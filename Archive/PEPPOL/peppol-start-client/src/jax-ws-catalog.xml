@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog" prefer="system">
+    <system systemId="http://www.w3.org/2006/03/addressing/ws-addr.xsd" uri="wsdl/www.w3.org/2006/03/addressing/ws-addr.xsd"/>
+</catalog>
