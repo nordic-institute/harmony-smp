@@ -1,0 +1,8 @@
+CREATE TABLE sml_allowed_wildcard_schemes (username VARCHAR(200) NOT NULL, scheme VARCHAR(25) NOT NULL, PRIMARY KEY (username, scheme))
+CREATE TABLE sml_migrate (recipient_participant_identifier_value VARCHAR(50) NOT NULL, migration_code VARCHAR(200) NOT NULL, recipient_participant_identifier_scheme VARCHAR(25) NOT NULL, PRIMARY KEY (recipient_participant_identifier_value, migration_code, recipient_participant_identifier_scheme))
+CREATE TABLE sml_recipient_participant_identifier (recipient_participant_identifier_value VARCHAR(50) NOT NULL, recipient_participant_identifier_scheme VARCHAR(25) NOT NULL, smp_id VARCHAR(200) NOT NULL, PRIMARY KEY (recipient_participant_identifier_value, recipient_participant_identifier_scheme))
+CREATE TABLE sml_service_metadata_publisher (smp_id VARCHAR(200) NOT NULL UNIQUE, logical_address LONGTEXT NOT NULL, physical_address LONGTEXT NOT NULL, username VARCHAR(200) NOT NULL, PRIMARY KEY (smp_id))
+CREATE TABLE sml_user (username VARCHAR(200) NOT NULL UNIQUE, password LONGTEXT, PRIMARY KEY (username))
+ALTER TABLE sml_allowed_wildcard_schemes ADD CONSTRAINT FK_sml_allowed_wildcard_schemes_username FOREIGN KEY (username) REFERENCES sml_user (username)
+ALTER TABLE sml_recipient_participant_identifier ADD CONSTRAINT FK_sml_recipient_participant_identifier_smp_id FOREIGN KEY (smp_id) REFERENCES sml_service_metadata_publisher (smp_id)
+ALTER TABLE sml_service_metadata_publisher ADD CONSTRAINT FK_sml_service_metadata_publisher_username FOREIGN KEY (username) REFERENCES sml_user (username)
