@@ -58,7 +58,6 @@ import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.internal.AssumptionViolatedException;
 
@@ -82,7 +81,8 @@ import eu.europa.ec.cipa.smp.server.hook.DoNothingRegistrationHook;
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-//@Ignore ("Cannot be enabled by default, because it would fail without the correct configuration")
+// @Ignore
+// ("Cannot be enabled by default, because it would fail without the correct configuration")
 @DevelopersNote ("You need to adjust your local META-INF/persistence.xml file to run this test")
 public class DBMSDataManagerTest {
   private static final String PARTICIPANT_IDENTIFIER_SCHEME = CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME;

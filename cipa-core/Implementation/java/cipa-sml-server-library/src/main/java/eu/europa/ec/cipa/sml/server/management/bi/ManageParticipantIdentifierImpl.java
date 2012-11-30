@@ -40,10 +40,6 @@ package eu.europa.ec.cipa.sml.server.management.bi;
 import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
-import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFactory;
-import javax.xml.soap.SOAPFault;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.WebServiceContext;
 
@@ -110,7 +106,7 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
                                                                            NotFoundFault,
                                                                            UnauthorizedFault {
     try {
-      // Validate input 
+      // Validate input
       DataValidator.validate (createListIn);
 
       // Validate client unique ID
@@ -126,16 +122,16 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
                 createListIn.getServiceMetadataPublisherID ());
     }
     catch (final NotFoundException e) {
-      final FaultType faultInfo =  m_aObjFactory.createFaultType ();
+      final FaultType faultInfo = m_aObjFactory.createFaultType ();
       faultInfo.setFaultMessage (e.getMessage ());
-      throw new NotFoundFault(e.getMessage (), faultInfo, e); 
+      throw new NotFoundFault (e.getMessage (), faultInfo, e);
     }
     catch (final UnauthorizedException e) {
       log.warn ("Unauthorized request on create", e);
       final FaultType faultInfo = m_aObjFactory.createFaultType ();
-     
+
       faultInfo.setFaultMessage (e.getMessage ());
-      
+
       throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
     }
     catch (final UnknownUserException e) {
@@ -306,7 +302,8 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
   }
 
   public void create (final ServiceMetadataPublisherServiceForParticipantType aParticipantToSMP) throws BadRequestFault,
-                                                                                                InternalErrorFault,NotFoundFault,
+                                                                                                InternalErrorFault,
+                                                                                                NotFoundFault,
                                                                                                 UnauthorizedFault {
     final ParticipantIdentifierType aParticipantIdentifier = aParticipantToSMP.getParticipantIdentifier ();
     if (log.isDebugEnabled ())
@@ -337,8 +334,8 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
     catch (final NotFoundException e) {
       final FaultType faultInfo = m_aObjFactory.createFaultType ();
       faultInfo.setFaultMessage (e.getMessage ());
-      
-      throw new NotFoundFault(e.getMessage (), faultInfo, e);
+
+      throw new NotFoundFault (e.getMessage (), faultInfo, e);
     }
     catch (final UnauthorizedException e) {
       log.warn ("Unauthorized request on create", e);

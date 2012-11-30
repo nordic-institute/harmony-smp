@@ -37,13 +37,9 @@
  */
 package eu.europa.ec.cipa.smp.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 import java.net.URI;
-
 
 import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
 import org.busdox.servicemetadata.publishing._1.SignedServiceMetadataType;
@@ -63,7 +59,6 @@ import eu.europa.ec.cipa.peppol.sml.ESML;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.peppol.utils.ReadonlyUsernamePWCredentials;
-import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 
 /**
  * Expects a local SMP up and running with DNS enabled at port 80 at the ROOT

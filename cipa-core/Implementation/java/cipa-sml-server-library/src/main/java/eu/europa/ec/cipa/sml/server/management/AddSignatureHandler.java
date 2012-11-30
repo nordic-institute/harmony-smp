@@ -37,7 +37,6 @@
  */
 package eu.europa.ec.cipa.sml.server.management;
 
-import java.io.StringWriter;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -59,15 +58,10 @@ import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
-import javax.xml.transform.Result;
 import javax.xml.transform.Source;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import javax.xml.ws.LogicalMessage;
 import javax.xml.ws.handler.LogicalHandler;
 import javax.xml.ws.handler.LogicalMessageContext;
@@ -104,7 +98,7 @@ public class AddSignatureHandler implements LogicalHandler <LogicalMessageContex
   @Nonnull
   private final ConfigFile _getConfigFile () {
     return ConfigFile.getInstance ();
-  } 
+  }
 
   @Override
   public void close (final MessageContext context) {}
@@ -126,12 +120,12 @@ public class AddSignatureHandler implements LogicalHandler <LogicalMessageContex
   public boolean handleMessage (final LogicalMessageContext context) {
     // Returns if the message is an inbound message.
     final Boolean isOutbound = (Boolean) context.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY);
-    final Boolean signResponse = Boolean.valueOf(_getConfigFile ().getString (CONFIG_SML_SIGN_RESPONSE));
+    final Boolean signResponse = Boolean.valueOf (_getConfigFile ().getString (CONFIG_SML_SIGN_RESPONSE));
     if (isOutbound.equals (Boolean.FALSE))
       return true;
     //
-    if (Boolean.FALSE.equals( signResponse)){
-    	return true;
+    if (Boolean.FALSE.equals (signResponse)) {
+      return true;
     }
 
     final LogicalMessage message = context.getMessage ();

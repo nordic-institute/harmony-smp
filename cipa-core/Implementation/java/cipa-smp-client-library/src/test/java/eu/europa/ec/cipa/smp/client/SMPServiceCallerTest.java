@@ -38,9 +38,9 @@
 package eu.europa.ec.cipa.smp.client;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
 import java.net.UnknownHostException;
 import java.security.cert.X509Certificate;
 
@@ -55,7 +55,6 @@ import eu.europa.ec.cipa.peppol.identifier.doctype.EPredefinedDocumentTypeIdenti
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.EPredefinedProcessIdentifier;
 import eu.europa.ec.cipa.peppol.sml.ESML;
-import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 
 /**
  * Test class for class {@link SMPServiceCaller}.
@@ -76,13 +75,13 @@ public final class SMPServiceCallerTest {
 
     try {
       sEndpointAddress = new SMPServiceCaller (PI_alfa1lab, ESML.PRODUCTION).getEndpointAddress (PI_alfa1lab,
-                                                                                                  DOCUMENT_INVOICE,
+                                                                                                 DOCUMENT_INVOICE,
                                                                                                  PROCESS_BII04);
       assertEquals ("https://start-ap.alfa1lab.com:443/accessPointService", sEndpointAddress);
 
       sEndpointAddress = new SMPServiceCaller (PI_helseVest, ESML.PRODUCTION).getEndpointAddress (PI_helseVest,
                                                                                                   DOCUMENT_INVOICE,
-                                                                                                   PROCESS_BII04);
+                                                                                                  PROCESS_BII04);
       assertEquals ("https://peppolap.ibxplatform.net:8443/accessPointService", sEndpointAddress);
 
       sEndpointAddress = new SMPServiceCaller (PI_sendRegning, ESML.PRODUCTION).getEndpointAddress (PI_sendRegning,

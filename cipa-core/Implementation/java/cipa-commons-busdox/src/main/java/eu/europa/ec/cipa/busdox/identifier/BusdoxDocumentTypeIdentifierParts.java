@@ -49,7 +49,7 @@ import com.phloc.commons.string.StringHelper;
 import com.phloc.commons.string.ToStringGenerator;
 
 /**
- * A standalone wrapper class for the {@link IBusdoxDocumentIdentifierParts}
+ * A standalone wrapper class for the {@link IBusdoxDocumentTypeIdentifierParts}
  * interface. The implementation is immutable.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger

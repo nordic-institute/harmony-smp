@@ -38,9 +38,8 @@
 package eu.europa.ec.cipa.smp.client;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+
 import java.net.URI;
 import java.util.Date;
 
@@ -68,7 +67,6 @@ import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.w3c.dom.Element;
 
-
 import com.phloc.commons.annotations.DevelopersNote;
 import com.phloc.commons.url.URLUtils;
 
@@ -82,8 +80,6 @@ import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
 import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.peppol.utils.ReadonlyUsernamePWCredentials;
-import eu.europa.ec.cipa.smp.client.CSMPIdentifier;
-import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 import eu.europa.ec.cipa.smp.client.exception.NotFoundException;
 import eu.europa.ec.cipa.smp.client.exception.UnauthorizedException;
 

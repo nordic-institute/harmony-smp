@@ -43,7 +43,6 @@ import javax.annotation.concurrent.Immutable;
 
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 
-
 import com.phloc.commons.annotations.UnsupportedOperation;
 import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.hash.HashCodeGenerator;
@@ -131,8 +130,8 @@ public final class ReadonlyParticipantIdentifier extends ParticipantIdentifierTy
    * Note: this method does compare case sensitive!!!! Otherwise the required
    * semantics of #equals would not be fulfilled!
    * 
-   * @see IdentifierUtils#areIdentifiersEqual(at.peppol.busdox.identifier.IReadonlyParticipantIdentifier,
-   *      at.peppol.busdox.identifier.IReadonlyParticipantIdentifier)
+   * @see IdentifierUtils#areIdentifiersEqual(eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier,
+   *      eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier)
    */
   @Override
   public boolean equals (final Object o) {

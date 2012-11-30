@@ -59,7 +59,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.charset.CCharset;
@@ -128,7 +127,7 @@ public final class MainCreateCodelistsFilesFromExcel {
     if (aDoc == null)
       throw new IllegalStateException ("Failed to serialize code list");
     final OutputStream aFOS = FileUtils.getOutputStream (sFilename);
-    if (XMLWriter.writeToStream (aDoc, aFOS, XMLWriterSettings.SUGGESTED_XML_SETTINGS).isFailure ())
+    if (XMLWriter.writeToStream (aDoc, aFOS, XMLWriterSettings.DEFAULT_XML_SETTINGS).isFailure ())
       throw new IllegalStateException ("Failed to write file " + sFilename);
     s_aLogger.info ("Wrote Genericode file " + sFilename);
   }
