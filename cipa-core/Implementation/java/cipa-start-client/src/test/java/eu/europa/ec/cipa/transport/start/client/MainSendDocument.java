@@ -62,7 +62,6 @@ import eu.europa.ec.cipa.peppol.sml.ESML;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 import eu.europa.ec.cipa.transport.IMessageMetadata;
 import eu.europa.ec.cipa.transport.MessageMetadata;
-import eu.europa.ec.cipa.transport.start.client.AccessPointClient;
 
 /**
  * Test sending a document to a receiver

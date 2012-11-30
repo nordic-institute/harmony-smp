@@ -50,9 +50,9 @@ import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.busdox.transport.identifiers._1.ProcessIdentifierType;
 import org.junit.Ignore;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.Test;
 import org.w3c.dom.Document;
 
 import com.phloc.commons.CGlobal;
@@ -64,7 +64,6 @@ import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifi
 import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
 import eu.europa.ec.cipa.transport.IMessageMetadata;
 import eu.europa.ec.cipa.transport.MessageMetadata;
-import eu.europa.ec.cipa.transport.start.client.AccessPointClient;
 
 /**
  * @author nigel@mazeppa.no

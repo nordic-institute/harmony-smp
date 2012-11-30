@@ -44,15 +44,13 @@ import javax.xml.bind.JAXBException;
 import org.junit.Test;
 
 import com.phloc.commons.mock.PhlocTestUtils;
+import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.HeaderList;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
-import eu.europa.ec.cipa.transport.IMessageMetadata;
-import eu.europa.ec.cipa.transport.MessageMetadata;
-import eu.europa.ec.cipa.transport.MessageMetadataHelper;
 
 /**
  * Test class for class {@link MessageMetadataHelper}.
@@ -62,7 +60,7 @@ import eu.europa.ec.cipa.transport.MessageMetadataHelper;
 public final class MessageMetadataHelperTest {
   private static void _testMarshal (final IMessageMetadata m) throws JAXBException {
     final List <Header> aHeaders = MessageMetadataHelper.createHeadersFromMetadata (m);
-    final HeaderList aHL = new HeaderList ();
+    final HeaderList aHL = new HeaderList (SOAPVersion.SOAP_11);
     aHL.addAll (aHeaders);
 
     final IMessageMetadata m2 = MessageMetadataHelper.createMetadataFromHeaders (aHL);

@@ -45,9 +45,9 @@ import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
 import org.busdox.servicemetadata.publishing._1.SignedServiceMetadataType;
 import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import com.phloc.commons.url.URLUtils;
 

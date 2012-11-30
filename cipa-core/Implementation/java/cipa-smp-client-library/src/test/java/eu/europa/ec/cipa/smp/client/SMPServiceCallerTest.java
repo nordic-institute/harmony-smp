@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
 import java.net.UnknownHostException;
 import java.security.cert.X509Certificate;
 
-import org.testng.annotations.Test;
+import org.junit.Test;
 
 import com.sun.jersey.api.client.ClientHandlerException;
 

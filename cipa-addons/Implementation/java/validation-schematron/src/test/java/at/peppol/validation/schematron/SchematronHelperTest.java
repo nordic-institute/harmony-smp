@@ -26,8 +26,6 @@ import javax.xml.transform.Source;
 import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 
-import at.peppol.validation.schematron.ISchematronResource;
-import at.peppol.validation.schematron.SchematronHelper;
 import at.peppol.validation.schematron.svrl.SVRLWriter;
 import at.peppol.validation.schematron.xslt.SchematronResourceSCH;
 

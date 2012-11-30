@@ -39,12 +39,6 @@
 			<artifactId>webservices-rt</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.10</version>
-			<scope>test</scope>
-		</dependency>
 
 		<dependency>
 			<groupId>eu.europa.ec.cipa</groupId>

@@ -39,6 +39,8 @@ package eu.europa.ec.cipa.smp.client;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 import java.net.URI;
 import java.util.Date;
@@ -62,9 +64,9 @@ import org.busdox.servicemetadata.publishing._1.SignedServiceMetadataType;
 import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.busdox.transport.identifiers._1.ProcessIdentifierType;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.Test;
+import org.junit.Test;
 import org.w3c.dom.Element;
 
 import com.phloc.commons.annotations.DevelopersNote;
@@ -80,7 +82,6 @@ import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
 import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.peppol.utils.ReadonlyUsernamePWCredentials;
-import eu.europa.ec.cipa.smp.client.exception.NotFoundException;
 import eu.europa.ec.cipa.smp.client.exception.UnauthorizedException;
 
 /**
@@ -117,7 +118,7 @@ public final class ClientTest {
     }
   }
 
-  @Test (expectedExceptions = NotFoundException.class)
+  @Test
   public void testGetServiceMetadataNotExistsOnExistingSMP () throws Exception {
     final String sParticipantID = "0088:5798000099988";
 
@@ -125,7 +126,7 @@ public final class ClientTest {
     final DocumentIdentifierType aDocumentTypeID = SimpleDocumentTypeIdentifier.createWithDefaultScheme (TEST_DOCUMENT);
 
     final SMPServiceCaller aClient = new SMPServiceCaller (SMP_URI);
-    aClient.getServiceRegistration (aServiceGroupID, aDocumentTypeID);
+    assertNull (aClient.getServiceRegistrationOrNull (aServiceGroupID, aDocumentTypeID));
   }
 
   @Test
@@ -180,20 +181,28 @@ public final class ClientTest {
     _deleteServiceGroup (aClient, SMP_CREDENTIALS);
   }
 
-  @Test (expectedExceptions = UnauthorizedException.class)
+  @Test
   public void testUnauthorizedUser () throws Exception {
     final SMPServiceCaller aClient = new SMPServiceCaller (SMP_URI);
     final ReadonlyUsernamePWCredentials aCredentials = new ReadonlyUsernamePWCredentials (SMP_USERNAME + "wronguser",
                                                                                           SMP_PASSWORD);
-    _createSaveServiceGroup (aClient, aCredentials);
+    try {
+      _createSaveServiceGroup (aClient, aCredentials);
+      fail ();
+    }
+    catch (final UnauthorizedException ex) {}
   }
 
-  @Test (expectedExceptions = UnauthorizedException.class)
+  @Test
   public void testUnauthorizedPassword () throws Exception {
     final SMPServiceCaller aClient = new SMPServiceCaller (SMP_URI);
     final ReadonlyUsernamePWCredentials aCredentials = new ReadonlyUsernamePWCredentials (SMP_USERNAME, SMP_PASSWORD +
                                                                                                         "wrongpass");
-    _createSaveServiceGroup (aClient, aCredentials);
+    try {
+      _createSaveServiceGroup (aClient, aCredentials);
+      fail ();
+    }
+    catch (final UnauthorizedException ex) {}
   }
 
   @Test
