@@ -10,7 +10,7 @@
   <name>cipa-sml-client-swing</name>
 
 	<scm>
-		<connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/ccipa-sml-client-swing</connection>
+		<connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-sml-client-swing</connection>
 		<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-sml-client-swing</developerConnection>
 	</scm>
 
