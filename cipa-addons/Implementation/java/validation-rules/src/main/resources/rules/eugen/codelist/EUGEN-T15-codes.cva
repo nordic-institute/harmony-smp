@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+
+    Version: MPL 1.1/EUPL 1.1
+
+    The contents of this file are subject to the Mozilla Public License Version
+    1.1 (the "License"); you may not use this file except in compliance with
+    the License. You may obtain a copy of the License at:
+    http://www.mozilla.org/MPL/
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+    for the specific language governing rights and limitations under the
+    License.
+
+    The Original Code is Copyright The PEPPOL project (http://www.peppol.eu)
+
+    Alternatively, the contents of this file may be used under the
+    terms of the EUPL, Version 1.1 or - as soon they will be approved
+    by the European Commission - subsequent versions of the EUPL
+    (the "Licence"); You may not use this work except in compliance
+    with the Licence.
+    You may obtain a copy of the Licence at:
+    http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the Licence is distributed on an "AS IS" basis,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the Licence for the specific language governing permissions and
+    limitations under the Licence.
+
+    If you wish to allow use of your version of this file only
+    under the terms of the EUPL License and not to allow others to use
+    your version of this file under the MPL, indicate your decision by
+    deleting the provisions above and replace them with the notice and
+    other provisions required by the EUPL License. If you do not delete
+    the provisions above, a recipient may use your version of this file
+    under either the MPL or the EUPL License.
+
+-->
+<ns2:ContextValueAssociation name="EUGEN-T15-codes" xmlns:ns2="http://docs.oasis-open.org/codelist/ns/ContextValueAssociation/1.0/">
+  <ValueLists>
+    <ValueList uri="BinaryObjectMimeCode.gc" xml:id="BinaryObjectMimeCode" />
+    <ValueList uri="CommodityClassificationCode.gc" xml:id="CommodityClassificationCode" />
+    <ValueList uri="FinancialInstitutionIdentifier.gc" xml:id="FinancialInstitutionIdentifier" />
+    <ValueList uri="ItemIdentifier.gc" xml:id="ItemIdentifier" />
+    <ValueList uri="LocationIdentifier.gc" xml:id="LocationIdentifier" />
+    <ValueList uri="PartyID.gc" xml:id="PartyID" />
+    <ValueList uri="PostalAddressIdentifier.gc" xml:id="PostalAddressIdentifier" />
+    <ValueList uri="TaxExemptionReasonCode.gc" xml:id="TaxExemptionReasonCode" />
+  </ValueLists>
+  <Contexts>
+    <Context address="@mimeCode" mark="fatal" values="BinaryObjectMimeCode">
+      <Message>[PCL-015-001]-Mime code in attribute MUST be MIMEMediaType.</Message>
+    </Context>
+    <Context address="cac:FinancialInstitution/cbc:ID//@schemeID" mark="warning" values="FinancialInstitutionIdentifier">
+      <Message>[PCL-015-002]-Financial Institution SHOULD be BIC code.</Message>
+    </Context>
+    <Context address="cac:PostalAddress/cbc:ID//@schemeID" mark="warning" values="PostalAddressIdentifier">
+      <Message>[PCL-015-003]-Postal address identifiers SHOULD be GLN.</Message>
+    </Context>
+    <Context address="cac:Delivery/cac:DeliveryLocation/cbc:ID//@schemeID" mark="warning" values="LocationIdentifier">
+      <Message>[PCL-015-004]-Location identifiers SHOULD be GLN</Message>
+    </Context>
+    <Context address="cac:Item/cac:StandardItemIdentification/cbc:ID//@schemeID" mark="warning" values="ItemIdentifier">
+      <Message>[PCL-015-005]-Standard item identifiers SHOULD be GTIN.</Message>
+    </Context>
+    <Context address="cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode//@listID" mark="warning" values="CommodityClassificationCode">
+      <Message>[PCL-015-006]-Commodity classification SHOULD be one of UNSPSC, eClass or CPV.</Message>
+    </Context>
+    <Context address="cbc:TaxExemptionReasonCode" mark="fatal" values="TaxExemptionReasonCode">
+      <Message>[PCL-015-007]-Tax exemption reasons MUST be coded using Use CWA 15577 tax exemption code list. Version 2006</Message>
+    </Context>
+    <Context address="cac:PartyIdentification/cbc:ID//@schemeID" mark="fatal" values="PartyID">
+      <Message>[PCL-015-008]-Party Identifiers MUST use the PEPPOL PartyID list</Message>
+    </Context>
+    <Context address="cbc:EndpointID//@schemeID" mark="fatal" values="PartyID">
+      <Message>[PCL-015-009]-Endpoint Identifiers MUST use the PEPPOL PartyID list.</Message>
+    </Context>
+  </Contexts>
+</ns2:ContextValueAssociation>
