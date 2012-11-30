@@ -5,14 +5,9 @@
 	<artifactId>cipa-parent-pom</artifactId>
 	<packaging>pom</packaging>
 	<name>CIPA parent POM</name>
-	<description>The binary plug-and-play implementation of the PEPPOL sample code.</description>
+	<description>The Cipa e delivery platform</description>
 	<version>1.0-SNAPSHOT</version>
-	<url>https://github.com/SendRegning/sr-peppol/</url>
-	<scm>
-		<connection>scm:git:git@github.com:SendRegning/sr-peppol.git</connection>
-		<url>scm:git:git@github.com:SendRegning/sr-peppol.git</url>
-		<developerConnection>scm:git:git@github.com:SendRegning/sr-peppol.git</developerConnection>
-	</scm>
+	<url></url>
 	<modules>
 		<module>cipa-commons-busdox</module>
 		<module>cipa-commons-jpa</module>
@@ -184,17 +179,5 @@
 				<version>2.8</version> </plugin> </reportPlugins> </configuration> </plugin> -->
 		</plugins>
 	</build>
-	<distributionManagement>
-		<repository>
-			<id>sr-repo</id>
-			<!-- Remember to set the password in your ~/.m2/settings.xml -->
-			<name>Sendregning on nexus</name>
-			<url>http://embla.balder.no:8081/nexus/content/repositories/sendregning/</url>
-		</repository>
-		<site>
-			<id>oxalis.website</id>
-			<name>Oxalis website</name>
-			<url>file:///tmp/oxalis</url>
-		</site>
-	</distributionManagement>
+	
 </project>
