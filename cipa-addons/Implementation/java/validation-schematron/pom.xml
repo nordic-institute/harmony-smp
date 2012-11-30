@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
+		<groupId>eu.europa.ec.cipa</groupId>
+		<artifactId>cipa-parent-pom</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>peppol-validation-schematron</artifactId>
+  <version>2.3.2-SNAPSHOT</version>
+  <name>peppol-validation-schematron</name>
+  
+  <scm>
+    <connection>scm:svn:http://peppol-silicone.googlecode.com/svn/trunk/java/validation-schematron</connection>
+    <developerConnection>scm:svn:https://peppol-silicone.googlecode.com/svn/trunk/java/validation-schematron</developerConnection>
+  </scm>
+
+  <repositories>
+    <repository>
+      <id>phloc</id>
+      <url>http://repo.phloc.com/maven2/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.phloc</groupId>
+      <artifactId>phloc-commons</artifactId>
+      <version>3.9.1</version>
+    </dependency>
+    <!-- Saxon is required! - does not work with integrated JAXP! -->
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>saxonhe</artifactId>
+      <version>9.4.0_3j</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.jvnet.jaxb2.maven2</groupId>
+        <artifactId>maven-jaxb2-plugin</artifactId>
+        <version>0.8.2</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <bindingDirectory>src/main/resources/schemas</bindingDirectory>
+          <schemaDirectory>src/main/resources/schemas</schemaDirectory>
+          <schemaIncludes>
+            <schemaInclude>svrl-20100126.xsd</schemaInclude>
+          </schemaIncludes>
+          <extension>true</extension>
+          <specVersion>2.1</specVersion>
+          <args>
+            <arg>-no-header</arg>
+            <arg>-Xphloc-implements</arg>
+            <arg>java.io.Serializable</arg>
+            <arg>-Xphloc-equalshashcode</arg>
+            <arg>-Xphloc-tostring</arg>
+          </args>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-xjc</artifactId>
+            <version>2.2.5-2</version>
+          </dependency>
+          <dependency>
+            <groupId>com.phloc</groupId>
+            <artifactId>phloc-jaxb22-plugin</artifactId>
+            <version>2.2.5.5</version>
+          </dependency>
+          <!-- Required for correct entity resolving in paths with blanks! -->
+          <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>2.10.0</version>
+          </dependency>
+        </dependencies>
+      </plugin>
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>src/main/resources/schematron/**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>https://peppol-silicone.googlecode.com/svn/tags/${project.name}</tagBase>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
