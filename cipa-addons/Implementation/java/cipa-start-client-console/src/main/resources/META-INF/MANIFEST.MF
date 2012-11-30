@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: orazisa
+Build-Jdk: 1.6.0_30
+Specification-Title: cipa-transport-start-client
+Specification-Version: 1.0-SNAPSHOT
+Implementation-Title: cipa-transport-start-client
+Implementation-Version: 1.0-SNAPSHOT
+Implementation-Vendor-Id: eu.europa.ec.cipa
+Main-Class: eu.europa.ec.cipa.transport.start.client.console.StartClientConsole
+Class-Path: ./conf/
+
