@@ -42,6 +42,7 @@
 package eu.europa.ec.cipa.transport.start.server;
 
 import java.math.BigInteger;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -51,7 +52,6 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.ServiceLoader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -103,8 +103,6 @@ import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 import eu.europa.ec.cipa.transport.IMessageMetadata;
 import eu.europa.ec.cipa.transport.MessageMetadataHelper;
 import eu.europa.ec.cipa.transport.PingMessageHelper;
-import eu.europa.ec.cipa.transport.start.server.AccessPointReceiveError;
-import eu.europa.ec.cipa.transport.start.server.IAccessPointServiceReceiverSPI;
 import eu.europa.ec.cipa.transport.start.util.CIPAServerMode;
 
 /**
@@ -127,31 +125,29 @@ public class AccessPointService {
 
 	static {
 		String receiverClassPath = ServerConfigFile.getReceiverClassPath();
-
 		if (receiverClassPath != null) {
-			if (!receiverClassPath.endsWith("/")
-					&& !receiverClassPath.endsWith(".jar")) {
-				throw new InitializationException("Invalid class path: "
-						+ receiverClassPath
-						+ " ; must end with either / or .jar");
+			String[] pathEntries = receiverClassPath.split(",");
+			URL[]  pathEntriesURLS = new URL[pathEntries.length];
+			for (int i = 0; i < pathEntries.length; i++) {
+				String pathEntry = pathEntries[i];
+				if (!pathEntry.endsWith("/")
+						&& !pathEntry.endsWith(".jar")) throw new InitializationException("Invalid class path: "
+							+ pathEntry
+							+ " ; must end with either / or .jar");
+				try {
+					pathEntriesURLS[i] = new URL(pathEntry);	
+				} catch (MalformedURLException e) {
+					throw new InitializationException("Invalid class path: "+ pathEntry +"must Be a valid URL ");
+				}
 			}
 			URLClassLoader customCL;
-			try {
-				customCL = new URLClassLoader(new URL[] { new URL(
-						receiverClassPath) }, AccessPointService.class.getClassLoader());
-			} catch (Exception e) {
-				throw new InitializationException("Invalid class path: "
-						+ receiverClassPath, e);
-			}
+			customCL = new URLClassLoader(pathEntriesURLS,ClassHelper.getDefaultClassLoader ());
 			s_aReceivers = ContainerHelper
 					.newUnmodifiableList(ServiceLoaderBackport.load(
 							IAccessPointServiceReceiverSPI.class, customCL));
 
 		} else {
 			// Load all SPI implementations
-//			s_aReceivers = ContainerHelper
-//					.newUnmodifiableList(ServiceLoaderBackport
-//							.load(IAccessPointServiceReceiverSPI.class));
 			s_aReceivers = ContainerHelper
 			.newUnmodifiableList(ServiceLoaderBackport
 					.load(IAccessPointServiceReceiverSPI.class));
