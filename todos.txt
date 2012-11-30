@@ -1,0 +1,5 @@
+* Merge parent POM with the one from Silicone
+* Add a parent build pom to the addons folder
+* Add the LIME stuff from Silicone
+* Add the test files project from Silicone
+* Update all elements to the 2.3.1 code basis from Silicone
