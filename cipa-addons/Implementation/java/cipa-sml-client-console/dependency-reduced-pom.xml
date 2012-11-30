@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <artifactId>cipa-parent-pom</artifactId>
+    <groupId>eu.europa.ec.cipa</groupId>
+    <version>1.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>cipa-sml-client-console</artifactId>
+  <name>cipa-sml-client-console</name>
+  <scm>
+    <connection>scm:svn:http://peppol-silicone.googlecode.com/svn/trunk/java/sml-client-console</connection>
+    <developerConnection>scm:svn:https://peppol-silicone.googlecode.com/svn/trunk/java/sml-client-console</developerConnection>
+  </scm>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <transformers>
+                <transformer>
+                  <mainClass>eu.europa.ec.cipa.sml.client.console.Main</mainClass>
+                </transformer>
+                <transformer />
+                <transformer>
+                  <addHeader>false</addHeader>
+                </transformer>
+                <transformer />
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>https://peppol-silicone.googlecode.com/svn/tags/${project.name}</tagBase>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+  <repositories>
+    <repository>
+      <releases />
+      <snapshots />
+      <id>phloc</id>
+      <url>http://repo.phloc.com/maven2/</url>
+    </repository>
+  </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.10</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>hamcrest-core</artifactId>
+          <groupId>org.hamcrest</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>6.1.1</version>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <artifactId>bsh</artifactId>
+          <groupId>org.beanshell</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jcommander</artifactId>
+          <groupId>com.beust</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>snakeyaml</artifactId>
+          <groupId>org.yaml</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
+</project>
+
