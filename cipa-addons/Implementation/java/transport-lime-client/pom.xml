@@ -1,0 +1,60 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>at.peppol</groupId>
+    <artifactId>peppol-parent-pom</artifactId>
+    <version>15</version>
+  </parent>
+  <artifactId>peppol-transport-lime-client</artifactId>
+  <version>2.3.2-SNAPSHOT</version>
+  <name>peppol-transport-lime-client</name>
+
+  <scm>
+    <connection>scm:svn:http://peppol-silicone.googlecode.com/svn/trunk/java/transport-lime-client</connection>
+    <developerConnection>scm:svn:https://peppol-silicone.googlecode.com/svn/trunk/java/transport-lime-client</developerConnection>
+  </scm>
+
+  <repositories>
+    <repository>
+      <id>phloc</id>
+      <url>http://repo.phloc.com/maven2/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>at.peppol</groupId>
+      <artifactId>peppol-transport-api</artifactId>
+      <version>2.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.glassfish.metro</groupId>
+      <artifactId>webservices-rt</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>https://peppol-silicone.googlecode.com/svn/tags/${project.name}</tagBase>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
