@@ -61,7 +61,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <metro.new.version>2.2.1-1</metro.new.version>
-    <slf4j.version>1.6.2</slf4j.version>
+    <slf4j.version>1.7.2</slf4j.version>
     <jersey.version>1.15</jersey.version>
     <jetty.version>7.6.8.v20121106</jetty.version>
   </properties>
@@ -78,11 +78,6 @@
       <id>phax</id>
       <name>Philip Helger</name>
       <organization>Austrian Federal Computing Center/Bundesrechenzentrum</organization>
-    </developer>
-    <developer>
-      <id>thomas</id>
-      <name>Thomas Ravnholdt</name>
-      <organization>Silverbullet</organization>
     </developer>
   </developers>
 
@@ -133,7 +128,7 @@
        <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
-        <version>4.10</version>
+        <version>4.11</version>
       </dependency>
       <dependency>
         <groupId>javax.xml.bind</groupId>

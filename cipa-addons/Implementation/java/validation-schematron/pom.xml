@@ -32,7 +32,7 @@
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-commons</artifactId>
-      <version>3.9.1</version>
+      <version>3.9.2</version>
     </dependency>
     <!-- Saxon is required! - does not work with integrated JAXP! -->
     <dependency>
@@ -81,12 +81,12 @@
           <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-xjc</artifactId>
-            <version>2.2.5-2</version>
+            <version>2.2.6</version>
           </dependency>
           <dependency>
             <groupId>com.phloc</groupId>
             <artifactId>phloc-jaxb22-plugin</artifactId>
-            <version>2.2.5.5</version>
+            <version>2.2.6</version>
           </dependency>
           <!-- Required for correct entity resolving in paths with blanks! -->
           <dependency>
