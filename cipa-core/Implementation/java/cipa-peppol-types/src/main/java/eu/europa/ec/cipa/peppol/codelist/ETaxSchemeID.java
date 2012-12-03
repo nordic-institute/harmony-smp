@@ -35,12 +35,10 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-
 package eu.europa.ec.cipa.peppol.codelist;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.id.IHasID;
 import com.phloc.commons.lang.EnumHelper;

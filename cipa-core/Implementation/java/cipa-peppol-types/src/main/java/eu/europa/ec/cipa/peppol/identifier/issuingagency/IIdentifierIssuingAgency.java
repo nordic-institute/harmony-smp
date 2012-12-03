@@ -40,7 +40,6 @@ package eu.europa.ec.cipa.peppol.identifier.issuingagency;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.version.Version;
 

@@ -119,6 +119,7 @@ public final class MainCreateCodelistsFilesFromExcel {
   private static final String SHEET_DOCUMENT = "Document";
   private static final String SHEET_PROCESS = "Process";
   private static final String RESULT_DIRECTORY = "src/main/resources/codelists/";
+  private static final String RESULT_PACKAGE_PREFIX = "eu.europa.ec.cipa.peppol.";
   private static final JCodeModel s_aCodeModel = new JCodeModel ();
   private static JDefinedClass s_jEnumPredefinedDoc;
 
@@ -206,7 +207,7 @@ public final class MainCreateCodelistsFilesFromExcel {
 
     // Create Java source
     try {
-      final JDefinedClass jEnum = s_aCodeModel._package ("at.peppol.commons.identifier.issuingagency")
+      final JDefinedClass jEnum = s_aCodeModel._package (RESULT_PACKAGE_PREFIX + "identifier.issuingagency")
                                               ._enum ("EPredefinedIdentifierIssuingAgency")
                                               ._implements (IIdentifierIssuingAgency.class);
       jEnum.javadoc ().add ("This file is generated. Do NOT edit!");
@@ -361,7 +362,7 @@ public final class MainCreateCodelistsFilesFromExcel {
 
     // Create Java source
     try {
-      s_jEnumPredefinedDoc = s_aCodeModel._package ("at.peppol.commons.identifier.doctype")
+      s_jEnumPredefinedDoc = s_aCodeModel._package (RESULT_PACKAGE_PREFIX + "identifier.doctype")
                                          ._enum ("EPredefinedDocumentTypeIdentifier")
                                          ._implements (IPeppolPredefinedDocumentTypeIdentifier.class);
       s_jEnumPredefinedDoc.javadoc ().add ("This file is generated. Do NOT edit!");
@@ -586,7 +587,7 @@ public final class MainCreateCodelistsFilesFromExcel {
 
     // Create Java source
     try {
-      final JDefinedClass jEnum = s_aCodeModel._package ("at.peppol.commons.identifier.process")
+      final JDefinedClass jEnum = s_aCodeModel._package (RESULT_PACKAGE_PREFIX + "identifier.process")
                                               ._enum ("EPredefinedProcessIdentifier")
                                               ._implements (IPeppolPredefinedProcessIdentifier.class);
       jEnum.javadoc ().add ("This file is generated. Do NOT edit!");

@@ -46,7 +46,6 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import com.phloc.commons.lang.ServiceLoaderBackport;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;

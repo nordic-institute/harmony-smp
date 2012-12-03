@@ -42,7 +42,6 @@ import javax.annotation.Nullable;
 
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 
-
 import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.hash.HashCodeGenerator;
 import com.phloc.commons.string.ToStringGenerator;

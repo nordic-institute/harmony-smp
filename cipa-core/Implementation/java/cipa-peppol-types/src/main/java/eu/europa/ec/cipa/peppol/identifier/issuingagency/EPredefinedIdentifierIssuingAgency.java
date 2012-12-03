@@ -35,16 +35,12 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-
 package eu.europa.ec.cipa.peppol.identifier.issuingagency;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
-
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.version.Version;
-
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 
 /**

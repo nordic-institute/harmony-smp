@@ -43,7 +43,6 @@ import javax.annotation.concurrent.Immutable;
 
 import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 
-
 import com.phloc.commons.annotations.UnsupportedOperation;
 import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.hash.HashCodeGenerator;

@@ -39,7 +39,6 @@ package eu.europa.ec.cipa.peppol.identifier.validator;
 
 import javax.annotation.Nullable;
 
-
 import com.phloc.commons.annotations.IsSPIImplementation;
 import com.phloc.commons.string.StringHelper;
 

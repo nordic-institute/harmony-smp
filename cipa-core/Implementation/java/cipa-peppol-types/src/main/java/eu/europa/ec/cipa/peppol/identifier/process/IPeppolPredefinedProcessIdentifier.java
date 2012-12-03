@@ -41,7 +41,6 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-
 import com.phloc.commons.version.Version;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.IPeppolPredefinedDocumentTypeIdentifier;

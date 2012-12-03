@@ -46,7 +46,6 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import com.phloc.commons.regex.RegExHelper;
 import com.phloc.commons.string.StringHelper;
 

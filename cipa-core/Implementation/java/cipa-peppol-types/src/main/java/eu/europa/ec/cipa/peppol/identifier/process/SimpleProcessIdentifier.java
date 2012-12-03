@@ -41,7 +41,6 @@ import javax.annotation.Nonnull;
 
 import org.busdox.transport.identifiers._1.ProcessIdentifierType;
 
-
 import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.hash.HashCodeGenerator;
 import com.phloc.commons.string.ToStringGenerator;
