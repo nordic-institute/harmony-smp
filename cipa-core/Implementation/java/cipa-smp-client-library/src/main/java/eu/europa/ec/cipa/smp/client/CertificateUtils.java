@@ -49,18 +49,20 @@ import com.phloc.commons.io.streams.StringInputStream;
 import com.phloc.commons.string.StringHelper;
 
 public final class CertificateUtils {
-  public static final String BEGIN_CERTIFICATE = "-----BEGIN CERTIFICATE-----\n";
-  public static final String END_CERTIFICATE = "\n-----END CERTIFICATE-----";
+  public static final String BEGIN_CERTIFICATE = "-----BEGIN CERTIFICATE-----";
+  public static final String END_CERTIFICATE = "-----END CERTIFICATE-----";
 
   private CertificateUtils () {}
 
   @Nonnull
   private static String _ensureBeginAndEndArePresent (@Nonnull final String sCertString) {
     String sRealCertString = sCertString;
+    // Check without newline in case there are blanks between the string the
+    // certificate
     if (!sRealCertString.startsWith (BEGIN_CERTIFICATE))
-      sRealCertString = BEGIN_CERTIFICATE + sRealCertString;
-    if (!sRealCertString.endsWith (END_CERTIFICATE))
-      sRealCertString += END_CERTIFICATE;
+      sRealCertString = BEGIN_CERTIFICATE + "\n" + sRealCertString;
+    if (!sRealCertString.trim ().endsWith (END_CERTIFICATE))
+      sRealCertString += "\n" + END_CERTIFICATE;
     return sRealCertString;
   }
 
