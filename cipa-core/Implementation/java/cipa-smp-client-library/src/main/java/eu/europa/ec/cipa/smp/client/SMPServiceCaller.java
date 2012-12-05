@@ -85,6 +85,7 @@ import eu.europa.ec.cipa.peppol.ipmapper.ConfiguredDNSMapper;
 import eu.europa.ec.cipa.peppol.ipmapper.MappedDNSHost;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 import eu.europa.ec.cipa.peppol.uri.BusdoxURLUtils;
+import eu.europa.ec.cipa.peppol.utils.CertificateUtils;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;

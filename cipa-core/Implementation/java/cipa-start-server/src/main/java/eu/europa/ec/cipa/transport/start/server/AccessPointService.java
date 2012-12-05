@@ -97,8 +97,8 @@ import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifi
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
 import eu.europa.ec.cipa.peppol.sml.ESML;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
+import eu.europa.ec.cipa.peppol.utils.CertificateUtils;
 import eu.europa.ec.cipa.peppol.utils.ExceptionUtils;
-import eu.europa.ec.cipa.smp.client.CertificateUtils;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 import eu.europa.ec.cipa.transport.IMessageMetadata;
 import eu.europa.ec.cipa.transport.MessageMetadataHelper;

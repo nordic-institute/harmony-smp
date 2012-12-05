@@ -55,11 +55,11 @@ import com.phloc.commons.io.file.SimpleFileIO;
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
+import eu.europa.ec.cipa.peppol.utils.CertificateUtils;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.peppol.utils.ReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
-import eu.europa.ec.cipa.smp.client.CertificateUtils;
 
 /**
  * Configuration for this package

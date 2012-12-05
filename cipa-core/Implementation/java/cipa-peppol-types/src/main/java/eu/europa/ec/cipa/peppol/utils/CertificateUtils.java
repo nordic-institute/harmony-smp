@@ -35,7 +35,7 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.smp.client;
+package eu.europa.ec.cipa.peppol.utils;
 
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;

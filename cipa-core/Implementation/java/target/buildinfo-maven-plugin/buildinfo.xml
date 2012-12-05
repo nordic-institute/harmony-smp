@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<mapping>
+  <map key="buildinfo.version" value="1" />
+  <map key="project.groupid" value="eu.europa.ec.cipa" />
+  <map key="project.artifactid" value="cipa-parent-pom" />
+  <map key="project.version" value="1.0-SNAPSHOT" />
+  <map key="project.name" value="CIPA parent POM" />
+  <map key="project.packaging" value="pom" />
+  <map key="reactorproject.count" value="12" />
+  <map key="reactorproject.0.groupid" value="eu.europa.ec.cipa" />
+  <map key="reactorproject.0.artifactid" value="cipa-parent-pom" />
+  <map key="reactorproject.0.version" value="1.0-SNAPSHOT" />
+  <map key="reactorproject.0.name" value="CIPA parent POM" />
+  <map key="reactorproject.1.groupid" value="eu.europa.ec.cipa" />
+  <map key="reactorproject.1.artifactid" value="cipa-commons-busdox" />
+  <map key="reactorproject.1.version" value="1.0-SNAPSHOT" />
+  <map key="reactorproject.1.name" value="cipa-commons-busdox" />
+  <map key="reactorproject.2.groupid" value="eu.europa.ec.cipa" />
+  <map key="reactorproject.2.artifactid" value="cipa-commons-jpa" />
+  <map key="reactorproject.2.version" value="1.0-SNAPSHOT" />
+  <map key="reactorproject.2.name" value="peppol-commons-jpa" />
+  <map key="reactorproject.3.groupid" value="eu.europa.ec.cipa" />
+  <map key="reactorproject.3.artifactid" value="cipa-peppol-types" />
+  <map key="reactorproject.3.version" value="1.0-SNAPSHOT" />
+  <map key="reactorproject.3.name" value="cipa-peppol-types" />
+  <map key="reactorproject.4.groupid" value="eu.europa.ec.cipa" />
+  <map key="reactorproject.4.artifactid" value="cipa-sml-client-library" />
+  <map key="reactorproject.4.version" value="1.0-SNAPSHOT" />
+  <map key="reactorproject.4.name" value="cipa-sml-client-library" />
+  <map key="reactorproject.5.groupid" value="eu.europa.ec.cipa" />
+  <map key="reactorproject.5.artifactid" value="cipa-sml-server-library" />
+  <map key="reactorproject.5.version" value="1.0-SNAPSHOT" />
+  <map key="reactorproject.5.name" value="cipa-sml-server-library" />
+  <map key="reactorproject.6.groupid" value="eu.europa.ec.cipa" />
+  <map key="reactorproject.6.artifactid" value="cipa-sml-webapp" />
+  <map key="reactorproject.6.version" value="1.0-SNAPSHOT" />
+  <map key="reactorproject.6.name" value="cipa-sml-webapp" />
+  <map key="reactorproject.7.groupid" value="eu.europa.ec.cipa" />
+  <map key="reactorproject.7.artifactid" value="cipa-smp-client-library" />
+  <map key="reactorproject.7.version" value="1.0-SNAPSHOT" />
+  <map key="reactorproject.7.name" value="cipa-smp-client-library" />
+  <map key="reactorproject.8.groupid" value="eu.europa.ec.cipa" />
+  <map key="reactorproject.8.artifactid" value="cipa-smp-webapp" />
+  <map key="reactorproject.8.version" value="1.0-SNAPSHOT" />
+  <map key="reactorproject.8.name" value="cipa-smp-webapp" />
+  <map key="reactorproject.9.groupid" value="eu.europa.ec.cipa" />
+  <map key="reactorproject.9.artifactid" value="cipa-transport-api" />
+  <map key="reactorproject.9.version" value="1.0-SNAPSHOT" />
+  <map key="reactorproject.9.name" value="cipa-transport-api" />
+  <map key="reactorproject.10.groupid" value="eu.europa.ec.cipa" />
+  <map key="reactorproject.10.artifactid" value="cipa-start-client" />
+  <map key="reactorproject.10.version" value="1.0-SNAPSHOT" />
+  <map key="reactorproject.10.name" value="cipa-transport-start-client" />
+  <map key="reactorproject.11.groupid" value="eu.europa.ec.cipa" />
+  <map key="reactorproject.11.artifactid" value="cipa-start-server" />
+  <map key="reactorproject.11.version" value="1.0-SNAPSHOT" />
+  <map key="reactorproject.11.name" value="cipa-transport-start-server" />
+  <map key="build.plugin.count" value="12" />
+  <map key="build.plugin.0.groupid" value="org.apache.maven.plugins" />
+  <map key="build.plugin.0.artifactid" value="maven-compiler-plugin" />
+  <map key="build.plugin.0.version" value="2.5.1" />
+  <map key="build.plugin.0.configuration" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;configuration&gt;
+  &lt;fork&gt;false&lt;/fork&gt;
+  &lt;source&gt;1.6&lt;/source&gt;
+  &lt;target&gt;1.6&lt;/target&gt;
+  &lt;showWarnings&gt;true&lt;/showWarnings&gt;
+  &lt;maxmem&gt;768m&lt;/maxmem&gt;
+  &lt;compilerArguments&gt;
+    &lt;encoding&gt;UTF-8&lt;/encoding&gt;
+  &lt;/compilerArguments&gt;
+&lt;/configuration&gt;" />
+  <map key="build.plugin.1.groupid" value="org.apache.maven.plugins" />
+  <map key="build.plugin.1.artifactid" value="maven-source-plugin" />
+  <map key="build.plugin.1.version" value="2.1.2" />
+  <map key="build.plugin.2.groupid" value="org.apache.maven.plugins" />
+  <map key="build.plugin.2.artifactid" value="maven-jar-plugin" />
+  <map key="build.plugin.2.version" value="2.4" />
+  <map key="build.plugin.2.configuration" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;configuration&gt;
+  &lt;archive&gt;
+    &lt;manifest&gt;
+      &lt;addDefaultImplementationEntries&gt;true&lt;/addDefaultImplementationEntries&gt;
+    &lt;/manifest&gt;
+  &lt;/archive&gt;
+&lt;/configuration&gt;" />
+  <map key="build.plugin.3.groupid" value="org.apache.maven.plugins" />
+  <map key="build.plugin.3.artifactid" value="maven-war-plugin" />
+  <map key="build.plugin.3.version" value="2.2" />
+  <map key="build.plugin.3.configuration" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;configuration&gt;
+  &lt;archive&gt;
+    &lt;manifest&gt;
+      &lt;addDefaultImplementationEntries&gt;true&lt;/addDefaultImplementationEntries&gt;
+    &lt;/manifest&gt;
+  &lt;/archive&gt;
+&lt;/configuration&gt;" />
+  <map key="build.plugin.4.groupid" value="com.mycila.maven-license-plugin" />
+  <map key="build.plugin.4.artifactid" value="maven-license-plugin" />
+  <map key="build.plugin.4.version" value="1.10.b1" />
+  <map key="build.plugin.4.configuration" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;configuration&gt;
+  &lt;keywords&gt;
+    &lt;keyword&gt;EUPL&lt;/keyword&gt;
+    &lt;keyword&gt;MPL&lt;/keyword&gt;
+  &lt;/keywords&gt;
+  &lt;header&gt;src/etc/license-template.txt&lt;/header&gt;
+  &lt;strictCheck&gt;true&lt;/strictCheck&gt;
+  &lt;encoding&gt;UTF-8&lt;/encoding&gt;
+  &lt;mapping&gt;
+    &lt;cva&gt;XML_STYLE&lt;/cva&gt;
+    &lt;gc&gt;XML_STYLE&lt;/gc&gt;
+    &lt;sch&gt;XML_STYLE&lt;/sch&gt;
+    &lt;svxml&gt;XML_STYLE&lt;/svxml&gt;
+    &lt;wsdl&gt;XML_STYLE&lt;/wsdl&gt;
+    &lt;xjb&gt;XML_STYLE&lt;/xjb&gt;
+    &lt;xslt&gt;XML_STYLE&lt;/xslt&gt;
+    &lt;xvml&gt;XML_STYLE&lt;/xvml&gt;
+  &lt;/mapping&gt;
+  &lt;excludes&gt;
+    &lt;exclude&gt;**/NOTICE&lt;/exclude&gt;
+    &lt;exclude&gt;**/LICENSE&lt;/exclude&gt;
+    &lt;exclude&gt;**/*.pmd&lt;/exclude&gt;
+    &lt;exclude&gt;**/*.policy&lt;/exclude&gt;
+    &lt;exclude&gt;**/*.jjt&lt;/exclude&gt;
+    &lt;exclude&gt;**/*.xls*&lt;/exclude&gt;
+    &lt;exclude&gt;**/*.doc*&lt;/exclude&gt;
+    &lt;exclude&gt;**/*.ppt*&lt;/exclude&gt;
+    &lt;exclude&gt;**/*.wiki&lt;/exclude&gt;
+    &lt;exclude&gt;**/*.jks&lt;/exclude&gt;
+    &lt;exclude&gt;**/*.ods&lt;/exclude&gt;
+  &lt;/excludes&gt;
+&lt;/configuration&gt;" />
+  <map key="build.plugin.5.groupid" value="org.apache.maven.plugins" />
+  <map key="build.plugin.5.artifactid" value="maven-release-plugin" />
+  <map key="build.plugin.5.version" value="2.3.2" />
+  <map key="build.plugin.5.configuration" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;configuration&gt;
+  &lt;goals&gt;deploy&lt;/goals&gt;
+  &lt;releaseProfiles&gt;release&lt;/releaseProfiles&gt;
+  &lt;tagBase&gt;https://joinup.ec.europa.eu/svn/peppol/dev/infrastructure/java_tags&lt;/tagBase&gt;
+&lt;/configuration&gt;" />
+  <map key="build.plugin.6.groupid" value="org.apache.maven.plugins" />
+  <map key="build.plugin.6.artifactid" value="maven-idea-plugin" />
+  <map key="build.plugin.6.version" value="2.2" />
+  <map key="build.plugin.6.configuration" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;configuration&gt;
+  &lt;jdkLevel&gt;1.6&lt;/jdkLevel&gt;
+  &lt;linkModules&gt;true&lt;/linkModules&gt;
+  &lt;downloadSources&gt;true&lt;/downloadSources&gt;
+  &lt;downloadJavadocs&gt;true&lt;/downloadJavadocs&gt;
+&lt;/configuration&gt;" />
+  <map key="build.plugin.7.groupid" value="com.phloc.maven" />
+  <map key="build.plugin.7.artifactid" value="buildinfo-maven-plugin" />
+  <map key="build.plugin.7.version" value="1.0.9" />
+  <map key="build.plugin.7.configuration" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;configuration&gt;
+  &lt;formatProperties&gt;false&lt;/formatProperties&gt;
+  &lt;formatXML&gt;true&lt;/formatXML&gt;
+  &lt;withAllSystemProperties&gt;true&lt;/withAllSystemProperties&gt;
+  &lt;selectedEnvVars&gt;
+    &lt;param&gt;JAVA_.*&lt;/param&gt;
+    &lt;param&gt;M2_.*&lt;/param&gt;
+    &lt;param&gt;MAVEN_.*&lt;/param&gt;
+    &lt;param&gt;NUMBER_OF_PROCESSORS&lt;/param&gt;
+    &lt;param&gt;OS&lt;/param&gt;
+    &lt;param&gt;PROCESSOR_.*&lt;/param&gt;
+  &lt;/selectedEnvVars&gt;
+&lt;/configuration&gt;" />
+  <map key="build.plugin.8.groupid" value="org.apache.maven.plugins" />
+  <map key="build.plugin.8.artifactid" value="maven-site-plugin" />
+  <map key="build.plugin.8.version" value="3.1" />
+  <map key="build.plugin.8.configuration" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;configuration&gt;
+  &lt;reportPlugins&gt;
+    &lt;plugin&gt;
+      &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+      &lt;artifactId&gt;maven-project-info-reports-plugin&lt;/artifactId&gt;
+      &lt;version&gt;2.4&lt;/version&gt;
+    &lt;/plugin&gt;
+    &lt;plugin&gt;
+      &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+      &lt;artifactId&gt;maven-javadoc-plugin&lt;/artifactId&gt;
+      &lt;version&gt;2.8.1&lt;/version&gt;
+      &lt;configuration&gt;
+        &lt;links&gt;
+          &lt;link&gt;http://download.oracle.com/docs/cd/E17409_01/javase/6/docs/api&lt;/link&gt;
+        &lt;/links&gt;
+        &lt;encoding&gt;UTF-8&lt;/encoding&gt;
+      &lt;/configuration&gt;
+    &lt;/plugin&gt;
+    &lt;plugin&gt;
+      &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+      &lt;artifactId&gt;maven-jxr-plugin&lt;/artifactId&gt;
+      &lt;version&gt;2.3&lt;/version&gt;
+    &lt;/plugin&gt;
+    &lt;plugin&gt;
+      &lt;groupId&gt;org.codehaus.mojo&lt;/groupId&gt;
+      &lt;artifactId&gt;cobertura-maven-plugin&lt;/artifactId&gt;
+      &lt;version&gt;2.5.1&lt;/version&gt;
+      &lt;configuration&gt;
+        &lt;check&gt;
+          &lt;branchRate&gt;70&lt;/branchRate&gt;
+          &lt;lineRate&gt;70&lt;/lineRate&gt;
+          &lt;totalBranchRate&gt;70&lt;/totalBranchRate&gt;
+          &lt;totalLineRate&gt;70&lt;/totalLineRate&gt;
+          &lt;packageLineRate&gt;70&lt;/packageLineRate&gt;
+          &lt;packageBranchRate&gt;70&lt;/packageBranchRate&gt;
+        &lt;/check&gt;
+        &lt;maxmem&gt;512m&lt;/maxmem&gt;
+        &lt;formats&gt;
+          &lt;format&gt;html&lt;/format&gt;
+          &lt;format&gt;xml&lt;/format&gt;
+        &lt;/formats&gt;
+      &lt;/configuration&gt;
+    &lt;/plugin&gt;
+    &lt;plugin&gt;
+      &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+      &lt;artifactId&gt;maven-surefire-report-plugin&lt;/artifactId&gt;
+      &lt;version&gt;2.12&lt;/version&gt;
+      &lt;configuration&gt;
+        &lt;childDelegation&gt;true&lt;/childDelegation&gt;
+        &lt;aggregate&gt;true&lt;/aggregate&gt;
+      &lt;/configuration&gt;
+    &lt;/plugin&gt;
+    &lt;plugin&gt;
+      &lt;groupId&gt;org.codehaus.mojo&lt;/groupId&gt;
+      &lt;artifactId&gt;taglist-maven-plugin&lt;/artifactId&gt;
+      &lt;version&gt;2.4&lt;/version&gt;
+      &lt;configuration&gt;
+        &lt;tags&gt;
+          &lt;tag&gt;TODO&lt;/tag&gt;
+          &lt;tag&gt;FIXME&lt;/tag&gt;
+          &lt;tag&gt;XXX&lt;/tag&gt;
+          &lt;tag&gt;@todo&lt;/tag&gt;
+          &lt;tag&gt;@deprecated&lt;/tag&gt;
+        &lt;/tags&gt;
+      &lt;/configuration&gt;
+    &lt;/plugin&gt;
+  &lt;/reportPlugins&gt;
+&lt;/configuration&gt;" />
+  <map key="build.plugin.9.groupid" value="org.apache.maven.plugins" />
+  <map key="build.plugin.9.artifactid" value="maven-clean-plugin" />
+  <map key="build.plugin.9.version" value="2.5" />
+  <map key="build.plugin.10.groupid" value="org.apache.maven.plugins" />
+  <map key="build.plugin.10.artifactid" value="maven-install-plugin" />
+  <map key="build.plugin.10.version" value="2.3.1" />
+  <map key="build.plugin.11.groupid" value="org.apache.maven.plugins" />
+  <map key="build.plugin.11.artifactid" value="maven-deploy-plugin" />
+  <map key="build.plugin.11.version" value="2.7" />
+  <map key="build.datetime" value="2012-11-30T18:25:04.661+01:00" />
+  <map key="build.datetime.millis" value="1354296304661" />
+  <map key="build.datetime.date" value="2012-11-30" />
+  <map key="build.datetime.time" value="18:25:04.661" />
+  <map key="build.datetime.timezone" value="Europe/Vienna" />
+  <map key="build.datetime.timezone.offsethours" value="1" />
+  <map key="build.datetime.timezone.offsetmins" value="60" />
+  <map key="build.datetime.timezone.offsetsecs" value="3600" />
+  <map key="build.datetime.timezone.offsetmillisecs" value="3600000" />
+  <map key="systemproperty.awt.toolkit" value="sun.awt.windows.WToolkit" />
+  <map key="systemproperty.classworlds.conf" value="D:\tools\apache-maven-3.0.4\bin\m2.conf" />
+  <map key="systemproperty.file.encoding" value="Cp1252" />
+  <map key="systemproperty.file.encoding.pkg" value="sun.io" />
+  <map key="systemproperty.file.separator" value="\" />
+  <map key="systemproperty.guice.disable.misplaced.annotation.check" value="true" />
+  <map key="systemproperty.java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment" />
+  <map key="systemproperty.java.awt.printerjob" value="sun.awt.windows.WPrinterJob" />
+  <map key="systemproperty.java.class.path" value="D:\tools\apache-maven-3.0.4\boot\plexus-classworlds-2.4.jar" />
+  <map key="systemproperty.java.class.version" value="50.0" />
+  <map key="systemproperty.java.endorsed.dirs" value="C:\Program Files\Java\jdk1.6.0_34\jre\lib\endorsed" />
+  <map key="systemproperty.java.ext.dirs" value="C:\Program Files\Java\jdk1.6.0_34\jre\lib\ext;C:\Windows\Sun\Java\lib\ext" />
+  <map key="systemproperty.java.home" value="C:\Program Files\Java\jdk1.6.0_34\jre" />
+  <map key="systemproperty.java.io.tmpdir" value="C:\Users\philip\AppData\Local\Temp\" />
+  <map key="systemproperty.java.library.path" value="C:\Program Files\Java\jdk1.6.0_34\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:\PROGRAM FILES\COMMON FILES\MICROSOFT SHARED\WINDOWS LIVE;C:\PROGRAM FILES (X86)\COMMON FILES\MICROSOFT SHARED\WINDOWS LIVE;C:\Windows\SYSTEM32;C:\Windows;C:\Windows\SYSTEM32\WBEM;C:\Windows\SYSTEM32\WINDOWSPOWERSHELL\V1.0\;C:\PROGRAM FILES (X86)\COMMON FILES\LENOVO;C:\PROGRAM FILES (X86)\COMMON FILES\ULEAD SYSTEMS\MPEG;C:\PROGRAM FILES (X86)\WINDOWS LIVE\SHARED;D:\tools\apache-maven-3.0.4\BIN;C:\PROGRAM FILES\MICROSOFT WINDOWS PERFORMANCE TOOLKIT\;C:\PROGRAM FILES\MYSQL\MYSQL SERVER 5.5\BIN;C:\PROGRAM FILES (X86)\GNU\GNUPG\PUB;C:\PROGRAM FILES (X86)\GRAPHVIZ 2.28\BIN;C:\Program Files (x86)\Git\cmd;C:\Program Files\SlikSvn\bin;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;C:\Program Files\TortoiseSVN\bin;C:\Program Files (x86)\Lenovo\Access Connections\;%CHECKERS%\binary;d:\tools\;C:\Program Files (x86)\Git\bin\;C:\Program Files (x86)\GNU\GnuPG\;C:\Program Files\Intel\WiFi\bin\;C:\Program Files\Common Files\Intel\WirelessCommon\;." />
+  <map key="systemproperty.java.runtime.name" value="Java(TM) SE Runtime Environment" />
+  <map key="systemproperty.java.runtime.version" value="1.6.0_34-b04" />
+  <map key="systemproperty.java.specification.name" value="Java Platform API Specification" />
+  <map key="systemproperty.java.specification.vendor" value="Sun Microsystems Inc." />
+  <map key="systemproperty.java.specification.version" value="1.6" />
+  <map key="systemproperty.java.vendor" value="Sun Microsystems Inc." />
+  <map key="systemproperty.java.vendor.url" value="http://java.sun.com/" />
+  <map key="systemproperty.java.vendor.url.bug" value="http://java.sun.com/cgi-bin/bugreport.cgi" />
+  <map key="systemproperty.java.version" value="1.6.0_34" />
+  <map key="systemproperty.java.vm.info" value="mixed mode" />
+  <map key="systemproperty.java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM" />
+  <map key="systemproperty.java.vm.specification.name" value="Java Virtual Machine Specification" />
+  <map key="systemproperty.java.vm.specification.vendor" value="Sun Microsystems Inc." />
+  <map key="systemproperty.java.vm.specification.version" value="1.0" />
+  <map key="systemproperty.java.vm.vendor" value="Sun Microsystems Inc." />
+  <map key="systemproperty.java.vm.version" value="20.9-b04" />
+  <map key="systemproperty.line.separator" value="
+" />
+  <map key="systemproperty.maven.home" value="D:\tools\apache-maven-3.0.4" />
+  <map key="systemproperty.os.arch" value="amd64" />
+  <map key="systemproperty.os.name" value="Windows 7" />
+  <map key="systemproperty.os.version" value="6.1" />
+  <map key="systemproperty.path.separator" value=";" />
+  <map key="systemproperty.sun.arch.data.model" value="64" />
+  <map key="systemproperty.sun.boot.class.path" value="C:\Program Files\Java\jdk1.6.0_34\jre\lib\endorsed\webservices-api.jar;C:\Program Files\Java\jdk1.6.0_34\jre\lib\resources.jar;C:\Program Files\Java\jdk1.6.0_34\jre\lib\rt.jar;C:\Program Files\Java\jdk1.6.0_34\jre\lib\sunrsasign.jar;C:\Program Files\Java\jdk1.6.0_34\jre\lib\jsse.jar;C:\Program Files\Java\jdk1.6.0_34\jre\lib\jce.jar;C:\Program Files\Java\jdk1.6.0_34\jre\lib\charsets.jar;C:\Program Files\Java\jdk1.6.0_34\jre\lib\modules\jdk.boot.jar;C:\Program Files\Java\jdk1.6.0_34\jre\classes" />
+  <map key="systemproperty.sun.boot.library.path" value="C:\Program Files\Java\jdk1.6.0_34\jre\bin" />
+  <map key="systemproperty.sun.cpu.endian" value="little" />
+  <map key="systemproperty.sun.cpu.isalist" value="amd64" />
+  <map key="systemproperty.sun.desktop" value="windows" />
+  <map key="systemproperty.sun.io.unicode.encoding" value="UnicodeLittle" />
+  <map key="systemproperty.sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher install" />
+  <map key="systemproperty.sun.java.launcher" value="SUN_STANDARD" />
+  <map key="systemproperty.sun.jnu.encoding" value="Cp1252" />
+  <map key="systemproperty.sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers" />
+  <map key="systemproperty.sun.os.patch.level" value="Service Pack 1" />
+  <map key="systemproperty.user.country" value="AT" />
+  <map key="systemproperty.user.dir" value="D:\svn-joinup-cipa\trunk\cipa-core\Implementation\java" />
+  <map key="systemproperty.user.home" value="C:\Users\philip" />
+  <map key="systemproperty.user.language" value="de" />
+  <map key="systemproperty.user.name" value="philip" />
+  <map key="systemproperty.user.timezone" value="Europe/Berlin" />
+  <map key="systemproperty.user.variant" value="" />
+  <map key="envvar.JAVA_HOME" value="C:\Program Files\Java\jdk1.6.0_34" />
+  <map key="envvar.M2_HOME" value="D:\tools\apache-maven-3.0.4" />
+  <map key="envvar.MAVEN_CMD_LINE_ARGS" value="install" />
+  <map key="envvar.MAVEN_JAVA_EXE" value="&quot;C:\Program Files\Java\jdk1.6.0_34\bin\java.exe&quot;" />
+  <map key="envvar.NUMBER_OF_PROCESSORS" value="4" />
+  <map key="envvar.OS" value="Windows_NT" />
+  <map key="envvar.PROCESSOR_ARCHITECTURE" value="AMD64" />
+  <map key="envvar.PROCESSOR_IDENTIFIER" value="Intel64 Family 6 Model 37 Stepping 5, GenuineIntel" />
+  <map key="envvar.PROCESSOR_LEVEL" value="6" />
+  <map key="envvar.PROCESSOR_REVISION" value="2505" />
+</mapping>
