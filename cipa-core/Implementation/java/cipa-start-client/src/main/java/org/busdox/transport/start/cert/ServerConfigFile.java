@@ -73,18 +73,22 @@ public final class ServerConfigFile {
   public static ConfigFile getConfigFile () {
     return s_aConfigFile;
   }
+
   @Nullable
   public static String getServerMode () {
     return s_aConfigFile.getString (CONFIG_SERVER_MODE);
   }
+
   @Nullable
   public static String getReceiverClassPath () {
     return s_aConfigFile.getString (CONFIG_SERVER_RECEIVER_CLASSPATH);
   }
+
   @Nullable
   public static String getServerSMPUrl () {
     return s_aConfigFile.getString (CONFIG_SERVER_SMP_URL);
   }
+
   @Nullable
   public static String getKeyStorePath () {
     return s_aConfigFile.getString (CONFIG_SERVER_KEYSTORE_PATH);
