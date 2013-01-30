@@ -123,39 +123,45 @@ public final class MessageMetadataHelper {
     Marshaller aMarshaller;
 
     // Write message ID (may be null for LIME)
-    if (StringHelper.hasText (aMetadata.getMessageID ())) {
+    final String sMessageID = aMetadata.getMessageID ();
+    if (StringHelper.hasText (sMessageID)) {
       aMarshaller = JAXBContext.newInstance (String.class).createMarshaller ();
-      aMarshaller.marshal (aObjFactory.createMessageIdentifier (aMetadata.getMessageID ()), eRoot);
+      aMarshaller.marshal (aObjFactory.createMessageIdentifier (sMessageID), eRoot);
     }
 
     // Write channel ID
-    if (StringHelper.hasText (aMetadata.getChannelID ())) {
+    final String sChannelID = aMetadata.getChannelID ();
+    if (StringHelper.hasText (sChannelID)) {
       aMarshaller = JAXBContext.newInstance (String.class).createMarshaller ();
-      aMarshaller.marshal (aObjFactory.createChannelIdentifier (aMetadata.getChannelID ()), eRoot);
+      aMarshaller.marshal (aObjFactory.createChannelIdentifier (sChannelID), eRoot);
     }
 
     // Write sender
-    if (aMetadata.getSenderID () != null) {
+    final SimpleParticipantIdentifier aSenderID = aMetadata.getSenderID ();
+    if (aSenderID != null) {
       aMarshaller = JAXBContextCache.getInstance ().getFromCache (ParticipantIdentifierType.class).createMarshaller ();
-      aMarshaller.marshal (aObjFactory.createSenderIdentifier (aMetadata.getSenderID ()), eRoot);
+      aMarshaller.marshal (aObjFactory.createSenderIdentifier (aSenderID), eRoot);
     }
 
     // Write recipient
-    if (aMetadata.getRecipientID () != null) {
+    final SimpleParticipantIdentifier aRecipientID = aMetadata.getRecipientID ();
+    if (aRecipientID != null) {
       aMarshaller = JAXBContextCache.getInstance ().getFromCache (ParticipantIdentifierType.class).createMarshaller ();
-      aMarshaller.marshal (aObjFactory.createRecipientIdentifier (aMetadata.getRecipientID ()), eRoot);
+      aMarshaller.marshal (aObjFactory.createRecipientIdentifier (aRecipientID), eRoot);
     }
 
     // Write document type
-    if (aMetadata.getDocumentTypeID () != null) {
+    final SimpleDocumentTypeIdentifier aDocumentTypeID = aMetadata.getDocumentTypeID ();
+    if (aDocumentTypeID != null) {
       aMarshaller = JAXBContextCache.getInstance ().getFromCache (DocumentIdentifierType.class).createMarshaller ();
-      aMarshaller.marshal (aObjFactory.createDocumentIdentifier (aMetadata.getDocumentTypeID ()), eRoot);
+      aMarshaller.marshal (aObjFactory.createDocumentIdentifier (aDocumentTypeID), eRoot);
     }
 
     // Write process type
-    if (aMetadata.getProcessID () != null) {
+    final SimpleProcessIdentifier aProcessID = aMetadata.getProcessID ();
+    if (aProcessID != null) {
       aMarshaller = JAXBContextCache.getInstance ().getFromCache (ProcessIdentifierType.class).createMarshaller ();
-      aMarshaller.marshal (aObjFactory.createProcessIdentifier (aMetadata.getProcessID ()), eRoot);
+      aMarshaller.marshal (aObjFactory.createProcessIdentifier (aProcessID), eRoot);
     }
 
     return aDoc;
@@ -191,24 +197,25 @@ public final class MessageMetadataHelper {
   }
 
   @Nullable
-  private static ParticipantIdentifierType _getParticipantID (@Nonnull final HeaderList aHeaderList, final QName aQName) {
-    final Header hPartID = aHeaderList.get (aQName, false);
-    return hPartID == null ? null : new SimpleParticipantIdentifier (hPartID.getAttribute (QNAME_SCHEME),
-                                                                     hPartID.getStringContent ());
+  private static ParticipantIdentifierType _getParticipantID (@Nonnull final HeaderList aHeaderList,
+                                                              @Nonnull final QName aQName) {
+    final Header aHeaderPart = aHeaderList.get (aQName, false);
+    return aHeaderPart == null ? null : new SimpleParticipantIdentifier (aHeaderPart.getAttribute (QNAME_SCHEME),
+                                                                         aHeaderPart.getStringContent ());
   }
 
   @Nullable
   private static DocumentIdentifierType _getDocumentTypeID (@Nonnull final HeaderList aHeaderList) {
-    final Header hDocumentID = aHeaderList.get (QNAME_DOCUMENTID, false);
-    return hDocumentID == null ? null : new SimpleDocumentTypeIdentifier (hDocumentID.getAttribute (QNAME_SCHEME),
-                                                                          hDocumentID.getStringContent ());
+    final Header aHeaderPart = aHeaderList.get (QNAME_DOCUMENTID, false);
+    return aHeaderPart == null ? null : new SimpleDocumentTypeIdentifier (aHeaderPart.getAttribute (QNAME_SCHEME),
+                                                                          aHeaderPart.getStringContent ());
   }
 
   @Nullable
   private static ProcessIdentifierType _getProcessID (@Nonnull final HeaderList aHeaderList) {
-    final Header hProcessID = aHeaderList.get (QNAME_PROCESSID, false);
-    return hProcessID == null ? null : new SimpleProcessIdentifier (hProcessID.getAttribute (QNAME_SCHEME),
-                                                                    hProcessID.getStringContent ());
+    final Header aHeaderPart = aHeaderList.get (QNAME_PROCESSID, false);
+    return aHeaderPart == null ? null : new SimpleProcessIdentifier (aHeaderPart.getAttribute (QNAME_SCHEME),
+                                                                     aHeaderPart.getStringContent ());
   }
 
   @Nonnull
@@ -232,7 +239,7 @@ public final class MessageMetadataHelper {
    */
   @Nonnull
   public static IMessageMetadata createMetadataFromHeadersWithCustomMessageID (@Nonnull final HeaderList aHeaderList,
-                                                                               final String sMessageID) {
+                                                                               @Nullable final String sMessageID) {
     return new MessageMetadata (sMessageID,
                                 getChannelID (aHeaderList),
                                 _getParticipantID (aHeaderList, QNAME_SENDERID),

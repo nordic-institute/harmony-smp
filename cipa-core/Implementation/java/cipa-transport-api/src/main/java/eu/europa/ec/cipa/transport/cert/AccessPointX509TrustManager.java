@@ -42,12 +42,14 @@ import java.security.cert.X509Certificate;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.net.ssl.X509TrustManager;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.phloc.commons.annotations.Nonempty;
+import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ArrayHelper;
 import com.phloc.commons.regex.RegExHelper;
 import com.phloc.commons.string.StringHelper;
@@ -77,9 +79,8 @@ public final class AccessPointX509TrustManager implements X509TrustManager {
    * @param aAcceptedRootCertificate
    *        Represents a Certificate.
    */
-  public AccessPointX509TrustManager (final Set <String> aAcceptedCommonNames,
-                                      final X509Certificate aAcceptedRootCertificate) {
-
+  public AccessPointX509TrustManager (@Nullable final Set <String> aAcceptedCommonNames,
+                                      @Nullable final X509Certificate aAcceptedRootCertificate) {
     m_aRootCertificate = aAcceptedRootCertificate;
     m_aCommonNames = aAcceptedCommonNames;
     if (m_aCommonNames == null && s_aLogger.isDebugEnabled ())
@@ -97,7 +98,7 @@ public final class AccessPointX509TrustManager implements X509TrustManager {
    *         Throws a CertificateException.
    */
   @Override
-  public final void checkClientTrusted (final X509Certificate [] aChain, final String sAuthType) throws CertificateException {
+  public final void checkClientTrusted (@Nonnull @Nonempty final X509Certificate [] aChain, final String sAuthType) throws CertificateException {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Checking client certificates.");
     _check (aChain);
@@ -114,7 +115,7 @@ public final class AccessPointX509TrustManager implements X509TrustManager {
    *         Error with certificates.
    */
   @Override
-  public final void checkServerTrusted (final X509Certificate [] aChain, final String sAuthType) throws CertificateException {
+  public final void checkServerTrusted (@Nonnull @Nonempty final X509Certificate [] aChain, final String sAuthType) throws CertificateException {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Checking server certificates.");
     _check (aChain);
@@ -127,6 +128,8 @@ public final class AccessPointX509TrustManager implements X509TrustManager {
    * @return X509Certificate array containing the accepted root certificates.
    */
   @Override
+  @Nonnull
+  @ReturnsMutableCopy
   public final X509Certificate [] getAcceptedIssuers () {
     return ArrayHelper.newArray (m_aRootCertificate);
   }
@@ -139,7 +142,7 @@ public final class AccessPointX509TrustManager implements X509TrustManager {
    * @throws CertificateException
    *         Exception for Certificates.
    */
-  private void _check (final X509Certificate [] aChain) throws CertificateException {
+  private void _check (@Nonnull @Nonempty final X509Certificate [] aChain) throws CertificateException {
     _checkPrincipal (aChain);
   }
 
@@ -152,6 +155,9 @@ public final class AccessPointX509TrustManager implements X509TrustManager {
    *         Exception for Certificates.
    */
   private void _checkPrincipal (@Nonnull @Nonempty final X509Certificate [] aChain) throws CertificateException {
+    if (ArrayHelper.isEmpty (aChain))
+      throw new IllegalArgumentException ("No certificate to check provided");
+
     if (m_aCommonNames != null) {
       boolean bCommonNameOK = false;
       final String sPrincipal = aChain[0].getSubjectX500Principal ().toString ();

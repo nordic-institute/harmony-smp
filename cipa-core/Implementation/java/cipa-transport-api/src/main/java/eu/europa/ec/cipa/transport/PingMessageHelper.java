@@ -65,12 +65,6 @@ public final class PingMessageHelper {
   public static final String PING_DOCUMENT_TYPE_VALUE = "busdox:ping";
   public static final ReadonlyDocumentTypeIdentifier PING_DOCUMENT_TYPE = new ReadonlyDocumentTypeIdentifier (PING_DOCUMENT_TYPE_SCHEME,
                                                                                                               PING_DOCUMENT_TYPE_VALUE);
-  @Deprecated
-  public static final String PING_DOCUMENT_SCHEME = PING_DOCUMENT_TYPE_SCHEME;
-  @Deprecated
-  public static final String PING_DOCUMENT_VALUE = PING_DOCUMENT_TYPE_VALUE;
-  @Deprecated
-  public static final ReadonlyDocumentTypeIdentifier PING_DOCUMENT = PING_DOCUMENT_TYPE;
   public static final String PING_PROCESS_SCHEME = "busdox-procid-transport";
   public static final String PING_PROCESS_VALUE = CIdentifier.DEFAULT_PROCESS_IDENTIFIER_NOPROCESS;
   public static final ReadonlyProcessIdentifier PING_PROCESS = new ReadonlyProcessIdentifier (PING_PROCESS_SCHEME,
@@ -85,7 +79,7 @@ public final class PingMessageHelper {
            aMetadata.getRecipientID () != null &&
            IdentifierUtils.areIdentifiersEqual (aMetadata.getRecipientID (), PING_RECIPIENT) &&
            aMetadata.getDocumentTypeID () != null &&
-           IdentifierUtils.areIdentifiersEqual (aMetadata.getDocumentTypeID (), PING_DOCUMENT) &&
+           IdentifierUtils.areIdentifiersEqual (aMetadata.getDocumentTypeID (), PING_DOCUMENT_TYPE) &&
            aMetadata.getProcessID () != null &&
            IdentifierUtils.areIdentifiersEqual (aMetadata.getProcessID (), PING_PROCESS);
   }
