@@ -27,7 +27,6 @@
 		</repository>
 	</repositories>
 
-
 	<dependencies>
 		<dependency>
 			<groupId>eu.europa.ec.cipa</groupId>
@@ -65,7 +64,7 @@
 	</dependencies>
 
 	<build>
-	<!-- Please comment that bock to test from eclipse   -->
+	  <!-- Please comment that block to test from eclipse   -->
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
@@ -74,7 +73,7 @@
 				</excludes>
 			</resource>
 		</resources>
-	<!-- end of block -->
+	  <!-- end of block -->
 		<plugins>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
