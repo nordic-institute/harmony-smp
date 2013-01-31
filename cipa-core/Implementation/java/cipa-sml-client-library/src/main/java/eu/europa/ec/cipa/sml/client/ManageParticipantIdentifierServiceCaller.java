@@ -58,6 +58,9 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.annotations.Nonempty;
+import com.phloc.commons.collections.ContainerHelper;
+
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 
@@ -276,10 +279,15 @@ public final class ManageParticipantIdentifierServiceCaller {
    * @throws UnauthorizedFault
    *         Is thrown if the user was not authorized.
    */
-  public void deleteList (final Collection <ParticipantIdentifierType> aParticipantIdentifiers) throws BadRequestFault,
-                                                                                               InternalErrorFault,
-                                                                                               NotFoundFault,
-                                                                                               UnauthorizedFault {
+  public void deleteList (@Nonnull @Nonempty final Collection <ParticipantIdentifierType> aParticipantIdentifiers) throws BadRequestFault,
+                                                                                                                  InternalErrorFault,
+                                                                                                                  NotFoundFault,
+                                                                                                                  UnauthorizedFault {
+    if (aParticipantIdentifiers == null)
+      throw new NullPointerException ("participantIdentifiers");
+    if (ContainerHelper.isEmpty (aParticipantIdentifiers))
+      throw new IllegalArgumentException ("participantIdentifiers may not be empty!");
+
     s_aLogger.info ("Trying to delete multiple participants " + _toString (aParticipantIdentifiers));
     final ParticipantIdentifierPageType deleteListIn = new ParticipantIdentifierPageType ();
     deleteListIn.getParticipantIdentifier ().addAll (aParticipantIdentifiers);

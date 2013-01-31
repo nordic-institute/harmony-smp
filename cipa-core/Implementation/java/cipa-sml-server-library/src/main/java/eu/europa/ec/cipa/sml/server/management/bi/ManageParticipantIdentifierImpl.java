@@ -37,6 +37,7 @@
  */
 package eu.europa.ec.cipa.sml.server.management.bi;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
@@ -58,6 +59,7 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.collections.ContainerHelper;
 import com.sun.xml.ws.developer.SchemaValidation;
 
@@ -152,14 +154,17 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
     }
   }
 
-  public void deleteList (final ParticipantIdentifierPageType deleteListIn) throws BadRequestFault,
-                                                                           InternalErrorFault,
-                                                                           NotFoundFault,
-                                                                           UnauthorizedFault {
+  public void deleteList (@Nonnull @Nonempty final ParticipantIdentifierPageType deleteListIn) throws BadRequestFault,
+                                                                                              InternalErrorFault,
+                                                                                              NotFoundFault,
+                                                                                              UnauthorizedFault {
     try {
+      if (ContainerHelper.isEmpty (deleteListIn.getParticipantIdentifier ()))
+        throw new BadRequestException ("At least one participant to be deleted must be provided");
+
       // Validate input
-      for (final ParticipantIdentifierType participantIdentifier : deleteListIn.getParticipantIdentifier ())
-        DataValidator.validate (participantIdentifier);
+      for (final ParticipantIdentifierType aParticipantIdentifier : deleteListIn.getParticipantIdentifier ())
+        DataValidator.validate (aParticipantIdentifier);
 
       // Validate client unique ID
       final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID (wsContext);
