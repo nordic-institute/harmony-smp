@@ -40,12 +40,12 @@
 -->
 <endpoints xmlns="http://java.sun.com/xml/ns/jax-ws/ri/runtime" version="2.0">
   <endpoint name="ManageBusinessIdentifierServiceSoap"
-            implementation="at.peppol.sml.server.management.bi.ManageParticipantIdentifierImpl"
+            implementation="eu.europa.ec.cipa.sml.server.management.bi.ManageParticipantIdentifierImpl"
             url-pattern="/manageparticipantidentifier" 
             wsdl="WEB-INF/wsdl/ManageBusinessIdentifierService-1.0.wsdl" />
 
   <endpoint name="ManageServiceMetadataServiceSoap"
-            implementation="at.peppol.sml.server.management.sm.ManageServiceMetadataImpl"
+            implementation="eu.europa.ec.cipa.sml.server.management.sm.ManageServiceMetadataImpl"
             url-pattern="/manageservicemetadata" 
             wsdl="WEB-INF/wsdl/ManageServiceMetadataService-1.0.wsdl" />
 </endpoints>

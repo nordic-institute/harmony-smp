@@ -52,7 +52,7 @@
   
   <filter>
     <filter-name>ClientCertFilter</filter-name>
-    <filter-class>at.peppol.sml.server.web.ClientCertificateValidationFilter</filter-class>
+    <filter-class>eu.europa.ec.cipa.sml.server.web.ClientCertificateValidationFilter</filter-class>
   </filter>
   
   <filter-mapping>
@@ -74,13 +74,13 @@
 
   <servlet>
     <servlet-name>verifydns</servlet-name>
-    <servlet-class>at.peppol.sml.server.dns.ServletVerifyDNS</servlet-class>
+    <servlet-class>eu.europa.ec.cipa.sml.server.dns.ServletVerifyDNS</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
   <servlet>
     <servlet-name>listdns</servlet-name>
-    <servlet-class>at.peppol.sml.server.dns.ServletListDNS</servlet-class>
+    <servlet-class>eu.europa.ec.cipa.sml.server.dns.ServletListDNS</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
 
