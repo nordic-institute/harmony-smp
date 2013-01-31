@@ -61,7 +61,7 @@
 
   <servlet>
     <servlet-name>ValidationServlet</servlet-name>
-    <servlet-class>at.peppol.validation.web.servlet.ValidationServlet</servlet-class>
+    <servlet-class>eu.europa.ec.cipa.validation.web.servlet.ValidationServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>ValidationServlet</servlet-name>

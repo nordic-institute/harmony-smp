@@ -5,9 +5,8 @@
     <artifactId>cipa-parent-pom</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>peppol-transport-lime-client</artifactId>
-  <version>2.3.2-SNAPSHOT</version>
-  <name>peppol-transport-lime-client</name>
+  <artifactId>cipa-transport-lime-client</artifactId>
+  <name>cipa-transport-lime-client</name>
 
   <scm>
     <connection>scm:svn:http://peppol-silicone.googlecode.com/svn/trunk/java/transport-lime-client</connection>
@@ -29,9 +28,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>at.peppol</groupId>
-      <artifactId>peppol-transport-api</artifactId>
-      <version>2.3.1</version>
+      <groupId>eu.europa.ec.cipa</groupId>
+      <artifactId>cipa-transport-api</artifactId>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.metro</groupId>
