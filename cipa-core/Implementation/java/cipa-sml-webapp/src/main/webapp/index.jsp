@@ -52,7 +52,7 @@
     <h1>PEPPOL SML waiting for you</h1>
     <ul>
     <%
-      if (at.peppol.sml.server.dns.DNSClientConfiguration.isEnabled()) {
+      if (eu.europa.ec.cipa.sml.server.dns.DNSClientConfiguration.isEnabled()) {
     %>
       <li><a href="listdns">List DNS items</a></li>
     <%
@@ -61,7 +61,7 @@
       <li><a href="manageparticipantidentifier">manage participant identifier</a></li>
       <li><a href="manageservicemetadata">manage service metadata</a></li>
     </ul>
-    <div>Operating on the DNS zone: <b><%=at.peppol.sml.server.dns.DNSClientFactory.getInstance().getSMLZoneName()%></b></div>
-    <div>Client unique ID: <b><%=at.peppol.sml.server.web.WebRequestClientIdentifier.getClientUniqueID(request)%></b></div>
+    <div>Operating on the DNS zone: <b><%=eu.europa.ec.cipa.sml.server.dns.DNSClientFactory.getInstance().getSMLZoneName()%></b></div>
+    <div>Client unique ID: <b><%=eu.europa.ec.cipa.sml.server.web.WebRequestClientIdentifier.getClientUniqueID(request)%></b></div>
   </body>
 </html>
