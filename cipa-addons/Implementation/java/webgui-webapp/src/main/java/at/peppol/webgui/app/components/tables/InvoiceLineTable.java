@@ -41,120 +41,76 @@
  */
 package at.peppol.webgui.app.components.tables;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.InvoiceLineType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PaymentMeansType;
-
-import at.peppol.webgui.app.components.adapters.InvoiceAdditionalDocRefAdapter;
-import at.peppol.webgui.app.components.adapters.InvoiceAllowanceChargeAdapter;
 import at.peppol.webgui.app.components.adapters.InvoiceLineAdapter;
-import at.peppol.webgui.app.components.adapters.PaymentMeansAdapter;
 
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.Table;
 
 /**
- *
  * @author Jerouris
  */
 
 @SuppressWarnings ("serial")
-public class InvoiceLineTable extends GenericTable<InvoiceLineType, InvoiceLineAdapter> {
+public class InvoiceLineTable extends GenericTable <InvoiceLineType, InvoiceLineAdapter> {
 
-/*  private final List<InvoiceLineType> invoiceLines;
-  private final BeanItemContainer<InvoiceLineAdapter> tableLines =
-          new BeanItemContainer<InvoiceLineAdapter>(InvoiceLineAdapter.class);
-  private final List<String> visibleHeaderNames = new ArrayList<String>();*/
-  
+  /*
+   * private final List<InvoiceLineType> invoiceLines; private final
+   * BeanItemContainer<InvoiceLineAdapter> tableLines = new
+   * BeanItemContainer<InvoiceLineAdapter>(InvoiceLineAdapter.class); private
+   * final List<String> visibleHeaderNames = new ArrayList<String>();
+   */
 
-  public InvoiceLineTable(List<InvoiceLineType> items) {
-	  linesFromInvoice = items;
-	  
-	  tableLines = new BeanItemContainer<InvoiceLineAdapter>(InvoiceLineAdapter.class);
-	  
-	  if (linesFromInvoice.size() > 0) {
-		  for (int i=0;i<linesFromInvoice.size();i++) {
-			  InvoiceLineType type = linesFromInvoice.get(i); 
-			  InvoiceLineAdapter item = new InvoiceLineAdapter(type);
-			  tableLines.addBean(item);
-			  linesFromInvoice.set(i, item);
-		  }
-	  }
-	  
-	  //this.invoiceLines = items;
-	  setContainerDataSource(tableLines);
+  public InvoiceLineTable (final List <InvoiceLineType> items) {
+    linesFromInvoice = items;
 
-	  addPropertyWithHeader("ID.value", "# ID");
-	  addPropertyWithHeader("invLineItemName", "Item Name");
-	  addPropertyWithHeader("invLineInvoicedQuantity", "Invoiced Quantity");
-	  addPropertyWithHeader("invLineLineExtensionAmount", "Line Extension Amount");
-	  addPropertyWithHeader("InvLineTaxAmount", "Tax Total Amount");
+    tableLines = new BeanItemContainer <InvoiceLineAdapter> (InvoiceLineAdapter.class);
 
-	  setDefinedPropertiesAsVisible();
-	  setPageLength(4);
-	  
-	  tableLines.addNestedContainerProperty("CommonCurrency");
-  }
-/*
-  private void addPropertyWithHeader(String property, String headerName) {
-    tableLines.addNestedContainerProperty(property);
-    setColumnHeader(property, headerName);
-    visibleHeaderNames.add(property);
-  }
-
-  private void setDefinedPropertiesAsVisible() {
-    setVisibleColumns(visibleHeaderNames.toArray());
-  }
-
-  public void addInvoiceLine(InvoiceLineAdapter invln) {
-    invoiceLines.add(invln);
-    tableLines.addBean(invln);   
-  }
-
-  
-  public void setInvoiceLine(String lineID, InvoiceLineAdapter ln) {
-    //use for editing....
-    if(getIndexFromID(lineID) > -1){
-      invoiceLines.set (getIndexFromID(lineID), ln);
-      
-      //TODO: Better way to "refresh" the table?
-      //tableLines.addBean(ln);
-      tableLines.removeAllItems ();
-      Iterator<InvoiceLineType> iterator = invoiceLines.iterator ();
-      while (iterator.hasNext()) {
-        InvoiceLineType ac = iterator.next();
-        tableLines.addBean ((InvoiceLineAdapter) ac);
+    if (linesFromInvoice.size () > 0) {
+      for (int i = 0; i < linesFromInvoice.size (); i++) {
+        final InvoiceLineType type = linesFromInvoice.get (i);
+        final InvoiceLineAdapter item = new InvoiceLineAdapter (type);
+        tableLines.addBean (item);
+        linesFromInvoice.set (i, item);
       }
     }
-  }  
-  
-  public void removeInvoiceLine(String lineID) {
-    Iterator<InvoiceLineType> iterator = invoiceLines.iterator ();
-    while (iterator.hasNext()) {
-      InvoiceLineType ac = iterator.next();
-      if (ac.getID ().getValue ().equals (lineID)) {
-    	invoiceLines.remove (ac);
-    	tableLines.removeItem (ac);
-        break;
-        
-      }
-    }
+
+    // this.invoiceLines = items;
+    setContainerDataSource (tableLines);
+
+    addPropertyWithHeader ("ID.value", "# ID");
+    addPropertyWithHeader ("invLineItemName", "Item Name");
+    addPropertyWithHeader ("invLineInvoicedQuantity", "Invoiced Quantity");
+    addPropertyWithHeader ("invLineLineExtensionAmount", "Line Extension Amount");
+    addPropertyWithHeader ("InvLineTaxAmount", "Tax Total Amount");
+
+    setDefinedPropertiesAsVisible ();
+    setPageLength (4);
+
+    tableLines.addNestedContainerProperty ("CommonCurrency");
   }
-  
-  public int getIndexFromID(String lineID) {
-    Iterator<InvoiceLineType> iterator = invoiceLines.iterator ();
-    while (iterator.hasNext()) {
-      InvoiceLineType ac = iterator.next();
-      if (ac.getID ().getValue ().equals (lineID)) {
-        int index = invoiceLines.indexOf (ac);
-        return index;
-      }
-    }    
-    return -1;
-  }  
-  */
+  /*
+   * private void addPropertyWithHeader(String property, String headerName) {
+   * tableLines.addNestedContainerProperty(property); setColumnHeader(property,
+   * headerName); visibleHeaderNames.add(property); } private void
+   * setDefinedPropertiesAsVisible() {
+   * setVisibleColumns(visibleHeaderNames.toArray()); } public void
+   * addInvoiceLine(InvoiceLineAdapter invln) { invoiceLines.add(invln);
+   * tableLines.addBean(invln); } public void setInvoiceLine(String lineID,
+   * InvoiceLineAdapter ln) { //use for editing.... if(getIndexFromID(lineID) >
+   * -1){ invoiceLines.set (getIndexFromID(lineID), ln); //TODO: Better way to
+   * "refresh" the table? //tableLines.addBean(ln); tableLines.removeAllItems
+   * (); Iterator<InvoiceLineType> iterator = invoiceLines.iterator (); while
+   * (iterator.hasNext()) { InvoiceLineType ac = iterator.next();
+   * tableLines.addBean ((InvoiceLineAdapter) ac); } } } public void
+   * removeInvoiceLine(String lineID) { Iterator<InvoiceLineType> iterator =
+   * invoiceLines.iterator (); while (iterator.hasNext()) { InvoiceLineType ac =
+   * iterator.next(); if (ac.getID ().getValue ().equals (lineID)) {
+   * invoiceLines.remove (ac); tableLines.removeItem (ac); break; } } } public
+   * int getIndexFromID(String lineID) { Iterator<InvoiceLineType> iterator =
+   * invoiceLines.iterator (); while (iterator.hasNext()) { InvoiceLineType ac =
+   * iterator.next(); if (ac.getID ().getValue ().equals (lineID)) { int index =
+   * invoiceLines.indexOf (ac); return index; } } return -1; }
+   */
 }

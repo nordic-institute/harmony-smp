@@ -37,45 +37,41 @@
  */
 package at.peppol.webgui.app.components.tables;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
-
 import at.peppol.webgui.app.components.adapters.InvoiceAllowanceChargeAdapter;
 
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.Table;
 
-public class InvoiceLineAllowanceChargeTable extends GenericTable<AllowanceChargeType, InvoiceAllowanceChargeAdapter> {
-  
-  public InvoiceLineAllowanceChargeTable(List<AllowanceChargeType> items) {
-    
-	  linesFromInvoice = items;
-	  
-	  tableLines = new BeanItemContainer<InvoiceAllowanceChargeAdapter>(InvoiceAllowanceChargeAdapter.class);
-	  
-	  for (int i=0;i<items.size();i++) {
-		  InvoiceAllowanceChargeAdapter bean = new InvoiceAllowanceChargeAdapter(items.get(i));
-		  bean.setIDAdapter(String.valueOf(i+1));
-		  tableLines.addBean(bean);
-	  }
-	  
-	  setContainerDataSource(tableLines);
+public class InvoiceLineAllowanceChargeTable extends GenericTable <AllowanceChargeType, InvoiceAllowanceChargeAdapter> {
 
-	  addPropertyWithHeader("ID.value", "# ID");
-    
-	  //addPropertyWithHeader("chargeIndicator", "Charge Indicator");
-	  //addPropertyWithHeader("indicator", "Charge Indicator");
-	  addPropertyWithHeader("indicatorAsString", "Allowance/Charge");
-	  
-	  //addPropertyWithHeader("allowanceChargeReason","Charge Reason");
-	  addPropertyWithHeader("reason","Charge Reason");
-	  //addPropertyWithHeader("amount", "Amount");
-	  addPropertyWithHeader("chargeAmount", "Amount");
-    
-	  setDefinedPropertiesAsVisible();
-	  setPageLength(4);
-  }  
+  public InvoiceLineAllowanceChargeTable (final List <AllowanceChargeType> items) {
+
+    linesFromInvoice = items;
+
+    tableLines = new BeanItemContainer <InvoiceAllowanceChargeAdapter> (InvoiceAllowanceChargeAdapter.class);
+
+    for (int i = 0; i < items.size (); i++) {
+      final InvoiceAllowanceChargeAdapter bean = new InvoiceAllowanceChargeAdapter (items.get (i));
+      bean.setIDAdapter (String.valueOf (i + 1));
+      tableLines.addBean (bean);
+    }
+
+    setContainerDataSource (tableLines);
+
+    addPropertyWithHeader ("ID.value", "# ID");
+
+    // addPropertyWithHeader("chargeIndicator", "Charge Indicator");
+    // addPropertyWithHeader("indicator", "Charge Indicator");
+    addPropertyWithHeader ("indicatorAsString", "Allowance/Charge");
+
+    // addPropertyWithHeader("allowanceChargeReason","Charge Reason");
+    addPropertyWithHeader ("reason", "Charge Reason");
+    // addPropertyWithHeader("amount", "Amount");
+    addPropertyWithHeader ("chargeAmount", "Amount");
+
+    setDefinedPropertiesAsVisible ();
+    setPageLength (4);
+  }
 }

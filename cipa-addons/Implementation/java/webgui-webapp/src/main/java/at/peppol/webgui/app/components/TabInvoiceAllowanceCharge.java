@@ -37,37 +37,26 @@
  */
 package at.peppol.webgui.app.components;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.DocumentReferenceType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IDType;
-import un.unece.uncefact.codelist.specification._54217._2001.CurrencyCodeContentType;
-
-import at.peppol.webgui.app.components.InvoiceTabForm.TaxExclusiveAmountListener;
 import at.peppol.webgui.app.components.adapters.InvoiceAllowanceChargeAdapter;
 import at.peppol.webgui.app.components.tables.InvoiceAllowanceChargeTable;
 import at.peppol.webgui.app.components.tables.InvoiceAllowanceChargeTableEditor;
 
 import com.vaadin.data.Item;
-import com.vaadin.data.util.NestedMethodProperty;
 import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
 import com.vaadin.ui.FormFieldFactory;
-import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.Select;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 @SuppressWarnings ("serial")
 public class TabInvoiceAllowanceCharge extends Form {
@@ -77,15 +66,15 @@ public class TabInvoiceAllowanceCharge extends Form {
 
   private InvoiceAllowanceChargeAdapter originalItem;
 
-  private boolean editMode;
+  private final boolean editMode;
 
   public InvoiceAllowanceChargeTable table;
   private VerticalLayout hiddenContent;
 
-  public InvoiceAllowanceChargeTable getTable() {
-	  return table;
+  public InvoiceAllowanceChargeTable getTable () {
+    return table;
   }
-  
+
   public TabInvoiceAllowanceCharge (final InvoiceTabForm parent) {
     this.parent = parent;
     editMode = false;
@@ -108,29 +97,40 @@ public class TabInvoiceAllowanceCharge extends Form {
     table.setHeight (150, UNITS_PIXELS);
     table.setFooterVisible (true);
     table.addStyleName ("striped strong");
-    
-    //table.addListener(parent.new TaxExclusiveAmountListener());
+
+    // table.addListener(parent.new TaxExclusiveAmountListener());
 
     final VerticalLayout tableContainer = new VerticalLayout ();
     tableContainer.addComponent (table);
     tableContainer.setMargin (false, true, false, false);
-    
-    Button addButton = new Button("Add New");
-    Button editButton = new Button("Edit selected");
-    Button deleteButton = new Button("Delete selected");
-    
+
+    final Button addButton = new Button ("Add New");
+    final Button editButton = new Button ("Edit selected");
+    final Button deleteButton = new Button ("Delete selected");
+
     final VerticalLayout buttonsContainer = new VerticalLayout ();
     buttonsContainer.setSpacing (true);
     buttonsContainer.addComponent (addButton);
     buttonsContainer.addComponent (editButton);
     buttonsContainer.addComponent (deleteButton);
 
-    InvoiceAllowanceChargeTableEditor editor = new InvoiceAllowanceChargeTableEditor(editMode, parent.getInvoice());
-    Label label = new Label("<h3>Adding new allowance/charge line</h3>", Label.CONTENT_XHTML);
-    addButton.addListener(editor.addButtonListener(editButton, deleteButton, hiddenContent, table, allowanceChargeList ,label));
-    label = new Label("<h3>Edit allowance/charge line</h3>", Label.CONTENT_XHTML);
-    editButton.addListener(editor.editButtonListener(addButton, deleteButton, hiddenContent, table, allowanceChargeList, label));
-    deleteButton.addListener(editor.deleteButtonListener(table));
+    final InvoiceAllowanceChargeTableEditor editor = new InvoiceAllowanceChargeTableEditor (editMode,
+                                                                                            parent.getInvoice ());
+    Label label = new Label ("<h3>Adding new allowance/charge line</h3>", Label.CONTENT_XHTML);
+    addButton.addListener (editor.addButtonListener (editButton,
+                                                     deleteButton,
+                                                     hiddenContent,
+                                                     table,
+                                                     allowanceChargeList,
+                                                     label));
+    label = new Label ("<h3>Edit allowance/charge line</h3>", Label.CONTENT_XHTML);
+    editButton.addListener (editor.editButtonListener (addButton,
+                                                       deleteButton,
+                                                       hiddenContent,
+                                                       table,
+                                                       allowanceChargeList,
+                                                       label));
+    deleteButton.addListener (editor.deleteButtonListener (table));
 
     final Panel outerPanel = new Panel ("Allowance Charge");
 

@@ -38,14 +38,7 @@
 package at.peppol.webgui.app;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-//import java.nio.file.Paths; //jdk1.7
-import java.util.Iterator;
-
-import javax.xml.transform.stream.StreamSource;
-
-import oasis.names.specification.ubl.schema.xsd.invoice_2.InvoiceType;
 
 import org.vaadin.jouni.animator.AnimatorProxy;
 
@@ -61,6 +54,7 @@ import com.phloc.commons.io.resource.FileSystemResource;
 import com.vaadin.terminal.ExternalResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
@@ -69,15 +63,14 @@ import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.NativeButton;
-import com.vaadin.ui.Panel;
 import com.vaadin.ui.ProgressIndicator;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+
+//import java.nio.file.Paths; //jdk1.7
 
 /**
  * @author Jerouris
@@ -93,19 +86,19 @@ public class MainWindow extends Window {
   private HorizontalLayout topBarLayoutRight;
   private Component mainContentComponent;
   private final AnimatorProxy animProxy = new AnimatorProxy ();
-  
-  private UserFolderManager<File> um;
+
+  private final UserFolderManager <File> um;
   private ShowItemsPanel itemsPanel;
 
   public MainWindow () {
     super ("PAWG Main");
     addComponent (animProxy);
-    um = PawgApp.getInstance().getUserSpaceManager();
+    um = PawgApp.getInstance ().getUserSpaceManager ();
     initUI ();
   }
 
-  @SuppressWarnings("serial")
-private void initUI () {
+  @SuppressWarnings ("serial")
+  private void initUI () {
 
     final VerticalLayout root = new VerticalLayout ();
     root.setMargin (false);
@@ -116,49 +109,50 @@ private void initUI () {
     createMenuBar ();
     // Changed with custom layout using bootstrap -- under testing
     // createHeaderMenu();
-    
-    final UserFolder<File> userFolder = new UserFolder<File>();
+
+    final UserFolder <File> userFolder = new UserFolder <File> ();
     final long polling = 20000;
-    int draftInvoicesNum = um.countItemsInSpace(um.getDrafts());
-    int inboxInvoicesNum = um.countItemsInSpace(um.getInbox());
-    int outboxInvoicesNum = um.countItemsInSpace(um.getOutbox());
-    //Buttons
-    final NativeButton inboxInvoices = new NativeButton ("Invoices ("+inboxInvoicesNum+")");
-    final NativeButton outboxInvoices = new NativeButton ("Invoices ("+outboxInvoicesNum+")");
-    final NativeButton draftInvoices = new NativeButton ("Invoices ("+draftInvoicesNum+")");
-    
-    //thread
-	final Thread tFolderCount = new Thread(new Runnable(){
-		@Override
-		public void run() {
-			try {
-				while (true) {
-					int countDrafts = um.countItemsInSpace(um.getDrafts());
-					int countInbox = um.countItemsInSpace(um.getInbox());
-					int countOutbox = um.countItemsInSpace(um.getOutbox());
-   				 	synchronized(MainWindow.this.getApplication()) {
-   				 		String labelD = draftInvoices.getCaption();
-   						labelD = labelD.replaceFirst("[\\d]+", ""+countDrafts);
-   						draftInvoices.setCaption(labelD);
-   						
-   						String labelI = inboxInvoices.getCaption();
-   						labelI = labelI.replaceFirst("[\\d]+", ""+countInbox);
-   						inboxInvoices.setCaption(labelI);
-   						
-   						String labelO = outboxInvoices.getCaption();
-   						labelO = labelO.replaceFirst("[\\d]+", ""+countOutbox);
-   						outboxInvoices.setCaption(labelO);
-   						
-   						itemsPanel.reloadTable(userFolder);
-   				 	}
-   				 	Thread.sleep(polling);
-	    		 }
-   		 	}catch (InterruptedException e) {
-   		 		System.out.println("Thread folders interrupted!!!");
-   		 	}
-		}
-	});
-	
+    final int draftInvoicesNum = um.countItemsInSpace (um.getDrafts ());
+    final int inboxInvoicesNum = um.countItemsInSpace (um.getInbox ());
+    final int outboxInvoicesNum = um.countItemsInSpace (um.getOutbox ());
+    // Buttons
+    final NativeButton inboxInvoices = new NativeButton ("Invoices (" + inboxInvoicesNum + ")");
+    final NativeButton outboxInvoices = new NativeButton ("Invoices (" + outboxInvoicesNum + ")");
+    final NativeButton draftInvoices = new NativeButton ("Invoices (" + draftInvoicesNum + ")");
+
+    // thread
+    final Thread tFolderCount = new Thread (new Runnable () {
+      @Override
+      public void run () {
+        try {
+          while (true) {
+            final int countDrafts = um.countItemsInSpace (um.getDrafts ());
+            final int countInbox = um.countItemsInSpace (um.getInbox ());
+            final int countOutbox = um.countItemsInSpace (um.getOutbox ());
+            synchronized (MainWindow.this.getApplication ()) {
+              String labelD = draftInvoices.getCaption ();
+              labelD = labelD.replaceFirst ("[\\d]+", "" + countDrafts);
+              draftInvoices.setCaption (labelD);
+
+              String labelI = inboxInvoices.getCaption ();
+              labelI = labelI.replaceFirst ("[\\d]+", "" + countInbox);
+              inboxInvoices.setCaption (labelI);
+
+              String labelO = outboxInvoices.getCaption ();
+              labelO = labelO.replaceFirst ("[\\d]+", "" + countOutbox);
+              outboxInvoices.setCaption (labelO);
+
+              itemsPanel.reloadTable (userFolder);
+            }
+            Thread.sleep (polling);
+          }
+        }
+        catch (final InterruptedException e) {
+          System.out.println ("Thread folders interrupted!!!");
+        }
+      }
+    });
+
     // ------ START: Left NavBar -------
     final CssLayout leftNavBar = new CssLayout ();
     leftNavBar.setStyleName ("sidebar-menu");
@@ -174,53 +168,53 @@ private void initUI () {
     final NativeButton catalogueBtn = new NativeButton ("Catalogue");
     leftNavBar.addComponent (catalogueBtn);
     leftNavBar.addComponent (new NativeButton ("Orders"));
-    //leftNavBar.addComponent (new NativeButton ("Invoices"));
-    //int inboxInvoicesNum = um.countItemsInSpace(um.getInbox());
-    //inboxInvoices = new NativeButton ("Invoices ("+inboxInvoicesNum+")");
-    inboxInvoices.addListener(new ClickListener() {
-		@Override
-		public void buttonClick(ClickEvent event) {
-			inboxInvoices.setCaption("Invoices ("+um.countItemsInSpace(um.getInbox())+")");
-			userFolder.setFolder(um.getInbox().getFolder());
-			userFolder.setName(um.getInbox().getName());
-			showInitialMainContent (userFolder);
-			draftInvoices.removeStyleName("v-bold-nativebuttoncaption");
-		}
+    // leftNavBar.addComponent (new NativeButton ("Invoices"));
+    // int inboxInvoicesNum = um.countItemsInSpace(um.getInbox());
+    // inboxInvoices = new NativeButton ("Invoices ("+inboxInvoicesNum+")");
+    inboxInvoices.addListener (new ClickListener () {
+      @Override
+      public void buttonClick (final ClickEvent event) {
+        inboxInvoices.setCaption ("Invoices (" + um.countItemsInSpace (um.getInbox ()) + ")");
+        userFolder.setFolder (um.getInbox ().getFolder ());
+        userFolder.setName (um.getInbox ().getName ());
+        showInitialMainContent (userFolder);
+        draftInvoices.removeStyleName ("v-bold-nativebuttoncaption");
+      }
     });
     leftNavBar.addComponent (inboxInvoices);
 
     leftNavBar.addComponent (new Label ("DRAFTS"));
     leftNavBar.addComponent (new NativeButton ("Catalogue"));
     leftNavBar.addComponent (new NativeButton ("Orders"));
-    //int draftInvoicesNum = um.countItemsInSpace(um.getDrafts());
-    //draftInvoices = new NativeButton ("Invoices ("+draftInvoicesNum+")");
-    draftInvoices.addListener(new ClickListener() {
-		@Override
-		public void buttonClick(ClickEvent event) {
-			draftInvoices.setCaption("Invoices ("+um.countItemsInSpace(um.getDrafts())+")");
-			userFolder.setFolder(um.getDrafts().getFolder());
-			userFolder.setName(um.getDrafts().getName());
-			showInitialMainContent (userFolder);
-			draftInvoices.removeStyleName("v-bold-nativebuttoncaption");
-		}
+    // int draftInvoicesNum = um.countItemsInSpace(um.getDrafts());
+    // draftInvoices = new NativeButton ("Invoices ("+draftInvoicesNum+")");
+    draftInvoices.addListener (new ClickListener () {
+      @Override
+      public void buttonClick (final ClickEvent event) {
+        draftInvoices.setCaption ("Invoices (" + um.countItemsInSpace (um.getDrafts ()) + ")");
+        userFolder.setFolder (um.getDrafts ().getFolder ());
+        userFolder.setName (um.getDrafts ().getName ());
+        showInitialMainContent (userFolder);
+        draftInvoices.removeStyleName ("v-bold-nativebuttoncaption");
+      }
     });
     leftNavBar.addComponent (draftInvoices);
-        
+
     leftNavBar.addComponent (new Label ("OUTBOX"));
     leftNavBar.addComponent (new NativeButton ("Catalogue"));
     leftNavBar.addComponent (new NativeButton ("Orders"));
-    //leftNavBar.addComponent (new NativeButton ("Invoices"));
-    //int outboxInvoicesNum = um.countItemsInSpace(um.getOutbox());
-    //outboxInvoices = new NativeButton ("Invoices ("+outboxInvoicesNum+")");
-    outboxInvoices.addListener(new ClickListener() {
-		@Override
-		public void buttonClick(ClickEvent event) {
-			outboxInvoices.setCaption("Invoices ("+um.countItemsInSpace(um.getOutbox())+")");
-			userFolder.setFolder(um.getOutbox().getFolder());
-			userFolder.setName(um.getOutbox().getName());
-			showInitialMainContent (userFolder);
-			draftInvoices.removeStyleName("v-bold-nativebuttoncaption");
-		}
+    // leftNavBar.addComponent (new NativeButton ("Invoices"));
+    // int outboxInvoicesNum = um.countItemsInSpace(um.getOutbox());
+    // outboxInvoices = new NativeButton ("Invoices ("+outboxInvoicesNum+")");
+    outboxInvoices.addListener (new ClickListener () {
+      @Override
+      public void buttonClick (final ClickEvent event) {
+        outboxInvoices.setCaption ("Invoices (" + um.countItemsInSpace (um.getOutbox ()) + ")");
+        userFolder.setFolder (um.getOutbox ().getFolder ());
+        userFolder.setName (um.getOutbox ().getName ());
+        showInitialMainContent (userFolder);
+        draftInvoices.removeStyleName ("v-bold-nativebuttoncaption");
+      }
     });
     leftNavBar.addComponent (outboxInvoices);
 
@@ -230,43 +224,43 @@ private void initUI () {
     leftNavBar.addComponent (new NativeButton ("Suppliers"));
 
     final Embedded peppolLogoImg = new Embedded (null, new ExternalResource ("img/peppol_logo.png"));
-    
+
     peppolLogoImg.setStyleName ("logo");
     leftNavBar.addComponent (peppolLogoImg);
 
     middleContentLayout.addComponent (leftNavBar);
-    
-    /*Button refreshButton = new Button("Refresh");
-    refreshButton.addListener(new Button.ClickListener() {
-		@Override
-		public void buttonClick(ClickEvent event) {
-			int draftInvoices = um.countItemsInSpace(um.getDrafts());
-			invoices.setCaption("Invoices ("+draftInvoices+")");
-		}
-	});
-    leftNavBar.addComponent(refreshButton);*/
-    
-    //workaround so that thread refreshes UI. It seems that when a ProgressIndicator is present,
-    //all components receive server side refreshes
-    ProgressIndicator p = new ProgressIndicator();
-    p.setPollingInterval((int)polling);
-    p.setWidth("0px");
-    p.setHeight("0px");
-    leftNavBar.addComponent(p);
-    
+
+    /*
+     * Button refreshButton = new Button("Refresh");
+     * refreshButton.addListener(new Button.ClickListener() {
+     * @Override public void buttonClick(ClickEvent event) { int draftInvoices =
+     * um.countItemsInSpace(um.getDrafts());
+     * invoices.setCaption("Invoices ("+draftInvoices+")"); } });
+     * leftNavBar.addComponent(refreshButton);
+     */
+
+    // workaround so that thread refreshes UI. It seems that when a
+    // ProgressIndicator is present,
+    // all components receive server side refreshes
+    final ProgressIndicator p = new ProgressIndicator ();
+    p.setPollingInterval ((int) polling);
+    p.setWidth ("0px");
+    p.setHeight ("0px");
+    leftNavBar.addComponent (p);
+
     showInitialMainContent (null);
-    draftInvoices.click();
-    tFolderCount.start();
-    draftInvoices.addStyleName("v-bold-nativebuttoncaption");
+    draftInvoices.click ();
+    tFolderCount.start ();
+    draftInvoices.addStyleName ("v-bold-nativebuttoncaption");
   }
 
-  public void showInitialMainContent (UserFolder<?> userFolder) {
+  public void showInitialMainContent (final UserFolder <?> userFolder) {
     // ------ START: Main Content -------
     final VerticalLayout mainContentLayout = new VerticalLayout ();
 
     mainContentLayout.addStyleName ("margin");
     final VerticalLayout topmain = new VerticalLayout ();
-    topmain.setSpacing(true);
+    topmain.setSpacing (true);
     topmain.setWidth ("100%");
     final Label bigPAWGLabel = new Label ("PEPPOL Post Award Web GUI");
     bigPAWGLabel.setStyleName ("huge");
@@ -277,63 +271,68 @@ private void initUI () {
                                          + " of the Demo Client");
     blahContent.setWidth ("80%");
     blahContent.addStyleName ("big");
-    //topmain.addComponent (blahContent);
-    //HorizontalLayout itemsPanel = new ShowItemsPanel("Items", um, userFolder);
-    
-    final ShowItemsPanel itemsPanel = new ShowItemsPanel("Items", um, userFolder);
+    // topmain.addComponent (blahContent);
+    // HorizontalLayout itemsPanel = new ShowItemsPanel("Items", um,
+    // userFolder);
+
+    final ShowItemsPanel itemsPanel = new ShowItemsPanel ("Items", um, userFolder);
     this.itemsPanel = itemsPanel;
     topmain.addComponent (itemsPanel);
-    HorizontalLayout buttonsLayout = new HorizontalLayout();
-    buttonsLayout.setSpacing(true);
-    topmain.addComponent(buttonsLayout);
-    Button loadButton = new Button("Load invoice");
-    //topmain.addComponent(loadButton);
-    buttonsLayout.addComponent(loadButton);
-	loadButton.addListener(new ClickListener() {
-		@Override
-		public void buttonClick(ClickEvent event) {
-			Table table = itemsPanel.getTable();
-			if (table.getValue() != null) { 
-				//InvoiceType inv = (InvoiceType)table.getItem(table.getValue()).getItemProperty("invoice").getValue();
-				//InvoiceBean invBean = (InvoiceBean)table.getItem(table.getValue());
-				InvoiceBean invBean = ((InvoiceBeanContainer)table.getContainerDataSource()).getItem(table.getValue()).getBean();
-				//System.out.println("Invoice is: "+invBean);
-				showInvoiceForm(invBean);
-			}
-		}
-	});
-	
-	Button sendButton = new Button("Send invoice");
-	buttonsLayout.addComponent(sendButton);
-	sendButton.addListener(new ClickListener() {
-		@Override
-		public void buttonClick(ClickEvent event) {
-			try {
-				Table table = itemsPanel.getTable();
-				if (table.getValue() != null) { 
-					InvoiceBean invBean = ((InvoiceBeanContainer)table.getContainerDataSource()).getItem(table.getValue()).getBean();
-					String path = invBean.getFolderEntryID();
-					FileSystemResource s = new FileSystemResource(path);
-					SendInvoice.sendDocument(s);
-					
-					//file is sent. move invoice to outbox
-					um.moveInvoice(invBean, um.getDrafts(), um.getOutbox());
-					//itemsPanel.getTable().requestRepaint();
-					itemsPanel.init(um.getDrafts());
-				}
-			}catch (FileNotFoundException e) {
-				getWindow().showNotification("Could not find invoice file",Notification.TYPE_ERROR_MESSAGE);
-			}
-			catch (Exception e) {
-				getWindow().showNotification("Could not send invoice. AP connection error",Notification.TYPE_ERROR_MESSAGE);
-				e.printStackTrace();
-			}
-		}
-	});
-	
+    final HorizontalLayout buttonsLayout = new HorizontalLayout ();
+    buttonsLayout.setSpacing (true);
+    topmain.addComponent (buttonsLayout);
+    final Button loadButton = new Button ("Load invoice");
+    // topmain.addComponent(loadButton);
+    buttonsLayout.addComponent (loadButton);
+    loadButton.addListener (new ClickListener () {
+      @Override
+      public void buttonClick (final ClickEvent event) {
+        final Table table = itemsPanel.getTable ();
+        if (table.getValue () != null) {
+          // InvoiceType inv =
+          // (InvoiceType)table.getItem(table.getValue()).getItemProperty("invoice").getValue();
+          // InvoiceBean invBean = (InvoiceBean)table.getItem(table.getValue());
+          final InvoiceBean invBean = ((InvoiceBeanContainer) table.getContainerDataSource ()).getItem (table.getValue ())
+                                                                                              .getBean ();
+          // System.out.println("Invoice is: "+invBean);
+          showInvoiceForm (invBean);
+        }
+      }
+    });
+
+    final Button sendButton = new Button ("Send invoice");
+    buttonsLayout.addComponent (sendButton);
+    sendButton.addListener (new ClickListener () {
+      @Override
+      public void buttonClick (final ClickEvent event) {
+        try {
+          final Table table = itemsPanel.getTable ();
+          if (table.getValue () != null) {
+            final InvoiceBean invBean = ((InvoiceBeanContainer) table.getContainerDataSource ()).getItem (table.getValue ())
+                                                                                                .getBean ();
+            final String path = invBean.getFolderEntryID ();
+            final FileSystemResource s = new FileSystemResource (path);
+            SendInvoice.sendDocument (s);
+
+            // file is sent. move invoice to outbox
+            um.moveInvoice (invBean, um.getDrafts (), um.getOutbox ());
+            // itemsPanel.getTable().requestRepaint();
+            itemsPanel.init (um.getDrafts ());
+          }
+        }
+        catch (final FileNotFoundException e) {
+          getWindow ().showNotification ("Could not find invoice file", Notification.TYPE_ERROR_MESSAGE);
+        }
+        catch (final Exception e) {
+          getWindow ().showNotification ("Could not send invoice. AP connection error", Notification.TYPE_ERROR_MESSAGE);
+          e.printStackTrace ();
+        }
+      }
+    });
+
     final Button learnMoreBtn = new Button ("Learn More >>");
     learnMoreBtn.addStyleName ("tall default");
-    //topmain.addComponent (learnMoreBtn);
+    // topmain.addComponent (learnMoreBtn);
 
     mainContentLayout.addComponent (topmain);
     // ------ END: Main Content ---------
@@ -418,17 +417,17 @@ private void initUI () {
       public void menuSelected (final MenuItem selectedItem) {
 
         removeComponent (mainContentComponent);
-        showInitialMainContent (um.getDrafts());
+        showInitialMainContent (um.getDrafts ());
       }
     });
     final MenuBar.MenuItem docItem = lMenuBar.addItem ("Document", null);
     lMenuBar.addItem ("Preferences", null);
-    lMenuBar.addItem ("Logout", new MenuBar.Command() {
-		@Override
-		public void menuSelected(MenuItem selectedItem) {
-			PawgApp.getInstance().logout();
-			PawgApp.getInstance().showLoginWindow();
-		}
+    lMenuBar.addItem ("Logout", new MenuBar.Command () {
+      @Override
+      public void menuSelected (final MenuItem selectedItem) {
+        PawgApp.getInstance ().logout ();
+        PawgApp.getInstance ().showLoginWindow ();
+      }
     });
     lMenuBar.addItem ("About", null);
     lMenuBar.setSizeFull ();
@@ -438,8 +437,8 @@ private void initUI () {
     invItem.addItem ("New ...", new MenuBar.Command () {
       @Override
       public void menuSelected (final MenuItem selectedItem) {
-    	  showInvoiceForm ();
-    	  //showInvoiceForm (null);
+        showInvoiceForm ();
+        // showInvoiceForm (null);
       }
     });
     invItem.addItem ("View ... ", new MenuBar.Command () {
@@ -549,14 +548,14 @@ private void initUI () {
   public void showInvoiceForm () {
 
     // InvoiceForm invForm = new InvoiceForm();
-    //final InvoiceTabForm invForm = new InvoiceTabForm ();
-	  final InvoiceTabForm invForm = new InvoiceTabForm (um);
+    // final InvoiceTabForm invForm = new InvoiceTabForm ();
+    final InvoiceTabForm invForm = new InvoiceTabForm (um);
     middleContentLayout.replaceComponent (mainContentComponent, invForm);
     middleContentLayout.setExpandRatio (invForm, 1);
     mainContentComponent = invForm;
   }
-  
-  public void showInvoiceForm (InvoiceBean bean) {
+
+  public void showInvoiceForm (final InvoiceBean bean) {
     final InvoiceTabForm invForm = new InvoiceTabForm (um, bean);
     middleContentLayout.replaceComponent (mainContentComponent, invForm);
     middleContentLayout.setExpandRatio (invForm, 1);
@@ -593,5 +592,5 @@ private void initUI () {
     popup.setWidth ("430px");
     getWindow ().addWindow (popup);
   }
-  
+
 }

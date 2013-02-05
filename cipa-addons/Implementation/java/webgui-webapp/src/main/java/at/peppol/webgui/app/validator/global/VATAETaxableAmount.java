@@ -6,17 +6,17 @@ import com.vaadin.ui.Component;
 
 public class VATAETaxableAmount extends BaseValidation {
 
-	public VATAETaxableAmount(InvoiceType inv, Component c) {
-		super(inv, c);
-		ruleID = "";
-		errorMessage = "";
+  public VATAETaxableAmount (final InvoiceType inv, final Component c) {
+    super (inv, c);
+    ruleID = "";
+    errorMessage = "";
 
-	}
+  }
 
-	@Override
-	public ValidationError run() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+  @Override
+  public ValidationError run () {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
 }

@@ -37,49 +37,43 @@
  */
 package at.peppol.webgui.app.components.tables;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.DocumentReferenceType;
-
 import at.peppol.webgui.app.components.adapters.InvoiceAdditionalDocRefAdapter;
-import at.peppol.webgui.app.components.adapters.InvoiceAllowanceChargeAdapter;
-import at.peppol.webgui.app.components.adapters.PaymentMeansAdapter;
 
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.Table;
 
-public class InvoiceAdditionalDocRefTable extends GenericTable<DocumentReferenceType, InvoiceAdditionalDocRefAdapter> {
- 
-  public InvoiceAdditionalDocRefTable(List <DocumentReferenceType> list) {
+public class InvoiceAdditionalDocRefTable extends GenericTable <DocumentReferenceType, InvoiceAdditionalDocRefAdapter> {
+
+  public InvoiceAdditionalDocRefTable (final List <DocumentReferenceType> list) {
     linesFromInvoice = list;
-    
-    tableLines = new BeanItemContainer<InvoiceAdditionalDocRefAdapter>(InvoiceAdditionalDocRefAdapter.class);
-    
-    if (linesFromInvoice.size() > 0) {
-		  for (int i=0;i<linesFromInvoice.size();i++) {
-			  DocumentReferenceType type = linesFromInvoice.get(i); 
-			  InvoiceAdditionalDocRefAdapter item = new InvoiceAdditionalDocRefAdapter(type);
-			  tableLines.addBean(item);
-			  linesFromInvoice.set(i, item);
-		  }
-	  }
-    
-    setContainerDataSource(tableLines);
 
-    addPropertyWithHeader("AdditionalDocRefID", "#ID");
-    addPropertyWithHeader("AdditionalDocRefDocumentType", "Type of document");
-    //addPropertyWithHeader("AdditionalDocRefEmbeddedDocumentBinaryObject", "Filename");
-    addPropertyWithHeader("AdditionalDocRefExternalReference", "URI location");
-    addPropertyWithHeader("AdditionalDocRefFile", "Filename");
+    tableLines = new BeanItemContainer <InvoiceAdditionalDocRefAdapter> (InvoiceAdditionalDocRefAdapter.class);
 
-    setDefinedPropertiesAsVisible();
-    setPageLength(6);
-    
-    setColumnWidth("AdditionalDocRefExternalReference", 200);
-    //setColumnExpandRatio("AdditionalDocRefExternalReference", 2);
-  }  
-  
+    if (linesFromInvoice.size () > 0) {
+      for (int i = 0; i < linesFromInvoice.size (); i++) {
+        final DocumentReferenceType type = linesFromInvoice.get (i);
+        final InvoiceAdditionalDocRefAdapter item = new InvoiceAdditionalDocRefAdapter (type);
+        tableLines.addBean (item);
+        linesFromInvoice.set (i, item);
+      }
+    }
+
+    setContainerDataSource (tableLines);
+
+    addPropertyWithHeader ("AdditionalDocRefID", "#ID");
+    addPropertyWithHeader ("AdditionalDocRefDocumentType", "Type of document");
+    // addPropertyWithHeader("AdditionalDocRefEmbeddedDocumentBinaryObject",
+    // "Filename");
+    addPropertyWithHeader ("AdditionalDocRefExternalReference", "URI location");
+    addPropertyWithHeader ("AdditionalDocRefFile", "Filename");
+
+    setDefinedPropertiesAsVisible ();
+    setPageLength (6);
+
+    setColumnWidth ("AdditionalDocRefExternalReference", 200);
+    // setColumnExpandRatio("AdditionalDocRefExternalReference", 2);
+  }
+
 }

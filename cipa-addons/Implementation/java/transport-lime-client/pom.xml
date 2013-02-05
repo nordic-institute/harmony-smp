@@ -5,8 +5,8 @@
     <artifactId>cipa-parent-pom</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>cipa-transport-lime-client</artifactId>
-  <name>cipa-transport-lime-client</name>
+  <artifactId>cipa-lime-client</artifactId>
+  <name>cipa-lime-client</name>
 
   <scm>
     <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/transport-lime-client</connection>

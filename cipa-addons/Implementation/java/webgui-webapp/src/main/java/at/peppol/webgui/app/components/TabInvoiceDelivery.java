@@ -71,160 +71,176 @@ import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.VerticalLayout;
 
 @SuppressWarnings ("serial")
-public class TabInvoiceDelivery extends Form{
-  private InvoiceTabForm parent;
-  
-  private List<DeliveryType> deliveryList;
+public class TabInvoiceDelivery extends Form {
+  private final InvoiceTabForm parent;
+
+  private List <DeliveryType> deliveryList;
   private DeliveryType deliveryItem;
-  
+
   private AddressType deliveryAddress;
-  private AddressDetailForm deliveryAddressForm;   
+  private AddressDetailForm deliveryAddressForm;
   private Form idForm;
-  
-  public TabInvoiceDelivery(InvoiceTabForm parent) {
+
+  public TabInvoiceDelivery (final InvoiceTabForm parent) {
     this.parent = parent;
-    initElements();
+    initElements ();
   }
-  
-  
-  private void initElements() {
-    deliveryList = parent.getInvoice().getDelivery ();
-    if (deliveryList.size() == 0) {
-    	deliveryItem = createDeliveryItem();
-    	deliveryList.add (deliveryItem);
+
+  private void initElements () {
+    deliveryList = parent.getInvoice ().getDelivery ();
+    if (deliveryList.size () == 0) {
+      deliveryItem = createDeliveryItem ();
+      deliveryList.add (deliveryItem);
     }
     else {
-    	deliveryItem = deliveryList.get(0);
-    	deliveryAddress = deliveryItem.getDeliveryLocation().getAddress();
-    	prepareForms();
+      deliveryItem = deliveryList.get (0);
+      deliveryAddress = deliveryItem.getDeliveryLocation ().getAddress ();
+      prepareForms ();
     }
-   
-    final GridLayout grid = new GridLayout(2, 2);
-    final VerticalLayout outerLayout = new VerticalLayout();
-    
-    final Panel outerPanel = new Panel("Delivery");
-    outerPanel.addComponent(grid);
-    outerPanel.setScrollable(true);
-    outerLayout.addComponent(outerPanel);
-    
-    final Panel invoiceDetailsPanel = new Panel("Delivery Details");
-    invoiceDetailsPanel.setStyleName("light");
-    invoiceDetailsPanel.setSizeFull();
-    invoiceDetailsPanel.addComponent(createInvoiceDeliveryTopForm());
-    invoiceDetailsPanel.addComponent(deliveryAddressForm);
-    grid.addComponent(invoiceDetailsPanel, 0, 0);
-    grid.setSizeUndefined();
-     
-    setLayout(outerLayout);
-    outerPanel.requestRepaintAll();
-  }  
-  
-  private DeliveryType createDeliveryItem() {
-    final DeliveryType delivery = new DeliveryType();
-    
+
+    final GridLayout grid = new GridLayout (2, 2);
+    final VerticalLayout outerLayout = new VerticalLayout ();
+
+    final Panel outerPanel = new Panel ("Delivery");
+    outerPanel.addComponent (grid);
+    outerPanel.setScrollable (true);
+    outerLayout.addComponent (outerPanel);
+
+    final Panel invoiceDetailsPanel = new Panel ("Delivery Details");
+    invoiceDetailsPanel.setStyleName ("light");
+    invoiceDetailsPanel.setSizeFull ();
+    invoiceDetailsPanel.addComponent (createInvoiceDeliveryTopForm ());
+    invoiceDetailsPanel.addComponent (deliveryAddressForm);
+    grid.addComponent (invoiceDetailsPanel, 0, 0);
+    grid.setSizeUndefined ();
+
+    setLayout (outerLayout);
+    outerPanel.requestRepaintAll ();
+  }
+
+  private DeliveryType createDeliveryItem () {
+    final DeliveryType delivery = new DeliveryType ();
+
     deliveryAddress = new AddressType ();
     deliveryAddressForm = new AddressDetailForm ("Delivery", deliveryAddress);
-    
-    final  LocationType location = new LocationType();
-    IDType id = new IDType ();
-    id.setSchemeID("GLN");
+
+    final LocationType location = new LocationType ();
+    final IDType id = new IDType ();
+    id.setSchemeID ("GLN");
     location.setID (id);
-    idForm = new Form();
-    idForm.setSizeFull();
-    idForm.setFormFieldFactory(new InvoiceDeliveryFieldFactory());
-    idForm.setImmediate(true);
-    idForm.setWriteThrough(true);
-    idForm.addItemProperty("Location ID (GLN)", new NestedMethodProperty(id, "value"));
-    deliveryAddressForm.addComponent(idForm);
-    
-    location.setAddress(deliveryAddress);
-    
+    idForm = new Form ();
+    idForm.setSizeFull ();
+    idForm.setFormFieldFactory (new InvoiceDeliveryFieldFactory ());
+    idForm.setImmediate (true);
+    idForm.setWriteThrough (true);
+    idForm.addItemProperty ("Location ID (GLN)", new NestedMethodProperty (id, "value"));
+    deliveryAddressForm.addComponent (idForm);
+
+    location.setAddress (deliveryAddress);
+
     delivery.setDeliveryLocation (location);
     return delivery;
   }
-  
-  private void prepareForms() {
+
+  private void prepareForms () {
     deliveryAddressForm = new AddressDetailForm ("Delivery", deliveryAddress);
-    
-    IDType id = deliveryItem.getDeliveryLocation().getID();
-    idForm = new Form();
-    idForm.setSizeFull();
-    idForm.setFormFieldFactory(new InvoiceDeliveryFieldFactory());
-    idForm.setImmediate(true);
-    idForm.setWriteThrough(true);
-    idForm.addItemProperty("Location ID (GLN)", new NestedMethodProperty(id, "value"));
-    
-    deliveryAddressForm.addComponent(idForm);
+
+    final IDType id = deliveryItem.getDeliveryLocation ().getID ();
+    idForm = new Form ();
+    idForm.setSizeFull ();
+    idForm.setFormFieldFactory (new InvoiceDeliveryFieldFactory ());
+    idForm.setImmediate (true);
+    idForm.setWriteThrough (true);
+    idForm.addItemProperty ("Location ID (GLN)", new NestedMethodProperty (id, "value"));
+
+    deliveryAddressForm.addComponent (idForm);
   }
-    
-  
-  public Form createInvoiceDeliveryTopForm() {
-    final Form invoiceDeliveryTopForm = new Form(new FormLayout(), new InvoiceDeliveryFieldFactory());
-    invoiceDeliveryTopForm.setImmediate(true);
+
+  public Form createInvoiceDeliveryTopForm () {
+    final Form invoiceDeliveryTopForm = new Form (new FormLayout (), new InvoiceDeliveryFieldFactory ());
+    invoiceDeliveryTopForm.setImmediate (true);
 
     final Date actualDeliveryDate = new Date ();
     invoiceDeliveryTopForm.addItemProperty ("Actual Delivery Date", new ObjectProperty <Date> (actualDeliveryDate));
-    
-    invoiceDeliveryTopForm.addItemProperty ("Delivery Location ID", new NestedMethodProperty(deliveryItem.getDeliveryLocation().getID (), "value") );
-    
+
+    invoiceDeliveryTopForm.addItemProperty ("Delivery Location ID",
+                                            new NestedMethodProperty (deliveryItem.getDeliveryLocation ().getID (),
+                                                                      "value"));
+
     // The following replaced by AddressDetailForm
     /*
-    invoiceDeliveryTopForm.addItemProperty ("Address Street Name", new NestedMethodProperty(deliveryItem.getDeliveryLocation().getAddress (), "streetName.value") );
-    invoiceDeliveryTopForm.addItemProperty ("Address Additional Street Name", new NestedMethodProperty(deliveryItem.getDeliveryLocation().getAddress (), "additionalStreetName.value") );
-    invoiceDeliveryTopForm.addItemProperty ("Address Department", new NestedMethodProperty(deliveryItem.getDeliveryLocation().getAddress (), "department.value") );
-    invoiceDeliveryTopForm.addItemProperty ("Address Building Number", new NestedMethodProperty(deliveryItem.getDeliveryLocation().getAddress (), "buildingNumber.value") );
-    invoiceDeliveryTopForm.addItemProperty ("Address City Name", new NestedMethodProperty(deliveryItem.getDeliveryLocation().getAddress (), "cityName.value") );
-    invoiceDeliveryTopForm.addItemProperty ("Address Postal Zone", new NestedMethodProperty(deliveryItem.getDeliveryLocation().getAddress (), "postalZone.value") );
-    invoiceDeliveryTopForm.addItemProperty ("Address Country Subentity", new NestedMethodProperty(deliveryItem.getDeliveryLocation().getAddress (), "countrySubentity.value") );
-    invoiceDeliveryTopForm.addItemProperty ("Address Country ID", new NestedMethodProperty(deliveryItem.getDeliveryLocation().getAddress (), "country.identificationCode.value") );
-    */
-    
+     * invoiceDeliveryTopForm.addItemProperty ("Address Street Name", new
+     * NestedMethodProperty(deliveryItem.getDeliveryLocation().getAddress (),
+     * "streetName.value") ); invoiceDeliveryTopForm.addItemProperty
+     * ("Address Additional Street Name", new
+     * NestedMethodProperty(deliveryItem.getDeliveryLocation().getAddress (),
+     * "additionalStreetName.value") ); invoiceDeliveryTopForm.addItemProperty
+     * ("Address Department", new
+     * NestedMethodProperty(deliveryItem.getDeliveryLocation().getAddress (),
+     * "department.value") ); invoiceDeliveryTopForm.addItemProperty
+     * ("Address Building Number", new
+     * NestedMethodProperty(deliveryItem.getDeliveryLocation().getAddress (),
+     * "buildingNumber.value") ); invoiceDeliveryTopForm.addItemProperty
+     * ("Address City Name", new
+     * NestedMethodProperty(deliveryItem.getDeliveryLocation().getAddress (),
+     * "cityName.value") ); invoiceDeliveryTopForm.addItemProperty
+     * ("Address Postal Zone", new
+     * NestedMethodProperty(deliveryItem.getDeliveryLocation().getAddress (),
+     * "postalZone.value") ); invoiceDeliveryTopForm.addItemProperty
+     * ("Address Country Subentity", new
+     * NestedMethodProperty(deliveryItem.getDeliveryLocation().getAddress (),
+     * "countrySubentity.value") ); invoiceDeliveryTopForm.addItemProperty
+     * ("Address Country ID", new
+     * NestedMethodProperty(deliveryItem.getDeliveryLocation().getAddress (),
+     * "country.identificationCode.value") );
+     */
+
     return invoiceDeliveryTopForm;
-  }  
-  
+  }
+
   class InvoiceDeliveryFieldFactory implements FormFieldFactory {
 
-    public Field createField(final Item item, final Object propertyId, final Component uiContext) {
-        // Identify the fields by their Property ID.
-        final String pid = (String) propertyId;
-        if ("Actual Delivery Date".equals(pid)) {
-          final PopupDateField actualDateField = new PopupDateField("Actual Delivery Date");
-          actualDateField.setValue(new Date());
-          actualDateField.setResolution(DateField.RESOLUTION_DAY);
-          actualDateField.addListener(new ValueChangeListener() {
+    public Field createField (final Item item, final Object propertyId, final Component uiContext) {
+      // Identify the fields by their Property ID.
+      final String pid = (String) propertyId;
+      if ("Actual Delivery Date".equals (pid)) {
+        final PopupDateField actualDateField = new PopupDateField ("Actual Delivery Date");
+        actualDateField.setValue (new Date ());
+        actualDateField.setResolution (DateField.RESOLUTION_DAY);
+        actualDateField.addListener (new ValueChangeListener () {
 
-            @Override
-            public void valueChange(final com.vaadin.data.Property.ValueChangeEvent event) {
-              try {
-                final Date issueDate = (Date) actualDateField.getValue();
-                final GregorianCalendar greg = new GregorianCalendar();
-                greg.setTime(issueDate);
+          @Override
+          public void valueChange (final com.vaadin.data.Property.ValueChangeEvent event) {
+            try {
+              final Date issueDate = (Date) actualDateField.getValue ();
+              final GregorianCalendar greg = new GregorianCalendar ();
+              greg.setTime (issueDate);
 
-                // Workaround to print only the date and not the time.
-                final XMLGregorianCalendar XMLDate = DatatypeFactory.newInstance().newXMLGregorianCalendar();
-                XMLDate.setYear(greg.get(Calendar.YEAR));
-                XMLDate.setMonth(greg.get(Calendar.MONTH) + 1);
-                XMLDate.setDay(greg.get(Calendar.DATE));
+              // Workaround to print only the date and not the time.
+              final XMLGregorianCalendar XMLDate = DatatypeFactory.newInstance ().newXMLGregorianCalendar ();
+              XMLDate.setYear (greg.get (Calendar.YEAR));
+              XMLDate.setMonth (greg.get (Calendar.MONTH) + 1);
+              XMLDate.setDay (greg.get (Calendar.DATE));
 
-                parent.getInvoice().getDelivery ().add (new DeliveryType());
-                ActualDeliveryDateType sdt = new ActualDeliveryDateType ();
-                sdt.setValue (XMLDate);
-                parent.getInvoice().getDelivery ().get (0).setActualDeliveryDate (sdt);
-              } catch (final DatatypeConfigurationException ex) {
-                Logger.getLogger(TabInvoiceHeader.class.getName()).log(Level.SEVERE, null, ex);
-              }
+              parent.getInvoice ().getDelivery ().add (new DeliveryType ());
+              final ActualDeliveryDateType sdt = new ActualDeliveryDateType ();
+              sdt.setValue (XMLDate);
+              parent.getInvoice ().getDelivery ().get (0).setActualDeliveryDate (sdt);
             }
-          });
-         
+            catch (final DatatypeConfigurationException ex) {
+              Logger.getLogger (TabInvoiceHeader.class.getName ()).log (Level.SEVERE, null, ex);
+            }
+          }
+        });
 
-          return actualDateField;
-        }
-        final Field field = DefaultFieldFactory.get().createField(item, propertyId, uiContext);
-        if (field instanceof AbstractTextField) {
-            ((AbstractTextField) field).setNullRepresentation("");
-        }
-        return field;
+        return actualDateField;
+      }
+      final Field field = DefaultFieldFactory.get ().createField (item, propertyId, uiContext);
+      if (field instanceof AbstractTextField) {
+        ((AbstractTextField) field).setNullRepresentation ("");
+      }
+      return field;
     }
-  }  
-  
+  }
+
 }

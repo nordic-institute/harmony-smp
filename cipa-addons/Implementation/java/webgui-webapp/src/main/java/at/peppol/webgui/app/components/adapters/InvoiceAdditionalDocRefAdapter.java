@@ -46,116 +46,117 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IDType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.URIType;
 import un.unece.uncefact.codelist.specification.ianamimemediatype._2003.BinaryObjectMimeCodeContentType;
 
-@SuppressWarnings("serial")
-public class InvoiceAdditionalDocRefAdapter extends DocumentReferenceType implements Adapter{
-  
+@SuppressWarnings ("serial")
+public class InvoiceAdditionalDocRefAdapter extends DocumentReferenceType implements Adapter {
+
   String additionalDocRefFile;
-  
-  public InvoiceAdditionalDocRefAdapter(DocumentReferenceType type) {
-	  if (type.getID() != null)
-		  this.setID(type.getID());
-	  else
-		  setID (new IDType ());
-	  
-	  if (type.getDocumentType() != null)
-		  this.setDocumentType(type.getDocumentType());
-	  else
-		  this.setDocumentType (new DocumentTypeType ());
-	  
-	  if (type.getAttachment() != null) {
-		  this.setAttachment(type.getAttachment());
-		  if (type.getAttachment().getEmbeddedDocumentBinaryObject() == null)
-			  this.getAttachment().setEmbeddedDocumentBinaryObject (new EmbeddedDocumentBinaryObjectType ());
-		  if (type.getAttachment().getExternalReference() == null)
-			  this.getAttachment().setExternalReference(new ExternalReferenceType());
-		  if (type.getAttachment().getExternalReference().getURI() == null)
-			  this.getAttachment().getExternalReference().setURI(new URIType());
-	  }
-	  else {
-		  setAttachment (new AttachmentType ());
-		  getAttachment().setEmbeddedDocumentBinaryObject (new EmbeddedDocumentBinaryObjectType ());
-		  getAttachment().setExternalReference (new ExternalReferenceType ());
-		  getAttachment().getExternalReference ().setURI (new URIType ());
-	  }
+
+  public InvoiceAdditionalDocRefAdapter (final DocumentReferenceType type) {
+    if (type.getID () != null)
+      this.setID (type.getID ());
+    else
+      setID (new IDType ());
+
+    if (type.getDocumentType () != null)
+      this.setDocumentType (type.getDocumentType ());
+    else
+      this.setDocumentType (new DocumentTypeType ());
+
+    if (type.getAttachment () != null) {
+      this.setAttachment (type.getAttachment ());
+      if (type.getAttachment ().getEmbeddedDocumentBinaryObject () == null)
+        this.getAttachment ().setEmbeddedDocumentBinaryObject (new EmbeddedDocumentBinaryObjectType ());
+      if (type.getAttachment ().getExternalReference () == null)
+        this.getAttachment ().setExternalReference (new ExternalReferenceType ());
+      if (type.getAttachment ().getExternalReference ().getURI () == null)
+        this.getAttachment ().getExternalReference ().setURI (new URIType ());
+    }
+    else {
+      setAttachment (new AttachmentType ());
+      getAttachment ().setEmbeddedDocumentBinaryObject (new EmbeddedDocumentBinaryObjectType ());
+      getAttachment ().setExternalReference (new ExternalReferenceType ());
+      getAttachment ().getExternalReference ().setURI (new URIType ());
+    }
   }
-  
-  public InvoiceAdditionalDocRefAdapter() {
+
+  public InvoiceAdditionalDocRefAdapter () {
     setID (new IDType ());
     setDocumentType (new DocumentTypeType ());
     setAttachment (new AttachmentType ());
-    getAttachment().setEmbeddedDocumentBinaryObject (new EmbeddedDocumentBinaryObjectType ());
-    //getAttachment().getEmbeddedDocumentBinaryObject().setMimeCode(BinaryObjectMimeCodeContentType.);
-    getAttachment().setExternalReference (new ExternalReferenceType ());
-    getAttachment().getExternalReference ().setURI (new URIType ());
+    getAttachment ().setEmbeddedDocumentBinaryObject (new EmbeddedDocumentBinaryObjectType ());
+    // getAttachment().getEmbeddedDocumentBinaryObject().setMimeCode(BinaryObjectMimeCodeContentType.);
+    getAttachment ().setExternalReference (new ExternalReferenceType ());
+    getAttachment ().getExternalReference ().setURI (new URIType ());
   }
-  
-  public void setBinaryObjectByteArray(byte[] value) {
-	  getAttachment().getEmbeddedDocumentBinaryObject().setValue(value);
+
+  public void setBinaryObjectByteArray (final byte [] value) {
+    getAttachment ().getEmbeddedDocumentBinaryObject ().setValue (value);
   }
-  
-  public BinaryObjectMimeCodeContentType getBinaryObjectMimeCodeContentType(String mime) {
-	  BinaryObjectMimeCodeContentType[] types = BinaryObjectMimeCodeContentType.values();
-	  for (int i=0;i<types.length;i++) {
-		  if (mime.equals(types[i].value())) {
-			  return types[i];
-		  }
-	  }
-	  
-	  return null;
+
+  public BinaryObjectMimeCodeContentType getBinaryObjectMimeCodeContentType (final String mime) {
+    final BinaryObjectMimeCodeContentType [] types = BinaryObjectMimeCodeContentType.values ();
+    for (final BinaryObjectMimeCodeContentType type : types) {
+      if (mime.equals (type.value ())) {
+        return type;
+      }
+    }
+
+    return null;
   }
-  
-  public void setBinaryObjectMIMEType(BinaryObjectMimeCodeContentType mimeType) {
-	  if (mimeType != null)
-		  getAttachment().getEmbeddedDocumentBinaryObject().setMimeCode(mimeType);
+
+  public void setBinaryObjectMIMEType (final BinaryObjectMimeCodeContentType mimeType) {
+    if (mimeType != null)
+      getAttachment ().getEmbeddedDocumentBinaryObject ().setMimeCode (mimeType);
   }
-  
+
   @Override
-  public void setIDAdapter(String id) {
-	  setAdditionalDocRefID(id);
+  public void setIDAdapter (final String id) {
+    setAdditionalDocRefID (id);
   }
-  
+
   @Override
-  public String  getIDAdapter() {
-	  return getAdditionalDocRefID();
+  public String getIDAdapter () {
+    return getAdditionalDocRefID ();
   }
-  
-  public void setAdditionalDocRefID(String v) {
+
+  public void setAdditionalDocRefID (final String v) {
     getID ().setValue (v);
   }
-  
-  public String getAdditionalDocRefID() {
+
+  public String getAdditionalDocRefID () {
     return getID ().getValue ();
   }
-  
-  public void setAdditionalDocRefDocumentType(String v) {
+
+  public void setAdditionalDocRefDocumentType (final String v) {
     getDocumentType ().setValue (v);
   }
-  
-  public String getAdditionalDocRefDocumentType() {
+
+  public String getAdditionalDocRefDocumentType () {
     return getDocumentType ().getValue ();
   }
-  
-  public void setAdditionalDocRefEmbeddedDocumentBinaryObject(byte[] v) {
-    getAttachment().getEmbeddedDocumentBinaryObject().setValue (v);
+
+  public void setAdditionalDocRefEmbeddedDocumentBinaryObject (final byte [] v) {
+    getAttachment ().getEmbeddedDocumentBinaryObject ().setValue (v);
   }
-  
-  public byte[] getAdditionalDocRefEmbeddedDocumentBinaryObject() {
-    return getAttachment().getEmbeddedDocumentBinaryObject ().getValue ();
-  }    
-  
-  public void setAdditionalDocRefExternalReference(String v) {
-    getAttachment().getExternalReference ().getURI ().setValue (v);
+
+  public byte [] getAdditionalDocRefEmbeddedDocumentBinaryObject () {
+    return getAttachment ().getEmbeddedDocumentBinaryObject ().getValue ();
   }
-  
-  public String getAdditionalDocRefExternalReference() {
-    return getAttachment().getExternalReference ().getURI ().getValue ();
+
+  public void setAdditionalDocRefExternalReference (final String v) {
+    getAttachment ().getExternalReference ().getURI ().setValue (v);
   }
-  
-  public void setAdditionalDocRefFile(String f) {
-	  additionalDocRefFile = f;
+
+  public String getAdditionalDocRefExternalReference () {
+    return getAttachment ().getExternalReference ().getURI ().getValue ();
   }
-  public String getAdditionalDocRefFile() {
-	  return additionalDocRefFile;
+
+  public void setAdditionalDocRefFile (final String f) {
+    additionalDocRefFile = f;
   }
-  
+
+  public String getAdditionalDocRefFile () {
+    return additionalDocRefFile;
+  }
+
 }

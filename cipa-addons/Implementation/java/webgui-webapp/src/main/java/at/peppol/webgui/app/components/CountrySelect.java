@@ -41,8 +41,8 @@
  */
 package at.peppol.webgui.app.components;
 
-import com.vaadin.ui.Select;
 import com.phloc.ubl.codelist.ECountryIdentificationCode20;
+import com.vaadin.ui.Select;
 
 /**
  * @author Jerouris
@@ -51,18 +51,18 @@ public class CountrySelect extends Select {
 
   public CountrySelect (final String caption) {
     setCaption (caption);
-    setWidth(5,UNITS_EM);
+    setWidth (5, UNITS_EM);
     initData ();
   }
 
   private void initData () {
     for (final ECountryIdentificationCode20 cc : ECountryIdentificationCode20.values ()) {
-      addItem (cc.getID());
+      addItem (cc.getID ());
     }
   }
-  @Override
-    public void attach() {
-        setValue(ECountryIdentificationCode20.GR.getID());
-    }
-}
 
+  @Override
+  public void attach () {
+    setValue (ECountryIdentificationCode20.GR.getID ());
+  }
+}

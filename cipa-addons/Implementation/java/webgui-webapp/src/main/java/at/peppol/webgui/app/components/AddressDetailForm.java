@@ -49,7 +49,6 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.Departme
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IdentificationCodeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PostalZoneType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.StreetNameType;
-
 import at.peppol.webgui.app.validator.RequiredFieldListener;
 import at.peppol.webgui.app.validator.ValidatorsList;
 
@@ -68,91 +67,96 @@ import com.vaadin.ui.Panel;
 
 @SuppressWarnings ("serial")
 public class AddressDetailForm extends Panel {
-  
+
   private final AddressType address;
   private final String addressPrefix;
-  
-  public AddressDetailForm(String addressPrefix, AddressType addressBean) {
-      this.addressPrefix = addressPrefix;
-      this.address = addressBean;
-      
-      initElements();
-  }  
 
-  private void initElements() {
-    setCaption(addressPrefix + " Address");
-    setStyleName("light");
-    
-    PropertysetItem addressItemSet = new PropertysetItem();
-    
-    //initialize
-    //AddressType address = new AddressType();
-    if (address.getStreetName() == null)
-    	address.setStreetName(new StreetNameType());
-    if (address.getAdditionalStreetName() == null)
-    	address.setAdditionalStreetName (new AdditionalStreetNameType());
-    if (address.getBuildingNumber() == null)
-    	address.setBuildingNumber (new BuildingNumberType ());
-    if (address.getDepartment() == null)
-    	address.setDepartment (new DepartmentType ());
-    if (address.getCityName() == null)
-    	address.setCityName(new CityNameType());
-    if (address.getPostalZone() == null)
-    	address.setPostalZone(new PostalZoneType());
-    if (address.getCountrySubentity() == null)
-    	address.setCountrySubentity (new CountrySubentityType ());
-    
-    if (address.getCountry() == null) {
-    	address.setCountry(new CountryType());
-    	if (address.getCountry().getIdentificationCode() == null)
-    		address.getCountry().setIdentificationCode(new IdentificationCodeType());
+  public AddressDetailForm (final String addressPrefix, final AddressType addressBean) {
+    this.addressPrefix = addressPrefix;
+    this.address = addressBean;
+
+    initElements ();
+  }
+
+  private void initElements () {
+    setCaption (addressPrefix + " Address");
+    setStyleName ("light");
+
+    final PropertysetItem addressItemSet = new PropertysetItem ();
+
+    // initialize
+    // AddressType address = new AddressType();
+    if (address.getStreetName () == null)
+      address.setStreetName (new StreetNameType ());
+    if (address.getAdditionalStreetName () == null)
+      address.setAdditionalStreetName (new AdditionalStreetNameType ());
+    if (address.getBuildingNumber () == null)
+      address.setBuildingNumber (new BuildingNumberType ());
+    if (address.getDepartment () == null)
+      address.setDepartment (new DepartmentType ());
+    if (address.getCityName () == null)
+      address.setCityName (new CityNameType ());
+    if (address.getPostalZone () == null)
+      address.setPostalZone (new PostalZoneType ());
+    if (address.getCountrySubentity () == null)
+      address.setCountrySubentity (new CountrySubentityType ());
+
+    if (address.getCountry () == null) {
+      address.setCountry (new CountryType ());
+      if (address.getCountry ().getIdentificationCode () == null)
+        address.getCountry ().setIdentificationCode (new IdentificationCodeType ());
     }
-    
-    //make fields
-    addressItemSet.addItemProperty("Street Name", new NestedMethodProperty(address, "streetName.value"));
-    addressItemSet.addItemProperty ("Additional Street Name", new NestedMethodProperty(address, "additionalStreetName.value") );
-    addressItemSet.addItemProperty ("Department", new NestedMethodProperty(address, "department.value") );
-    addressItemSet.addItemProperty("City Name", new NestedMethodProperty(address, "cityName.value"));
-    addressItemSet.addItemProperty("Postal Zone", new NestedMethodProperty(address, "postalZone.value"));
-    addressItemSet.addItemProperty ("Country Subentity", new NestedMethodProperty(address, "countrySubentity.value") );
-    addressItemSet.addItemProperty("Country ID", new NestedMethodProperty(address, "country.identificationCode.value"));
-    
-    //make form
-    final Form addressForm = new Form();
-    addressForm.setFormFieldFactory(new AddressFieldFactory());
-    addressForm.setItemDataSource(addressItemSet);
-    addressForm.setImmediate(true);
-    addressForm.setWriteThrough(true);
-    
-    addComponent(addressForm);
-  }  
-  
+
+    // make fields
+    addressItemSet.addItemProperty ("Street Name", new NestedMethodProperty (address, "streetName.value"));
+    addressItemSet.addItemProperty ("Additional Street Name", new NestedMethodProperty (address,
+                                                                                        "additionalStreetName.value"));
+    addressItemSet.addItemProperty ("Department", new NestedMethodProperty (address, "department.value"));
+    addressItemSet.addItemProperty ("City Name", new NestedMethodProperty (address, "cityName.value"));
+    addressItemSet.addItemProperty ("Postal Zone", new NestedMethodProperty (address, "postalZone.value"));
+    addressItemSet.addItemProperty ("Country Subentity", new NestedMethodProperty (address, "countrySubentity.value"));
+    addressItemSet.addItemProperty ("Country ID",
+                                    new NestedMethodProperty (address, "country.identificationCode.value"));
+
+    // make form
+    final Form addressForm = new Form ();
+    addressForm.setFormFieldFactory (new AddressFieldFactory ());
+    addressForm.setItemDataSource (addressItemSet);
+    addressForm.setImmediate (true);
+    addressForm.setWriteThrough (true);
+
+    addComponent (addressForm);
+  }
+
   class AddressFieldFactory implements FormFieldFactory {
 
-     @Override
-     public Field createField(Item item, Object propertyId, Component uiContext) {
-       // Identify the fields by their Property ID.
-       String pid = (String) propertyId;
+    @Override
+    public Field createField (final Item item, final Object propertyId, final Component uiContext) {
+      // Identify the fields by their Property ID.
+      final String pid = (String) propertyId;
 
-       if ("Country ID".equals(pid)) {
-           final CountrySelect countrySelect = new CountrySelect("Country ID");
-           countrySelect.setRequired(true);
-           return countrySelect;
-       }
-       
-       Field field = DefaultFieldFactory.get().createField(item,propertyId, uiContext);
-       if (field instanceof AbstractTextField){
-           ((AbstractTextField) field).setNullRepresentation("");
-           final AbstractTextField tf = (AbstractTextField) field;
-           if ("Street Name".equals(pid) || "City Name".equals(pid) || "Postal Zone".equals(pid) || "Country ID".equals(pid)) {
-        	   tf.setRequired(true);
-        	   tf.addListener(new RequiredFieldListener(tf,pid));
-        	   ValidatorsList.addListeners((Collection<BlurListener>) tf.getListeners(BlurEvent.class));
-           }
-       }
-       
-       return field;
-     }
-  }  
- 
+      if ("Country ID".equals (pid)) {
+        final CountrySelect countrySelect = new CountrySelect ("Country ID");
+        countrySelect.setRequired (true);
+        return countrySelect;
+      }
+
+      final Field field = DefaultFieldFactory.get ().createField (item, propertyId, uiContext);
+      if (field instanceof AbstractTextField) {
+        ((AbstractTextField) field).setNullRepresentation ("");
+        final AbstractTextField tf = (AbstractTextField) field;
+        if ("Street Name".equals (pid) ||
+            "City Name".equals (pid) ||
+            "Postal Zone".equals (pid) ||
+            "Country ID".equals (pid)) {
+          tf.setRequired (true);
+          tf.addListener (new RequiredFieldListener (tf, pid));
+          ValidatorsList.addListeners ((Collection <BlurListener>) tf.getListeners (BlurEvent.class));
+        }
+      }
+
+      return field;
+    }
+  }
+
 }

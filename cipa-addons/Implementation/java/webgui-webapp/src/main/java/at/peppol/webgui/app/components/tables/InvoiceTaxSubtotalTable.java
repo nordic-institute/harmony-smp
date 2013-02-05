@@ -37,41 +37,37 @@
  */
 package at.peppol.webgui.app.components.tables;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.TaxSubtotalType;
-
 import at.peppol.webgui.app.components.adapters.InvoiceTaxSubtotalAdapter;
 
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.Table;
 
 @SuppressWarnings ("serial")
-public class InvoiceTaxSubtotalTable extends GenericTable<TaxSubtotalType, InvoiceTaxSubtotalAdapter> {
+public class InvoiceTaxSubtotalTable extends GenericTable <TaxSubtotalType, InvoiceTaxSubtotalAdapter> {
 
-    public InvoiceTaxSubtotalTable(List <TaxSubtotalType> list) {
+  public InvoiceTaxSubtotalTable (final List <TaxSubtotalType> list) {
     linesFromInvoice = list;
-    
-    tableLines = new BeanItemContainer<InvoiceTaxSubtotalAdapter>(InvoiceTaxSubtotalAdapter.class);
-    
-    for (int i=0;i<linesFromInvoice.size();i++) {
-    	TaxSubtotalType type = linesFromInvoice.get(i);
-    	InvoiceTaxSubtotalAdapter item = new InvoiceTaxSubtotalAdapter(type);
-    	linesFromInvoice.set(i, item);
-    	tableLines.addBean(item);
+
+    tableLines = new BeanItemContainer <InvoiceTaxSubtotalAdapter> (InvoiceTaxSubtotalAdapter.class);
+
+    for (int i = 0; i < linesFromInvoice.size (); i++) {
+      final TaxSubtotalType type = linesFromInvoice.get (i);
+      final InvoiceTaxSubtotalAdapter item = new InvoiceTaxSubtotalAdapter (type);
+      linesFromInvoice.set (i, item);
+      tableLines.addBean (item);
     }
-    
-    setContainerDataSource(tableLines);
 
-    addPropertyWithHeader("TableLineID", "# ID");
-    addPropertyWithHeader("TaxSubTotalTaxableAmount", "Taxable Amount");
-    addPropertyWithHeader("TaxSubTotalTaxAmount", "Tax Amount");
-    addPropertyWithHeader("TaxSubTotalCategoryID", "Tax Category ID");
-    addPropertyWithHeader("TaxSubTotalCategoryPercent", "Tax Category Percent");
+    setContainerDataSource (tableLines);
 
-    setDefinedPropertiesAsVisible();
-    setPageLength(10);
+    addPropertyWithHeader ("TableLineID", "# ID");
+    addPropertyWithHeader ("TaxSubTotalTaxableAmount", "Taxable Amount");
+    addPropertyWithHeader ("TaxSubTotalTaxAmount", "Tax Amount");
+    addPropertyWithHeader ("TaxSubTotalCategoryID", "Tax Category ID");
+    addPropertyWithHeader ("TaxSubTotalCategoryPercent", "Tax Category Percent");
+
+    setDefinedPropertiesAsVisible ();
+    setPageLength (10);
   }
 }

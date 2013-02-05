@@ -45,7 +45,6 @@ import java.util.List;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.TaxSubtotalType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.TaxTotalType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxAmountType;
-
 import at.peppol.webgui.app.components.adapters.InvoiceTaxSubtotalAdapter;
 import at.peppol.webgui.app.components.tables.InvoiceTaxSubtotalTable;
 import at.peppol.webgui.app.components.tables.InvoiceTaxSubtotalTableEditor;
@@ -54,15 +53,13 @@ import at.peppol.webgui.app.validator.RequiredNumericalFieldListener;
 import at.peppol.webgui.app.validator.ValidatorsList;
 
 import com.vaadin.data.Container.ItemSetChangeEvent;
-import com.vaadin.data.Item;
 import com.vaadin.data.Container.ItemSetChangeListener;
-import com.vaadin.data.Property.ValueChangeEvent;
+import com.vaadin.data.Item;
 import com.vaadin.data.util.NestedMethodProperty;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
@@ -70,23 +67,21 @@ import com.vaadin.ui.Form;
 import com.vaadin.ui.FormFieldFactory;
 import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 public class TabInvoiceTaxTotal extends Form {
   private final InvoiceTabForm parent;
-  
+
   public static String taxTotalAmount = "Tax Total Amount";
-  
+
   private List <TaxSubtotalType> taxSubtotalList;
   private InvoiceTaxSubtotalAdapter taxSubtotalItem;
 
   private InvoiceTaxSubtotalAdapter originalItem;
 
-  private boolean addMode;
+  private final boolean addMode;
   private final boolean editMode;
 
   public InvoiceTaxSubtotalTable table;
@@ -103,24 +98,25 @@ public class TabInvoiceTaxTotal extends Form {
     editMode = false;
     initElements ();
   }
-  
-  public Form getInvoiceTaxTotalTopForm() {
-	  return invoiceTaxTotalTopForm;
+
+  public Form getInvoiceTaxTotalTopForm () {
+    return invoiceTaxTotalTopForm;
   }
 
-  @SuppressWarnings("serial")
-private void initElements () {
-	  taxTotalList = parent.getInvoice().getTaxTotal();
-	  if (taxTotalList.size() == 0) {
-	    taxTotalItem = createTaxTotalItem();
-	    taxTotalList.add (taxTotalItem);
-	  }
-	  else {
-		taxTotalItem = taxTotalList.get(0);
-	  }
+  @SuppressWarnings ("serial")
+  private void initElements () {
+    taxTotalList = parent.getInvoice ().getTaxTotal ();
+    if (taxTotalList.size () == 0) {
+      taxTotalItem = createTaxTotalItem ();
+      taxTotalList.add (taxTotalItem);
+    }
+    else {
+      taxTotalItem = taxTotalList.get (0);
+    }
 
-    //taxSubtotalList = parent.getInvoice ().getTaxTotal ().get (0).getTaxSubtotal ();
-	  taxSubtotalList = taxTotalItem.getTaxSubtotal ();
+    // taxSubtotalList = parent.getInvoice ().getTaxTotal ().get
+    // (0).getTaxSubtotal ();
+    taxSubtotalList = taxTotalItem.getTaxSubtotal ();
 
     final GridLayout grid = new GridLayout (4, 4);
     final VerticalLayout outerLayout = new VerticalLayout ();
@@ -143,168 +139,131 @@ private void initElements () {
     final VerticalLayout tableContainer = new VerticalLayout ();
     tableContainer.addComponent (table);
     tableContainer.setMargin (false, true, false, false);
-        
-    Button addButton = new Button("Add new");
-    Button editButton = new Button("Edit selected");
-    Button deleteButton = new Button("Delete selected");
-    
+
+    final Button addButton = new Button ("Add new");
+    final Button editButton = new Button ("Edit selected");
+    final Button deleteButton = new Button ("Delete selected");
+
     final VerticalLayout buttonsContainer = new VerticalLayout ();
     buttonsContainer.setSpacing (true);
-    buttonsContainer.addComponent(addButton);
-    buttonsContainer.addComponent(editButton);
-    buttonsContainer.addComponent(deleteButton);
-    
-    InvoiceTaxSubtotalTableEditor editor = new InvoiceTaxSubtotalTableEditor(editMode);
-    Label label = new Label("<h3>Adding new tax subtotal</h3>", Label.CONTENT_XHTML);
-    addButton.addListener(editor.addButtonListener(editButton, deleteButton, hiddenContent, table, taxSubtotalList, label));
-    label = new Label("<h3>Edit tax subtotal</h3>", Label.CONTENT_XHTML);
-    editButton.addListener(editor.editButtonListener(addButton, deleteButton, hiddenContent, table, taxSubtotalList, label));
-    deleteButton.addListener(editor.deleteButtonListener(table));
+    buttonsContainer.addComponent (addButton);
+    buttonsContainer.addComponent (editButton);
+    buttonsContainer.addComponent (deleteButton);
 
+    final InvoiceTaxSubtotalTableEditor editor = new InvoiceTaxSubtotalTableEditor (editMode);
+    Label label = new Label ("<h3>Adding new tax subtotal</h3>", Label.CONTENT_XHTML);
+    addButton.addListener (editor.addButtonListener (editButton,
+                                                     deleteButton,
+                                                     hiddenContent,
+                                                     table,
+                                                     taxSubtotalList,
+                                                     label));
+    label = new Label ("<h3>Edit tax subtotal</h3>", Label.CONTENT_XHTML);
+    editButton.addListener (editor.editButtonListener (addButton,
+                                                       deleteButton,
+                                                       hiddenContent,
+                                                       table,
+                                                       taxSubtotalList,
+                                                       label));
+    deleteButton.addListener (editor.deleteButtonListener (table));
 
-/*    // buttons Add, Edit, Delete
-    final Button addBtn = new Button ("Add New", new Button.ClickListener () {
-      @Override
-      public void buttonClick (final Button.ClickEvent event) {
-
-        addMode = true;
-        hiddenContent.removeAllComponents ();
-        taxSubtotalItem = createTaxSubtotalItem ();
-
-        final Label formLabel = new Label ("<h3>Adding new tax subtotal line</h3>", Label.CONTENT_XHTML);
-
-        hiddenContent.addComponent (formLabel);
-        hiddenContent.addComponent (createInvoiceTaxSubtotalForm ());
-
-        // Save new line button
-        final HorizontalLayout buttonLayout = new HorizontalLayout ();
-        buttonLayout.setSpacing (true);
-        buttonLayout.addComponent (new Button ("Save tax subtotal line", new Button.ClickListener () {
-          @Override
-          public void buttonClick (final ClickEvent event) {
-            // update table (and consequently add new item to taxSubtotalList
-            // list)
-            table.addTaxSubtotalLine (taxSubtotalItem);
-            // hide form
-            hiddenContent.setVisible (false);
-            addMode = false;
-
-            // update Total Tax Amount
-            taxTotalItem.getTaxAmount ().setValue (SumTaxSubtotalAmount ());
-
-            // update form as well
-            // invoiceTaxTotalTopForm.getField("Tax Total Amount").setRequired(true);
-            invoiceTaxTotalTopForm.getField ("Tax Total Amount").setValue (taxTotalItem.getTaxAmount ().getValue ());
-          }
-        }));
-        buttonLayout.addComponent (new Button ("Cancel", new Button.ClickListener () {
-          @Override
-          public void buttonClick (final ClickEvent event) {
-            hiddenContent.removeAllComponents ();
-            // hide form
-            hiddenContent.setVisible (false);
-            addMode = false;
-          }
-        }));
-
-        hiddenContent.addComponent (buttonLayout);
-
-        // hiddenContent.setVisible(!hiddenContent.isVisible());
-        hiddenContent.setVisible (true);
-
-      }
-    });
-    final Button editBtn = new Button ("Edit Selected", new Button.ClickListener () {
-      @Override
-      public void buttonClick (final Button.ClickEvent event) {
-        /*
-         * Object rowId = table.getValue(); // get the selected rows id if(rowId
-         * != null){ if(addMode || editMode){ parent.getWindow
-         * ().showNotification("Info", "You cannot edit while in add/edit mode",
-         * Window.Notification.TYPE_HUMANIZED_MESSAGE); return; } final String
-         * sid =
-         * (String)table.getContainerProperty(rowId,"ID.value").getValue(); //
-         * TODO: PUT THIS IN FUNCTION BEGINS editMode = true;
-         * hiddenContent.removeAllComponents (); //get selected item
-         * allowanceChargeItem = (InvoiceAllowanceChargeAdapter)
-         * allowanceChargeList.get (table.getIndexFromID (sid)); //clone it to
-         * original item originalItem = new InvoiceAllowanceChargeAdapter ();
-         * cloneInvoiceAllowanceChargeItem(allowanceChargeItem, originalItem);
-         * Label formLabel = new Label("<h3>Editing allowance charge line</h3>",
-         * Label.CONTENT_XHTML); hiddenContent.addComponent (formLabel);
-         * hiddenContent.addComponent(createInvoiceAllowanceChargeForm());
-         * //Save new line button HorizontalLayout buttonLayout = new
-         * HorizontalLayout(); buttonLayout.setSpacing (true);
-         * buttonLayout.addComponent(new Button("Save changes",new
-         * Button.ClickListener(){
-         * @Override public void buttonClick (ClickEvent event) { //update table
-         * (and consequently edit item to allowanceChargeList list)
-         * table.setAllowanceChargeLine (sid, allowanceChargeItem); //hide form
-         * hiddenContent.setVisible(false); editMode = false; } }));
-         * buttonLayout.addComponent(new Button("Cancel editing",new
-         * Button.ClickListener(){
-         * @Override public void buttonClick (ClickEvent event) {
-         * hiddenContent.removeAllComponents (); table.setAllowanceChargeLine
-         * (sid, originalItem); //hide form hiddenContent.setVisible(false);
-         * editMode = false; } })); hiddenContent.addComponent(buttonLayout);
-         * //hiddenContent.setVisible(!hiddenContent.isVisible());
-         * hiddenContent.setVisible(true); // TODO: PUT THIS IN FUNCTION ENDS }
-         * else { parent.getWindow ().showNotification("Info",
-         * "No table line is selected",
-         * Window.Notification.TYPE_HUMANIZED_MESSAGE); }
-         */
-/*      }
-    });
-    editBtn.setEnabled (false);
-    final Button deleteBtn = new Button ("Delete Selected", new Button.ClickListener () {
-      @Override
-      public void buttonClick (final Button.ClickEvent event) {
-
-        final Object rowId = table.getValue (); // get the selected rows id
-        if (rowId != null) {
-          if (addMode || editMode) {
-            parent.getWindow ().showNotification ("Info",
-                                                  "You cannot delete while in add/edit mode",
-                                                  Window.Notification.TYPE_HUMANIZED_MESSAGE);
-            return;
-          }
-          if (table.getContainerProperty (rowId, "TableLineID").getValue () != null) {
-            final String sid = (String) table.getContainerProperty (rowId, "TableLineID").getValue ();
-            table.removeTaxSubtotalLine (sid);
-
-            // update Total Tax Amount
-            taxTotalItem.getTaxAmount ().setValue (SumTaxSubtotalAmount ());
-
-            invoiceTaxTotalTopForm.getField ("Tax Total Amount").setValue (taxTotalItem.getTaxAmount ().getValue ());
-
-          }
-        }
-        else {
-          parent.getWindow ().showNotification ("Info",
-                                                "No table line is selected",
-                                                Window.Notification.TYPE_HUMANIZED_MESSAGE);
-
-        }
-
-      }
-    });*/
-
+    /*
+     * // buttons Add, Edit, Delete final Button addBtn = new Button ("Add New",
+     * new Button.ClickListener () {
+     * @Override public void buttonClick (final Button.ClickEvent event) {
+     * addMode = true; hiddenContent.removeAllComponents (); taxSubtotalItem =
+     * createTaxSubtotalItem (); final Label formLabel = new Label
+     * ("<h3>Adding new tax subtotal line</h3>", Label.CONTENT_XHTML);
+     * hiddenContent.addComponent (formLabel); hiddenContent.addComponent
+     * (createInvoiceTaxSubtotalForm ()); // Save new line button final
+     * HorizontalLayout buttonLayout = new HorizontalLayout ();
+     * buttonLayout.setSpacing (true); buttonLayout.addComponent (new Button
+     * ("Save tax subtotal line", new Button.ClickListener () {
+     * @Override public void buttonClick (final ClickEvent event) { // update
+     * table (and consequently add new item to taxSubtotalList // list)
+     * table.addTaxSubtotalLine (taxSubtotalItem); // hide form
+     * hiddenContent.setVisible (false); addMode = false; // update Total Tax
+     * Amount taxTotalItem.getTaxAmount ().setValue (SumTaxSubtotalAmount ());
+     * // update form as well //
+     * invoiceTaxTotalTopForm.getField("Tax Total Amount").setRequired(true);
+     * invoiceTaxTotalTopForm.getField ("Tax Total Amount").setValue
+     * (taxTotalItem.getTaxAmount ().getValue ()); } }));
+     * buttonLayout.addComponent (new Button ("Cancel", new Button.ClickListener
+     * () {
+     * @Override public void buttonClick (final ClickEvent event) {
+     * hiddenContent.removeAllComponents (); // hide form
+     * hiddenContent.setVisible (false); addMode = false; } }));
+     * hiddenContent.addComponent (buttonLayout); //
+     * hiddenContent.setVisible(!hiddenContent.isVisible());
+     * hiddenContent.setVisible (true); } }); final Button editBtn = new Button
+     * ("Edit Selected", new Button.ClickListener () {
+     * @Override public void buttonClick (final Button.ClickEvent event) { /*
+     * Object rowId = table.getValue(); // get the selected rows id if(rowId !=
+     * null){ if(addMode || editMode){ parent.getWindow
+     * ().showNotification("Info", "You cannot edit while in add/edit mode",
+     * Window.Notification.TYPE_HUMANIZED_MESSAGE); return; } final String sid =
+     * (String)table.getContainerProperty(rowId,"ID.value").getValue(); // TODO:
+     * PUT THIS IN FUNCTION BEGINS editMode = true;
+     * hiddenContent.removeAllComponents (); //get selected item
+     * allowanceChargeItem = (InvoiceAllowanceChargeAdapter)
+     * allowanceChargeList.get (table.getIndexFromID (sid)); //clone it to
+     * original item originalItem = new InvoiceAllowanceChargeAdapter ();
+     * cloneInvoiceAllowanceChargeItem(allowanceChargeItem, originalItem); Label
+     * formLabel = new Label("<h3>Editing allowance charge line</h3>",
+     * Label.CONTENT_XHTML); hiddenContent.addComponent (formLabel);
+     * hiddenContent.addComponent(createInvoiceAllowanceChargeForm()); //Save
+     * new line button HorizontalLayout buttonLayout = new HorizontalLayout();
+     * buttonLayout.setSpacing (true); buttonLayout.addComponent(new
+     * Button("Save changes",new Button.ClickListener(){
+     * @Override public void buttonClick (ClickEvent event) { //update table
+     * (and consequently edit item to allowanceChargeList list)
+     * table.setAllowanceChargeLine (sid, allowanceChargeItem); //hide form
+     * hiddenContent.setVisible(false); editMode = false; } }));
+     * buttonLayout.addComponent(new Button("Cancel editing",new
+     * Button.ClickListener(){
+     * @Override public void buttonClick (ClickEvent event) {
+     * hiddenContent.removeAllComponents (); table.setAllowanceChargeLine (sid,
+     * originalItem); //hide form hiddenContent.setVisible(false); editMode =
+     * false; } })); hiddenContent.addComponent(buttonLayout);
+     * //hiddenContent.setVisible(!hiddenContent.isVisible());
+     * hiddenContent.setVisible(true); // TODO: PUT THIS IN FUNCTION ENDS } else
+     * { parent.getWindow ().showNotification("Info",
+     * "No table line is selected", Window.Notification.TYPE_HUMANIZED_MESSAGE);
+     * }
+     */
+    /*
+     * } }); editBtn.setEnabled (false); final Button deleteBtn = new Button
+     * ("Delete Selected", new Button.ClickListener () {
+     * @Override public void buttonClick (final Button.ClickEvent event) { final
+     * Object rowId = table.getValue (); // get the selected rows id if (rowId
+     * != null) { if (addMode || editMode) { parent.getWindow
+     * ().showNotification ("Info", "You cannot delete while in add/edit mode",
+     * Window.Notification.TYPE_HUMANIZED_MESSAGE); return; } if
+     * (table.getContainerProperty (rowId, "TableLineID").getValue () != null) {
+     * final String sid = (String) table.getContainerProperty (rowId,
+     * "TableLineID").getValue (); table.removeTaxSubtotalLine (sid); // update
+     * Total Tax Amount taxTotalItem.getTaxAmount ().setValue
+     * (SumTaxSubtotalAmount ()); invoiceTaxTotalTopForm.getField
+     * ("Tax Total Amount").setValue (taxTotalItem.getTaxAmount ().getValue ());
+     * } } else { parent.getWindow ().showNotification ("Info",
+     * "No table line is selected", Window.Notification.TYPE_HUMANIZED_MESSAGE);
+     * } } });
+     */
 
     final Panel invoiceDetailsPanel = new Panel ("Tax Total Details");
     invoiceDetailsPanel.setStyleName ("light");
     invoiceDetailsPanel.setSizeFull ();
     invoiceDetailsPanel.addComponent (createInvoiceTaxTotalTopForm ());
-    
-    table.addListener(new ItemSetChangeListener() {
 
-		@Override
-		public void containerItemSetChange(ItemSetChangeEvent event) {
-			Field f = invoiceTaxTotalTopForm.getField(taxTotalAmount);
-			f.setValue(addTaxSubTotals());
-		}
-    	
+    table.addListener (new ItemSetChangeListener () {
+
+      @Override
+      public void containerItemSetChange (final ItemSetChangeEvent event) {
+        final Field f = invoiceTaxTotalTopForm.getField (taxTotalAmount);
+        f.setValue (addTaxSubTotals ());
+      }
+
     });
-
 
     grid.setSpacing (true);
     grid.addComponent (invoiceDetailsPanel, 0, 0);
@@ -334,26 +293,25 @@ private void initElements () {
   public Form createInvoiceTaxTotalTopForm () {
     invoiceTaxTotalTopForm = new Form (new FormLayout (), new InvoiceTaxTotalFieldFactory ());
     invoiceTaxTotalTopForm.setImmediate (true);
-    
-    
-    NestedMethodProperty nmp = new NestedMethodProperty (taxTotalItem.getTaxAmount (), "value");
-    nmp.setValue(addTaxSubTotals());
+
+    final NestedMethodProperty nmp = new NestedMethodProperty (taxTotalItem.getTaxAmount (), "value");
+    nmp.setValue (addTaxSubTotals ());
     invoiceTaxTotalTopForm.addItemProperty ("Tax Total Amount", nmp);
-    
+
     return invoiceTaxTotalTopForm;
   }
-  
-  public BigDecimal addTaxSubTotals() {
-	  List<TaxSubtotalType> subs = parent.getInvoice().getTaxTotal().get(0).getTaxSubtotal();
-	  //float taxTotal = 0;
-	  BigDecimal taxTotal = new BigDecimal(0.00);
-	  for (TaxSubtotalType sub : subs) {
-		  //taxTotal += sub.getTaxAmount().getValue().floatValue();
-		  taxTotal = taxTotal.add(sub.getTaxAmount().getValue());
-	  }
-	  
-	  return taxTotal;
-	  //return String.valueOf(taxTotal);
+
+  public BigDecimal addTaxSubTotals () {
+    final List <TaxSubtotalType> subs = parent.getInvoice ().getTaxTotal ().get (0).getTaxSubtotal ();
+    // float taxTotal = 0;
+    BigDecimal taxTotal = new BigDecimal (0.00);
+    for (final TaxSubtotalType sub : subs) {
+      // taxTotal += sub.getTaxAmount().getValue().floatValue();
+      taxTotal = taxTotal.add (sub.getTaxAmount ().getValue ());
+    }
+
+    return taxTotal;
+    // return String.valueOf(taxTotal);
   }
 
   public Form createInvoiceTaxSubtotalForm () {
@@ -440,43 +398,44 @@ private void initElements () {
     public Field createField (final Item item, final Object propertyId, final Component uiContext) {
       // Identify the fields by their Property ID.
       final String pid = (String) propertyId;
-      
-      if ("Tax Scheme ID".equals(pid)) {
-          final TaxSchemeSelect taxSchemeSelect = new TaxSchemeSelect(pid);
-          taxSchemeSelect.setRequired(true);
-          return taxSchemeSelect;
+
+      if ("Tax Scheme ID".equals (pid)) {
+        final TaxSchemeSelect taxSchemeSelect = new TaxSchemeSelect (pid);
+        taxSchemeSelect.setRequired (true);
+        return taxSchemeSelect;
       }
-      if ("Tax Category ID".equals(pid)) {
-          final TaxCategoryIDSelect taxCategoryIDSelect = new TaxCategoryIDSelect(pid);
-          taxCategoryIDSelect.setRequired(true);
-          return taxCategoryIDSelect;
+      if ("Tax Category ID".equals (pid)) {
+        final TaxCategoryIDSelect taxCategoryIDSelect = new TaxCategoryIDSelect (pid);
+        taxCategoryIDSelect.setRequired (true);
+        return taxCategoryIDSelect;
       }
 
       final Field field = DefaultFieldFactory.get ().createField (item, propertyId, uiContext);
       if (field instanceof AbstractTextField) {
         ((AbstractTextField) field).setNullRepresentation ("");
         final AbstractTextField tf = (AbstractTextField) field;
-        if ("Tax Total Amount".equals(pid)) {
-            tf.setEnabled(false);
-            //tf.setCaption("Tax Total Amount");
-            tf.setStyleName("disabled_opacity_1");
+        if ("Tax Total Amount".equals (pid)) {
+          tf.setEnabled (false);
+          // tf.setCaption("Tax Total Amount");
+          tf.setStyleName ("disabled_opacity_1");
 
-        	//tf.setRequired(true);
-        	//tf.addListener(new RequiredNumericalFieldListener(tf,pid));
-        	//tf.addListener(new PositiveValueListener(tf,pid));
-        	//ValidatorsList.addListeners((Collection<BlurListener>) tf.getListeners(BlurEvent.class));
+          // tf.setRequired(true);
+          // tf.addListener(new RequiredNumericalFieldListener(tf,pid));
+          // tf.addListener(new PositiveValueListener(tf,pid));
+          // ValidatorsList.addListeners((Collection<BlurListener>)
+          // tf.getListeners(BlurEvent.class));
         }
-        if ("Taxable Amount".equals(pid)) {
-        	tf.setRequired(true);
-        	tf.addListener(new RequiredNumericalFieldListener(tf,pid));
-        	tf.addListener(new PositiveValueListener(tf,pid));
-        	ValidatorsList.addListeners((Collection<BlurListener>) tf.getListeners(BlurEvent.class));
+        if ("Taxable Amount".equals (pid)) {
+          tf.setRequired (true);
+          tf.addListener (new RequiredNumericalFieldListener (tf, pid));
+          tf.addListener (new PositiveValueListener (tf, pid));
+          ValidatorsList.addListeners ((Collection <BlurListener>) tf.getListeners (BlurEvent.class));
         }
-        if ("Tax Amount".equals(pid)) {
-        	tf.setRequired(true);
-        	tf.addListener(new RequiredNumericalFieldListener(tf,pid));
-        	tf.addListener(new PositiveValueListener(tf,pid));
-        	ValidatorsList.addListeners((Collection<BlurListener>) tf.getListeners(BlurEvent.class));
+        if ("Tax Amount".equals (pid)) {
+          tf.setRequired (true);
+          tf.addListener (new RequiredNumericalFieldListener (tf, pid));
+          tf.addListener (new PositiveValueListener (tf, pid));
+          ValidatorsList.addListeners ((Collection <BlurListener>) tf.getListeners (BlurEvent.class));
         }
       }
       return field;

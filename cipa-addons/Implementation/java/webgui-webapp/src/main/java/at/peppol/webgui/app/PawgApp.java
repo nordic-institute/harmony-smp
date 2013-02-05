@@ -70,29 +70,29 @@ public class PawgApp extends Application implements HttpServletRequestListener {
     setInstance (this);
     setTheme ("peppol");
     try {
-    	if (false) {
-    		if (!lum.isUserLoggedInInCurrentSession()) {
-       			showLoginWindow ();
-        	}
-    		else {
-    			showMainAppWindow ();
-    		}
-    		/*logout();
-    		lum.logoutCurrentUser ();
-    		showLoginWindow ();
-    		startWithMainWindow ();*/
-    	}
-    	else {
-    		authenticate ("user@peppol.eu", "user");
-    	}
+      if (false) {
+        if (!lum.isUserLoggedInInCurrentSession ()) {
+          showLoginWindow ();
+        }
+        else {
+          showMainAppWindow ();
+        }
+        /*
+         * logout(); lum.logoutCurrentUser (); showLoginWindow ();
+         * startWithMainWindow ();
+         */
+      }
+      else {
+        authenticate ("user@peppol.eu", "user");
+      }
     }
     catch (final Exception ex) {
       LOGGER.error (null, ex);
     }
   }
-  
-  public UserFolderManager<File> getUserSpaceManager() {
-	  return um;
+
+  public UserFolderManager <File> getUserSpaceManager () {
+    return um;
   }
 
   public void showLoginWindow () {
@@ -139,8 +139,8 @@ public class PawgApp extends Application implements HttpServletRequestListener {
     if (res.isSuccess ()) {
       user = AccessManager.getInstance ().getUserOfID (lum.getCurrentUserID ());
       setUser (user);
-      um = new UserDirManager(user, "invoice");
-      um.createUserFolders();
+      um = new UserDirManager (user, "invoice");
+      um.createUserFolders ();
       showMainAppWindow ();
 
     }
@@ -154,7 +154,7 @@ public class PawgApp extends Application implements HttpServletRequestListener {
     lum.logoutCurrentUser ();
     close ();
   }
-  
+
   private void startWithMainWindow () throws Exception {
     user = AccessManager.getInstance ().getUserOfLoginName ("user@peppol.eu");
     setUser (user);

@@ -37,124 +37,75 @@
  */
 package at.peppol.webgui.app.components.tables;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ItemPropertyType;
-
 import at.peppol.webgui.app.components.adapters.InvoiceItemPropertyAdapter;
 
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Window.Notification;
 
 @SuppressWarnings ("serial")
-public class InvoiceItemPropertyTable extends GenericTable<ItemPropertyType, InvoiceItemPropertyAdapter> {
+public class InvoiceItemPropertyTable extends GenericTable <ItemPropertyType, InvoiceItemPropertyAdapter> {
 
-  public InvoiceItemPropertyTable(List<ItemPropertyType> list) {
+  public InvoiceItemPropertyTable (final List <ItemPropertyType> list) {
     linesFromInvoice = list;
-    
-    tableLines = new BeanItemContainer<InvoiceItemPropertyAdapter>(InvoiceItemPropertyAdapter.class);
-    
-    for (int i=0;i<list.size();i++) {
-    	InvoiceItemPropertyAdapter bean = new InvoiceItemPropertyAdapter(list.get(i));
-    	bean.setTableLineID(String.valueOf(i+1));
-    	tableLines.addBean(bean);
-    }
-    setContainerDataSource(tableLines);
 
-    addPropertyWithHeader("TableLineID", "# ID");
-    addPropertyWithHeader("ItemPropertyName", "Item Property Name");
-    addPropertyWithHeader("ItemPropertyValue", "Item Property Value");
+    tableLines = new BeanItemContainer <InvoiceItemPropertyAdapter> (InvoiceItemPropertyAdapter.class);
 
-    setDefinedPropertiesAsVisible();
-    setPageLength(4);
-    setFooterVisible(false);
-  }
-/*  
-  private void addPropertyWithHeader(String property, String headerName) {
-    tableLines.addNestedContainerProperty(property);
-    setColumnHeader(property, headerName);
-    visibleHeaderNames.add(property);
-  }
+    for (int i = 0; i < list.size (); i++) {
+      final InvoiceItemPropertyAdapter bean = new InvoiceItemPropertyAdapter (list.get (i));
+      bean.setTableLineID (String.valueOf (i + 1));
+      tableLines.addBean (bean);
+    }
+    setContainerDataSource (tableLines);
 
-  private void setDefinedPropertiesAsVisible() {
-    setVisibleColumns(visibleHeaderNames.toArray());
-  }  
-  
-  public void addItemPropertyLine(InvoiceItemPropertyAdapter invln) {
-    itemPropertyLines.add(invln);
-    tableLines.addBean(invln);   
+    addPropertyWithHeader ("TableLineID", "# ID");
+    addPropertyWithHeader ("ItemPropertyName", "Item Property Name");
+    addPropertyWithHeader ("ItemPropertyValue", "Item Property Value");
+
+    setDefinedPropertiesAsVisible ();
+    setPageLength (4);
+    setFooterVisible (false);
   }
-  
-  public void setItemPropertyLine(String lineID, InvoiceItemPropertyAdapter ln) {
-    //use for editing....
-    if(getIndexFromID(lineID) > -1){
-      itemPropertyLines.set (getIndexFromID(lineID), ln);
-      
-      //TODO: Better way to "refresh" the table?
-      //tableLines.addBean(ln);
-      tableLines.removeAllItems ();
-      Iterator <ItemPropertyType> iterator = itemPropertyLines.iterator ();
-      int count=1;
-      while (iterator.hasNext()) {
-    	  InvoiceItemPropertyAdapter ac = (InvoiceItemPropertyAdapter)iterator.next();
-    	  ac.setTableLineID(String.valueOf(count++));
-    	  tableLines.addBean(ac);
-      }
-    }
-  }  
-  
-  public void removeItemPropertyLine(String lineID) {
-    String id="";
-    int index=0;
-    String message = "";
-    message += "lineID="+lineID+"\n";
-    
-    for (int i=0;i<itemPropertyLines.size();i++) {
-    	InvoiceItemPropertyAdapter ac = (InvoiceItemPropertyAdapter)itemPropertyLines.get(i);
-    	message += "rowID="+ac.getTableLineID()+"\n";
-    }
-    getWindow().showNotification(message,Notification.TYPE_TRAY_NOTIFICATION);
-    
-    for (int i=0;i<itemPropertyLines.size();i++) {
-    	InvoiceItemPropertyAdapter ac = (InvoiceItemPropertyAdapter)itemPropertyLines.get(i);	
-    	if (ac.getTableLineID ().equals (lineID)) {
-    		tableLines.removeItem (ac);
-    		itemPropertyLines.remove (ac);
-    		index = i;
-    		id = ac.getTableLineID();
-    		break;
-    	}
-    }
-    if (!id.equals(""))
-	    for (int i=index;i<itemPropertyLines.size();i++) {
-	    	InvoiceItemPropertyAdapter ac = (InvoiceItemPropertyAdapter)itemPropertyLines.get(i); 
-			tableLines.removeItem(ac);
-			itemPropertyLines.remove(ac);
-			ac = new InvoiceItemPropertyAdapter(ac);
-			ac.setTableLineID(id);
-			tableLines.addBean(ac);
-			itemPropertyLines.add(i,ac);
-			id = String.valueOf((Integer.valueOf(id).intValue() + 1));
-			//tableLines.getItem(ac).getBean().setTableLineID(String.valueOf(count));
-	    }
-    
-  }
-  
-  public int getIndexFromID(String lineID) {
-    Iterator <ItemPropertyType> iterator = itemPropertyLines.iterator ();
-    while (iterator.hasNext()) {
-      InvoiceItemPropertyAdapter ac = (InvoiceItemPropertyAdapter) iterator.next();
-      if (ac.getTableLineID ().equals (lineID)) {
-        int index = itemPropertyLines.indexOf (ac);
-        return index;
-      }
-    }    
-    return -1;
-  }    
-*/  
-  
+  /*
+   * private void addPropertyWithHeader(String property, String headerName) {
+   * tableLines.addNestedContainerProperty(property); setColumnHeader(property,
+   * headerName); visibleHeaderNames.add(property); } private void
+   * setDefinedPropertiesAsVisible() {
+   * setVisibleColumns(visibleHeaderNames.toArray()); } public void
+   * addItemPropertyLine(InvoiceItemPropertyAdapter invln) {
+   * itemPropertyLines.add(invln); tableLines.addBean(invln); } public void
+   * setItemPropertyLine(String lineID, InvoiceItemPropertyAdapter ln) { //use
+   * for editing.... if(getIndexFromID(lineID) > -1){ itemPropertyLines.set
+   * (getIndexFromID(lineID), ln); //TODO: Better way to "refresh" the table?
+   * //tableLines.addBean(ln); tableLines.removeAllItems (); Iterator
+   * <ItemPropertyType> iterator = itemPropertyLines.iterator (); int count=1;
+   * while (iterator.hasNext()) { InvoiceItemPropertyAdapter ac =
+   * (InvoiceItemPropertyAdapter)iterator.next();
+   * ac.setTableLineID(String.valueOf(count++)); tableLines.addBean(ac); } } }
+   * public void removeItemPropertyLine(String lineID) { String id=""; int
+   * index=0; String message = ""; message += "lineID="+lineID+"\n"; for (int
+   * i=0;i<itemPropertyLines.size();i++) { InvoiceItemPropertyAdapter ac =
+   * (InvoiceItemPropertyAdapter)itemPropertyLines.get(i); message +=
+   * "rowID="+ac.getTableLineID()+"\n"; }
+   * getWindow().showNotification(message,Notification.TYPE_TRAY_NOTIFICATION);
+   * for (int i=0;i<itemPropertyLines.size();i++) { InvoiceItemPropertyAdapter
+   * ac = (InvoiceItemPropertyAdapter)itemPropertyLines.get(i); if
+   * (ac.getTableLineID ().equals (lineID)) { tableLines.removeItem (ac);
+   * itemPropertyLines.remove (ac); index = i; id = ac.getTableLineID(); break;
+   * } } if (!id.equals("")) for (int i=index;i<itemPropertyLines.size();i++) {
+   * InvoiceItemPropertyAdapter ac =
+   * (InvoiceItemPropertyAdapter)itemPropertyLines.get(i);
+   * tableLines.removeItem(ac); itemPropertyLines.remove(ac); ac = new
+   * InvoiceItemPropertyAdapter(ac); ac.setTableLineID(id);
+   * tableLines.addBean(ac); itemPropertyLines.add(i,ac); id =
+   * String.valueOf((Integer.valueOf(id).intValue() + 1));
+   * //tableLines.getItem(ac).getBean().setTableLineID(String.valueOf(count)); }
+   * } public int getIndexFromID(String lineID) { Iterator <ItemPropertyType>
+   * iterator = itemPropertyLines.iterator (); while (iterator.hasNext()) {
+   * InvoiceItemPropertyAdapter ac = (InvoiceItemPropertyAdapter)
+   * iterator.next(); if (ac.getTableLineID ().equals (lineID)) { int index =
+   * itemPropertyLines.indexOf (ac); return index; } } return -1; }
+   */
+
 }
-

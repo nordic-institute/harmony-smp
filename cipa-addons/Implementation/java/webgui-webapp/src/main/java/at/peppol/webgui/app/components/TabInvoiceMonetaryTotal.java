@@ -38,7 +38,6 @@
 package at.peppol.webgui.app.components;
 
 import java.math.BigDecimal;
-import java.util.Collection;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.MonetaryTotalType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AllowanceTotalAmountType;
@@ -50,16 +49,8 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PrepaidA
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxExclusiveAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxInclusiveAmountType;
 
-import at.peppol.webgui.app.validator.PositiveValueListener;
-import at.peppol.webgui.app.validator.PositiveValueValidator;
-import at.peppol.webgui.app.validator.RequiredFieldListener;
-import at.peppol.webgui.app.validator.RequiredNumericalFieldListener;
-import at.peppol.webgui.app.validator.ValidatorsList;
-
 import com.vaadin.data.Item;
 import com.vaadin.data.util.NestedMethodProperty;
-import com.vaadin.event.FieldEvents.BlurEvent;
-import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DefaultFieldFactory;
@@ -76,11 +67,11 @@ public class TabInvoiceMonetaryTotal extends Form {
 
   private MonetaryTotalType monetaryTotal;
   private Form invoiceMonetaryTotalTopForm;
-  
+
   public static String taxExclusiveAmount = "Tax Exclusive Amount";
   public static String lineExtensionAmount = "Line Extension Amount";
   public static String taxInclusiveAmount = "Tax Inclusive Amount";
-  public static String allowanceTotalAmount= "Allowance Total Amount";
+  public static String allowanceTotalAmount = "Allowance Total Amount";
   public static String chargeTotalAmount = "Charge Total Amount";
   public static String prepaidAmount = "Prepaid Amount";
   public static String payableRoundingAmount = "Payable Rounding Amount";
@@ -90,9 +81,9 @@ public class TabInvoiceMonetaryTotal extends Form {
     this.parent = parent;
     initElements ();
   }
-  
-  public Form getMonetaryTotalForm() {
-	  return invoiceMonetaryTotalTopForm;
+
+  public Form getMonetaryTotalForm () {
+    return invoiceMonetaryTotalTopForm;
   }
 
   private void initElements () {
@@ -112,68 +103,66 @@ public class TabInvoiceMonetaryTotal extends Form {
     invoiceDetailsPanel.setStyleName ("light");
     invoiceDetailsPanel.setSizeFull ();
     invoiceMonetaryTotalTopForm = createInvoiceMonetaryTotalTopForm ();
-    invoiceDetailsPanel.addComponent(invoiceMonetaryTotalTopForm);
-    //invoiceDetailsPanel.addComponent (createInvoiceMonetaryTotalTopForm ());
+    invoiceDetailsPanel.addComponent (invoiceMonetaryTotalTopForm);
+    // invoiceDetailsPanel.addComponent (createInvoiceMonetaryTotalTopForm ());
     grid.addComponent (invoiceDetailsPanel, 0, 0, 3, 0);
     grid.setSizeUndefined ();
 
-    //Add the Total Line Extension Amount Listener
-     
-    
+    // Add the Total Line Extension Amount Listener
+
     setLayout (outerLayout);
     outerPanel.requestRepaintAll ();
   }
 
   private MonetaryTotalType createMonetaryTotal () {
-	  MonetaryTotalType mt;
-	  if (parent.getInvoice().getLegalMonetaryTotal() != null) {
-		  mt = parent.getInvoice().getLegalMonetaryTotal();
-	  }
-	  else {
-		  mt = new MonetaryTotalType ();
-	  }
-	  
-	  if (mt.getLineExtensionAmount () == null) {
-		  mt.setLineExtensionAmount (new LineExtensionAmountType ());
-		  mt.getLineExtensionAmount ().setValue (BigDecimal.ZERO);
-	  }
-	
-	  if (mt.getTaxExclusiveAmount() == null) {
-		  mt.setTaxExclusiveAmount (new TaxExclusiveAmountType ());
-		  mt.getTaxExclusiveAmount ().setValue (BigDecimal.ZERO);
-	  }
-	
-	  if (mt.getTaxInclusiveAmount() == null) {
-		  mt.setTaxInclusiveAmount (new TaxInclusiveAmountType ());
-		  mt.getTaxInclusiveAmount ().setValue (BigDecimal.ZERO);
-	  }
-	
-	  if (mt.getAllowanceTotalAmount() == null) {
-		  mt.setAllowanceTotalAmount (new AllowanceTotalAmountType ());
-		  mt.getAllowanceTotalAmount ().setValue (BigDecimal.ZERO);
-	  }
-	
-	  if (mt.getChargeTotalAmount() == null) {
-		  mt.setChargeTotalAmount (new ChargeTotalAmountType ());
-		  mt.getChargeTotalAmount ().setValue (BigDecimal.ZERO);
-	  }
-	
-	  if (mt.getPrepaidAmount() == null) {
-		  mt.setPrepaidAmount (new PrepaidAmountType ());
-		  mt.getPrepaidAmount ().setValue (BigDecimal.ZERO);
-	  }
-	  
-	  if (mt.getPayableRoundingAmount() == null) {
-		  mt.setPayableRoundingAmount (new PayableRoundingAmountType ());
-		  mt.getPayableRoundingAmount ().setValue (BigDecimal.ZERO);
-	  }
-	
-	  if (mt.getPayableAmount() == null) {
-		  mt.setPayableAmount (new PayableAmountType ());
-		  mt.getPayableAmount ().setValue (BigDecimal.ZERO);
-	  }
-	
-	
+    MonetaryTotalType mt;
+    if (parent.getInvoice ().getLegalMonetaryTotal () != null) {
+      mt = parent.getInvoice ().getLegalMonetaryTotal ();
+    }
+    else {
+      mt = new MonetaryTotalType ();
+    }
+
+    if (mt.getLineExtensionAmount () == null) {
+      mt.setLineExtensionAmount (new LineExtensionAmountType ());
+      mt.getLineExtensionAmount ().setValue (BigDecimal.ZERO);
+    }
+
+    if (mt.getTaxExclusiveAmount () == null) {
+      mt.setTaxExclusiveAmount (new TaxExclusiveAmountType ());
+      mt.getTaxExclusiveAmount ().setValue (BigDecimal.ZERO);
+    }
+
+    if (mt.getTaxInclusiveAmount () == null) {
+      mt.setTaxInclusiveAmount (new TaxInclusiveAmountType ());
+      mt.getTaxInclusiveAmount ().setValue (BigDecimal.ZERO);
+    }
+
+    if (mt.getAllowanceTotalAmount () == null) {
+      mt.setAllowanceTotalAmount (new AllowanceTotalAmountType ());
+      mt.getAllowanceTotalAmount ().setValue (BigDecimal.ZERO);
+    }
+
+    if (mt.getChargeTotalAmount () == null) {
+      mt.setChargeTotalAmount (new ChargeTotalAmountType ());
+      mt.getChargeTotalAmount ().setValue (BigDecimal.ZERO);
+    }
+
+    if (mt.getPrepaidAmount () == null) {
+      mt.setPrepaidAmount (new PrepaidAmountType ());
+      mt.getPrepaidAmount ().setValue (BigDecimal.ZERO);
+    }
+
+    if (mt.getPayableRoundingAmount () == null) {
+      mt.setPayableRoundingAmount (new PayableRoundingAmountType ());
+      mt.getPayableRoundingAmount ().setValue (BigDecimal.ZERO);
+    }
+
+    if (mt.getPayableAmount () == null) {
+      mt.setPayableAmount (new PayableAmountType ());
+      mt.getPayableAmount ().setValue (BigDecimal.ZERO);
+    }
+
     return mt;
   }
 
@@ -204,11 +193,7 @@ public class TabInvoiceMonetaryTotal extends Form {
                                                                            "value"));
     invoiceMonetaryTotalTopForm.addItemProperty (payableAmount,
                                                  new NestedMethodProperty (monetaryTotal.getPayableAmount (), "value"));
-    
-    
-    
-    
-    
+
     return invoiceMonetaryTotalTopForm;
   }
 
@@ -223,35 +208,41 @@ public class TabInvoiceMonetaryTotal extends Form {
       if (field instanceof AbstractTextField) {
         ((AbstractTextField) field).setNullRepresentation ("");
         final AbstractTextField tf = (AbstractTextField) field;
-        if ("Line Extension Amount".equals(pid)) {
-        	tf.setEnabled(false);
-            //tf.setCaption("Tax Total Amount");
-            tf.setStyleName("disabled_opacity_1");
-            
-        	//tf.setRequired(true);
-        	//tf.addListener(new RequiredNumericalFieldListener(tf,pid));
-        	//ValidatorsList.addListeners((Collection<BlurListener>) tf.getListeners(BlurEvent.class));
+        if ("Line Extension Amount".equals (pid)) {
+          tf.setEnabled (false);
+          // tf.setCaption("Tax Total Amount");
+          tf.setStyleName ("disabled_opacity_1");
+
+          // tf.setRequired(true);
+          // tf.addListener(new RequiredNumericalFieldListener(tf,pid));
+          // ValidatorsList.addListeners((Collection<BlurListener>)
+          // tf.getListeners(BlurEvent.class));
         }
-        else if ("Tax Exclusive Amount".equals(pid)) {
-        	tf.setEnabled(false);
-            tf.setStyleName("disabled_opacity_1");
-        }
-        else if ("Tax Inclusive Amount".equals(pid)) {
-        	tf.setEnabled(false);
-            tf.setStyleName("disabled_opacity_1");
-        }
-        else if ("Allowance Total Amount".equals(pid)) {
-        	tf.setEnabled(false);
-            tf.setStyleName("disabled_opacity_1");
-        }
-        else if ("Charge Total Amount".equals(pid)) {
-        	tf.setEnabled(false);
-            tf.setStyleName("disabled_opacity_1");
-        }
-        else if ("Payable Amount".equals(pid)) {
-        	tf.setEnabled(false);
-            tf.setStyleName("disabled_opacity_1");
-        }
+        else
+          if ("Tax Exclusive Amount".equals (pid)) {
+            tf.setEnabled (false);
+            tf.setStyleName ("disabled_opacity_1");
+          }
+          else
+            if ("Tax Inclusive Amount".equals (pid)) {
+              tf.setEnabled (false);
+              tf.setStyleName ("disabled_opacity_1");
+            }
+            else
+              if ("Allowance Total Amount".equals (pid)) {
+                tf.setEnabled (false);
+                tf.setStyleName ("disabled_opacity_1");
+              }
+              else
+                if ("Charge Total Amount".equals (pid)) {
+                  tf.setEnabled (false);
+                  tf.setStyleName ("disabled_opacity_1");
+                }
+                else
+                  if ("Payable Amount".equals (pid)) {
+                    tf.setEnabled (false);
+                    tf.setStyleName ("disabled_opacity_1");
+                  }
       }
       return field;
     }

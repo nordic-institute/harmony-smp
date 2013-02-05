@@ -102,7 +102,8 @@ public final class ScopeListener implements ServletContextListener, HttpSessionL
                                 CSecurity.USER_ADMINISTRATOR_NAME,
                                 null,
                                 null,
-                                null);
+                                null,
+                                false);
     if (!aAM.containsUserWithID (CSecurity.USER_USER_ID))
       aAM.createPredefinedUser (CSecurity.USER_USER_ID,
                                 CSecurity.USER_USER_EMAIL,
@@ -111,7 +112,8 @@ public final class ScopeListener implements ServletContextListener, HttpSessionL
                                 CSecurity.USER_USER_NAME,
                                 null,
                                 null,
-                                null);
+                                null,
+                                false);
     if (!aAM.containsUserWithID (CSecurity.USER_GUEST_ID))
       aAM.createPredefinedUser (CSecurity.USER_GUEST_ID,
                                 CSecurity.USER_GUEST_EMAIL,
@@ -120,7 +122,8 @@ public final class ScopeListener implements ServletContextListener, HttpSessionL
                                 CSecurity.USER_GUEST_NAME,
                                 null,
                                 null,
-                                null);
+                                null,
+                                false);
 
     // Roles
     if (!aAM.containsRoleWithID (CSecurity.ROLE_ADMINISTRATOR_ID))

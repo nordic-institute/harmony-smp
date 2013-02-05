@@ -37,38 +37,35 @@
  */
 package at.peppol.webgui.app.components;
 
-import com.vaadin.ui.ComboBox;
 import com.phloc.ubl.codelist.EPaymentMeansCode20;
+import com.vaadin.ui.ComboBox;
 
 /**
- *
  * @author Jerouris
  */
 public class PaymentMeansSelect extends ComboBox {
-    
-    public PaymentMeansSelect(String caption){
-        super(caption);
-        setWidth(13,UNITS_EM);
-        initData();
+
+  public PaymentMeansSelect (final String caption) {
+    super (caption);
+    setWidth (13, UNITS_EM);
+    initData ();
+  }
+
+  private void initData () {
+
+    for (final EPaymentMeansCode20 paymentMeansID : EPaymentMeansCode20.values ()) {
+      addItem (paymentMeansID.getID ());
+      setItemCaption (paymentMeansID.getID (), paymentMeansID.getDisplayName () + " (" + paymentMeansID.getID () + ")");
     }
-    
-    private void initData() {
-      
-        for (EPaymentMeansCode20 paymentMeansID : EPaymentMeansCode20.values()) {
-            addItem(paymentMeansID.getID());
-            setItemCaption(paymentMeansID.getID(), paymentMeansID.getDisplayName()+" ("+paymentMeansID.getID()+")");
-       }
-    }
-    
-    public String getSelectedTaxSchemeIDName() 
-    {
-        return getItemCaption(getValue());
-    
-    }
-    
-    public String getSelectedTaxSchemeID() 
-    {
-        return (String) getValue();
-    }
-    
+  }
+
+  public String getSelectedTaxSchemeIDName () {
+    return getItemCaption (getValue ());
+
+  }
+
+  public String getSelectedTaxSchemeID () {
+    return (String) getValue ();
+  }
+
 }

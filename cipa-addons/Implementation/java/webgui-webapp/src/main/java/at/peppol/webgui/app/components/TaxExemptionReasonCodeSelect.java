@@ -38,37 +38,35 @@
 package at.peppol.webgui.app.components;
 
 import com.vaadin.ui.ComboBox;
-import at.peppol.commons.codelist.ETaxExemptionReasonCode;
+
+import eu.europa.ec.cipa.peppol.codelist.ETaxExemptionReasonCode;
 
 /**
- *
  * @author Jerouris
  */
 public class TaxExemptionReasonCodeSelect extends ComboBox {
-    
-    public TaxExemptionReasonCodeSelect(String caption){
-        super(caption);
-        setWidth(13,UNITS_EM);
-        initData();
+
+  public TaxExemptionReasonCodeSelect (final String caption) {
+    super (caption);
+    setWidth (13, UNITS_EM);
+    initData ();
+  }
+
+  private void initData () {
+
+    for (final ETaxExemptionReasonCode taxExemptionID : ETaxExemptionReasonCode.values ()) {
+      addItem (taxExemptionID.getID ());
+      setItemCaption (taxExemptionID.getID (), taxExemptionID.getID () + " (" + taxExemptionID.getDisplayName () + ")");
     }
-    
-    private void initData() {
-      
-        for (ETaxExemptionReasonCode taxExemptionID : ETaxExemptionReasonCode.values()) {
-            addItem(taxExemptionID.getID());
-            setItemCaption(taxExemptionID.getID(), taxExemptionID.getID()+" ("+taxExemptionID.getDisplayName()+")");
-       }
-    }
-    
-    public String getSelectedTaxCategoryIDName() 
-    {
-        return getItemCaption(getValue());
-    
-    }
-    
-    public String getSelectedTaxCategoryID() 
-    {
-        return (String) getValue();
-    }
-    
+  }
+
+  public String getSelectedTaxCategoryIDName () {
+    return getItemCaption (getValue ());
+
+  }
+
+  public String getSelectedTaxCategoryID () {
+    return (String) getValue ();
+  }
+
 }

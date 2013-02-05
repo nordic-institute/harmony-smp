@@ -43,7 +43,6 @@ package at.peppol.webgui.app.components;
 
 import un.unece.uncefact.codelist.specification._54217._2001.CurrencyCodeContentType;
 
-
 import com.vaadin.ui.Select;
 
 /**
@@ -61,9 +60,9 @@ public class CurrencySelect extends Select {
       addItem (cc.value ());
     }
   }
-  @Override
-    public void attach() {
-        setValue(CurrencyCodeContentType.EUR.value());
-    }
-}
 
+  @Override
+  public void attach () {
+    setValue (CurrencyCodeContentType.EUR.value ());
+  }
+}

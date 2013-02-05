@@ -49,10 +49,10 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ChargeIn
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IDType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PercentType;
 
-public class InvoiceAllowanceChargeAdapter extends AllowanceChargeType implements Adapter{
+public class InvoiceAllowanceChargeAdapter extends AllowanceChargeType implements Adapter {
 
   public InvoiceAllowanceChargeAdapter () {
-	super();
+    super ();
     setID (new IDType ());
     setChargeIndicator (new ChargeIndicatorType ());
     setAllowanceChargeReason (new AllowanceChargeReasonType ());
@@ -68,74 +68,74 @@ public class InvoiceAllowanceChargeAdapter extends AllowanceChargeType implement
 
     getTaxCategory ().add (taxCategory);
   }
-  
-  public InvoiceAllowanceChargeAdapter(AllowanceChargeType ac) {
-	  super();
-	  if (ac.getID() != null)
-		  setID(ac.getID());
-	  else
-		  setID (new IDType ());
-	  if (ac.getChargeIndicator() != null)
-		  setChargeIndicator(ac.getChargeIndicator());
-	  else
-		  setChargeIndicator (new ChargeIndicatorType ());
-	  if (ac.getAllowanceChargeReason() != null)
-		  setAllowanceChargeReason(ac.getAllowanceChargeReason());
-	  else
-		  setAllowanceChargeReason (new AllowanceChargeReasonType ());
-	  if (ac.getAmount() != null)
-		  setAmount(ac.getAmount());
-	  else
-		  setAmount (new AmountType ());
-	  
-	  if (ac.getTaxCategory().size() > 0) {
-		  TaxCategoryType taxCategory = ac.getTaxCategory().get(0);
-		  getTaxCategory().add (taxCategory);
-		  if (taxCategory.getID() == null)
-			  getTaxCategory().get(0).setID(new IDType());
-		  if (taxCategory.getPercent() == null)
-			  getTaxCategory().get(0).setPercent(new PercentType());
-		  
-		  if (taxCategory.getTaxScheme() != null) {
-			  TaxSchemeType taxScheme = taxCategory.getTaxScheme();
-			  taxCategory.setTaxScheme (taxScheme);
-			  if (taxScheme.getID() == null)
-				  getTaxCategory().get(0).getTaxScheme().setID(new IDType());
-		  }
-		  /*final TaxSchemeType taxScheme = new TaxSchemeType ();
-		  taxScheme.setID (ac.getTaxCategory().get(0).getTaxScheme().getID());
-		  
-		  taxCategory.setTaxScheme (taxScheme);
-		  
-		  getTaxCategory ().add (taxCategory);*/
-	  }
-	  else {
-		  final TaxCategoryType taxCategory = new TaxCategoryType ();
-		  taxCategory.setID (new IDType ());
-		  taxCategory.setPercent (new PercentType ());
 
-		  final TaxSchemeType taxScheme = new TaxSchemeType ();
-		  taxScheme.setID (new IDType ());
-		  taxCategory.setTaxScheme (taxScheme);
+  public InvoiceAllowanceChargeAdapter (final AllowanceChargeType ac) {
+    super ();
+    if (ac.getID () != null)
+      setID (ac.getID ());
+    else
+      setID (new IDType ());
+    if (ac.getChargeIndicator () != null)
+      setChargeIndicator (ac.getChargeIndicator ());
+    else
+      setChargeIndicator (new ChargeIndicatorType ());
+    if (ac.getAllowanceChargeReason () != null)
+      setAllowanceChargeReason (ac.getAllowanceChargeReason ());
+    else
+      setAllowanceChargeReason (new AllowanceChargeReasonType ());
+    if (ac.getAmount () != null)
+      setAmount (ac.getAmount ());
+    else
+      setAmount (new AmountType ());
 
-		  getTaxCategory ().add (taxCategory);
-	  }
+    if (ac.getTaxCategory ().size () > 0) {
+      final TaxCategoryType taxCategory = ac.getTaxCategory ().get (0);
+      getTaxCategory ().add (taxCategory);
+      if (taxCategory.getID () == null)
+        getTaxCategory ().get (0).setID (new IDType ());
+      if (taxCategory.getPercent () == null)
+        getTaxCategory ().get (0).setPercent (new PercentType ());
+
+      if (taxCategory.getTaxScheme () != null) {
+        final TaxSchemeType taxScheme = taxCategory.getTaxScheme ();
+        taxCategory.setTaxScheme (taxScheme);
+        if (taxScheme.getID () == null)
+          getTaxCategory ().get (0).getTaxScheme ().setID (new IDType ());
+      }
+      /*
+       * final TaxSchemeType taxScheme = new TaxSchemeType (); taxScheme.setID
+       * (ac.getTaxCategory().get(0).getTaxScheme().getID());
+       * taxCategory.setTaxScheme (taxScheme); getTaxCategory ().add
+       * (taxCategory);
+       */
+    }
+    else {
+      final TaxCategoryType taxCategory = new TaxCategoryType ();
+      taxCategory.setID (new IDType ());
+      taxCategory.setPercent (new PercentType ());
+
+      final TaxSchemeType taxScheme = new TaxSchemeType ();
+      taxScheme.setID (new IDType ());
+      taxCategory.setTaxScheme (taxScheme);
+
+      getTaxCategory ().add (taxCategory);
+    }
   }
-  
-  public InvoiceAllowanceChargeAdapter copyFrom(AllowanceChargeType type) {
-	  return new InvoiceAllowanceChargeAdapter(type);
+
+  public InvoiceAllowanceChargeAdapter copyFrom (final AllowanceChargeType type) {
+    return new InvoiceAllowanceChargeAdapter (type);
   }
 
   @Override
-  public void setIDAdapter(String id) {
-	  setAllowanceChargeID(id);
+  public void setIDAdapter (final String id) {
+    setAllowanceChargeID (id);
   }
-  
+
   @Override
-  public String getIDAdapter() {
-	  return getAllowanceChargeID();
+  public String getIDAdapter () {
+    return getAllowanceChargeID ();
   }
-  
+
   public void setAllowanceChargeID (final String v) {
     getID ().setValue (v);
   }
@@ -153,16 +153,16 @@ public class InvoiceAllowanceChargeAdapter extends AllowanceChargeType implement
       return Boolean.TRUE;
     return Boolean.FALSE;
   }
-  
+
   public void setIndicatorAsString (final Boolean v) {
-	  setIndicator(v);
+    setIndicator (v);
   }
-  
-  public String getIndicatorAsString() {
-	  if (getChargeIndicator().isValue())
-		  return "Charge";
-	  else
-		  return "Allowance";
+
+  public String getIndicatorAsString () {
+    if (getChargeIndicator ().isValue ())
+      return "Charge";
+    else
+      return "Allowance";
   }
 
   public void setReason (final String v) {
@@ -174,7 +174,7 @@ public class InvoiceAllowanceChargeAdapter extends AllowanceChargeType implement
   }
 
   public void setChargeAmount (final BigDecimal v) {
-	  BigDecimal v1 = v.setScale(2,RoundingMode.HALF_UP);
+    final BigDecimal v1 = v.setScale (2, RoundingMode.HALF_UP);
     getAmount ().setValue (v1);
   }
 
@@ -191,7 +191,7 @@ public class InvoiceAllowanceChargeAdapter extends AllowanceChargeType implement
   }
 
   public void setTaxCategoryPercent (final BigDecimal v) {
-	  BigDecimal v1 = v.setScale(2,RoundingMode.HALF_UP);
+    final BigDecimal v1 = v.setScale (2, RoundingMode.HALF_UP);
     getTaxCategory ().get (0).getPercent ().setValue (v1);
   }
 

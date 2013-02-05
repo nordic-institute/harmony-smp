@@ -47,10 +47,10 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.peppol.commons.utils.ConfigFile;
-
 import com.phloc.commons.GlobalDebug;
 import com.phloc.commons.SystemProperties;
+
+import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 
 /**
  * Run this as an application and your SML will be up and running on port 8080

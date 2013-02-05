@@ -37,22 +37,9 @@
  */
 package at.peppol.webgui.app.components;
 
-import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.BranchType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.DocumentReferenceType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.FinancialAccountType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.FinancialInstitutionType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PartyIdentificationType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PartyLegalEntityType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PartyNameType;
@@ -63,37 +50,20 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CompanyI
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IDType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.NameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.NoteType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaymentChannelCodeType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaymentDueDateType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.PaymentMeansCodeType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.RegistrationNameType;
-import un.unece.uncefact.codelist.specification.ianamimemediatype._2003.BinaryObjectMimeCodeContentType;
-
-import at.peppol.webgui.app.components.adapters.Adapter;
 import at.peppol.webgui.app.components.adapters.PaymentMeansAdapter;
-import at.peppol.webgui.app.components.tables.GenericTable;
 import at.peppol.webgui.app.components.tables.PaymentMeansTable;
 import at.peppol.webgui.app.components.tables.PaymentMeansTableEditor;
-import at.peppol.webgui.app.utils.DocUpload;
 import at.peppol.webgui.app.validator.RequiredFieldListener;
 import at.peppol.webgui.app.validator.ValidatorsList;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.Property;
 import com.vaadin.data.util.NestedMethodProperty;
-import com.vaadin.data.util.ObjectProperty;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.event.FieldEvents.BlurListener;
 import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.Table.ColumnGenerator;
-import com.vaadin.ui.Upload.FinishedEvent;
-import com.vaadin.ui.Upload.StartedEvent;
-import com.vaadin.ui.Window.Notification;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.DateField;
 import com.vaadin.ui.DefaultFieldFactory;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.Form;
@@ -103,280 +73,295 @@ import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
-import com.vaadin.ui.PopupDateField;
 import com.vaadin.ui.TextArea;
-import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
-@SuppressWarnings("serial")
+@SuppressWarnings ("serial")
 public class TabInvoicePayment extends Form {
-  private InvoiceTabForm parent;
-  
+  private final InvoiceTabForm parent;
+
   private PaymentMeansAdapter originalItem;
   private PaymentMeansAdapter paymentMeansAdapterItem;
-  
-  private List<PaymentMeansType> paymentMeansList;
-  //private PaymentMeansType paymentMeansItem;
 
-  //private List<PaymentTermsType> paymentTermsList;
+  private List <PaymentMeansType> paymentMeansList;
+  // private PaymentMeansType paymentMeansItem;
+
+  // private List<PaymentTermsType> paymentTermsList;
   private PaymentTermsType paymentTermsItem;
-  
+
   private PartyType payeeParty;
   private PartyDetailForm payeeForm;
-  
+
   private VerticalLayout hiddenContent;
   private PaymentMeansTable table;
-  
+
   private boolean editMode;
-  
-  public TabInvoicePayment(InvoiceTabForm parent) {
+
+  public TabInvoicePayment (final InvoiceTabForm parent) {
     this.parent = parent;
-    initElements();
+    initElements ();
   }
 
-  @SuppressWarnings("serial")
-  private void initElements() {
-	editMode = false;
-    paymentMeansList = parent.getInvoice().getPaymentMeans();
-    //paymentMeansItem = createPaymentMeansItem();
-    //paymentMeansList.add (paymentMeansItem);
+  @SuppressWarnings ("serial")
+  private void initElements () {
+    editMode = false;
+    paymentMeansList = parent.getInvoice ().getPaymentMeans ();
+    // paymentMeansItem = createPaymentMeansItem();
+    // paymentMeansList.add (paymentMeansItem);
 
-    //paymentTermsList = parent.getInvoice().getPaymentTerms ();
-    //PaymentTermsType pt = new PaymentTermsType();
-    //paymentTermsList.add (pt);
-    
-    if (parent.getInvoice().getPaymentTerms().size() == 0) {
-    	paymentTermsItem = new PaymentTermsType();
-    	paymentTermsItem.getNote().add(new NoteType());
-    	parent.getInvoice().getPaymentTerms().add(paymentTermsItem);
+    // paymentTermsList = parent.getInvoice().getPaymentTerms ();
+    // PaymentTermsType pt = new PaymentTermsType();
+    // paymentTermsList.add (pt);
+
+    if (parent.getInvoice ().getPaymentTerms ().size () == 0) {
+      paymentTermsItem = new PaymentTermsType ();
+      paymentTermsItem.getNote ().add (new NoteType ());
+      parent.getInvoice ().getPaymentTerms ().add (paymentTermsItem);
     }
     else {
-    	paymentTermsItem = parent.getInvoice().getPaymentTerms().get(0);
+      paymentTermsItem = parent.getInvoice ().getPaymentTerms ().get (0);
     }
-        
-    //payeeParty = parent.getInvoice().getPayeeParty ();
-    if (parent.getInvoice().getPayeeParty() == null) {
-    	payeeParty = createPayeePartyItem ();
-    	parent.getInvoice().setPayeeParty(payeeParty);
+
+    // payeeParty = parent.getInvoice().getPayeeParty ();
+    if (parent.getInvoice ().getPayeeParty () == null) {
+      payeeParty = createPayeePartyItem ();
+      parent.getInvoice ().setPayeeParty (payeeParty);
     }
     else {
-    	payeeParty = parent.getInvoice().getPayeeParty();
+      payeeParty = parent.getInvoice ().getPayeeParty ();
     }
-    //payeeParty = new PartyType();
-    //payeeParty.setParty(new PartyType());
-    
-    hiddenContent = new VerticalLayout();
+    // payeeParty = new PartyType();
+    // payeeParty.setParty(new PartyType());
+
+    hiddenContent = new VerticalLayout ();
     hiddenContent.setSpacing (true);
     hiddenContent.setMargin (true);
-    
-    final GridLayout grid = new GridLayout(2, 2);
+
+    final GridLayout grid = new GridLayout (2, 2);
     grid.setSpacing (true);
-    //grid.setMargin(true);
-    final VerticalLayout outerLayout = new VerticalLayout();
-    
-    final Panel outerPanel = new Panel("Payment");
-    outerPanel.addComponent(grid);
-    outerPanel.setScrollable(true);
-    outerLayout.addComponent(outerPanel);
-    
-    final Panel invoiceDetailsPanel = new Panel("Payment Details");
-    invoiceDetailsPanel.setStyleName("light");
-    invoiceDetailsPanel.setSizeFull();
-    //invoiceDetailsPanel.addComponent(createInvoicePaymentTopForm());
-    //grid.addComponent(invoiceDetailsPanel, 0, 0);
-    
-    final Panel payeePartyPanel = new Panel("Payee Details");
-    payeePartyPanel.setStyleName("light");
-    payeePartyPanel.setSizeFull();
-    payeePartyPanel.addComponent(createInvoicePayeePartyForm());
-    //payeeForm = new PartyDetailForm("Payee", payeeParty);
-    //payeePartyPanel.addComponent(payeeForm);
-    grid.addComponent(payeePartyPanel, 0, 0);
-    
-    final Panel paymentTermsPanel = new Panel("Payment Terms");
-    paymentTermsPanel.setStyleName("light");
-    paymentTermsPanel.setSizeFull();
-    paymentTermsPanel.addComponent(createInvoicePaymentTermsForm());
-    grid.addComponent(paymentTermsPanel, 1, 0);
-    
-    final Panel paymentMeansPanel = new Panel("Payment Means");
-    VerticalLayout paymentMeansLayout = new VerticalLayout();
-    paymentMeansPanel.setContent(paymentMeansLayout);
-    paymentMeansPanel.setStyleName("light");
-    paymentMeansPanel.setSizeFull();
-    paymentMeansLayout.setSpacing(true);
-    paymentMeansLayout.setMargin(true);
-    
-    table = new PaymentMeansTable(paymentMeansList);
-    table.setSelectable(true);
-    table.setImmediate(true);
-    table.setNullSelectionAllowed(false);
+    // grid.setMargin(true);
+    final VerticalLayout outerLayout = new VerticalLayout ();
+
+    final Panel outerPanel = new Panel ("Payment");
+    outerPanel.addComponent (grid);
+    outerPanel.setScrollable (true);
+    outerLayout.addComponent (outerPanel);
+
+    final Panel invoiceDetailsPanel = new Panel ("Payment Details");
+    invoiceDetailsPanel.setStyleName ("light");
+    invoiceDetailsPanel.setSizeFull ();
+    // invoiceDetailsPanel.addComponent(createInvoicePaymentTopForm());
+    // grid.addComponent(invoiceDetailsPanel, 0, 0);
+
+    final Panel payeePartyPanel = new Panel ("Payee Details");
+    payeePartyPanel.setStyleName ("light");
+    payeePartyPanel.setSizeFull ();
+    payeePartyPanel.addComponent (createInvoicePayeePartyForm ());
+    // payeeForm = new PartyDetailForm("Payee", payeeParty);
+    // payeePartyPanel.addComponent(payeeForm);
+    grid.addComponent (payeePartyPanel, 0, 0);
+
+    final Panel paymentTermsPanel = new Panel ("Payment Terms");
+    paymentTermsPanel.setStyleName ("light");
+    paymentTermsPanel.setSizeFull ();
+    paymentTermsPanel.addComponent (createInvoicePaymentTermsForm ());
+    grid.addComponent (paymentTermsPanel, 1, 0);
+
+    final Panel paymentMeansPanel = new Panel ("Payment Means");
+    final VerticalLayout paymentMeansLayout = new VerticalLayout ();
+    paymentMeansPanel.setContent (paymentMeansLayout);
+    paymentMeansPanel.setStyleName ("light");
+    paymentMeansPanel.setSizeFull ();
+    paymentMeansLayout.setSpacing (true);
+    paymentMeansLayout.setMargin (true);
+
+    table = new PaymentMeansTable (paymentMeansList);
+    table.setSelectable (true);
+    table.setImmediate (true);
+    table.setNullSelectionAllowed (false);
     table.setHeight (200, UNITS_PIXELS);
-    table.setSizeFull();
-    table.setWidth("80%");
+    table.setSizeFull ();
+    table.setWidth ("80%");
     table.setFooterVisible (false);
     table.addStyleName ("striped strong");
-    
-    HorizontalLayout tableLayout = new HorizontalLayout();
-    paymentMeansLayout.addComponent(tableLayout);
-    paymentMeansLayout.addComponent(hiddenContent);
-    hiddenContent.setVisible(false);
-    
-    VerticalLayout tableButtonsLayout = new VerticalLayout();
-    tableButtonsLayout.setSpacing(true);
-    tableButtonsLayout.setMargin(true);
-    final Button addButton = new Button("Add new");
-    final Button editButton = new Button("Edit selected");
-    final Button deleteButton = new Button("Delete selected");
-    tableButtonsLayout.addComponent(addButton);
-    tableButtonsLayout.addComponent(editButton);
-    tableButtonsLayout.addComponent(deleteButton);
-    
-    tableLayout.addComponent(table);
-    tableLayout.addComponent(tableButtonsLayout);
-    
-    outerPanel.addComponent(paymentMeansPanel);
-    
-    grid.setSizeUndefined();
-    
-    PaymentMeansTableEditor editor = new PaymentMeansTableEditor(editMode, parent.getInvoice());
-    Label label = new Label("<h3>Adding new payments means</h3>", Label.CONTENT_XHTML);
-    addButton.addListener(editor.addButtonListener(editButton, deleteButton, hiddenContent, table, paymentMeansList, label));
-    label = new Label("<h3>Edit payment means line</h3>", Label.CONTENT_XHTML);
-    editButton.addListener(editor.editButtonListener(addButton, deleteButton, hiddenContent, table, paymentMeansList, label));
-    deleteButton.addListener(editor.deleteButtonListener(table));
-    
-    setLayout(outerLayout);
-    outerPanel.requestRepaintAll();
+
+    final HorizontalLayout tableLayout = new HorizontalLayout ();
+    paymentMeansLayout.addComponent (tableLayout);
+    paymentMeansLayout.addComponent (hiddenContent);
+    hiddenContent.setVisible (false);
+
+    final VerticalLayout tableButtonsLayout = new VerticalLayout ();
+    tableButtonsLayout.setSpacing (true);
+    tableButtonsLayout.setMargin (true);
+    final Button addButton = new Button ("Add new");
+    final Button editButton = new Button ("Edit selected");
+    final Button deleteButton = new Button ("Delete selected");
+    tableButtonsLayout.addComponent (addButton);
+    tableButtonsLayout.addComponent (editButton);
+    tableButtonsLayout.addComponent (deleteButton);
+
+    tableLayout.addComponent (table);
+    tableLayout.addComponent (tableButtonsLayout);
+
+    outerPanel.addComponent (paymentMeansPanel);
+
+    grid.setSizeUndefined ();
+
+    final PaymentMeansTableEditor editor = new PaymentMeansTableEditor (editMode, parent.getInvoice ());
+    Label label = new Label ("<h3>Adding new payments means</h3>", Label.CONTENT_XHTML);
+    addButton.addListener (editor.addButtonListener (editButton,
+                                                     deleteButton,
+                                                     hiddenContent,
+                                                     table,
+                                                     paymentMeansList,
+                                                     label));
+    label = new Label ("<h3>Edit payment means line</h3>", Label.CONTENT_XHTML);
+    editButton.addListener (editor.editButtonListener (addButton,
+                                                       deleteButton,
+                                                       hiddenContent,
+                                                       table,
+                                                       paymentMeansList,
+                                                       label));
+    deleteButton.addListener (editor.deleteButtonListener (table));
+
+    setLayout (outerLayout);
+    outerPanel.requestRepaintAll ();
   }
-  
-  private PartyType createPayeePartyItem() {
-    PartyType pt = new PartyType();
-    
-    PartyIdentificationType partyID = new PartyIdentificationType();
-    partyID.setID(new IDType());
-    pt.getPartyIdentification().add(partyID);
-    
-    PartyNameType partyName = new PartyNameType();
-    partyName.setName(new NameType());
-    pt.getPartyName().add(partyName);
-    
-    PartyLegalEntityType legalEntity = new PartyLegalEntityType();
-    legalEntity.setCompanyID(new CompanyIDType());
-    pt.getPartyLegalEntity().add(legalEntity);
-    
+
+  private PartyType createPayeePartyItem () {
+    final PartyType pt = new PartyType ();
+
+    final PartyIdentificationType partyID = new PartyIdentificationType ();
+    partyID.setID (new IDType ());
+    pt.getPartyIdentification ().add (partyID);
+
+    final PartyNameType partyName = new PartyNameType ();
+    partyName.setName (new NameType ());
+    pt.getPartyName ().add (partyName);
+
+    final PartyLegalEntityType legalEntity = new PartyLegalEntityType ();
+    legalEntity.setCompanyID (new CompanyIDType ());
+    pt.getPartyLegalEntity ().add (legalEntity);
+
     return pt;
   }
-  
-/*  public Form createInvoicePaymentTopForm() {
-    final Form invoicePaymentTopForm = new Form(new FormLayout(), new InvoicePaymentFieldFactory());
-    invoicePaymentTopForm.setImmediate(true);
-      
-    invoicePaymentTopForm.addItemProperty ("Payment ID", new NestedMethodProperty(paymentMeansItem.getID (), "value") );
-    invoicePaymentTopForm.addItemProperty ("Payment Means Code", new NestedMethodProperty(paymentMeansItem.getPaymentMeansCode (), "value") );
-    final Date paymentDueDate = new Date ();
-    invoicePaymentTopForm.addItemProperty ("Payment Due Date", new ObjectProperty <Date> (paymentDueDate));    
-    invoicePaymentTopForm.addItemProperty ("Payment Channel Code", new NestedMethodProperty(paymentMeansItem.getPaymentChannelCode (), "value") );    
-    invoicePaymentTopForm.addItemProperty ("Financial Account ID", new NestedMethodProperty(paymentMeansItem.getPayeeFinancialAccount (), "ID.value") );    
-    invoicePaymentTopForm.addItemProperty ("Financial Branch ID", new NestedMethodProperty(paymentMeansItem.getPayeeFinancialAccount ().getFinancialInstitutionBranch (), "ID.value") );    
-    invoicePaymentTopForm.addItemProperty ("Financial Institution ID", new NestedMethodProperty(paymentMeansItem.getPayeeFinancialAccount ().getFinancialInstitutionBranch ().getFinancialInstitution (), "ID.value") );    
-    
-    return invoicePaymentTopForm;
-  }  
-*/ 
-  public Form createInvoicePayeePartyForm() {
-    final Form invoicePayeePartyForm = new Form(new FormLayout(), new InvoicePaymentFieldFactory());
-    invoicePayeePartyForm.setImmediate(true);
-    
-    invoicePayeePartyForm.addItemProperty("Payee ID", new NestedMethodProperty(payeeParty.getPartyIdentification().get(0), "ID.value"));
-    invoicePayeePartyForm.addItemProperty("Payee Name", new NestedMethodProperty(payeeParty.getPartyName().get(0), "Name.value"));
-    invoicePayeePartyForm.addItemProperty("Legal Entity ID", new NestedMethodProperty(payeeParty.getPartyLegalEntity().get(0), "CompanyID.value"));
-    
+
+  /*
+   * public Form createInvoicePaymentTopForm() { final Form
+   * invoicePaymentTopForm = new Form(new FormLayout(), new
+   * InvoicePaymentFieldFactory()); invoicePaymentTopForm.setImmediate(true);
+   * invoicePaymentTopForm.addItemProperty ("Payment ID", new
+   * NestedMethodProperty(paymentMeansItem.getID (), "value") );
+   * invoicePaymentTopForm.addItemProperty ("Payment Means Code", new
+   * NestedMethodProperty(paymentMeansItem.getPaymentMeansCode (), "value") );
+   * final Date paymentDueDate = new Date ();
+   * invoicePaymentTopForm.addItemProperty ("Payment Due Date", new
+   * ObjectProperty <Date> (paymentDueDate));
+   * invoicePaymentTopForm.addItemProperty ("Payment Channel Code", new
+   * NestedMethodProperty(paymentMeansItem.getPaymentChannelCode (), "value") );
+   * invoicePaymentTopForm.addItemProperty ("Financial Account ID", new
+   * NestedMethodProperty(paymentMeansItem.getPayeeFinancialAccount (),
+   * "ID.value") ); invoicePaymentTopForm.addItemProperty
+   * ("Financial Branch ID", new
+   * NestedMethodProperty(paymentMeansItem.getPayeeFinancialAccount
+   * ().getFinancialInstitutionBranch (), "ID.value") );
+   * invoicePaymentTopForm.addItemProperty ("Financial Institution ID", new
+   * NestedMethodProperty(paymentMeansItem.getPayeeFinancialAccount
+   * ().getFinancialInstitutionBranch ().getFinancialInstitution (), "ID.value")
+   * ); return invoicePaymentTopForm; }
+   */
+  public Form createInvoicePayeePartyForm () {
+    final Form invoicePayeePartyForm = new Form (new FormLayout (), new InvoicePaymentFieldFactory ());
+    invoicePayeePartyForm.setImmediate (true);
+
+    invoicePayeePartyForm.addItemProperty ("Payee ID", new NestedMethodProperty (payeeParty.getPartyIdentification ()
+                                                                                           .get (0), "ID.value"));
+    invoicePayeePartyForm.addItemProperty ("Payee Name", new NestedMethodProperty (payeeParty.getPartyName ().get (0),
+                                                                                   "Name.value"));
+    invoicePayeePartyForm.addItemProperty ("Legal Entity ID",
+                                           new NestedMethodProperty (payeeParty.getPartyLegalEntity ().get (0),
+                                                                     "CompanyID.value"));
+
     return invoicePayeePartyForm;
 
-  }    
-  
-  public Form createInvoicePaymentTermsForm() {
-    final Form invoicePaymentTermsForm = new Form(new FormLayout(), new InvoicePaymentFieldFactory());
-    invoicePaymentTermsForm.setImmediate(true);
-    
-    invoicePaymentTermsForm.addItemProperty("Payment Terms", new NestedMethodProperty(paymentTermsItem.getNote().get(0), "value"));
-    
+  }
+
+  public Form createInvoicePaymentTermsForm () {
+    final Form invoicePaymentTermsForm = new Form (new FormLayout (), new InvoicePaymentFieldFactory ());
+    invoicePaymentTermsForm.setImmediate (true);
+
+    invoicePaymentTermsForm.addItemProperty ("Payment Terms", new NestedMethodProperty (paymentTermsItem.getNote ()
+                                                                                                        .get (0),
+                                                                                        "value"));
+
     return invoicePaymentTermsForm;
 
   }
-  
-/*  public Form createInvoicePaymentMeansForm() {
-	  Form form = new Form(new FormLayout(), new InvoicePaymentFieldFactory());
-	  form.setImmediate(true);
-	  
-	  //automatically set the id
-	  if (!editMode) {
-		  IDType num = new IDType();
-	      //num.setValue (String.valueOf (paymentMeansList.size ()+1));
-	      //paymentMeansAdapterItem.setID(num);
-	      int max = 0;
-	      for (PaymentMeansType payment : paymentMeansList) {
-	    	  if (Integer.parseInt(payment.getID().getValue()) > max)
-	    		  max = Integer.parseInt(payment.getID().getValue());
-	      }
-	      num.setValue(String.valueOf(max+1));
-	      paymentMeansAdapterItem.setID(num);
-	  }
-	  
-      form.addItemProperty("Payment Means Code", new NestedMethodProperty(paymentMeansAdapterItem, "PaymentMeansCodeAdapter"));
-      form.addItemProperty("Payment Due Date", new NestedMethodProperty(paymentMeansAdapterItem, "PaymentDueDateAdapter"));
-      form.addItemProperty("Payment Channel Code", new NestedMethodProperty(paymentMeansAdapterItem, "PaymentChannelCodeAdapter"));
-      form.addItemProperty("Account Number", new NestedMethodProperty(paymentMeansAdapterItem, "FinancialAccountIDAdapter"));
-      form.addItemProperty("Branch ID", new NestedMethodProperty(paymentMeansAdapterItem, "BranchIDAdapter"));
-      form.addItemProperty("Financial Institution ID", new NestedMethodProperty(paymentMeansAdapterItem, "InstitutionIDAdapter"));
-      
-	  return form;
-  }
-*/
-  
+
+  /*
+   * public Form createInvoicePaymentMeansForm() { Form form = new Form(new
+   * FormLayout(), new InvoicePaymentFieldFactory()); form.setImmediate(true);
+   * //automatically set the id if (!editMode) { IDType num = new IDType();
+   * //num.setValue (String.valueOf (paymentMeansList.size ()+1));
+   * //paymentMeansAdapterItem.setID(num); int max = 0; for (PaymentMeansType
+   * payment : paymentMeansList) { if
+   * (Integer.parseInt(payment.getID().getValue()) > max) max =
+   * Integer.parseInt(payment.getID().getValue()); }
+   * num.setValue(String.valueOf(max+1)); paymentMeansAdapterItem.setID(num); }
+   * form.addItemProperty("Payment Means Code", new
+   * NestedMethodProperty(paymentMeansAdapterItem, "PaymentMeansCodeAdapter"));
+   * form.addItemProperty("Payment Due Date", new
+   * NestedMethodProperty(paymentMeansAdapterItem, "PaymentDueDateAdapter"));
+   * form.addItemProperty("Payment Channel Code", new
+   * NestedMethodProperty(paymentMeansAdapterItem,
+   * "PaymentChannelCodeAdapter")); form.addItemProperty("Account Number", new
+   * NestedMethodProperty(paymentMeansAdapterItem,
+   * "FinancialAccountIDAdapter")); form.addItemProperty("Branch ID", new
+   * NestedMethodProperty(paymentMeansAdapterItem, "BranchIDAdapter"));
+   * form.addItemProperty("Financial Institution ID", new
+   * NestedMethodProperty(paymentMeansAdapterItem, "InstitutionIDAdapter"));
+   * return form; }
+   */
+
   @SuppressWarnings ("serial")
   class InvoicePaymentFieldFactory implements FormFieldFactory {
 
-    public Field createField(final Item item, final Object propertyId, final Component uiContext) {
-        // Identify the fields by their Property ID.
-        final String pid = (String) propertyId;
-        
-        if ("Payee ID".equals(pid)) {
-            final PartyAgencyIDSelect select = new PartyAgencyIDSelect(pid);
-            select.addListener(new Property.ValueChangeListener() {
+    public Field createField (final Item item, final Object propertyId, final Component uiContext) {
+      // Identify the fields by their Property ID.
+      final String pid = (String) propertyId;
 
-                @Override
-                public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-                	payeeParty.getPartyIdentification().get(0)
-                            .getID()
-                            .setSchemeAgencyName(select.getSelectedAgencyName());
-                }
-            });
-            return select;
+      if ("Payee ID".equals (pid)) {
+        final PartyAgencyIDSelect select = new PartyAgencyIDSelect (pid);
+        select.addListener (new Property.ValueChangeListener () {
+
+          @Override
+          public void valueChange (final com.vaadin.data.Property.ValueChangeEvent event) {
+            payeeParty.getPartyIdentification ().get (0).getID ().setSchemeAgencyName (select.getSelectedAgencyName ());
+          }
+        });
+        return select;
+      }
+
+      if ("Payment Terms".equals (pid)) {
+        final TextArea area = new TextArea (pid);
+        area.setWordwrap (true);
+        area.setRows (3);
+        area.setNullRepresentation ("");
+        return area;
+      }
+
+      final Field field = DefaultFieldFactory.get ().createField (item, propertyId, uiContext);
+      if (field instanceof AbstractTextField) {
+        ((AbstractTextField) field).setNullRepresentation ("");
+
+        final AbstractTextField tf = (AbstractTextField) field;
+        if ("Payee Name".equals (pid)) {
+          tf.setRequired (true);
+          tf.addListener (new RequiredFieldListener (tf, pid));
+          ValidatorsList.addListeners ((Collection <BlurListener>) tf.getListeners (BlurEvent.class));
         }
-        
-        if ("Payment Terms".equals(pid)) {
-        	TextArea area = new TextArea(pid);
-        	area.setWordwrap(true);
-        	area.setRows(3);
-        	area.setNullRepresentation("");
-        	return area;
-        }
-        
-        final Field field = DefaultFieldFactory.get().createField(item, propertyId, uiContext);
-        if (field instanceof AbstractTextField) {
-            ((AbstractTextField) field).setNullRepresentation("");
-            
-            final AbstractTextField tf = (AbstractTextField) field;
-            if ("Payee Name".equals(pid)) {
-            	tf.setRequired(true);
-            	tf.addListener(new RequiredFieldListener(tf,pid));
-            	ValidatorsList.addListeners((Collection<BlurListener>) tf.getListeners(BlurEvent.class));
-            }
-        }
-        return field;
+      }
+      return field;
     }
-  }    
+  }
 }

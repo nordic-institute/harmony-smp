@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <groupId>at.peppol</groupId>
-    <artifactId>peppol-parent-pom</artifactId>
-    <version>15</version>
+    <groupId>eu.europa.ec.cipa</groupId>
+    <artifactId>cipa-parent-pom</artifactId>
+    <version>1.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>peppol-webgui-api</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
-  <name>peppol-webgui-api</name>
+  <artifactId>cipa-webgui-api</artifactId>
+  <name>cipa-webgui-api</name>
   
   <scm>
-    <connection>scm:svn:http://peppol-silicone.googlecode.com/svn/trunk/java/webgui-api</connection>
-    <developerConnection>scm:svn:https://peppol-silicone.googlecode.com/svn/trunk/java/webgui-api</developerConnection>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/webgui-api</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/webgui-api</developerConnection>
   </scm>
 
   <repositories>
@@ -30,19 +29,19 @@
 
   <dependencies>
     <dependency>
-      <groupId>at.peppol</groupId>
-      <artifactId>peppol-commons-peppol</artifactId>
-      <version>2.3.1</version>
+      <groupId>eu.europa.ec.cipa</groupId>
+      <artifactId>cipa-peppol-types</artifactId>
+      <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-scopes</artifactId>
-      <version>4.1.4</version>
+      <version>4.1.6</version>
     </dependency>
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-appbasics</artifactId>
-      <version>1.8.19</version>
+      <version>1.9.0</version>
     </dependency>
     <dependency>
       <groupId>com.phloc</groupId>
@@ -56,9 +55,9 @@
     </dependency>
 
     <dependency>
-      <groupId>at.peppol</groupId>
-      <artifactId>peppol-test-files</artifactId>
-      <version>2.3.1</version>
+      <groupId>eu.europa.ec.cipa</groupId>
+      <artifactId>cipa-test-files</artifactId>
+      <version>1.0-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -74,7 +73,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
         <configuration>
-          <tagBase>https://peppol-silicone.googlecode.com/svn/tags/${project.name}</tagBase>
+          <tagBase>https://joinup.ec.europa.eu/svn/cipaedelivery/tags/${project.name}</tagBase>
         </configuration>
       </plugin>
     </plugins>

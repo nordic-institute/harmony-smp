@@ -2,6 +2,9 @@ package at.peppol.webgui.app.components.tables;
 
 import java.util.List;
 
+import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.OrderLineReferenceType;
+import at.peppol.webgui.app.components.adapters.InvoiceLineOrderReferenceAdapter;
+
 import com.vaadin.data.Item;
 import com.vaadin.data.util.NestedMethodProperty;
 import com.vaadin.event.FieldEvents;
@@ -14,79 +17,73 @@ import com.vaadin.ui.Form;
 import com.vaadin.ui.FormFieldFactory;
 import com.vaadin.ui.FormLayout;
 
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.OrderLineReferenceType;
-import at.peppol.webgui.app.components.adapters.InvoiceLineOrderReferenceAdapter;
-import at.peppol.webgui.app.components.tables.InvoiceItemPropertyTableEditor.ItemPropertyFieldFactory;
-
 public class InvoiceLineOrderReferenceTableEditor extends
-		GenericTableEditor<OrderLineReferenceType, InvoiceLineOrderReferenceAdapter> {
+                                                 GenericTableEditor <OrderLineReferenceType, InvoiceLineOrderReferenceAdapter> {
 
-	public InvoiceLineOrderReferenceTableEditor(boolean editMode) {
-		super(editMode);
-	}
+  public InvoiceLineOrderReferenceTableEditor (final boolean editMode) {
+    super (editMode);
+  }
 
-	@Override
-	public Form createTableForm(InvoiceLineOrderReferenceAdapter t,
-			List<OrderLineReferenceType> invoiceList) {
-		
-		final Form invoiceLineOrderForm = new Form(new FormLayout(), new LineOrderFactory());
-		invoiceLineOrderForm.setImmediate(true);
+  @Override
+  public Form createTableForm (final InvoiceLineOrderReferenceAdapter t, final List <OrderLineReferenceType> invoiceList) {
 
-	    //NestedMethodProperty mp = new NestedMethodProperty(t, "tableLineID");
-	    if(!editMode){
-	      t.setIDAdapter(String.valueOf (invoiceList.size ()+1));
-	    }
-	    else {
-	      //mp.setReadOnly (true);
-	    }
-	    
-	    //invoiceItemPropertyForm.addItemProperty ("Line ID #", new NestedMethodProperty(itemPropertyBean, "ID.value") );
-	    //invoiceItemPropertyForm.addItemProperty ("Line ID #", mp );
-	    invoiceLineOrderForm.addItemProperty ("Order ID", new NestedMethodProperty(t, "InvLineOrderLineID") );
+    final Form invoiceLineOrderForm = new Form (new FormLayout (), new LineOrderFactory ());
+    invoiceLineOrderForm.setImmediate (true);
 
-	    return invoiceLineOrderForm;
-	}
-	
-	class LineOrderFactory implements FormFieldFactory {
+    // NestedMethodProperty mp = new NestedMethodProperty(t, "tableLineID");
+    if (!editMode) {
+      t.setIDAdapter (String.valueOf (invoiceList.size () + 1));
+    }
+    else {
+      // mp.setReadOnly (true);
+    }
 
-	    @Override
-	    public Field createField(Item item, Object propertyId, Component uiContext) {
-	      // Identify the fields by their Property ID.
-	      String pid = (String) propertyId;
+    // invoiceItemPropertyForm.addItemProperty ("Line ID #", new
+    // NestedMethodProperty(itemPropertyBean, "ID.value") );
+    // invoiceItemPropertyForm.addItemProperty ("Line ID #", mp );
+    invoiceLineOrderForm.addItemProperty ("Order ID", new NestedMethodProperty (t, "InvLineOrderLineID"));
 
-	      Field field = DefaultFieldFactory.get().createField(item,propertyId, uiContext);
-	      if (field instanceof AbstractTextField){
-	          ((AbstractTextField) field).setNullRepresentation("");
-	          final AbstractTextField tf = (AbstractTextField) field;
-	          tf.addListener(new FieldEvents.FocusListener() {
-	        	  @Override
-	        	  public void focus(FocusEvent event) {
-	        		  tf.selectAll();
-	        	  }
-		      });
-	      }
-	      
-	      return field;
-	    }
-	 }    
+    return invoiceLineOrderForm;
+  }
 
+  class LineOrderFactory implements FormFieldFactory {
 
-	@Override
-	public InvoiceLineOrderReferenceAdapter createItem() {
-		InvoiceLineOrderReferenceAdapter ac = new InvoiceLineOrderReferenceAdapter();
-		
-		ac.setInvLineOrderLineID("");
-		
-		return ac;
-	}
+    @Override
+    public Field createField (final Item item, final Object propertyId, final Component uiContext) {
+      // Identify the fields by their Property ID.
+      final String pid = (String) propertyId;
 
-	@Override
-	public void cloneItem(InvoiceLineOrderReferenceAdapter srcItem,
-			InvoiceLineOrderReferenceAdapter dstItem) {
-		
-		dstItem.setIDAdapter(srcItem.getIDAdapter());
-		dstItem.setInvLineOrderLineID(dstItem.getInvLineOrderLineID());
-		
-	}
+      final Field field = DefaultFieldFactory.get ().createField (item, propertyId, uiContext);
+      if (field instanceof AbstractTextField) {
+        ((AbstractTextField) field).setNullRepresentation ("");
+        final AbstractTextField tf = (AbstractTextField) field;
+        tf.addListener (new FieldEvents.FocusListener () {
+          @Override
+          public void focus (final FocusEvent event) {
+            tf.selectAll ();
+          }
+        });
+      }
+
+      return field;
+    }
+  }
+
+  @Override
+  public InvoiceLineOrderReferenceAdapter createItem () {
+    final InvoiceLineOrderReferenceAdapter ac = new InvoiceLineOrderReferenceAdapter ();
+
+    ac.setInvLineOrderLineID ("");
+
+    return ac;
+  }
+
+  @Override
+  public void cloneItem (final InvoiceLineOrderReferenceAdapter srcItem, final InvoiceLineOrderReferenceAdapter dstItem) {
+
+    dstItem.setIDAdapter (srcItem.getIDAdapter ());
+    dstItem.setInvLineOrderLineID (dstItem.getInvLineOrderLineID ());
+
+  }
 
 }

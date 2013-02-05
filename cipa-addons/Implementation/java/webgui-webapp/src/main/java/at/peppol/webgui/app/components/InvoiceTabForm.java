@@ -37,16 +37,11 @@
  */
 package at.peppol.webgui.app.components;
 
-import javax.xml.transform.Source;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.OutputStreamWriter;
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.transform.stream.StreamResult;
@@ -58,7 +53,6 @@ import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.Invo
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PartyType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.SupplierPartyType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.TaxSubtotalType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.TaxTotalType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CustomizationIDType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IDType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.InvoiceTypeCodeType;
@@ -70,30 +64,15 @@ import oasis.names.specification.ubl.schema.xsd.invoice_2.ObjectFactory;
 import org.slf4j.LoggerFactory;
 
 import un.unece.uncefact.codelist.specification._54217._2001.CurrencyCodeContentType;
-//import at.peppol.commons.cenbii.profiles.EProfile;
-//import at.peppol.commons.cenbii.profiles.ETransaction;
-import at.peppol.commons.identifier.doctype.EPredefinedDocumentTypeIdentifier;
 import at.peppol.webgui.app.InvoiceBean;
-//import at.peppol.validation.pyramid.ValidationPyramid;
-//import at.peppol.validation.pyramid.ValidationPyramidResultLayer;
-//import at.peppol.validation.rules.EValidationDocumentType;
-//import at.peppol.validation.rules.ValidationTransaction;
-import at.peppol.webgui.app.components.adapters.InvoiceLineAdapter;
 import at.peppol.webgui.app.login.UserFolderManager;
 import at.peppol.webgui.app.validator.ValidatorHandler;
 import at.peppol.webgui.app.validator.ValidatorsList;
 import at.peppol.webgui.app.validator.global.GlobalValidationsRegistry;
 import at.peppol.webgui.app.validator.global.ValidationError;
-import at.peppol.commons.identifier.process.EPredefinedProcessIdentifier;
 
-import com.phloc.commons.error.IResourceError;
-import com.phloc.commons.io.resource.ClassPathResource;
-import com.phloc.commons.io.resource.FileSystemResource;
-import com.phloc.commons.state.ESuccess;
 import com.phloc.ubl.AbstractUBLDocumentMarshaller;
-import com.phloc.ubl.EUBL20DocumentType;
 import com.phloc.ubl.UBL20DocumentMarshaller;
-import com.vaadin.data.Container;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.ui.Button;
@@ -106,6 +85,15 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.TabSheet.Tab;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.Window.Notification;
+
+import eu.europa.ec.cipa.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
+import eu.europa.ec.cipa.peppol.identifier.process.EPredefinedProcessIdentifier;
+//import at.peppol.commons.cenbii.profiles.EProfile;
+//import at.peppol.commons.cenbii.profiles.ETransaction;
+//import at.peppol.validation.pyramid.ValidationPyramid;
+//import at.peppol.validation.pyramid.ValidationPyramidResultLayer;
+//import at.peppol.validation.rules.EValidationDocumentType;
+//import at.peppol.validation.rules.ValidationTransaction;
 
 @SuppressWarnings ("serial")
 public class InvoiceTabForm extends Form {
@@ -135,6 +123,7 @@ public class InvoiceTabForm extends Form {
   private TabSheet invTabSheet;
 
   private UserFolderManager um;
+
   /**
    * The constructor
    */
@@ -143,102 +132,109 @@ public class InvoiceTabForm extends Form {
     initInvoiceData ();
     initElements ();
     buildMainLayout ();
-    GlobalValidationsRegistry.setMainComponents(this, invoice);
+    GlobalValidationsRegistry.setMainComponents (this, invoice);
   }
-  
-  public InvoiceTabForm (UserFolderManager um) {
-	    invObjFactory = new ObjectFactory ();
-	    this.um = um;
-	    initInvoiceData ();
-	    initElements ();
-	    buildMainLayout ();
-	    GlobalValidationsRegistry.setMainComponents(this, invoice);
+
+  public InvoiceTabForm (final UserFolderManager um) {
+    invObjFactory = new ObjectFactory ();
+    this.um = um;
+    initInvoiceData ();
+    initElements ();
+    buildMainLayout ();
+    GlobalValidationsRegistry.setMainComponents (this, invoice);
   }
-  
-  public InvoiceTabForm (UserFolderManager um, InvoiceBean invoiceBean) {
-	    invObjFactory = new ObjectFactory ();
-	    this.um = um;
-	    this.invoice = invoiceBean.getInvoice();
-	    this.invoiceFilePath = invoiceBean.getFolderEntryID();
-	    initInvoiceData ();
-	    initElements ();
-	    buildMainLayout ();
-	    GlobalValidationsRegistry.setMainComponents(this, invoice);
-}
- 
-  public String getInvoiceFilePath() {
-	  return invoiceFilePath;
+
+  public InvoiceTabForm (final UserFolderManager um, final InvoiceBean invoiceBean) {
+    invObjFactory = new ObjectFactory ();
+    this.um = um;
+    this.invoice = invoiceBean.getInvoice ();
+    this.invoiceFilePath = invoiceBean.getFolderEntryID ();
+    initInvoiceData ();
+    initElements ();
+    buildMainLayout ();
+    GlobalValidationsRegistry.setMainComponents (this, invoice);
   }
-  
-  public TabInvoiceLine getInvoiceLineTab() {
-	  return tTabInvoiceLine;
+
+  public String getInvoiceFilePath () {
+    return invoiceFilePath;
   }
-  public TabInvoiceHeader getTabInvoiceHeader() {
-	  return tTabInvoiceHeader;
+
+  public TabInvoiceLine getInvoiceLineTab () {
+    return tTabInvoiceLine;
   }
-  public TabInvoiceDelivery gettTabInvoiceDelivery() {
-	  return tTabInvoiceDelivery;
+
+  public TabInvoiceHeader getTabInvoiceHeader () {
+    return tTabInvoiceHeader;
   }
-  public TabInvoicePayment getTabInvoicePayment() {
-	  return tTabInvoicePayment;
+
+  public TabInvoiceDelivery gettTabInvoiceDelivery () {
+    return tTabInvoiceDelivery;
   }
-  public TabInvoiceAllowanceCharge getTabInvoiceAllowanceCharge() {
-	  return tTabInvoiceAllowanceCharge;
+
+  public TabInvoicePayment getTabInvoicePayment () {
+    return tTabInvoicePayment;
   }
-  public TabInvoiceTaxTotal getTabInvoiceTaxTotal() {
-	  return tTabInvoiceTaxTotal;
+
+  public TabInvoiceAllowanceCharge getTabInvoiceAllowanceCharge () {
+    return tTabInvoiceAllowanceCharge;
   }
-  public PartyDetailForm getSupplierForm() {
-	  return supplierForm;
+
+  public TabInvoiceTaxTotal getTabInvoiceTaxTotal () {
+    return tTabInvoiceTaxTotal;
   }
-  public PartyDetailForm getCustomerForm() {
-	  return customerForm;
+
+  public PartyDetailForm getSupplierForm () {
+    return supplierForm;
+  }
+
+  public PartyDetailForm getCustomerForm () {
+    return customerForm;
   }
 
   private void initInvoiceData () {
-    //invoice = invObjFactory.createInvoiceType ();
+    // invoice = invObjFactory.createInvoiceType ();
 
-	if (invoice == null) {
-		System.out.println("Invoice is null");
-    	invoice = invObjFactory.createInvoiceType ();
-	    // Standard input, not using user input
-	    final UBLVersionIDType version = new UBLVersionIDType ();
-	    version.setValue ("2.0");
-	
-	    // Use PEPPOL Codelists
-	    final CustomizationIDType custID = new CustomizationIDType ();
-	    custID.setValue (EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A.getTransactionID ());
-	    custID.setSchemeID ("PEPPOL");
-	    
-	    ProfileIDType profileID = new ProfileIDType();
-	    profileID.setValue(EPredefinedProcessIdentifier.BIS4A.getValue());
-	    invoice.setProfileID(profileID);
-	
-	    // Setting invoice type code to 380: Commercial Invoice
-	    invoice.setInvoiceTypeCode (new InvoiceTypeCodeType ());
-	    invoice.getInvoiceTypeCode ().setValue ("380");
-	
-	    invoice.setUBLVersionID (version);
-	    invoice.setCustomizationID (custID);
-	    invoice.setID (new IDType ());
-	    
-	    supplier = new SupplierPartyType ();
-	    supplier.setParty (new PartyType ());
+    if (invoice == null) {
+      System.out.println ("Invoice is null");
+      invoice = invObjFactory.createInvoiceType ();
+      // Standard input, not using user input
+      final UBLVersionIDType version = new UBLVersionIDType ();
+      version.setValue ("2.0");
 
-	    customer = new CustomerPartyType ();
-	    customer.setParty (new PartyType ());
+      // Use PEPPOL Codelists
+      final CustomizationIDType custID = new CustomizationIDType ();
+      custID.setValue (EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A.getTransactionID ());
+      custID.setSchemeID ("PEPPOL");
 
-	    invoice.setAccountingCustomerParty (customer);
-	    invoice.setAccountingSupplierParty (supplier);
-	    
+      final ProfileIDType profileID = new ProfileIDType ();
+      profileID.setValue (EPredefinedProcessIdentifier.BIS4A.getValue ());
+      invoice.setProfileID (profileID);
+
+      // Setting invoice type code to 380: Commercial Invoice
+      invoice.setInvoiceTypeCode (new InvoiceTypeCodeType ());
+      invoice.getInvoiceTypeCode ().setValue ("380");
+
+      invoice.setUBLVersionID (version);
+      invoice.setCustomizationID (custID);
+      invoice.setID (new IDType ());
+
+      supplier = new SupplierPartyType ();
+      supplier.setParty (new PartyType ());
+
+      customer = new CustomerPartyType ();
+      customer.setParty (new PartyType ());
+
+      invoice.setAccountingCustomerParty (customer);
+      invoice.setAccountingSupplierParty (supplier);
+
     }
-	else {
-		System.out.println("Invoice is NOT null: "+invoice);
-		supplier = invoice.getAccountingSupplierParty();
-		customer = invoice.getAccountingCustomerParty();
-	}
+    else {
+      System.out.println ("Invoice is NOT null: " + invoice);
+      supplier = invoice.getAccountingSupplierParty ();
+      customer = invoice.getAccountingCustomerParty ();
+    }
     // invoice.setLegalMonetaryTotal(new MonetaryTotalType());
-	tTabInvoiceHeader = new TabInvoiceHeader (this);
+    tTabInvoiceHeader = new TabInvoiceHeader (this);
     tTabInvoiceLine = new TabInvoiceLine (this);
     tTabInvoiceDelivery = new TabInvoiceDelivery (this);
     tTabInvoicePayment = new TabInvoicePayment (this);
@@ -249,11 +245,11 @@ public class InvoiceTabForm extends Form {
 
   private void initElements () {
     supplierForm = new PartyDetailForm ("Supplier", supplier.getParty ());
-    supplierForm.setImmediate(true);
+    supplierForm.setImmediate (true);
     customerForm = new PartyDetailForm ("Customer", customer.getParty ());
-    customerForm.setImmediate(true);
-    //supplierForm.setSizeFull ();
-    //customerForm.setSizeFull ();
+    customerForm.setImmediate (true);
+    // supplierForm.setSizeFull ();
+    // customerForm.setSizeFull ();
 
     final HorizontalLayout footerLayout = new HorizontalLayout ();
     footerLayout.setSpacing (true);
@@ -262,123 +258,133 @@ public class InvoiceTabForm extends Form {
 
       @Override
       public void buttonClick (final Button.ClickEvent event) {
-    	  SetCommonCurrency ();
-          ValidatorHandler vh = new ValidatorHandler(footerLayout);
-          AbstractUBLDocumentMarshaller.setGlobalValidationEventHandler (vh);
-          vh.clearErrors();
-          clearTabErrorStyles();
-          boolean invoiceHasErrors = false;
-          
-          List<ValidationError> errors = GlobalValidationsRegistry.runAll();
-          if (errors.size() > 0) {
-        	  invoiceHasErrors = true;
-        	  Window errorWindow = new Window("Errors");
-        	  //position and size of the window
-        	  errorWindow.setPositionX(200);
-        	  errorWindow.setPositionY(200);
-        	  errorWindow.setWidth("600px");
-        	  errorWindow.setHeight("300px");
-        	  
-        	  //add the error messages
-        	  String errorMessage = "<ol>"; 
-        	  for (int i=0;i<errors.size();i++) {
-        		  errorMessage += "<li style=\"margin-top: 4px;\"><b>"+errors.get(i).getRuleID()+"</b>: "+errors.get(i).getErrorInfo()+"</li>";
-        		  //mark the appropriate Tab as error
-        		  Tab tab = invTabSheet.getTab(errors.get(i).getMainComponent());
-        		  if (tab != null)
-        			  tab.setStyleName("test111");
-        	  }
-        	  errorMessage += "</ol>";
-        	  errorWindow.addComponent(new Label(errorMessage, Label.CONTENT_XHTML));
-        	  
-        	  //show the error window
-        	  getParent().getWindow().addWindow(errorWindow);
-        	  errors.clear();
+        SetCommonCurrency ();
+        final ValidatorHandler vh = new ValidatorHandler (footerLayout);
+        AbstractUBLDocumentMarshaller.setGlobalValidationEventHandler (vh);
+        vh.clearErrors ();
+        clearTabErrorStyles ();
+        boolean invoiceHasErrors = false;
+
+        final List <ValidationError> errors = GlobalValidationsRegistry.runAll ();
+        if (errors.size () > 0) {
+          invoiceHasErrors = true;
+          final Window errorWindow = new Window ("Errors");
+          // position and size of the window
+          errorWindow.setPositionX (200);
+          errorWindow.setPositionY (200);
+          errorWindow.setWidth ("600px");
+          errorWindow.setHeight ("300px");
+
+          // add the error messages
+          String errorMessage = "<ol>";
+          for (int i = 0; i < errors.size (); i++) {
+            errorMessage += "<li style=\"margin-top: 4px;\"><b>" +
+                            errors.get (i).getRuleID () +
+                            "</b>: " +
+                            errors.get (i).getErrorInfo () +
+                            "</li>";
+            // mark the appropriate Tab as error
+            final Tab tab = invTabSheet.getTab (errors.get (i).getMainComponent ());
+            if (tab != null)
+              tab.setStyleName ("test111");
           }
-          
-          ValidatorsList.validateListenersNotify();
-          if (ValidatorsList.validateListeners() == false) {
-        	  invoiceHasErrors = true;
+          errorMessage += "</ol>";
+          errorWindow.addComponent (new Label (errorMessage, Label.CONTENT_XHTML));
+
+          // show the error window
+          getParent ().getWindow ().addWindow (errorWindow);
+          errors.clear ();
+        }
+
+        ValidatorsList.validateListenersNotify ();
+        if (ValidatorsList.validateListeners () == false) {
+          invoiceHasErrors = true;
+        }
+
+        if (invoiceHasErrors) {
+          getWindow ().showNotification ("Validation error. Could not save invoice",
+                                         Notification.TYPE_TRAY_NOTIFICATION);
+        }
+        else {
+          try {
+            if (invoiceFilePath.equals ("")) {
+              UBL20DocumentMarshaller.writeInvoice (invoice,
+                                                    new StreamResult (new File (um.getDrafts ()
+                                                                                  .getFolder ()
+                                                                                  .toString () +
+                                                                                System.getProperty ("file.separator") +
+                                                                                "invoice" +
+                                                                                System.currentTimeMillis () +
+                                                                                ".xml")));
+              invoiceFilePath = um.getDrafts ().getFolder ().toString () +
+                                System.getProperty ("file.separator") +
+                                "invoice" +
+                                System.currentTimeMillis () +
+                                ".xml";
+            }
+            else {
+              UBL20DocumentMarshaller.writeInvoice (invoice, new StreamResult (new File (invoiceFilePath)));
+            }
+            getWindow ().showNotification ("Validation passed. Invoice saved in " +
+                                               um.getDrafts ().getName ().toUpperCase () +
+                                               " folder",
+                                           Notification.TYPE_TRAY_NOTIFICATION);
           }
-          
-          if (invoiceHasErrors) {
-        	  getWindow().showNotification("Validation error. Could not save invoice",Notification.TYPE_TRAY_NOTIFICATION);
+          catch (final Exception e) {
+            getWindow ().showNotification ("Disk access error. Could not save invoice", Notification.TYPE_ERROR_MESSAGE);
           }
-          else {
-        	  try {
-        		  if (invoiceFilePath.equals("")) {
-		        	  UBL20DocumentMarshaller.writeInvoice(invoice, new StreamResult(new
-			        		  File(um.getDrafts().getFolder().toString()+
-			        				  System.getProperty("file.separator")+
-			        				  "invoice"+System.currentTimeMillis()+".xml")));
-		        	  invoiceFilePath = um.getDrafts().getFolder().toString()+
-	        				  			System.getProperty("file.separator")+
-	        				  			"invoice"+System.currentTimeMillis()+".xml";
-        		  }
-        		  else {
-        			  UBL20DocumentMarshaller.writeInvoice(invoice, new StreamResult(new
-			        		  File(invoiceFilePath)));
-        		  }
-	        	  getWindow().showNotification("Validation passed. Invoice saved in "+um.getDrafts().getName().toUpperCase()+" folder",Notification.TYPE_TRAY_NOTIFICATION);
-        	  }catch (Exception e) {
-        		  getWindow().showNotification("Disk access error. Could not save invoice",Notification.TYPE_ERROR_MESSAGE);
-        	  }
-          }
-	          
-          /*PEPPOL validation
-           * final ValidationPyramid vp = new ValidationPyramid (EValidationDocumentType.INVOICE,
-                  ValidationTransaction.createUBLTransaction (ETransaction.T10));
-	     	final List <ValidationPyramidResultLayer> aResults = vp.applyValidation (new FileSystemResource ("invoice.xml"))
-	              .getAllValidationResultLayers ();
-	     	if (aResults.isEmpty ())
-	          System.out.println ("  The document is valid!");
-	        else
-	          for (final ValidationPyramidResultLayer aResultLayer : aResults)
-	            for (final IResourceError aError : aResultLayer.getValidationErrors ())
-	              System.out.println ("  " + aResultLayer.getValidationLevel () + " " + aError.getAsString (Locale.US));
-         */	
-          /*ValidatorsList.validateListenersNotify();
-          if (ValidatorsList.validateListeners() == false) {
-        	  getParent().getWindow().showNotification("Validation error... ",Notification.TYPE_TRAY_NOTIFICATION);
-          }
-          else
-        	  getParent().getWindow().showNotification("Validation passed! ",Notification.TYPE_TRAY_NOTIFICATION);
-          */
-        	  
+        }
+
+        /*
+         * PEPPOL validation final ValidationPyramid vp = new ValidationPyramid
+         * (EValidationDocumentType.INVOICE,
+         * ValidationTransaction.createUBLTransaction (ETransaction.T10)); final
+         * List <ValidationPyramidResultLayer> aResults = vp.applyValidation
+         * (new FileSystemResource ("invoice.xml"))
+         * .getAllValidationResultLayers (); if (aResults.isEmpty ())
+         * System.out.println ("  The document is valid!"); else for (final
+         * ValidationPyramidResultLayer aResultLayer : aResults) for (final
+         * IResourceError aError : aResultLayer.getValidationErrors ())
+         * System.out.println ("  " + aResultLayer.getValidationLevel () + " " +
+         * aError.getAsString (Locale.US));
+         */
+        /*
+         * ValidatorsList.validateListenersNotify(); if
+         * (ValidatorsList.validateListeners() == false) {
+         * getParent().getWindow(
+         * ).showNotification("Validation error... ",Notification
+         * .TYPE_TRAY_NOTIFICATION); } else
+         * getParent().getWindow().showNotification
+         * ("Validation passed! ",Notification.TYPE_TRAY_NOTIFICATION);
+         */
+
       }
     }));
 
-/*    footerLayout.addComponent (new Button ("Save Invoice", new Button.ClickListener () {
+    /*
+     * footerLayout.addComponent (new Button ("Save Invoice", new
+     * Button.ClickListener () {
+     * @Override public void buttonClick (final Button.ClickEvent event) { try {
+     * SetCommonCurrency (); System.out.println (invoice.getDelivery ().get
+     * (0).getDeliveryAddress ().getStreetName ().getValue ()); } catch (final
+     * Exception ex) { LOGGER.error ("Error creating files. ", ex); } } }));
+     */
+    footerLayout.addComponent (new Button ("Read Invoice from disk", new Button.ClickListener () {
 
       @Override
       public void buttonClick (final Button.ClickEvent event) {
         try {
-          SetCommonCurrency ();          
-          System.out.println (invoice.getDelivery ().get (0).getDeliveryAddress ().getStreetName ().getValue ());
+          SetCommonCurrency ();
+          final InvoiceType inv = UBL20DocumentMarshaller.readInvoice (new StreamSource (new FileInputStream (new File ("invoice.xml"))));
         }
         catch (final Exception ex) {
           LOGGER.error ("Error creating files. ", ex);
         }
       }
     }));
-*/    
-    footerLayout.addComponent (new Button ("Read Invoice from disk", new Button.ClickListener () {
 
-        @Override
-        public void buttonClick (final Button.ClickEvent event) {
-          try {
-            SetCommonCurrency ();
-            InvoiceType inv = UBL20DocumentMarshaller.readInvoice(new StreamSource(new FileInputStream(new File("invoice.xml"))));
-          }
-          catch (final Exception ex) {
-            LOGGER.error ("Error creating files. ", ex);
-          }
-        }
-      }));
-
-    
     getFooter ().addComponent (footerLayout);
-     
+
   }
 
   private GridLayout buildMainLayout () {
@@ -417,33 +423,37 @@ public class InvoiceTabForm extends Form {
 
     mainLayout.addComponent (invTabSheet, 0, 0);
 
-    //BIIRULE-T10-R011
-    tTabInvoiceLine.getTable().addListener(new LinesTotalAmountListener());
-     
-    //BIIRULE-T10-R012
-    TaxExclusiveAmountListener taxExclusiveAmountListener = new TaxExclusiveAmountListener();
-    tTabInvoiceLine.getTable().addListener(taxExclusiveAmountListener);
-    tTabInvoiceAllowanceCharge.getTable().addListener(taxExclusiveAmountListener);
-    
-    //BIIRULE-T10-R013
-    TaxInclusiveAmountListener taxInclusiveAmountListener = new TaxInclusiveAmountListener();
-    tTabInvoiceTaxTotal.getInvoiceTaxTotalTopForm().getField(TabInvoiceTaxTotal.taxTotalAmount).addListener(
-    		taxInclusiveAmountListener);
-    tTabInvoiceMonetaryTotal.getMonetaryTotalForm().getField(TabInvoiceMonetaryTotal.taxExclusiveAmount).addListener(
-    		taxInclusiveAmountListener);
-    
-    //BIIRULE-T10-R015 & BIIRULE-T10-R016 
-    BIIRULE_T10_R015_R016 biirule_t10_r015_r016 = new BIIRULE_T10_R015_R016();
-    tTabInvoiceLine.getTable().addListener(biirule_t10_r015_r016);
-    tTabInvoiceAllowanceCharge.getTable().addListener(biirule_t10_r015_r016);
-    
-    //BIIRULE-T10-R017
-    BIIRULE_T10_R017 biirule_t10_r017 = new BIIRULE_T10_R017();
-    tTabInvoiceMonetaryTotal.getMonetaryTotalForm().getField(TabInvoiceMonetaryTotal.taxInclusiveAmount).addListener(
-    		biirule_t10_r017);
-    tTabInvoiceMonetaryTotal.getMonetaryTotalForm().getField(TabInvoiceMonetaryTotal.prepaidAmount).addListener(
-    		biirule_t10_r017);
-    
+    // BIIRULE-T10-R011
+    tTabInvoiceLine.getTable ().addListener (new LinesTotalAmountListener ());
+
+    // BIIRULE-T10-R012
+    final TaxExclusiveAmountListener taxExclusiveAmountListener = new TaxExclusiveAmountListener ();
+    tTabInvoiceLine.getTable ().addListener (taxExclusiveAmountListener);
+    tTabInvoiceAllowanceCharge.getTable ().addListener (taxExclusiveAmountListener);
+
+    // BIIRULE-T10-R013
+    final TaxInclusiveAmountListener taxInclusiveAmountListener = new TaxInclusiveAmountListener ();
+    tTabInvoiceTaxTotal.getInvoiceTaxTotalTopForm ()
+                       .getField (TabInvoiceTaxTotal.taxTotalAmount)
+                       .addListener (taxInclusiveAmountListener);
+    tTabInvoiceMonetaryTotal.getMonetaryTotalForm ()
+                            .getField (TabInvoiceMonetaryTotal.taxExclusiveAmount)
+                            .addListener (taxInclusiveAmountListener);
+
+    // BIIRULE-T10-R015 & BIIRULE-T10-R016
+    final BIIRULE_T10_R015_R016 biirule_t10_r015_r016 = new BIIRULE_T10_R015_R016 ();
+    tTabInvoiceLine.getTable ().addListener (biirule_t10_r015_r016);
+    tTabInvoiceAllowanceCharge.getTable ().addListener (biirule_t10_r015_r016);
+
+    // BIIRULE-T10-R017
+    final BIIRULE_T10_R017 biirule_t10_r017 = new BIIRULE_T10_R017 ();
+    tTabInvoiceMonetaryTotal.getMonetaryTotalForm ()
+                            .getField (TabInvoiceMonetaryTotal.taxInclusiveAmount)
+                            .addListener (biirule_t10_r017);
+    tTabInvoiceMonetaryTotal.getMonetaryTotalForm ()
+                            .getField (TabInvoiceMonetaryTotal.prepaidAmount)
+                            .addListener (biirule_t10_r017);
+
     return mainLayout;
   }
 
@@ -454,16 +464,16 @@ public class InvoiceTabForm extends Form {
   public JAXBElement <InvoiceType> getInvoiceAsJAXB () {
     return invObjFactory.createInvoice (invoice);
   }
-  
-  public void clearTabErrorStyles() {
-	  int position = 0;
-	  while (true) {
-		  Tab tab = invTabSheet.getTab(position++);
-		  if (tab == null)
-			  break;
-		  
-		  tab.setStyleName("");
-	  }
+
+  public void clearTabErrorStyles () {
+    int position = 0;
+    while (true) {
+      final Tab tab = invTabSheet.getTab (position++);
+      if (tab == null)
+        break;
+
+      tab.setStyleName ("");
+    }
   }
 
   public void SetCommonCurrency () {
@@ -490,18 +500,19 @@ public class InvoiceTabForm extends Form {
       ac.getTaxAmount ().setCurrencyID (cur);
       ac.getTaxableAmount ().setCurrencyID (cur);
     }
-    
-    //dummy method
-    if (invoice.getTaxTotal().size() > 1)
-    	invoice.getTaxTotal().remove(1);
-    
-    /*Collection<?> col = tTabInvoiceLine.getTable().getContainerDataSource().getItemIds(); 
-    for (Object itemId : col) {
-    	System.out.println("Table item id: "+itemId);
-    	tTabInvoiceLine.getTable().getContainerDataSource().getItem(itemId).
-    		getItemProperty("CommonCurrency").setValue(cur);
-    }*/
-    
+
+    // dummy method
+    if (invoice.getTaxTotal ().size () > 1)
+      invoice.getTaxTotal ().remove (1);
+
+    /*
+     * Collection<?> col =
+     * tTabInvoiceLine.getTable().getContainerDataSource().getItemIds(); for
+     * (Object itemId : col) { System.out.println("Table item id: "+itemId);
+     * tTabInvoiceLine.getTable().getContainerDataSource().getItem(itemId).
+     * getItemProperty("CommonCurrency").setValue(cur); }
+     */
+
     // lines
     final List <InvoiceLineType> invoiceLineList = invoice.getInvoiceLine ();
     final Iterator <InvoiceLineType> iter = invoiceLineList.iterator ();
@@ -514,140 +525,138 @@ public class InvoiceTabForm extends Form {
       il.getPrice ().getAllowanceCharge ().get (0).getBaseAmount ().setCurrencyID (cur);
     }
   }
-  
-/*  public void linesTotalAmountListener(ItemSetChangeEvent event) {
-	  Field lineTotalField = tTabInvoiceMonetaryTotal.getMonetaryTotalForm().getField("Line Extension Amount");
-	   
-	  BigDecimal total = new BigDecimal(0.0);
-	  List<InvoiceLineType> list = tTabInvoiceLine.getInvoiceLineList();
-	  for (InvoiceLineType line : list) {
-		  total = total.add(line.getLineExtensionAmount().getValue());
-	  }
-	  System.out.println("Total is "+total.floatValue());
-	  
-	  lineTotalField.setValue(total);
-  }*/
-  
+
+  /*
+   * public void linesTotalAmountListener(ItemSetChangeEvent event) { Field
+   * lineTotalField = tTabInvoiceMonetaryTotal.getMonetaryTotalForm().getField(
+   * "Line Extension Amount"); BigDecimal total = new BigDecimal(0.0);
+   * List<InvoiceLineType> list = tTabInvoiceLine.getInvoiceLineList(); for
+   * (InvoiceLineType line : list) { total =
+   * total.add(line.getLineExtensionAmount().getValue()); }
+   * System.out.println("Total is "+total.floatValue());
+   * lineTotalField.setValue(total); }
+   */
+
   public class LinesTotalAmountListener implements ItemSetChangeListener {
-	@Override
-	public void containerItemSetChange(ItemSetChangeEvent event) {
-		Field lineTotalField = tTabInvoiceMonetaryTotal.getMonetaryTotalForm().getField(
-											 TabInvoiceMonetaryTotal.lineExtensionAmount);
-		
-		BigDecimal total = new BigDecimal(0.0);
-		//List<InvoiceLineType> list = tTabInvoiceLine.getInvoiceLineList();
-		List<InvoiceLineType> list = invoice.getInvoiceLine();
-		for (InvoiceLineType line : list) {
-			total = total.add(line.getLineExtensionAmount().getValue());
-		}
-		lineTotalField.setValue(total);
-	}
+    @Override
+    public void containerItemSetChange (final ItemSetChangeEvent event) {
+      final Field lineTotalField = tTabInvoiceMonetaryTotal.getMonetaryTotalForm ()
+                                                           .getField (TabInvoiceMonetaryTotal.lineExtensionAmount);
+
+      BigDecimal total = new BigDecimal (0.0);
+      // List<InvoiceLineType> list = tTabInvoiceLine.getInvoiceLineList();
+      final List <InvoiceLineType> list = invoice.getInvoiceLine ();
+      for (final InvoiceLineType line : list) {
+        total = total.add (line.getLineExtensionAmount ().getValue ());
+      }
+      lineTotalField.setValue (total);
+    }
   }
-  
+
   public class TaxExclusiveAmountListener implements ItemSetChangeListener {
-	@Override
-	public void containerItemSetChange(ItemSetChangeEvent event) {
-		Field taxExclusiveField = tTabInvoiceMonetaryTotal.getMonetaryTotalForm().getField(
-											  TabInvoiceMonetaryTotal.taxExclusiveAmount);
-		   
-		BigDecimal lineTotal = new BigDecimal(0.0);
-		List<InvoiceLineType> list = invoice.getInvoiceLine();
-		for (InvoiceLineType line : list) {
-			lineTotal = lineTotal.add(line.getLineExtensionAmount().getValue());
-		}
-		
-		BigDecimal chargesTotal = new BigDecimal(0.0);
-		BigDecimal allowancesTotal = new BigDecimal(0.0);
-		List<AllowanceChargeType> list2 = invoice.getAllowanceCharge();
-		for (AllowanceChargeType ac : list2) {
-			if (ac.getChargeIndicator().isValue()) {
-				chargesTotal = chargesTotal.add(ac.getAmount().getValue());
-			}
-			else {
-				allowancesTotal = allowancesTotal.add(ac.getAmount().getValue());
-			}
-		}
-		
-		BigDecimal result = lineTotal.add(chargesTotal).subtract(allowancesTotal);
-		if (result.doubleValue() < 0)
-			taxExclusiveField.setValue(new BigDecimal(0.0));
-		else
-			taxExclusiveField.setValue(result);
-	}
+    @Override
+    public void containerItemSetChange (final ItemSetChangeEvent event) {
+      final Field taxExclusiveField = tTabInvoiceMonetaryTotal.getMonetaryTotalForm ()
+                                                              .getField (TabInvoiceMonetaryTotal.taxExclusiveAmount);
+
+      BigDecimal lineTotal = new BigDecimal (0.0);
+      final List <InvoiceLineType> list = invoice.getInvoiceLine ();
+      for (final InvoiceLineType line : list) {
+        lineTotal = lineTotal.add (line.getLineExtensionAmount ().getValue ());
+      }
+
+      BigDecimal chargesTotal = new BigDecimal (0.0);
+      BigDecimal allowancesTotal = new BigDecimal (0.0);
+      final List <AllowanceChargeType> list2 = invoice.getAllowanceCharge ();
+      for (final AllowanceChargeType ac : list2) {
+        if (ac.getChargeIndicator ().isValue ()) {
+          chargesTotal = chargesTotal.add (ac.getAmount ().getValue ());
+        }
+        else {
+          allowancesTotal = allowancesTotal.add (ac.getAmount ().getValue ());
+        }
+      }
+
+      final BigDecimal result = lineTotal.add (chargesTotal).subtract (allowancesTotal);
+      if (result.doubleValue () < 0)
+        taxExclusiveField.setValue (new BigDecimal (0.0));
+      else
+        taxExclusiveField.setValue (result);
+    }
   }
-  
+
   public class TaxInclusiveAmountListener implements ValueChangeListener {
-	@Override
-	public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-		// TODO Auto-generated method stub
-		Field taxInclusiveAmountField = tTabInvoiceMonetaryTotal.getMonetaryTotalForm().getField(
-				  									   TabInvoiceMonetaryTotal.taxInclusiveAmount);
-	
-		BigDecimal taxEx = invoice.getLegalMonetaryTotal().getTaxExclusiveAmount().getValue();
-		BigDecimal taxTot = invoice.getTaxTotal().get(0).getTaxAmount().getValue();
-		
-		taxInclusiveAmountField.setValue(taxEx.add(taxTot));
-	}
-	  
+    @Override
+    public void valueChange (final com.vaadin.data.Property.ValueChangeEvent event) {
+      // TODO Auto-generated method stub
+      final Field taxInclusiveAmountField = tTabInvoiceMonetaryTotal.getMonetaryTotalForm ()
+                                                                    .getField (TabInvoiceMonetaryTotal.taxInclusiveAmount);
+
+      final BigDecimal taxEx = invoice.getLegalMonetaryTotal ().getTaxExclusiveAmount ().getValue ();
+      final BigDecimal taxTot = invoice.getTaxTotal ().get (0).getTaxAmount ().getValue ();
+
+      taxInclusiveAmountField.setValue (taxEx.add (taxTot));
+    }
+
   }
-  
+
   public class BIIRULE_T10_R015_R016 implements ItemSetChangeListener {
 
-	@Override
-	public void containerItemSetChange(ItemSetChangeEvent event) {
-		Field totalAllowanceField = tTabInvoiceMonetaryTotal.getMonetaryTotalForm().getField(
-				   TabInvoiceMonetaryTotal.allowanceTotalAmount);
-		Field totalChargeField = tTabInvoiceMonetaryTotal.getMonetaryTotalForm().getField(
-				   TabInvoiceMonetaryTotal.chargeTotalAmount);
-		
-		List<AllowanceChargeType> invoiceAllowanceCharge = invoice.getAllowanceCharge();
-		BigDecimal allowancesTotal = new BigDecimal(0.0);
-		BigDecimal chargesTotal = new BigDecimal(0.0);
-		for (AllowanceChargeType ac : invoiceAllowanceCharge) {
-			if (!ac.getChargeIndicator().isValue()) {
-				allowancesTotal = allowancesTotal.add(ac.getAmount().getValue());
-			}
-			else {
-				chargesTotal = chargesTotal.add(ac.getAmount().getValue());
-			}
-		}
-		
-		List<InvoiceLineType> lines = invoice.getInvoiceLine();
-		for (InvoiceLineType line : lines) {
-			List<AllowanceChargeType> lineAllowanceCharge = line.getAllowanceCharge();
-			for (AllowanceChargeType ac : lineAllowanceCharge) {
-				if (!ac.getChargeIndicator().isValue()) {
-					allowancesTotal = allowancesTotal.add(ac.getAmount().getValue());
-				}
-				else {
-					chargesTotal = chargesTotal.add(ac.getAmount().getValue());
-				}
-			}
-		}
-		
-		totalAllowanceField.setValue(allowancesTotal);
-		totalChargeField.setValue(chargesTotal);
-	}
-	  
+    @Override
+    public void containerItemSetChange (final ItemSetChangeEvent event) {
+      final Field totalAllowanceField = tTabInvoiceMonetaryTotal.getMonetaryTotalForm ()
+                                                                .getField (TabInvoiceMonetaryTotal.allowanceTotalAmount);
+      final Field totalChargeField = tTabInvoiceMonetaryTotal.getMonetaryTotalForm ()
+                                                             .getField (TabInvoiceMonetaryTotal.chargeTotalAmount);
+
+      final List <AllowanceChargeType> invoiceAllowanceCharge = invoice.getAllowanceCharge ();
+      BigDecimal allowancesTotal = new BigDecimal (0.0);
+      BigDecimal chargesTotal = new BigDecimal (0.0);
+      for (final AllowanceChargeType ac : invoiceAllowanceCharge) {
+        if (!ac.getChargeIndicator ().isValue ()) {
+          allowancesTotal = allowancesTotal.add (ac.getAmount ().getValue ());
+        }
+        else {
+          chargesTotal = chargesTotal.add (ac.getAmount ().getValue ());
+        }
+      }
+
+      final List <InvoiceLineType> lines = invoice.getInvoiceLine ();
+      for (final InvoiceLineType line : lines) {
+        final List <AllowanceChargeType> lineAllowanceCharge = line.getAllowanceCharge ();
+        for (final AllowanceChargeType ac : lineAllowanceCharge) {
+          if (!ac.getChargeIndicator ().isValue ()) {
+            allowancesTotal = allowancesTotal.add (ac.getAmount ().getValue ());
+          }
+          else {
+            chargesTotal = chargesTotal.add (ac.getAmount ().getValue ());
+          }
+        }
+      }
+
+      totalAllowanceField.setValue (allowancesTotal);
+      totalChargeField.setValue (chargesTotal);
+    }
+
   }
-  
+
   public class BIIRULE_T10_R017 implements ValueChangeListener {
 
-	@Override
-	public void valueChange(com.vaadin.data.Property.ValueChangeEvent event) {
-		Field payableAmountField = tTabInvoiceMonetaryTotal.getMonetaryTotalForm().getField(
-				   TabInvoiceMonetaryTotal.payableAmount);
-		
-		BigDecimal payable = new BigDecimal(0.0);
-		payable = payable.add(invoice.getLegalMonetaryTotal().getTaxInclusiveAmount().getValue())
-						 .subtract(invoice.getLegalMonetaryTotal().getPrepaidAmount().getValue());
-		
-		if (payable.doubleValue() < 0)
-			payableAmountField.setValue(new BigDecimal(0.00));
-		else
-			payableAmountField.setValue(payable);
-		
-	}
-	  
+    @Override
+    public void valueChange (final com.vaadin.data.Property.ValueChangeEvent event) {
+      final Field payableAmountField = tTabInvoiceMonetaryTotal.getMonetaryTotalForm ()
+                                                               .getField (TabInvoiceMonetaryTotal.payableAmount);
+
+      BigDecimal payable = new BigDecimal (0.0);
+      payable = payable.add (invoice.getLegalMonetaryTotal ().getTaxInclusiveAmount ().getValue ())
+                       .subtract (invoice.getLegalMonetaryTotal ().getPrepaidAmount ().getValue ());
+
+      if (payable.doubleValue () < 0)
+        payableAmountField.setValue (new BigDecimal (0.00));
+      else
+        payableAmountField.setValue (payable);
+
+    }
+
   }
 }

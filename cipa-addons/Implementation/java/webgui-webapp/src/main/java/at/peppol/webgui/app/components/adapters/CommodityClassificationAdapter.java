@@ -1,51 +1,49 @@
 package at.peppol.webgui.app.components.adapters;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.CommodityClassificationType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.OrderLineReferenceType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.CommodityCodeType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IDType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.LineIDType;
 
 public class CommodityClassificationAdapter extends CommodityClassificationType implements Adapter {
 
-	String tableID = "";
-	
-	public CommodityClassificationAdapter() {
-		super();
-		CommodityCodeType code = new CommodityCodeType(); 
-		this.setCommodityCode(code);
-	}
-	
-	public CommodityClassificationAdapter(CommodityClassificationType ac) {
-		if (ac.getCommodityCode() != null)
-			this.setCommodityCode(ac.getCommodityCode());
-		else
-			this.setCommodityCode(new CommodityCodeType());
-	}
-	
-	@Override
-	public String getIDAdapter() {
-		return tableID;
-	}
+  String tableID = "";
 
-	@Override
-	public void setIDAdapter(String id) {
-		tableID = id;
+  public CommodityClassificationAdapter () {
+    super ();
+    final CommodityCodeType code = new CommodityCodeType ();
+    this.setCommodityCode (code);
+  }
 
-	}
-	
-	@Override
-	public void setID(IDType id) {
-		// TODO Auto-generated method stub
+  public CommodityClassificationAdapter (final CommodityClassificationType ac) {
+    if (ac.getCommodityCode () != null)
+      this.setCommodityCode (ac.getCommodityCode ());
+    else
+      this.setCommodityCode (new CommodityCodeType ());
+  }
 
-	}
-	
-	public void setInvLineCommodityCode(String id) {
-		this.getCommodityCode().setValue(id);
-	}
-	
-	public String getInvLineCommodityCode() {
-		return getCommodityCode().getValue();
-	}
+  @Override
+  public String getIDAdapter () {
+    return tableID;
+  }
+
+  @Override
+  public void setIDAdapter (final String id) {
+    tableID = id;
+
+  }
+
+  @Override
+  public void setID (final IDType id) {
+    // TODO Auto-generated method stub
+
+  }
+
+  public void setInvLineCommodityCode (final String id) {
+    this.getCommodityCode ().setValue (id);
+  }
+
+  public String getInvLineCommodityCode () {
+    return getCommodityCode ().getValue ();
+  }
 
 }

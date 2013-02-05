@@ -37,49 +37,45 @@
  */
 package at.peppol.webgui.app.components;
 
-import at.peppol.commons.identifier.issuingagency.EPredefinedIdentifierIssuingAgency;
-
 import com.vaadin.ui.ComboBox;
 
+import eu.europa.ec.cipa.peppol.identifier.issuingagency.EPredefinedIdentifierIssuingAgency;
+
 /**
- *
  * @author Jerouris
  */
 public class PartyAgencyIDSelect extends ComboBox {
-    
-    public PartyAgencyIDSelect(String caption){
-        super(caption);
-        setWidth(13,UNITS_EM);
-        initData();
+
+  public PartyAgencyIDSelect (final String caption) {
+    super (caption);
+    setWidth (13, UNITS_EM);
+    initData ();
+  }
+
+  private void initData () {
+    for (final EPredefinedIdentifierIssuingAgency a : EPredefinedIdentifierIssuingAgency.values ()) {
+      if (!a.isDeprecated ()) {
+        addItem (a.getSchemeID ());
+        setItemCaption (a.getSchemeID (), a.getSchemeID () + " (" + a.getSchemeAgency () + ")");
+      }
     }
-    
-    private void initData() {
-    	for (EPredefinedIdentifierIssuingAgency a : EPredefinedIdentifierIssuingAgency.values()) {
-            if (!a.isDeprecated()) 
-            {
-                addItem(a.getSchemeID());
-                setItemCaption(a.getSchemeID(),a.getSchemeID()+" ("+a.getSchemeAgency()+")");
-            }
-       }
+  }
+
+  public String getSelectedAgencyName () {
+    final String id = getSelectedAgencyID ();
+    for (final EPredefinedIdentifierIssuingAgency a : EPredefinedIdentifierIssuingAgency.values ()) {
+      if (!a.isDeprecated ()) {
+        if (a.getSchemeID ().equals (id))
+          return a.getSchemeAgency ();
+      }
     }
-    
-    public String getSelectedAgencyName() 
-    {
-        String id = getSelectedAgencyID();
-        for (EPredefinedIdentifierIssuingAgency a : EPredefinedIdentifierIssuingAgency.values()) {
-            if (!a.isDeprecated()) {
-                if (a.getSchemeID().equals(id))
-                	return a.getSchemeAgency();
-            }
-        }
-        
-        return getItemCaption(getValue());
-    
-    }
-    
-    public String getSelectedAgencyID() 
-    {
-        return (String) getValue();
-    }
-    
+
+    return getItemCaption (getValue ());
+
+  }
+
+  public String getSelectedAgencyID () {
+    return (String) getValue ();
+  }
+
 }

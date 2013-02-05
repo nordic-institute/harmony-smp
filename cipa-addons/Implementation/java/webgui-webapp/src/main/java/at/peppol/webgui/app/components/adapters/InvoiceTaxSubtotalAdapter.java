@@ -53,236 +53,236 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.TaxableA
 @SuppressWarnings ("serial")
 public class InvoiceTaxSubtotalAdapter extends TaxSubtotalType implements Adapter {
   private String tableLineID;
-  
-  public InvoiceTaxSubtotalAdapter() {
-    super();
-	tableLineID = "";
+
+  public InvoiceTaxSubtotalAdapter () {
+    super ();
+    tableLineID = "";
     setTaxableAmount (new TaxableAmountType ());
     setTaxAmount (new TaxAmountType ());
-    TaxCategoryType tc = new TaxCategoryType ();
+    final TaxCategoryType tc = new TaxCategoryType ();
     tc.setID (new IDType ());
     tc.setPercent (new PercentType ());
     tc.setTaxExemptionReasonCode (new TaxExemptionReasonCodeType ());
     tc.setTaxExemptionReason (new TaxExemptionReasonType ());
-    TaxSchemeType ts = new TaxSchemeType ();
+    final TaxSchemeType ts = new TaxSchemeType ();
     ts.setID (new IDType ());
     tc.setTaxScheme (ts);
     setTaxCategory (tc);
   }
-  
-  public InvoiceTaxSubtotalAdapter(TaxSubtotalType type) {
-	  super();
-	  tableLineID = "";
-	  
-	  if (type.getTaxableAmount() != null)
-		  this.setTaxableAmount(type.getTaxableAmount());
-	  else
-		  this.setTaxableAmount (new TaxableAmountType ());
-	  if (type.getTaxAmount() != null)
-		  this.setTaxAmount(type.getTaxAmount());
-	  else
-		  this.setTaxAmount(new TaxAmountType());
-	  if (type.getTaxCategory() != null) {
-		TaxCategoryType tc = type.getTaxCategory();
-		this.setTaxCategory(tc);
-		if (tc.getID() == null)
-			tc.setID(new IDType());
-		if (tc.getPercent() == null)
-			tc.setPercent(new PercentType());
-		if (tc.getTaxExemptionReasonCode() == null)
-			tc.setTaxExemptionReasonCode(new TaxExemptionReasonCodeType());
-		if (tc.getTaxExemptionReason() == null)
-			tc.setTaxExemptionReason(new TaxExemptionReasonType());
-		if (tc.getTaxScheme() == null) {
-			TaxSchemeType ts = new TaxSchemeType ();
-		    ts.setID (new IDType ());
-		    tc.setTaxScheme (ts);
-		}
-		else {
-			if (tc.getTaxScheme().getID() == null)
-				tc.getTaxScheme().setID(new IDType());
-		}
-	  }
-	  else {
-			TaxCategoryType tc = new TaxCategoryType ();
-		    tc.setID (new IDType ());
-		    tc.setPercent (new PercentType ());
-		    tc.setTaxExemptionReasonCode (new TaxExemptionReasonCodeType ());
-		    tc.setTaxExemptionReason (new TaxExemptionReasonType ());
-		    TaxSchemeType ts = new TaxSchemeType ();
-		    ts.setID (new IDType ());
-		    tc.setTaxScheme (ts);
-		    this.setTaxCategory (tc);
-	  }
+
+  public InvoiceTaxSubtotalAdapter (final TaxSubtotalType type) {
+    super ();
+    tableLineID = "";
+
+    if (type.getTaxableAmount () != null)
+      this.setTaxableAmount (type.getTaxableAmount ());
+    else
+      this.setTaxableAmount (new TaxableAmountType ());
+    if (type.getTaxAmount () != null)
+      this.setTaxAmount (type.getTaxAmount ());
+    else
+      this.setTaxAmount (new TaxAmountType ());
+    if (type.getTaxCategory () != null) {
+      final TaxCategoryType tc = type.getTaxCategory ();
+      this.setTaxCategory (tc);
+      if (tc.getID () == null)
+        tc.setID (new IDType ());
+      if (tc.getPercent () == null)
+        tc.setPercent (new PercentType ());
+      if (tc.getTaxExemptionReasonCode () == null)
+        tc.setTaxExemptionReasonCode (new TaxExemptionReasonCodeType ());
+      if (tc.getTaxExemptionReason () == null)
+        tc.setTaxExemptionReason (new TaxExemptionReasonType ());
+      if (tc.getTaxScheme () == null) {
+        final TaxSchemeType ts = new TaxSchemeType ();
+        ts.setID (new IDType ());
+        tc.setTaxScheme (ts);
+      }
+      else {
+        if (tc.getTaxScheme ().getID () == null)
+          tc.getTaxScheme ().setID (new IDType ());
+      }
+    }
+    else {
+      final TaxCategoryType tc = new TaxCategoryType ();
+      tc.setID (new IDType ());
+      tc.setPercent (new PercentType ());
+      tc.setTaxExemptionReasonCode (new TaxExemptionReasonCodeType ());
+      tc.setTaxExemptionReason (new TaxExemptionReasonType ());
+      final TaxSchemeType ts = new TaxSchemeType ();
+      ts.setID (new IDType ());
+      tc.setTaxScheme (ts);
+      this.setTaxCategory (tc);
+    }
   }
-  
-  public void setID(IDType id) {/*dummy method*/}
-  
+
+  public void setID (final IDType id) {/* dummy method */}
+
   @Override
-  public int hashCode() {
-	  int ret = 0;
-	  if (getTableLineID() != null)
-		  ret += getTableLineID().hashCode();
-	  if (getTaxSubTotalTaxableAmount() != null)
-		  ret += getTaxSubTotalTaxableAmount().hashCode();
-	  if (getTaxSubTotalTaxAmount() != null)
-		  ret += getTaxSubTotalTaxAmount().hashCode();
-	  if (getTaxSubTotalCategoryID() != null)
-		  ret += getTaxSubTotalCategoryID().hashCode();
-	  if (getTaxSubTotalCategoryPercent() != null)
-		  ret += getTaxSubTotalCategoryPercent().hashCode();
-	  if (getTaxSubTotalCategoryExemptionReasonCode() != null)
-		  ret += getTaxSubTotalCategoryExemptionReasonCode().hashCode();
-	  if (getTaxSubTotalCategoryExemptionReason() != null)
-		  ret += getTaxSubTotalCategoryExemptionReason().hashCode();
-	  if (getTaxSubTotalCategoryTaxSchemeID() != null)
-		  ret += getTaxSubTotalCategoryTaxSchemeID().hashCode();
-	  
-	  return ret;
+  public int hashCode () {
+    int ret = 0;
+    if (getTableLineID () != null)
+      ret += getTableLineID ().hashCode ();
+    if (getTaxSubTotalTaxableAmount () != null)
+      ret += getTaxSubTotalTaxableAmount ().hashCode ();
+    if (getTaxSubTotalTaxAmount () != null)
+      ret += getTaxSubTotalTaxAmount ().hashCode ();
+    if (getTaxSubTotalCategoryID () != null)
+      ret += getTaxSubTotalCategoryID ().hashCode ();
+    if (getTaxSubTotalCategoryPercent () != null)
+      ret += getTaxSubTotalCategoryPercent ().hashCode ();
+    if (getTaxSubTotalCategoryExemptionReasonCode () != null)
+      ret += getTaxSubTotalCategoryExemptionReasonCode ().hashCode ();
+    if (getTaxSubTotalCategoryExemptionReason () != null)
+      ret += getTaxSubTotalCategoryExemptionReason ().hashCode ();
+    if (getTaxSubTotalCategoryTaxSchemeID () != null)
+      ret += getTaxSubTotalCategoryTaxSchemeID ().hashCode ();
+
+    return ret;
   }
-  
+
   @Override
-  public boolean equals(Object obj) {
-	  if (obj == null)
-		  return false;
-	  
-	  if (this.hashCode() == obj.hashCode())
-		  return true;
-	  
-	  return false;
+  public boolean equals (final Object obj) {
+    if (obj == null)
+      return false;
+
+    if (this.hashCode () == obj.hashCode ())
+      return true;
+
+    return false;
   }
-  
+
   @Override
-  public void setIDAdapter(String id) {
-	  //setTableLineID(id);
-	  tableLineID = id;
-  }
-  
-  @Override
-  public String getIDAdapter() {
-	  //return getTableLineID();
-	  return tableLineID;
-  }
-  
-  public void setTableLineID(String id) {
+  public void setIDAdapter (final String id) {
+    // setTableLineID(id);
     tableLineID = id;
   }
-  
+
+  @Override
+  public String getIDAdapter () {
+    // return getTableLineID();
+    return tableLineID;
+  }
+
+  public void setTableLineID (final String id) {
+    tableLineID = id;
+  }
+
   public String getTableLineID () {
     return tableLineID;
   }
 
-  public void setTaxSubTotalTaxableAmount(BigDecimal v) {
-	  v = v.setScale(2,RoundingMode.HALF_UP);
-	  if (getTaxableAmount() == null)
-		  setTaxableAmount(new TaxableAmountType());
-	  getTaxableAmount ().setValue (v);
+  public void setTaxSubTotalTaxableAmount (BigDecimal v) {
+    v = v.setScale (2, RoundingMode.HALF_UP);
+    if (getTaxableAmount () == null)
+      setTaxableAmount (new TaxableAmountType ());
+    getTaxableAmount ().setValue (v);
   }
-  
-  public BigDecimal getTaxSubTotalTaxableAmount() {
-	  if (getTaxableAmount() != null)
-		  return getTaxableAmount ().getValue ();
-	  return null;
-  } 
-  
-  public void setTaxSubTotalTaxAmount(BigDecimal v) {
-	  v = v.setScale(2,RoundingMode.HALF_UP);
-	  
-	  if (getTaxAmount () == null)
-		  setTaxAmount(new TaxAmountType());
-	  
-	  getTaxAmount ().setValue (v);
+
+  public BigDecimal getTaxSubTotalTaxableAmount () {
+    if (getTaxableAmount () != null)
+      return getTaxableAmount ().getValue ();
+    return null;
   }
-  
-  public BigDecimal getTaxSubTotalTaxAmount() {
-	  if (getTaxAmount() != null)
-		  return getTaxAmount().getValue ();
-	  return null;
-  }    
-  
-  public void setTaxSubTotalCategoryID(String v) {
-	  if (getTaxCategory ().getID () == null)
-		  getTaxCategory ().setID(new IDType());
-	  
-	  getTaxCategory ().getID ().setValue (v);
+
+  public void setTaxSubTotalTaxAmount (BigDecimal v) {
+    v = v.setScale (2, RoundingMode.HALF_UP);
+
+    if (getTaxAmount () == null)
+      setTaxAmount (new TaxAmountType ());
+
+    getTaxAmount ().setValue (v);
   }
-  
-  public String getTaxSubTotalCategoryID() {
-	  if (getTaxCategory ().getID () != null)
-		  return getTaxCategory ().getID ().getValue ();
-	  return null;
+
+  public BigDecimal getTaxSubTotalTaxAmount () {
+    if (getTaxAmount () != null)
+      return getTaxAmount ().getValue ();
+    return null;
   }
-  
-  public void setTaxSubTotalCategoryPercent(BigDecimal v) {
-	  v = v.setScale(2,RoundingMode.HALF_UP);
-	  if (getTaxCategory ().getPercent () == null)
-		  getTaxCategory ().setPercent(new PercentType());
-	  
-	  getTaxCategory ().getPercent ().setValue (v);
+
+  public void setTaxSubTotalCategoryID (final String v) {
+    if (getTaxCategory ().getID () == null)
+      getTaxCategory ().setID (new IDType ());
+
+    getTaxCategory ().getID ().setValue (v);
   }
-  
-  public BigDecimal getTaxSubTotalCategoryPercent() {
-	  if (getTaxCategory ().getPercent () != null)
-		  return getTaxCategory ().getPercent ().getValue ();
-	  return null;
-  }   
-  
-  public void setTaxSubTotalCategoryExemptionReasonCode(String v) {
+
+  public String getTaxSubTotalCategoryID () {
+    if (getTaxCategory ().getID () != null)
+      return getTaxCategory ().getID ().getValue ();
+    return null;
+  }
+
+  public void setTaxSubTotalCategoryPercent (BigDecimal v) {
+    v = v.setScale (2, RoundingMode.HALF_UP);
+    if (getTaxCategory ().getPercent () == null)
+      getTaxCategory ().setPercent (new PercentType ());
+
+    getTaxCategory ().getPercent ().setValue (v);
+  }
+
+  public BigDecimal getTaxSubTotalCategoryPercent () {
+    if (getTaxCategory ().getPercent () != null)
+      return getTaxCategory ().getPercent ().getValue ();
+    return null;
+  }
+
+  public void setTaxSubTotalCategoryExemptionReasonCode (final String v) {
     if (getTaxCategory ().getTaxExemptionReasonCode () == null)
-    	getTaxCategory ().setTaxExemptionReasonCode(new TaxExemptionReasonCodeType());
-    
+      getTaxCategory ().setTaxExemptionReasonCode (new TaxExemptionReasonCodeType ());
+
     getTaxCategory ().getTaxExemptionReasonCode ().setValue (v);
   }
-  
-  public String getTaxSubTotalCategoryExemptionReasonCode() {
+
+  public String getTaxSubTotalCategoryExemptionReasonCode () {
     if (getTaxCategory ().getTaxExemptionReasonCode () != null)
-    	return getTaxCategory ().getTaxExemptionReasonCode ().getValue ();
+      return getTaxCategory ().getTaxExemptionReasonCode ().getValue ();
     return null;
   }
-  
-  public void setTaxSubTotalCategoryExemptionReason(String v) {
+
+  public void setTaxSubTotalCategoryExemptionReason (final String v) {
     if (getTaxCategory ().getTaxExemptionReason () == null)
-    	getTaxCategory ().setTaxExemptionReason(new TaxExemptionReasonType());
-    
-	getTaxCategory ().getTaxExemptionReason ().setValue (v);
+      getTaxCategory ().setTaxExemptionReason (new TaxExemptionReasonType ());
+
+    getTaxCategory ().getTaxExemptionReason ().setValue (v);
   }
-  
-  public String getTaxSubTotalCategoryExemptionReason() {
+
+  public String getTaxSubTotalCategoryExemptionReason () {
     if (getTaxCategory ().getTaxExemptionReason () != null)
-    	return getTaxCategory ().getTaxExemptionReason ().getValue ();
+      return getTaxCategory ().getTaxExemptionReason ().getValue ();
     return null;
   }
-  
-  public void setTaxSubTotalCategoryTaxSchemeID(String v) {
-	  if (getTaxCategory ().getTaxScheme ().getID () == null)
-		  getTaxCategory ().getTaxScheme ().setID (new IDType());
-		  
-	  getTaxCategory ().getTaxScheme ().getID ().setValue (v);
-	  
+
+  public void setTaxSubTotalCategoryTaxSchemeID (final String v) {
+    if (getTaxCategory ().getTaxScheme ().getID () == null)
+      getTaxCategory ().getTaxScheme ().setID (new IDType ());
+
+    getTaxCategory ().getTaxScheme ().getID ().setValue (v);
+
   }
-  
-  public String getTaxSubTotalCategoryTaxSchemeID() {
-	  if (getTaxCategory ().getTaxScheme ().getID () != null)
-		  return getTaxCategory ().getTaxScheme ().getID ().getValue ();
-	  return null;
+
+  public String getTaxSubTotalCategoryTaxSchemeID () {
+    if (getTaxCategory ().getTaxScheme ().getID () != null)
+      return getTaxCategory ().getTaxScheme ().getID ().getValue ();
+    return null;
   }
-  
-  public void setEmptyAsNull() {
-	  if (getTaxSubTotalCategoryExemptionReason() != null) {
-		  if (getTaxSubTotalCategoryExemptionReason().trim().equals(""))
-			  getTaxCategory ().setTaxExemptionReason(null);
-	  }
-	  else
-		  getTaxCategory ().setTaxExemptionReason(null);
-	  
-	  if (getTaxSubTotalCategoryExemptionReasonCode() != null) {
-		  if (getTaxSubTotalCategoryExemptionReasonCode().trim().equals(""))
-			  getTaxCategory ().setTaxExemptionReasonCode(null);
-	  }
-	  else
-		  getTaxCategory ().setTaxExemptionReasonCode(null);
-	  
-	  if (this.getTaxSubTotalCategoryPercent() == BigDecimal.ZERO)
-		  getTaxCategory ().setPercent(null);
+
+  public void setEmptyAsNull () {
+    if (getTaxSubTotalCategoryExemptionReason () != null) {
+      if (getTaxSubTotalCategoryExemptionReason ().trim ().equals (""))
+        getTaxCategory ().setTaxExemptionReason (null);
+    }
+    else
+      getTaxCategory ().setTaxExemptionReason (null);
+
+    if (getTaxSubTotalCategoryExemptionReasonCode () != null) {
+      if (getTaxSubTotalCategoryExemptionReasonCode ().trim ().equals (""))
+        getTaxCategory ().setTaxExemptionReasonCode (null);
+    }
+    else
+      getTaxCategory ().setTaxExemptionReasonCode (null);
+
+    if (this.getTaxSubTotalCategoryPercent () == BigDecimal.ZERO)
+      getTaxCategory ().setPercent (null);
   }
 }

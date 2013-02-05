@@ -39,151 +39,140 @@ package at.peppol.webgui.app.components;
 
 import java.util.List;
 
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ItemPropertyType;
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.OrderLineReferenceType;
 import oasis.names.specification.ubl.schema.xsd.invoice_2.InvoiceType;
-
-import at.peppol.webgui.app.components.adapters.InvoiceAllowanceChargeAdapter;
-import at.peppol.webgui.app.components.adapters.InvoiceItemPropertyAdapter;
 import at.peppol.webgui.app.components.adapters.InvoiceLineOrderReferenceAdapter;
-import at.peppol.webgui.app.components.tables.InvoiceAdditionalDocRefTableEditor;
-import at.peppol.webgui.app.components.tables.InvoiceItemPropertyTable;
-import at.peppol.webgui.app.components.tables.InvoiceItemPropertyTableEditor;
-import at.peppol.webgui.app.components.tables.InvoiceLineAllowanceChargeTable;
-import at.peppol.webgui.app.components.tables.InvoiceLineAllowanceChargeTableEditor;
 import at.peppol.webgui.app.components.tables.InvoiceLineOrderReferenceTable;
 import at.peppol.webgui.app.components.tables.InvoiceLineOrderReferenceTableEditor;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.util.NestedMethodProperty;
-import com.vaadin.ui.AbstractTextField;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
-import com.vaadin.ui.Component;
-import com.vaadin.ui.DefaultFieldFactory;
-import com.vaadin.ui.Field;
-import com.vaadin.ui.Form;
-import com.vaadin.ui.FormFieldFactory;
-import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.Window;
 
 @SuppressWarnings ("serial")
 public class InvoiceLineOrderForm extends Panel {
   private final String prefix;
-  
+
   private InvoiceType inv;
-  private List<OrderLineReferenceType> lineOrderList;
+  private final List <OrderLineReferenceType> lineOrderList;
   private InvoiceLineOrderReferenceAdapter lineOrderBean;
-  
+
   private InvoiceLineOrderReferenceAdapter originalItem;
 
-  private boolean editMode;
-  
+  private final boolean editMode;
+
   public InvoiceLineOrderReferenceTable table;
   private VerticalLayout hiddenContent;
 
-  
-  public InvoiceLineOrderForm(String prefix, List<OrderLineReferenceType> lineOrderList) {
-      this.prefix = prefix;
-      this.lineOrderList = lineOrderList;
-      editMode = false;
-      
-      initElements();
-  }
-  
-  public InvoiceLineOrderForm(String prefix, List<OrderLineReferenceType> lineOrderList, InvoiceType inv) {
-	  this.prefix = prefix;
-      this.lineOrderList = lineOrderList;
-      editMode = false;
-      this.inv = inv;
-      
-      initElements();
-  }
-  private void initElements() {
+  public InvoiceLineOrderForm (final String prefix, final List <OrderLineReferenceType> lineOrderList) {
+    this.prefix = prefix;
+    this.lineOrderList = lineOrderList;
+    editMode = false;
 
-    final GridLayout grid = new GridLayout(4, 4);
-    final VerticalLayout outerLayout = new VerticalLayout();
-    hiddenContent = new VerticalLayout();
+    initElements ();
+  }
+
+  public InvoiceLineOrderForm (final String prefix,
+                               final List <OrderLineReferenceType> lineOrderList,
+                               final InvoiceType inv) {
+    this.prefix = prefix;
+    this.lineOrderList = lineOrderList;
+    editMode = false;
+    this.inv = inv;
+
+    initElements ();
+  }
+
+  private void initElements () {
+
+    final GridLayout grid = new GridLayout (4, 4);
+    final VerticalLayout outerLayout = new VerticalLayout ();
+    hiddenContent = new VerticalLayout ();
     hiddenContent.setSpacing (true);
     hiddenContent.setMargin (true);
-    
-    table = new InvoiceLineOrderReferenceTable(lineOrderList);
-    table.setSelectable(true);
-    table.setImmediate(true);
-    table.setNullSelectionAllowed(false);
+
+    table = new InvoiceLineOrderReferenceTable (lineOrderList);
+    table.setSelectable (true);
+    table.setImmediate (true);
+    table.setNullSelectionAllowed (false);
     table.setHeight (150, UNITS_PIXELS);
     table.setFooterVisible (false);
     table.addStyleName ("striped strong");
-        
-    VerticalLayout tableContainer = new VerticalLayout();
+
+    final VerticalLayout tableContainer = new VerticalLayout ();
     tableContainer.addComponent (table);
     tableContainer.setMargin (false, true, false, false);
-    
-    Button addButton = new Button("Add new");
-    Button editButton = new Button("Edit selected");
-    Button deleteButton = new Button("Delete selected");
-    
-    VerticalLayout buttonsContainer = new VerticalLayout();
+
+    final Button addButton = new Button ("Add new");
+    final Button editButton = new Button ("Edit selected");
+    final Button deleteButton = new Button ("Delete selected");
+
+    final VerticalLayout buttonsContainer = new VerticalLayout ();
     buttonsContainer.setSpacing (true);
     buttonsContainer.addComponent (addButton);
     buttonsContainer.addComponent (editButton);
     buttonsContainer.addComponent (deleteButton);
-    
-    InvoiceLineOrderReferenceTableEditor editor = new InvoiceLineOrderReferenceTableEditor(editMode);
-    Label label = new Label("<h3>Adding order line</h3>", Label.CONTENT_XHTML);
-    addButton.addListener(editor.addButtonListener(editButton, deleteButton, hiddenContent, table, lineOrderList, label));
-    label = new Label("<h3>Edit order line</h3>", Label.CONTENT_XHTML);
-    editButton.addListener(editor.editButtonListener(addButton, deleteButton, hiddenContent, table, lineOrderList, label));
-    deleteButton.addListener(editor.deleteButtonListener(table));
 
-    Panel outerPanel = new Panel(prefix + " Referencing Orders"); 
-    //outerPanel.setStyleName("light");     
-   
+    final InvoiceLineOrderReferenceTableEditor editor = new InvoiceLineOrderReferenceTableEditor (editMode);
+    Label label = new Label ("<h3>Adding order line</h3>", Label.CONTENT_XHTML);
+    addButton.addListener (editor.addButtonListener (editButton,
+                                                     deleteButton,
+                                                     hiddenContent,
+                                                     table,
+                                                     lineOrderList,
+                                                     label));
+    label = new Label ("<h3>Edit order line</h3>", Label.CONTENT_XHTML);
+    editButton.addListener (editor.editButtonListener (addButton,
+                                                       deleteButton,
+                                                       hiddenContent,
+                                                       table,
+                                                       lineOrderList,
+                                                       label));
+    deleteButton.addListener (editor.deleteButtonListener (table));
+
+    final Panel outerPanel = new Panel (prefix + " Referencing Orders");
+    // outerPanel.setStyleName("light");
+
     // ---- HIDDEN FORM BEGINS -----
-    VerticalLayout formLayout = new VerticalLayout();
-    formLayout.addComponent(hiddenContent);
-    hiddenContent.setVisible(false);    
+    final VerticalLayout formLayout = new VerticalLayout ();
+    formLayout.addComponent (hiddenContent);
+    hiddenContent.setVisible (false);
     // ---- HIDDEN FORM ENDS -----
-    
-    grid.setSizeUndefined();
-    grid.addComponent(tableContainer, 0, 0);
-    grid.addComponent(buttonsContainer, 1, 0); 
-    
+
+    grid.setSizeUndefined ();
+    grid.addComponent (tableContainer, 0, 0);
+    grid.addComponent (buttonsContainer, 1, 0);
+
     outerPanel.addComponent (grid);
     outerPanel.addComponent (formLayout);
-    outerLayout.addComponent(outerPanel);
-    outerPanel.requestRepaintAll();
-    
-    VerticalLayout mainLayout = new VerticalLayout();
-    final VerticalLayout showHideContentLayout = new VerticalLayout();
-    showHideContentLayout.addComponent(outerPanel);
-    HorizontalLayout showHideButtonLayout = new HorizontalLayout();
-    Button btn = new Button("Show/Hide Allowances/Charges",new Button.ClickListener(){
+    outerLayout.addComponent (outerPanel);
+    outerPanel.requestRepaintAll ();
+
+    final VerticalLayout mainLayout = new VerticalLayout ();
+    final VerticalLayout showHideContentLayout = new VerticalLayout ();
+    showHideContentLayout.addComponent (outerPanel);
+    final HorizontalLayout showHideButtonLayout = new HorizontalLayout ();
+    final Button btn = new Button ("Show/Hide Allowances/Charges", new Button.ClickListener () {
       @Override
-      public void buttonClick (ClickEvent event) {
+      public void buttonClick (final ClickEvent event) {
         // TODO Auto-generated method stub
-        showHideContentLayout.setVisible(!showHideContentLayout.isVisible());
+        showHideContentLayout.setVisible (!showHideContentLayout.isVisible ());
       }
     });
-    showHideButtonLayout.setWidth("100%");
-    showHideButtonLayout.addComponent(btn);
+    showHideButtonLayout.setWidth ("100%");
+    showHideButtonLayout.addComponent (btn);
     showHideButtonLayout.setComponentAlignment (btn, Alignment.MIDDLE_RIGHT);
-    
-    //mainLayout.addComponent(showHideButtonLayout);
-    mainLayout.addComponent(showHideContentLayout);
-    //showHideContentLayout.setVisible(false);    
-    
-    addComponent(mainLayout);
 
-  }  
+    // mainLayout.addComponent(showHideButtonLayout);
+    mainLayout.addComponent (showHideContentLayout);
+    // showHideContentLayout.setVisible(false);
+
+    addComponent (mainLayout);
+
+  }
 }
-
-
-

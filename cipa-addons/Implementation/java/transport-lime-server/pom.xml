@@ -5,9 +5,9 @@
     <artifactId>cipa-parent-pom</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>cipa-transport-lime-server</artifactId>
+  <artifactId>cipa-lime-server</artifactId>
   <packaging>war</packaging>
-  <name>cipa-transport-lime-server</name>
+  <name>cipa-lime-server</name>
 
   <scm>
     <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/transport-lime-server</connection>
@@ -30,7 +30,7 @@
   <dependencies>
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
-      <artifactId>cipa-transport-lime-client</artifactId>
+      <artifactId>cipa-lime-client</artifactId>
       <version>1.0-SNAPSHOT</version>
     </dependency>
     <dependency>

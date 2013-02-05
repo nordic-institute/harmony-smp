@@ -37,73 +37,67 @@
  */
 package at.peppol.webgui.app.components.tables;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.AllowanceChargeType;
-import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PaymentMeansType;
-
 import at.peppol.webgui.app.components.adapters.InvoiceAllowanceChargeAdapter;
-import at.peppol.webgui.app.components.adapters.PaymentMeansAdapter;
 
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.Table;
 
-public class InvoiceAllowanceChargeTable extends GenericTable<AllowanceChargeType, InvoiceAllowanceChargeAdapter> {
-  
-  public InvoiceAllowanceChargeTable(List<AllowanceChargeType> items) {
-    
-	  linesFromInvoice = items;
-	  
-	  tableLines = new BeanItemContainer<InvoiceAllowanceChargeAdapter>(InvoiceAllowanceChargeAdapter.class);
-	  
-	  if (linesFromInvoice.size() > 0) {
-		  for (int i=0;i<linesFromInvoice.size();i++) {
-			  AllowanceChargeType type = linesFromInvoice.get(i); 
-			  InvoiceAllowanceChargeAdapter item = new InvoiceAllowanceChargeAdapter(type);
-			  tableLines.addBean(item);
-			  linesFromInvoice.set(i, item);
-		  }
-	  }
-	  
-	  setContainerDataSource(tableLines);
+public class InvoiceAllowanceChargeTable extends GenericTable <AllowanceChargeType, InvoiceAllowanceChargeAdapter> {
 
-	  addPropertyWithHeader("ID.value", "# ID");
-    
-	  //addPropertyWithHeader("chargeIndicator", "Charge Indicator");
-	  //addPropertyWithHeader("indicator", "Charge Indicator");
-	  addPropertyWithHeader("indicatorAsString", "Allowance/Charge");
-	  //addPropertyWithHeader("allowanceChargeReason","Charge Reason");
-	  addPropertyWithHeader("reason","Charge Reason");
-	  //addPropertyWithHeader("amount", "Amount");
-	  addPropertyWithHeader("chargeAmount", "Amount");
-	  addPropertyWithHeader("taxCategoryID","Tax Category ID");
-	  addPropertyWithHeader("taxCategoryPercent","Tax Category Percent");
-	  addPropertyWithHeader("taxCategorySchemeID","Tax Scheme ID");
-    
-	  setDefinedPropertiesAsVisible();
-	  setPageLength(4);
+  public InvoiceAllowanceChargeTable (final List <AllowanceChargeType> items) {
+
+    linesFromInvoice = items;
+
+    tableLines = new BeanItemContainer <InvoiceAllowanceChargeAdapter> (InvoiceAllowanceChargeAdapter.class);
+
+    if (linesFromInvoice.size () > 0) {
+      for (int i = 0; i < linesFromInvoice.size (); i++) {
+        final AllowanceChargeType type = linesFromInvoice.get (i);
+        final InvoiceAllowanceChargeAdapter item = new InvoiceAllowanceChargeAdapter (type);
+        tableLines.addBean (item);
+        linesFromInvoice.set (i, item);
+      }
+    }
+
+    setContainerDataSource (tableLines);
+
+    addPropertyWithHeader ("ID.value", "# ID");
+
+    // addPropertyWithHeader("chargeIndicator", "Charge Indicator");
+    // addPropertyWithHeader("indicator", "Charge Indicator");
+    addPropertyWithHeader ("indicatorAsString", "Allowance/Charge");
+    // addPropertyWithHeader("allowanceChargeReason","Charge Reason");
+    addPropertyWithHeader ("reason", "Charge Reason");
+    // addPropertyWithHeader("amount", "Amount");
+    addPropertyWithHeader ("chargeAmount", "Amount");
+    addPropertyWithHeader ("taxCategoryID", "Tax Category ID");
+    addPropertyWithHeader ("taxCategoryPercent", "Tax Category Percent");
+    addPropertyWithHeader ("taxCategorySchemeID", "Tax Scheme ID");
+
+    setDefinedPropertiesAsVisible ();
+    setPageLength (4);
   }
-  
-  	@Override
-	public void setLineItem(String lineID, InvoiceAllowanceChargeAdapter pms) {
-  		InvoiceAllowanceChargeAdapter originalItem = getItemWithID(lineID);
-		int index=-1;
-		if (originalItem != null) {
-			for (AllowanceChargeType type : linesFromInvoice) {
-				InvoiceAllowanceChargeAdapter opa = new InvoiceAllowanceChargeAdapter(type);
-				if (opa.getIDAdapter().equals(originalItem.getIDAdapter())) {
-					index = linesFromInvoice.indexOf(type);
-					break;
-				}
-			}
-			if (index > -1) {
-				linesFromInvoice.set(index, (AllowanceChargeType)pms);
-				int tableIndex = tableLines.indexOfId(originalItem);
-				tableLines.removeItem(originalItem);
-				tableLines.addItemAt(tableIndex, pms);
-			}
-		}
-	}
+
+  @Override
+  public void setLineItem (final String lineID, final InvoiceAllowanceChargeAdapter pms) {
+    final InvoiceAllowanceChargeAdapter originalItem = getItemWithID (lineID);
+    int index = -1;
+    if (originalItem != null) {
+      for (final AllowanceChargeType type : linesFromInvoice) {
+        final InvoiceAllowanceChargeAdapter opa = new InvoiceAllowanceChargeAdapter (type);
+        if (opa.getIDAdapter ().equals (originalItem.getIDAdapter ())) {
+          index = linesFromInvoice.indexOf (type);
+          break;
+        }
+      }
+      if (index > -1) {
+        linesFromInvoice.set (index, pms);
+        final int tableIndex = tableLines.indexOfId (originalItem);
+        tableLines.removeItem (originalItem);
+        tableLines.addItemAt (tableIndex, pms);
+      }
+    }
+  }
 }

@@ -39,26 +39,24 @@ package at.peppol.webgui.app.components;
 
 import un.unece.uncefact.codelist.specification._66411._2001.UnitCodeContentType;
 
-import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Select;
 
 /**
- *
  * @author Jerouris
  */
-@SuppressWarnings("serial")
+@SuppressWarnings ("serial")
 public class UnitCodeSelect extends Select {
-    
-    public UnitCodeSelect(String caption){
-        super(caption);
-        setWidth(13,UNITS_EM);
-        initData();
+
+  public UnitCodeSelect (final String caption) {
+    super (caption);
+    setWidth (13, UNITS_EM);
+    initData ();
+  }
+
+  private void initData () {
+    for (final UnitCodeContentType unitCode : UnitCodeContentType.values ()) {
+      addItem (unitCode);
+      setItemCaption (unitCode, unitCode.toString ());
     }
-    
-    private void initData() {
-       for (UnitCodeContentType unitCode :UnitCodeContentType.values()) {
-            addItem(unitCode);
-            setItemCaption(unitCode, unitCode.toString());
-       }
-    }
+  }
 }

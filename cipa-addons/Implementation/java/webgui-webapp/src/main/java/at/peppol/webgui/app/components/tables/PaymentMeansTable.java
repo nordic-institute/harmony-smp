@@ -37,68 +37,63 @@
  */
 package at.peppol.webgui.app.components.tables;
 
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.PaymentMeansType;
-
-import at.peppol.webgui.app.components.adapters.InvoiceTaxSubtotalAdapter;
 import at.peppol.webgui.app.components.adapters.PaymentMeansAdapter;
 
 import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.ui.Table;
 
-@SuppressWarnings("serial")
-public class PaymentMeansTable extends GenericTable<PaymentMeansType,PaymentMeansAdapter> {
- 
-	public PaymentMeansTable(List<PaymentMeansType> list) {
-		linesFromInvoice = list;
-		
-		tableLines = new BeanItemContainer<PaymentMeansAdapter>(PaymentMeansAdapter.class);
-		
-		if (linesFromInvoice.size() > 0) {
-			for (PaymentMeansType type : linesFromInvoice) {
-				PaymentMeansAdapter item = new PaymentMeansAdapter(type);
-				tableLines.addBean(item);
-			}
-		}
-		
-		setContainerDataSource(getTableLines());
+@SuppressWarnings ("serial")
+public class PaymentMeansTable extends GenericTable <PaymentMeansType, PaymentMeansAdapter> {
 
-		addPropertyWithHeader("IDAdapter", "#ID");
-		addPropertyWithHeader("PaymentMeansCodeAdapter", "Payment Means Code");
-		addPropertyWithHeader("PaymentDueDateAdapterAsString", "Due Date");
-		addPropertyWithHeader("PaymentChannelCodeAdapter", "Channel Code");
-		addPropertyWithHeader("FinancialAccountIDAdapter", "Account Number");
-		addPropertyWithHeader("BranchIDAdapter", "Branch ID");
-		addPropertyWithHeader("InstitutionIDAdapter", "Financial Institution ID");
-    
-		setDefinedPropertiesAsVisible();
-		setPageLength(7);
-    
-		//setColumnWidth("AdditionalDocRefExternalReference", 200);
-		//setColumnExpandRatio("AdditionalDocRefExternalReference", 2);
-	}
-	
-	@Override
-	public void setLineItem(String lineID, PaymentMeansAdapter pms) {
-		PaymentMeansAdapter originalItem = getItemWithID(lineID);
-		int index=-1;
-		if (originalItem != null) {
-			for (PaymentMeansType type : linesFromInvoice) {
-				PaymentMeansAdapter opa = new PaymentMeansAdapter(type);
-				if (opa.getIDAdapter().equals(originalItem.getIDAdapter())) {
-					index = linesFromInvoice.indexOf(type);
-					break;
-				}
-			}
-			if (index > -1) {
-				linesFromInvoice.set(index, (PaymentMeansType)pms);
-				int tableIndex = tableLines.indexOfId(originalItem);
-				tableLines.removeItem(originalItem);
-				tableLines.addItemAt(tableIndex, pms);
-			}
-		}
-	}
+  public PaymentMeansTable (final List <PaymentMeansType> list) {
+    linesFromInvoice = list;
+
+    tableLines = new BeanItemContainer <PaymentMeansAdapter> (PaymentMeansAdapter.class);
+
+    if (linesFromInvoice.size () > 0) {
+      for (final PaymentMeansType type : linesFromInvoice) {
+        final PaymentMeansAdapter item = new PaymentMeansAdapter (type);
+        tableLines.addBean (item);
+      }
+    }
+
+    setContainerDataSource (getTableLines ());
+
+    addPropertyWithHeader ("IDAdapter", "#ID");
+    addPropertyWithHeader ("PaymentMeansCodeAdapter", "Payment Means Code");
+    addPropertyWithHeader ("PaymentDueDateAdapterAsString", "Due Date");
+    addPropertyWithHeader ("PaymentChannelCodeAdapter", "Channel Code");
+    addPropertyWithHeader ("FinancialAccountIDAdapter", "Account Number");
+    addPropertyWithHeader ("BranchIDAdapter", "Branch ID");
+    addPropertyWithHeader ("InstitutionIDAdapter", "Financial Institution ID");
+
+    setDefinedPropertiesAsVisible ();
+    setPageLength (7);
+
+    // setColumnWidth("AdditionalDocRefExternalReference", 200);
+    // setColumnExpandRatio("AdditionalDocRefExternalReference", 2);
+  }
+
+  @Override
+  public void setLineItem (final String lineID, final PaymentMeansAdapter pms) {
+    final PaymentMeansAdapter originalItem = getItemWithID (lineID);
+    int index = -1;
+    if (originalItem != null) {
+      for (final PaymentMeansType type : linesFromInvoice) {
+        final PaymentMeansAdapter opa = new PaymentMeansAdapter (type);
+        if (opa.getIDAdapter ().equals (originalItem.getIDAdapter ())) {
+          index = linesFromInvoice.indexOf (type);
+          break;
+        }
+      }
+      if (index > -1) {
+        linesFromInvoice.set (index, pms);
+        final int tableIndex = tableLines.indexOfId (originalItem);
+        tableLines.removeItem (originalItem);
+        tableLines.addItemAt (tableIndex, pms);
+      }
+    }
+  }
 }

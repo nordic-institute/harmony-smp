@@ -38,66 +38,66 @@
 package at.peppol.webgui.app.components.adapters;
 
 import oasis.names.specification.ubl.schema.xsd.commonaggregatecomponents_2.ItemPropertyType;
+import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IDType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.NameType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ValueType;
-import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.IDType;
 
 @SuppressWarnings ("serial")
 public class InvoiceItemPropertyAdapter extends ItemPropertyType implements Adapter {
   private String tableLineID;
-  
-  public InvoiceItemPropertyAdapter() {
+
+  public InvoiceItemPropertyAdapter () {
     tableLineID = "";
     setName (new NameType ());
     setValue (new ValueType ());
   }
-  
-  public InvoiceItemPropertyAdapter(ItemPropertyType item) {
-	  tableLineID = "";
-	  
-	  if (item.getName() != null)
-		  this.setName(item.getName());
-	  else
-		  this.setName(new NameType());
-	  
-	  if (item.getValue() != null)
-		  this.setValue(item.getValue());
-	  else
-		  this.setValue(new ValueType ());
+
+  public InvoiceItemPropertyAdapter (final ItemPropertyType item) {
+    tableLineID = "";
+
+    if (item.getName () != null)
+      this.setName (item.getName ());
+    else
+      this.setName (new NameType ());
+
+    if (item.getValue () != null)
+      this.setValue (item.getValue ());
+    else
+      this.setValue (new ValueType ());
   }
-  
-  public void setID(IDType id){}
-  
-  public void setIDAdapter(String id) {
-	  setTableLineID(id);
+
+  public void setID (final IDType id) {}
+
+  public void setIDAdapter (final String id) {
+    setTableLineID (id);
   }
-  
-  public String getIDAdapter() {
-	  return getTableLineID();
+
+  public String getIDAdapter () {
+    return getTableLineID ();
   }
-  
-  public void setTableLineID(String v) {
+
+  public void setTableLineID (final String v) {
     tableLineID = v;
   }
-  
+
   public String getTableLineID () {
     return tableLineID;
   }
-  
-  public void setItemPropertyName(String v) {
-    getName().setValue (v);
-  }
-  
-  public String getItemPropertyName() {
-    return getName().getValue ();
-  }  
-  
-  public void setItemPropertyValue(String v) {
-    getValue().setValue (v);
-  }
-  
-  public String getItemPropertyValue() {
-    return getValue().getValue ();
-  }  
 
-} 
+  public void setItemPropertyName (final String v) {
+    getName ().setValue (v);
+  }
+
+  public String getItemPropertyName () {
+    return getName ().getValue ();
+  }
+
+  public void setItemPropertyValue (final String v) {
+    getValue ().setValue (v);
+  }
+
+  public String getItemPropertyValue () {
+    return getValue ().getValue ();
+  }
+
+}

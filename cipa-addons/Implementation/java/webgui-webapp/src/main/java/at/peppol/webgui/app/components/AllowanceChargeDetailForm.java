@@ -42,7 +42,6 @@ import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.AmountTy
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.BaseAmountType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.ChargeIndicatorType;
 import oasis.names.specification.ubl.schema.xsd.commonbasiccomponents_2.MultiplierFactorNumericType;
-
 import at.peppol.webgui.app.components.adapters.InvoiceAllowanceChargeAdapter;
 
 import com.vaadin.data.Item;

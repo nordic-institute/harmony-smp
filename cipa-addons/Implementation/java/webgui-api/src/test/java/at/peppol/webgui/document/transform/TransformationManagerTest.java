@@ -44,13 +44,14 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import at.peppol.test.ETestFileType;
-import at.peppol.test.TestFiles;
 import at.peppol.webgui.document.EDocumentMetaType;
 
 import com.phloc.commons.io.IReadableResource;
 import com.phloc.commons.io.resource.ClassPathResource;
 import com.phloc.commons.xml.serialize.XMLReader;
+
+import eu.europa.ec.cipa.test.ETestFileType;
+import eu.europa.ec.cipa.test.TestFiles;
 
 /**
  * Test class for class {@link TransformationManager}.
