@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>at.peppol</groupId>
+    <artifactId>peppol-parent-pom</artifactId>
+    <version>15</version>
+  </parent>
+  <artifactId>peppol-webgui-webapp</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>war</packaging>
+  <name>peppol-webgui-webapp</name>
+
+  <scm>
+    <connection>scm:svn:http://peppol-silicone.googlecode.com/svn/trunk/java/webgui-webapp</connection>
+    <developerConnection>scm:svn:https://peppol-silicone.googlecode.com/svn/trunk/java/webgui-webapp</developerConnection>
+  </scm>
+
+  <repositories>
+    <repository>
+      <id>phloc</id>
+      <url>http://repo.phloc.com/maven2/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>vaadin-addons</id>
+      <url>http://maven.vaadin.com/vaadin-addons</url>
+      <layout>default</layout>
+    </repository>
+  </repositories>
+
+  <properties>
+    <vaadin.version>6.8.7</vaadin.version>
+    <!-- Use 1.7.1 for vaadin7; 1.6.6 for vaadin6 -->
+    <vaadin.animator.version>1.6.6</vaadin.animator.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>at.peppol</groupId>
+      <artifactId>peppol-smp-client-library</artifactId>
+      <version>2.3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>at.peppol</groupId>
+      <artifactId>peppol-webgui-api</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>com.vaadin</groupId>
+      <artifactId>vaadin</artifactId>
+      <version>${vaadin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.vaadin.addons</groupId>
+      <artifactId>animator</artifactId>
+      <version>${vaadin.animator.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-webapp</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mortbay.jetty</groupId>
+      <artifactId>jsp-2.1-glassfish</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>at.peppol</groupId>
+    	<artifactId>peppol-transport-start-client</artifactId>
+    	<version>2.3.1</version>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <resources>
+      <resource>
+        <directory>${basedir}/src/main/resources</directory>
+        <targetPath>${project.build.directory}/classes</targetPath>
+      </resource>
+      <resource>
+        <directory>${basedir}/src/test/resources</directory>
+        <targetPath>${project.build.directory}/test-classes</targetPath>
+      </resource>
+      <resource>
+        <directory>${basedir}/src/main/webapp</directory>
+        <targetPath>${project.build.directory}/webapp-classes</targetPath>
+      </resource>
+    </resources>
+    
+    <plugins>
+      <plugin>
+        <groupId>org.mortbay.jetty</groupId>
+        <artifactId>jetty-maven-plugin</artifactId>
+        <version>7.6.7.v20120910</version>
+        <configuration>
+          <scanIntervalSeconds>1</scanIntervalSeconds>
+          <!-- Set stopKey and stopPort to be used in run configurations like this: jetty:stop -Dstop.port=9999 -Dstop.key=stopme -->
+          <stopKey>stopme</stopKey>
+          <stopPort>9999</stopPort>
+          <!-- Configure the webapp -->
+          <contextPath>/</contextPath>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>src/main/webapp/css/**</exclude>
+            <exclude>src/main/webapp/img/**</exclude>
+            <exclude>src/main/webapp/js/**</exclude>
+            <exclude>src/main/webapp/VAADIN/**</exclude>
+            <exclude>nb-configuration.xml</exclude>
+            <exclude>nbactions.xml</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>https://peppol-silicone.googlecode.com/svn/tags/${project.name}</tagBase>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
