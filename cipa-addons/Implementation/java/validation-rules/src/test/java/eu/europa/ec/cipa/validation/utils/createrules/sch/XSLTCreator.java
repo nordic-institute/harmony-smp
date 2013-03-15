@@ -44,14 +44,13 @@ import javax.annotation.concurrent.Immutable;
 
 import org.w3c.dom.Document;
 
-import at.peppol.validation.schematron.xslt.ISchematronXSLTProvider;
-import at.peppol.validation.schematron.xslt.SchematronResourceSCHCache;
-
 import com.phloc.commons.io.file.FilenameHelper;
 import com.phloc.commons.io.file.SimpleFileIO;
 import com.phloc.commons.io.resource.FileSystemResource;
 import com.phloc.commons.xml.serialize.XMLWriter;
 import com.phloc.commons.xml.serialize.XMLWriterSettings;
+import com.phloc.schematron.xslt.ISchematronXSLTProvider;
+import com.phloc.schematron.xslt.SchematronResourceSCHCache;
 
 import eu.europa.ec.cipa.validation.utils.createrules.RuleSourceItem;
 import eu.europa.ec.cipa.validation.utils.createrules.utils.Utils;

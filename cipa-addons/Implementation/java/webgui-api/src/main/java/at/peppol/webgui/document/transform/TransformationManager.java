@@ -48,9 +48,8 @@ import org.slf4j.LoggerFactory;
 
 import at.peppol.webgui.document.EDocumentType;
 
-import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.lang.CGStringHelper;
-import com.phloc.commons.lang.ServiceLoaderBackport;
+import com.phloc.commons.lang.ServiceLoaderUtils;
 import com.phloc.commons.typeconvert.TypeConverterException;
 
 /**
@@ -68,16 +67,16 @@ public final class TransformationManager {
 
   static {
     // Resolve all SPI implementations
-    s_aCatalogueTransformers = ContainerHelper.newList (ServiceLoaderBackport.load (ITransformCatalogueToUBLSPI.class));
+    s_aCatalogueTransformers = ServiceLoaderUtils.getAllSPIImplementations (ITransformCatalogueToUBLSPI.class);
     s_aLogger.info ("Found " + s_aCatalogueTransformers.size () + " catalogue transformer(s)");
 
-    s_aOrderTransformers = ContainerHelper.newList (ServiceLoaderBackport.load (ITransformOrderToUBLSPI.class));
+    s_aOrderTransformers = ServiceLoaderUtils.getAllSPIImplementations (ITransformOrderToUBLSPI.class);
     s_aLogger.info ("Found " + s_aOrderTransformers.size () + " order transformer(s)");
 
-    s_aOrderResponseTransformers = ContainerHelper.newList (ServiceLoaderBackport.load (ITransformOrderResponseToUBLSPI.class));
+    s_aOrderResponseTransformers = ServiceLoaderUtils.getAllSPIImplementations (ITransformOrderResponseToUBLSPI.class);
     s_aLogger.info ("Found " + s_aOrderResponseTransformers.size () + " order response transformer(s)");
 
-    s_aInvoiceTransformers = ContainerHelper.newList (ServiceLoaderBackport.load (ITransformInvoiceToUBLSPI.class));
+    s_aInvoiceTransformers = ServiceLoaderUtils.getAllSPIImplementations (ITransformInvoiceToUBLSPI.class);
     s_aLogger.info ("Found " + s_aInvoiceTransformers.size () + " invoice transformer(s)");
   }
 

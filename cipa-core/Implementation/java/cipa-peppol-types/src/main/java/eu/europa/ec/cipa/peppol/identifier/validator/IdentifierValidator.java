@@ -37,7 +37,6 @@
  */
 package eu.europa.ec.cipa.peppol.identifier.validator;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -46,7 +45,7 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.lang.ServiceLoaderBackport;
+import com.phloc.commons.lang.ServiceLoaderUtils;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.IPeppolParticipantIdentifier;
@@ -59,11 +58,10 @@ import eu.europa.ec.cipa.peppol.identifier.participant.IPeppolParticipantIdentif
 @Immutable
 public final class IdentifierValidator {
   private static final Logger s_aLogger = LoggerFactory.getLogger (IdentifierValidator.class);
-  private static final List <IParticipantIdentifierValidatorSPI> s_aParticipantIDValidators = new ArrayList <IParticipantIdentifierValidatorSPI> ();
+  private static final List <IParticipantIdentifierValidatorSPI> s_aParticipantIDValidators;
 
   static {
-    for (final IParticipantIdentifierValidatorSPI aValidator : ServiceLoaderBackport.load (IParticipantIdentifierValidatorSPI.class))
-      s_aParticipantIDValidators.add (aValidator);
+    s_aParticipantIDValidators = ServiceLoaderUtils.getAllSPIImplementations (IParticipantIdentifierValidatorSPI.class);
     if (!s_aParticipantIDValidators.isEmpty ())
       s_aLogger.info ("Loaded " +
                       s_aParticipantIDValidators.size () +

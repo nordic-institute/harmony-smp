@@ -70,8 +70,6 @@ import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;
 import org.w3c.dom.Document;
 
-import at.peppol.validation.schematron.CSchematron;
-
 import com.phloc.commons.collections.multimap.IMultiMapSetBased;
 import com.phloc.commons.collections.multimap.MultiTreeMapTreeSetBased;
 import com.phloc.commons.io.file.FilenameHelper;
@@ -90,6 +88,7 @@ import com.phloc.commons.xml.transform.XMLTransformerFactory;
 import com.phloc.cva.CVA10Marshaller;
 import com.phloc.genericode.Genericode10CodeListMarshaller;
 import com.phloc.genericode.Genericode10Utils;
+import com.phloc.schematron.CSchematron;
 
 import eu.europa.ec.cipa.validation.utils.createrules.utils.ODFUtils;
 import eu.europa.ec.cipa.validation.utils.createrules.utils.Utils;

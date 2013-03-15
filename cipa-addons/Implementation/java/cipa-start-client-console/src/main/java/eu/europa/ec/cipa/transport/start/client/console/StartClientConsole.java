@@ -108,7 +108,7 @@ public class StartClientConsole {
     java.util.logging.LogManager.getLogManager ()
                                 .readConfiguration (new StringInputStream ("handlers=java.util.logging.ConsoleHandler\r\n"
                                                                                + "java.util.logging.ConsoleHandler.level=FINEST",
-                                                                           CCharset.CHARSET_ISO_8859_1));
+                                                                           CCharset.CHARSET_ISO_8859_1_OBJ));
     final FileHandler fh = new FileHandler ("metroOut.log");
     fh.setLevel (Level.FINEST);
 

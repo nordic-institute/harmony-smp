@@ -98,7 +98,7 @@ public final class UsernamePWCredentials implements IUsernamePWCredentials {
   @Nonnull
   public String getAsHTTPHeaderValue () {
     final String sCombined = m_sPassword == null ? m_sUsername : m_sUsername + ':' + m_sPassword;
-    return BASIC_AUTH_PREFIX + Base64Helper.safeEncode (sCombined, CCharset.CHARSET_UTF_8);
+    return BASIC_AUTH_PREFIX + Base64Helper.safeEncode (sCombined, CCharset.CHARSET_UTF_8_OBJ);
   }
 
   @Override
@@ -130,7 +130,7 @@ public final class UsernamePWCredentials implements IUsernamePWCredentials {
     final String sEncodedCredentials = sAuthHeader.substring (BASIC_AUTH_PREFIX.length ());
 
     // Apply Base64 decoding
-    final String sUsernamePassword = Base64Helper.safeDecodeAsString (sEncodedCredentials, CCharset.CHARSET_UTF_8);
+    final String sUsernamePassword = Base64Helper.safeDecodeAsString (sEncodedCredentials, CCharset.CHARSET_UTF_8_OBJ);
     if (sUsernamePassword == null) {
       // Illegal base64 encoded value
       return null;

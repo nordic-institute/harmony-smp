@@ -47,6 +47,7 @@ import javax.annotation.concurrent.ThreadSafe;
 import at.peppol.webgui.document.IUserDocument;
 
 import com.phloc.appbasics.app.dao.impl.AbstractSimpleDAO;
+import com.phloc.appbasics.app.dao.impl.DAOException;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.callback.INonThrowingRunnableWithParameter;
 import com.phloc.commons.microdom.IMicroDocument;
@@ -62,7 +63,7 @@ import com.phloc.commons.state.EChange;
 public final class UserFolderTreeManager extends AbstractSimpleDAO implements IUserFolderTree {
   private UserFolderTree m_aTree = new UserFolderTree ();
 
-  public UserFolderTreeManager (@Nonnull final String sFilename) {
+  public UserFolderTreeManager (@Nonnull final String sFilename) throws DAOException {
     super (sFilename);
     initialRead ();
   }

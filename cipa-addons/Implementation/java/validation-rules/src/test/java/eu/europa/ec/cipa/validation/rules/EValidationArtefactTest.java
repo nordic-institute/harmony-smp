@@ -42,10 +42,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import at.peppol.validation.schematron.xslt.SchematronResourceXSLT;
-
 import com.phloc.commons.io.IReadableResource;
 import com.phloc.commons.locale.country.CountryCache;
+import com.phloc.schematron.xslt.SchematronResourceXSLT;
 
 /**
  * Test class for class {@link EValidationArtefact}.

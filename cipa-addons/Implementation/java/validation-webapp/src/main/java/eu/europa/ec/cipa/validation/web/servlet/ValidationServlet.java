@@ -49,7 +49,6 @@ import javax.xml.transform.dom.DOMSource;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-
 import com.phloc.commons.error.IResourceError;
 import com.phloc.commons.error.IResourceErrorGroup;
 import com.phloc.commons.locale.LocaleCache;
@@ -79,9 +78,9 @@ import com.phloc.html.hc.html.HCSpan;
 import com.phloc.html.hc.html.HCTable;
 import com.phloc.html.hc.html.HCTextArea;
 import com.phloc.html.hc.html.HCUL;
-import com.phloc.scopes.web.domain.IRequestWebScopeWithoutResponse;
-import com.phloc.webbasics.servlet.AbstractUnifiedResponseServlet;
-import com.phloc.webbasics.web.UnifiedResponse;
+import com.phloc.web.servlet.response.UnifiedResponse;
+import com.phloc.webscopes.domain.IRequestWebScopeWithoutResponse;
+import com.phloc.webscopes.servlets.AbstractUnifiedResponseServlet;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 import eu.europa.ec.cipa.validation.pyramid.ValidationPyramid;

@@ -54,18 +54,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import at.peppol.validation.schematron.SchematronHelper;
-import at.peppol.validation.schematron.svrl.SVRLFailedAssert;
-import at.peppol.validation.schematron.svrl.SVRLUtils;
-import at.peppol.validation.schematron.svrl.SVRLWriter;
-import at.peppol.validation.schematron.xslt.SchematronResourceXSLT;
-
 import com.phloc.commons.CGlobal;
 import com.phloc.commons.error.EErrorLevel;
 import com.phloc.commons.io.IReadableResource;
 import com.phloc.commons.locale.country.CountryCache;
 import com.phloc.commons.xml.serialize.XMLReader;
 import com.phloc.commons.xml.serialize.XMLWriter;
+import com.phloc.schematron.SchematronHelper;
+import com.phloc.schematron.svrl.SVRLFailedAssert;
+import com.phloc.schematron.svrl.SVRLUtils;
+import com.phloc.schematron.svrl.SVRLWriter;
+import com.phloc.schematron.xslt.SchematronResourceXSLT;
 import com.phloc.ubl.UBL20DocumentMarshaller;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;

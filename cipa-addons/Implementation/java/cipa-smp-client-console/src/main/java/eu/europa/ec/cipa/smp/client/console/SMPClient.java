@@ -233,7 +233,8 @@ public final class SMPClient {
               bGoodCmd = false;
             }
             else {
-              cert = SimpleFileIO.readFileAsString (new File (cmd.getOptionValue ('e')), CCharset.CHARSET_ISO_8859_1);
+              cert = SimpleFileIO.readFileAsString (new File (cmd.getOptionValue ('e')),
+                                                    CCharset.CHARSET_ISO_8859_1_OBJ);
             }
             break;
           case DEL:

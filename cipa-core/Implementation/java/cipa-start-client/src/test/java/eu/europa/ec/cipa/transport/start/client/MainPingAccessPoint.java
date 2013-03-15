@@ -125,7 +125,7 @@ public class MainPingAccessPoint {
       java.util.logging.LogManager.getLogManager ()
                                   .readConfiguration (new StringInputStream ("handlers=java.util.logging.ConsoleHandler\r\n"
                                                                                  + "java.util.logging.ConsoleHandler.level=FINEST",
-                                                                             CCharset.CHARSET_ISO_8859_1));
+                                                                             CCharset.CHARSET_ISO_8859_1_OBJ));
       java.util.logging.Logger.getLogger ("com.sun.metro.rx").setLevel (java.util.logging.Level.FINER);
     }
     if (false) {

@@ -64,11 +64,11 @@ import com.phloc.commons.GlobalDebug;
 import com.phloc.commons.idfactory.FileIntIDFactory;
 import com.phloc.commons.idfactory.GlobalIDFactory;
 import com.phloc.commons.string.StringHelper;
-import com.phloc.scopes.MetaScopeFactory;
-import com.phloc.scopes.web.domain.IRequestWebScope;
-import com.phloc.scopes.web.factory.DefaultWebScopeFactory;
-import com.phloc.scopes.web.impl.RequestWebScopeNoMultipart;
-import com.phloc.scopes.web.mgr.WebScopeManager;
+import com.phloc.webscopes.MetaWebScopeFactory;
+import com.phloc.webscopes.domain.IRequestWebScope;
+import com.phloc.webscopes.factory.DefaultWebScopeFactory;
+import com.phloc.webscopes.impl.RequestWebScopeNoMultipart;
+import com.phloc.webscopes.mgr.WebScopeManager;
 
 /**
  * A special scope listener, that correctly manages global and session scopes
@@ -176,7 +176,7 @@ public final class ScopeListener implements ServletContextListener, HttpSessionL
     GlobalIDFactory.setPersistentIntIDFactory (new FileIntIDFactory (WebFileIO.getFile ("id.txt")));
 
     // Set the non-multipart file item request web scope
-    MetaScopeFactory.setWebScopeFactory (new DefaultWebScopeFactory () {
+    MetaWebScopeFactory.setWebScopeFactory (new DefaultWebScopeFactory () {
       @Override
       @Nonnull
       public IRequestWebScope createRequestScope (@Nonnull final HttpServletRequest aHttpRequest,

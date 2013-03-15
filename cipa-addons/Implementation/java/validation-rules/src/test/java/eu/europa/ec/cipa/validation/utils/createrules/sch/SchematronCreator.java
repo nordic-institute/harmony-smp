@@ -50,8 +50,6 @@ import javax.annotation.concurrent.Immutable;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;
 
-import at.peppol.validation.schematron.CSchematron;
-
 import com.phloc.commons.collections.multimap.IMultiMapListBased;
 import com.phloc.commons.collections.multimap.MultiHashMapArrayListBased;
 import com.phloc.commons.io.file.SimpleFileIO;
@@ -61,6 +59,7 @@ import com.phloc.commons.microdom.impl.MicroDocument;
 import com.phloc.commons.microdom.serialize.MicroWriter;
 import com.phloc.commons.string.StringHelper;
 import com.phloc.commons.xml.serialize.XMLWriterSettings;
+import com.phloc.schematron.CSchematron;
 
 import eu.europa.ec.cipa.validation.utils.createrules.RuleSourceItem;
 import eu.europa.ec.cipa.validation.utils.createrules.utils.ODFUtils;

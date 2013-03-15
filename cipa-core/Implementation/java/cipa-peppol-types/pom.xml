@@ -36,7 +36,7 @@
 		<dependency>
 			<groupId>com.phloc</groupId>
 			<artifactId>phloc-commons</artifactId>
-			<version>3.9.4</version>
+			<version>4.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.metro</groupId>
@@ -52,7 +52,7 @@
 		<dependency>
 			<groupId>com.phloc</groupId>
 			<artifactId>phloc-genericode</artifactId>
-			<version>3.1.1</version>
+			<version>3.1.5</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>

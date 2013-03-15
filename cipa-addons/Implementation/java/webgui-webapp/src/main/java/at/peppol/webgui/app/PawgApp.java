@@ -52,7 +52,7 @@ import com.phloc.appbasics.security.AccessManager;
 import com.phloc.appbasics.security.login.ELoginResult;
 import com.phloc.appbasics.security.login.LoggedInUserManager;
 import com.phloc.appbasics.security.user.IUser;
-import com.phloc.scopes.web.mgr.WebScopeManager;
+import com.phloc.webscopes.mgr.WebScopeManager;
 import com.vaadin.Application;
 import com.vaadin.terminal.gwt.server.HttpServletRequestListener;
 import com.vaadin.ui.Window;

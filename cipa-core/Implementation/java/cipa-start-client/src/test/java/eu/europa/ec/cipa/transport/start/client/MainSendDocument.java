@@ -106,7 +106,7 @@ public final class MainSendDocument {
 
   public static void main (final String [] args) throws Exception {
     System.setProperty ("java.net.useSystemProxies", "true");
-   
+
     if (USE_PROXY) {
       System.setProperty ("http.proxyHost", PROXY_HOST);
       System.setProperty ("http.proxyPort", PROXY_PORT);
@@ -125,7 +125,7 @@ public final class MainSendDocument {
       java.util.logging.LogManager.getLogManager ()
                                   .readConfiguration (new StringInputStream ("handlers=java.util.logging.ConsoleHandler\r\n"
                                                                                  + "java.util.logging.ConsoleHandler.level=FINEST",
-                                                                             CCharset.CHARSET_ISO_8859_1));
+                                                                             CCharset.CHARSET_ISO_8859_1_OBJ));
       java.util.logging.Logger.getLogger ("com.sun.metro.rx").setLevel (java.util.logging.Level.FINER);
     }
     if (false) {

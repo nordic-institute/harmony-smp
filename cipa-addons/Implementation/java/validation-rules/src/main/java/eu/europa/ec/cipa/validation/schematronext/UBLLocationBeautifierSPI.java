@@ -40,9 +40,8 @@ package eu.europa.ec.cipa.validation.schematronext;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import at.peppol.validation.schematron.svrl.ISVRLLocationBeautifierSPI;
-
 import com.phloc.commons.annotations.IsSPIImplementation;
+import com.phloc.schematron.svrl.ISVRLLocationBeautifierSPI;
 import com.phloc.ubl.UBL20DocumentTypes;
 
 /**

@@ -35,7 +35,7 @@
   </repositories>
 
   <properties>
-    <vaadin.version>6.8.8</vaadin.version>
+    <vaadin.version>6.8.9</vaadin.version>
     <!-- Use 1.7.1 for vaadin7; 1.6.6 for vaadin6 -->
     <vaadin.animator.version>1.6.6</vaadin.animator.version>
   </properties>

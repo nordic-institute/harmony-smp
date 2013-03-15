@@ -48,7 +48,7 @@ import javax.annotation.Nonnull;
 import com.phloc.appbasics.app.io.WebFileIO;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.UsedViaReflection;
-import com.phloc.scopes.web.singleton.GlobalWebSingleton;
+import com.phloc.webscopes.singleton.GlobalWebSingleton;
 
 /**
  * Handle uploaded resources and clean them up when the application is shut

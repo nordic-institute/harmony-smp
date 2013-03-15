@@ -85,7 +85,7 @@ import com.phloc.commons.error.EErrorLevel;
 import com.phloc.commons.exceptions.InitializationException;
 import com.phloc.commons.io.misc.SizeHelper;
 import com.phloc.commons.lang.ClassHelper;
-import com.phloc.commons.lang.ServiceLoaderBackport;
+import com.phloc.commons.lang.ServiceLoaderUtils;
 import com.phloc.commons.log.LogMessage;
 import com.phloc.commons.state.ESuccess;
 import com.phloc.commons.state.impl.SuccessWithValue;
@@ -162,14 +162,13 @@ public class AccessPointService {
       }
       // Load all SPI implementations with a custom class loader
       final URLClassLoader aCustomCL = new URLClassLoader (aPathEntriesURLS, ClassHelper.getDefaultClassLoader ());
-      s_aReceivers = ContainerHelper.newUnmodifiableList (ServiceLoaderBackport.load (IAccessPointServiceReceiverSPI.class,
-                                                                                      aCustomCL));
+      s_aReceivers = ContainerHelper.newUnmodifiableList (ServiceLoaderUtils.getAllSPIImplementations (IAccessPointServiceReceiverSPI.class,
+                                                                                                       aCustomCL));
 
     }
     else {
       // Load all SPI implementations
-      s_aReceivers = ContainerHelper.newUnmodifiableList (ServiceLoaderBackport.load (IAccessPointServiceReceiverSPI.class));
-
+      s_aReceivers = ContainerHelper.newUnmodifiableList (ServiceLoaderUtils.getAllSPIImplementations (IAccessPointServiceReceiverSPI.class));
     }
 
     if (s_aReceivers.isEmpty ())
