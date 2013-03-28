@@ -41,7 +41,7 @@
  */
 package at.peppol.webgui.app.components;
 
-import com.phloc.ubl.codelist.ECountryIdentificationCode20;
+import com.phloc.ubl20.codelist.ECountryIdentificationCode20;
 import com.vaadin.ui.Select;
 
 /**

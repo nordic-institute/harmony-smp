@@ -37,7 +37,7 @@
  */
 package at.peppol.webgui.app.components;
 
-import com.phloc.ubl.codelist.EPaymentMeansCode20;
+import com.phloc.ubl20.codelist.EPaymentMeansCode20;
 import com.vaadin.ui.ComboBox;
 
 /**
