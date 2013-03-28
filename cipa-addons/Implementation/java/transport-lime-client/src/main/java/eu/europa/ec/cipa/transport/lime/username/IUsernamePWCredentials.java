@@ -35,19 +35,32 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.peppol.utils;
+package eu.europa.ec.cipa.transport.lime.username;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.phloc.commons.annotations.Nonempty;
+
 /**
- * A read-only version of username/password credentials.
+ * A writable version of the username/password credentials.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public interface IReadonlyUsernamePWCredentials extends IHasUsername {
+public interface IUsernamePWCredentials extends IReadonlyUsernamePWCredentials {
   /**
-   * @return The password to use
+   * Set the user name
+   * 
+   * @param sUsername
+   *        The new user name
    */
-  @Nullable
-  String getPassword ();
+  void setUsername (@Nonnull @Nonempty String sUsername);
+
+  /**
+   * Set the password
+   * 
+   * @param sPassword
+   *        The new password
+   */
+  void setPassword (@Nullable String sPassword);
 }

@@ -35,7 +35,7 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.peppol.utils;
+package eu.europa.ec.cipa.transport.lime.username;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -45,6 +45,8 @@ import org.junit.Test;
 
 import com.phloc.commons.mock.PhlocTestUtils;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+
 /**
  * Test class for class {@link UsernamePWCredentials}.
  * 
@@ -52,6 +54,7 @@ import com.phloc.commons.mock.PhlocTestUtils;
  */
 public final class UsernamePWCredentialsTest {
   @Test
+  @SuppressFBWarnings ("NP_NONNULL_PARAM_VIOLATION")
   public void testDefault () {
     final UsernamePWCredentials uc = new UsernamePWCredentials ();
     assertNull (uc.getUsername ());

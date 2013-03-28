@@ -70,7 +70,6 @@ import com.phloc.commons.xml.XMLFactory;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.developer.JAXWSProperties;
 
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 import eu.europa.ec.cipa.transport.CTransportIdentifiers;
 import eu.europa.ec.cipa.transport.IMessageMetadata;
@@ -82,6 +81,7 @@ import eu.europa.ec.cipa.transport.lime.IMessage;
 import eu.europa.ec.cipa.transport.lime.IMessageReference;
 import eu.europa.ec.cipa.transport.lime.MessageException;
 import eu.europa.ec.cipa.transport.lime.soapheader.SoapHeaderMapper;
+import eu.europa.ec.cipa.transport.lime.username.IReadonlyUsernamePWCredentials;
 
 /**
  * @author Ravnholt<br>

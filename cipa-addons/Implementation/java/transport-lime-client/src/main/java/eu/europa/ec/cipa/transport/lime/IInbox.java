@@ -39,7 +39,7 @@ package eu.europa.ec.cipa.transport.lime;
 
 import java.util.List;
 
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
+import eu.europa.ec.cipa.transport.lime.username.IReadonlyUsernamePWCredentials;
 
 /**
  * @author Ravnholt<br>

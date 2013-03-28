@@ -35,7 +35,7 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.peppol.utils;
+package eu.europa.ec.cipa.transport.lime.username;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

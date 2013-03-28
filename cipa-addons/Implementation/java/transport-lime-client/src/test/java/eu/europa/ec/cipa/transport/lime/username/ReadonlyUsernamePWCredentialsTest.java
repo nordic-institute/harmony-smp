@@ -35,62 +35,37 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.peppol.utils;
+package eu.europa.ec.cipa.transport.lime.username;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import static org.junit.Assert.assertEquals;
 
-import com.phloc.commons.hash.HashCodeGenerator;
-import com.phloc.commons.string.ToStringGenerator;
+import org.junit.Test;
+
+import com.phloc.commons.mock.PhlocTestUtils;
+
+import eu.europa.ec.cipa.transport.lime.username.ReadonlyUsernamePWCredentials;
 
 /**
- * Default implementation of the {@link IReadonlyUsernamePWCredentials}
- * interface. It encapsulates an object of type {@link UsernamePWCredentials}
- * and offers only the reading methods. This is done to avoid copying too much
- * business logic.
+ * Test class for class {@link ReadonlyUsernamePWCredentials}.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-@Immutable
-public final class ReadonlyUsernamePWCredentials implements IReadonlyUsernamePWCredentials {
-  private final UsernamePWCredentials m_aCredentials;
+public final class ReadonlyUsernamePWCredentialsTest {
+  @Test
+  public void testAll () {
+    final ReadonlyUsernamePWCredentials uc = new ReadonlyUsernamePWCredentials ("name", "pw");
+    assertEquals ("name", uc.getUsername ());
+    assertEquals ("pw", uc.getPassword ());
 
-  public ReadonlyUsernamePWCredentials (@Nonnull final IReadonlyUsernamePWCredentials aCredentials) {
-    this (aCredentials.getUsername (), aCredentials.getPassword ());
-  }
-
-  public ReadonlyUsernamePWCredentials (@Nonnull final String sUsername, @Nullable final String sPassword) {
-    m_aCredentials = new UsernamePWCredentials (sUsername, sPassword);
-  }
-
-  @Nonnull
-  public String getUsername () {
-    return m_aCredentials.getUsername ();
-  }
-
-  @Nullable
-  public String getPassword () {
-    return m_aCredentials.getPassword ();
-  }
-
-  @Override
-  public boolean equals (final Object o) {
-    if (o == this)
-      return true;
-    if (!(o instanceof ReadonlyUsernamePWCredentials))
-      return false;
-    final ReadonlyUsernamePWCredentials rhs = (ReadonlyUsernamePWCredentials) o;
-    return m_aCredentials.equals (rhs.m_aCredentials);
-  }
-
-  @Override
-  public int hashCode () {
-    return new HashCodeGenerator (this).append (m_aCredentials).getHashCode ();
-  }
-
-  @Override
-  public String toString () {
-    return new ToStringGenerator (this).append ("username", getUsername ()).appendPassword ("password").toString ();
+    PhlocTestUtils.testDefaultImplementationWithEqualContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
+                                                                    new ReadonlyUsernamePWCredentials ("name", "pw"));
+    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
+                                                                        new ReadonlyUsernamePWCredentials ("name2",
+                                                                                                           "pw"));
+    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
+                                                                        new ReadonlyUsernamePWCredentials ("name",
+                                                                                                           "pww"));
+    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
+                                                                        new ReadonlyUsernamePWCredentials ("name", null));
   }
 }

@@ -55,8 +55,8 @@ import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.random.VerySecureRandom;
 import com.phloc.commons.string.StringHelper;
 
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.transport.cert.AccessPointX509TrustManager;
+import eu.europa.ec.cipa.transport.lime.username.IReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.transport.lime.ws.LimeClientService;
 
 /**

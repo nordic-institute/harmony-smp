@@ -56,7 +56,6 @@ import com.phloc.commons.string.StringHelper;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.developer.WSBindingProvider;
 
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 import eu.europa.ec.cipa.transport.IMessageMetadata;
 import eu.europa.ec.cipa.transport.MessageMetadata;
@@ -66,6 +65,7 @@ import eu.europa.ec.cipa.transport.lime.IEndpointReference;
 import eu.europa.ec.cipa.transport.lime.IMessage;
 import eu.europa.ec.cipa.transport.lime.IOutbox;
 import eu.europa.ec.cipa.transport.lime.MessageException;
+import eu.europa.ec.cipa.transport.lime.username.IReadonlyUsernamePWCredentials;
 
 /**
  * @author Ravnholt<br>

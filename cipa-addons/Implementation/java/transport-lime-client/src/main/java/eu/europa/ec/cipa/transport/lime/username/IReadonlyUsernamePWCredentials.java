@@ -35,35 +35,19 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.peppol.utils;
+package eu.europa.ec.cipa.transport.lime.username;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
-import com.phloc.commons.mock.PhlocTestUtils;
+import javax.annotation.Nullable;
 
 /**
- * Test class for class {@link ReadonlyUsernamePWCredentials}.
+ * A read-only version of username/password credentials.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class ReadonlyUsernamePWCredentialsTest {
-  @Test
-  public void testAll () {
-    final ReadonlyUsernamePWCredentials uc = new ReadonlyUsernamePWCredentials ("name", "pw");
-    assertEquals ("name", uc.getUsername ());
-    assertEquals ("pw", uc.getPassword ());
-
-    PhlocTestUtils.testDefaultImplementationWithEqualContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
-                                                                    new ReadonlyUsernamePWCredentials ("name", "pw"));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
-                                                                        new ReadonlyUsernamePWCredentials ("name2",
-                                                                                                           "pw"));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
-                                                                        new ReadonlyUsernamePWCredentials ("name",
-                                                                                                           "pww"));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
-                                                                        new ReadonlyUsernamePWCredentials ("name", null));
-  }
+public interface IReadonlyUsernamePWCredentials extends IHasUsername {
+  /**
+   * @return The password to use
+   */
+  @Nullable
+  String getPassword ();
 }

@@ -68,8 +68,6 @@ import eu.europa.ec.cipa.peppol.identifier.participant.ReadonlyParticipantIdenti
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.EPredefinedProcessIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
-import eu.europa.ec.cipa.peppol.utils.UsernamePWCredentials;
 import eu.europa.ec.cipa.transport.lime.IEndpointReference;
 import eu.europa.ec.cipa.transport.lime.IInbox;
 import eu.europa.ec.cipa.transport.lime.IMessage;
@@ -80,6 +78,8 @@ import eu.europa.ec.cipa.transport.lime.impl.Inbox;
 import eu.europa.ec.cipa.transport.lime.impl.Message;
 import eu.europa.ec.cipa.transport.lime.impl.MessageReference;
 import eu.europa.ec.cipa.transport.lime.impl.Outbox;
+import eu.europa.ec.cipa.transport.lime.username.IReadonlyUsernamePWCredentials;
+import eu.europa.ec.cipa.transport.lime.username.UsernamePWCredentials;
 
 /**
  * @author Ravnholt<br>
