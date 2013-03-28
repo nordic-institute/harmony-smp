@@ -71,6 +71,7 @@ import org.w3c.dom.Element;
 
 import com.phloc.commons.annotations.DevelopersNote;
 import com.phloc.commons.url.URLUtils;
+import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
@@ -80,8 +81,6 @@ import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
 import eu.europa.ec.cipa.peppol.sml.ESML;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
-import eu.europa.ec.cipa.peppol.utils.ReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.smp.client.exception.UnauthorizedException;
 
 /**
@@ -100,8 +99,8 @@ public final class ClientTest {
 
   private static final String SMP_USERNAME = "peppol_user";
   private static final String SMP_PASSWORD = "Test1234";
-  private static final IReadonlyUsernamePWCredentials SMP_CREDENTIALS = new ReadonlyUsernamePWCredentials (SMP_USERNAME,
-                                                                                                           SMP_PASSWORD);
+  private static final BasicAuthClientCredentials SMP_CREDENTIALS = new BasicAuthClientCredentials (SMP_USERNAME,
+                                                                                                    SMP_PASSWORD);
   public static final URI SMP_URI = URLUtils.getAsURI ("http://localhost/");
 
   @BeforeClass
@@ -143,7 +142,7 @@ public final class ClientTest {
 
   @Nonnull
   private static ServiceGroupType _createSaveServiceGroup (final SMPServiceCaller aClient,
-                                                           final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+                                                           final BasicAuthClientCredentials aCredentials) throws Exception {
     final ParticipantIdentifierType aPI = SimpleParticipantIdentifier.createWithDefaultScheme (TEST_BUSINESS_IDENTIFIER);
     final ServiceGroupType aServiceGroup = new ObjectFactory ().createServiceGroupType ();
     aServiceGroup.setParticipantIdentifier (aPI);
@@ -153,8 +152,7 @@ public final class ClientTest {
   }
 
   @Nonnull
-  private static void _deleteServiceGroup (final SMPServiceCaller aClient,
-                                           final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+  private static void _deleteServiceGroup (final SMPServiceCaller aClient, final BasicAuthClientCredentials aCredentials) throws Exception {
     final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createWithDefaultScheme (TEST_BUSINESS_IDENTIFIER);
     aClient.deleteServiceGroup (aServiceGroupID, aCredentials);
   }
@@ -184,8 +182,8 @@ public final class ClientTest {
   @Test
   public void testUnauthorizedUser () throws Exception {
     final SMPServiceCaller aClient = new SMPServiceCaller (SMP_URI);
-    final ReadonlyUsernamePWCredentials aCredentials = new ReadonlyUsernamePWCredentials (SMP_USERNAME + "wronguser",
-                                                                                          SMP_PASSWORD);
+    final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (SMP_USERNAME + "wronguser",
+                                                                                    SMP_PASSWORD);
     try {
       _createSaveServiceGroup (aClient, aCredentials);
       fail ();
@@ -196,8 +194,8 @@ public final class ClientTest {
   @Test
   public void testUnauthorizedPassword () throws Exception {
     final SMPServiceCaller aClient = new SMPServiceCaller (SMP_URI);
-    final ReadonlyUsernamePWCredentials aCredentials = new ReadonlyUsernamePWCredentials (SMP_USERNAME, SMP_PASSWORD +
-                                                                                                        "wrongpass");
+    final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (SMP_USERNAME, SMP_PASSWORD +
+                                                                                                  "wrongpass");
     try {
       _createSaveServiceGroup (aClient, aCredentials);
       fail ();

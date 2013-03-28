@@ -73,13 +73,12 @@ import com.phloc.commons.io.streams.NonBlockingStringWriter;
 import com.phloc.commons.lang.CGStringHelper;
 import com.phloc.commons.random.VerySecureRandom;
 import com.phloc.commons.string.StringHelper;
+import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
 import eu.europa.ec.cipa.peppol.security.DoNothingTrustManager;
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
-import eu.europa.ec.cipa.peppol.utils.ReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 import eu.europa.ec.cipa.smp.client.CSMPIdentifier;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
@@ -124,7 +123,7 @@ public final class SMPClient {
 
   private final URI m_aSMPAddress;
   private final String m_sSMPUsername;
-  private final IReadonlyUsernamePWCredentials m_aSMPCredentials;
+  private final BasicAuthClientCredentials m_aSMPCredentials;
   private final String m_sAPAddress;
   private final String m_sCertificateContent;
   private final SimpleParticipantIdentifier m_aParticipantID;
@@ -141,7 +140,7 @@ public final class SMPClient {
                     final String sCertificateContent) {
     m_aSMPAddress = aSMPAddress;
     m_sSMPUsername = sSMPUsername;
-    m_aSMPCredentials = new ReadonlyUsernamePWCredentials (sSMPUsername, sSMPPassword);
+    m_aSMPCredentials = new BasicAuthClientCredentials (sSMPUsername, sSMPPassword);
     m_sAPAddress = sAPAddress;
     m_sCertificateContent = sCertificateContent;
     m_aParticipantID = SimpleParticipantIdentifier.createWithDefaultScheme (sParticipantID);

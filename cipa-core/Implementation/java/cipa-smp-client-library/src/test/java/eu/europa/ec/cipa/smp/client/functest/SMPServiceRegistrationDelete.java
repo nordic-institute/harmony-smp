@@ -42,9 +42,10 @@ import java.net.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
+
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 
 /**
@@ -55,7 +56,7 @@ public final class SMPServiceRegistrationDelete {
 
   public static void main (final String [] args) throws Exception {
     final URI SMP_URI = CFunctestConfig.getSMPURI ();
-    final IReadonlyUsernamePWCredentials SMP_CREDENTIALS = CFunctestConfig.getSMPCredentials ();
+    final BasicAuthClientCredentials SMP_CREDENTIALS = CFunctestConfig.getSMPCredentials ();
     final SimpleParticipantIdentifier PARTICIPANT_ID = CFunctestConfig.getParticipantID ();
     final SimpleDocumentTypeIdentifier DOCUMENT_ID = CFunctestConfig.getDocumentTypeID ();
 

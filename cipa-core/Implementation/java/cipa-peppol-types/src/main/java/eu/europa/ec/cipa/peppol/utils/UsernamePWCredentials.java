@@ -45,8 +45,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.base64.Base64Helper;
-import com.phloc.commons.charset.CCharset;
 import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.hash.HashCodeGenerator;
 import com.phloc.commons.string.StringHelper;
@@ -60,7 +58,6 @@ import com.phloc.commons.string.ToStringGenerator;
 @NotThreadSafe
 public final class UsernamePWCredentials implements IUsernamePWCredentials {
   private static final Logger s_aLogger = LoggerFactory.getLogger (UsernamePWCredentials.class);
-  private static final String BASIC_AUTH_PREFIX = "Basic ";
   private String m_sUsername;
   private String m_sPassword;
 
@@ -95,12 +92,6 @@ public final class UsernamePWCredentials implements IUsernamePWCredentials {
     return m_sPassword;
   }
 
-  @Nonnull
-  public String getAsHTTPHeaderValue () {
-    final String sCombined = m_sPassword == null ? m_sUsername : m_sUsername + ':' + m_sPassword;
-    return BASIC_AUTH_PREFIX + Base64Helper.safeEncode (sCombined, CCharset.CHARSET_UTF_8_OBJ);
-  }
-
   @Override
   public boolean equals (final Object o) {
     if (o == this)
@@ -119,28 +110,5 @@ public final class UsernamePWCredentials implements IUsernamePWCredentials {
   @Override
   public String toString () {
     return new ToStringGenerator (this).append ("username", m_sUsername).appendPassword ("password").toString ();
-  }
-
-  @Nullable
-  public static IUsernamePWCredentials createFromBasicAuth (@Nonnull final String sAuthHeader) {
-    if (!sAuthHeader.startsWith (BASIC_AUTH_PREFIX))
-      return null;
-
-    // Remove the auth prefix
-    final String sEncodedCredentials = sAuthHeader.substring (BASIC_AUTH_PREFIX.length ());
-
-    // Apply Base64 decoding
-    final String sUsernamePassword = Base64Helper.safeDecodeAsString (sEncodedCredentials, CCharset.CHARSET_UTF_8_OBJ);
-    if (sUsernamePassword == null) {
-      // Illegal base64 encoded value
-      return null;
-    }
-
-    // Do we have a username/password separator?
-    final int nIndex = sUsernamePassword.indexOf (':');
-    if (nIndex >= 0)
-      return new UsernamePWCredentials (sUsernamePassword.substring (0, nIndex),
-                                        sUsernamePassword.substring (nIndex + 1));
-    return new UsernamePWCredentials (sUsernamePassword, null);
   }
 }

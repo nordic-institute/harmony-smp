@@ -57,8 +57,9 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
+
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
@@ -88,8 +89,8 @@ public final class ListInterface {
 
     try {
       final ObjectFactory aObjFactory = new ObjectFactory ();
-      final IReadonlyUsernamePWCredentials aCredentials = RequestHelper.getAuth (headers);
-      if (!aCredentials.getUsername ().equals (sUserId))
+      final BasicAuthClientCredentials aCredentials = RequestHelper.getAuth (headers);
+      if (aCredentials == null || !aCredentials.getUserName ().equals (sUserId))
         throw new UnauthorizedException ();
 
       final IDataManager aDataManager = DataManagerFactory.getInstance ();

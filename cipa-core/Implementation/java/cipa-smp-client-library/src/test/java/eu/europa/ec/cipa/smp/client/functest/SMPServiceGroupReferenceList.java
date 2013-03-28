@@ -44,7 +44,8 @@ import org.busdox.servicemetadata.publishing._1.ServiceGroupReferenceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
+import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
+
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 
 /**
@@ -55,7 +56,7 @@ public final class SMPServiceGroupReferenceList {
 
   public static void main (final String [] args) throws Exception {
     final URI SMP_URI = CFunctestConfig.getSMPURI ();
-    final IReadonlyUsernamePWCredentials SMP_CREDENTIALS = CFunctestConfig.getSMPCredentials ();
+    final BasicAuthClientCredentials SMP_CREDENTIALS = CFunctestConfig.getSMPCredentials ();
     final String SMP_USERNAME = CFunctestConfig.getSMPUserName ();
 
     // The main SMP client

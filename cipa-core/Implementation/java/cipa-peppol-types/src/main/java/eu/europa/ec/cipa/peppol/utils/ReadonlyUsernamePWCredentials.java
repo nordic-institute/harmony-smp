@@ -74,11 +74,6 @@ public final class ReadonlyUsernamePWCredentials implements IReadonlyUsernamePWC
     return m_aCredentials.getPassword ();
   }
 
-  @Nonnull
-  public String getAsHTTPHeaderValue () {
-    return m_aCredentials.getAsHTTPHeaderValue ();
-  }
-
   @Override
   public boolean equals (final Object o) {
     if (o == this)
@@ -97,13 +92,5 @@ public final class ReadonlyUsernamePWCredentials implements IReadonlyUsernamePWC
   @Override
   public String toString () {
     return new ToStringGenerator (this).append ("username", getUsername ()).appendPassword ("password").toString ();
-  }
-
-  @Nullable
-  public static IReadonlyUsernamePWCredentials createFromBasicAuth (final String sAuthHeader) {
-    final IUsernamePWCredentials aCredentials = UsernamePWCredentials.createFromBasicAuth (sAuthHeader);
-
-    // Create a copy to avoid casting and modification of the contents later on
-    return aCredentials == null ? null : new ReadonlyUsernamePWCredentials (aCredentials);
   }
 }

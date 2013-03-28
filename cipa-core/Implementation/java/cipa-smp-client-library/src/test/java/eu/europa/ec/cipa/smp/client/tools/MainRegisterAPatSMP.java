@@ -56,16 +56,14 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import com.phloc.commons.state.ESuccess;
+import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.EPredefinedProcessIdentifier;
 import eu.europa.ec.cipa.peppol.sml.ESML;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
-import eu.europa.ec.cipa.peppol.utils.UsernamePWCredentials;
 import eu.europa.ec.cipa.smp.client.CSMPIdentifier;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 
@@ -124,7 +122,7 @@ public final class MainRegisterAPatSMP {
                                               @Nonnull final EPredefinedProcessIdentifier eProcessID,
                                               @Nonnull final Date aStartDate,
                                               @Nonnull final Date aEndDate,
-                                              @Nonnull final IReadonlyUsernamePWCredentials aAuth) {
+                                              @Nonnull final BasicAuthClientCredentials aAuth) {
     if (aParticipantID == null)
       return ESuccess.FAILURE;
     if (eDocumentID == null)
@@ -196,6 +194,6 @@ public final class MainRegisterAPatSMP {
                         PROCTYPE,
                         START_DATE,
                         END_DATE,
-                        new UsernamePWCredentials (SMP_USERID, SMP_PASSWORD));
+                        new BasicAuthClientCredentials (SMP_USERID, SMP_PASSWORD));
   }
 }

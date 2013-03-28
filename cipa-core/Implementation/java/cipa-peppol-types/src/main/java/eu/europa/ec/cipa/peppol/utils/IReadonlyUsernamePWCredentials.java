@@ -37,7 +37,6 @@
  */
 package eu.europa.ec.cipa.peppol.utils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -51,11 +50,4 @@ public interface IReadonlyUsernamePWCredentials extends IHasUsername {
    */
   @Nullable
   String getPassword ();
-
-  /**
-   * @return The HTTP basic authentication header representation of this
-   *         credentials.
-   */
-  @Nonnull
-  String getAsHTTPHeaderValue ();
 }

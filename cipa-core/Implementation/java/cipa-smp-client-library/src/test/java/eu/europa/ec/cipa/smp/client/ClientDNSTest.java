@@ -50,6 +50,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import com.phloc.commons.url.URLUtils;
+import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
@@ -57,8 +58,6 @@ import eu.europa.ec.cipa.peppol.identifier.issuingagency.EPredefinedIdentifierIs
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.sml.ESML;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
-import eu.europa.ec.cipa.peppol.utils.ReadonlyUsernamePWCredentials;
 
 /**
  * Expects a local SMP up and running with DNS enabled at port 80 at the ROOT
@@ -74,8 +73,8 @@ public final class ClientDNSTest {
 
   private static final String SMP_USERNAME = "peppol_user";
   private static final String SMP_PASSWORD = "Test1234";
-  private static final IReadonlyUsernamePWCredentials SMP_CREDENTIALS = new ReadonlyUsernamePWCredentials (SMP_USERNAME,
-                                                                                                           SMP_PASSWORD);
+  private static final BasicAuthClientCredentials SMP_CREDENTIALS = new BasicAuthClientCredentials (SMP_USERNAME,
+                                                                                                    SMP_PASSWORD);
   public static final URI SMP_URI = URLUtils.getAsURI ("http://localhost/");
 
   @BeforeClass

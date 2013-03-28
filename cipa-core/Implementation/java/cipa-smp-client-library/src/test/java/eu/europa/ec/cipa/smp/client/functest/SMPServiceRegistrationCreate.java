@@ -56,10 +56,11 @@ import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
+
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.smp.client.CSMPIdentifier;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 
@@ -81,7 +82,7 @@ public final class SMPServiceRegistrationCreate {
 
   public static void main (final String [] args) throws Exception {
     final URI SMP_URI = CFunctestConfig.getSMPURI ();
-    final IReadonlyUsernamePWCredentials SMP_CREDENTIALS = CFunctestConfig.getSMPCredentials ();
+    final BasicAuthClientCredentials SMP_CREDENTIALS = CFunctestConfig.getSMPCredentials ();
     final SimpleParticipantIdentifier PARTICIPANT_ID = CFunctestConfig.getParticipantID ();
     final SimpleDocumentTypeIdentifier DOCUMENT_ID = CFunctestConfig.getDocumentTypeID ();
     final SimpleProcessIdentifier PROCESS_ID = CFunctestConfig.getProcessTypeID ();
@@ -89,7 +90,7 @@ public final class SMPServiceRegistrationCreate {
     final String AP_CERT_STRING = CFunctestConfig.getAPCert ();
     final String AP_SERVICE_DESCRIPTION = CFunctestConfig.getAPServiceDescription ();
     final String AP_CONTACT_URL = CFunctestConfig.getAPContact ();
-    final String AP_INFO_URL = CFunctestConfig.getAPInfo (); 
+    final String AP_INFO_URL = CFunctestConfig.getAPInfo ();
 
     // The main SMP client
     final SMPServiceCaller aClient = new SMPServiceCaller (SMP_URI);

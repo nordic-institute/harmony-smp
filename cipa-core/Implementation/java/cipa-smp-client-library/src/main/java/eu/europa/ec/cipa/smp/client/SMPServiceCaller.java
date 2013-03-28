@@ -65,10 +65,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3._2000._09.xmldsig.X509DataType;
 
-
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.string.StringHelper;
+import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.api.client.GenericType;
@@ -87,7 +87,6 @@ import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 import eu.europa.ec.cipa.peppol.uri.BusdoxURLUtils;
 import eu.europa.ec.cipa.peppol.utils.CertificateUtils;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 import eu.europa.ec.cipa.smp.client.exception.BadRequestException;
 import eu.europa.ec.cipa.smp.client.exception.NotFoundException;
@@ -195,7 +194,7 @@ public final class SMPServiceCaller {
     try {
       final String sOriginalHost = aSMPHost.getHost ();
       final InetAddress aInetAddr = InetAddress.getByName (sOriginalHost);
-      final MappedDNSHost aRealHostToUse = s_aDNSMapper.getMappedDNSHost(aInetAddr);
+      final MappedDNSHost aRealHostToUse = s_aDNSMapper.getMappedDNSHost (aInetAddr);
       if (!sOriginalHost.equals (aRealHostToUse.getHost ())) {
         final int nPortToUse = aRealHostToUse.getPort () != null ? aRealHostToUse.getPort ().intValue ()
                                                                 : aSMPHost.getPort ();
@@ -255,7 +254,7 @@ public final class SMPServiceCaller {
 
   @Nonnull
   private static ServiceGroupReferenceListType _getServiceGroupReferenceList (@Nonnull final WebResource aFullResource,
-                                                                              @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+                                                                              @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     if (aFullResource == null)
       throw new NullPointerException ("fullResource");
     if (aCredentials == null)
@@ -265,8 +264,7 @@ public final class SMPServiceCaller {
       s_aLogger.debug ("_getServiceGroupReferenceList from " + aFullResource.getURI ());
 
     try {
-      final Builder aBuilderWithAuth = aFullResource.header (HttpHeaders.AUTHORIZATION,
-                                                             aCredentials.getAsHTTPHeaderValue ());
+      final Builder aBuilderWithAuth = aFullResource.header (HttpHeaders.AUTHORIZATION, aCredentials.getRequestValue ());
       return aBuilderWithAuth.get (TYPE_SERVICEGROUPREFERENCELIST).getValue ();
     }
     catch (final UniformInterfaceException e) {
@@ -294,7 +292,7 @@ public final class SMPServiceCaller {
    */
   @Nonnull
   public ServiceGroupReferenceListType getServiceGroupReferenceList (@Nonnull final String sUserID,
-                                                                     @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+                                                                     @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     if (StringHelper.hasNoText (sUserID))
       throw new IllegalArgumentException ("The user ID for which the listing should be created, must be supplied!");
     if (aCredentials == null)
@@ -306,7 +304,7 @@ public final class SMPServiceCaller {
 
   @Nullable
   public ServiceGroupReferenceListType getServiceGroupReferenceListOrNull (@Nonnull final String sUserID,
-                                                                           @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+                                                                           @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     try {
       return getServiceGroupReferenceList (sUserID, aCredentials);
     }
@@ -335,7 +333,7 @@ public final class SMPServiceCaller {
    */
   @Deprecated
   public static ServiceGroupReferenceListType getServiceGroupReferenceList (@Nonnull final URI aURI,
-                                                                            @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+                                                                            @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     return _getServiceGroupReferenceList (_getResource (aURI), aCredentials);
   }
 
@@ -379,7 +377,7 @@ public final class SMPServiceCaller {
 
     final WebResource aFullResource = m_aWebResource.path ("/complete/" +
                                                            IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID));
-    System.out.println(aFullResource);
+    System.out.println (aFullResource);
     return _getCompleteServiceGroup (aFullResource);
   }
 
@@ -397,7 +395,7 @@ public final class SMPServiceCaller {
    * Returns a complete service group. A complete service group contains both
    * the service group and the service metadata. This method is handy when using
    * the results from
-   * {@link #getServiceGroupReferenceList(String, IReadonlyUsernamePWCredentials)}
+   * {@link #getServiceGroupReferenceList(String, BasicAuthClientCredentials)}
    * 
    * @param aURI
    *        The URI containing the complete service group
@@ -542,7 +540,7 @@ public final class SMPServiceCaller {
 
   private static void _saveServiceGroup (@Nonnull final WebResource aFullResource,
                                          @Nonnull final ServiceGroupType aServiceGroup,
-                                         @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+                                         @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     if (aFullResource == null)
       throw new NullPointerException ("fullResource");
     if (aServiceGroup == null)
@@ -554,8 +552,7 @@ public final class SMPServiceCaller {
       s_aLogger.debug ("_saveServiceGroup from " + aFullResource.getURI ());
 
     try {
-      final Builder aBuilderWithAuth = aFullResource.header (HttpHeaders.AUTHORIZATION,
-                                                             aCredentials.getAsHTTPHeaderValue ());
+      final Builder aBuilderWithAuth = aFullResource.header (HttpHeaders.AUTHORIZATION, aCredentials.getRequestValue ());
 
       // Important to build a JAXBElement around the service group
       aBuilderWithAuth.put (s_aObjFactory.createServiceGroup (aServiceGroup));
@@ -584,7 +581,7 @@ public final class SMPServiceCaller {
    *         The request was not well formed.
    */
   public void saveServiceGroup (@Nonnull final ServiceGroupType aServiceGroup,
-                                @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+                                @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     if (aServiceGroup == null)
       throw new NullPointerException ("serviceGroup");
     if (aCredentials == null)
@@ -613,7 +610,7 @@ public final class SMPServiceCaller {
    *         The request was not well formed.
    */
   public void saveServiceGroup (@Nonnull final IReadonlyParticipantIdentifier aParticipantID,
-                                @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+                                @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     if (aParticipantID == null)
       throw new NullPointerException ("participantID");
     if (aCredentials == null)
@@ -649,12 +646,12 @@ public final class SMPServiceCaller {
   @Deprecated
   public static void saveServiceGroup (@Nonnull final URI aURI,
                                        @Nonnull final ServiceGroupType aServiceGroup,
-                                       @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+                                       @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     _saveServiceGroup (_getResource (aURI), aServiceGroup, aCredentials);
   }
 
   private static void _deleteServiceGroup (@Nonnull final WebResource aFullResource,
-                                           @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+                                           @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     if (aFullResource == null)
       throw new NullPointerException ("fullResource");
     if (aCredentials == null)
@@ -664,8 +661,7 @@ public final class SMPServiceCaller {
       s_aLogger.debug ("_deleteServiceGroup from " + aFullResource.getURI ());
 
     try {
-      final Builder aBuilderWithAuth = aFullResource.header (HttpHeaders.AUTHORIZATION,
-                                                             aCredentials.getAsHTTPHeaderValue ());
+      final Builder aBuilderWithAuth = aFullResource.header (HttpHeaders.AUTHORIZATION, aCredentials.getRequestValue ());
       aBuilderWithAuth.delete ();
     }
     catch (final UniformInterfaceException ex) {
@@ -690,7 +686,7 @@ public final class SMPServiceCaller {
    *         The request was not well formed.
    */
   public void deleteServiceGroup (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
-                                  @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+                                  @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     if (aServiceGroupID == null)
       throw new NullPointerException ("serviceGroupID");
     if (aCredentials == null)
@@ -718,8 +714,7 @@ public final class SMPServiceCaller {
    *         The request was not well formed.
    */
   @Deprecated
-  public static void deleteServiceGroup (@Nonnull final URI aURI,
-                                         @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+  public static void deleteServiceGroup (@Nonnull final URI aURI, @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     _deleteServiceGroup (_getResource (aURI), aCredentials);
   }
 
@@ -963,7 +958,7 @@ public final class SMPServiceCaller {
 
   private static void _saveServiceRegistration (@Nonnull final WebResource aFullResource,
                                                 @Nonnull final ServiceMetadataType aServiceMetadata,
-                                                @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+                                                @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     if (aFullResource == null)
       throw new NullPointerException ("fullResource");
     if (aServiceMetadata == null)
@@ -975,8 +970,7 @@ public final class SMPServiceCaller {
       s_aLogger.debug ("_saveServiceRegistration from " + aFullResource.getURI ());
 
     try {
-      final Builder aBuilderWithAuth = aFullResource.header (HttpHeaders.AUTHORIZATION,
-                                                             aCredentials.getAsHTTPHeaderValue ());
+      final Builder aBuilderWithAuth = aFullResource.header (HttpHeaders.AUTHORIZATION, aCredentials.getRequestValue ());
 
       // Create JAXBElement!
       aBuilderWithAuth.put (s_aObjFactory.createServiceMetadata (aServiceMetadata));
@@ -1005,11 +999,11 @@ public final class SMPServiceCaller {
    *         The request was not well formed.
    */
   public void saveServiceRegistration (@Nonnull final ServiceMetadataType aServiceMetadata,
-                                       @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+                                       @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     if (aServiceMetadata == null)
       throw new NullPointerException ("serviceMetadata");
     if (aCredentials == null)
-      throw new NullPointerException ("credentials"); 
+      throw new NullPointerException ("credentials");
 
     final ServiceInformationType aServiceInformation = aServiceMetadata.getServiceInformation ();
     if (aServiceInformation == null)
@@ -1052,12 +1046,12 @@ public final class SMPServiceCaller {
   @Deprecated
   public static void saveServiceRegistration (@Nonnull final URI aURI,
                                               @Nonnull final ServiceMetadataType aServiceMetadata,
-                                              @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+                                              @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     _saveServiceRegistration (_getResource (aURI), aServiceMetadata, aCredentials);
   }
 
   private static void _deleteServiceRegistration (@Nonnull final WebResource aFullResource,
-                                                  @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+                                                  @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     if (aFullResource == null)
       throw new NullPointerException ("fullResource");
     if (aCredentials == null)
@@ -1067,8 +1061,7 @@ public final class SMPServiceCaller {
       s_aLogger.debug ("_deleteServiceRegistration from " + aFullResource.getURI ());
 
     try {
-      final Builder aBuilderWithAuth = aFullResource.header (HttpHeaders.AUTHORIZATION,
-                                                             aCredentials.getAsHTTPHeaderValue ());
+      final Builder aBuilderWithAuth = aFullResource.header (HttpHeaders.AUTHORIZATION, aCredentials.getRequestValue ());
       aBuilderWithAuth.delete ();
     }
     catch (final UniformInterfaceException e) {
@@ -1097,7 +1090,7 @@ public final class SMPServiceCaller {
    */
   public void deleteServiceRegistration (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                          @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
-                                         @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+                                         @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     if (aServiceGroupID == null)
       throw new NullPointerException ("serviceGroupID");
     if (aDocumentTypeID == null)
@@ -1129,7 +1122,7 @@ public final class SMPServiceCaller {
    */
   @Deprecated
   public static void deleteServiceRegistration (@Nonnull final URI aURI,
-                                                @Nonnull final IReadonlyUsernamePWCredentials aCredentials) throws Exception {
+                                                @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     _deleteServiceRegistration (_getResource (aURI), aCredentials);
   }
 }

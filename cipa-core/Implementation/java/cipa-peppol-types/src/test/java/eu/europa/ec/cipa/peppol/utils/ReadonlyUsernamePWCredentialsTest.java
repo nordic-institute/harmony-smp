@@ -38,15 +38,10 @@
 package eu.europa.ec.cipa.peppol.utils;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 
 import org.junit.Test;
 
 import com.phloc.commons.mock.PhlocTestUtils;
-
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
-import eu.europa.ec.cipa.peppol.utils.ReadonlyUsernamePWCredentials;
 
 /**
  * Test class for class {@link ReadonlyUsernamePWCredentials}.
@@ -59,27 +54,6 @@ public final class ReadonlyUsernamePWCredentialsTest {
     final ReadonlyUsernamePWCredentials uc = new ReadonlyUsernamePWCredentials ("name", "pw");
     assertEquals ("name", uc.getUsername ());
     assertEquals ("pw", uc.getPassword ());
-    assertEquals ("Basic bmFtZTpwdw==", uc.getAsHTTPHeaderValue ());
-
-    // With password
-    IReadonlyUsernamePWCredentials uc2 = ReadonlyUsernamePWCredentials.createFromBasicAuth ("Basic bmFtZTpwdw==");
-    assertNotNull (uc2);
-    assertEquals ("name", uc2.getUsername ());
-    assertEquals ("pw", uc2.getPassword ());
-    assertEquals ("Basic bmFtZTpwdw==", uc2.getAsHTTPHeaderValue ());
-    assertNull (ReadonlyUsernamePWCredentials.createFromBasicAuth ("asic bmFtZTpwdw=="));
-    assertNull (ReadonlyUsernamePWCredentials.createFromBasicAuth ("Basic äöü"));
-
-    // Without password
-    uc2 = ReadonlyUsernamePWCredentials.createFromBasicAuth ("Basic bmFtZTI=");
-    assertNotNull (uc2);
-    assertEquals ("name2", uc2.getUsername ());
-    assertNull (uc2.getPassword ());
-    assertEquals ("Basic bmFtZTI=", uc2.getAsHTTPHeaderValue ());
-
-    // Invalid
-    assertNull (ReadonlyUsernamePWCredentials.createFromBasicAuth ("asic bmFtZTpwdw=="));
-    assertNull (ReadonlyUsernamePWCredentials.createFromBasicAuth ("Basic äöü"));
 
     PhlocTestUtils.testDefaultImplementationWithEqualContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
                                                                     new ReadonlyUsernamePWCredentials ("name", "pw"));

@@ -64,11 +64,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.phloc.commons.GlobalDebug;
+import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.NotFoundException;
 
 import eu.europa.ec.cipa.commons.jpa.AbstractJPAEnabledManager;
 import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.DBEndpoint;
@@ -112,14 +112,14 @@ public final class DBMSDataManager extends AbstractJPAEnabledManager implements 
   }
 
   @Nonnull
-  private DBUser _verifyUser (@Nonnull final IReadonlyUsernamePWCredentials aCredentials) {
-    final String sUsername = aCredentials.getUsername ();
-    final DBUser aDBUser = getEntityManager ().find (DBUser.class, sUsername);
+  private DBUser _verifyUser (@Nonnull final BasicAuthClientCredentials aCredentials) {
+    final String sUserName = aCredentials.getUserName ();
+    final DBUser aDBUser = getEntityManager ().find (DBUser.class, sUserName);
 
     // Check that the user exists
     if (aDBUser == null) {
-      s_aLogger.warn ("No such user '" + sUsername + "'");
-      throw new UnknownUserException (sUsername);
+      s_aLogger.warn ("No such user '" + sUserName + "'");
+      throw new UnknownUserException (sUserName);
     }
 
     // Check that the password is correct
@@ -130,7 +130,7 @@ public final class DBMSDataManager extends AbstractJPAEnabledManager implements 
     return aDBUser;
   }
 
-  public Collection <ParticipantIdentifierType> getServiceGroupList (final IReadonlyUsernamePWCredentials aCredentials) {
+  public Collection <ParticipantIdentifierType> getServiceGroupList (final BasicAuthClientCredentials aCredentials) {
     final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
     aTransaction.begin ();
     try {
@@ -189,7 +189,7 @@ public final class DBMSDataManager extends AbstractJPAEnabledManager implements 
     }
   }
 
-  public void saveServiceGroup (final ServiceGroupType aServiceGroup, final IReadonlyUsernamePWCredentials aCredentials) {
+  public void saveServiceGroup (final ServiceGroupType aServiceGroup, final BasicAuthClientCredentials aCredentials) {
     final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
     aTransaction.begin ();
     try {
@@ -197,7 +197,7 @@ public final class DBMSDataManager extends AbstractJPAEnabledManager implements 
 
       final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID (aServiceGroup.getParticipantIdentifier ());
       DBServiceGroup aDBServiceGroup = getEntityManager ().find (DBServiceGroup.class, aDBServiceGroupID);
-      final DBOwnershipID aDBOwnershipID = new DBOwnershipID (aCredentials.getUsername (),
+      final DBOwnershipID aDBOwnershipID = new DBOwnershipID (aCredentials.getUserName (),
                                                               aServiceGroup.getParticipantIdentifier ());
 
       // Check whether the business already exists
@@ -236,7 +236,7 @@ public final class DBMSDataManager extends AbstractJPAEnabledManager implements 
     }
   }
 
-  public void deleteServiceGroup (final ParticipantIdentifierType aPI, final IReadonlyUsernamePWCredentials aCredentials) {
+  public void deleteServiceGroup (final ParticipantIdentifierType aPI, final BasicAuthClientCredentials aCredentials) {
     final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
     aTransaction.begin ();
     try {
@@ -253,12 +253,12 @@ public final class DBMSDataManager extends AbstractJPAEnabledManager implements 
       }
 
       // Check the owner ship of the service group
-      final DBOwnershipID aDBOwnershipID = new DBOwnershipID (aCredentials.getUsername (), aPI);
+      final DBOwnershipID aDBOwnershipID = new DBOwnershipID (aCredentials.getUserName (), aPI);
       final DBOwnership aDBOwnership = getEntityManager ().find (DBOwnership.class, aDBOwnershipID);
       if (aDBOwnership == null) {
-        s_aLogger.warn ("User: " + aCredentials.getUsername () + " does not own " + aPI);
+        s_aLogger.warn ("User: " + aCredentials.getUserName () + " does not own " + aPI);
         throw new UnauthorizedException ("User: " +
-                                         aCredentials.getUsername () +
+                                         aCredentials.getUserName () +
                                          " does not own " +
                                          aPI.getScheme () +
                                          "::" +
@@ -366,7 +366,7 @@ public final class DBMSDataManager extends AbstractJPAEnabledManager implements 
     return ret;
   }
 
-  public void saveService (final ServiceMetadataType aServiceMetadata, final IReadonlyUsernamePWCredentials aCredentials) {
+  public void saveService (final ServiceMetadataType aServiceMetadata, final BasicAuthClientCredentials aCredentials) {
     final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
     aTransaction.begin ();
     try {
@@ -376,7 +376,7 @@ public final class DBMSDataManager extends AbstractJPAEnabledManager implements 
                                                                     .getParticipantIdentifier ();
 
       // Check that the business is owned by the user
-      final DBOwnershipID aDBwnershipID = new DBOwnershipID (aCredentials.getUsername (), aBusinessID);
+      final DBOwnershipID aDBwnershipID = new DBOwnershipID (aCredentials.getUserName (), aBusinessID);
       if (getEntityManager ().find (DBOwnership.class, aDBwnershipID) == null)
         throw new UnauthorizedException ();
 
@@ -429,17 +429,17 @@ public final class DBMSDataManager extends AbstractJPAEnabledManager implements 
 
   public void deleteService (final ParticipantIdentifierType aServiceGroupID,
                              final DocumentIdentifierType aDocTypeID,
-                             final IReadonlyUsernamePWCredentials aCredentials) {
+                             final BasicAuthClientCredentials aCredentials) {
     final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
     aTransaction.begin ();
     try {
       _verifyUser (aCredentials);
 
       // Check that the business is owned by the user
-      final DBOwnershipID aOwnershipID = new DBOwnershipID (aCredentials.getUsername (), aServiceGroupID);
+      final DBOwnershipID aOwnershipID = new DBOwnershipID (aCredentials.getUserName (), aServiceGroupID);
       if (getEntityManager ().find (DBOwnership.class, aOwnershipID) == null)
         throw new UnauthorizedException ("User: " +
-                                         aCredentials.getUsername () +
+                                         aCredentials.getUserName () +
                                          " does not own " +
                                          aServiceGroupID.getScheme () +
                                          "::" +

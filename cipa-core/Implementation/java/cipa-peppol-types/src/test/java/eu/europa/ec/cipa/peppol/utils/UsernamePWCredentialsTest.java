@@ -38,16 +38,12 @@
 package eu.europa.ec.cipa.peppol.utils;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
 import com.phloc.commons.mock.PhlocTestUtils;
-
-import eu.europa.ec.cipa.peppol.utils.IUsernamePWCredentials;
-import eu.europa.ec.cipa.peppol.utils.UsernamePWCredentials;
 
 /**
  * Test class for class {@link UsernamePWCredentials}.
@@ -80,7 +76,6 @@ public final class UsernamePWCredentialsTest {
     final UsernamePWCredentials uc = new UsernamePWCredentials ("name", "pw");
     assertEquals ("name", uc.getUsername ());
     assertEquals ("pw", uc.getPassword ());
-    assertEquals ("Basic bmFtZTpwdw==", uc.getAsHTTPHeaderValue ());
     uc.setUsername ("name2");
     assertEquals ("name2", uc.getUsername ());
     assertEquals ("pw", uc.getPassword ());
@@ -90,25 +85,6 @@ public final class UsernamePWCredentialsTest {
     uc.setPassword (null);
     assertEquals ("name2", uc.getUsername ());
     assertNull (uc.getPassword ());
-    assertEquals ("Basic bmFtZTI=", uc.getAsHTTPHeaderValue ());
-
-    // With password
-    IUsernamePWCredentials uc2 = UsernamePWCredentials.createFromBasicAuth ("Basic bmFtZTpwdw==");
-    assertNotNull (uc2);
-    assertEquals ("name", uc2.getUsername ());
-    assertEquals ("pw", uc2.getPassword ());
-    assertEquals ("Basic bmFtZTpwdw==", uc2.getAsHTTPHeaderValue ());
-
-    // Without password
-    uc2 = UsernamePWCredentials.createFromBasicAuth ("Basic bmFtZTI=");
-    assertNotNull (uc2);
-    assertEquals ("name2", uc2.getUsername ());
-    assertNull (uc2.getPassword ());
-    assertEquals ("Basic bmFtZTI=", uc2.getAsHTTPHeaderValue ());
-
-    // Invalid
-    assertNull (UsernamePWCredentials.createFromBasicAuth ("asic bmFtZTpwdw=="));
-    assertNull (UsernamePWCredentials.createFromBasicAuth ("Basic äöü"));
 
     // Test equals/hashcode etc.
     PhlocTestUtils.testDefaultImplementationWithEqualContentObject (new UsernamePWCredentials ("name", "pw"),

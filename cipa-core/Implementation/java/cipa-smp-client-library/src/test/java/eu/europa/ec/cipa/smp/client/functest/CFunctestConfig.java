@@ -47,18 +47,16 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 
-
 import com.phloc.commons.base64.Base64;
 import com.phloc.commons.exceptions.InitializationException;
 import com.phloc.commons.io.file.SimpleFileIO;
+import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
 import eu.europa.ec.cipa.peppol.utils.CertificateUtils;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
-import eu.europa.ec.cipa.peppol.utils.ReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 
 /**
@@ -73,8 +71,8 @@ public final class CFunctestConfig {
   // init
   static {
     // How to get the Cert String:
-   // if (false)
-      System.out.println (Base64.encodeBytes (SimpleFileIO.readFileBytes (new File ("E:/data/APP_PEPPOL_ACCESS_POINT_TEST_CA.cer"))));
+    // if (false)
+    System.out.println (Base64.encodeBytes (SimpleFileIO.readFileBytes (new File ("E:/data/APP_PEPPOL_ACCESS_POINT_TEST_CA.cer"))));
 
     try {
       if (CertificateUtils.convertStringToCertficate (getAPCert ()) == null)
@@ -98,9 +96,9 @@ public final class CFunctestConfig {
   }
 
   @Nonnull
-  public static final IReadonlyUsernamePWCredentials getSMPCredentials () {
-  	System.out.print(getSMPUserName ());
-    return new ReadonlyUsernamePWCredentials (getSMPUserName (), getSMPPassword ());
+  public static final BasicAuthClientCredentials getSMPCredentials () {
+    System.out.print (getSMPUserName ());
+    return new BasicAuthClientCredentials (getSMPUserName (), getSMPPassword ());
   }
 
   @Nonnull

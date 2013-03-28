@@ -47,7 +47,7 @@ import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
+import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
 
 /**
  * This interface is used by the REST interface for accessing the underlying SMP
@@ -75,7 +75,7 @@ public interface IDataManager {
    * @param creds
    *        The credentials to use.
    */
-  void saveServiceGroup (ServiceGroupType serviceGroup, IReadonlyUsernamePWCredentials creds);
+  void saveServiceGroup (ServiceGroupType serviceGroup, BasicAuthClientCredentials creds);
 
   /**
    * Deletes the service group having the specified id.
@@ -85,7 +85,7 @@ public interface IDataManager {
    * @param creds
    *        The credentials to use.
    */
-  void deleteServiceGroup (ParticipantIdentifierType serviceGroupId, IReadonlyUsernamePWCredentials creds);
+  void deleteServiceGroup (ParticipantIdentifierType serviceGroupId, BasicAuthClientCredentials creds);
 
   /**
    * Gets a list of the document id's of the given service group.
@@ -116,7 +116,7 @@ public interface IDataManager {
    * @param creds
    *        The credentials to use.
    */
-  void saveService (ServiceMetadataType serviceMetadata, IReadonlyUsernamePWCredentials creds);
+  void saveService (ServiceMetadataType serviceMetadata, BasicAuthClientCredentials creds);
 
   /**
    * Deletes a service metadata object given by its service group id and
@@ -131,7 +131,7 @@ public interface IDataManager {
    */
   void deleteService (ParticipantIdentifierType serviceGroupId,
                       DocumentIdentifierType docType,
-                      IReadonlyUsernamePWCredentials creds);
+                      BasicAuthClientCredentials creds);
 
   /**
    * Checks whether the ServiceMetadata should be found elsewhere.
@@ -152,7 +152,7 @@ public interface IDataManager {
    *        The credentials to get service groups id for.
    * @return A collection of service group id's.
    */
-  Collection <ParticipantIdentifierType> getServiceGroupList (IReadonlyUsernamePWCredentials creds);
+  Collection <ParticipantIdentifierType> getServiceGroupList (BasicAuthClientCredentials creds);
 
   /**
    * Gets the list of service metadata objects corresponding to a given service
