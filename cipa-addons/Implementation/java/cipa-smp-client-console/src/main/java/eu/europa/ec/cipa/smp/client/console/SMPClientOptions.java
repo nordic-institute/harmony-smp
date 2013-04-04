@@ -51,7 +51,7 @@ final class SMPClientOptions extends Options {
     addOption ("u", "username", true, "USERNAME for SMP");
     addOption ("p", "password", true, "PASSWORD for SMP");
 
-    addOption ("c", "command", true, "Command to perform SMP entry (ADD, DEL, LIST)");
+    addOption ("c", "command", true, "Command to perform SMP entry (ADDGROUP, DELGROUP, ADD, DEL, LIST)");
     addOption ("b", "businessid", true, "Business id of participant");
 
     addOption ("a", "apurl", true, "Accesspoint URL");
