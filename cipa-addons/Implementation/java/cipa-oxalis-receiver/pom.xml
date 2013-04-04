@@ -27,7 +27,7 @@
 		<dependency>
 			<groupId>no.sendregning.ap</groupId>
 			<artifactId>oxalis-api</artifactId>
-			<version>1.18-SNAPSHOT</version>
+			<version>1.17</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.testng</groupId>
