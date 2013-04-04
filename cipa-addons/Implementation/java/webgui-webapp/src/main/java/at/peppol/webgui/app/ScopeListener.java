@@ -51,7 +51,6 @@ import javax.servlet.http.HttpSessionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.peppol.webgui.security.CSecurity;
 
 import com.phloc.appbasics.app.io.WebFileIO;
 import com.phloc.appbasics.app.io.WebIO;
@@ -69,6 +68,8 @@ import com.phloc.webscopes.domain.IRequestWebScope;
 import com.phloc.webscopes.factory.DefaultWebScopeFactory;
 import com.phloc.webscopes.impl.RequestWebScopeNoMultipart;
 import com.phloc.webscopes.mgr.WebScopeManager;
+
+import eu.europa.ec.cipa.webgui.security.CSecurity;
 
 /**
  * A special scope listener, that correctly manages global and session scopes

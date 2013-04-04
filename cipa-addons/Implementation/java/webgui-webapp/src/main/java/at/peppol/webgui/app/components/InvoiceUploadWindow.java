@@ -42,8 +42,6 @@ import java.io.OutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import at.peppol.webgui.upload.UploadManager;
-import at.peppol.webgui.upload.UploadedResource;
 
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -57,6 +55,9 @@ import com.vaadin.ui.Upload.StartedEvent;
 import com.vaadin.ui.Upload.SucceededEvent;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+
+import eu.europa.ec.cipa.webgui.upload.UploadManager;
+import eu.europa.ec.cipa.webgui.upload.UploadedResource;
 
 @SuppressWarnings ("serial")
 public class InvoiceUploadWindow extends VerticalLayout implements Upload.Receiver {
