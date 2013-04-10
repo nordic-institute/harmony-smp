@@ -51,8 +51,6 @@ import org.w3c.dom.Element;
 
 import com.phloc.commons.xml.XMLFactory;
 
-import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
-
 /**
  * Test class for class {@link W3CEndpointReferenceUtils}.
  * 

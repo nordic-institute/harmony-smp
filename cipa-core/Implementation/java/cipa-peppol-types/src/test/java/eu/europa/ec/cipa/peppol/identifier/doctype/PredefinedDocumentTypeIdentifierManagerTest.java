@@ -45,9 +45,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import eu.europa.ec.cipa.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.doctype.PredefinedDocumentTypeIdentifierManager;
-
 /**
  * Test class for class {@link PredefinedDocumentTypeIdentifierManager}.
  * 

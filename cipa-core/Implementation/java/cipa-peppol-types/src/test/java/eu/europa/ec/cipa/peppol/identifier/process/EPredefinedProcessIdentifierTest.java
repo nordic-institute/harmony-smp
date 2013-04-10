@@ -45,11 +45,9 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-
 import com.phloc.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.process.EPredefinedProcessIdentifier;
 
 /**
  * Test class for class {@link EPredefinedProcessIdentifier}.

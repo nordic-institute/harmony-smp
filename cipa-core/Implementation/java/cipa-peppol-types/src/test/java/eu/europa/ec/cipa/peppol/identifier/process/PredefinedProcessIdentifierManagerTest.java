@@ -44,9 +44,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import eu.europa.ec.cipa.peppol.identifier.process.IPeppolPredefinedProcessIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.process.PredefinedProcessIdentifierManager;
-
 /**
  * Test class for class {@link PredefinedProcessIdentifierManager}.
  * 

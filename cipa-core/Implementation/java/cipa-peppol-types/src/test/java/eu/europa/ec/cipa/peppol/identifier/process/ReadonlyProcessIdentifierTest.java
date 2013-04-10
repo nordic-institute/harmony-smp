@@ -42,12 +42,10 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-
 import com.phloc.commons.mock.PhlocTestUtils;
 import com.phloc.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.process.ReadonlyProcessIdentifier;
 
 /**
  * Test class for class {@link ReadonlyProcessIdentifier}.

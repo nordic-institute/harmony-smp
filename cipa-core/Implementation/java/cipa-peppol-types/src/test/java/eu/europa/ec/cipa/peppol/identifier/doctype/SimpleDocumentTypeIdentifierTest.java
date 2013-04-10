@@ -42,14 +42,12 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-
 import com.phloc.commons.mock.PhlocTestUtils;
 import com.phloc.commons.string.StringHelper;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import eu.europa.ec.cipa.busdox.identifier.IDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 
 /**
  * Test class for class {@link SimpleDocumentTypeIdentifier}.

@@ -38,11 +38,14 @@
 package eu.europa.ec.cipa.peppol.identifier.doctype;
 
 import java.util.List;
+
 import javax.annotation.Nonnull;
+
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.version.Version;
+
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 

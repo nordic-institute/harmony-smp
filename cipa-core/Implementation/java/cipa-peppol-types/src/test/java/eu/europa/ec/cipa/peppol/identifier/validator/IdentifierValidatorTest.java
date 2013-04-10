@@ -43,7 +43,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import eu.europa.ec.cipa.peppol.identifier.issuingagency.EPredefinedIdentifierIssuingAgency;
-import eu.europa.ec.cipa.peppol.identifier.validator.IdentifierValidator;
 
 
 /**

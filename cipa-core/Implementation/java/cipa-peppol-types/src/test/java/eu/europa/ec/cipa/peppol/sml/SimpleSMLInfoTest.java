@@ -45,9 +45,6 @@ import org.junit.Test;
 
 import com.phloc.commons.mock.PhlocTestUtils;
 
-import eu.europa.ec.cipa.peppol.sml.ESML;
-import eu.europa.ec.cipa.peppol.sml.SimpleSMLInfo;
-
 /**
  * Test class for class {@link SimpleSMLInfo}.
  * 

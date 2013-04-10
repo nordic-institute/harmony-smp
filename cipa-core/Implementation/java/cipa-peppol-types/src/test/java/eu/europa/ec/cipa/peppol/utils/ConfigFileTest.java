@@ -44,8 +44,6 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import eu.europa.ec.cipa.peppol.utils.ConfigFile;
-
 /**
  * Test class for class {@link ConfigFile}.
  * 

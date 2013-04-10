@@ -43,7 +43,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.string.StringHelper;
 

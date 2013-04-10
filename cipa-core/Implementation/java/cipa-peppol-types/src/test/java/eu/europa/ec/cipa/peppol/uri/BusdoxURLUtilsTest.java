@@ -52,7 +52,6 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.sml.ESML;
-import eu.europa.ec.cipa.peppol.uri.BusdoxURLUtils;
 
 /**
  * Test class for class {@link BusdoxURLUtils}.
@@ -92,6 +91,9 @@ public final class BusdoxURLUtilsTest {
     assertEquals ("B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis.",
                   BusdoxURLUtils.getDNSNameOfParticipant (SimpleParticipantIdentifier.createWithDefaultScheme ("0088:123ABC"),
                                                           ""));
+
+    System.out.println (BusdoxURLUtils.getDNSNameOfParticipant (SimpleParticipantIdentifier.createWithDefaultScheme ("9915:b"),
+                                                                ESML.PRODUCTION));
 
     // Test invalid
     try {

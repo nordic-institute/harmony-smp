@@ -48,8 +48,6 @@ import java.net.UnknownHostException;
 
 import org.junit.Test;
 
-import eu.europa.ec.cipa.peppol.ipmapper.MappedDNSHost;
-
 /**
  * Test class for class {@link MappedDNSHost}.
  * 

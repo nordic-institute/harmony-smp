@@ -47,8 +47,6 @@ import org.junit.Test;
 
 import com.phloc.commons.state.ETriState;
 
-import eu.europa.ec.cipa.peppol.identifier.issuingagency.IdentifierIssuingAgencyManager;
-
 /**
  * Test class for class {@link IdentifierIssuingAgencyManager}.
  * 

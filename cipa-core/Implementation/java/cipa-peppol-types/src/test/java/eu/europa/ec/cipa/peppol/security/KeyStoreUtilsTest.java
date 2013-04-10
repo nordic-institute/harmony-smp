@@ -61,8 +61,6 @@ import org.junit.Test;
 
 import com.phloc.commons.collections.ContainerHelper;
 
-import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
-
 /**
  * Test class for class {@link KeyStoreUtils}.
  * 

@@ -48,8 +48,6 @@ import org.busdox.servicemetadata.publishing._1.ObjectFactory;
 import org.junit.Test;
 import org.w3c.dom.Element;
 
-import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
-
 /**
  * Test class for class {@link ExtensionConverter}.
  * 
