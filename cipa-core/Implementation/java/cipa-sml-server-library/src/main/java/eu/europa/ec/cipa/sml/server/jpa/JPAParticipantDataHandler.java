@@ -39,6 +39,7 @@ package eu.europa.ec.cipa.sml.server.jpa;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.persistence.EntityTransaction;
 
@@ -89,11 +90,12 @@ public final class JPAParticipantDataHandler extends AbstractJPAEnabledManager i
     m_aCallback = aCallback;
   }
 
-  public void createParticipantIdentifiers (final ParticipantIdentifierPageType aJAXBPage, final String sClientUniqueID) throws NotFoundException,
-                                                                                                                        UnauthorizedException,
-                                                                                                                        UnknownUserException,
-                                                                                                                        InternalErrorException,
-                                                                                                                        BadRequestException {
+  public void createParticipantIdentifiers (@Nonnull final ParticipantIdentifierPageType aJAXBPage,
+                                            final String sClientUniqueID) throws NotFoundException,
+                                                                         UnauthorizedException,
+                                                                         UnknownUserException,
+                                                                         InternalErrorException,
+                                                                         BadRequestException {
     final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
     aTransaction.begin ();
     try {
@@ -102,7 +104,7 @@ public final class JPAParticipantDataHandler extends AbstractJPAEnabledManager i
       // Check that the user owns the smp
       final DBServiceMetadataPublisher aSMP = getEntityManager ().find (DBServiceMetadataPublisher.class, sSMPID);
       if (aSMP == null)
-        throw new NotFoundException("The service metadata publisher does not exist. ID: " + sSMPID);
+        throw new NotFoundException ("The service metadata publisher does not exist. ID: " + sSMPID);
 
       if (!aSMP.getUser ().getUsername ().equals (sClientUniqueID))
         throw new UnauthorizedException ("The user does not own the publisher.");
@@ -271,17 +273,24 @@ public final class JPAParticipantDataHandler extends AbstractJPAEnabledManager i
     aTransaction.begin ();
     try {
       // Change the owner of the identifier
+      final ParticipantIdentifierType aParticipantID = aMigrationRecord.getParticipantIdentifier ();
       final DBParticipantIdentifier aDBIdentifier = getEntityManager ().find (DBParticipantIdentifier.class,
-                                                                              new DBParticipantIdentifierID (aMigrationRecord.getParticipantIdentifier ()));
+                                                                              new DBParticipantIdentifierID (aParticipantID));
       if (aDBIdentifier == null)
-        throw new NotFoundException ("The participant identifier was not registered in the SML.");
+        throw new NotFoundException ("The participant identifier '" +
+                                     aParticipantID.getScheme () +
+                                     "::" +
+                                     aParticipantID.getValue () +
+                                     "' was not registered in the SML.");
 
       // Get the old SMP
       final DBServiceMetadataPublisher aOldSMP = aDBIdentifier.getServiceMetadataPublisher ();
 
       // And the new SMP
-      final DBServiceMetadataPublisher aNewSMP = getEntityManager ().find (DBServiceMetadataPublisher.class,
-                                                                           aMigrationRecord.getServiceMetadataPublisherID ());
+      final String sNewSMPID = aMigrationRecord.getServiceMetadataPublisherID ();
+      final DBServiceMetadataPublisher aNewSMP = getEntityManager ().find (DBServiceMetadataPublisher.class, sNewSMPID);
+      if (aNewSMP == null)
+        throw new NotFoundException ("The new SMP with ID '" + sNewSMPID + "' was not found!");
 
       // Check that the user owns the smp
       if (!aNewSMP.getUser ().getUsername ().equals (sClientUniqueID))
