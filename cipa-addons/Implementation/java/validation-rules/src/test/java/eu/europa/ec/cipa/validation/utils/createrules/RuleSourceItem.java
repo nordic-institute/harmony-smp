@@ -46,6 +46,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.phloc.commons.annotations.Nonempty;
+import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.id.IHasID;
 
@@ -112,11 +113,13 @@ public final class RuleSourceItem implements IHasID <String> {
   }
 
   @Nonnull
+  @ReturnsMutableCopy
   public List <RuleSourceCodeList> getAllCodeLists () {
     return ContainerHelper.newList (m_aCodeLists);
   }
 
   @Nonnull
+  @ReturnsMutableCopy
   public List <RuleSourceBusinessRule> getAllBusinessRules () {
     return ContainerHelper.newList (m_aBusinessRules);
   }
