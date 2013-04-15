@@ -95,6 +95,13 @@ import eu.europa.ec.cipa.validation.utils.createrules.utils.Utils;
 
 @Immutable
 public final class CodeListCreator {
+  /**
+   * The separator used to separate different code list values.<br>
+   * Previously used 0x007f is an invalid XML character, so we cannot use it
+   * safely!
+   */
+  public static final char CODELIST_VALUE_SEPARATOR = '\ufffd';
+
   private static final String NS_SCHEMATRON = CSchematron.NAMESPACE_SCHEMATRON;
 
   private static Templates s_aCVA2SCH;
@@ -133,7 +140,7 @@ public final class CodeListCreator {
       final String sSeverity = ODFUtils.getText (aCVASheet, 6, nRow);
 
       if (StringHelper.hasText (sScope))
-        sItem = sScope + "//" + sItem;
+        sItem = sScope + "/" + sItem;
 
       // Save context per transaction
       CVAData aCVAData = m_aCVAs.get (sTransaction);
@@ -314,17 +321,14 @@ public final class CodeListCreator {
         final IMicroElement eAssert = eRule.appendElement (NS_SCHEMATRON, "assert");
         eAssert.setAttribute ("flag", aCVAContextData.getSeverity ());
         final Set <String> aMatchingCodes = m_aAllCodes.get (aCVAContextData.getCodeListName ());
-        // Previously used 007f is an invalid XML character, so we cannot use it
-        // safely!
-        final char cSep = '\ufffd';
         final String sTest = "contains('" +
-                             cSep +
-                             StringHelper.getImploded (cSep, aMatchingCodes) +
-                             cSep +
+                             CODELIST_VALUE_SEPARATOR +
+                             StringHelper.getImploded (CODELIST_VALUE_SEPARATOR, aMatchingCodes) +
+                             CODELIST_VALUE_SEPARATOR +
                              "',concat('" +
-                             cSep +
+                             CODELIST_VALUE_SEPARATOR +
                              "',.,'" +
-                             cSep +
+                             CODELIST_VALUE_SEPARATOR +
                              "'))";
         eAssert.setAttribute ("test", sTest);
         eAssert.appendText ("[" + aCVAContextData.getID () + "]-" + aCVAContextData.getMessage ());

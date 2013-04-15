@@ -50,19 +50,19 @@
     <Context address="@mimeCode" mark="fatal" values="BinaryObjectMimeCode">
       <Message>[PCL-001-001]-Mime code in attribute MUST be MIMEMediaType.</Message>
     </Context>
-    <Context address="cac:PostalAddress/cbc:ID//@schemeID" mark="warning" values="PostalAddressIdentifier">
+    <Context address="cac:PostalAddress/cbc:ID/@schemeID" mark="warning" values="PostalAddressIdentifier">
       <Message>[PCL-001-002]-Postal address identifiers SHOULD be GLN.</Message>
     </Context>
-    <Context address="cac:Delivery/cac:DeliveryLocation/cbc:ID//@schemeID" mark="warning" values="LocationIdentifier">
+    <Context address="cac:Delivery/cac:DeliveryLocation/cbc:ID/@schemeID" mark="warning" values="LocationIdentifier">
       <Message>[PCL-001-003]-Location identifiers SHOULD be GLN</Message>
     </Context>
-    <Context address="cac:Item/cac:StandardItemIdentification/cbc:ID//@schemeID" mark="warning" values="ItemIdentifier">
+    <Context address="cac:Item/cac:StandardItemIdentification/cbc:ID/@schemeID" mark="warning" values="ItemIdentifier">
       <Message>[PCL-001-004]-Standard item identifiers SHOULD be GTIN.</Message>
     </Context>
-    <Context address="cac:PartyIdentification/cbc:ID//@schemeID" mark="fatal" values="PartyID">
+    <Context address="cac:PartyIdentification/cbc:ID/@schemeID" mark="fatal" values="PartyID">
       <Message>[PCL-001-006]-Party Identifiers MUST use the PEPPOL PartyID list</Message>
     </Context>
-    <Context address="cbc:EndpointID//@schemeID" mark="fatal" values="PartyID">
+    <Context address="cbc:EndpointID/@schemeID" mark="fatal" values="PartyID">
       <Message>[PCL-001-007]-Endpoint Identifiers MUST use the PEPPOL PartyID list.</Message>
     </Context>
   </Contexts>

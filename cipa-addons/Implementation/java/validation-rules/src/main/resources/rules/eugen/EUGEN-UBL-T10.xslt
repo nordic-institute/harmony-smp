@@ -228,8 +228,8 @@
 
 
 	<!--RULE -->
-<xsl:template match="cac:FinancialInstitution/cbc:ID//@schemeID" mode="M6" priority="1007">
-    <svrl:fired-rule context="cac:FinancialInstitution/cbc:ID//@schemeID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+<xsl:template match="cac:FinancialInstitution/cbc:ID/@schemeID" mode="M6" priority="1007">
+    <svrl:fired-rule context="cac:FinancialInstitution/cbc:ID/@schemeID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
 
 		<!--ASSERT -->
 <xsl:choose>
@@ -248,8 +248,8 @@
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="cac:PostalAddress/cbc:ID//@schemeID" mode="M6" priority="1006">
-    <svrl:fired-rule context="cac:PostalAddress/cbc:ID//@schemeID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+<xsl:template match="cac:PostalAddress/cbc:ID/@schemeID" mode="M6" priority="1006">
+    <svrl:fired-rule context="cac:PostalAddress/cbc:ID/@schemeID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
 
 		<!--ASSERT -->
 <xsl:choose>
@@ -268,8 +268,8 @@
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="cac:Delivery/cac:DeliveryLocation/cbc:ID//@schemeID" mode="M6" priority="1005">
-    <svrl:fired-rule context="cac:Delivery/cac:DeliveryLocation/cbc:ID//@schemeID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+<xsl:template match="cac:Delivery/cac:DeliveryLocation/cbc:ID/@schemeID" mode="M6" priority="1005">
+    <svrl:fired-rule context="cac:Delivery/cac:DeliveryLocation/cbc:ID/@schemeID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
 
 		<!--ASSERT -->
 <xsl:choose>
@@ -288,8 +288,8 @@
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="cac:Item/cac:StandardItemIdentification/cbc:ID//@schemeID" mode="M6" priority="1004">
-    <svrl:fired-rule context="cac:Item/cac:StandardItemIdentification/cbc:ID//@schemeID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+<xsl:template match="cac:Item/cac:StandardItemIdentification/cbc:ID/@schemeID" mode="M6" priority="1004">
+    <svrl:fired-rule context="cac:Item/cac:StandardItemIdentification/cbc:ID/@schemeID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
 
 		<!--ASSERT -->
 <xsl:choose>
@@ -308,8 +308,8 @@
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode//@listID" mode="M6" priority="1003">
-    <svrl:fired-rule context="cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode//@listID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+<xsl:template match="cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode/@listID" mode="M6" priority="1003">
+    <svrl:fired-rule context="cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode/@listID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
 
 		<!--ASSERT -->
 <xsl:choose>
@@ -348,8 +348,8 @@
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="cac:PartyIdentification/cbc:ID//@schemeID" mode="M6" priority="1001">
-    <svrl:fired-rule context="cac:PartyIdentification/cbc:ID//@schemeID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+<xsl:template match="cac:PartyIdentification/cbc:ID/@schemeID" mode="M6" priority="1001">
+    <svrl:fired-rule context="cac:PartyIdentification/cbc:ID/@schemeID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
 
 		<!--ASSERT -->
 <xsl:choose>
@@ -368,8 +368,8 @@
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="cbc:EndpointID//@schemeID" mode="M6" priority="1000">
-    <svrl:fired-rule context="cbc:EndpointID//@schemeID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+<xsl:template match="cbc:EndpointID/@schemeID" mode="M6" priority="1000">
+    <svrl:fired-rule context="cbc:EndpointID/@schemeID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
 
 		<!--ASSERT -->
 <xsl:choose>

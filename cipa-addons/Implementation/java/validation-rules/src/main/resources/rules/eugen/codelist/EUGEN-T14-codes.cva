@@ -53,28 +53,28 @@
     <Context address="@mimeCode" mark="fatal" values="BinaryObjectMimeCode">
       <Message>[PCL-014-001]-Mime code in attribute MUST be MIMEMediaType.</Message>
     </Context>
-    <Context address="cac:FinancialInstitution/cbc:ID//@schemeID" mark="warning" values="FinancialInstitutionIdentifier">
+    <Context address="cac:FinancialInstitution/cbc:ID/@schemeID" mark="warning" values="FinancialInstitutionIdentifier">
       <Message>[PCL-014-002]-Financial Institution SHOULD be BIC code.</Message>
     </Context>
-    <Context address="cac:PostalAddress/cbc:ID//@schemeID" mark="warning" values="PostalAddressIdentifier">
+    <Context address="cac:PostalAddress/cbc:ID/@schemeID" mark="warning" values="PostalAddressIdentifier">
       <Message>[PCL-014-003]-Postal address identifiers SHOULD be GLN.</Message>
     </Context>
-    <Context address="cac:Delivery/cac:DeliveryLocation/cbc:ID//@schemeID" mark="warning" values="LocationIdentifier">
+    <Context address="cac:Delivery/cac:DeliveryLocation/cbc:ID/@schemeID" mark="warning" values="LocationIdentifier">
       <Message>[PCL-014-004]-Location identifiers SHOULD be GLN</Message>
     </Context>
-    <Context address="cac:Item/cac:StandardItemIdentification/cbc:ID//@schemeID" mark="warning" values="ItemIdentifier">
+    <Context address="cac:Item/cac:StandardItemIdentification/cbc:ID/@schemeID" mark="warning" values="ItemIdentifier">
       <Message>[PCL-014-005]-Standard item identifiers SHOULD be GTIN.</Message>
     </Context>
-    <Context address="cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode//@listID" mark="warning" values="CommodityClassificationCode">
+    <Context address="cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode/@listID" mark="warning" values="CommodityClassificationCode">
       <Message>[PCL-014-006]-Commodity classification SHOULD be one of UNSPSC, eClass or CPV.</Message>
     </Context>
     <Context address="cbc:TaxExemptionReasonCode" mark="fatal" values="TaxExemptionReasonCode">
       <Message>[PCL-014-007]-Tax exemption reasons MUST be coded using Use CWA 15577 tax exemption code list. Version 2006</Message>
     </Context>
-    <Context address="cac:PartyIdentification/cbc:ID//@schemeID" mark="fatal" values="PartyID">
+    <Context address="cac:PartyIdentification/cbc:ID/@schemeID" mark="fatal" values="PartyID">
       <Message>[PCL-014-008]-Party Identifiers MUST use the PEPPOL PartyID list</Message>
     </Context>
-    <Context address="cbc:EndpointID//@schemeID" mark="fatal" values="PartyID">
+    <Context address="cbc:EndpointID/@schemeID" mark="fatal" values="PartyID">
       <Message>[PCL-014-009]-Endpoint Identifiers MUST use the PEPPOL PartyID list.</Message>
     </Context>
   </Contexts>

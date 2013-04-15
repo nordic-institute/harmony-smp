@@ -52,13 +52,13 @@
     <Context address="@currencyID" mark="fatal" values="CurrencyCode">
       <Message>[CL-014-002]-currencyID MUST be coded using ISO code list 4217</Message>
     </Context>
-    <Context address="cac:Country//cbc:IdentificationCode" mark="fatal" values="CountryIdentificationCode">
+    <Context address="cac:Country/cbc:IdentificationCode" mark="fatal" values="CountryIdentificationCode">
       <Message>[CL-014-003]-Country codes in a credit note MUST be coded using ISO code list 3166-1</Message>
     </Context>
-    <Context address="cac:TaxScheme//cbc:ID" mark="warning" values="TaxSchemeID">
+    <Context address="cac:TaxScheme/cbc:ID" mark="warning" values="TaxSchemeID">
       <Message>[CL-014-004]-Credit Note tax schemes MUST be coded using UN/ECE 5153 code list</Message>
     </Context>
-    <Context address="cac:TaxCategory//cbc:ID" mark="warning" values="TaxCategoryID">
+    <Context address="cac:TaxCategory/cbc:ID" mark="warning" values="TaxCategoryID">
       <Message>[CL-014-005]-Credit Note tax categories MUST be coded using UN/ECE 5305 code list</Message>
     </Context>
   </Contexts>

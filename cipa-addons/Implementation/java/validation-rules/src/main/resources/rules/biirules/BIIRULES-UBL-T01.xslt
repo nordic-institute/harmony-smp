@@ -268,8 +268,8 @@
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="cac:Country//cbc:IdentificationCode" mode="M6" priority="1002">
-    <svrl:fired-rule context="cac:Country//cbc:IdentificationCode" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+<xsl:template match="cac:Country/cbc:IdentificationCode" mode="M6" priority="1002">
+    <svrl:fired-rule context="cac:Country/cbc:IdentificationCode" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
 
 		<!--ASSERT -->
 <xsl:choose>
@@ -288,8 +288,8 @@
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="cac:TaxScheme//cbc:ID" mode="M6" priority="1001">
-    <svrl:fired-rule context="cac:TaxScheme//cbc:ID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+<xsl:template match="cac:TaxScheme/cbc:ID" mode="M6" priority="1001">
+    <svrl:fired-rule context="cac:TaxScheme/cbc:ID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
 
 		<!--ASSERT -->
 <xsl:choose>
@@ -308,8 +308,8 @@
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="cac:DeliveryTerms//cbc:ID" mode="M6" priority="1000">
-    <svrl:fired-rule context="cac:DeliveryTerms//cbc:ID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+<xsl:template match="cac:DeliveryTerms/cbc:ID" mode="M6" priority="1000">
+    <svrl:fired-rule context="cac:DeliveryTerms/cbc:ID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
 
 		<!--ASSERT -->
 <xsl:choose>

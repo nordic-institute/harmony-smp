@@ -52,13 +52,13 @@
     <Context address="@currencyID" mark="fatal" values="CurrencyCode">
       <Message>[CL-001-002]-currencyID MUST be coded using ISO code list 4217</Message>
     </Context>
-    <Context address="cac:Country//cbc:IdentificationCode" mark="fatal" values="CountryIdentificationCode">
+    <Context address="cac:Country/cbc:IdentificationCode" mark="fatal" values="CountryIdentificationCode">
       <Message>[CL-001-003]-Country codes MUST be coded using ISO code list 3166-1</Message>
     </Context>
-    <Context address="cac:TaxScheme//cbc:ID" mark="warning" values="TaxSchemeID">
+    <Context address="cac:TaxScheme/cbc:ID" mark="warning" values="TaxSchemeID">
       <Message>[CL-001-004]-Tax schemes MUST be coded using UN/ECE 5153 code list</Message>
     </Context>
-    <Context address="cac:DeliveryTerms//cbc:ID" mark="warning" values="DeliveryTermsID">
+    <Context address="cac:DeliveryTerms/cbc:ID" mark="warning" values="DeliveryTermsID">
       <Message>[CL-001-005]-Delivery termsID SHOULD be coded using Incoterms 2000 code list</Message>
     </Context>
   </Contexts>
