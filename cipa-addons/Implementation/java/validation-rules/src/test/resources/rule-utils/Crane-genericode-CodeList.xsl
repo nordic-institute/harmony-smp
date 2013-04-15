@@ -47,7 +47,7 @@
                 version="1.0"
                 exclude-result-prefixes="g g-old xs ccs xslo">
 
-<xs:doc info="$Id: Crane-genericode-CodeList.xsl,v 1.13 2010/05/19 15:26:30 gkholman Exp $"
+<xs:doc info="$Id: Crane-genericode-CodeList.xsl,v 1.14 2013/02/07 19:21:11 admin Exp $"
         filename="Crane-genericode-CodeList.xsl" internal-ns="ccs" 
         global-ns="xs" vocabulary="DocBook">
   <xs:title>CVA support for genericode list-level definitions</xs:title>
@@ -424,7 +424,8 @@
   <xsl:text>
   </xsl:text>
   <xslo:variable name="metadata-{position()}"
-                 select="(key('identification',$values-id)/ *[{@identification}][1]/ {@identification})[normalize-space(.)]"/>
+                 select="key('identification',$values-id)/
+                         *[({@identification})[normalize-space(.)]][1]"/>
   <xsl:text>
   </xsl:text>
   <xslo:text>( </xslo:text>
@@ -447,7 +448,7 @@
         <xslo:text>not(<xsl:value-of select="@address"/>!='</xslo:text>
         <xsl:text>
         </xsl:text>
-        <xslo:value-of select="."/>
+        <xslo:value-of select="({@identification})[normalize-space(.)][1]"/>
         <xsl:text>
         </xsl:text>
         <xslo:text>')</xslo:text>

@@ -44,7 +44,7 @@
                 xmlns:ccs="urn:x-Crane:ss:Crane-Constraints2Schematron"
                 exclude-result-prefixes="xs ccs"
                 version="1.0">
-<!--
+<!-- 
  Copyright (C) - Crane Softwrights Ltd.
                - http://www.CraneSoftwrights.com/links/res-dev.htm
  
@@ -80,7 +80,7 @@
 <!--the main logic of the transformation is independent of both-->
 <xsl:import href="Crane-Constraints2SchematronXSLT.xsl"/>
 
-<xs:doc info="$Id: Crane-cva2schXSLT.xsl,v 1.8 2010/05/20 15:00:12 gkholman Exp $"
+<xs:doc info="$Id: Crane-cva2schXSLT.xsl,v 1.9 2013/02/07 19:40:41 admin Exp $"
         filename="Crane-cva2schXSLT.xsl" internal-ns="ccs" 
         global-ns="xs" vocabulary="DocBook">
   <xs:title>Crane's CVA to Schematron XSLT for genericode</xs:title>
