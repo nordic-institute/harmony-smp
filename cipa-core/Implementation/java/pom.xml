@@ -16,7 +16,8 @@
     <module>cipa-sml-server-library</module>
     <module>cipa-sml-webapp</module>
     <module>cipa-smp-client-library</module>
-    <module>cipa-smp-webapp</module>
+    <module>cipa-smp-server-library</module>
+    <module>cipa-smp-full-webapp</module>
     <module>cipa-transport-api</module>
     <module>cipa-start-client</module>
     <module>cipa-start-server</module>
