@@ -36,6 +36,9 @@
     under either the MPL or the EUPL License.
 ====
 
+global-truststore.jks is the global trust store for PEPPOL
+global-truststore-openpeppol.jks is the global trust store for OpenPEPPOL 
+
 This global truststore works for SMP and AP.
 
 The contained aliases are:

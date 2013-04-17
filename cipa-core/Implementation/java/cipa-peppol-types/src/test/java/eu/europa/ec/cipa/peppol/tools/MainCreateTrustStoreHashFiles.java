@@ -39,6 +39,8 @@ package eu.europa.ec.cipa.peppol.tools;
 
 import java.io.File;
 
+import javax.annotation.Nonnull;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,20 +62,25 @@ import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
 public final class MainCreateTrustStoreHashFiles {
   private static final Logger s_aLogger = LoggerFactory.getLogger (MainCreateTrustStoreHashFiles.class);
 
-  public static void main (final String [] args) {
-    final IReadableResource aTrustStore = new ClassPathResource (KeyStoreUtils.TRUSTSTORE_CLASSPATH);
+  private static void _create (@Nonnull final String sTruststorePath) {
+    final IReadableResource aTrustStore = new ClassPathResource (sTruststorePath);
 
     final byte [] aMD5 = MessageDigestGeneratorHelper.getDigestFromInputStream (aTrustStore.getInputStream (),
                                                                                 EMessageDigestAlgorithm.MD5);
-    SimpleFileIO.writeFile (new File ("src/main/resources/" + KeyStoreUtils.TRUSTSTORE_CLASSPATH + ".md5"),
+    SimpleFileIO.writeFile (new File ("src/main/resources/" + sTruststorePath + ".md5"),
                             MessageDigestGeneratorHelper.getHexValueFromDigest (aMD5),
                             CCharset.CHARSET_ISO_8859_1_OBJ);
     final byte [] aSHA1 = MessageDigestGeneratorHelper.getDigestFromInputStream (aTrustStore.getInputStream (),
                                                                                  EMessageDigestAlgorithm.SHA_1);
-    SimpleFileIO.writeFile (new File ("src/main/resources/" + KeyStoreUtils.TRUSTSTORE_CLASSPATH + ".sha1"),
+    SimpleFileIO.writeFile (new File ("src/main/resources/" + sTruststorePath + ".sha1"),
                             MessageDigestGeneratorHelper.getHexValueFromDigest (aSHA1),
                             CCharset.CHARSET_ISO_8859_1_OBJ);
 
-    s_aLogger.info ("Done creating hash values");
+    s_aLogger.info ("Done creating hash values for " + sTruststorePath);
+  }
+
+  public static void main (final String [] args) {
+    _create (KeyStoreUtils.TRUSTSTORE_CLASSPATH);
+    _create (KeyStoreUtils.TRUSTSTORE_CLASSPATH_OPENPEPPOL);
   }
 }
