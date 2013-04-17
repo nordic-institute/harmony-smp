@@ -41,12 +41,12 @@
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-commons</artifactId>
-      <version>4.0.1</version>
+      <version>4.0.3</version>
     </dependency>
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-ubl</artifactId>
-      <version>3.0.0</version>
+      <version>3.1.0</version>
     </dependency>
 
     <dependency>
@@ -75,7 +75,7 @@
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-genericode</artifactId>
-      <version>3.1.5</version>
+      <version>3.1.6</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
