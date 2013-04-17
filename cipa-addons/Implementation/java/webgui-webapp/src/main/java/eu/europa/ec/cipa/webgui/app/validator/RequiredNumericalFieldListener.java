@@ -1,5 +1,6 @@
 package eu.europa.ec.cipa.webgui.app.validator;
 
+import com.phloc.commons.string.StringParser;
 import com.vaadin.event.FieldEvents.BlurEvent;
 import com.vaadin.terminal.UserError;
 import com.vaadin.ui.AbstractTextField;
@@ -13,14 +14,7 @@ public class RequiredNumericalFieldListener extends RequiredFieldListener {
   }
 
   boolean isNumericInput (final String value) {
-    try {
-      final double d = Double.parseDouble (value);
-    }
-    catch (final Exception e) {
-      return false;
-    }
-
-    return true;
+    return StringParser.isDouble (value);
   }
 
   @Override
@@ -31,7 +25,7 @@ public class RequiredNumericalFieldListener extends RequiredFieldListener {
       passValidation = false;
     }
     else
-      if (value.equals ("")) {
+      if (value.length () == 0) {
         tf.setComponentError (new UserError (errorMessage));
         passValidation = false;
       }

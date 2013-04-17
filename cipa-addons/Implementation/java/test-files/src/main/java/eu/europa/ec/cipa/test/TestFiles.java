@@ -48,7 +48,6 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ArrayHelper;
 import com.phloc.commons.io.IReadableResource;
@@ -222,6 +221,7 @@ public final class TestFiles {
                                                                                               new Warning ("EUGEN-T10-R009")),
                                                                             new TestDocument ("TC10.18.TS1.xml",
                                                                                               new FatalError ("PCL-010-007"),
+                                                                                              new FatalError ("PCL-010-008"),
                                                                                               new Warning ("BIICORE-T10-R114"),
                                                                                               new Warning ("BIICORE-T10-R185"),
                                                                                               new Warning ("EUGEN-T10-R023")) };

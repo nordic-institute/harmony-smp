@@ -169,7 +169,7 @@ public final class ArtefactIndex {
     final ArtefactIndex ret = new ArtefactIndex (aLanguages, sStylesheet);
 
     // Read all resources
-    for (final IMicroElement eResource : eRoot.getChildElements ("resource")) {
+    for (final IMicroElement eResource : eRoot.getAllChildElements ("resource")) {
       // Type
       final String sType = eResource.getAttribute ("type");
       final EArtefactResourceType eType = EArtefactResourceType.getFromIDOrNull (sType);
