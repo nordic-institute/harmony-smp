@@ -54,6 +54,7 @@ import com.phloc.commons.io.IReadableResource;
 import com.phloc.commons.string.ToStringGenerator;
 import com.phloc.schematron.ISchematronResource;
 import com.phloc.schematron.SchematronHelper;
+import com.phloc.schematron.pure.SchematronResourcePure;
 import com.phloc.schematron.xslt.SchematronResourceSCH;
 import com.phloc.schematron.xslt.SchematronResourceXSLT;
 
@@ -112,12 +113,19 @@ public final class XMLSchematronValidator extends AbstractXMLValidator {
   }
 
   @Nonnull
+  @Deprecated
   public static XMLSchematronValidator createFromXSLT (@Nonnull final IReadableResource aXSLT) {
     return new XMLSchematronValidator (new SchematronResourceXSLT (aXSLT));
   }
 
   @Nonnull
+  @Deprecated
   public static XMLSchematronValidator createFromSCH (@Nonnull final IReadableResource aSCH) {
     return new XMLSchematronValidator (new SchematronResourceSCH (aSCH));
+  }
+
+  @Nonnull
+  public static XMLSchematronValidator createFromSCHPure (@Nonnull final IReadableResource aSCH) {
+    return new XMLSchematronValidator (new SchematronResourcePure (aSCH));
   }
 }

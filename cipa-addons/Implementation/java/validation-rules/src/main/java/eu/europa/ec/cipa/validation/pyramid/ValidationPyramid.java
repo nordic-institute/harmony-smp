@@ -45,7 +45,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
+
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import com.phloc.commons.CGlobal;
 import com.phloc.commons.annotations.Nonempty;
@@ -54,7 +58,7 @@ import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.error.IResourceErrorGroup;
 import com.phloc.commons.io.IReadableResource;
 import com.phloc.commons.string.ToStringGenerator;
-import com.phloc.commons.xml.transform.ResourceStreamSource;
+import com.phloc.commons.xml.serialize.XMLReader;
 
 import eu.europa.ec.cipa.validation.generic.IXMLValidator;
 import eu.europa.ec.cipa.validation.generic.XMLSchemaValidator;
@@ -170,11 +174,11 @@ public class ValidationPyramid {
       for (final EValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (eLevel,
                                                                                               m_aValidationDocType,
                                                                                               aLookupCountry)) {
-        // Get the Schematron XSLT for the specified transaction in this level
-        final IReadableResource aXSLT = eArtefact.getValidationXSLTResource (m_aValidationTransaction);
-        if (aXSLT != null)
+        // Get the Schematron SCH for the specified transaction in this level
+        final IReadableResource aSCH = eArtefact.getValidationSchematronResource (m_aValidationTransaction);
+        if (aSCH != null)
           m_aValidationLayers.add (new ValidationPyramidLayer (eLevel,
-                                                               XMLSchematronValidator.createFromXSLT (aXSLT),
+                                                               XMLSchematronValidator.createFromSCHPure (aSCH),
                                                                false));
       }
     }
@@ -238,7 +242,13 @@ public class ValidationPyramid {
     if (aRes == null)
       throw new NullPointerException ("resource");
 
-    return applyValidation (aRes.getPath (), new ResourceStreamSource (aRes));
+    try {
+      final Document aDoc = XMLReader.readXMLDOM (aRes);
+      return applyValidation (aRes.getPath (), new DOMSource (aDoc));
+    }
+    catch (final SAXException ex) {
+      throw new IllegalArgumentException ("Failed to parse XML", ex);
+    }
   }
 
   /**

@@ -44,7 +44,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.regex.Matcher;
 
 import javax.annotation.Nonnull;
 
@@ -53,6 +52,7 @@ import oasis.names.specification.ubl.schema.xsd.order_2.OrderType;
 
 import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import com.phloc.commons.CGlobal;
@@ -63,10 +63,10 @@ import com.phloc.commons.regex.RegExHelper;
 import com.phloc.commons.xml.serialize.XMLReader;
 import com.phloc.commons.xml.serialize.XMLWriter;
 import com.phloc.schematron.SchematronHelper;
+import com.phloc.schematron.pure.SchematronResourcePure;
 import com.phloc.schematron.svrl.SVRLFailedAssert;
 import com.phloc.schematron.svrl.SVRLUtils;
 import com.phloc.schematron.svrl.SVRLWriter;
-import com.phloc.schematron.xslt.SchematronResourceXSLT;
 import com.phloc.ubl.UBL20DocumentMarshaller;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
@@ -91,13 +91,13 @@ public final class FuncTestDocumentValidationError {
     final List <SVRLFailedAssert> aFAs = SVRLUtils.getAllFailedAssertions (aSVRL);
     for (final SVRLFailedAssert aFA : aFAs) {
       final String sText = aFA.getText ();
-      final Matcher m = RegExHelper.getMatcher ("^\\[(.+)\\].+", sText);
-      if (m.find ()) {
-        final String sErrorCode = m.group (1);
-        if (aFA.getFlag ().equals (EErrorLevel.WARN))
-          ret.add (new Warning (sErrorCode));
+      final boolean bIsWarning = aFA.getFlag ().isLessOrEqualSevereThan (EErrorLevel.WARN);
+      final String [] aMatches = RegExHelper.getAllMatchingGroupValues ("^\\[(.+)\\].+", sText);
+      if (aMatches != null) {
+        if (bIsWarning)
+          ret.add (new Warning (aMatches[0]));
         else
-          ret.add (new FatalError (sErrorCode));
+          ret.add (new FatalError (aMatches[0]));
       }
     }
     return ret;
@@ -105,13 +105,15 @@ public final class FuncTestDocumentValidationError {
 
   @Test
   public void testReadOrdersError () throws SAXException {
+    final IValidationTransaction aVT = ValidationTransaction.createUBLTransaction (ETransaction.T01);
     // For all available orders
     for (final TestResource aTestDoc : TestFiles.getErrorFiles (ETestFileType.ORDER)) {
       // Get the UBL XML file
       final IReadableResource aTestFile = aTestDoc.getResource ();
+      final Document aTestFileDoc = XMLReader.readXMLDOM (aTestFile);
 
       // Ensure the UBL file validates against the scheme
-      final OrderType aUBLOrder = UBL20DocumentMarshaller.readOrder (XMLReader.readXMLDOM (aTestFile));
+      final OrderType aUBLOrder = UBL20DocumentMarshaller.readOrder (aTestFileDoc);
       assertNotNull (aUBLOrder);
 
       final Set <AbstractErrorDefinition> aErrCodes = new HashSet <AbstractErrorDefinition> ();
@@ -120,12 +122,10 @@ public final class FuncTestDocumentValidationError {
       for (final IValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
                                                                                               EValidationDocumentType.ORDER,
                                                                                               CGlobal.LOCALE_INDEPENDENT)) {
-        // Get the XSLT for transaction T01
-        final IReadableResource aXSLT = eArtefact.getValidationXSLTResource (ValidationTransaction.createUBLTransaction (ETransaction.T01));
 
-        // And now run the main "Schematron" validation
-        final SchematronOutputType aSVRL = SchematronHelper.applySchematron (new SchematronResourceXSLT (aXSLT),
-                                                                             aTestFile);
+        SchematronOutputType aSVRL;
+        aSVRL = SchematronHelper.applySchematron (new SchematronResourcePure (eArtefact.getValidationSchematronResource (aVT)),
+                                                  aTestFileDoc);
         assertNotNull (aSVRL);
 
         if (false) {
@@ -157,6 +157,7 @@ public final class FuncTestDocumentValidationError {
     for (final TestResource aTestDoc : TestFiles.getErrorFiles (ETestFileType.INVOICE)) {
       // Get the UBL XML file
       final IReadableResource aTestFile = aTestDoc.getResource ();
+      final Document aTestFileDoc = XMLReader.readXMLDOM (aTestFile);
 
       // Ensure the UBL file validates against the scheme
       final InvoiceType aUBLInvoice = UBL20DocumentMarshaller.readInvoice (XMLReader.readXMLDOM (aTestFile));
@@ -168,17 +169,14 @@ public final class FuncTestDocumentValidationError {
       for (final IValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
                                                                                               EValidationDocumentType.INVOICE,
                                                                                               CGlobal.LOCALE_INDEPENDENT)) {
-        // Get the XSLT for transaction T10
-        final IReadableResource aXSLT = eArtefact.getValidationXSLTResource (aVT);
-
-        // And now run the main "Schematron" validation
-        final SchematronOutputType aSVRL = SchematronHelper.applySchematron (new SchematronResourceXSLT (aXSLT),
-                                                                             aTestFile);
+        SchematronOutputType aSVRL;
+        aSVRL = SchematronHelper.applySchematron (new SchematronResourcePure (eArtefact.getValidationSchematronResource (aVT)),
+                                                  aTestFileDoc);
         assertNotNull (aSVRL);
 
         if (false) {
           // For debugging purposes: print the SVRL
-          System.out.println (XMLWriter.getXMLString (SVRLWriter.createXML (aSVRL)));
+          System.out.println (SVRLWriter.createXMLString (aSVRL));
         }
 
         aErrCodes.addAll (_getAllFailedAssertionErrorCode (aSVRL));
