@@ -734,6 +734,7 @@ public final class SMPServiceCaller {
 
         // Follow the redirect
         final WebResource aRedirectFullResource = _getResourceWithSignatureCheck (URI.create (aRedirect.getHref ()));
+        s_aLogger.info ("Following a redirect to " + aRedirect.getHref());
         aMetadata = aRedirectFullResource.get (TYPE_SIGNEDSERVICEMETADATA).getValue ();
 
         // Check that the certificateUID is correct.
