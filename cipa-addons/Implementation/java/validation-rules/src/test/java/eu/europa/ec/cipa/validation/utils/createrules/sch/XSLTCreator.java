@@ -67,7 +67,11 @@ public final class XSLTCreator {
         for (final File aSCHFile : aBusinessRule.getAllResultSchematronFiles ()) {
           Utils.log ("  Creating XSLT for " + aSCHFile.getName ());
 
-          final ISchematronXSLTProvider aXSLTProvider = SchematronResourceSCHCache.createSchematronXSLTProvider (new FileSystemResource (aSCHFile));
+          final ISchematronXSLTProvider aXSLTProvider = SchematronResourceSCHCache.createSchematronXSLTProvider (new FileSystemResource (aSCHFile),
+                                                                                                                 null,
+                                                                                                                 null,
+                                                                                                                 null,
+                                                                                                                 null);
           if (aXSLTProvider == null) {
             // Error message already emitted!
             continue;
