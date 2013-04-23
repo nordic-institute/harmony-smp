@@ -62,7 +62,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <metro.new.version>2.2.1-1</metro.new.version>
-    <slf4j.version>1.7.2</slf4j.version>
+    <slf4j.version>1.7.5</slf4j.version>
     <jersey.version>1.16</jersey.version>
     <jetty.version>7.6.10.v20130312</jetty.version>
   </properties>
@@ -201,7 +201,7 @@
         <version>1.2.17</version>
       </dependency>
       <!-- Test only: -->
-      <!-- Note: use Jetty 7.x as it uses Servlet API 2.5. Branch 8.0 uses 3.0 -->
+      <!-- Note: use Jetty 7.x as it uses Servlet API 2.5. Branch 8.0+ uses 3.0 -->
       <dependency>
         <groupId>org.eclipse.jetty</groupId>
         <artifactId>jetty-webapp</artifactId>
