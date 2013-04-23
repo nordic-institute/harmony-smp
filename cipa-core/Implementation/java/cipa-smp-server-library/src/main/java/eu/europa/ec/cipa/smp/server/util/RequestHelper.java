@@ -43,13 +43,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.core.HttpHeaders;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.phloc.commons.collections.ContainerHelper;
+import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
+import com.phloc.web.http.basicauth.HTTPBasicAuth;
 
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
-import eu.europa.ec.cipa.peppol.utils.ReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
 
 /**
@@ -60,22 +57,15 @@ import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
  */
 @Immutable
 public final class RequestHelper {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (RequestHelper.class);
-
   private RequestHelper () {}
 
   @Nonnull
-  public static IReadonlyUsernamePWCredentials getAuth (@Nonnull final HttpHeaders headers) throws UnauthorizedException {
+  public static BasicAuthClientCredentials getAuth (@Nonnull final HttpHeaders headers) throws UnauthorizedException {
     final List <String> aHeaders = headers.getRequestHeader (HttpHeaders.AUTHORIZATION);
     if (ContainerHelper.isEmpty (aHeaders))
       throw new UnauthorizedException ("Missing required HTTP header for Authorization");
 
     final String sAuthHeader = ContainerHelper.getFirstElement (aHeaders);
-    final IReadonlyUsernamePWCredentials aCredentials = ReadonlyUsernamePWCredentials.createFromBasicAuth (sAuthHeader);
-    if (aCredentials == null) {
-      s_aLogger.warn ("Illegal credentials provided: " + sAuthHeader);
-      throw new UnauthorizedException ("Only Basic authorization accepted.");
-    }
-    return aCredentials;
+    return HTTPBasicAuth.getBasicAuthClientCredentials (sAuthHeader);
   }
 }

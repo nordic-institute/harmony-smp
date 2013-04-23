@@ -62,6 +62,7 @@ import org.junit.Test;
 import org.junit.internal.AssumptionViolatedException;
 
 import com.phloc.commons.annotations.DevelopersNote;
+import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.NotFoundException;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
@@ -70,8 +71,6 @@ import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
 import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
-import eu.europa.ec.cipa.peppol.utils.IReadonlyUsernamePWCredentials;
-import eu.europa.ec.cipa.peppol.utils.ReadonlyUsernamePWCredentials;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 import eu.europa.ec.cipa.smp.client.CSMPIdentifier;
 import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
@@ -113,8 +112,7 @@ public class DBMSDataManagerTest {
   private static final ParticipantIdentifierType SERVICEGROUP_ID = PARTY_ID;
   private static final DocumentIdentifierType DOCTYPE_ID = new SimpleDocumentTypeIdentifier (DOCUMENT_SCHEME,
                                                                                              TEST_DOCUMENT);
-  private static final IReadonlyUsernamePWCredentials CREDENTIALS = new ReadonlyUsernamePWCredentials (USERNAME,
-                                                                                                       PASSWORD);
+  private static final BasicAuthClientCredentials CREDENTIALS = new BasicAuthClientCredentials (USERNAME, PASSWORD);
 
   private static DBMSDataManager s_aDataMgr;
 
@@ -202,7 +200,7 @@ public class DBMSDataManagerTest {
 
   @Test
   public void testCreateServiceGroupInvalidPassword () {
-    final IReadonlyUsernamePWCredentials aCredentials = new ReadonlyUsernamePWCredentials (USERNAME, "WRONG_PASSWORD");
+    final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WRONG_PASSWORD");
 
     m_aServiceGroup.getParticipantIdentifier ().setValue (PARTICIPANT_IDENTIFIER2);
     try {
@@ -214,7 +212,7 @@ public class DBMSDataManagerTest {
 
   @Test
   public void testCreateServiceGroupUnknownUser () {
-    final IReadonlyUsernamePWCredentials aCredentials = new ReadonlyUsernamePWCredentials ("Unknown_User", PASSWORD);
+    final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
 
     m_aServiceGroup.getParticipantIdentifier ().setValue (PARTICIPANT_IDENTIFIER2);
     try {
@@ -241,7 +239,7 @@ public class DBMSDataManagerTest {
 
   @Test
   public void testDeleteServiceGroupUnknownUser () {
-    final IReadonlyUsernamePWCredentials aCredentials = new ReadonlyUsernamePWCredentials ("Unknown_User", PASSWORD);
+    final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
     try {
       s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, aCredentials);
       fail ();
@@ -251,7 +249,7 @@ public class DBMSDataManagerTest {
 
   @Test
   public void testDeleteServiceGroupWrongPass () {
-    final IReadonlyUsernamePWCredentials aCredentials = new ReadonlyUsernamePWCredentials (USERNAME, "WrongPassword");
+    final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WrongPassword");
     try {
       s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, aCredentials);
       fail ();
@@ -298,7 +296,7 @@ public class DBMSDataManagerTest {
 
   @Test
   public void testCreateServiceMetadataUnknownUser () {
-    final IReadonlyUsernamePWCredentials aCredentials = new ReadonlyUsernamePWCredentials ("Unknown_User", PASSWORD);
+    final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
     try {
       s_aDataMgr.saveService (m_aServiceMetadata, aCredentials);
       fail ();
@@ -308,7 +306,7 @@ public class DBMSDataManagerTest {
 
   @Test
   public void testCreateServiceMetadataWrongPass () {
-    final IReadonlyUsernamePWCredentials aCredentials = new ReadonlyUsernamePWCredentials (USERNAME, "WrongPassword");
+    final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WrongPassword");
     try {
       s_aDataMgr.saveService (m_aServiceMetadata, aCredentials);
       fail ();
@@ -330,7 +328,7 @@ public class DBMSDataManagerTest {
 
   @Test
   public void testDeleteServiceMetadataUnknownUser () {
-    final IReadonlyUsernamePWCredentials aCredentials = new ReadonlyUsernamePWCredentials ("Unknown_User", PASSWORD);
+    final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
     try {
       s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, aCredentials);
       fail ();
@@ -340,7 +338,7 @@ public class DBMSDataManagerTest {
 
   @Test
   public void testDeleteServiceMetadataWrongPass () {
-    final IReadonlyUsernamePWCredentials aCredentials = new ReadonlyUsernamePWCredentials (USERNAME, "WrongPassword");
+    final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WrongPassword");
     try {
       s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, aCredentials);
       fail ();
