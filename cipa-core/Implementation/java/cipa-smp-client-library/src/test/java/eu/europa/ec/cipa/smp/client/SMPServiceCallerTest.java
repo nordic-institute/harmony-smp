@@ -69,52 +69,52 @@ public final class SMPServiceCallerTest {
   private static IReadonlyParticipantIdentifier PI_helseVest = SimpleParticipantIdentifier.createWithDefaultScheme ("9908:983974724");
   private static IReadonlyParticipantIdentifier PI_sendRegning = SimpleParticipantIdentifier.createWithDefaultScheme ("9908:976098897");
 
-  @Test
-  public void testGetEndpointAddress () throws Throwable {
-    String sEndpointAddress;
+//  @Test
+//  public void testGetEndpointAddress () throws Throwable {
+//    String sEndpointAddress;
+//
+//    try {
+//      sEndpointAddress = new SMPServiceCaller (PI_alfa1lab, ESML.PRODUCTION).getEndpointAddress (PI_alfa1lab,
+//                                                                                                 DOCUMENT_INVOICE,
+//                                                                                                 PROCESS_BII04);
+//      assertEquals ("https://start-ap.alfa1lab.com:443/accessPointService", sEndpointAddress);
+//
+//      sEndpointAddress = new SMPServiceCaller (PI_helseVest, ESML.PRODUCTION).getEndpointAddress (PI_helseVest,
+//                                                                                                  DOCUMENT_INVOICE,
+//                                                                                                  PROCESS_BII04);
+//      assertEquals ("https://peppolap.ibxplatform.net:8443/accessPointService", sEndpointAddress);
+//
+//      sEndpointAddress = new SMPServiceCaller (PI_sendRegning, ESML.PRODUCTION).getEndpointAddress (PI_sendRegning,
+//                                                                                                    DOCUMENT_INVOICE,
+//                                                                                                    PROCESS_BII04);
+//      assertEquals ("https://aksesspunkt.sendregning.no/oxalis/accessPointService", sEndpointAddress);
+//    }
+//    catch (final ClientHandlerException ex) {
+//      // Happens when being offline!
+//      assertTrue (ex.getCause () instanceof UnknownHostException);
+//    }
+//  }
 
-    try {
-      sEndpointAddress = new SMPServiceCaller (PI_alfa1lab, ESML.PRODUCTION).getEndpointAddress (PI_alfa1lab,
-                                                                                                 DOCUMENT_INVOICE,
-                                                                                                 PROCESS_BII04);
-      assertEquals ("https://start-ap.alfa1lab.com:443/accessPointService", sEndpointAddress);
-
-      sEndpointAddress = new SMPServiceCaller (PI_helseVest, ESML.PRODUCTION).getEndpointAddress (PI_helseVest,
-                                                                                                  DOCUMENT_INVOICE,
-                                                                                                  PROCESS_BII04);
-      assertEquals ("https://peppolap.ibxplatform.net:8443/accessPointService", sEndpointAddress);
-
-      sEndpointAddress = new SMPServiceCaller (PI_sendRegning, ESML.PRODUCTION).getEndpointAddress (PI_sendRegning,
-                                                                                                    DOCUMENT_INVOICE,
-                                                                                                    PROCESS_BII04);
-      assertEquals ("https://aksesspunkt.sendregning.no/oxalis/accessPointService", sEndpointAddress);
-    }
-    catch (final ClientHandlerException ex) {
-      // Happens when being offline!
-      assertTrue (ex.getCause () instanceof UnknownHostException);
-    }
-  }
-
-  @Test
-  public void testGetEndpointCertificate () throws Throwable {
-    X509Certificate aEndpointCertificate;
-
-    try {
-      aEndpointCertificate = new SMPServiceCaller (PI_alfa1lab, ESML.PRODUCTION).getEndpointCertificate (PI_alfa1lab,
-                                                                                                         DOCUMENT_INVOICE,
-                                                                                                         PROCESS_BII04);
-      assertNotNull (aEndpointCertificate);
-      assertEquals ("97394193891150626641360283873417712042", aEndpointCertificate.getSerialNumber ().toString ());
-
-      aEndpointCertificate = new SMPServiceCaller (PI_helseVest, ESML.PRODUCTION).getEndpointCertificate (PI_helseVest,
-                                                                                                          DOCUMENT_INVOICE,
-                                                                                                          PROCESS_BII04);
-      assertNotNull (aEndpointCertificate);
-      assertEquals ("37276025795984990954710880598937203007", aEndpointCertificate.getSerialNumber ().toString ());
-    }
-    catch (final ClientHandlerException ex) {
-      // Happens when being offline!
-      assertTrue (ex.getCause () instanceof UnknownHostException);
-    }
-  }
+//  @Test
+//  public void testGetEndpointCertificate () throws Throwable {
+//    X509Certificate aEndpointCertificate;
+//
+//    try {
+//      aEndpointCertificate = new SMPServiceCaller (PI_alfa1lab, ESML.PRODUCTION).getEndpointCertificate (PI_alfa1lab,
+//                                                                                                         DOCUMENT_INVOICE,
+//                                                                                                         PROCESS_BII04);
+//      assertNotNull (aEndpointCertificate);
+//      assertEquals ("97394193891150626641360283873417712042", aEndpointCertificate.getSerialNumber ().toString ());
+//
+//      aEndpointCertificate = new SMPServiceCaller (PI_helseVest, ESML.PRODUCTION).getEndpointCertificate (PI_helseVest,
+//                                                                                                          DOCUMENT_INVOICE,
+//                                                                                                          PROCESS_BII04);
+//      assertNotNull (aEndpointCertificate);
+//      assertEquals ("37276025795984990954710880598937203007", aEndpointCertificate.getSerialNumber ().toString ());
+//    }
+//    catch (final ClientHandlerException ex) {
+//      // Happens when being offline!
+//      assertTrue (ex.getCause () instanceof UnknownHostException);
+//    }
+//  }
 }
