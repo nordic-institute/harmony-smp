@@ -61,6 +61,7 @@ public final class JPAConfiguration {
   public static final String CONFIG_DDL_GENERATION_MODE = PersistenceUnitProperties.DDL_GENERATION_MODE;
 
   @PresentForCodeCoverage
+  @SuppressWarnings ("unused")
   private static final JPAConfiguration s_aInstance = new JPAConfiguration ();
 
   // Write SQL file only in debug mode, so that the production version can be
