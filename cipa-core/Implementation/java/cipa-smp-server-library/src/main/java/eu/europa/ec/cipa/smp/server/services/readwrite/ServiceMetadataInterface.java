@@ -86,7 +86,7 @@ public final class ServiceMetadataInterface {
   public ServiceMetadataInterface () {}
 
   @GET
-  //changed Produced media type to match the smp specification.
+  // changed Produced media type to match the smp specification.
   @Produces (MediaType.TEXT_XML)
   public JAXBElement <SignedServiceMetadataType> getServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
                                                                          @PathParam ("DocumentTypeId") final String sDocumentTypeID) {

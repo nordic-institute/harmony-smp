@@ -59,7 +59,7 @@ public final class DataManagerFactory {
   @Nonnull
   public static IDataManager getInstance () {
     final String dataManagerName = ConfigFile.getInstance ().getString (CONFIG_DATA_MANAGER_CLASS);
-    System.out.println("Data manager Name :" + dataManagerName);
+    System.out.println ("Data manager Name :" + dataManagerName);
     final IDataManager ret = GenericReflection.newInstance (dataManagerName, IDataManager.class);
     if (ret == null)
       throw new IllegalStateException ("Failed to create DataManager instance of class " + dataManagerName);
