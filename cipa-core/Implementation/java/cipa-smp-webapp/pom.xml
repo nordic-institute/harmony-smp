@@ -71,7 +71,7 @@
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-web</artifactId>
-      <version>5.0.4</version>
+      <version>5.0.5</version>
     </dependency>
 		<!-- You may replace MySQL in production with something else -->
 		<dependency>

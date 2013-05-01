@@ -67,7 +67,7 @@ import com.phloc.schematron.pure.SchematronResourcePure;
 import com.phloc.schematron.svrl.SVRLFailedAssert;
 import com.phloc.schematron.svrl.SVRLUtils;
 import com.phloc.schematron.svrl.SVRLWriter;
-import com.phloc.ubl.UBL20DocumentMarshaller;
+import com.phloc.ubl.UBL20Reader;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 import eu.europa.ec.cipa.test.ETestFileType;
@@ -113,7 +113,7 @@ public final class FuncTestDocumentValidationError {
       final Document aTestFileDoc = XMLReader.readXMLDOM (aTestFile);
 
       // Ensure the UBL file validates against the scheme
-      final OrderType aUBLOrder = UBL20DocumentMarshaller.readOrder (aTestFileDoc);
+      final OrderType aUBLOrder = UBL20Reader.readOrder (aTestFileDoc);
       assertNotNull (aUBLOrder);
 
       final Set <AbstractErrorDefinition> aErrCodes = new HashSet <AbstractErrorDefinition> ();
@@ -160,7 +160,7 @@ public final class FuncTestDocumentValidationError {
       final Document aTestFileDoc = XMLReader.readXMLDOM (aTestFile);
 
       // Ensure the UBL file validates against the scheme
-      final InvoiceType aUBLInvoice = UBL20DocumentMarshaller.readInvoice (XMLReader.readXMLDOM (aTestFile));
+      final InvoiceType aUBLInvoice = UBL20Reader.readInvoice (aTestFileDoc);
       assertNotNull (aUBLInvoice);
 
       final Set <AbstractErrorDefinition> aErrCodes = new HashSet <AbstractErrorDefinition> ();

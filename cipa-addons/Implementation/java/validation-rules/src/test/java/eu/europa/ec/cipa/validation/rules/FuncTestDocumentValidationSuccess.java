@@ -52,20 +52,18 @@ import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.SAXException;
 
 import com.phloc.commons.CGlobal;
 import com.phloc.commons.error.EErrorLevel;
 import com.phloc.commons.io.IReadableResource;
 import com.phloc.commons.locale.country.CountryCache;
-import com.phloc.commons.xml.serialize.XMLReader;
 import com.phloc.commons.xml.serialize.XMLWriter;
 import com.phloc.schematron.SchematronHelper;
 import com.phloc.schematron.svrl.SVRLFailedAssert;
 import com.phloc.schematron.svrl.SVRLUtils;
 import com.phloc.schematron.svrl.SVRLWriter;
 import com.phloc.schematron.xslt.SchematronResourceXSLT;
-import com.phloc.ubl.UBL20DocumentMarshaller;
+import com.phloc.ubl.UBL20Reader;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 import eu.europa.ec.cipa.test.ETestFileType;
@@ -81,11 +79,11 @@ public final class FuncTestDocumentValidationSuccess {
   private static final Logger s_aLogger = LoggerFactory.getLogger (FuncTestDocumentValidationSuccess.class);
 
   @Test
-  public void testReadCataloguesSuccess () throws SAXException {
+  public void testReadCataloguesSuccess () {
     // For all available catalogues
     for (final IReadableResource aTestFile : TestFiles.getSuccessFiles (ETestFileType.CATALOGUE)) {
       // Ensure the UBL file validates against the scheme
-      final CatalogueType aUBLCatalogue = UBL20DocumentMarshaller.readCatalogue (XMLReader.readXMLDOM (aTestFile));
+      final CatalogueType aUBLCatalogue = UBL20Reader.readCatalogue (aTestFile);
       assertNotNull (aUBLCatalogue);
 
       // Test the country-independent catalogue layers
@@ -114,11 +112,11 @@ public final class FuncTestDocumentValidationSuccess {
   }
 
   @Test
-  public void testReadOrdersSuccess () throws SAXException {
+  public void testReadOrdersSuccess () {
     // For all available orders
     for (final IReadableResource aTestFile : TestFiles.getSuccessFiles (ETestFileType.ORDER)) {
       // Ensure the UBL file validates against the scheme
-      final OrderType aUBLOrder = UBL20DocumentMarshaller.readOrder (XMLReader.readXMLDOM (aTestFile));
+      final OrderType aUBLOrder = UBL20Reader.readOrder (aTestFile);
       assertNotNull (aUBLOrder);
 
       // Test the country-independent orders layers
@@ -149,11 +147,11 @@ public final class FuncTestDocumentValidationSuccess {
   }
 
   @Test
-  public void testReadOrderResponsesSuccess () throws SAXException {
+  public void testReadOrderResponsesSuccess () {
     // For all available orders
     for (final IReadableResource aTestFile : TestFiles.getSuccessFiles (ETestFileType.ORDERRESPONSE)) {
       // Ensure the UBL file validates against the scheme
-      final OrderResponseSimpleType aUBLOrderResponse = UBL20DocumentMarshaller.readOrderResponseSimple (XMLReader.readXMLDOM (aTestFile));
+      final OrderResponseSimpleType aUBLOrderResponse = UBL20Reader.readOrderResponseSimple (aTestFile);
       assertNotNull (aUBLOrderResponse);
 
       // Test the country-independent orders layers
@@ -184,11 +182,11 @@ public final class FuncTestDocumentValidationSuccess {
   }
 
   @Test
-  public void testReadCreditNotesSuccess () throws SAXException {
+  public void testReadCreditNotesSuccess () {
     // For all available credit notes
     for (final IReadableResource aTestFile : TestFiles.getSuccessFiles (ETestFileType.CREDITNOTE)) {
       // Ensure the UBL file validates against the scheme
-      final CreditNoteType aUBLCreditNote = UBL20DocumentMarshaller.readCreditNote (XMLReader.readXMLDOM (aTestFile));
+      final CreditNoteType aUBLCreditNote = UBL20Reader.readCreditNote (aTestFile);
       assertNotNull (aUBLCreditNote);
 
       // Test the country-independent orders layers
@@ -219,12 +217,12 @@ public final class FuncTestDocumentValidationSuccess {
   }
 
   @Test
-  public void testReadInvoicesSuccess () throws SAXException {
+  public void testReadInvoicesSuccess () {
     final IValidationTransaction aVT = ValidationTransaction.createUBLTransaction (ETransaction.T10);
     // For all available invoices
     for (final IReadableResource aTestFile : TestFiles.getSuccessFiles (ETestFileType.INVOICE)) {
       // Ensure the UBL file validates against the scheme
-      final InvoiceType aUBLInvoice = UBL20DocumentMarshaller.readInvoice (XMLReader.readXMLDOM (aTestFile));
+      final InvoiceType aUBLInvoice = UBL20Reader.readInvoice (aTestFile);
       assertNotNull (aUBLInvoice);
 
       // Test the country-independent invoice layers
@@ -255,12 +253,12 @@ public final class FuncTestDocumentValidationSuccess {
   }
 
   @Test
-  public void testReadInvoicesATSuccess () throws SAXException {
+  public void testReadInvoicesATSuccess () {
     final Locale aCountry = CountryCache.getCountry ("AT");
     // For all available invoices
     for (final IReadableResource aTestFile : TestFiles.getSuccessFiles (ETestFileType.INVOICE, aCountry)) {
       // Ensure the UBL file validates against the scheme
-      final InvoiceType aUBLInvoice = UBL20DocumentMarshaller.readInvoice (XMLReader.readXMLDOM (aTestFile));
+      final InvoiceType aUBLInvoice = UBL20Reader.readInvoice (aTestFile);
       assertNotNull (aUBLInvoice);
 
       // Test the country-independent invoice layers

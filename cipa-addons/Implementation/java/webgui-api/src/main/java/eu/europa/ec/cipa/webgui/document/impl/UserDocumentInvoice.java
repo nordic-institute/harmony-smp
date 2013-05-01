@@ -49,7 +49,7 @@ import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.idfactory.GlobalIDFactory;
 import com.phloc.commons.io.streams.StreamUtils;
 import com.phloc.commons.state.ESuccess;
-import com.phloc.ubl.UBL20DocumentMarshaller;
+import com.phloc.ubl.UBL20Writer;
 
 import eu.europa.ec.cipa.webgui.document.AbstractUserDocument;
 import eu.europa.ec.cipa.webgui.document.EDocumentType;
@@ -81,7 +81,7 @@ public final class UserDocumentInvoice extends AbstractUserDocument {
   @Nonnull
   public ESuccess writeToStream (@Nonnull @WillClose final OutputStream aOS) {
     try {
-      return UBL20DocumentMarshaller.writeInvoice (m_aInvoice, new StreamResult (aOS));
+      return UBL20Writer.writeInvoice (m_aInvoice, new StreamResult (aOS));
     }
     finally {
       StreamUtils.close (aOS);

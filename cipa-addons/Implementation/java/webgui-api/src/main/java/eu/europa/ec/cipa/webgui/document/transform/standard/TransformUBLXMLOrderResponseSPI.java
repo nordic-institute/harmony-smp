@@ -46,7 +46,7 @@ import com.phloc.commons.jaxb.validation.CollectingValidationEventHandler;
 import com.phloc.commons.typeconvert.TypeConverterException;
 import com.phloc.commons.xml.XMLHelper;
 import com.phloc.ubl.EUBL20DocumentType;
-import com.phloc.ubl.UBL20DocumentMarshaller;
+import com.phloc.ubl.UBL20Reader;
 
 import eu.europa.ec.cipa.webgui.document.transform.ITransformOrderResponseToUBLSPI;
 import eu.europa.ec.cipa.webgui.document.transform.TransformationResult;
@@ -71,8 +71,7 @@ public final class TransformUBLXMLOrderResponseSPI implements ITransformOrderRes
   @Nonnull
   public TransformationResult convertOrderResponseToUBL (@Nonnull final TransformationSource aSource) throws TypeConverterException {
     final CollectingValidationEventHandler aHdl = new CollectingValidationEventHandler ();
-    final OrderResponseSimpleType aCatalogue = UBL20DocumentMarshaller.readOrderResponseSimple (aSource.getXMLDocument (),
-                                                                                                aHdl);
+    final OrderResponseSimpleType aCatalogue = UBL20Reader.readOrderResponseSimple (aSource.getXMLDocument (), aHdl);
     final IResourceErrorGroup aErrors = aHdl.getResourceErrors ();
     if (aErrors.containsAtLeastOneError ())
       return TransformationResult.createFailure (aErrors);
