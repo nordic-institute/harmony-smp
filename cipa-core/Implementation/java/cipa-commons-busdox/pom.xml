@@ -27,11 +27,24 @@
     </repository>
   </repositories>
 
+  <pluginRepositories>
+    <pluginRepository>
+      <id>phloc</id>
+      <url>http://repo.phloc.com/maven2/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
+
   <dependencies>
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-commons</artifactId>
-      <version>4.0.3</version>
+      <version>4.0.4</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.metro</groupId>
@@ -122,7 +135,7 @@
       <plugin>
         <groupId>org.jvnet.jaxb2.maven2</groupId>
         <artifactId>maven-jaxb2-plugin</artifactId>
-        <version>0.8.0</version>
+        <version>0.8.3</version>
         <executions>
           <execution>
             <goals>
@@ -144,13 +157,24 @@
           <extension>true</extension>
           <forceRegenerate>true</forceRegenerate>
           <args>
+            <arg>-no-header</arg>
             <arg>-Xinheritance</arg>
+            <arg>-Xphloc-default-locale</arg>
+            <arg>en_US</arg>
+            <arg>-Xphloc-annotate</arg>
+            <arg>-Xphloc-fields-private</arg>
+            <arg>-Xphloc-code-quality</arg>
+            <arg>-Xphloc-implements</arg>
+            <arg>java.io.Serializable</arg>
+            <arg>-Xphloc-equalshashcode</arg>
+            <arg>-Xphloc-tostring</arg>
+            <arg>-Xphloc-list-extension</arg>
           </args>
           <plugins>
             <plugin>
               <groupId>org.jvnet.jaxb2_commons</groupId>
               <artifactId>jaxb2-basics</artifactId>
-              <version>0.6.3</version>
+              <version>0.6.4</version>
             </plugin>
           </plugins>
         </configuration>
@@ -158,8 +182,18 @@
           <!-- For maven-jaxb22-plugin 0.8.0 use JAXB 2.2.4-1 0.8.1 uses 2.2.5-b10 which has some weird WS Adressing special handling! -->
           <dependency>
             <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>2.2.7</version>
+          </dependency>
+          <dependency>
+            <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-xjc</artifactId>
-            <version>2.2.4-1</version>
+            <version>2.2.7</version>
+          </dependency>
+          <dependency>
+            <groupId>com.phloc</groupId>
+            <artifactId>phloc-jaxb22-plugin</artifactId>
+            <version>2.2.7.1</version>
           </dependency>
           <!-- Required for correct entity resolving in paths with blanks! -->
           <dependency>

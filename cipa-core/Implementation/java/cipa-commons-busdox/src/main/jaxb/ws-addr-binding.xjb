@@ -65,4 +65,9 @@
       <class ref="javax.xml.ws.wsaddressing.W3CEndpointReference" />
     </bindings>
   </bindings>
+  <bindings schemaLocation="../resources/WEB-INF/wsdl/xmldsig-core-schema.xsd">
+    <schemaBindings>
+      <package name="org.w3._2000._09.xmldsig" />
+    </schemaBindings>
+  </bindings>
 </bindings>

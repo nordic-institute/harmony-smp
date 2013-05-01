@@ -39,18 +39,18 @@
 
 -->
 <bindings xmlns="http://java.sun.com/xml/ns/jaxb"
-	        xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" 
           xmlns:xs="http://www.w3.org/2001/XMLSchema"
           xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://java.sun.com/xml/ns/jaxb http://java.sun.com/xml/ns/jaxb/bindingschema_2_0.xsd"
+          xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" 
           extensionBindingPrefixes="xjc"
-          version="1.0">
-	<globalBindings generateValueClass="true">
-		<javaType name="java.util.Date" xmlType="xs:dateTime"
-	        	  parseMethod="eu.europa.ec.cipa.busdox.types.DateAdapter.parseDate"
-	        	  printMethod="eu.europa.ec.cipa.busdox.types.DateAdapter.printDate" />
-	</globalBindings>
+          version="2.1">
+  <globalBindings generateValueClass="true">
+    <javaType name="java.util.Date" xmlType="xs:dateTime"
+              parseMethod="eu.europa.ec.cipa.busdox.types.DateAdapter.parseDate"
+              printMethod="eu.europa.ec.cipa.busdox.types.DateAdapter.printDate" />
+  </globalBindings>
   <bindings schemaLocation="../resources/WEB-INF/wsdl/Identifiers-1.0.xsd">
     <bindings node="//xs:complexType[@name='ParticipantIdentifierType']">
       <inheritance:implements>eu.europa.ec.cipa.busdox.identifier.IParticipantIdentifier</inheritance:implements>

@@ -44,9 +44,6 @@ import javax.annotation.concurrent.Immutable;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 
 import com.phloc.commons.annotations.UnsupportedOperation;
-import com.phloc.commons.equals.EqualsUtils;
-import com.phloc.commons.hash.HashCodeGenerator;
-import com.phloc.commons.string.ToStringGenerator;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
@@ -86,14 +83,14 @@ public final class ReadonlyParticipantIdentifier extends ParticipantIdentifierTy
 
   @Override
   @UnsupportedOperation
-  public void setValue (final String sValue) {
+  public void setValue (@Nullable final String sValue) {
     // This is how we make things read-only :)
     throw new UnsupportedOperationException ("setValue is forbidden on this class!");
   }
 
   @Override
   @UnsupportedOperation
-  public void setScheme (final String sScheme) {
+  public void setScheme (@Nullable final String sScheme) {
     // This is how we make things read-only :)
     throw new UnsupportedOperationException ("setScheme is forbidden on this class!");
   }
@@ -124,33 +121,6 @@ public final class ReadonlyParticipantIdentifier extends ParticipantIdentifierTy
   @Nullable
   public String getLocalParticipantID () {
     return IdentifierUtils.getLocalParticipantIDFromParticipantIDValue (this);
-  }
-
-  /**
-   * Note: this method does compare case sensitive!!!! Otherwise the required
-   * semantics of #equals would not be fulfilled!
-   * 
-   * @see IdentifierUtils#areIdentifiersEqual(eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier,
-   *      eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier)
-   */
-  @Override
-  public boolean equals (final Object o) {
-    if (o == this)
-      return true;
-    if (!(o instanceof ReadonlyParticipantIdentifier))
-      return false;
-    final ReadonlyParticipantIdentifier rhs = (ReadonlyParticipantIdentifier) o;
-    return EqualsUtils.equals (scheme, rhs.scheme) && EqualsUtils.equals (value, rhs.value);
-  }
-
-  @Override
-  public int hashCode () {
-    return new HashCodeGenerator (this).append (scheme).append (value).getHashCode ();
-  }
-
-  @Override
-  public String toString () {
-    return new ToStringGenerator (this).append ("scheme", scheme).append ("value", value).toString ();
   }
 
   @Nonnull

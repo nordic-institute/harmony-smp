@@ -42,10 +42,6 @@ import javax.annotation.Nullable;
 
 import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 
-import com.phloc.commons.equals.EqualsUtils;
-import com.phloc.commons.hash.HashCodeGenerator;
-import com.phloc.commons.string.ToStringGenerator;
-
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
@@ -91,31 +87,6 @@ public class SimpleDocumentTypeIdentifier extends DocumentIdentifierType impleme
   @Nonnull
   public IPeppolDocumentTypeIdentifierParts getParts () {
     return PeppolDocumentTypeIdentifierParts.extractFromString (getValue ());
-  }
-
-  /*
-   * Note: this method does compare case sensitive!!!! Otherwise the required
-   * semantics of #equals would not be fulfilled!
-   * @see IdentifierUtils#areIdentifiersEqual(IIdentifier,IIdentifier)
-   */
-  @Override
-  public boolean equals (final Object o) {
-    if (o == this)
-      return true;
-    if (o == null || !getClass ().equals (o.getClass ()))
-      return false;
-    final SimpleDocumentTypeIdentifier rhs = (SimpleDocumentTypeIdentifier) o;
-    return EqualsUtils.equals (scheme, rhs.scheme) && EqualsUtils.equals (value, rhs.value);
-  }
-
-  @Override
-  public int hashCode () {
-    return new HashCodeGenerator (this).append (scheme).append (value).getHashCode ();
-  }
-
-  @Override
-  public String toString () {
-    return new ToStringGenerator (this).append ("scheme", scheme).append ("value", value).toString ();
   }
 
   @Nonnull
