@@ -121,13 +121,28 @@
           <xjcArgs>
             <xjcArg>-no-header</xjcArg>
             <!-- <xjcArg>-extension</xjcArg> <xjcArg>-episode</xjcArg> -->
+            <xjcArg>-Xphloc-default-locale</xjcArg>
+            <xjcArg>en_US</xjcArg>
+            <xjcArg>-Xphloc-annotate</xjcArg>
+            <xjcArg>-Xphloc-fields-private</xjcArg>
+            <xjcArg>-Xphloc-code-quality</xjcArg>
+            <xjcArg>-Xphloc-implements</xjcArg>
+            <xjcArg>java.io.Serializable</xjcArg>
+            <xjcArg>-Xphloc-equalshashcode</xjcArg>
+            <xjcArg>-Xphloc-tostring</xjcArg>
+            <xjcArg>-Xphloc-list-extension</xjcArg>
           </xjcArgs>
         </configuration>
         <dependencies>
           <dependency>
             <groupId>com.sun.xml.ws</groupId>
             <artifactId>jaxws-tools</artifactId>
-            <version>2.2.6-2</version>
+            <version>2.2.7</version>
+          </dependency>
+          <dependency>
+            <groupId>com.phloc</groupId>
+            <artifactId>phloc-jaxb22-plugin</artifactId>
+            <version>2.2.7.1</version>
           </dependency>
         </dependencies>
       </plugin>
