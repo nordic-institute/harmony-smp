@@ -494,7 +494,7 @@ Please remove or make sure it appears in the correct subdirectory of the classpa
         <plugin>
           <groupId>com.phloc.maven</groupId>
           <artifactId>buildinfo-maven-plugin</artifactId>
-          <version>1.1.0</version>
+          <version>1.1.1</version>
         </plugin>
         <plugin>
           <groupId>com.phloc.maven</groupId>
@@ -553,6 +553,19 @@ Please remove or make sure it appears in the correct subdirectory of the classpa
                     <versionRange>[1.0.0-SNAPSHOT,)</versionRange>
                     <goals>
                       <goal>csscompress</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <execute runOnIncremental="false"/>
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>com.phloc.maven</groupId>
+                    <artifactId>dirindex-maven-plugin</artifactId>
+                    <versionRange>[1.0.0,)</versionRange>
+                    <goals>
+                      <goal>generate-dirindex</goal>
                     </goals>
                   </pluginExecutionFilter>
                   <action>

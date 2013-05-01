@@ -27,19 +27,6 @@
     </repository>
   </repositories>
 
-  <pluginRepositories>
-    <pluginRepository>
-      <id>phloc</id>
-      <url>http://repo.phloc.com/maven2/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
-
   <dependencies>
     <dependency>
       <groupId>com.phloc</groupId>
@@ -142,7 +129,7 @@
           <dependency>
             <groupId>com.phloc</groupId>
             <artifactId>phloc-jaxb22-plugin</artifactId>
-            <version>2.2.7.1</version>
+            <version>2.2.7.2</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -208,7 +195,7 @@
           <dependency>
             <groupId>com.phloc</groupId>
             <artifactId>phloc-jaxb22-plugin</artifactId>
-            <version>2.2.7.1</version>
+            <version>2.2.7.2</version>
           </dependency>
           <!-- Required for correct entity resolving in paths with blanks! -->
           <dependency>
@@ -233,61 +220,9 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
         <configuration>
-          <tagBase>https://joinup.ec.europa.eu/svn/cipaedelivery/tags${project.name}</tagBase>
+          <tagBase>https://joinup.ec.europa.eu/svn/cipaedelivery/tags/${project.name}</tagBase>
         </configuration>
       </plugin>
     </plugins>
-    <pluginManagement>
-      <plugins>
-        <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself. -->
-        <plugin>
-          <groupId>org.eclipse.m2e</groupId>
-          <artifactId>lifecycle-mapping</artifactId>
-          <version>1.0.0</version>
-          <configuration>
-            <lifecycleMappingMetadata>
-              <pluginExecutions>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>
-                      org.jvnet.jax-ws-commons
-                    </groupId>
-                    <artifactId>
-                      jaxws-maven-plugin
-                    </artifactId>
-                    <versionRange>[2.2,)</versionRange>
-                    <goals>
-                      <goal>wsimport</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
-                <pluginExecution>
-                  <pluginExecutionFilter>
-                    <groupId>
-                      org.jvnet.jaxb2.maven2
-                    </groupId>
-                    <artifactId>
-                      maven-jaxb2-plugin
-                    </artifactId>
-                    <versionRange>
-                      [0.8.0,)
-                    </versionRange>
-                    <goals>
-                      <goal>generate</goal>
-                    </goals>
-                  </pluginExecutionFilter>
-                  <action>
-                    <ignore></ignore>
-                  </action>
-                </pluginExecution>
-              </pluginExecutions>
-            </lifecycleMappingMetadata>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
   </build>
 </project>
