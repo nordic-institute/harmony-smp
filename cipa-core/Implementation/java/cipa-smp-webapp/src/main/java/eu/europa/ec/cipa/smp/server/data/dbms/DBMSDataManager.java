@@ -450,7 +450,7 @@ public final class DBMSDataManager extends AbstractJPAEnabledManager implements 
                                                                              aDBServiceMetadataID);
       if (aDBServiceMetadata == null) {
         // There were no service to delete.
-        s_aLogger.warn ("No such service to delete: " + aServiceGroupID.toString ());
+        s_aLogger.warn ("No such service to delete: " + aDBServiceMetadataID.toString ());
         throw new NotFoundException ("");
       }
 

@@ -82,7 +82,7 @@ import eu.europa.ec.cipa.smp.server.hook.DoNothingRegistrationHook;
  */
 // @Ignore
 // ("Cannot be enabled by default, because it would fail without the correct configuration")
-@DevelopersNote ("You need to adjust your local META-INF/persistence.xml file to run this test")
+@DevelopersNote ("You need to adjust your local config.properties file to run this test")
 public class DBMSDataManagerTest {
   private static final String PARTICIPANT_IDENTIFIER_SCHEME = CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME;
   private static final String DOCUMENT_SCHEME = CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME;
@@ -316,6 +316,9 @@ public class DBMSDataManagerTest {
 
   @Test
   public void testDeleteServiceMetadata () {
+    // Ensure something is present :)
+    s_aDataMgr.saveService (m_aServiceMetadata, CREDENTIALS);
+
     // First deletion succeeds
     s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, CREDENTIALS);
     try {
