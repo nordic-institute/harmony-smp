@@ -60,7 +60,8 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 
 /**
- * Configuration for this package
+ * Configuration file handling for this package. The base file is located in
+ * src/test/resources
  * 
  * @author philip
  */
@@ -71,15 +72,15 @@ public final class CFunctestConfig {
   // init
   static {
     // How to get the Cert String:
-    // if (false)
-    System.out.println (Base64.encodeBytes (SimpleFileIO.readFileBytes (new File ("E:/data/APP_PEPPOL_ACCESS_POINT_TEST_CA.cer"))));
+    if (false)
+      System.out.println (Base64.encodeBytes (SimpleFileIO.readFileBytes (new File ("src/test/resources/SMP_PEPPOL_SML_PEPPOL_SERVICE_METADATA_PUBLISHER_TEST_CA.cer"))));
 
     try {
       if (CertificateUtils.convertStringToCertficate (getAPCert ()) == null)
-        throw new InitializationException ("Failed to convert certificate string to a certificate!");
+        throw new InitializationException ("Failed to convert certificate string from config file to a certificate!");
     }
     catch (final CertificateException ex) {
-      throw new InitializationException ("Failed to convert certificate string to a certificate!", ex);
+      throw new InitializationException ("Failed to convert certificate string from config file to a certificate!", ex);
     }
   }
 
@@ -97,7 +98,6 @@ public final class CFunctestConfig {
 
   @Nonnull
   public static final BasicAuthClientCredentials getSMPCredentials () {
-    System.out.print (getSMPUserName ());
     return new BasicAuthClientCredentials (getSMPUserName (), getSMPPassword ());
   }
 
