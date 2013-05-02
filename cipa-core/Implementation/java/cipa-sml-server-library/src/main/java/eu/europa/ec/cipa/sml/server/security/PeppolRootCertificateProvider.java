@@ -59,9 +59,9 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
  */
 @Immutable
 public final class PeppolRootCertificateProvider {
-  private static final String CONFIG_SML_TRUSTSTORE_PATH = "sml.truststore.path";
-  private static final String CONFIG_SML_TRUSTSTORE_PASSWORD = "sml.truststore.password";
-  private static final String CONFIG_SML_TRUSTSTORE_ALIAS = "sml.truststore.alias";
+  public static final String CONFIG_SML_TRUSTSTORE_PATH = "sml.truststore.path";
+  public static final String CONFIG_SML_TRUSTSTORE_PASSWORD = "sml.truststore.password";
+  public static final String CONFIG_SML_TRUSTSTORE_ALIAS = "sml.truststore.alias";
   private static final Logger s_aLogger = LoggerFactory.getLogger (PeppolRootCertificateProvider.class);
 
   private static X509Certificate s_aPeppolSMPRootCert;
@@ -78,13 +78,19 @@ public final class PeppolRootCertificateProvider {
       final KeyStore aKS = KeyStoreUtils.loadKeyStore (sTrustStorePath, sTrustStorePW);
       s_aPeppolSMPRootCert = (X509Certificate) aKS.getCertificate (sTrustStoreAlias);
     }
-    catch (final Exception ex) {
-      s_aLogger.error ("Failed to read SML trust store from '" + sTrustStorePath + "'", ex);
+    catch (final Throwable t) {
+      final String sErrorMsg = "Failed to read SML trust store from '" + sTrustStorePath + "'";
+      s_aLogger.error (sErrorMsg);
+      throw new InitializationException (sErrorMsg, t);
     }
 
     if (s_aPeppolSMPRootCert == null)
       throw new InitializationException ("Failed to resolve alias '" + sTrustStoreAlias + "' in trust store!");
-    s_aLogger.info ("PEPPOL root certificate loaded successfully");
+    s_aLogger.info ("PEPPOL root certificate loaded successfully from trust store '" +
+                    sTrustStorePath +
+                    "' with alias '" +
+                    sTrustStoreAlias +
+                    "'");
   }
 
   private PeppolRootCertificateProvider () {}

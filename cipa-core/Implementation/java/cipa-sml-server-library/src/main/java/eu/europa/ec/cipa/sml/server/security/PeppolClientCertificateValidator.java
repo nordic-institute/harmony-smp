@@ -114,13 +114,18 @@ public final class PeppolClientCertificateValidator {
    * @return <code>true</code> if valid, <code>false</code> otherwise.
    */
   public static boolean isClientCertificateValid (@Nonnull final HttpServletRequest aHttpRequest) {
+    // This is how to get client certificate from request
     final Object aValue = aHttpRequest.getAttribute ("javax.servlet.request.X509Certificate");
     if (aValue == null) {
       s_aLogger.warn ("No client certificates present in the request");
       return false;
     }
+
+    // type check
     if (!(aValue instanceof X509Certificate []))
       throw new IllegalStateException ("Request value is not of type X509Certificate[] but of " + aValue.getClass ());
+
+    // Main checking
     return isClientCertificateValid ((X509Certificate []) aValue);
   }
 
@@ -135,23 +140,22 @@ public final class PeppolClientCertificateValidator {
     final Collection <CRL> aCRLs = new ArrayList <CRL> ();
     final Date aNow = new Date ();
 
-    /*
-     * final CertificateFactory certFactory = CertificateFactory.getInstance
-     * ("X.509"); final URL crlURL = new URL (crlURLString); final InputStream
-     * crlStream = crlURL.openStream (); final X509CRL crl = (X509CRL)
-     * certFactory.generateCRL (crlStream); crl.verify
-     * (issuerCertificate.getPublicKey ()); final boolean revoked =
-     * crl.isRevoked (certificate);
-     */
+    // final CertificateFactory certFactory = CertificateFactory.getInstance
+    // ("X.509");
+    // final URL crlURL = new URL (crlURLString);
+    // final InputStream crlStream = crlURL.openStream ();
+    // final X509CRL crl = (X509CRL) certFactory.generateCRL (crlStream);
+    // crl.verify (issuerCertificate.getPublicKey ());
+    // final boolean revoked = crl.isRevoked (certificate);
 
     // OK, we have a non-empty, type checked Certificate array
     // Find the certificate that is issued by
     final String sIssuerToSearch = ConfigFile.getInstance ().getString (CONFIG_SML_CLIENT_CERTISSUER);
-    s_aLogger.warn ("Searching for the following Issuer  : " +sIssuerToSearch);
+    s_aLogger.info ("Searching for the following certificate issuer: '" + sIssuerToSearch + "'");
     X509Certificate aCertToVerify = null;
     for (final X509Certificate aCert : aRequestCerts) {
       final X500Principal aIssuer = aCert.getIssuerX500Principal ();
-      s_aLogger.warn ("Found the following Issuer  : " +aIssuer.getName());
+      s_aLogger.info ("  Found the following certificate issuer: " + aIssuer.getName ());
       if (sIssuerToSearch.equals (aIssuer.getName ())) {
         aCertToVerify = aCert;
         break;
@@ -160,7 +164,7 @@ public final class PeppolClientCertificateValidator {
 
     // Do we have exactly 1 certificate to verify?
     if (aCertToVerify == null)
-      throw new IllegalStateException ("Found no certificate based on the SMP Sub CA root certificate!");
+      throw new IllegalStateException ("Found no certificate that was issued by '" + sIssuerToSearch + "'!");
 
     // This is the main verification process against the PEPPOL root
     // certificate
@@ -169,8 +173,10 @@ public final class PeppolClientCertificateValidator {
     if (sVerifyMsg != null) {
       s_aLogger.warn ("Client certificate not correct: " +
                       sVerifyMsg +
-                      "; root cert serial = " +
-                      aRootCert.getSerialNumber ().toString (16));
+                      "; root certificate serial=" +
+                      aRootCert.getSerialNumber ().toString (16) +
+                      "; root certficate issuer=" +
+                      aRootCert.getIssuerX500Principal ().getName ());
       return false;
     }
 
