@@ -14,12 +14,7 @@
         <developerConnection>scm:git:git@github.com:difi/oxalis.git</developerConnection>
     </scm>
     <modules>
-        <module>oxalis-start-inbound</module>
-        <module>oxalis-start-outbound</module>
-        <module>oxalis-commons</module>
-        <module>oxalis-standalone</module>
         <module>oxalis-api</module>
-        <module>oxalis-distribution</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
