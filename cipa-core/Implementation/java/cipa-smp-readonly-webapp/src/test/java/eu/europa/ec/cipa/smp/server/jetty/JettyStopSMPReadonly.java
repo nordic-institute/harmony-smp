@@ -49,8 +49,8 @@ import org.slf4j.LoggerFactory;
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class JettyStopSMP {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (JettyStopSMP.class);
+public final class JettyStopSMPReadonly {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (JettyStopSMPReadonly.class);
 
   public static void main (final String [] args) throws IOException {
     try {
