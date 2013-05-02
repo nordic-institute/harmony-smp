@@ -66,10 +66,13 @@ public final class TimeZoneCorrectorListener implements ServletContextListener {
       s_aLogger.info ("Default time zone set to '" + DEFAULT_TIMEZONE + "'");
     }
     catch (final Throwable t) {
-      s_aLogger.error ("Failed to set default time zon to '" + DEFAULT_TIMEZONE + "'!", t);
-      throw new InitializationException ("Failed to set default time zone to '" + DEFAULT_TIMEZONE + "'!", t);
+      final String sErrorMsg = "Failed to set default time zone to '" + DEFAULT_TIMEZONE + "'!";
+      s_aLogger.error (sErrorMsg, t);
+      throw new InitializationException (sErrorMsg, t);
     }
   }
 
-  public void contextDestroyed (final ServletContextEvent aServletContextEvent) {}
+  public void contextDestroyed (@Nonnull final ServletContextEvent aServletContextEvent) {
+    // empty
+  }
 }

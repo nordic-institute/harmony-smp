@@ -61,10 +61,10 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class SignatureFilter implements ContainerResponseFilter {
-  private static final String CONFIG_XMLDSIG_KEYSTORE_CLASSPATH = "xmldsig.keystore.classpath";
-  private static final String CONFIG_XMLDSIG_KEYSTORE_PASSWORD = "xmldsig.keystore.password";
-  private static final String CONFIG_XMLDSIG_KEYSTORE_KEY_ALIAS = "xmldsig.keystore.key.alias";
-  private static final String CONFIG_XMLDSIG_KEYSTORE_KEY_PASSWORD = "xmldsig.keystore.key.password";
+  public static final String CONFIG_XMLDSIG_KEYSTORE_CLASSPATH = "xmldsig.keystore.classpath";
+  public static final String CONFIG_XMLDSIG_KEYSTORE_PASSWORD = "xmldsig.keystore.password";
+  public static final String CONFIG_XMLDSIG_KEYSTORE_KEY_ALIAS = "xmldsig.keystore.key.alias";
+  public static final String CONFIG_XMLDSIG_KEYSTORE_KEY_PASSWORD = "xmldsig.keystore.key.password";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (SignatureFilter.class);
 

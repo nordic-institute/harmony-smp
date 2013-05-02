@@ -42,76 +42,29 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
-import org.busdox.servicemetadata.publishing._1.ObjectFactory;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.busdox.servicemetadata.publishing._1.SignedServiceMetadataType;
-import org.busdox.transport.identifiers._1.DocumentIdentifierType;
-import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.sun.jersey.api.NotFoundException;
-
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
-import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
-import eu.europa.ec.cipa.smp.server.data.IDataManager;
+import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
 
 /**
  * This class implements the REST interface for getting SignedServiceMetadata's.
- * PUT and DELETE are also implemented.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Path ("/{ServiceGroupId}/services/{DocumentTypeId}")
 public final class ServiceMetadataInterface {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (ServiceMetadataInterface.class);
-
-  @Context
-  private HttpHeaders headers;
   @Context
   private UriInfo uriInfo;
-
-  public ServiceMetadataInterface () {}
 
   @GET
   // changed Produced media type to match the smp specification.
   @Produces (MediaType.TEXT_XML)
   public JAXBElement <SignedServiceMetadataType> getServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
                                                                          @PathParam ("DocumentTypeId") final String sDocumentTypeID) {
-    s_aLogger.info ("GET /" + sServiceGroupID + "/services/" + sDocumentTypeID);
-
-    try {
-      final ObjectFactory aObjFactory = new ObjectFactory ();
-      final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createFromURIPart (sServiceGroupID);
-      final DocumentIdentifierType aDocTypeID = IdentifierUtils.createDocumentTypeIdentifierFromURIPart (sDocumentTypeID);
-      final IDataManager aDataManager = DataManagerFactory.getInstance ();
-
-      // First check for redirection, then for actual service
-      ServiceMetadataType aService = aDataManager.getRedirection (aServiceGroupID, aDocTypeID);
-      if (aService == null) {
-        aService = aDataManager.getService (aServiceGroupID, aDocTypeID);
-        if (aService == null)
-          throw new NotFoundException ("service", uriInfo.getAbsolutePath ());
-      }
-
-      final SignedServiceMetadataType aSignedServiceMetadata = aObjFactory.createSignedServiceMetadataType ();
-      aSignedServiceMetadata.setServiceMetadata (aService);
-      // Signature is added by a handler
-
-      s_aLogger.info ("Finished getServiceRegistration(" + sServiceGroupID + "," + sDocumentTypeID + ")");
-
-      return aObjFactory.createSignedServiceMetadata (aSignedServiceMetadata);
-    }
-    catch (final RuntimeException ex) {
-      s_aLogger.error ("Error in returning service metadata.", ex);
-      throw ex;
-    }
+    return BaseServiceMetadataInterfaceImpl.getServiceRegistration (uriInfo, sServiceGroupID, sDocumentTypeID);
   }
-
 }

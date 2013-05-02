@@ -37,8 +37,6 @@
  */
 package eu.europa.ec.cipa.smp.server.services.readwrite;
 
-import java.util.List;
-
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -53,21 +51,16 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
-import org.busdox.servicemetadata.publishing._1.ObjectFactory;
 import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataReferenceCollectionType;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataReferenceType;
-import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.jersey.api.NotFoundException;
 
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
+import eu.europa.ec.cipa.smp.server.services.BaseServiceGroupInterfaceImpl;
 import eu.europa.ec.cipa.smp.server.util.RequestHelper;
 
 /**
@@ -90,61 +83,7 @@ public final class ServiceGroupInterface {
   @GET
   @Produces (MediaType.TEXT_XML)
   public JAXBElement <ServiceGroupType> getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId) {
-    s_aLogger.info ("GET /" + sServiceGroupId);
-    ParticipantIdentifierType aServiceGroupID = null;
-    try {
-      aServiceGroupID = SimpleParticipantIdentifier.createFromURIPart (sServiceGroupId);
-    }
-    catch (final IllegalArgumentException ex) {
-      // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupId + "'");
-      return null;
-    }
-
-    try {
-      final ObjectFactory aObjFactory = new ObjectFactory ();
-
-      // Retrieve the service group
-      final IDataManager aDataManager = DataManagerFactory.getInstance ();
-      final ServiceGroupType aServiceGroup = aDataManager.getServiceGroup (aServiceGroupID);
-      if (aServiceGroup == null) {
-        // No such service group
-        throw new NotFoundException ("serviceGroup", uriInfo.getAbsolutePath ());
-      }
-
-      /*
-       * Then add the service metadata references
-       */
-      final ServiceMetadataReferenceCollectionType aCollectionType = aObjFactory.createServiceMetadataReferenceCollectionType ();
-      final List <ServiceMetadataReferenceType> aMetadataReferences = aCollectionType.getServiceMetadataReference ();
-
-      final List <DocumentIdentifierType> aDocTypeIds = aDataManager.getDocumentTypes (aServiceGroupID);
-      for (final DocumentIdentifierType aDocTypeId : aDocTypeIds) {
-        final ServiceMetadataReferenceType aMetadataReference = aObjFactory.createServiceMetadataReferenceType ();
-        aMetadataReference.setHref (uriInfo.getBaseUriBuilder ()
-                                           .path (ServiceMetadataInterface.class)
-                                           .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID),
-                                                              IdentifierUtils.getIdentifierURIPercentEncoded (aDocTypeId))
-                                           .toString ());
-        aMetadataReferences.add (aMetadataReference);
-      }
-      aServiceGroup.setServiceMetadataReferenceCollection (aCollectionType);
-
-      s_aLogger.info ("Finished getServiceGroup(" + sServiceGroupId + ")");
-
-      /*
-       * Finally return it
-       */
-      return aObjFactory.createServiceGroup (aServiceGroup);
-    }
-    catch (final NotFoundException ex) {
-      // No logging needed here - already logged in DB
-      throw ex;
-    }
-    catch (final RuntimeException ex) {
-      s_aLogger.error ("Error getting service group " + aServiceGroupID, ex);
-      throw ex;
-    }
+    return BaseServiceGroupInterfaceImpl.getServiceGroup (uriInfo, sServiceGroupId);
   }
 
   @PUT
