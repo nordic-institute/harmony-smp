@@ -40,6 +40,9 @@ package eu.europa.ec.cipa.smp.server.data;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.phloc.commons.lang.GenericReflection;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
@@ -52,17 +55,24 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
  */
 @Immutable
 public final class DataManagerFactory {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (DataManagerFactory.class);
   private static final String CONFIG_DATA_MANAGER_CLASS = "dataManager.class";
+
+  private static final IDataManager s_aInstance;
+
+  static {
+    final String sDataManagerName = ConfigFile.getInstance ().getString (CONFIG_DATA_MANAGER_CLASS);
+    s_aLogger.info ("Data Manager class nmame: " + sDataManagerName);
+    final IDataManager ret = GenericReflection.newInstance (sDataManagerName, IDataManager.class);
+    if (ret == null)
+      throw new IllegalStateException ("Failed to create DataManager instance of class " + sDataManagerName);
+    s_aInstance = ret;
+  }
 
   private DataManagerFactory () {}
 
   @Nonnull
   public static IDataManager getInstance () {
-    final String dataManagerName = ConfigFile.getInstance ().getString (CONFIG_DATA_MANAGER_CLASS);
-    System.out.println ("Data manager Name :" + dataManagerName);
-    final IDataManager ret = GenericReflection.newInstance (dataManagerName, IDataManager.class);
-    if (ret == null)
-      throw new IllegalStateException ("Failed to create DataManager instance of class " + dataManagerName);
-    return ret;
+    return s_aInstance;
   }
 }

@@ -42,11 +42,11 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 
 import org.busdox.servicemetadata.publishing._1.EndpointType;
@@ -65,6 +65,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.phloc.commons.GlobalDebug;
+import com.phloc.db.jpa.IEntityManagerProvider;
+import com.phloc.db.jpa.JPAEnabledManager;
 import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.NotFoundException;
 
@@ -94,7 +96,7 @@ import eu.europa.ec.cipa.smp.server.hook.RegistrationHookFactory;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class DBMSDataManager implements IDataManager {
+public final class DBMSDataManager extends JPAEnabledManager implements IDataManager {
   private static final Logger s_aLogger = LoggerFactory.getLogger (DBMSDataManager.class);
 
   private final IRegistrationHook m_aHook;
@@ -105,14 +107,17 @@ public final class DBMSDataManager implements IDataManager {
   }
 
   public DBMSDataManager (@Nonnull final IRegistrationHook aHook) {
+    super (new IEntityManagerProvider () {
+      // This additional indirection level is required!!!
+      // So that for every request the correct getInstance is invoked!
+      @Nonnull
+      public EntityManager getEntityManager () {
+        return SMPEntityManagerWrapper.getInstance ().getEntityManager ();
+      }
+    });
     if (aHook == null)
       throw new NullPointerException ("hook");
     m_aHook = aHook;
-  }
-
-  @Nonnull
-  private EntityManager getEntityManager () {
-    return SMPEntityManagerWrapper.getInstance ().getEntityManager ();
   }
 
   @Nonnull
@@ -134,389 +139,296 @@ public final class DBMSDataManager implements IDataManager {
     return aDBUser;
   }
 
+  @Nonnull
+  private DBOwnership _verifyOwnership (@Nonnull final BasicAuthClientCredentials aCredentials,
+                                        @Nonnull final ParticipantIdentifierType aBusinessID) {
+    final DBOwnershipID aOwnershipID = new DBOwnershipID (aCredentials.getUserName (), aBusinessID);
+    final DBOwnership aOwnership = getEntityManager ().find (DBOwnership.class, aOwnershipID);
+    if (aOwnership == null) {
+      final String sErrorMsg = "User: " +
+                               aCredentials.getUserName () +
+                               " does not own " +
+                               aBusinessID.getScheme () +
+                               "::" +
+                               aBusinessID.getValue ();
+      s_aLogger.warn (sErrorMsg);
+      throw new UnauthorizedException (sErrorMsg);
+    }
+    return aOwnership;
+  }
+
   public Collection <ParticipantIdentifierType> getServiceGroupList (final BasicAuthClientCredentials aCredentials) {
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    aTransaction.begin ();
-    try {
-      final DBUser aDBUser = _verifyUser (aCredentials);
-
-      final List <DBOwnership> aDBOwnerships = getEntityManager ().createQuery ("SELECT p FROM DBOwnership p WHERE p.user = :user",
-                                                                                DBOwnership.class)
-                                                                  .setParameter ("user", aDBUser)
-                                                                  .getResultList ();
-
-      final Collection <ParticipantIdentifierType> ret = new ArrayList <ParticipantIdentifierType> ();
-      for (final DBOwnership aDBOwnership : aDBOwnerships) {
-        final DBServiceGroupID aDBServiceGroupID = aDBOwnership.getServiceGroup ().getId ();
-        ret.add (aDBServiceGroupID.asBusinessIdentifier ());
+    return doSelect (new Callable <Collection <ParticipantIdentifierType>> () {
+      public Collection <ParticipantIdentifierType> call () throws Exception {
+        final EntityManager aEM = getEntityManager ();
+        final DBUser aDBUser = _verifyUser (aCredentials);
+        final List <DBOwnership> aDBOwnerships = aEM.createQuery ("SELECT p FROM DBOwnership p WHERE p.user = :user",
+                                                                  DBOwnership.class)
+                                                    .setParameter ("user", aDBUser)
+                                                    .getResultList ();
+        final Collection <ParticipantIdentifierType> ret = new ArrayList <ParticipantIdentifierType> ();
+        for (final DBOwnership aDBOwnership : aDBOwnerships) {
+          final DBServiceGroupID aDBServiceGroupID = aDBOwnership.getServiceGroup ().getId ();
+          ret.add (aDBServiceGroupID.asBusinessIdentifier ());
+        }
+        return ret;
       }
-
-      aTransaction.commit ();
-      return ret;
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction in getServiceGroupList!");
-      }
-    }
+    }).get ();
   }
 
   @Nullable
   public ServiceGroupType getServiceGroup (final ParticipantIdentifierType aServiceGroupID) {
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    aTransaction.begin ();
-    try {
-      final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID (aServiceGroupID);
-      final DBServiceGroup aDBServiceGroup = getEntityManager ().find (DBServiceGroup.class, aDBServiceGroupID);
-      if (aDBServiceGroup == null) {
-        s_aLogger.warn ("No such service group to retrieve: " + aDBServiceGroupID.toString ());
-        aTransaction.rollback ();
-        return null;
-      }
+    return doInTransaction (new Callable <ServiceGroupType> () {
+      public ServiceGroupType call () throws Exception {
+        final EntityManager aEM = getEntityManager ();
+        final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID (aServiceGroupID);
+        final DBServiceGroup aDBServiceGroup = aEM.find (DBServiceGroup.class, aDBServiceGroupID);
+        if (aDBServiceGroup == null) {
+          s_aLogger.warn ("No such service group to retrieve: " + aDBServiceGroupID.toString ());
+          return null;
+        }
 
-      // Convert service group DB to service group service
-      final ServiceGroupType ret = m_aObjFactory.createServiceGroupType ();
-      ret.setParticipantIdentifier (aServiceGroupID);
-      ret.setExtension (ExtensionConverter.convert (aDBServiceGroup.getExtension ()));
-      // This is set by the REST interface:
-      // ret.setServiceMetadataReferenceCollection(value)
-
-      aTransaction.commit ();
-      return ret;
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction in getServiceGroup!");
+        // Convert service group DB to service group service
+        final ServiceGroupType ret = m_aObjFactory.createServiceGroupType ();
+        ret.setParticipantIdentifier (aServiceGroupID);
+        ret.setExtension (ExtensionConverter.convert (aDBServiceGroup.getExtension ()));
+        // This is set by the REST interface:
+        // ret.setServiceMetadataReferenceCollection(value)
+        return ret;
       }
-    }
+    }).get ();
   }
 
   public void saveServiceGroup (final ServiceGroupType aServiceGroup, final BasicAuthClientCredentials aCredentials) {
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    aTransaction.begin ();
-    try {
-      final DBUser aDBUser = _verifyUser (aCredentials);
+    doInTransaction (new Runnable () {
+      public void run () {
+        final EntityManager aEM = getEntityManager ();
+        final DBUser aDBUser = _verifyUser (aCredentials);
 
-      final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID (aServiceGroup.getParticipantIdentifier ());
-      DBServiceGroup aDBServiceGroup = getEntityManager ().find (DBServiceGroup.class, aDBServiceGroupID);
-      final DBOwnershipID aDBOwnershipID = new DBOwnershipID (aCredentials.getUserName (),
-                                                              aServiceGroup.getParticipantIdentifier ());
+        final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID (aServiceGroup.getParticipantIdentifier ());
+        DBServiceGroup aDBServiceGroup = aEM.find (DBServiceGroup.class, aDBServiceGroupID);
+        final DBOwnershipID aDBOwnershipID = new DBOwnershipID (aCredentials.getUserName (),
+                                                                aServiceGroup.getParticipantIdentifier ());
 
-      // Check whether the business already exists
-      if (aDBServiceGroup != null) {
-        // The business did exist. So it must be owned by user.
-        if (getEntityManager ().find (DBOwnership.class, aDBOwnershipID) == null) {
-          s_aLogger.warn ("No such ownership: " + aDBOwnershipID.asBusinessIdentifier ().toString ());
-          throw new UnauthorizedException ();
+        // Check whether the business already exists
+        if (aDBServiceGroup != null) {
+          // The business did exist. So it must be owned by user.
+          if (aEM.find (DBOwnership.class, aDBOwnershipID) == null) {
+            s_aLogger.warn ("No such ownership: " + aDBOwnershipID.asBusinessIdentifier ().toString ());
+            throw new UnauthorizedException ();
+          }
+
+          // Simply update the extension
+          final String sXMLString = ExtensionConverter.convert (aServiceGroup.getExtension ());
+          aDBServiceGroup.setExtension (sXMLString);
         }
+        else {
+          m_aHook.create (aServiceGroup.getParticipantIdentifier ());
 
-        // Simply update the extension
-        final String sXMLString = ExtensionConverter.convert (aServiceGroup.getExtension ());
-        aDBServiceGroup.setExtension (sXMLString);
+          // Did not exist. Create it.
+          aDBServiceGroup = new DBServiceGroup (aDBServiceGroupID);
+
+          final String sXmlString = ExtensionConverter.convert (aServiceGroup.getExtension ());
+          aDBServiceGroup.setExtension (sXmlString);
+
+          final DBOwnership aDBOwnership = new DBOwnership (aDBOwnershipID, aDBUser, aDBServiceGroup);
+          aEM.persist (aDBServiceGroup);
+          aEM.persist (aDBOwnership);
+        }
       }
-      else {
-        m_aHook.create (aServiceGroup.getParticipantIdentifier ());
-
-        // Did not exist. Create it.
-        aDBServiceGroup = new DBServiceGroup (aDBServiceGroupID);
-
-        final String xmlString = ExtensionConverter.convert (aServiceGroup.getExtension ());
-        aDBServiceGroup.setExtension (xmlString);
-
-        final DBOwnership aDBOwnership = new DBOwnership (aDBOwnershipID, aDBUser, aDBServiceGroup);
-        getEntityManager ().persist (aDBServiceGroup);
-        getEntityManager ().persist (aDBOwnership);
-      }
-
-      aTransaction.commit ();
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction in saveServiceGroup!");
-      }
-    }
+    });
   }
 
-  public void deleteServiceGroup (final ParticipantIdentifierType aPI, final BasicAuthClientCredentials aCredentials) {
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    aTransaction.begin ();
-    try {
-      _verifyUser (aCredentials);
+  public void deleteServiceGroup (final ParticipantIdentifierType aBusinessID,
+                                  final BasicAuthClientCredentials aCredentials) {
+    doInTransaction (new Runnable () {
+      public void run () {
+        final EntityManager aEM = getEntityManager ();
+        _verifyUser (aCredentials);
+        final DBOwnership aDBOwnership = _verifyOwnership (aCredentials, aBusinessID);
 
-      m_aHook.delete (aPI);
+        m_aHook.delete (aBusinessID);
 
-      // Check if the service group is existing
-      final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID (aPI);
-      final DBServiceGroup aDBServiceGroup = getEntityManager ().find (DBServiceGroup.class, aDBServiceGroupID);
-      if (aDBServiceGroup == null) {
-        s_aLogger.warn ("No such service group to delete: " + aPI.toString ());
-        return;
+        // Check if the service group is existing
+        final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID (aBusinessID);
+        final DBServiceGroup aDBServiceGroup = aEM.find (DBServiceGroup.class, aDBServiceGroupID);
+        if (aDBServiceGroup == null) {
+          s_aLogger.warn ("No such service group to delete: " + aBusinessID.toString ());
+          return;
+        }
+
+        aEM.remove (aDBOwnership);
+        aEM.remove (aDBServiceGroup);
       }
-
-      // Check the owner ship of the service group
-      final DBOwnershipID aDBOwnershipID = new DBOwnershipID (aCredentials.getUserName (), aPI);
-      final DBOwnership aDBOwnership = getEntityManager ().find (DBOwnership.class, aDBOwnershipID);
-      if (aDBOwnership == null) {
-        s_aLogger.warn ("User: " + aCredentials.getUserName () + " does not own " + aPI);
-        throw new UnauthorizedException ("User: " +
-                                         aCredentials.getUserName () +
-                                         " does not own " +
-                                         aPI.getScheme () +
-                                         "::" +
-                                         aPI.getValue ());
-      }
-
-      getEntityManager ().remove (aDBOwnership);
-      getEntityManager ().remove (aDBServiceGroup);
-
-      aTransaction.commit ();
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction in deleteServiceGroup!");
-      }
-    }
+    });
   }
 
   public List <DocumentIdentifierType> getDocumentTypes (final ParticipantIdentifierType aServiceGroupID) {
-    final List <DocumentIdentifierType> ret = new ArrayList <DocumentIdentifierType> ();
+    return doSelect (new Callable <List <DocumentIdentifierType>> () {
+      public List <DocumentIdentifierType> call () throws Exception {
+        final List <DBServiceMetadata> aServices = getEntityManager ().createQuery ("SELECT p FROM DBServiceMetadata p WHERE p.id.businessIdentifierScheme = :scheme AND p.id.businessIdentifier = :value",
+                                                                                    DBServiceMetadata.class)
+                                                                      .setParameter ("scheme",
+                                                                                     aServiceGroupID.getScheme ())
+                                                                      .setParameter ("value",
+                                                                                     aServiceGroupID.getValue ())
+                                                                      .getResultList ();
 
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    aTransaction.begin ();
-    try {
-      final List <DBServiceMetadata> aServices = getEntityManager ().createQuery ("SELECT p FROM DBServiceMetadata p WHERE p.id.businessIdentifierScheme = :scheme AND p.id.businessIdentifier = :value",
-                                                                                  DBServiceMetadata.class)
-                                                                    .setParameter ("scheme",
-                                                                                   aServiceGroupID.getScheme ())
-                                                                    .setParameter ("value", aServiceGroupID.getValue ())
-                                                                    .getResultList ();
-
-      for (final DBServiceMetadata aService : aServices)
-        ret.add (aService.getId ().asDocumentTypeIdentifier ());
-
-      aTransaction.commit ();
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction in getDocumentTypes!");
+        final List <DocumentIdentifierType> ret = new ArrayList <DocumentIdentifierType> ();
+        for (final DBServiceMetadata aService : aServices)
+          ret.add (aService.getId ().asDocumentTypeIdentifier ());
+        return ret;
       }
-    }
-
-    return ret;
+    }).get ();
   }
 
   @Nullable
   public ServiceMetadataType getService (final ParticipantIdentifierType serviceGroupId,
                                          final DocumentIdentifierType docType) {
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    aTransaction.begin ();
-    try {
-      final DBServiceMetadataID id = new DBServiceMetadataID (serviceGroupId, docType);
-      final DBServiceMetadata aDBServiceMetadata = getEntityManager ().find (DBServiceMetadata.class, id);
+    return doSelect (new Callable <ServiceMetadataType> () {
 
-      if (aDBServiceMetadata == null) {
-        s_aLogger.info ("Service group ID " + id.toString () + " not found");
-        aTransaction.rollback ();
-        return null;
+      public ServiceMetadataType call () throws Exception {
+        final DBServiceMetadataID id = new DBServiceMetadataID (serviceGroupId, docType);
+        final DBServiceMetadata aDBServiceMetadata = getEntityManager ().find (DBServiceMetadata.class, id);
+
+        if (aDBServiceMetadata == null) {
+          s_aLogger.info ("Service group ID " + id.toString () + " not found");
+          return null;
+        }
+
+        final ServiceMetadataType serviceMetadata = m_aObjFactory.createServiceMetadataType ();
+        _convertFromDBToService (aDBServiceMetadata, serviceMetadata);
+        return serviceMetadata;
       }
-
-      final ServiceMetadataType serviceMetadata = m_aObjFactory.createServiceMetadataType ();
-      _convertFromDBToService (aDBServiceMetadata, serviceMetadata);
-      aTransaction.commit ();
-
-      return serviceMetadata;
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction in getService!");
-      }
-    }
+    }).get ();
   }
 
   public Collection <ServiceMetadataType> getServices (final ParticipantIdentifierType aServiceGroupID) {
-    final List <ServiceMetadataType> ret = new ArrayList <ServiceMetadataType> ();
+    return doSelect (new Callable <Collection <ServiceMetadataType>> () {
+      public Collection <ServiceMetadataType> call () throws Exception {
+        final List <DBServiceMetadata> aServices = getEntityManager ().createQuery ("SELECT p FROM DBServiceMetadata p WHERE p.id.businessIdentifierScheme = :scheme AND p.id.businessIdentifier = :value",
+                                                                                    DBServiceMetadata.class)
+                                                                      .setParameter ("scheme",
+                                                                                     aServiceGroupID.getScheme ())
+                                                                      .setParameter ("value",
+                                                                                     aServiceGroupID.getValue ())
+                                                                      .getResultList ();
 
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    aTransaction.begin ();
-    try {
-      final List <DBServiceMetadata> aServices = getEntityManager ().createQuery ("SELECT p FROM DBServiceMetadata p WHERE p.id.businessIdentifierScheme = :scheme AND p.id.businessIdentifier = :value",
-                                                                                  DBServiceMetadata.class)
-                                                                    .setParameter ("scheme",
-                                                                                   aServiceGroupID.getScheme ())
-                                                                    .setParameter ("value", aServiceGroupID.getValue ())
-                                                                    .getResultList ();
-
-      for (final DBServiceMetadata aService : aServices) {
-        final ServiceMetadataType aServiceMetadata = m_aObjFactory.createServiceMetadataType ();
-        _convertFromDBToService (aService, aServiceMetadata);
-        ret.add (aServiceMetadata);
+        final List <ServiceMetadataType> ret = new ArrayList <ServiceMetadataType> ();
+        for (final DBServiceMetadata aService : aServices) {
+          final ServiceMetadataType aServiceMetadata = m_aObjFactory.createServiceMetadataType ();
+          _convertFromDBToService (aService, aServiceMetadata);
+          ret.add (aServiceMetadata);
+        }
+        return ret;
       }
-
-      aTransaction.commit ();
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction in getServices!");
-      }
-    }
-
-    return ret;
+    }).get ();
   }
 
-  public void saveService (final ServiceMetadataType aServiceMetadata, final BasicAuthClientCredentials aCredentials) {
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    aTransaction.begin ();
-    try {
-      _verifyUser (aCredentials);
+  public void saveService (@Nonnull final ServiceMetadataType aServiceMetadata,
+                           @Nonnull final BasicAuthClientCredentials aCredentials) {
+    final ParticipantIdentifierType aBusinessID = aServiceMetadata.getServiceInformation ().getParticipantIdentifier ();
+    final DocumentIdentifierType aDocTypeID = aServiceMetadata.getServiceInformation ().getDocumentIdentifier ();
+    deleteService (aBusinessID, aDocTypeID, aCredentials);
+    final DBServiceMetadataID aDBServiceMetadataID = new DBServiceMetadataID (aBusinessID, aDocTypeID);
 
-      final ParticipantIdentifierType aBusinessID = aServiceMetadata.getServiceInformation ()
-                                                                    .getParticipantIdentifier ();
+    // Delete any existing service in a separate transaction
+    deleteService (aBusinessID, aDocTypeID, aCredentials);
 
-      // Check that the business is owned by the user
-      final DBOwnershipID aDBwnershipID = new DBOwnershipID (aCredentials.getUserName (), aBusinessID);
-      if (getEntityManager ().find (DBOwnership.class, aDBwnershipID) == null)
-        throw new UnauthorizedException ();
+    // Create a new entry
+    doInTransaction (new Runnable () {
+      public void run () {
+        final EntityManager aEM = getEntityManager ();
+        _verifyUser (aCredentials);
+        _verifyOwnership (aCredentials, aBusinessID);
 
-      // Check if an existing service is already contained
-      final DBServiceMetadataID aDBServiceMetadataID = new DBServiceMetadataID (aBusinessID,
-                                                                                aServiceMetadata.getServiceInformation ()
-                                                                                                .getDocumentIdentifier ());
-      DBServiceMetadata aDBServiceMetadata = getEntityManager ().find (DBServiceMetadata.class, aDBServiceMetadataID);
-      // Check whether the service already exists
-      if (aDBServiceMetadata != null) {
-        // Remove all existing info
-        for (final DBProcess aDBProcess : aDBServiceMetadata.getProcesses ()) {
-          for (final DBEndpoint aDBEndpoint : aDBProcess.getEndpoints ())
-            getEntityManager ().remove (aDBEndpoint);
-          getEntityManager ().remove (aDBProcess);
-        }
-        getEntityManager ().remove (aDBServiceMetadata);
+        // Check if an existing service is already contained
+        // This should have been deleted previously!
+        DBServiceMetadata aDBServiceMetadata = aEM.find (DBServiceMetadata.class, aDBServiceMetadataID);
+        if (aDBServiceMetadata != null)
+          throw new IllegalStateException ("No DB ServiceMeta data with ID " +
+                                           aDBServiceMetadataID.toString () +
+                                           " should be present!");
 
-        // Commit this, in case the same information is written again
-        aTransaction.commit ();
-        aTransaction.begin ();
-      }
-      else {
         // Create a new entry
         aDBServiceMetadata = new DBServiceMetadata ();
         aDBServiceMetadata.setId (aDBServiceMetadataID);
+
+        _convertFromServiceToDB (aServiceMetadata, aDBServiceMetadata);
+        aEM.persist (aDBServiceMetadata);
+
+        // For all processes
+        for (final DBProcess aDBProcess : aDBServiceMetadata.getProcesses ()) {
+          aEM.persist (aDBProcess);
+
+          // For all endpoints
+          for (final DBEndpoint aDBEndpoint : aDBProcess.getEndpoints ())
+            aEM.persist (aDBEndpoint);
+        }
       }
-
-      _convertFromServiceToDB (aServiceMetadata, aDBServiceMetadata);
-      getEntityManager ().persist (aDBServiceMetadata);
-
-      // For all processes
-      for (final DBProcess aDBProcess : aDBServiceMetadata.getProcesses ()) {
-        getEntityManager ().persist (aDBProcess);
-
-        // For all endpoints
-        for (final DBEndpoint aDBEndpoint : aDBProcess.getEndpoints ())
-          getEntityManager ().persist (aDBEndpoint);
-      }
-
-      aTransaction.commit ();
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction in saveService!");
-      }
-    }
+    });
   }
 
-  public void deleteService (final ParticipantIdentifierType aServiceGroupID,
-                             final DocumentIdentifierType aDocTypeID,
-                             final BasicAuthClientCredentials aCredentials) {
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    aTransaction.begin ();
-    try {
-      _verifyUser (aCredentials);
+  public void deleteService (@Nonnull final ParticipantIdentifierType aBusinessID,
+                             @Nonnull final DocumentIdentifierType aDocTypeID,
+                             @Nonnull final BasicAuthClientCredentials aCredentials) {
+    doInTransaction (new Runnable () {
+      public void run () {
+        final EntityManager aEM = getEntityManager ();
+        _verifyUser (aCredentials);
+        _verifyOwnership (aCredentials, aBusinessID);
 
-      // Check that the business is owned by the user
-      final DBOwnershipID aOwnershipID = new DBOwnershipID (aCredentials.getUserName (), aServiceGroupID);
-      if (getEntityManager ().find (DBOwnership.class, aOwnershipID) == null)
-        throw new UnauthorizedException ("User: " +
-                                         aCredentials.getUserName () +
-                                         " does not own " +
-                                         aServiceGroupID.getScheme () +
-                                         "::" +
-                                         aServiceGroupID.getValue ());
+        final DBServiceMetadataID aDBServiceMetadataID = new DBServiceMetadataID (aBusinessID, aDocTypeID);
+        final DBServiceMetadata aDBServiceMetadata = aEM.find (DBServiceMetadata.class, aDBServiceMetadataID);
+        if (aDBServiceMetadata == null) {
+          // There were no service to delete.
+          s_aLogger.warn ("No such service to delete: " + aBusinessID.toString ());
+          throw new NotFoundException ("");
+        }
 
-      final DBServiceMetadataID aDBServiceMetadataID = new DBServiceMetadataID (aServiceGroupID, aDocTypeID);
-      final DBServiceMetadata aDBServiceMetadata = getEntityManager ().find (DBServiceMetadata.class,
-                                                                             aDBServiceMetadataID);
-      if (aDBServiceMetadata == null) {
-        // There were no service to delete.
-        s_aLogger.warn ("No such service to delete: " + aServiceGroupID.toString ());
-        throw new NotFoundException ("");
+        // Remove all attached processes incl. their endpoints
+        for (final DBProcess aDBProcess : aDBServiceMetadata.getProcesses ()) {
+          // First endpoints
+          for (final DBEndpoint aDBEndpoint : aDBProcess.getEndpoints ())
+            aEM.remove (aDBEndpoint);
+
+          // Than process
+          aEM.remove (aDBProcess);
+        }
+
+        // Remove main service data
+        aEM.remove (aDBServiceMetadata);
       }
-
-      // Remove all attached processes incl. their endpoints
-      for (final DBProcess aDBProcess : aDBServiceMetadata.getProcesses ()) {
-        // First endpoints
-        for (final DBEndpoint aDBEndpoint : aDBProcess.getEndpoints ())
-          getEntityManager ().remove (aDBEndpoint);
-
-        // Than process
-        getEntityManager ().remove (aDBProcess);
-      }
-
-      // Remove main service data
-      getEntityManager ().remove (aDBServiceMetadata);
-
-      aTransaction.commit ();
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction in deleteService!");
-      }
-    }
+    });
   }
 
   public ServiceMetadataType getRedirection (final ParticipantIdentifierType aServiceGroupId,
                                              final DocumentIdentifierType docType) {
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    aTransaction.begin ();
-    try {
-      final DBServiceMetadataRedirectionID id = new DBServiceMetadataRedirectionID (aServiceGroupId, docType);
-      final DBServiceMetadataRedirection aDBServiceMetadataRedirection = getEntityManager ().find (DBServiceMetadataRedirection.class,
-                                                                                                   id);
+    return doSelect (new Callable <ServiceMetadataType> () {
+      public ServiceMetadataType call () throws Exception {
+        final DBServiceMetadataRedirectionID id = new DBServiceMetadataRedirectionID (aServiceGroupId, docType);
+        final DBServiceMetadataRedirection aDBServiceMetadataRedirection = getEntityManager ().find (DBServiceMetadataRedirection.class,
+                                                                                                     id);
 
-      if (aDBServiceMetadataRedirection == null) {
-        if (GlobalDebug.isDebugMode ())
-          s_aLogger.info ("No redirection service group id: " + aServiceGroupId.toString ());
-        aTransaction.rollback ();
-        return null;
+        if (aDBServiceMetadataRedirection == null) {
+          if (GlobalDebug.isDebugMode ())
+            s_aLogger.info ("No redirection service group id: " + aServiceGroupId.toString ());
+          return null;
+        }
+
+        // First check whether an redirect exists.
+        final ServiceMetadataType serviceMetadata = m_aObjFactory.createServiceMetadataType ();
+
+        // Then return a redirect instead.
+        final RedirectType redirectType = m_aObjFactory.createRedirectType ();
+        redirectType.setCertificateUID (aDBServiceMetadataRedirection.getCertificateUid ());
+        redirectType.setHref (aDBServiceMetadataRedirection.getRedirectionUrl ());
+        redirectType.setExtension (ExtensionConverter.convert (aDBServiceMetadataRedirection.getExtension ()));
+        serviceMetadata.setRedirect (redirectType);
+
+        return serviceMetadata;
       }
-
-      // First check whether an redirect exists.
-      final ServiceMetadataType serviceMetadata = m_aObjFactory.createServiceMetadataType ();
-
-      // Then return a redirect instead.
-      final RedirectType redirectType = m_aObjFactory.createRedirectType ();
-      redirectType.setCertificateUID (aDBServiceMetadataRedirection.getCertificateUid ());
-      redirectType.setHref (aDBServiceMetadataRedirection.getRedirectionUrl ());
-      redirectType.setExtension (ExtensionConverter.convert (aDBServiceMetadataRedirection.getExtension ()));
-      serviceMetadata.setRedirect (redirectType);
-
-      aTransaction.commit ();
-
-      return serviceMetadata;
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction in getRedirection!");
-      }
-    }
+    }).get ();
   }
 
   private void _convertFromDBToService (final DBServiceMetadata serviceMetadataDB,
