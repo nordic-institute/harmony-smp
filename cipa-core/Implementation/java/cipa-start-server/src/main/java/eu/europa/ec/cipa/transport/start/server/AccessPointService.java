@@ -105,6 +105,7 @@ import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 import eu.europa.ec.cipa.peppol.utils.CertificateUtils;
 import eu.europa.ec.cipa.peppol.utils.ExceptionUtils;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
+import eu.europa.ec.cipa.smp.client.SMPServiceCallerReadonly;
 import eu.europa.ec.cipa.transport.IMessageMetadata;
 import eu.europa.ec.cipa.transport.MessageMetadataHelper;
 import eu.europa.ec.cipa.transport.PingMessageHelper;
@@ -253,8 +254,9 @@ public class AccessPointService {
       s_aLogger.debug (sMessageID + " Our AP URL is " + sOwnAPUrl);
 
     // In debug mode, use our recipient URL, so that the URL check will work
-    final String sRecipientAPUrl = GlobalDebug.isDebugMode () ? sOwnAPUrl
-                                                             : SMPServiceCaller.getEndpointAddress (aRecipientEndpoint);
+    final String sRecipientAPUrl = GlobalDebug.isDebugMode ()
+                                                             ? sOwnAPUrl
+                                                             : SMPServiceCallerReadonly.getEndpointAddress (aRecipientEndpoint);
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug (sMessageID + " Recipient AP URL is " + sRecipientAPUrl);
 
@@ -309,7 +311,7 @@ public class AccessPointService {
 
   private static void _checkIfEndpointCertificateMatches (@Nullable final EndpointType aRecipientEndpoint,
                                                           @Nonnull final String sMessageID) throws FaultMessage {
-    final String sCertString = SMPServiceCaller.getEndpointCertificateString (aRecipientEndpoint);
+    final String sCertString = SMPServiceCallerReadonly.getEndpointCertificateString (aRecipientEndpoint);
     X509Certificate aRecipientSMPCert = null;
     try {
       aRecipientSMPCert = CertificateUtils.convertStringToCertficate (sCertString);
