@@ -48,6 +48,7 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import javax.annotation.Nullable;
 import javax.xml.crypto.AlgorithmMethod;
 import javax.xml.crypto.KeySelector;
 import javax.xml.crypto.KeySelectorException;
@@ -70,6 +71,19 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
  *      with the Java XML Digital Signature API</a>
  */
 public final class X509KeySelector extends KeySelector {
+  public static final class ConstantKeySelectorResult implements KeySelectorResult {
+    private final Key m_aKey;
+
+    public ConstantKeySelectorResult (@Nullable final Key aKey) {
+      m_aKey = aKey;
+    }
+
+    @Nullable
+    public Key getKey () {
+      return m_aKey;
+    }
+  }
+
   private static final ConfigFile s_aConfigFile = ConfigFile.getInstance ();
   private static final String TRUSTSTORE_LOCATION = s_aConfigFile.getString ("truststore.location",
                                                                              KeyStoreUtils.TRUSTSTORE_CLASSPATH);
@@ -123,16 +137,11 @@ public final class X509KeySelector extends KeySelector {
           final PublicKey aPublicKey = certificate.getPublicKey ();
 
           // Make sure the algorithm is compatible with the method.
-          if (_algEquals (aMethod.getAlgorithm (), aPublicKey.getAlgorithm ())) {
-            return new KeySelectorResult () {
-              public Key getKey () {
-                return aPublicKey;
-              }
-            };
-          }
+          if (_algEquals (aMethod.getAlgorithm (), aPublicKey.getAlgorithm ()))
+            return new ConstantKeySelectorResult (aPublicKey);
         }
-        catch (final Exception e) {
-          throw new KeySelectorException ("Failed to select public key", e);
+        catch (final Throwable t) {
+          throw new KeySelectorException ("Failed to select public key", t);
         }
       }
     }

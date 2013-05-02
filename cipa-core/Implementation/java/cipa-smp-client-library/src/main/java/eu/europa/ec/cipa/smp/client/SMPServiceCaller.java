@@ -40,7 +40,6 @@ package eu.europa.ec.cipa.smp.client;
 import java.net.URI;
 
 import javax.annotation.Nonnull;
-import javax.annotation.concurrent.NotThreadSafe;
 import javax.ws.rs.core.HttpHeaders;
 
 import org.busdox.servicemetadata.publishing._1.ObjectFactory;
@@ -73,7 +72,6 @@ import eu.europa.ec.cipa.smp.client.exception.UnknownException;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-@NotThreadSafe
 public final class SMPServiceCaller extends SMPServiceCallerReadonly {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SMPServiceCaller.class);
 

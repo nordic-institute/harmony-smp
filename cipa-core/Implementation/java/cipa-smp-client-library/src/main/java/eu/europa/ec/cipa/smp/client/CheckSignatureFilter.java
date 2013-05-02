@@ -53,7 +53,6 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-
 import com.phloc.commons.collections.ArrayHelper;
 import com.phloc.commons.io.streams.NonBlockingByteArrayInputStream;
 import com.phloc.commons.io.streams.StreamUtils;
@@ -113,7 +112,7 @@ public final class CheckSignatureFilter extends ClientFilter {
           final Iterator <?> i = aSignature.getSignedInfo ().getReferences ().iterator ();
           while (i.hasNext ()) {
             final boolean bRefValid = ((Reference) i.next ()).validate (aValidateContext);
-            s_aLogger.info ("  Reference[" + nIndex + "] validity status: " + bRefValid);
+            s_aLogger.info ("  Reference[" + nIndex + "] validity status: " + (bRefValid ? "valid" : "NOT valid!"));
             ++nIndex;
           }
         }
@@ -143,7 +142,7 @@ public final class CheckSignatureFilter extends ClientFilter {
       if (ArrayHelper.isEmpty (aResponseBytes))
         throw new ClientHandlerException ("Could not read entity");
 
-      try { 
+      try {
         // Check the signature
         if (!_checkSignature (new NonBlockingByteArrayInputStream (aResponseBytes)))
           throw new ClientHandlerException ("Signature was not valid");

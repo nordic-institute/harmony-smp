@@ -39,15 +39,21 @@ package eu.europa.ec.cipa.smp.client;
 
 import javax.annotation.concurrent.Immutable;
 
+import com.phloc.commons.annotations.PresentForCodeCoverage;
+
 /**
  * This class contains some important SMP constants
  * 
- * @author philip
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
 public final class CSMPIdentifier {
   /** The START transport profile to be used in EndPointType objects */
   public static final String TRANSPORT_PROFILE_START = "busdox-transport-start";
+
+  @PresentForCodeCoverage
+  @SuppressWarnings ("unused")
+  private static final CSMPIdentifier s_aInstance = new CSMPIdentifier ();
 
   private CSMPIdentifier () {}
 }

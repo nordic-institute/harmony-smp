@@ -71,7 +71,7 @@ import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
  * This tool lets you register a single AP at an SMP. All the constants must be
  * modified before the tool can be executed!
  * 
- * @author philip
+ * @author PEPPOL.AT, BRZ. Philip Helger
  */
 public final class MainRegisterAPatSMP {
   public static final Logger s_aLogger = LoggerFactory.getLogger (MainRegisterAPatSMP.class);
@@ -85,7 +85,7 @@ public final class MainRegisterAPatSMP {
   // The participant you want to register
   private static final String PARTICIPANT_ID = "0088:myGLNNumber";
 
-  // What is the URL of the START service (without any ?wsdl!)
+  // What is the URL of the START service (without any '?wsdl' !!!!)
   private static final String AP_ENDPOINTREF = "https://myap.example.com/accessPointService";
 
   // The Base64 encoded, DER encoded AP certificate (public key only)

@@ -47,7 +47,6 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.NotThreadSafe;
 import javax.ws.rs.core.HttpHeaders;
 import javax.xml.bind.JAXBElement;
 
@@ -95,7 +94,6 @@ import eu.europa.ec.cipa.smp.client.exception.UnknownException;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-@NotThreadSafe
 public class SMPServiceCallerReadonly {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SMPServiceCallerReadonly.class);
 
