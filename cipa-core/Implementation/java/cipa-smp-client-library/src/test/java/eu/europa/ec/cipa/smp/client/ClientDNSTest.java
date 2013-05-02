@@ -100,12 +100,12 @@ public final class ClientDNSTest {
     final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createWithDefaultScheme (sParticipantID);
     final DocumentIdentifierType aDocumentTypeID = SimpleDocumentTypeIdentifier.createWithDefaultScheme (sDocumentID);
 
-    final ServiceGroupType aGroup = SMPServiceCaller.getServiceGroupByDNS (SML_INFO, aServiceGroupID);
+    final ServiceGroupType aGroup = SMPServiceCallerReadonly.getServiceGroupByDNS (SML_INFO, aServiceGroupID);
     assertNotNull (aGroup);
 
-    final SignedServiceMetadataType aMetadata = SMPServiceCaller.getServiceRegistrationByDNS (SML_INFO,
-                                                                                              aServiceGroupID,
-                                                                                              aDocumentTypeID);
+    final SignedServiceMetadataType aMetadata = SMPServiceCallerReadonly.getServiceRegistrationByDNS (SML_INFO,
+                                                                                                      aServiceGroupID,
+                                                                                                      aDocumentTypeID);
     assertNotNull (aMetadata);
   }
 
@@ -116,9 +116,9 @@ public final class ClientDNSTest {
     // Document type identifier from enumeration
     final DocumentIdentifierType aDocumentTypeID = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A.getAsDocumentTypeIdentifier ();
     // Main call to the SMP client with the correct SML to use
-    final SignedServiceMetadataType aMetadata = SMPServiceCaller.getServiceRegistrationByDNS (ESML.DEVELOPMENT_LOCAL,
-                                                                                              aServiceGroupID,
-                                                                                              aDocumentTypeID);
+    final SignedServiceMetadataType aMetadata = SMPServiceCallerReadonly.getServiceRegistrationByDNS (ESML.DEVELOPMENT_LOCAL,
+                                                                                                      aServiceGroupID,
+                                                                                                      aDocumentTypeID);
     assertNotNull (aMetadata);
   }
 
@@ -130,9 +130,9 @@ public final class ClientDNSTest {
     final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createWithDefaultScheme (sParticipantID);
     final DocumentIdentifierType aDocumentTypeID = SimpleDocumentTypeIdentifier.createWithDefaultScheme (sDocumentID);
 
-    final SignedServiceMetadataType aMetadata = SMPServiceCaller.getServiceRegistrationByDNS (SML_INFO,
-                                                                                              aServiceGroupID,
-                                                                                              aDocumentTypeID);
+    final SignedServiceMetadataType aMetadata = SMPServiceCallerReadonly.getServiceRegistrationByDNS (SML_INFO,
+                                                                                                      aServiceGroupID,
+                                                                                                      aDocumentTypeID);
     assertNotNull (aMetadata);
   }
 }
