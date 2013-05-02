@@ -57,11 +57,13 @@ import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.internal.AssumptionViolatedException;
+import org.junit.rules.TestRule;
 
 import com.phloc.commons.annotations.DevelopersNote;
+import com.phloc.scopes.mock.ScopeTestRule;
 import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.NotFoundException;
 
@@ -116,18 +118,27 @@ public class DBMSDataManagerTest {
 
   private static DBMSDataManager s_aDataMgr;
 
-  @BeforeClass
-  public static void init () {
-    try {
-      SMPJPAWrapper.getInstance ();
-    }
-    catch (final ExceptionInInitializerError ex) {
-      // No database present
-      throw new AssumptionViolatedException ("No database connection could be established");
-    }
+  private static final class SMPTestRule extends ScopeTestRule {
+    @Override
+    public void before () {
+      super.before ();
+      if (s_aDataMgr == null) {
+        // Do it only once :)
+        try {
+          SMPEntityManagerFactory.getInstance ();
+        }
+        catch (final ExceptionInInitializerError ex) {
+          // No database present
+          throw new AssumptionViolatedException ("No database connection could be established");
+        }
 
-    s_aDataMgr = new DBMSDataManager (new DoNothingRegistrationHook ());
+        s_aDataMgr = new DBMSDataManager (new DoNothingRegistrationHook ());
+      }
+    }
   }
+
+  @ClassRule
+  public static TestRule rule = new SMPTestRule ();
 
   private ServiceGroupType m_aServiceGroup;
   private ServiceMetadataType m_aServiceMetadata;

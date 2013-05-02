@@ -45,6 +45,7 @@ import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 
@@ -67,7 +68,6 @@ import com.phloc.commons.GlobalDebug;
 import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.NotFoundException;
 
-import eu.europa.ec.cipa.commons.jpa.AbstractJPAEnabledManager;
 import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
@@ -94,7 +94,7 @@ import eu.europa.ec.cipa.smp.server.hook.RegistrationHookFactory;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class DBMSDataManager extends AbstractJPAEnabledManager implements IDataManager {
+public final class DBMSDataManager implements IDataManager {
   private static final Logger s_aLogger = LoggerFactory.getLogger (DBMSDataManager.class);
 
   private final IRegistrationHook m_aHook;
@@ -105,10 +105,14 @@ public final class DBMSDataManager extends AbstractJPAEnabledManager implements 
   }
 
   public DBMSDataManager (@Nonnull final IRegistrationHook aHook) {
-    super (SMPJPAWrapper.getInstance ());
     if (aHook == null)
       throw new NullPointerException ("hook");
     m_aHook = aHook;
+  }
+
+  @Nonnull
+  private EntityManager getEntityManager () {
+    return SMPEntityManagerWrapper.getInstance ().getEntityManager ();
   }
 
   @Nonnull

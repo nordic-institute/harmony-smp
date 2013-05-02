@@ -45,9 +45,9 @@ import javax.annotation.Nonnull;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.phloc.commons.annotations.ReturnsMutableCopy;
+import com.phloc.commons.annotations.UsedViaReflection;
+import com.phloc.db.jpa.AbstractEntityManagerFactorySingleton;
 
-import eu.europa.ec.cipa.commons.jpa.AbstractJPAWrapper;
-import eu.europa.ec.cipa.commons.jpa.JPAConfiguration;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 
 /**
@@ -55,9 +55,7 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-final class SMPJPAWrapper extends AbstractJPAWrapper {
-  private static final SMPJPAWrapper s_aInstance = new SMPJPAWrapper ();
-
+public final class SMPEntityManagerFactory extends AbstractEntityManagerFactorySingleton {
   @Nonnull
   @ReturnsMutableCopy
   private static Map <String, Object> _createSettingsMap () {
@@ -66,11 +64,6 @@ final class SMPJPAWrapper extends AbstractJPAWrapper {
 
     final Map <String, Object> ret = new HashMap <String, Object> ();
     // Read all properties from the standard configuration file
-    ret.put (PersistenceUnitProperties.JDBC_DRIVER, aCF.getString (JPAConfiguration.CONFIG_JDBC_DRIVER));
-    ret.put (PersistenceUnitProperties.JDBC_URL, aCF.getString (JPAConfiguration.CONFIG_JDBC_URL));
-    ret.put (PersistenceUnitProperties.JDBC_USER, aCF.getString (JPAConfiguration.CONFIG_JDBC_USER));
-    ret.put (PersistenceUnitProperties.JDBC_PASSWORD, aCF.getString (JPAConfiguration.CONFIG_JDBC_PASSWORD));
-    ret.put (PersistenceUnitProperties.TARGET_DATABASE, aCF.getString (JPAConfiguration.CONFIG_TARGET_DATABASE));
     // Connection pooling
     ret.put (PersistenceUnitProperties.CONNECTION_POOL_MAX,
              aCF.getString (JPAConfiguration.CONFIG_JDBC_READ_CONNECTIONS_MAX));
@@ -91,12 +84,20 @@ final class SMPJPAWrapper extends AbstractJPAWrapper {
     return ret;
   }
 
-  private SMPJPAWrapper () {
-    super ("peppol-smp", _createSettingsMap ());
+  @Deprecated
+  @UsedViaReflection
+  public SMPEntityManagerFactory () {
+    super (ConfigFile.getInstance ().getString (JPAConfiguration.CONFIG_JDBC_DRIVER),
+           ConfigFile.getInstance ().getString (JPAConfiguration.CONFIG_JDBC_URL),
+           ConfigFile.getInstance ().getString (JPAConfiguration.CONFIG_JDBC_USER),
+           ConfigFile.getInstance ().getString (JPAConfiguration.CONFIG_JDBC_PASSWORD),
+           ConfigFile.getInstance ().getString (JPAConfiguration.CONFIG_TARGET_DATABASE),
+           "peppol-smp",
+           _createSettingsMap ());
   }
 
   @Nonnull
-  public static SMPJPAWrapper getInstance () {
-    return s_aInstance;
+  public static SMPEntityManagerFactory getInstance () {
+    return getGlobalSingleton (SMPEntityManagerFactory.class);
   }
 }
