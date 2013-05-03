@@ -4,7 +4,7 @@ import javax.annotation.Nonnull;
 import javax.persistence.EntityManager;
 
 import com.phloc.commons.annotations.UsedViaReflection;
-import com.phloc.db.jpa.AbstractEntityManagerSingleton;
+import com.phloc.db.jpa.AbstractPerRequestEntityManager;
 
 /**
  * The per-request singleton, that creates {@link EntityManager} objects from
@@ -12,7 +12,7 @@ import com.phloc.db.jpa.AbstractEntityManagerSingleton;
  * 
  * @author philip
  */
-public class SMPEntityManagerWrapper extends AbstractEntityManagerSingleton {
+public final class SMPEntityManagerWrapper extends AbstractPerRequestEntityManager {
   @Deprecated
   @UsedViaReflection
   public SMPEntityManagerWrapper () {}

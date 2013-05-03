@@ -87,7 +87,7 @@ public final class CompleteServiceGroupInterface {
 
   @GET
   @Produces (MediaType.TEXT_XML)
-  public JAXBElement <CompleteServiceGroupType> getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId) {
+  public JAXBElement <CompleteServiceGroupType> getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId) throws Throwable {
     s_aLogger.info ("GET /complete/" + sServiceGroupId);
     try {
       final ObjectFactory aObjFactory = new ObjectFactory ();
@@ -127,7 +127,7 @@ public final class CompleteServiceGroupInterface {
 
       return aObjFactory.createCompleteServiceGroup (aCompleteServiceGroup);
     }
-    catch (final RuntimeException ex) {
+    catch (final Throwable ex) {
       s_aLogger.error ("Error getting service group", ex);
       throw ex;
     }

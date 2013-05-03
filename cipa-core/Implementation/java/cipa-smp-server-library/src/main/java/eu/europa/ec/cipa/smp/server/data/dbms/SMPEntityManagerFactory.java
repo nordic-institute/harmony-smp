@@ -46,16 +46,16 @@ import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.annotations.UsedViaReflection;
-import com.phloc.db.jpa.AbstractEntityManagerFactorySingleton;
+import com.phloc.db.jpa.AbstractGlobalEntityManagerFactory;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 
 /**
- * Specific SMP JPA entity manager
+ * Specific SMP JPA entity manager factory
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class SMPEntityManagerFactory extends AbstractEntityManagerFactorySingleton {
+public final class SMPEntityManagerFactory extends AbstractGlobalEntityManagerFactory {
   @Nonnull
   @ReturnsMutableCopy
   private static Map <String, Object> _createSettingsMap () {

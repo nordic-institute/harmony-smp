@@ -84,7 +84,7 @@ public final class ListInterface {
 
   @GET
   @Produces (MediaType.TEXT_XML)
-  public JAXBElement <ServiceGroupReferenceListType> getServiceGroup (@PathParam ("UserId") final String sUserId) {
+  public JAXBElement <ServiceGroupReferenceListType> getServiceGroup (@PathParam ("UserId") final String sUserId) throws Throwable {
     s_aLogger.info ("GET /list/" + sUserId);
 
     try {
@@ -113,7 +113,7 @@ public final class ListInterface {
 
       return aObjFactory.createServiceGroupReferenceList (aRefList);
     }
-    catch (final RuntimeException ex) {
+    catch (final Throwable ex) {
       s_aLogger.error ("A error occured when listing service groups for user: " + sUserId, ex);
       throw ex;
     }

@@ -144,7 +144,7 @@ public class DBMSDataManagerTest {
   private ServiceMetadataType m_aServiceMetadata;
 
   @Before
-  public void createDefaultServiceGroup () {
+  public void createDefaultServiceGroup () throws Throwable {
     final ExtensionType aExtension = ExtensionConverter.convert ("<root><any>value</any></root>");
     assertNotNull (aExtension);
     assertNotNull (aExtension.getAny ());
@@ -196,7 +196,7 @@ public class DBMSDataManagerTest {
   }
 
   @Test
-  public void testCreateServiceGroup () {
+  public void testCreateServiceGroup () throws Throwable {
     m_aServiceGroup.getParticipantIdentifier ().setValue (PARTICIPANT_IDENTIFIER2);
     s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
 
@@ -210,7 +210,7 @@ public class DBMSDataManagerTest {
   }
 
   @Test
-  public void testCreateServiceGroupInvalidPassword () {
+  public void testCreateServiceGroupInvalidPassword () throws Throwable {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WRONG_PASSWORD");
 
     m_aServiceGroup.getParticipantIdentifier ().setValue (PARTICIPANT_IDENTIFIER2);
@@ -222,7 +222,7 @@ public class DBMSDataManagerTest {
   }
 
   @Test
-  public void testCreateServiceGroupUnknownUser () {
+  public void testCreateServiceGroupUnknownUser () throws Throwable {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
 
     m_aServiceGroup.getParticipantIdentifier ().setValue (PARTICIPANT_IDENTIFIER2);
@@ -234,14 +234,14 @@ public class DBMSDataManagerTest {
   }
 
   @Test
-  public void testDeleteServiceGroup () {
+  public void testDeleteServiceGroup () throws Throwable {
     s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, CREDENTIALS);
 
     assertNull (s_aDataMgr.getServiceGroup (SERVICEGROUP_ID));
   }
 
   @Test
-  public void testDeleteServiceGroupUnknownID () {
+  public void testDeleteServiceGroupUnknownID () throws Throwable {
     final ParticipantIdentifierType aServiceGroupID2 = SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_IDENTIFIER2);
     s_aDataMgr.deleteServiceGroup (aServiceGroupID2, CREDENTIALS);
 
@@ -249,7 +249,7 @@ public class DBMSDataManagerTest {
   }
 
   @Test
-  public void testDeleteServiceGroupUnknownUser () {
+  public void testDeleteServiceGroupUnknownUser () throws Throwable {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
     try {
       s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, aCredentials);
@@ -259,7 +259,7 @@ public class DBMSDataManagerTest {
   }
 
   @Test
-  public void testDeleteServiceGroupWrongPass () {
+  public void testDeleteServiceGroupWrongPass () throws Throwable {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WrongPassword");
     try {
       s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, aCredentials);
@@ -269,7 +269,7 @@ public class DBMSDataManagerTest {
   }
 
   @Test
-  public void testCreateServiceMetadata () {
+  public void testCreateServiceMetadata () throws Throwable {
     // Save to DB
     s_aDataMgr.saveService (m_aServiceMetadata, CREDENTIALS);
 
@@ -306,7 +306,7 @@ public class DBMSDataManagerTest {
   }
 
   @Test
-  public void testCreateServiceMetadataUnknownUser () {
+  public void testCreateServiceMetadataUnknownUser () throws Throwable {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
     try {
       s_aDataMgr.saveService (m_aServiceMetadata, aCredentials);
@@ -316,7 +316,7 @@ public class DBMSDataManagerTest {
   }
 
   @Test
-  public void testCreateServiceMetadataWrongPass () {
+  public void testCreateServiceMetadataWrongPass () throws Throwable {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WrongPassword");
     try {
       s_aDataMgr.saveService (m_aServiceMetadata, aCredentials);
@@ -326,7 +326,7 @@ public class DBMSDataManagerTest {
   }
 
   @Test
-  public void testDeleteServiceMetadata () {
+  public void testDeleteServiceMetadata () throws Throwable {
     // Ensure something is present :)
     s_aDataMgr.saveService (m_aServiceMetadata, CREDENTIALS);
 
@@ -341,7 +341,7 @@ public class DBMSDataManagerTest {
   }
 
   @Test
-  public void testDeleteServiceMetadataUnknownUser () {
+  public void testDeleteServiceMetadataUnknownUser () throws Throwable {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
     try {
       s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, aCredentials);
@@ -351,7 +351,7 @@ public class DBMSDataManagerTest {
   }
 
   @Test
-  public void testDeleteServiceMetadataWrongPass () {
+  public void testDeleteServiceMetadataWrongPass () throws Throwable {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WrongPassword");
     try {
       s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, aCredentials);

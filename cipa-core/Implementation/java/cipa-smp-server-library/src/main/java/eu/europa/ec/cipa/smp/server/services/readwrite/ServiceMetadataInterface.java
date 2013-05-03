@@ -87,14 +87,14 @@ public final class ServiceMetadataInterface {
   // changed Produced media type to match the smp specification.
   @Produces (MediaType.TEXT_XML)
   public JAXBElement <SignedServiceMetadataType> getServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
-                                                                         @PathParam ("DocumentTypeId") final String sDocumentTypeID) {
+                                                                         @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
     return BaseServiceMetadataInterfaceImpl.getServiceRegistration (uriInfo, sServiceGroupID, sDocumentTypeID);
   }
 
   @PUT
   public Response saveServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupId,
                                            @PathParam ("DocumentTypeId") final String sDocumentTypeId,
-                                           final ServiceMetadataType aServiceMetadata) {
+                                           final ServiceMetadataType aServiceMetadata) throws Throwable {
     s_aLogger.info ("PUT /" + sServiceGroupId + "/services/" + sDocumentTypeId + " ==> " + aServiceMetadata);
 
     try {
@@ -135,7 +135,7 @@ public final class ServiceMetadataInterface {
 
       return Response.ok ().build ();
     }
-    catch (final RuntimeException ex) {
+    catch (final Throwable ex) {
       s_aLogger.error ("Error in saving Service metadata.", ex);
       throw ex;
     }
@@ -143,7 +143,7 @@ public final class ServiceMetadataInterface {
 
   @DELETE
   public Response deleteServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupId,
-                                             @PathParam ("DocumentTypeId") final String sDocumentTypeId) {
+                                             @PathParam ("DocumentTypeId") final String sDocumentTypeId) throws Throwable {
     s_aLogger.info ("DELETE /" + sServiceGroupId + "/services/" + sDocumentTypeId);
 
     try {
@@ -157,7 +157,7 @@ public final class ServiceMetadataInterface {
 
       return Response.ok ().build ();
     }
-    catch (final RuntimeException ex) {
+    catch (final Throwable ex) {
       s_aLogger.error ("Error in deleting Service metadata.", ex);
       throw ex;
     }

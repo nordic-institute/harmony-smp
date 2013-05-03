@@ -72,7 +72,7 @@ public final class BaseServiceMetadataInterfaceImpl {
   @Nonnull
   public static JAXBElement <SignedServiceMetadataType> getServiceRegistration (@Nonnull final UriInfo uriInfo,
                                                                                 @Nullable final String sServiceGroupID,
-                                                                                @Nullable final String sDocumentTypeID) {
+                                                                                @Nullable final String sDocumentTypeID) throws Throwable {
     s_aLogger.info ("GET /" + sServiceGroupID + "/services/" + sDocumentTypeID);
 
     try {
@@ -96,7 +96,7 @@ public final class BaseServiceMetadataInterfaceImpl {
       s_aLogger.info ("Finished getServiceRegistration(" + sServiceGroupID + "," + sDocumentTypeID + ")");
       return aObjFactory.createSignedServiceMetadata (aSignedServiceMetadata);
     }
-    catch (final RuntimeException ex) {
+    catch (final Throwable ex) {
       s_aLogger.error ("Error in returning service metadata.", ex);
       throw ex;
     }

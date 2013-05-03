@@ -62,9 +62,10 @@ public interface IDataManager {
    * @param id
    *        The service group id.
    * @return The service group corresponding to the id.
+   * @throws Throwable
    */
   @Nullable
-  ServiceGroupType getServiceGroup (ParticipantIdentifierType id);
+  ServiceGroupType getServiceGroup (ParticipantIdentifierType id) throws Throwable;
 
   /**
    * Persists the service group in the underlying data layer. This operation
@@ -74,8 +75,9 @@ public interface IDataManager {
    *        The service group to save.
    * @param creds
    *        The credentials to use.
+   * @throws Throwable
    */
-  void saveServiceGroup (ServiceGroupType serviceGroup, BasicAuthClientCredentials creds);
+  void saveServiceGroup (ServiceGroupType serviceGroup, BasicAuthClientCredentials creds) throws Throwable;
 
   /**
    * Deletes the service group having the specified id.
@@ -84,8 +86,9 @@ public interface IDataManager {
    *        The ID of the service group to delete.
    * @param creds
    *        The credentials to use.
+   * @throws Throwable
    */
-  void deleteServiceGroup (ParticipantIdentifierType serviceGroupId, BasicAuthClientCredentials creds);
+  void deleteServiceGroup (ParticipantIdentifierType serviceGroupId, BasicAuthClientCredentials creds) throws Throwable;
 
   /**
    * Gets a list of the document id's of the given service group.
@@ -93,8 +96,9 @@ public interface IDataManager {
    * @param serviceGroupId
    *        The id of the service group.
    * @return The corresponding document id's.
+   * @throws Throwable
    */
-  List <DocumentIdentifierType> getDocumentTypes (ParticipantIdentifierType serviceGroupId);
+  List <DocumentIdentifierType> getDocumentTypes (ParticipantIdentifierType serviceGroupId) throws Throwable;
 
   /**
    * Gets the service metadata corresponding to the service group id and
@@ -105,8 +109,9 @@ public interface IDataManager {
    * @param docType
    *        The document id of the service metadata.
    * @return The corresponding service metadata.
+   * @throws Throwable
    */
-  ServiceMetadataType getService (ParticipantIdentifierType serviceGroupId, DocumentIdentifierType docType);
+  ServiceMetadataType getService (ParticipantIdentifierType serviceGroupId, DocumentIdentifierType docType) throws Throwable;
 
   /**
    * Saves the given service metadata in the underlying data layer.
@@ -115,8 +120,9 @@ public interface IDataManager {
    *        The service metadata to save.
    * @param creds
    *        The credentials to use.
+   * @throws Throwable
    */
-  void saveService (ServiceMetadataType serviceMetadata, BasicAuthClientCredentials creds);
+  void saveService (ServiceMetadataType serviceMetadata, BasicAuthClientCredentials creds) throws Throwable;
 
   /**
    * Deletes a service metadata object given by its service group id and
@@ -128,10 +134,11 @@ public interface IDataManager {
    *        The document id of the service metadata.
    * @param creds
    *        The credentials to use.
+   * @throws Throwable
    */
   void deleteService (ParticipantIdentifierType serviceGroupId,
                       DocumentIdentifierType docType,
-                      BasicAuthClientCredentials creds);
+                      BasicAuthClientCredentials creds) throws Throwable;
 
   /**
    * Checks whether the ServiceMetadata should be found elsewhere.
@@ -142,8 +149,9 @@ public interface IDataManager {
    *        The document id of the service metadata.
    * @return The URI to be redirected to. null if no redirection should take
    *         place.
+   * @throws Throwable
    */
-  ServiceMetadataType getRedirection (ParticipantIdentifierType servGroupId, DocumentIdentifierType docTypeId);
+  ServiceMetadataType getRedirection (ParticipantIdentifierType servGroupId, DocumentIdentifierType docTypeId) throws Throwable;
 
   /**
    * Gets the service group ids owned by the given credentials.
@@ -151,8 +159,9 @@ public interface IDataManager {
    * @param creds
    *        The credentials to get service groups id for.
    * @return A collection of service group id's.
+   * @throws Throwable
    */
-  Collection <ParticipantIdentifierType> getServiceGroupList (BasicAuthClientCredentials creds);
+  Collection <ParticipantIdentifierType> getServiceGroupList (BasicAuthClientCredentials creds) throws Throwable;
 
   /**
    * Gets the list of service metadata objects corresponding to a given service
@@ -161,6 +170,7 @@ public interface IDataManager {
    * @param serviceGroupId
    *        The service group id.
    * @return A list of service metadata objects.
+   * @throws Throwable
    */
-  Collection <ServiceMetadataType> getServices (ParticipantIdentifierType serviceGroupId);
+  Collection <ServiceMetadataType> getServices (ParticipantIdentifierType serviceGroupId) throws Throwable;
 }

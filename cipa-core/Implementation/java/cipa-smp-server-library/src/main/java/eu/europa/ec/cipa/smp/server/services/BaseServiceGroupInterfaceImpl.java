@@ -74,7 +74,7 @@ public final class BaseServiceGroupInterfaceImpl {
 
   @Nullable
   public static JAXBElement <ServiceGroupType> getServiceGroup (@Nonnull final UriInfo uriInfo,
-                                                                @Nullable final String sServiceGroupId) {
+                                                                @Nullable final String sServiceGroupId) throws Throwable {
     s_aLogger.info ("GET /" + sServiceGroupId);
     ParticipantIdentifierType aServiceGroupID = null;
     try {
@@ -124,7 +124,7 @@ public final class BaseServiceGroupInterfaceImpl {
       // No logging needed here - already logged in DB
       throw ex;
     }
-    catch (final RuntimeException ex) {
+    catch (final Throwable ex) {
       s_aLogger.error ("Error getting service group " + aServiceGroupID, ex);
       throw ex;
     }
