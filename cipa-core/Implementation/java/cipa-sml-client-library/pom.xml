@@ -5,14 +5,17 @@
 	<parent>
 		<groupId>eu.europa.ec.cipa</groupId>
 		<artifactId>cipa-parent-pom</artifactId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.0</version>
 	</parent>
 	<artifactId>cipa-sml-client-library</artifactId>
-	<name>cipa-sml-client-library</name>
+  <version>1.0.1-SNAPSHOT</version>
+  <name>cipa-sml-client-library</name>
+
   <scm>
     <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-commons-jpa</connection>
     <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-commons-jpa</developerConnection>
   </scm>
+
 	<repositories>
 		<repository>
 			<id>phloc</id>
@@ -30,12 +33,12 @@
 		<dependency>
 			<groupId>eu.europa.ec.cipa</groupId>
 			<artifactId>cipa-commons-busdox</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>eu.europa.ec.cipa</groupId>
 			<artifactId>cipa-peppol-types</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.glassfish.metro</groupId>

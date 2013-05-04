@@ -4,10 +4,13 @@
 	<parent>
 		<artifactId>cipa-parent-pom</artifactId>
 		<groupId>eu.europa.ec.cipa</groupId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.0</version>
 	</parent>
 	<artifactId>cipa-oxalis-receiver</artifactId>
+  <version>1.0.1-SNAPSHOT</version>
+  <name>cipa-oxalis-receiver</name>
 	<description>This module is meant to integrate the cipa access point and the oxalis open source implementation of the access point</description>
+  
 	<scm>
 		<connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-oxalis-receiver</connection>
 		<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-oxalis-receiver</developerConnection>
@@ -17,7 +20,7 @@
 		<dependency>
 			<groupId>eu.europa.ec.cipa</groupId>
 			<artifactId>cipa-transport-api</artifactId>
-			<version>1.0-SNAPSHOT</version>
+			<version>1.0.1-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>

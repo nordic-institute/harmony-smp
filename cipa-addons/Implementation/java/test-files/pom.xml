@@ -3,9 +3,10 @@
   <parent>
     <groupId>eu.europa.ec.cipa</groupId>
     <artifactId>cipa-parent-pom</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
   </parent>
   <artifactId>cipa-test-files</artifactId>
+  <version>1.0.1-SNAPSHOT</version>
   <name>cipa-test-files</name>
 
   <scm>

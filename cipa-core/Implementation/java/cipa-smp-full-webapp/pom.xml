@@ -4,9 +4,10 @@
   <parent>
     <groupId>eu.europa.ec.cipa</groupId>
     <artifactId>cipa-parent-pom</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
   </parent>
   <artifactId>cipa-smp-full-webapp</artifactId>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>cipa-smp-full-webapp</name>
   <description>SMP webapp with all available features (read &amp; write)</description>
