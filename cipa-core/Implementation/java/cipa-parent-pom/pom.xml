@@ -39,6 +39,10 @@
       <id>joinup.nexus</id>
       <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
     </repository>
+    <snapshotRepository>
+      <id>joinup.nexus</id>
+      <url>https://joinup.ec.europa.eu/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
   </distributionManagement>
 
   <!-- Properties for default plugins -->
