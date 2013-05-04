@@ -48,7 +48,7 @@
 		<dependency>
 			<groupId>eu.europa.ec.cipa</groupId>
 			<artifactId>cipa-commons-jpa</artifactId>
-			<version>1.0.1-SNAPSHOT</version>
+			<version>1.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>dnsjava</groupId>
