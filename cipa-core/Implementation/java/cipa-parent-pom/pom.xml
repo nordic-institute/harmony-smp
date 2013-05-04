@@ -3,10 +3,10 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.europa.ec.cipa</groupId>
   <artifactId>cipa-parent-pom</artifactId>
+  <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>cipa-parent-pom</name>
   <description>The Cipa e delivery platform</description>
-  <version>1.0-SNAPSHOT</version>
   
   <!-- Minimum Maven version -->
   <prerequisites>
@@ -66,6 +66,44 @@
       <organization>Austrian Federal Computing Center/Bundesrechenzentrum</organization>
     </developer>
   </developers>
+  
+  <!-- Where are we looking for JARs? -->
+  <repositories>
+    <repository>
+      <id>phloc</id>
+      <url>http://repo.phloc.com/maven2/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>eclipselink</id>
+      <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>        
+    </repository>
+  </repositories>
+  
+  <!-- Where are we looking for Maven plugins? -->
+  <pluginRepositories>
+    <pluginRepository>
+      <id>phloc</id>
+      <url>http://repo.phloc.com/maven2/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 
   <!-- Specific build configurations (=profiles) -->
   <profiles>
@@ -208,47 +246,27 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  
-  <!-- Where are we looking for JARs? -->
-  <repositories>
-    <repository>
-      <id>phloc</id>
-      <url>http://repo.phloc.com/maven2/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>eclipselink</id>
-      <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>        
-    </repository>
-  </repositories>
-  
-  <!-- Where are we looking for Maven plugins? -->
-  <pluginRepositories>
-    <pluginRepository>
-      <id>phloc</id>
-      <url>http://repo.phloc.com/maven2/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
 
   <!-- Build plugins -->
   <build>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ssh</artifactId>
+        <version>2.1</version>
+      </extension>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-http</artifactId>
+        <version>2.1</version>
+      </extension>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-file</artifactId>
+        <version>2.1</version>
+      </extension>
+    </extensions>
+
     <pluginManagement>
       <plugins>
         <plugin>
@@ -723,24 +741,6 @@ Please remove or make sure it appears in the correct subdirectory of the classpa
         </plugin>
       </plugins>
     </pluginManagement>
-
-    <extensions>
-      <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-ssh</artifactId>
-        <version>2.1</version>
-      </extension>
-      <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-http</artifactId>
-        <version>2.1</version>
-      </extension>
-      <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-file</artifactId>
-        <version>2.1</version>
-      </extension>
-    </extensions>
 
     <plugins>
       <!-- Compile as Java 1.6 code (lifecycle: compile) -->
