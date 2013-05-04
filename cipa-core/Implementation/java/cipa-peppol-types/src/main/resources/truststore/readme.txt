@@ -47,7 +47,7 @@ peppol access point test ca (peppol root test ca)
 peppol security token service test ca (peppol root test ca)
 peppol service metadata publisher test ca (peppol root test ca)
 
-The password to access the trust store is:
+The password to access the trust stores is:
 peppol
 
 --[EOF]--
