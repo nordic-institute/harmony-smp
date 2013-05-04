@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.europa.ec.cipa</groupId>
   <artifactId>cipa-parent-pom</artifactId>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.0</version>
   <packaging>pom</packaging>
   <name>cipa-parent-pom</name>
   <description>The Cipa e delivery platform</description>
@@ -15,8 +15,8 @@
   
   <!-- SVN location -->
   <scm>
-    <connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-parent-pom</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-parent-pom</developerConnection>
+    <connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/tags/cipa-parent-pom-1.0</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/tags/cipa-parent-pom-1.0</developerConnection>
   </scm>
   
   <!-- Used licenses -->
@@ -622,7 +622,7 @@ Please remove or make sure it appears in the correct subdirectory of the classpa
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <execute runOnIncremental="false"/>
+                    <execute runOnIncremental="false" />
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -635,7 +635,7 @@ Please remove or make sure it appears in the correct subdirectory of the classpa
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <execute runOnIncremental="false"/>
+                    <execute runOnIncremental="false" />
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -648,7 +648,7 @@ Please remove or make sure it appears in the correct subdirectory of the classpa
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <execute runOnIncremental="false"/>
+                    <execute runOnIncremental="false" />
                   </action>
                 </pluginExecution>
                 <pluginExecution>
@@ -662,7 +662,7 @@ Please remove or make sure it appears in the correct subdirectory of the classpa
                     </goals>
                   </pluginExecutionFilter>
                   <action>
-                    <execute runOnIncremental="false"/>
+                    <execute runOnIncremental="false" />
                   </action>
                 </pluginExecution>
                 <pluginExecution>
