@@ -6,12 +6,12 @@
     <version>1.0</version>
   </parent>
   <artifactId>cipa-test-files</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2-SNAPSHOT</version>
   <name>cipa-test-files</name>
 
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/tags/cipa-test-files/cipa-test-files-1.0.1</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/tags/cipa-test-files/cipa-test-files-1.0.1</developerConnection>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/test-files</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/test-files</developerConnection>
   </scm>
 
   <repositories>
