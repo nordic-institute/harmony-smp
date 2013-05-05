@@ -42,7 +42,6 @@ import static org.junit.Assert.fail;
 
 import java.util.List;
 
-import org.busdox.servicemetadata.locator._1.ObjectFactory;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
@@ -60,8 +59,6 @@ import eu.europa.ec.cipa.sml.server.exceptions.NotFoundException;
  */
 @DevelopersNote ("You need to adjust your local src/test/resources/config.properties file to run this test")
 public final class SMLDataHandlerGenericTest {
-  // Static for every test.
-  private static final ObjectFactory s_aObjFactory = new ObjectFactory ();
   private static IGenericDataHandler s_aGenericHandler;
 
   private static final class SMLTestRule extends ScopeTestRule {

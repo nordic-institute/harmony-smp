@@ -37,7 +37,6 @@
  */
 package eu.europa.ec.cipa.sml.server.dns;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
@@ -67,7 +66,7 @@ import com.phloc.commons.io.streams.StreamUtils;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class ServletListDNS extends HttpServlet {
-  private static final Logger log = LoggerFactory.getLogger (ServletListDNS.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (ServletListDNS.class);
   private static final AtomicBoolean s_aAlreadyRunning = new AtomicBoolean (false);
 
   /**
@@ -84,8 +83,8 @@ public final class ServletListDNS extends HttpServlet {
   }
 
   private static void _writeToStreamAndLog (final OutputStream os, final String msg) throws IOException {
-    if (log.isDebugEnabled ())
-      log.debug (msg);
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug (msg);
     _writeToStream (os, msg);
   }
 
@@ -107,32 +106,32 @@ public final class ServletListDNS extends HttpServlet {
   /**
    * List all DNS records to servlet output stream.
    * 
-   * @param os
+   * @param aOS
    *        The {@link OutputStream} to write to. Will not be closed in here!
    * @throws Exception
    */
-  private static void _doit (@WillNotClose final OutputStream os) throws Exception {
+  public static void listDNS (@WillNotClose final OutputStream aOS) throws Exception {
     // Is DNS listing already running?
     if (!s_aAlreadyRunning.compareAndSet (false, true)) {
-      if (log.isInfoEnabled ())
-        log.info ("List DNS is already running...");
-      _writeToStream (os, "List DNS is already running...");
+      if (s_aLogger.isInfoEnabled ())
+        s_aLogger.info ("List DNS is already running...");
+      _writeToStream (aOS, "List DNS is already running...");
       return;
     }
 
     try {
       final IDNSClient aDNSClient = DNSClientFactory.getInstance ();
 
-      _writeToStreamAndLog (os, "DNSClient is : " + aDNSClient.toString ());
-      _writeToStreamAndLog (os,
+      _writeToStreamAndLog (aOS, "DNSClient is : " + aDNSClient.toString ());
+      _writeToStreamAndLog (aOS,
                             "DNSServer is : " +
                                 aDNSClient.getServer () +
                                 " - handling DNS Zone : " +
                                 aDNSClient.getDNSZoneName () +
                                 " - SML Zone : " +
                                 aDNSClient.getSMLZoneName ());
-      _writeToStream (os, "");
-      _writeToStream (os, "=== List Records in DNS ===");
+      _writeToStream (aOS, "");
+      _writeToStream (aOS, "=== List Records in DNS ===");
 
       // Get all domain records
       final List <Record> aAllRecords = aDNSClient.getAllRecords ();
@@ -151,17 +150,17 @@ public final class ServletListDNS extends HttpServlet {
           aFilteredRecords.add (aRecord);
         }
       }
-      _writeToStreamAndLog (os, " - retrieved # of records : " + aFilteredRecords.size ());
-      _writeToStream (os, "");
+      _writeToStreamAndLog (aOS, " - retrieved # of records : " + aFilteredRecords.size ());
+      _writeToStream (aOS, "");
 
       // Emit all records sorted
       for (final Record aRecord : ContainerHelper.getSortedInline (aFilteredRecords, new ComparatorDNSRecord ()))
-        _writeToStreamAndLog (os, aRecord.toString ());
+        _writeToStreamAndLog (aOS, aRecord.toString ());
 
-      if (log.isInfoEnabled ())
-        log.info ("List DNS done!");
-      _writeToStream (os, "");
-      _writeToStream (os, "List DNS done!");
+      if (s_aLogger.isInfoEnabled ())
+        s_aLogger.info ("List DNS done!");
+      _writeToStream (aOS, "");
+      _writeToStream (aOS, "List DNS done!");
     }
     finally {
       // Mark DNS listing as not running
@@ -183,10 +182,10 @@ public final class ServletListDNS extends HttpServlet {
     try {
       if (DNSClientConfiguration.isEnabled ()) {
         final String sInitMsg = "List DNS Records : " + new Date ().toString ();
-        if (log.isInfoEnabled ())
-          log.info (sInitMsg);
+        if (s_aLogger.isInfoEnabled ())
+          s_aLogger.info (sInitMsg);
         _writeToStream (os, sInitMsg);
-        _doit (os);
+        listDNS (os);
       }
       else {
         // DNS is not active - no need to list anything
@@ -194,8 +193,8 @@ public final class ServletListDNS extends HttpServlet {
       }
     }
     catch (final Exception ex) {
-      log.error ("Failed to list DNS Records", ex);
-      _writeToStream (os, "Failed to list DNS Records : " + ex.getMessage ());
+      s_aLogger.error ("Failed to list DNS Records", ex);
+      _writeToStream (os, "Failed to list DNS Records: " + ex.getMessage ());
       _writeToStream (os, ex);
     }
     finally {
@@ -212,21 +211,5 @@ public final class ServletListDNS extends HttpServlet {
   @Override
   protected void doPost (final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
     _handleRequest (req, resp);
-  }
-
-  /**
-   * Run listing locally. NOTE: DNS ZoneTransfer must be enabled for client.
-   * Check your DNS administrator for details
-   * 
-   * @param args
-   * @throws Exception
-   */
-  public static void main (final String [] args) throws Exception {
-    final ByteArrayOutputStream baos = new ByteArrayOutputStream ();
-    new ServletListDNS ();
-    ServletListDNS._doit (baos);
-
-    System.out.println ("=================================================");
-    System.out.println (baos.toString ("cp1252"));
   }
 }

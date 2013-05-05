@@ -65,6 +65,7 @@ import org.xbill.DNS.Type;
 import org.xbill.DNS.ZoneTransferException;
 
 import com.phloc.commons.lang.StackTraceHelper;
+import com.phloc.commons.string.StringHelper;
 import com.phloc.commons.url.URLUtils;
 
 import eu.europa.ec.cipa.sml.server.IGenericDataHandler;
@@ -107,6 +108,23 @@ public class ServletVerifyDNS extends HttpServlet {
     aOS.write (sText.getBytes ());
     aOS.flush ();
     s_aLogger.error (sMessage, t);
+  }
+
+  /**
+   * Utility method to get host name.
+   * 
+   * @param sEndpoint
+   * @return the host name to use
+   */
+  @Nonnull
+  private static String _getHost (@Nonnull final String sEndpoint) {
+    final String sEndpointLC = sEndpoint.toLowerCase (Locale.US);
+    if (sEndpointLC.startsWith ("http:")) {
+      final URL aEndpointUrl = URLUtils.getAsURL (sEndpointLC);
+      if (aEndpointUrl != null)
+        return aEndpointUrl.getHost ();
+    }
+    return sEndpointLC;
   }
 
   /**
@@ -232,172 +250,76 @@ public class ServletVerifyDNS extends HttpServlet {
     _infoLog (aOS, "");
   }
 
-  /**
-   * Verify DNS Records.
-   * 
-   * @param aOS
-   *        OutputStream to use. May not be <code>null</code>.
-   * @throws Exception
-   */
-  public static void verifyDNS (@Nonnull final OutputStream aOS) throws Exception {
-    if (s_aVerifyRunning.getAndSet (true)) {
-      _infoLog (aOS, "DNS Verify is already running...");
-      return;
-    }
-
+  private static void _verifyDNSAll (@Nonnull final OutputStream aOS,
+                                     @Nonnull final IDNSClient aDNSClient,
+                                     @Nonnull final IGenericDataHandler aGenericHandler) throws IOException {
+    _infoLog (aOS, "=== Verify Records in DNS ===");
     try {
-      final IDNSClient aDNSClient = DNSClientFactory.getInstance ();
-      final IGenericDataHandler aGenericHandler = DataHandlerFactory.getGenericDataHandler ();
+      final List <Record> aRecords = aDNSClient.getAllRecords ();
+      _infoLog (aOS, " - retrieved # of records : " + aRecords.size ());
 
-      _infoLog (aOS, "DNSClient is: " + aDNSClient);
-      _infoLog (aOS,
-                "DNSServer is: " +
-                    aDNSClient.getServer () +
-                    " - handling DNS Zone: " +
-                    aDNSClient.getDNSZoneName () +
-                    " - SML Zone: " +
-                    aDNSClient.getSMLZoneName () +
-                    " - TTL: " +
-                    DNSClientConfiguration.getTTL () +
-                    " secs");
-      _infoLog (aOS, "Generic DataHandler is: " + aGenericHandler);
-      _infoLog (aOS, "=== Verify Records in DNS ===");
-      try {
-        final List <Record> aRecords = aDNSClient.getAllRecords ();
-        _infoLog (aOS, " - retrieved # of records : " + aRecords.size ());
+      // Loop through all DNS Records
+      for (final Record aRecord : aRecords) {
+        final String sRecordName = aRecord.getName ().toString ();
+        _infoLog (aOS, sRecordName);
 
-        // Loop through all DNS Records
-        for (final Record aRecord : aRecords) {
-          final String sRecordName = aRecord.getName ().toString ();
-          _infoLog (aOS, sRecordName);
-
-          String sReferredName = null;
-          switch (aRecord.getType ()) {
-            case Type.CNAME:
-              if (!aDNSClient.isHandledZone (sRecordName)) {
-                _infoLog (aOS, "  CName entry not in zone");
-                continue;
-              }
-              sReferredName = ((CNAMERecord) aRecord).getAlias ().toString ();
-              break;
-            case Type.A:
-              if (!aDNSClient.isHandledZone (sRecordName)) {
-                _infoLog (aOS, "  A entry not in zone");
-                continue;
-              }
-              sReferredName = ((ARecord) aRecord).getAddress ().getHostAddress ();
-              if (sReferredName.endsWith (".")) {
-                sReferredName = sReferredName.substring (0, sReferredName.length () - 1);
-                _infoLog (aOS, "  REFERRED NAME [" + sReferredName + "]");
-              }
-              if (aDNSClient.getPublisherAnchorFromDnsName (sRecordName) == null) {
-                _infoLog (aOS, "  Skipping A entry");
-                continue;
-              }
-              break;
-            case Type.NS:
-              _infoLog (aOS, "  Skipping NS entry");
+        String sReferredName = null;
+        switch (aRecord.getType ()) {
+          case Type.CNAME:
+            if (!aDNSClient.isHandledZone (sRecordName)) {
+              _infoLog (aOS, "  CName entry not in zone");
               continue;
-            case Type.SOA:
-              _infoLog (aOS, "  Skipping SOA entry");
-              continue;
-            default:
-              s_aLogger.info ("  Skipping " + Type.string (aRecord.getType ()) + " entry");
-              continue;
-          }
-
-          // Check if DNS Record is ParticipantIdentifier
-          final ParticipantIdentifierType aParticipantID = aDNSClient.getIdentifierFromDnsName (sRecordName);
-          if (aParticipantID != null) {
-            // NO VERIFY BEFORE LOOKUP BY HASH
-            _verifyDNSParticipantIdentifier (aOS,
-                                             aDNSClient,
-                                             aGenericHandler,
-                                             sRecordName,
-                                             sReferredName,
-                                             aParticipantID);
-            // if(true) break;
-            continue;
-          }
-
-          // Check if DNS Record is PublisherAnchor
-          _infoLog (aOS, "Test for PublisherAnchor " + sRecordName);
-          final String sPublisherAnchorID = aDNSClient.getPublisherAnchorFromDnsName (sRecordName);
-          if (sPublisherAnchorID != null) {
-            _verifyDNSPublisherAnchor (aOS, aDNSClient, aGenericHandler, sReferredName, sPublisherAnchorID);
-            continue;
-          }
-
-          _infoLog (aOS, "");
-        }
-      }
-      catch (final Throwable e) {
-        _errorLog (aOS, "DNS Verify failed.", e);
-      }
-
-      _infoLog (aOS, "=== Verify Records in Database ===");
-      // find all smp's
-      try {
-        final List <String> aAllSMPIDs = aGenericHandler.getAllSMPIDs ();
-        _infoLog (aOS, "Find All Publisher # = " + aAllSMPIDs.size ());
-
-        // Loop through all Publishers in Database
-        for (final String sSMPID : aAllSMPIDs) {
-          _infoLog (aOS, "");
-          _infoLog (aOS, "Validate : " + sSMPID);
-          final String dnsPublisherEndpoint = aDNSClient.lookupPeppolPublisherById (sSMPID);
-          _infoLog (aOS, " - DNS Publisher endpoint : " + dnsPublisherEndpoint);
-
-          final PublisherEndpointType dbPublisherEndpointType = aGenericHandler.getSMPEndpointAddressOfSMPID (sSMPID);
-          final String dbPublisherEndpoint = dbPublisherEndpointType.getPhysicalAddress ();
-
-          _infoLog (aOS, " - DB  Publisher endpoint : " + dbPublisherEndpoint);
-          final String dbPublisherEndpointHost = _getHost (dbPublisherEndpoint);
-
-          if (dnsPublisherEndpoint == null || !dbPublisherEndpointHost.equalsIgnoreCase (dnsPublisherEndpoint)) {
-            // create new anchor!
-            _infoLog (aOS, " - Creating new Anchor : " + sSMPID + " -> " + dbPublisherEndpointHost);
-            aDNSClient.createPublisherAnchor (sSMPID, dbPublisherEndpointHost);
-          }
-
-          String nextPageIdentifier = "";
-
-          // Loop through all ParticipantIdentifiers for Publisher
-
-          do {
-            final ParticipantIdentifierPageType participantIdentifiers = aGenericHandler.listParticipantIdentifiers (nextPageIdentifier,
-                                                                                                                     sSMPID);
-            _infoLog (aOS, " - # of identifiers for id : " +
-                           sSMPID +
-                           " == " +
-                           participantIdentifiers.getParticipantIdentifier ().size ());
-            _infoLog (aOS, "");
-            for (final ParticipantIdentifierType pi : participantIdentifiers.getParticipantIdentifier ()) {
-
-              //
-              _verifyDBParticipantIdentifier (aOS, aDNSClient, sSMPID, pi);
-
             }
-            nextPageIdentifier = participantIdentifiers.getNextPageIdentifier ();
-          } while (nextPageIdentifier != null && nextPageIdentifier.length () > 0);
-
-          _infoLog (aOS, "");
-
+            sReferredName = ((CNAMERecord) aRecord).getAlias ().toString ();
+            break;
+          case Type.A:
+            if (!aDNSClient.isHandledZone (sRecordName)) {
+              _infoLog (aOS, "  A entry not in zone");
+              continue;
+            }
+            sReferredName = ((ARecord) aRecord).getAddress ().getHostAddress ();
+            if (sReferredName.endsWith (".")) {
+              sReferredName = sReferredName.substring (0, sReferredName.length () - 1);
+              _infoLog (aOS, "  REFERRED NAME [" + sReferredName + "]");
+            }
+            if (aDNSClient.getPublisherAnchorFromDnsName (sRecordName) == null) {
+              _infoLog (aOS, "  Skipping A entry");
+              continue;
+            }
+            break;
+          case Type.NS:
+            _infoLog (aOS, "  Skipping NS entry");
+            continue;
+          case Type.SOA:
+            _infoLog (aOS, "  Skipping SOA entry");
+            continue;
+          default:
+            s_aLogger.info ("  Skipping " + Type.string (aRecord.getType ()) + " entry");
+            continue;
         }
-      }
-      catch (final Throwable e) {
-        _errorLog (aOS, "Failed Verifying Database", e);
-      }
 
-      _infoLog (aOS, "Check Done");
+        // Check if DNS Record is ParticipantIdentifier
+        final ParticipantIdentifierType aParticipantID = aDNSClient.getIdentifierFromDnsName (sRecordName);
+        if (aParticipantID != null) {
+          // NO VERIFY BEFORE LOOKUP BY HASH
+          _verifyDNSParticipantIdentifier (aOS, aDNSClient, aGenericHandler, sRecordName, sReferredName, aParticipantID);
+          // if(true) break;
+          continue;
+        }
 
-      aOS.close ();
+        // Check if DNS Record is PublisherAnchor
+        _infoLog (aOS, "Test for PublisherAnchor " + sRecordName);
+        final String sPublisherAnchorID = aDNSClient.getPublisherAnchorFromDnsName (sRecordName);
+        if (sPublisherAnchorID != null) {
+          _verifyDNSPublisherAnchor (aOS, aDNSClient, aGenericHandler, sReferredName, sPublisherAnchorID);
+          continue;
+        }
+
+        _infoLog (aOS, "");
+      }
     }
-    catch (final Exception e) {
-      _errorLog (aOS, "Failed to init DNSChecker", e);
-    }
-    finally {
-      s_aVerifyRunning.set (false);
+    catch (final Throwable e) {
+      _errorLog (aOS, "DNS Verify failed.", e);
     }
   }
 
@@ -437,7 +359,7 @@ public class ServletVerifyDNS extends HttpServlet {
         final String sPublisherAnchorID = aDNSClient.getPublisherAnchorFromDnsName (sDNSHostName);
         if (sPublisherAnchorID == null) {
           // IS THIS ERROR ???
-          _infoLog (aOS, " -   Could not get PublisherAnchorId from : " +
+          _infoLog (aOS, " -   Could not get PublisherAnchorId from: " +
                          sParticipantDNSName +
                          " : " +
                          sDNSHostName +
@@ -452,7 +374,7 @@ public class ServletVerifyDNS extends HttpServlet {
             // SMP id has changed
             _infoLog (aOS, " -   PublisherAnchorID does not match SMP ID: " + sPublisherAnchorID + " != " + sSMPID);
             // create identifier!
-            _infoLog (aOS, "  - Create ParticipantIdentifier: " + sParticipantDNSName + " -> " + sSMPID);
+            _infoLog (aOS, " -   Create ParticipantIdentifier: " + sParticipantDNSName + " -> " + sSMPID);
             if (EXECUTE_CONSISTENCY_OPERATIONS)
               aDNSClient.createIdentifier (aParticipantID, sSMPID);
           }
@@ -462,21 +384,98 @@ public class ServletVerifyDNS extends HttpServlet {
     _infoLog (aOS, "");
   }
 
-  /**
-   * Utility method to get host name.
-   * 
-   * @param sEndpoint
-   * @return the host name to use
-   */
-  @Nonnull
-  private static String _getHost (@Nonnull final String sEndpoint) {
-    final String sEndpointLC = sEndpoint.toLowerCase (Locale.US);
-    if (sEndpointLC.startsWith ("http:")) {
-      final URL aEndpointUrl = URLUtils.getAsURL (sEndpointLC);
-      if (aEndpointUrl != null)
-        return aEndpointUrl.getHost ();
+  private static void _verifyDBAll (final OutputStream aOS,
+                                    final IDNSClient aDNSClient,
+                                    final IGenericDataHandler aGenericHandler) throws IOException {
+    // find all smp's
+    try {
+      final List <String> aAllSMPIDs = aGenericHandler.getAllSMPIDs ();
+      _infoLog (aOS, "Find all " + aAllSMPIDs.size () + " SMP IDs");
+
+      // Loop through all Publishers in Database
+      for (final String sSMPID : aAllSMPIDs) {
+        _infoLog (aOS, "");
+        _infoLog (aOS, "Validate: " + sSMPID);
+
+        final String sDNSPublisherEndpoint = aDNSClient.lookupPeppolPublisherById (sSMPID);
+        _infoLog (aOS, " - DNS Publisher endpoint: " + sDNSPublisherEndpoint);
+
+        final PublisherEndpointType aDBPublisherEndpoint = aGenericHandler.getSMPEndpointAddressOfSMPID (sSMPID);
+        final String sDBPhysicalAddress = aDBPublisherEndpoint.getPhysicalAddress ();
+
+        _infoLog (aOS, " - DB Publisher endpoint: " + sDBPhysicalAddress);
+        final String sDBPhyiscalHost = _getHost (sDBPhysicalAddress);
+
+        if (sDNSPublisherEndpoint == null || !sDBPhyiscalHost.equalsIgnoreCase (sDNSPublisherEndpoint)) {
+          // create new anchor!
+          _infoLog (aOS, " - Host mismatch: " + sSMPID + " -> " + sDBPhyiscalHost);
+          if (EXECUTE_CONSISTENCY_OPERATIONS)
+            aDNSClient.createPublisherAnchor (sSMPID, sDBPhyiscalHost);
+        }
+
+        // Loop through all ParticipantIdentifiers for Publisher
+        String sNextPageIdentifier = "";
+        do {
+          final ParticipantIdentifierPageType aParticipantIDPage = aGenericHandler.listParticipantIdentifiers (sNextPageIdentifier,
+                                                                                                               sSMPID);
+          _infoLog (aOS, " - # of identifiers: " + aParticipantIDPage.getParticipantIdentifierCount ());
+          for (final ParticipantIdentifierType aParticipantID : aParticipantIDPage.getParticipantIdentifier ())
+            _verifyDBParticipantIdentifier (aOS, aDNSClient, sSMPID, aParticipantID);
+
+          sNextPageIdentifier = aParticipantIDPage.getNextPageIdentifier ();
+        } while (StringHelper.hasText (sNextPageIdentifier));
+
+        _infoLog (aOS, "");
+      }
     }
-    return sEndpointLC;
+    catch (final Throwable e) {
+      _errorLog (aOS, "Failed Verifying DB content", e);
+    }
+  }
+
+  /**
+   * Verify DNS Records.
+   * 
+   * @param aOS
+   *        OutputStream to use. May not be <code>null</code>.
+   * @throws Exception
+   */
+  public static void verifyAllEntries (@Nonnull final OutputStream aOS) throws Exception {
+    if (s_aVerifyRunning.getAndSet (true)) {
+      _infoLog (aOS, "DNS Verify is already running...");
+      return;
+    }
+
+    try {
+      final IDNSClient aDNSClient = DNSClientFactory.getInstance ();
+      final IGenericDataHandler aGenericHandler = DataHandlerFactory.getGenericDataHandler ();
+
+      _infoLog (aOS, "DNSClient is: " + aDNSClient);
+      _infoLog (aOS,
+                "DNSServer is: " +
+                    aDNSClient.getServer () +
+                    " - handling DNS Zone: " +
+                    aDNSClient.getDNSZoneName () +
+                    " - SML Zone: " +
+                    aDNSClient.getSMLZoneName () +
+                    " - TTL: " +
+                    DNSClientConfiguration.getTTL () +
+                    " secs");
+      _infoLog (aOS, "Generic DataHandler is: " + aGenericHandler);
+      _verifyDNSAll (aOS, aDNSClient, aGenericHandler);
+
+      _infoLog (aOS, "=== Verify Records in Database ===");
+      _verifyDBAll (aOS, aDNSClient, aGenericHandler);
+
+      _infoLog (aOS, "Check Done");
+    }
+    catch (final Exception e) {
+      _errorLog (aOS, "Failed to init DNSChecker", e);
+    }
+    finally {
+      aOS.close ();
+      s_aVerifyRunning.set (false);
+    }
   }
 
   // ===== Test Methods
@@ -522,7 +521,7 @@ public class ServletVerifyDNS extends HttpServlet {
     final ServletOutputStream aOS = aHttpResponse.getOutputStream ();
     try {
       _infoLog (aOS, "Check DNS Records. Start time " + new Date ());
-      verifyDNS (aOS);
+      verifyAllEntries (aOS);
     }
     catch (final Exception e) {
       _errorLog (aOS, "Failed to verify DNS vs Database", e);
