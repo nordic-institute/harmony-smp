@@ -10,8 +10,8 @@
   <name>cipa-lime-client</name>
 
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/transport-lime-client</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/transport-lime-client</developerConnection>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-lime-client</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-lime-client</developerConnection>
   </scm>
 
   <repositories>

@@ -11,8 +11,8 @@
   <name>cipa-visualization</name>
   
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/visualization</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/visualization</developerConnection>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-visualization</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-visualization</developerConnection>
   </scm>
 
   <repositories>

@@ -11,8 +11,8 @@
   <name>cipa-lime-server</name>
 
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/transport-lime-server</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/transport-lime-server</developerConnection>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-lime-server</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-lime-server</developerConnection>
   </scm>
 
   <repositories>
