@@ -37,7 +37,6 @@
  */
 package eu.europa.ec.cipa.sml.server;
 
-import eu.europa.ec.cipa.sml.server.exceptions.InternalErrorException;
 import eu.europa.ec.cipa.sml.server.exceptions.UnknownUserException;
 
 /**
@@ -52,5 +51,5 @@ public interface IRequestAuthenticationHandler {
    * @throws UnknownUserException
    *         In case the user is unknown
    */
-  void verifyExistingUser (String sClientUniqueID) throws UnknownUserException,InternalErrorException;
+  void verifyExistingUser (String sClientUniqueID) throws UnknownUserException;
 }

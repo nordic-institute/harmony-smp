@@ -37,6 +37,7 @@
  */
 package eu.europa.ec.cipa.sml.server.management.sm;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
@@ -57,14 +58,12 @@ import org.slf4j.LoggerFactory;
 import eu.europa.ec.cipa.sml.server.IRequestAuthenticationHandler;
 import eu.europa.ec.cipa.sml.server.ISMPDataHandler;
 import eu.europa.ec.cipa.sml.server.exceptions.BadRequestException;
-import eu.europa.ec.cipa.sml.server.exceptions.InternalErrorException;
 import eu.europa.ec.cipa.sml.server.exceptions.NotFoundException;
 import eu.europa.ec.cipa.sml.server.exceptions.UnauthorizedException;
 import eu.europa.ec.cipa.sml.server.exceptions.UnknownUserException;
 import eu.europa.ec.cipa.sml.server.management.DataHandlerFactory;
 import eu.europa.ec.cipa.sml.server.management.DataValidator;
 import eu.europa.ec.cipa.sml.server.web.WebRequestClientIdentifier;
-
 
 /**
  * An implementation of the Manage Service Metadata web service.
@@ -95,6 +94,36 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
     m_aReqAuthHdl = DataHandlerFactory.getGenericDataHandler ();
   }
 
+  private void _handleException (@Nonnull final Throwable e) throws NotFoundFault,
+                                                            UnauthorizedFault,
+                                                            BadRequestFault,
+                                                            InternalErrorFault {
+    if (e instanceof NotFoundException) {
+      final FaultType faultInfo = m_aObjFactory.createFaultType ();
+      faultInfo.setFaultMessage (e.getMessage ());
+      throw new NotFoundFault (e.getMessage (), faultInfo, e);
+    }
+    if (e instanceof UnauthorizedException) {
+      final FaultType faultInfo = m_aObjFactory.createFaultType ();
+      faultInfo.setFaultMessage (e.getMessage ());
+      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
+    }
+    if (e instanceof UnknownUserException) {
+      final FaultType faultInfo = m_aObjFactory.createFaultType ();
+      faultInfo.setFaultMessage (e.getMessage ());
+      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
+    }
+    if (e instanceof BadRequestException) {
+      final FaultType faultInfo = m_aObjFactory.createFaultType ();
+      faultInfo.setFaultMessage (e.getMessage ());
+      throw new BadRequestFault (e.getMessage (), faultInfo, e);
+    }
+    // All others as internal errors
+    final FaultType faultInfo = m_aObjFactory.createFaultType ();
+    faultInfo.setFaultMessage (e.getMessage ());
+    throw new InternalErrorFault (e.getMessage (), faultInfo, e);
+  }
+
   public void create (final ServiceMetadataPublisherServiceType aSMPData) throws BadRequestFault,
                                                                          InternalErrorFault,
                                                                          UnauthorizedFault {
@@ -115,31 +144,17 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
       log.info ("Created SMP " +
                 aSMPData.getServiceMetadataPublisherID () +
                 " with URLs " +
-                aSMPData.getPublisherEndpoint ().getPhysicalAddress () + 
+                aSMPData.getPublisherEndpoint ().getPhysicalAddress () +
                 "/" +
                 aSMPData.getPublisherEndpoint ().getLogicalAddress ());
     }
-    catch (final BadRequestException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new BadRequestFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnauthorizedException e) {
-      log.warn ("Unauthorized request on create", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnknownUserException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final InternalErrorException e) {
-      log.error ("Internal error on create", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new InternalErrorFault (e.getMessage (), faultInfo, e);
+    catch (final Throwable t) {
+      try {
+        _handleException (t);
+      }
+      catch (final NotFoundFault ex) {
+        // never happens
+      }
     }
   }
 
@@ -164,32 +179,11 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
       log.info ("Read SMP data of " + messagePart.getServiceMetadataPublisherID ());
       return ret;
     }
-    catch (final BadRequestException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new BadRequestFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final NotFoundException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new NotFoundFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnauthorizedException e) {
-      log.warn ("Unauthorized request on read", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnknownUserException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final InternalErrorException e) {
-      log.error ("Internal error on read", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new InternalErrorFault (e.getMessage (), faultInfo, e);
+    catch (final Throwable t) {
+      _handleException (t);
+      // Never reached
+      assert false;
+      return null;
     }
   }
 
@@ -218,32 +212,8 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
                 "/" +
                 aSMPData.getPublisherEndpoint ().getLogicalAddress ());
     }
-    catch (final NotFoundException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new NotFoundFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnauthorizedException e) {
-      log.warn ("Unauthorized request on update", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnknownUserException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final InternalErrorException e) {
-      log.error ("Internal error on update", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new InternalErrorFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final BadRequestException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new BadRequestFault (e.getMessage (), faultInfo, e);
+    catch (final Throwable t) {
+      _handleException (t);
     }
   }
 
@@ -264,32 +234,8 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
 
       log.info ("Deleted SMP " + sSMPID);
     }
-    catch (final BadRequestException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new BadRequestFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final NotFoundException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new NotFoundFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnauthorizedException e) {
-      log.warn ("Unauthorized request on delete", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnknownUserException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final InternalErrorException e) {
-      log.error ("Internal error on delete", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new InternalErrorFault (e.getMessage (), faultInfo, e);
+    catch (final Throwable t) {
+      _handleException (t);
     }
   }
 }

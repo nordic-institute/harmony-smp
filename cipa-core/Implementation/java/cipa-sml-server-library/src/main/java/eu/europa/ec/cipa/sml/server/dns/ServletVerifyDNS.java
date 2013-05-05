@@ -70,7 +70,6 @@ import eu.europa.ec.cipa.sml.server.exceptions.InternalErrorException;
 import eu.europa.ec.cipa.sml.server.exceptions.NotFoundException;
 import eu.europa.ec.cipa.sml.server.management.DataHandlerFactory;
 
-
 /**
  * Utility servlet that verifies consistency between registration in DNS and
  * Locator Database. First loops through DNS - and verifies against DB. Then
@@ -138,7 +137,7 @@ public class ServletVerifyDNS extends HttpServlet {
    * @param e
    * @throws Exception
    */
-  private static void _writeLog (final OutputStream os, final Exception e) throws Exception {
+  private static void _writeLog (final OutputStream os, final Throwable e) throws Exception {
     // Write exception + stacktrace to print writer
     final StringWriter aSW = new StringWriter ();
     final PrintWriter pw = new PrintWriter (aSW);
@@ -274,7 +273,7 @@ public class ServletVerifyDNS extends HttpServlet {
 
         }
       }
-      catch (final Exception e) {
+      catch (final Throwable e) {
         log.info ("DNS Verify failed.", e);
         _writeLog (os, "DNS Verify failed.");
         _writeLog (os, e);
@@ -331,7 +330,7 @@ public class ServletVerifyDNS extends HttpServlet {
 
         }
       }
-      catch (final Exception e) {
+      catch (final Throwable e) {
         log.error ("Failed Verifying Dabtabase : " + e, e);
         _writeLog (os, "Failed Verifying Dabtabase : " + e);
         _writeLog (os, e);
@@ -438,9 +437,7 @@ public class ServletVerifyDNS extends HttpServlet {
                                                  final IDNSClient aDNSClient,
                                                  final IGenericDataHandler aGenericHandler,
                                                  final String referedName,
-                                                 final String dnsAnchorId) throws Exception,
-                                                                          InternalErrorException,
-                                                                          IOException {
+                                                 final String dnsAnchorId) throws Throwable {
     log.info (" - This is Anchor : " + dnsAnchorId);
     _writeLog (aOS, " - Is Anchor : " + dnsAnchorId);
 
@@ -562,7 +559,7 @@ public class ServletVerifyDNS extends HttpServlet {
       log.info (" - Deleted");
       _writeLog (os, " deleted");
     }
-    catch (final Exception e) {
+    catch (final Throwable e) {
       log.error ("Error verifying DNS Record : ", e);
       _writeLog (os, "Error verifying DNS Record : " + e);
       _writeLog (os, e);

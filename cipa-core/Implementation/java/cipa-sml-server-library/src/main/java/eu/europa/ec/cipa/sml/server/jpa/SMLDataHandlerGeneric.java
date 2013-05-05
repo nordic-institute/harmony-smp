@@ -37,24 +37,22 @@
  */
 package eu.europa.ec.cipa.sml.server.jpa;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.NoResultException;
 
 import org.busdox.servicemetadata.locator._1.ObjectFactory;
 import org.busdox.servicemetadata.locator._1.ParticipantIdentifierPageType;
 import org.busdox.servicemetadata.locator._1.PublisherEndpointType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.phloc.commons.annotations.UsedViaReflection;
 import com.phloc.db.jpa.IEntityManagerProvider;
 import com.phloc.db.jpa.JPAEnabledManager;
+import com.phloc.db.jpa.JPAExecutionResult;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
 import eu.europa.ec.cipa.sml.server.IGenericDataHandler;
@@ -62,9 +60,7 @@ import eu.europa.ec.cipa.sml.server.datamodel.DBParticipantIdentifier;
 import eu.europa.ec.cipa.sml.server.datamodel.DBParticipantIdentifierID;
 import eu.europa.ec.cipa.sml.server.datamodel.DBServiceMetadataPublisher;
 import eu.europa.ec.cipa.sml.server.datamodel.DBUser;
-import eu.europa.ec.cipa.sml.server.exceptions.InternalErrorException;
 import eu.europa.ec.cipa.sml.server.exceptions.NotFoundException;
-import eu.europa.ec.cipa.sml.server.exceptions.UnauthorizedException;
 import eu.europa.ec.cipa.sml.server.exceptions.UnknownUserException;
 
 /**
@@ -74,8 +70,6 @@ import eu.europa.ec.cipa.sml.server.exceptions.UnknownUserException;
  */
 @UsedViaReflection
 public final class SMLDataHandlerGeneric extends JPAEnabledManager implements IGenericDataHandler {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (SMLDataHandlerGeneric.class);
-
   private final ObjectFactory m_aObjFactory = new ObjectFactory ();
 
   public SMLDataHandlerGeneric () {
@@ -89,138 +83,104 @@ public final class SMLDataHandlerGeneric extends JPAEnabledManager implements IG
     });
   }
 
-  /*
-   * ==== Helper methods for getting information without having a username.
-   * These methods must not be called directly by the service interface.
-   */
+  @Nonnull
+  public ServiceMetadataPublisherServiceType getSMPDataOfParticipant (@Nonnull final IReadonlyParticipantIdentifier aRecipientIdentifier) throws Throwable {
+    JPAExecutionResult <ServiceMetadataPublisherServiceType> ret;
+    ret = doInTransaction (new Callable <ServiceMetadataPublisherServiceType> () {
+      @Nonnull
+      public ServiceMetadataPublisherServiceType call () throws Exception {
+        // Find identifier in DB
+        final DBParticipantIdentifier aDBIdentifier = getEntityManager ().find (DBParticipantIdentifier.class,
+                                                                                new DBParticipantIdentifierID (aRecipientIdentifier));
+        if (aDBIdentifier == null)
+          throw new NotFoundException ("The given identifier was not found.");
 
-  public ServiceMetadataPublisherServiceType getSMPDataOfParticipant (final IReadonlyParticipantIdentifier aRecipientIdentifier) throws NotFoundException,
-                                                                                                                                InternalErrorException {
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    aTransaction.begin ();
-    try {
-      // Find identifier in DB
-      final DBParticipantIdentifier aDBIdentifier = getEntityManager ().find (DBParticipantIdentifier.class,
-                                                                              new DBParticipantIdentifierID (aRecipientIdentifier));
-      if (aDBIdentifier == null)
-        throw new NotFoundException ("The given identifier was not found.");
+        final DBServiceMetadataPublisher aPublisher = aDBIdentifier.getServiceMetadataPublisher ();
 
-      final DBServiceMetadataPublisher aPublisher = aDBIdentifier.getServiceMetadataPublisher ();
-
-      // Build result object
-      final ServiceMetadataPublisherServiceType aJAXBSMPData = m_aObjFactory.createServiceMetadataPublisherServiceType ();
-      aJAXBSMPData.setServiceMetadataPublisherID (aPublisher.getSmpId ());
-      final PublisherEndpointType aJAXBEndpoint = m_aObjFactory.createPublisherEndpointType ();
-      aJAXBEndpoint.setLogicalAddress (aPublisher.getLogicalAddress ());
-      aJAXBEndpoint.setPhysicalAddress (aPublisher.getPhysicalAddress ());
-      aJAXBSMPData.setPublisherEndpoint (aJAXBEndpoint);
-
-      aTransaction.commit ();
-      return aJAXBSMPData;
-    }
-    catch (final RuntimeException ex) {
-      s_aLogger.error ("error readServiceMetadata " + aRecipientIdentifier, ex);
-      throw new InternalErrorException (ex);
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction!");
+        // Build result object
+        final ServiceMetadataPublisherServiceType aJAXBSMPData = m_aObjFactory.createServiceMetadataPublisherServiceType ();
+        aJAXBSMPData.setServiceMetadataPublisherID (aPublisher.getSmpId ());
+        final PublisherEndpointType aJAXBEndpoint = m_aObjFactory.createPublisherEndpointType ();
+        aJAXBEndpoint.setLogicalAddress (aPublisher.getLogicalAddress ());
+        aJAXBEndpoint.setPhysicalAddress (aPublisher.getPhysicalAddress ());
+        aJAXBSMPData.setPublisherEndpoint (aJAXBEndpoint);
+        return aJAXBSMPData;
       }
-    }
+    });
+    if (ret.hasThrowable ())
+      throw ret.getThrowable ();
+    return ret.get ();
   }
 
-  public List <String> getAllSMPIDs () throws InternalErrorException {
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    aTransaction.begin ();
-    try {
-      final List <String> ret = getEntityManager ().createQuery ("SELECT p.smpId FROM DBServiceMetadataPublisher p",
-                                                                 String.class).getResultList ();
-      aTransaction.commit ();
-      return ret;
-    }
-    catch (final NoResultException ex) {
-      return Collections.<String> emptyList ();
-    }
-    catch (final RuntimeException ex) {
-      s_aLogger.error ("exception", ex);
-      throw new InternalErrorException (ex);
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction!");
+  @Nonnull
+  public List <String> getAllSMPIDs () throws Throwable {
+    JPAExecutionResult <List <String>> ret;
+    ret = doSelect (new Callable <List <String>> () {
+      @Nonnull
+      public List <String> call () throws Exception {
+        return getEntityManager ().createQuery ("SELECT p.smpId FROM DBServiceMetadataPublisher p", String.class)
+                                  .getResultList ();
       }
-    }
+    });
+    if (ret.hasThrowable ())
+      throw ret.getThrowable ();
+    return ret.get ();
   }
 
-  public PublisherEndpointType getSMPEndpointAddressOfSMPID (final String sSMPID) throws InternalErrorException,
-                                                                                 NotFoundException {
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    aTransaction.begin ();
-    try {
-      final DBServiceMetadataPublisher aPublisher = getEntityManager ().find (DBServiceMetadataPublisher.class, sSMPID);
-      if (aPublisher == null)
-        throw new NotFoundException ("The smp was not found: '" + sSMPID + "'");
+  @Nonnull
+  public PublisherEndpointType getSMPEndpointAddressOfSMPID (final String sSMPID) throws Throwable {
+    JPAExecutionResult <PublisherEndpointType> ret;
+    ret = doInTransaction (new Callable <PublisherEndpointType> () {
+      @Nonnull
+      public PublisherEndpointType call () throws Exception {
+        final DBServiceMetadataPublisher aPublisher = getEntityManager ().find (DBServiceMetadataPublisher.class,
+                                                                                sSMPID);
+        if (aPublisher == null)
+          throw new NotFoundException ("The smp was not found: '" + sSMPID + "'");
 
-      final PublisherEndpointType aJAXBEndpoint = m_aObjFactory.createPublisherEndpointType ();
-      aJAXBEndpoint.setLogicalAddress (aPublisher.getLogicalAddress ());
-      aJAXBEndpoint.setPhysicalAddress (aPublisher.getPhysicalAddress ());
-      aTransaction.commit ();
-      return aJAXBEndpoint;
-    }
-    catch (final RuntimeException ex) {
-      s_aLogger.error ("exception", ex);
-      throw new InternalErrorException (ex);
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction!");
+        final PublisherEndpointType aJAXBEndpoint = m_aObjFactory.createPublisherEndpointType ();
+        aJAXBEndpoint.setLogicalAddress (aPublisher.getLogicalAddress ());
+        aJAXBEndpoint.setPhysicalAddress (aPublisher.getPhysicalAddress ());
+        return aJAXBEndpoint;
       }
-    }
+    });
+    if (ret.hasThrowable ())
+      throw ret.getThrowable ();
+    return ret.get ();
   }
 
-  public ParticipantIdentifierPageType listParticipantIdentifiers (final String sPageID, final String sSMPID) throws NotFoundException,
-                                                                                                             UnauthorizedException,
-                                                                                                             UnknownUserException,
-                                                                                                             InternalErrorException {
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    aTransaction.begin ();
-    try {
-      // Check that the smp exists.
-      final DBServiceMetadataPublisher aPublisher = getEntityManager ().find (DBServiceMetadataPublisher.class, sSMPID);
-      if (aPublisher == null)
-        throw new NotFoundException ("The given service metadata publisher does not exist.");
+  @Nonnull
+  public ParticipantIdentifierPageType listParticipantIdentifiers (final String sPageID, final String sSMPID) throws Throwable {
+    JPAExecutionResult <ParticipantIdentifierPageType> ret;
+    ret = doInTransaction (new Callable <ParticipantIdentifierPageType> () {
+      @Nonnull
+      public ParticipantIdentifierPageType call () throws Exception {
+        // Check that the smp exists.
+        final DBServiceMetadataPublisher aPublisher = getEntityManager ().find (DBServiceMetadataPublisher.class,
+                                                                                sSMPID);
+        if (aPublisher == null)
+          throw new NotFoundException ("The given service metadata publisher does not exist.");
 
-      final ParticipantIdentifierPageType aJAXBPage = m_aObjFactory.createParticipantIdentifierPageType ();
-      for (final DBParticipantIdentifier aDBIdentifier : aPublisher.getRecipientParticipantIdentifiers ())
-        aJAXBPage.getParticipantIdentifier ().add (aDBIdentifier.getId ().asParticipantIdentifier ());
-      aJAXBPage.setServiceMetadataPublisherID (sSMPID);
+        final ParticipantIdentifierPageType aJAXBPage = m_aObjFactory.createParticipantIdentifierPageType ();
+        for (final DBParticipantIdentifier aDBIdentifier : aPublisher.getRecipientParticipantIdentifiers ())
+          aJAXBPage.getParticipantIdentifier ().add (aDBIdentifier.getId ().asParticipantIdentifier ());
+        aJAXBPage.setServiceMetadataPublisherID (sSMPID);
 
-      aTransaction.commit ();
-      return aJAXBPage;
-    }
-    catch (final RuntimeException ex) {
-      s_aLogger.error ("exception", ex);
-      throw new InternalErrorException (ex);
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction!");
+        return aJAXBPage;
       }
-    }
+    });
+    if (ret.hasThrowable ())
+      throw ret.getThrowable ();
+    return ret.get ();
   }
 
-  public void verifyExistingUser (final String sClientUniqueID) throws UnknownUserException, InternalErrorException {
-    DBUser aDBUser = null;
-    try {
-      aDBUser = getEntityManager ().find (DBUser.class, sClientUniqueID);
-    }
-    catch (final Exception e) {
-      throw new InternalErrorException (e);
-    }
+  public void verifyExistingUser (final String sClientUniqueID) throws UnknownUserException {
+    final DBUser aDBUser = doSelect (new Callable <DBUser> () {
+      @Nullable
+      public DBUser call () throws Exception {
+        return getEntityManager ().find (DBUser.class, sClientUniqueID);
+      }
+    }).get ();
     if (aDBUser == null)
       throw new UnknownUserException ();
   }

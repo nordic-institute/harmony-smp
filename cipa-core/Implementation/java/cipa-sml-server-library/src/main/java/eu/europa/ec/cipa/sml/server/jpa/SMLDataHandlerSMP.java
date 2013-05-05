@@ -64,7 +64,6 @@ import eu.europa.ec.cipa.sml.server.exceptions.BadRequestException;
 import eu.europa.ec.cipa.sml.server.exceptions.InternalErrorException;
 import eu.europa.ec.cipa.sml.server.exceptions.NotFoundException;
 import eu.europa.ec.cipa.sml.server.exceptions.UnauthorizedException;
-import eu.europa.ec.cipa.sml.server.exceptions.UnknownUserException;
 
 /**
  * A JPA implementation of the {@link ISMPDataHandler} interface.
@@ -97,10 +96,7 @@ public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDa
    * These methods must not be called directly by the service interface.
    */
 
-  public void createSMPData (final ServiceMetadataPublisherServiceType aSMPData, final String sClientUniqueID) throws UnauthorizedException,
-                                                                                                              UnknownUserException,
-                                                                                                              InternalErrorException,
-                                                                                                              BadRequestException {
+  public void createSMPData (final ServiceMetadataPublisherServiceType aSMPData, final String sClientUniqueID) throws Throwable {
     final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
     aTransaction.begin ();
     try {
@@ -145,10 +141,7 @@ public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDa
     }
   }
 
-  public ServiceMetadataPublisherServiceType getSMPData (final String sSMPID, final String sClientUniqueID) throws NotFoundException,
-                                                                                                           UnauthorizedException,
-                                                                                                           UnknownUserException,
-                                                                                                           InternalErrorException {
+  public ServiceMetadataPublisherServiceType getSMPData (final String sSMPID, final String sClientUniqueID) throws Throwable {
     try {
       // Then make sure that the smp exist.
       final DBServiceMetadataPublisher aSMP = getEntityManager ().find (DBServiceMetadataPublisher.class, sSMPID);
@@ -175,11 +168,7 @@ public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDa
     }
   }
 
-  public void updateSMPData (final ServiceMetadataPublisherServiceType aSMPData, final String sClientUniqueID) throws NotFoundException,
-                                                                                                              UnauthorizedException,
-                                                                                                              UnknownUserException,
-                                                                                                              InternalErrorException,
-                                                                                                              BadRequestException {
+  public void updateSMPData (final ServiceMetadataPublisherServiceType aSMPData, final String sClientUniqueID) throws Throwable {
     final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
     try {
       // Then make sure that the smp exist.
@@ -217,11 +206,7 @@ public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDa
     }
   }
 
-  public void deleteSMPData (final String sSMPID, final String sClientUniqueID) throws NotFoundException,
-                                                                               UnauthorizedException,
-                                                                               UnknownUserException,
-                                                                               InternalErrorException,
-                                                                               BadRequestException {
+  public void deleteSMPData (final String sSMPID, final String sClientUniqueID) throws Throwable {
     final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
     try {
       // Then make sure that the smp exist.

@@ -67,7 +67,6 @@ import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.sml.server.IGenericDataHandler;
 import eu.europa.ec.cipa.sml.server.IParticipantDataHandler;
 import eu.europa.ec.cipa.sml.server.exceptions.BadRequestException;
-import eu.europa.ec.cipa.sml.server.exceptions.InternalErrorException;
 import eu.europa.ec.cipa.sml.server.exceptions.NotFoundException;
 import eu.europa.ec.cipa.sml.server.exceptions.UnauthorizedException;
 import eu.europa.ec.cipa.sml.server.exceptions.UnknownUserException;
@@ -103,10 +102,40 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
     m_aReqAuthHdl = DataHandlerFactory.getGenericDataHandler ();
   }
 
-  public void createList (final ParticipantIdentifierPageType createListIn) throws BadRequestFault,
-                                                                           InternalErrorFault,
-                                                                           NotFoundFault,
-                                                                           UnauthorizedFault {
+  private void _handleException (@Nonnull final Throwable e) throws NotFoundFault,
+                                                            UnauthorizedFault,
+                                                            BadRequestFault,
+                                                            InternalErrorFault {
+    if (e instanceof NotFoundException) {
+      final FaultType faultInfo = m_aObjFactory.createFaultType ();
+      faultInfo.setFaultMessage (e.getMessage ());
+      throw new NotFoundFault (e.getMessage (), faultInfo, e);
+    }
+    if (e instanceof UnauthorizedException) {
+      final FaultType faultInfo = m_aObjFactory.createFaultType ();
+      faultInfo.setFaultMessage (e.getMessage ());
+      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
+    }
+    if (e instanceof UnknownUserException) {
+      final FaultType faultInfo = m_aObjFactory.createFaultType ();
+      faultInfo.setFaultMessage (e.getMessage ());
+      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
+    }
+    if (e instanceof BadRequestException) {
+      final FaultType faultInfo = m_aObjFactory.createFaultType ();
+      faultInfo.setFaultMessage (e.getMessage ());
+      throw new BadRequestFault (e.getMessage (), faultInfo, e);
+    }
+    // All others as internal errors
+    final FaultType faultInfo = m_aObjFactory.createFaultType ();
+    faultInfo.setFaultMessage (e.getMessage ());
+    throw new InternalErrorFault (e.getMessage (), faultInfo, e);
+  }
+
+  public void createList (final ParticipantIdentifierPageType createListIn) throws NotFoundFault,
+                                                                           UnauthorizedFault,
+                                                                           BadRequestFault,
+                                                                           InternalErrorFault {
     try {
       // Validate input
       DataValidator.validate (createListIn);
@@ -123,34 +152,8 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
                 " participants in " +
                 createListIn.getServiceMetadataPublisherID ());
     }
-    catch (final NotFoundException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new NotFoundFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnauthorizedException e) {
-      log.warn ("Unauthorized request on create", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-
-      faultInfo.setFaultMessage (e.getMessage ());
-
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnknownUserException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final InternalErrorException e) {
-      log.error ("Internal error on create", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new InternalErrorFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final BadRequestException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new BadRequestFault (e.getMessage (), faultInfo, e);
+    catch (final Throwable t) {
+      _handleException (t);
     }
   }
 
@@ -178,32 +181,8 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
                 " participants of " +
                 deleteListIn.getServiceMetadataPublisherID ());
     }
-    catch (final UnauthorizedException e) {
-      log.warn ("Unauthorized request on delete", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnknownUserException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final InternalErrorException e) {
-      log.error ("Internal error on delete", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new InternalErrorFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final BadRequestException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new BadRequestFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final NotFoundException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new NotFoundFault (e.getMessage (), faultInfo, e);
+    catch (final Throwable t) {
+      _handleException (t);
     }
   }
 
@@ -227,32 +206,8 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
                 " to " +
                 aMigrationRecord.getServiceMetadataPublisherID ());
     }
-    catch (final NotFoundException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new NotFoundFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnauthorizedException e) {
-      log.warn ("Unauthorized request on migrate", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnknownUserException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final InternalErrorException e) {
-      log.error ("Internal error on migrate", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new InternalErrorFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final BadRequestException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new BadRequestFault (e.getMessage (), faultInfo, e);
+    catch (final Throwable t) {
+      _handleException (t);
     }
   }
 
@@ -277,32 +232,8 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
                 " from " +
                 aMigrationRecord.getServiceMetadataPublisherID ());
     }
-    catch (final NotFoundException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new NotFoundFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnauthorizedException e) {
-      log.warn ("Unauthorized request on prepareToMigrate", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnknownUserException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final InternalErrorException e) {
-      log.error ("Internal error on prepareToMigrate", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new InternalErrorFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final BadRequestException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new BadRequestFault (e.getMessage (), faultInfo, e);
+    catch (final Throwable t) {
+      _handleException (t);
     }
   }
 
@@ -336,33 +267,8 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
                 " to " +
                 aParticipantToSMP.getServiceMetadataPublisherID ());
     }
-    catch (final NotFoundException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-
-      throw new NotFoundFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnauthorizedException e) {
-      log.warn ("Unauthorized request on create", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnknownUserException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final InternalErrorException e) {
-      log.error ("Internal error on create", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new InternalErrorFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final BadRequestException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new BadRequestFault (e.getMessage (), faultInfo, e);
+    catch (final Throwable t) {
+      _handleException (t);
     }
   }
 
@@ -390,32 +296,8 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
 
       log.info ("Deleted participant " + IdentifierUtils.getIdentifierURIEncoded (aParticipantIdentifier));
     }
-    catch (final UnauthorizedException e) {
-      log.warn ("Unauthorized request on delete", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnknownUserException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final InternalErrorException e) {
-      log.error ("Internal error on delete", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new InternalErrorFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final BadRequestException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new BadRequestFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final NotFoundException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new NotFoundFault (e.getMessage (), faultInfo, e);
+    catch (final Throwable t) {
+      _handleException (t);
     }
   }
 
@@ -440,32 +322,11 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
                 messagePart.getServiceMetadataPublisherID ());
       return ret;
     }
-    catch (final NotFoundException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new NotFoundFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnauthorizedException e) {
-      log.warn ("Unauthorized request on list", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final UnknownUserException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final InternalErrorException e) {
-      log.error ("Internal error on list", e);
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new InternalErrorFault (e.getMessage (), faultInfo, e);
-    }
-    catch (final BadRequestException e) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new BadRequestFault (e.getMessage (), faultInfo, e);
+    catch (final Throwable t) {
+      _handleException (t);
+      // Never reached!
+      assert false;
+      return null;
     }
   }
 }

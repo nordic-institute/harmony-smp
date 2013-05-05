@@ -45,6 +45,7 @@ import javax.persistence.Embeddable;
 import com.phloc.commons.annotations.DevelopersNote;
 import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.hash.HashCodeGenerator;
+import com.phloc.commons.string.ToStringGenerator;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 
@@ -98,5 +99,10 @@ public class DBAllowedWildcardSchemesID implements Serializable {
   @Override
   public int hashCode () {
     return new HashCodeGenerator (this).append (m_sScheme).append (m_sUsername).getHashCode ();
+  }
+
+  @Override
+  public String toString () {
+    return new ToStringGenerator (this).append ("scheme", m_sScheme).append ("username", m_sUsername).toString ();
   }
 }

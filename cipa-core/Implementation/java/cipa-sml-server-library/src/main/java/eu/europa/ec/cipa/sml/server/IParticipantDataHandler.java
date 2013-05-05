@@ -44,13 +44,6 @@ import org.busdox.servicemetadata.locator._1.PageRequestType;
 import org.busdox.servicemetadata.locator._1.ParticipantIdentifierPageType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 
-import eu.europa.ec.cipa.sml.server.exceptions.BadRequestException;
-import eu.europa.ec.cipa.sml.server.exceptions.InternalErrorException;
-import eu.europa.ec.cipa.sml.server.exceptions.NotFoundException;
-import eu.europa.ec.cipa.sml.server.exceptions.UnauthorizedException;
-import eu.europa.ec.cipa.sml.server.exceptions.UnknownUserException;
-
-
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
@@ -61,31 +54,13 @@ public interface IParticipantDataHandler {
    */
   void setCallback (IParticipantDataHandlerCallback aCallback);
 
-  void createParticipantIdentifiers (ParticipantIdentifierPageType participantIdentifierPage, String sClientUniqueID) throws NotFoundException,
-                                                                                                                     UnauthorizedException,
-                                                                                                                     UnknownUserException,
-                                                                                                                     InternalErrorException,
-                                                                                                                     BadRequestException;
+  void createParticipantIdentifiers (ParticipantIdentifierPageType participantIdentifierPage, String sClientUniqueID) throws Throwable;
 
-  void deleteParticipantIdentifiers (List <ParticipantIdentifierType> participantIdentifiers, String sClientUniqueID) throws UnauthorizedException,
-                                                                                                                     UnknownUserException,
-                                                                                                                     InternalErrorException,
-                                                                                                                     NotFoundException,
-                                                                                                                     BadRequestException;
+  void deleteParticipantIdentifiers (List <ParticipantIdentifierType> participantIdentifiers, String sClientUniqueID) throws Throwable;
 
-  ParticipantIdentifierPageType listParticipantIdentifiers (PageRequestType request, String sClientUniqueID) throws NotFoundException,
-                                                                                                            UnauthorizedException,
-                                                                                                            UnknownUserException,
-                                                                                                            InternalErrorException;
+  ParticipantIdentifierPageType listParticipantIdentifiers (PageRequestType request, String sClientUniqueID) throws Throwable;
 
-  void prepareToMigrate (MigrationRecordType migrationRecord, String sClientUniqueID) throws NotFoundException,
-                                                                                     UnauthorizedException,
-                                                                                     UnknownUserException,
-                                                                                     InternalErrorException;
+  void prepareToMigrate (MigrationRecordType migrationRecord, String sClientUniqueID) throws Throwable;
 
-  void migrate (MigrationRecordType migrationRecord, String sClientUniqueID) throws NotFoundException,
-                                                                            UnauthorizedException,
-                                                                            UnknownUserException,
-                                                                            InternalErrorException,
-                                                                            BadRequestException;
+  void migrate (MigrationRecordType migrationRecord, String sClientUniqueID) throws Throwable;
 }

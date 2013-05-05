@@ -39,15 +39,13 @@ package eu.europa.ec.cipa.sml.server;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
+
 import org.busdox.servicemetadata.locator._1.ParticipantIdentifierPageType;
 import org.busdox.servicemetadata.locator._1.PublisherEndpointType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
-import eu.europa.ec.cipa.sml.server.exceptions.InternalErrorException;
-import eu.europa.ec.cipa.sml.server.exceptions.NotFoundException;
-import eu.europa.ec.cipa.sml.server.exceptions.UnauthorizedException;
-import eu.europa.ec.cipa.sml.server.exceptions.UnknownUserException;
 
 /**
  * This interface is used by the web service to access the underlying data.
@@ -55,18 +53,15 @@ import eu.europa.ec.cipa.sml.server.exceptions.UnknownUserException;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public interface IGenericDataHandler extends IRequestAuthenticationHandler {
-  ServiceMetadataPublisherServiceType getSMPDataOfParticipant (IReadonlyParticipantIdentifier recipientBusinessIdentifier) throws NotFoundException,
-                                                                                                                          InternalErrorException;
+  @Nonnull
+  ServiceMetadataPublisherServiceType getSMPDataOfParticipant (@Nonnull IReadonlyParticipantIdentifier aRecipientIdentifier) throws Throwable;
 
-  /*
-   * Utility methods used by the DNS scheme
-   */
-  PublisherEndpointType getSMPEndpointAddressOfSMPID (String sSMPID) throws InternalErrorException, NotFoundException;
+  @Nonnull
+  List <String> getAllSMPIDs () throws Throwable;
 
-  List <String> getAllSMPIDs () throws InternalErrorException;
+  @Nonnull
+  PublisherEndpointType getSMPEndpointAddressOfSMPID (String sSMPID) throws Throwable;
 
-  ParticipantIdentifierPageType listParticipantIdentifiers (String pageId, String sSMPID) throws NotFoundException,
-                                                                                         UnauthorizedException,
-                                                                                         UnknownUserException,
-                                                                                         InternalErrorException;
+  @Nonnull
+  ParticipantIdentifierPageType listParticipantIdentifiers (String pageId, String sSMPID) throws Throwable;
 }

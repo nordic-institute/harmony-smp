@@ -70,7 +70,6 @@ import eu.europa.ec.cipa.sml.server.exceptions.BadRequestException;
 import eu.europa.ec.cipa.sml.server.exceptions.InternalErrorException;
 import eu.europa.ec.cipa.sml.server.exceptions.NotFoundException;
 import eu.europa.ec.cipa.sml.server.exceptions.UnauthorizedException;
-import eu.europa.ec.cipa.sml.server.exceptions.UnknownUserException;
 
 /**
  * A JPA of the {@link IParticipantDataHandler} interface.<br>
@@ -99,50 +98,9 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager implement
     m_aCallback = aCallback;
   }
 
-  public void createParticipantIdentifiers (@Nonnull final ParticipantIdentifierPageType aJAXBPage,
-                                            final String sClientUniqueID) throws NotFoundException,
-                                                                         UnauthorizedException,
-                                                                         UnknownUserException,
-                                                                         InternalErrorException,
-                                                                         BadRequestException {
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    aTransaction.begin ();
-    try {
-      final String sSMPID = aJAXBPage.getServiceMetadataPublisherID ();
-
-      // Check that the user owns the smp
-      final DBServiceMetadataPublisher aSMP = getEntityManager ().find (DBServiceMetadataPublisher.class, sSMPID);
-      if (aSMP == null)
-        throw new NotFoundException ("The service metadata publisher does not exist. ID: " + sSMPID);
-
-      if (!aSMP.getUser ().getUsername ().equals (sClientUniqueID))
-        throw new UnauthorizedException ("The user does not own the publisher.");
-
-      // iterate participant identifiers
-      for (final IReadonlyParticipantIdentifier aParticipantIdentifier : aJAXBPage.getParticipantIdentifier ())
-        _internalCreateParticipantIdentifier (aParticipantIdentifier, aSMP, sClientUniqueID);
-
-      aTransaction.commit ();
-    }
-    catch (final RuntimeException ex) {
-      s_aLogger.error ("exception", ex);
-      throw new InternalErrorException (ex);
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction in createParticipantIdentifiers");
-      }
-    }
-
-    if (m_aCallback != null)
-      m_aCallback.identifiersCreated (aJAXBPage);
-  }
-
-  private void _internalCreateParticipantIdentifier (final IReadonlyParticipantIdentifier aParticipantIdentifier,
-                                                     final DBServiceMetadataPublisher aSMP,
-                                                     final String sClientUniqueID) throws BadRequestException,
-                                                                                  UnauthorizedException {
+  private void _internalCreateParticipantIdentifier (@Nonnull final IReadonlyParticipantIdentifier aParticipantIdentifier,
+                                                     @Nonnull final DBServiceMetadataPublisher aSMP,
+                                                     @Nonnull final String sClientUniqueID) throws Throwable {
     // Then make sure that the participant identifier doesn't exists.
     final DBParticipantIdentifierID aDBIdentifierID = new DBParticipantIdentifierID (aParticipantIdentifier);
     final DBParticipantIdentifier aDBIdentifier = getEntityManager ().find (DBParticipantIdentifier.class,
@@ -188,12 +146,44 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager implement
     getEntityManager ().merge (aSMP);
   }
 
-  public void deleteParticipantIdentifiers (final List <ParticipantIdentifierType> aParticipantIdentifiers,
-                                            final String sClientUniqueID) throws UnauthorizedException,
-                                                                         UnknownUserException,
-                                                                         InternalErrorException,
-                                                                         NotFoundException,
-                                                                         BadRequestException {
+  public void createParticipantIdentifiers (@Nonnull final ParticipantIdentifierPageType aJAXBPage,
+                                            @Nonnull final String sClientUniqueID) throws Throwable {
+    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
+    aTransaction.begin ();
+    try {
+      final String sSMPID = aJAXBPage.getServiceMetadataPublisherID ();
+
+      // Check that the user owns the smp
+      final DBServiceMetadataPublisher aSMP = getEntityManager ().find (DBServiceMetadataPublisher.class, sSMPID);
+      if (aSMP == null)
+        throw new NotFoundException ("The service metadata publisher does not exist. ID: " + sSMPID);
+
+      if (!aSMP.getUser ().getUsername ().equals (sClientUniqueID))
+        throw new UnauthorizedException ("The user does not own the publisher.");
+
+      // iterate participant identifiers
+      for (final IReadonlyParticipantIdentifier aParticipantIdentifier : aJAXBPage.getParticipantIdentifier ())
+        _internalCreateParticipantIdentifier (aParticipantIdentifier, aSMP, sClientUniqueID);
+
+      aTransaction.commit ();
+    }
+    catch (final RuntimeException ex) {
+      s_aLogger.error ("exception", ex);
+      throw new InternalErrorException (ex);
+    }
+    finally {
+      if (aTransaction.isActive ()) {
+        aTransaction.rollback ();
+        s_aLogger.warn ("Rolled back transaction in createParticipantIdentifiers");
+      }
+    }
+
+    if (m_aCallback != null)
+      m_aCallback.identifiersCreated (aJAXBPage);
+  }
+
+  public void deleteParticipantIdentifiers (@Nonnull final List <ParticipantIdentifierType> aParticipantIdentifiers,
+                                            @Nonnull final String sClientUniqueID) throws Throwable {
     final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
     aTransaction.begin ();
     try {
@@ -219,17 +209,17 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager implement
     }
   }
 
-  private void _internalDeleteParticipant (final ParticipantIdentifierType aPI, final String sClientUniqueID) throws NotFoundException,
-                                                                                                             UnauthorizedException {
+  private void _internalDeleteParticipant (@Nonnull final ParticipantIdentifierType aParticipantID,
+                                           @Nonnull final String sClientUniqueID) throws Throwable {
     // Then make sure that the participant identifier exists.
     final DBParticipantIdentifier aDBIdentifier = getEntityManager ().find (DBParticipantIdentifier.class,
-                                                                            new DBParticipantIdentifierID (aPI));
+                                                                            new DBParticipantIdentifierID (aParticipantID));
     if (aDBIdentifier == null)
-      throw new NotFoundException ("The participant identifier " + aPI + " does not exist.");
+      throw new NotFoundException ("The participant identifier " + aParticipantID + " does not exist.");
 
     // Check that the user owns the identifier
     if (!aDBIdentifier.getServiceMetadataPublisher ().getUser ().getUsername ().equals (sClientUniqueID))
-      throw new UnauthorizedException ("The user does not own the identifier " + aPI);
+      throw new UnauthorizedException ("The user does not own the identifier " + aParticipantID);
 
     // Remove from SMP as well
     final DBServiceMetadataPublisher aSMP = aDBIdentifier.getServiceMetadataPublisher ();
@@ -240,10 +230,8 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager implement
     getEntityManager ().remove (aDBIdentifier);
   }
 
-  public void prepareToMigrate (final MigrationRecordType aMigrationRecord, final String sClientUniqueID) throws NotFoundException,
-                                                                                                         UnauthorizedException,
-                                                                                                         UnknownUserException,
-                                                                                                         InternalErrorException {
+  public void prepareToMigrate (@Nonnull final MigrationRecordType aMigrationRecord,
+                                @Nonnull final String sClientUniqueID) throws Throwable {
     final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
     aTransaction.begin ();
     try {
@@ -273,11 +261,7 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager implement
     }
   }
 
-  public void migrate (final MigrationRecordType aMigrationRecord, final String sClientUniqueID) throws NotFoundException,
-                                                                                                UnauthorizedException,
-                                                                                                UnknownUserException,
-                                                                                                InternalErrorException,
-                                                                                                BadRequestException {
+  public void migrate (@Nonnull final MigrationRecordType aMigrationRecord, @Nonnull final String sClientUniqueID) throws Throwable {
     final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
     aTransaction.begin ();
     try {
@@ -351,11 +335,8 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager implement
     }
   }
 
-  public ParticipantIdentifierPageType listParticipantIdentifiers (final PageRequestType aPageRequest,
-                                                                   final String sClientUniqueID) throws NotFoundException,
-                                                                                                UnauthorizedException,
-                                                                                                UnknownUserException,
-                                                                                                InternalErrorException {
+  public ParticipantIdentifierPageType listParticipantIdentifiers (@Nonnull final PageRequestType aPageRequest,
+                                                                   @Nonnull final String sClientUniqueID) throws Throwable {
     final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
     aTransaction.begin ();
     try {

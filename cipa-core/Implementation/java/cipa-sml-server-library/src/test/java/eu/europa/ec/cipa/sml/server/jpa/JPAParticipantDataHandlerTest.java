@@ -112,7 +112,7 @@ public final class JPAParticipantDataHandlerTest {
   private ParticipantIdentifierPageType m_aParticipantIdentifierPage;
 
   @Before
-  public void initTest () throws Exception {
+  public void initTest () throws Throwable {
     m_aSMPService = s_aObjFactory.createServiceMetadataPublisherServiceType ();
     m_aSMPService.setServiceMetadataPublisherID (SMP_ID);
     final PublisherEndpointType endpoint = s_aObjFactory.createPublisherEndpointType ();
@@ -147,7 +147,7 @@ public final class JPAParticipantDataHandlerTest {
    * Test service metadata methods
    */
   @Test
-  public void testCreateMetadataNotAllowed () throws Exception {
+  public void testCreateMetadataNotAllowed () throws Throwable {
     try {
       s_aSMPHandler.deleteSMPData (SMP_ID, "WRONG_USER_ID");
       fail ("The deletion should fail because of wrong user ID");
@@ -166,7 +166,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testCreateMetadataAlreadyExist () throws Exception {
+  public void testCreateMetadataAlreadyExist () throws Throwable {
     try {
       s_aSMPHandler.createSMPData (m_aSMPService, CLIENT_UNIQUE_ID);
       fail ("The registry was created successfully.");
@@ -175,7 +175,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testCreateMetadataNotOwnedID () throws Exception {
+  public void testCreateMetadataNotOwnedID () throws Throwable {
     try {
       s_aSMPHandler.createSMPData (m_aSMPService, CLIENT_UNIQUE_ID2);
       fail ("The registry was created successfully.");
@@ -184,7 +184,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testDeleteMetadataNotOwnedID () throws Exception {
+  public void testDeleteMetadataNotOwnedID () throws Throwable {
     try {
       s_aSMPHandler.deleteSMPData (SMP_ID, CLIENT_UNIQUE_ID2);
       fail ("The registry was deleted successfully.");
@@ -193,7 +193,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testDeleteMetadata () throws Exception {
+  public void testDeleteMetadata () throws Throwable {
     s_aSMPHandler.deleteSMPData (SMP_ID, CLIENT_UNIQUE_ID);
 
     try {
@@ -206,7 +206,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testUpdateMetadata () throws Exception {
+  public void testUpdateMetadata () throws Throwable {
     final PublisherEndpointType endpoint = m_aSMPService.getPublisherEndpoint ();
     endpoint.setLogicalAddress (SMP_LOGICAL_ADDRESS2);
     endpoint.setPhysicalAddress (SMP_PHYSICAL_ADDRESS2);
@@ -220,7 +220,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testUpdateMetadataNotOwned () throws Exception {
+  public void testUpdateMetadataNotOwned () throws Throwable {
     try {
       final PublisherEndpointType endpoint = m_aSMPService.getPublisherEndpoint ();
       endpoint.setLogicalAddress (SMP_LOGICAL_ADDRESS2);
@@ -233,7 +233,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testUpdateMetadataNotExist () throws Exception {
+  public void testUpdateMetadataNotExist () throws Throwable {
     try {
       m_aSMPService.setServiceMetadataPublisherID (SMP_ID2);
       s_aSMPHandler.updateSMPData (m_aSMPService, CLIENT_UNIQUE_ID2);
@@ -246,7 +246,7 @@ public final class JPAParticipantDataHandlerTest {
    * Test participant identifier methods
    */
   @Test
-  public void testCreateParticipantIdentifier () throws Exception {
+  public void testCreateParticipantIdentifier () throws Throwable {
     s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
 
     final PageRequestType request = s_aObjFactory.createPageRequestType ();
@@ -260,7 +260,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testCreateParticipantIdentifierNotExistID () throws Exception {
+  public void testCreateParticipantIdentifierNotExistID () throws Throwable {
     try {
       m_aParticipantIdentifierPage.setServiceMetadataPublisherID (SMP_ID2);
       s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
@@ -269,7 +269,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testCreateParticipantIdentifierNotOwnedID () throws Exception {
+  public void testCreateParticipantIdentifierNotOwnedID () throws Throwable {
     try {
       m_aSMPService.setServiceMetadataPublisherID (SMP_ID2);
       s_aSMPHandler.createSMPData (m_aSMPService, CLIENT_UNIQUE_ID2);
@@ -287,7 +287,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testCreateParticipantIdentifierAlreadySelfOwned () throws Exception {
+  public void testCreateParticipantIdentifierAlreadySelfOwned () throws Throwable {
     try {
       s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
       s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
@@ -297,7 +297,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testCreateParticipantIdentifierAlreadyOwnedByOther () throws Exception {
+  public void testCreateParticipantIdentifierAlreadyOwnedByOther () throws Throwable {
     try {
       m_aSMPService.setServiceMetadataPublisherID (SMP_ID2);
       s_aSMPHandler.createSMPData (m_aSMPService, CLIENT_UNIQUE_ID2);
@@ -316,7 +316,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testDeleteParticipantIdentifier () throws Exception {
+  public void testDeleteParticipantIdentifier () throws Throwable {
     s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
 
     s_aParticipantHandler.deleteParticipantIdentifiers (m_aParticipantIdentifierPage.getParticipantIdentifier (),
@@ -332,7 +332,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testDeleteParticipantIdentifierNotExistID () throws Exception {
+  public void testDeleteParticipantIdentifierNotExistID () throws Throwable {
     try {
       s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
 
@@ -345,7 +345,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testDeleteParticipantIdentifierNotOwnedID () throws Exception {
+  public void testDeleteParticipantIdentifierNotOwnedID () throws Throwable {
     try {
       m_aSMPService.setServiceMetadataPublisherID (SMP_ID2);
       s_aSMPHandler.createSMPData (m_aSMPService, CLIENT_UNIQUE_ID2);
@@ -366,7 +366,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testListParticipantIdentifiers () throws Exception {
+  public void testListParticipantIdentifiers () throws Throwable {
     final ParticipantIdentifierType secondIdentifier = SimpleParticipantIdentifier.createWithDefaultScheme ("0010:599900000002");
 
     m_aParticipantIdentifierPage.getParticipantIdentifier ().add (secondIdentifier);
@@ -381,7 +381,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testMigration () throws Exception {
+  public void testMigration () throws Throwable {
     // Make sure that ID1 owns identifier
     s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
 
@@ -415,7 +415,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testMigrateNotExistingKeyAndIdentifier () throws Exception {
+  public void testMigrateNotExistingKeyAndIdentifier () throws Throwable {
     try {
       final MigrationRecordType migrationRecord = s_aObjFactory.createMigrationRecordType ();
       migrationRecord.setMigrationKey ("NOT_EXISTING_KEY");
@@ -429,7 +429,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testPrepareToMigrateNotOwnedIdentifier () throws Exception {
+  public void testPrepareToMigrateNotOwnedIdentifier () throws Throwable {
     try {
       s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
 
@@ -444,7 +444,7 @@ public final class JPAParticipantDataHandlerTest {
   }
 
   @Test
-  public void testMigrationWrongKey () throws Exception {
+  public void testMigrationWrongKey () throws Throwable {
 
     // Make sure that ID1 owns identifier
     s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);

@@ -39,13 +39,6 @@ package eu.europa.ec.cipa.sml.server;
 
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
 
-import eu.europa.ec.cipa.sml.server.exceptions.BadRequestException;
-import eu.europa.ec.cipa.sml.server.exceptions.InternalErrorException;
-import eu.europa.ec.cipa.sml.server.exceptions.NotFoundException;
-import eu.europa.ec.cipa.sml.server.exceptions.UnauthorizedException;
-import eu.europa.ec.cipa.sml.server.exceptions.UnknownUserException;
-
-
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
@@ -59,25 +52,11 @@ public interface ISMPDataHandler {
    */
   void setCallback (ISMPDataHandlerCallback aCallback);
 
-  void createSMPData (ServiceMetadataPublisherServiceType aSMPService, String sClientUniqueID) throws UnauthorizedException,
-                                                                                              UnknownUserException,
-                                                                                              InternalErrorException,
-                                                                                              BadRequestException;
+  void createSMPData (ServiceMetadataPublisherServiceType aSMPService, String sClientUniqueID) throws Throwable;
 
-  void updateSMPData (ServiceMetadataPublisherServiceType aSMPService, String sClientUniqueID) throws NotFoundException,
-                                                                                              UnauthorizedException,
-                                                                                              UnknownUserException,
-                                                                                              InternalErrorException,
-                                                                                              BadRequestException;
+  void updateSMPData (ServiceMetadataPublisherServiceType aSMPService, String sClientUniqueID) throws Throwable;
 
-  void deleteSMPData (String sSMPID, String sClientUniqueID) throws NotFoundException,
-                                                            UnauthorizedException,
-                                                            UnknownUserException,
-                                                            InternalErrorException,
-                                                            BadRequestException;
+  void deleteSMPData (String sSMPID, String sClientUniqueID) throws Throwable;
 
-  ServiceMetadataPublisherServiceType getSMPData (String sSMPID, String sClientUniqueID) throws NotFoundException,
-                                                                                        UnauthorizedException,
-                                                                                        UnknownUserException,
-                                                                                        InternalErrorException;
+  ServiceMetadataPublisherServiceType getSMPData (String sSMPID, String sClientUniqueID) throws Throwable;
 }

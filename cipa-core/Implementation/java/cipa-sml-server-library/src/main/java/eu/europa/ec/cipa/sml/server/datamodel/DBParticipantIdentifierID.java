@@ -46,6 +46,7 @@ import javax.persistence.Embeddable;
 import com.phloc.commons.annotations.DevelopersNote;
 import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.hash.HashCodeGenerator;
+import com.phloc.commons.string.ToStringGenerator;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
@@ -59,8 +60,8 @@ import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifi
  */
 @Embeddable
 public class DBParticipantIdentifierID implements Serializable {
-  private String m_sScheme;
-  private String m_sValue;
+  private String m_sParticipantIDScheme;
+  private String m_sParticipantIDValue;
 
   @Deprecated
   @DevelopersNote ("Used only by JPA")
@@ -76,11 +77,11 @@ public class DBParticipantIdentifierID implements Serializable {
            updatable = false,
            length = CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH)
   public String getRecipientParticipantIdentifierScheme () {
-    return m_sScheme;
+    return m_sParticipantIDScheme;
   }
 
   public void setRecipientParticipantIdentifierScheme (final String sScheme) {
-    m_sScheme = IdentifierUtils.getUnifiedParticipantDBValue (sScheme);
+    m_sParticipantIDScheme = IdentifierUtils.getUnifiedParticipantDBValue (sScheme);
   }
 
   @Column (name = "recipient_participant_identifier_value",
@@ -88,16 +89,16 @@ public class DBParticipantIdentifierID implements Serializable {
            updatable = false,
            length = CIdentifier.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)
   public String getRecipientParticipantIdentifierValue () {
-    return m_sValue;
+    return m_sParticipantIDValue;
   }
 
   public void setRecipientParticipantIdentifierValue (final String sValue) {
-    m_sValue = IdentifierUtils.getUnifiedParticipantDBValue (sValue);
+    m_sParticipantIDValue = IdentifierUtils.getUnifiedParticipantDBValue (sValue);
   }
 
   @Nonnull
   public SimpleParticipantIdentifier asParticipantIdentifier () {
-    return new SimpleParticipantIdentifier (m_sScheme, m_sValue);
+    return new SimpleParticipantIdentifier (m_sParticipantIDScheme, m_sParticipantIDValue);
   }
 
   @Override
@@ -107,11 +108,19 @@ public class DBParticipantIdentifierID implements Serializable {
     if (!(other instanceof DBParticipantIdentifierID))
       return false;
     final DBParticipantIdentifierID rhs = (DBParticipantIdentifierID) other;
-    return EqualsUtils.equals (m_sScheme, rhs.m_sScheme) && EqualsUtils.equals (m_sValue, rhs.m_sValue);
+    return EqualsUtils.equals (m_sParticipantIDScheme, rhs.m_sParticipantIDScheme) &&
+           EqualsUtils.equals (m_sParticipantIDValue, rhs.m_sParticipantIDValue);
   }
 
   @Override
   public int hashCode () {
-    return new HashCodeGenerator (this).append (m_sScheme).append (m_sValue).getHashCode ();
+    return new HashCodeGenerator (this).append (m_sParticipantIDScheme).append (m_sParticipantIDValue).getHashCode ();
+  }
+
+  @Override
+  public String toString () {
+    return new ToStringGenerator (this).append ("participantIDScheme", m_sParticipantIDScheme)
+                                       .append ("participantIDValue", m_sParticipantIDValue)
+                                       .toString ();
   }
 }
