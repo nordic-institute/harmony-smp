@@ -146,7 +146,7 @@ public final class JPAParticipantDataHandlerTest {
   public void testCreateMetadataNotAllowed () throws Exception {
     try {
       s_aSMPHandler.deleteSMPData (SMP_ID, "WRONG_USER_ID");
-      fail ("The registry was created successfully.");
+      fail ("The deletion should fail because of wrong user ID");
     }
     catch (final UnauthorizedException e) {
       // This must happen.
@@ -238,7 +238,7 @@ public final class JPAParticipantDataHandlerTest {
     assertEquals (PARTICIPANT_IDENTIFIER_SCHEME, result.getParticipantIdentifier ().get (0).getScheme ());
   }
 
-  @Test (expected = BadRequestException.class)
+  @Test (expected = NotFoundException.class)
   public void testCreateParticipantIdentifierNotExistID () throws Exception {
     m_aParticipantIdentifierPage.setServiceMetadataPublisherID (SMP_ID2);
     s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
