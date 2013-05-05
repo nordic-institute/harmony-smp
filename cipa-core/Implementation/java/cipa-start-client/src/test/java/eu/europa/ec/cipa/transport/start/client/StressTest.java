@@ -71,21 +71,21 @@ import eu.europa.ec.cipa.transport.MessageMetadata;
  *         <p/>
  *         Created by User: steinar Date: 14.12.11 Time: 20:42
  */
-@Ignore("Takes too long and requires a local AP up and running")
+@Ignore ("Takes too long and requires a local AP up and running")
 public final class StressTest {
 
   private static final long MESSAGES = 90;
   private static final int THREADS = 6;
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (StressTest.class);
- 
+
   @Test
   public void test01 () throws Exception {
     final List <Callable <Integer>> partitions = new ArrayList <Callable <Integer>> ();
 
     final long start = System.currentTimeMillis ();
 
-    final Document document = XMLReader.readXMLDOM (new ClassPathResource ("/ehf-test-invoice.xml"));
+    final Document document = XMLReader.readXMLDOM (new ClassPathResource ("xml/ehf-test-invoice.xml"));
 
     for (int i = 1; i <= MESSAGES; i++) {
       partitions.add (new Callable <Integer> () {
