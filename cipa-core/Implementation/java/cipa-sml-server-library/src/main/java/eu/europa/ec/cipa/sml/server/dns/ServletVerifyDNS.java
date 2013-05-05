@@ -151,12 +151,12 @@ public class ServletVerifyDNS extends HttpServlet {
                                                        @Nonnull final String sReferedName,
                                                        @Nonnull final ParticipantIdentifierType aParticipantID) throws Exception,
                                                                                                                IOException {
-    s_aLogger.info (" - Participant ID " +
-                    aParticipantID.getScheme () +
-                    "::" +
-                    aParticipantID.getValue () +
-                    " with " +
-                    sReferedName);
+    _infoLog (aOS, " - Participant ID " +
+                   aParticipantID.getScheme () +
+                   "::" +
+                   aParticipantID.getValue () +
+                   " with " +
+                   sReferedName);
 
     final String sDNSPublisherAnchorID = aDNSClient.getPublisherAnchorFromDnsName (sReferedName);
     if (sDNSPublisherAnchorID == null) {
@@ -256,7 +256,7 @@ public class ServletVerifyDNS extends HttpServlet {
     _infoLog (aOS, "=== Verify Records in DNS ===");
     try {
       final List <Record> aRecords = aDNSClient.getAllRecords ();
-      _infoLog (aOS, " - retrieved # of records : " + aRecords.size ());
+      _infoLog (aOS, " - Retrieved " + aRecords.size () + " records");
 
       // Loop through all DNS Records
       for (final Record aRecord : aRecords) {
@@ -294,7 +294,7 @@ public class ServletVerifyDNS extends HttpServlet {
             _infoLog (aOS, "  Skipping SOA entry");
             continue;
           default:
-            s_aLogger.info ("  Skipping " + Type.string (aRecord.getType ()) + " entry");
+            _infoLog (aOS, "  Skipping " + Type.string (aRecord.getType ()) + " entry");
             continue;
         }
 
@@ -387,10 +387,10 @@ public class ServletVerifyDNS extends HttpServlet {
   private static void _verifyDBAll (final OutputStream aOS,
                                     final IDNSClient aDNSClient,
                                     final IGenericDataHandler aGenericHandler) throws IOException {
-    // find all smp's
+    _infoLog (aOS, "=== Verify Records in Database ===");
     try {
       final List <String> aAllSMPIDs = aGenericHandler.getAllSMPIDs ();
-      _infoLog (aOS, "Find all " + aAllSMPIDs.size () + " SMP IDs");
+      _infoLog (aOS, "Found " + aAllSMPIDs.size () + " SMP IDs");
 
       // Loop through all Publishers in Database
       for (final String sSMPID : aAllSMPIDs) {
@@ -408,7 +408,7 @@ public class ServletVerifyDNS extends HttpServlet {
 
         if (sDNSPublisherEndpoint == null || !sDBPhyiscalHost.equalsIgnoreCase (sDNSPublisherEndpoint)) {
           // create new anchor!
-          _infoLog (aOS, " - Host mismatch: " + sSMPID + " -> " + sDBPhyiscalHost);
+          _infoLog (aOS, " - Host mismatch for '" + sSMPID + "' - creating");
           if (EXECUTE_CONSISTENCY_OPERATIONS)
             aDNSClient.createPublisherAnchor (sSMPID, sDBPhyiscalHost);
         }
@@ -463,10 +463,7 @@ public class ServletVerifyDNS extends HttpServlet {
                     " secs");
       _infoLog (aOS, "Generic DataHandler is: " + aGenericHandler);
       _verifyDNSAll (aOS, aDNSClient, aGenericHandler);
-
-      _infoLog (aOS, "=== Verify Records in Database ===");
       _verifyDBAll (aOS, aDNSClient, aGenericHandler);
-
       _infoLog (aOS, "Check Done");
     }
     catch (final Exception e) {

@@ -110,7 +110,7 @@ public final class ServletListDNS extends HttpServlet {
    *        The {@link OutputStream} to write to. Will not be closed in here!
    * @throws Exception
    */
-  public static void listDNS (@WillNotClose final OutputStream aOS) throws Exception {
+  public static void listAllEntries (@WillNotClose final OutputStream aOS) throws Exception {
     // Is DNS listing already running?
     if (!s_aAlreadyRunning.compareAndSet (false, true)) {
       if (s_aLogger.isInfoEnabled ())
@@ -185,7 +185,7 @@ public final class ServletListDNS extends HttpServlet {
         if (s_aLogger.isInfoEnabled ())
           s_aLogger.info (sInitMsg);
         _writeToStream (os, sInitMsg);
-        listDNS (os);
+        listAllEntries (os);
       }
       else {
         // DNS is not active - no need to list anything

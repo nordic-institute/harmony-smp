@@ -35,59 +35,27 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.sml.server.management;
+package eu.europa.ec.cipa.sml.server.dns;
 
-import java.util.Set;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TestRule;
 
-import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPException;
-import javax.xml.soap.SOAPFault;
-import javax.xml.soap.SOAPMessage;
-import javax.xml.ws.handler.MessageContext;
-import javax.xml.ws.handler.soap.SOAPMessageContext;
+import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
+import com.phloc.scopes.mock.ScopeTestRule;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+/**
+ * Test class for class {@link ServletListDNS}.
+ * 
+ * @author philip
+ */
+public class ServletListDNSTest {
+  @Rule
+  public TestRule m_aRule = new ScopeTestRule ();
 
-public class FaultHandler implements javax.xml.ws.handler.soap.SOAPHandler <SOAPMessageContext> {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AddSignatureHandler.class);
-
-  @Override
-  public void close (final MessageContext context) {
-    // TODO Auto-generated method stub
-
-  }
-
-  @Override
-  public boolean handleFault (final SOAPMessageContext context) {
-    final Boolean aOutbound = (Boolean) context.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY);
-    System.out.println ("Entered the soap handler" + aOutbound);
-    s_aLogger.info ("Converting " + aOutbound + " to DOMSource");
-    if (aOutbound != null && aOutbound.booleanValue ()) {
-      final SOAPMessage sm = context.getMessage ();
-      SOAPFault fault;
-      try {
-        fault = sm.getSOAPBody ().getFault ();
-        System.out.println (fault.getFaultCode ());
-        System.out.println (fault.getFaultString ());
-      }
-      catch (final SOAPException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace ();
-      }
-
-    }
-    return true;
-  }
-
-  @Override
-  public boolean handleMessage (final SOAPMessageContext context) {
-    return true;
-  }
-
-  @Override
-  public Set <QName> getHeaders () {
-    // TODO Auto-generated method stub
-    return null;
+  @Test
+  public void testRun () throws Exception {
+    final NonBlockingByteArrayOutputStream aBAOS = new NonBlockingByteArrayOutputStream ();
+    ServletListDNS.listAllEntries (aBAOS);
   }
 }
