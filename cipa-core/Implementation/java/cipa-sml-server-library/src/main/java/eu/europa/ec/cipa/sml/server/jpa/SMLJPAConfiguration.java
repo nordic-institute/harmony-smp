@@ -64,6 +64,8 @@ public final class SMLJPAConfiguration {
   @SuppressWarnings ("unused")
   private static final SMLJPAConfiguration s_aInstance = new SMLJPAConfiguration ();
 
+  private SMLJPAConfiguration () {}
+
   // Write SQL file only in debug mode, so that the production version can be
   // read-only!
   @Nonnull

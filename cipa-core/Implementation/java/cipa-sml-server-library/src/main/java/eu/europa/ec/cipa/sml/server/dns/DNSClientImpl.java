@@ -82,7 +82,7 @@ import eu.europa.ec.cipa.sml.server.exceptions.IllegalIdentifierSchemeException;
 public class DNSClientImpl implements IDNSClient {
   // Time to live
   public static final int DEFAULT_TTL_SECS = 60;
-  private static final Logger log = LoggerFactory.getLogger (DNSClientImpl.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (DNSClientImpl.class);
 
   private final String m_sServerName;
   private String m_sDNSZoneName;
@@ -102,7 +102,7 @@ public class DNSClientImpl implements IDNSClient {
     if (nTTL < 0)
       throw new IllegalArgumentException ("TTL is invalid: " + nTTL);
 
-    log.info ("DnsClientImpl init : " + sServerName + " : " + sDNSZoneName + " : " + sSMLZoneName + " : " + nTTL);
+    s_aLogger.info ("DnsClientImpl init : " + sServerName + " : " + sDNSZoneName + " : " + sSMLZoneName + " : " + nTTL);
     m_sServerName = sServerName;
     m_sDNSZoneName = sDNSZoneName.toLowerCase ();
     if (!m_sDNSZoneName.endsWith (".")) {
@@ -123,7 +123,7 @@ public class DNSClientImpl implements IDNSClient {
 
     m_nTTLSecs = nTTL;
 
-    log.info ("DnsClientImpl init done - DNS Zone : " + m_sDNSZoneName + " - SML Zone : " + m_sSMLZoneName);
+    s_aLogger.info ("DnsClientImpl init done - DNS Zone : " + m_sDNSZoneName + " - SML Zone : " + m_sSMLZoneName);
   }
 
   @Nonnull
@@ -149,13 +149,13 @@ public class DNSClientImpl implements IDNSClient {
   public void createIdentifier (final ParticipantIdentifierType aParticipantIdentifier, final String sSMPID) throws IOException,
                                                                                                             IllegalIdentifierSchemeException,
                                                                                                             IllegalHostnameException {
-    if (log.isDebugEnabled ())
-      log.debug ("Create Identifier : " +
-                 aParticipantIdentifier.getScheme () +
-                 "::" +
-                 aParticipantIdentifier.getValue () +
-                 " -> " +
-                 sSMPID);
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Create Identifier : " +
+                       aParticipantIdentifier.getScheme () +
+                       "::" +
+                       aParticipantIdentifier.getValue () +
+                       " -> " +
+                       sSMPID);
 
     // check that host name is ok
     DNSUtils.verifyHostname (sSMPID);
@@ -185,8 +185,8 @@ public class DNSClientImpl implements IDNSClient {
   public void createIdentifiers (final List <ParticipantIdentifierType> aParticipantIdentifiers, final String sSMPID) throws IOException,
                                                                                                                      IllegalIdentifierSchemeException,
                                                                                                                      IllegalHostnameException {
-    if (log.isDebugEnabled ())
-      log.debug ("Create List of Identifier for : " + sSMPID);
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Create List of Identifier for : " + sSMPID);
 
     // check that host name is ok
     DNSUtils.verifyHostname (sSMPID);
@@ -212,8 +212,8 @@ public class DNSClientImpl implements IDNSClient {
   public void deleteIdentifier (final ParticipantIdentifierType pi) throws IllegalIdentifierSchemeException,
                                                                    IOException {
     final String sPIDNSName = getDNSNameOfParticipant (pi);
-    if (log.isDebugEnabled ())
-      log.debug ("Delete Identifier : " + sPIDNSName);
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Delete Identifier : " + sPIDNSName);
 
     deleteZoneRecord (sPIDNSName);
   }
@@ -237,8 +237,8 @@ public class DNSClientImpl implements IDNSClient {
 
   public void createPublisherAnchor (final String sSMPID, final String sEndpoint) throws IOException,
                                                                                  IllegalHostnameException {
-    if (log.isDebugEnabled ())
-      log.debug ("Create Publisher Anchor : " + sSMPID + " in zone : " + m_sDNSZoneName + " -> " + sEndpoint);
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Create Publisher Anchor : " + sSMPID + " in zone : " + m_sDNSZoneName + " -> " + sEndpoint);
 
     // check that host name is ok
     DNSUtils.verifyHostname (sSMPID);
@@ -258,8 +258,8 @@ public class DNSClientImpl implements IDNSClient {
     Record aRecord = null;
     byte [] ipAddressBytes = Address.toByteArray (sEndpoint, Address.IPv4);
     if (ipAddressBytes != null) {
-      if (log.isDebugEnabled ())
-        log.debug (" - IPV4");
+      if (s_aLogger.isDebugEnabled ())
+        s_aLogger.debug (" - IPV4");
       final InetAddress ipAddress = InetAddress.getByAddress (ipAddressBytes);
       aRecord = new ARecord (aSMPHost, Type.A, m_nTTLSecs, ipAddress);
     }
@@ -267,8 +267,8 @@ public class DNSClientImpl implements IDNSClient {
       ipAddressBytes = Address.toByteArray (sEndpoint, Address.IPv6);
       // NO IPv6 yet
       if (false && ipAddressBytes != null) {
-        if (log.isDebugEnabled ())
-          log.debug (" - IPV6");
+        if (s_aLogger.isDebugEnabled ())
+          s_aLogger.debug (" - IPV6");
         final InetAddress ipAddress = InetAddress.getByAddress (ipAddressBytes);
         // FIXME
         final int nPrefixBits = 0;
@@ -277,15 +277,15 @@ public class DNSClientImpl implements IDNSClient {
       }
       else
         if ((sEndpoint + ".").endsWith (m_sDNSZoneName)) {
-          if (log.isDebugEnabled ())
-            log.debug (" - in Local Zone");
+          if (s_aLogger.isDebugEnabled ())
+            s_aLogger.debug (" - in Local Zone");
           // FOR NOW WE CAN ONLY RESOLVE LOCAL ADDRESSES...
           // - CNAME TO LOCAL
           aRecord = new CNAMERecord (aSMPHost, Type.A, m_nTTLSecs, new Name (sEndpoint + "."));
         }
         else {
-          if (log.isDebugEnabled ())
-            log.debug (" - Other Zone");
+          if (s_aLogger.isDebugEnabled ())
+            s_aLogger.debug (" - Other Zone");
           // NOT VALID ANY MORE
           // FOR NOW WE CAN ONLY RESOLVE LOCAL ADDRESSES...
           // - if NOT local - resolve and create A RECORD
@@ -306,16 +306,16 @@ public class DNSClientImpl implements IDNSClient {
 
   public void deletePublisherAnchor (final String sSMPID) throws IOException {
     final String aSMPAnchor = sSMPID + ".publisher." + m_sSMLZoneName;
-    if (log.isDebugEnabled ())
-      log.debug ("Delete Publisher Anchor : " + aSMPAnchor);
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Delete Publisher Anchor : " + aSMPAnchor);
 
     deleteZoneRecord (aSMPAnchor);
   }
 
   @SuppressWarnings ("unused")
   private void createZoneRecord (final Record aRecord) throws IOException {
-    if (log.isDebugEnabled ())
-      log.debug ("Insert Zone Record : " + aRecord);
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Insert Zone Record : " + aRecord);
 
     final Name aDNSZone = Name.fromString (m_sDNSZoneName);
     final Update aDNSUpdate = new Update (aDNSZone);
@@ -335,51 +335,51 @@ public class DNSClientImpl implements IDNSClient {
     return records;
   }
 
-  public String lookupPeppolPublisherById (final String sSMPID) throws IOException {
-    if (log.isDebugEnabled ())
-      log.debug ("Lookup Publisher By ID : " + sSMPID);
-    final String name = sSMPID + "." + CSMLDefault.DNS_PUBLISHER_SUBZONE + m_sSMLZoneName;
-
-    return lookupDNSRecord (name);
+  @Nullable
+  public String lookupPeppolPublisherById (@Nonnull final String sSMPID) throws IOException {
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Lookup Publisher By ID : " + sSMPID);
+    final String sName = sSMPID + "." + CSMLDefault.DNS_PUBLISHER_SUBZONE + m_sSMLZoneName;
+    return lookupDNSRecord (sName);
   }
 
   @Nullable
-  public String lookupDNSRecord (final String name) throws IOException {
-    if (log.isDebugEnabled ())
-      log.debug ("Lookup Publisher : " + name);
+  public String lookupDNSRecord (@Nonnull final String sName) throws IOException {
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Lookup Publisher: " + sName);
 
-    final Resolver res = getResolver ();
-    Name host;
-    if (name.endsWith (".")) {
-      host = Name.fromString (name);
+    final Resolver aResolver = getResolver ();
+    Name aHost;
+    if (sName.endsWith (".")) {
+      aHost = Name.fromString (sName);
     }
     else {
-      final Name zone = Name.fromString (m_sDNSZoneName);
-      host = Name.fromString (name, zone);
+      final Name aZone = Name.fromString (m_sDNSZoneName);
+      aHost = Name.fromString (sName, aZone);
     }
-    final Lookup lookup = new Lookup (host, Type.ANY); // , Type.CNAME);
-    lookup.setResolver (res);
-    lookup.setCache (null);
+    final Lookup aLookup = new Lookup (aHost, Type.ANY); // , Type.CNAME);
+    aLookup.setResolver (aResolver);
+    aLookup.setCache (null);
 
-    if (log.isDebugEnabled ())
-      log.debug ("Run Lookup for Host : " + host);
-    final Record [] records = lookup.run ();
-    if (log.isDebugEnabled ())
-      log.debug ("Run Lookup for Host - DONE : " + Arrays.toString (records));
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Run Lookup for Host : " + aHost);
+    final Record [] aRecords = aLookup.run ();
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Run Lookup for Host - DONE : " + Arrays.toString (aRecords));
 
-    if (records == null)
+    if (aRecords == null)
       return null;
 
-    if (records[0] instanceof CNAMERecord) {
-      return ((CNAMERecord) records[0]).getAlias ().toString ();
+    if (aRecords[0] instanceof CNAMERecord) {
+      return ((CNAMERecord) aRecords[0]).getAlias ().toString ();
     }
-    if (records[0] instanceof ARecord) {
+    if (aRecords[0] instanceof ARecord) {
       // ?? is this to validate ???
-      final InetAddress inetAddress = ((ARecord) records[0]).getAddress ();
-      return inetAddress.getHostAddress ();
+      final InetAddress aInetAddress = ((ARecord) aRecords[0]).getAddress ();
+      return aInetAddress.getHostAddress ();
     }
 
-    return records[0].toString ();
+    return aRecords[0].toString ();
   }
 
   /**
@@ -389,8 +389,8 @@ public class DNSClientImpl implements IDNSClient {
    * @throws IOException
    */
   private void deleteZoneRecord (final String name) throws IOException {
-    if (log.isDebugEnabled ())
-      log.debug ("Delete Zone Record : " + name);
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Delete Zone Record : " + name);
 
     final Resolver aDNSResolver = getResolver ();
 
@@ -416,8 +416,8 @@ public class DNSClientImpl implements IDNSClient {
    */
   @SuppressWarnings ("unused")
   private void deleteZoneRecord (final Record aDNSRecord) throws IOException {
-    if (log.isDebugEnabled ())
-      log.debug ("Delete Zone Record : " + aDNSRecord);
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Delete Zone Record : " + aDNSRecord);
 
     final Resolver aDNSResolver = getResolver ();
 
@@ -438,11 +438,11 @@ public class DNSClientImpl implements IDNSClient {
   private static void validateDNSResponse (final Message aResponse) {
     final int nRetCode = aResponse.getRcode ();
     final String sRetCode = Rcode.string (nRetCode);
-    if (log.isDebugEnabled ())
-      log.debug ("validateDNSResponse : " + sRetCode);
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("validateDNSResponse : " + sRetCode);
     if (nRetCode != Rcode.NOERROR) {
       // Error - not handling special cases yet
-      log.error ("Error performing DNS request : " + sRetCode + "\n" + aResponse);
+      s_aLogger.error ("Error performing DNS request : " + sRetCode + "\n" + aResponse);
       throw new DNSErrorException ("Error performing DNS request : " + sRetCode);
     }
   }

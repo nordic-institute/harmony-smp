@@ -69,8 +69,8 @@ import eu.europa.ec.cipa.sml.server.exceptions.UnauthorizedException;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-@DevelopersNote ("You need to adjust your local META-INF/persistence.xml file to run this test")
-public final class JPAParticipantDataHandlerTest {
+@DevelopersNote ("You need to adjust your local src/test/resources/config.properties file to run this test")
+public final class SMLDataHandlerParticipantTest {
   private static final String PARTICIPANT_IDENTIFIER_SCHEME = CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME;
   private static final String PARTICIPANT_IDENTIFIER_DEFAULT = "0010:5999000000001";
 

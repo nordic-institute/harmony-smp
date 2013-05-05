@@ -40,6 +40,8 @@ package eu.europa.ec.cipa.sml.server.dns;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
+
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.xbill.DNS.Record;
 
@@ -75,38 +77,47 @@ public final class DoNothingDNSClient implements IDNSClient {
     // Do nothing...
   }
 
+  @Nullable
   public String lookupDNSRecord (final String dnsName) {
     return null;
   }
 
+  @Nullable
   public String lookupPeppolPublisherById (final String publisherId) {
     return null;
   }
 
+  @Nullable
   public List <Record> getAllRecords () {
     return new ArrayList <Record> ();
   }
 
+  @Nullable
   public String getDNSZoneName () {
     return null;
   }
 
+  @Nullable
   public String getSMLZoneName () {
     return null;
   }
 
+  @Nullable
   public String getServer () {
     return null;
   }
 
+  @Nullable
   public ParticipantIdentifierType getIdentifierFromDnsName (final String name) {
     return null;
   }
 
+  @Nullable
   public String getDNSNameOfParticipant (final ParticipantIdentifierType pi) {
     return null;
   }
 
+  @Nullable
   public String getPublisherAnchorFromDnsName (final String name) {
     return null;
   }

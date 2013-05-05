@@ -64,6 +64,8 @@ public final class SMPJPAConfiguration {
   @SuppressWarnings ("unused")
   private static final SMPJPAConfiguration s_aInstance = new SMPJPAConfiguration ();
 
+  private SMPJPAConfiguration () {}
+
   // Write SQL file only in debug mode, so that the production version can be
   // read-only!
   @Nonnull

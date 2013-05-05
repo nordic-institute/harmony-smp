@@ -127,7 +127,10 @@ public final class SMLDataHandlerGeneric extends JPAEnabledManager implements IG
   }
 
   @Nonnull
-  public PublisherEndpointType getSMPEndpointAddressOfSMPID (final String sSMPID) throws Throwable {
+  public PublisherEndpointType getSMPEndpointAddressOfSMPID (@Nonnull final String sSMPID) throws Throwable {
+    if (sSMPID == null)
+      throw new NotFoundException ("The service metadata publisher ID may not be null");
+
     JPAExecutionResult <PublisherEndpointType> ret;
     ret = doInTransaction (new Callable <PublisherEndpointType> () {
       @Nonnull
@@ -135,7 +138,7 @@ public final class SMLDataHandlerGeneric extends JPAEnabledManager implements IG
         final DBServiceMetadataPublisher aPublisher = getEntityManager ().find (DBServiceMetadataPublisher.class,
                                                                                 sSMPID);
         if (aPublisher == null)
-          throw new NotFoundException ("The smp was not found: '" + sSMPID + "'");
+          throw new NotFoundException ("The service metadata publisher ID '" + sSMPID + "' was not found");
 
         final PublisherEndpointType aJAXBEndpoint = m_aObjFactory.createPublisherEndpointType ();
         aJAXBEndpoint.setLogicalAddress (aPublisher.getLogicalAddress ());

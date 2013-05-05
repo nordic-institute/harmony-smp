@@ -40,13 +40,15 @@ package eu.europa.ec.cipa.sml.server.dns;
 import java.io.IOException;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.ZoneTransferException;
 
 import eu.europa.ec.cipa.sml.server.exceptions.IllegalHostnameException;
 import eu.europa.ec.cipa.sml.server.exceptions.IllegalIdentifierSchemeException;
-
 
 /**
  * Interface for DNSClient used by ServiceMetadataLocator to maintain Publisher
@@ -61,6 +63,7 @@ public interface IDNSClient {
    * 
    * @return zonename
    */
+  @Nullable
   String getDNSZoneName ();
 
   /**
@@ -69,6 +72,7 @@ public interface IDNSClient {
    * 
    * @return zonename
    */
+  @Nullable
   String getSMLZoneName ();
 
   /**
@@ -76,6 +80,7 @@ public interface IDNSClient {
    * 
    * @return server
    */
+  @Nullable
   String getServer ();
 
   /**
@@ -159,7 +164,8 @@ public interface IDNSClient {
    * @return host
    * @throws IOException
    */
-  String lookupDNSRecord (String dnsName) throws IOException;
+  @Nullable
+  String lookupDNSRecord (@Nonnull String dnsName) throws IOException;
 
   /**
    * Run Zone Transfer and list all records.
@@ -168,6 +174,7 @@ public interface IDNSClient {
    * @throws IOException
    * @throws ZoneTransferException
    */
+  @Nullable
   List <Record> getAllRecords () throws IOException, ZoneTransferException;
 
   /**
@@ -177,6 +184,7 @@ public interface IDNSClient {
    * @return host
    * @throws IOException
    */
+  @Nullable
   String lookupPeppolPublisherById (String dnsPublisher) throws IOException;
 
   /**
@@ -186,6 +194,7 @@ public interface IDNSClient {
    *        DNS Name
    * @return ParticipantIdentifier
    */
+  @Nullable
   ParticipantIdentifierType getIdentifierFromDnsName (String name);
 
   /**
@@ -196,6 +205,7 @@ public interface IDNSClient {
    * @return DNS Name
    * @throws IllegalIdentifierSchemeException
    */
+  @Nullable
   String getDNSNameOfParticipant (ParticipantIdentifierType pi) throws IllegalIdentifierSchemeException;
 
   /**
@@ -204,6 +214,7 @@ public interface IDNSClient {
    * @param name
    * @return Publisher Anchor
    */
+  @Nullable
   String getPublisherAnchorFromDnsName (String name);
 
   /**

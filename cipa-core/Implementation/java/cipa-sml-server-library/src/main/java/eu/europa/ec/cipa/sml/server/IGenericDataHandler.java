@@ -60,8 +60,8 @@ public interface IGenericDataHandler extends IRequestAuthenticationHandler {
   List <String> getAllSMPIDs () throws Throwable;
 
   @Nonnull
-  PublisherEndpointType getSMPEndpointAddressOfSMPID (String sSMPID) throws Throwable;
+  PublisherEndpointType getSMPEndpointAddressOfSMPID (@Nonnull String sSMPID) throws Throwable;
 
   @Nonnull
-  ParticipantIdentifierPageType listParticipantIdentifiers (String pageId, String sSMPID) throws Throwable;
+  ParticipantIdentifierPageType listParticipantIdentifiers (String sPageID, String sSMPID) throws Throwable;
 }
