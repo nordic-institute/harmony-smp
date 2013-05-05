@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>eu.europa.ec.cipa</groupId>
-		<artifactId>cipa-parent-pom</artifactId>
-		<version>1.0</version>
-	</parent>
+  <parent>
+    <groupId>eu.europa.ec.cipa</groupId>
+    <artifactId>cipa-parent-pom</artifactId>
+    <version>1.0</version>
+  </parent>
   <artifactId>cipa-sml-webapp-standalone</artifactId>
   <version>1.0.2-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>cipa-sml-webapp-standalone</name>
 
-	<scm>
-		<connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-sml-webapp-standalone</connection>
-		<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-sml-webapp-standalone</developerConnection>
-	</scm>
-  
+  <scm>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-sml-webapp-standalone</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-sml-webapp-standalone</developerConnection>
+  </scm>
+
   <repositories>
     <repository>
       <id>phloc</id>
@@ -40,16 +40,16 @@
   </repositories>
 
   <dependencies>
-		<dependency>
-			<groupId>eu.europa.ec.cipa</groupId>
-			<artifactId>cipa-sml-server-library</artifactId>
-			<version>1.0.1</version>
-		</dependency>
-	  <dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.25</version>
-		</dependency>
+    <dependency>
+      <groupId>eu.europa.ec.cipa</groupId>
+      <artifactId>cipa-sml-server-library</artifactId>
+      <version>1.0.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>5.1.25</version>
+    </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
@@ -97,7 +97,7 @@
         <targetPath>${project.build.directory}/webapp-classes</targetPath>
       </resource>
     </resources>
-      
+
     <plugins>
       <plugin>
         <groupId>com.mycila.maven-license-plugin</groupId>
