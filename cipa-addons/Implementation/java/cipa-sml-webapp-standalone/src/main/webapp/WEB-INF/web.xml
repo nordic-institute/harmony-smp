@@ -50,11 +50,27 @@
     <param-value>tcpAllowOthers</param-value>
   </context-param>
 
+  <session-config>
+    <session-timeout>60</session-timeout>
+  </session-config>
+
+  <!-- Scope handling: listener + filter must be first -->
+  <listener>
+    <listener-class>com.phloc.webscopes.servlet.WebScopeListener</listener-class>
+  </listener>
+  <filter>
+    <filter-name>ScopeFilter</filter-name>
+    <filter-class>com.phloc.webscopes.servlet.DefaultScopeAwareFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>ScopeFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
   <filter>
     <filter-name>ClientCertFilter</filter-name>
     <filter-class>eu.europa.ec.cipa.sml.server.web.ClientCertificateValidationFilter</filter-class>
   </filter>
-  
   <filter-mapping>
     <filter-name>ClientCertFilter</filter-name>
     <url-pattern>/*</url-pattern>
@@ -73,18 +89,16 @@
     <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
+  <servlet-mapping>
+    <servlet-name>managebusinessidentifier</servlet-name>
+    <url-pattern>/manageparticipantidentifier</url-pattern>
+  </servlet-mapping>
 
   <servlet>
     <servlet-name>manageservicemetadata</servlet-name>
     <servlet-class>com.sun.xml.ws.transport.http.servlet.WSServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
-
-  <servlet-mapping>
-    <servlet-name>managebusinessidentifier</servlet-name>
-    <url-pattern>/manageparticipantidentifier</url-pattern>
-  </servlet-mapping>
-
   <servlet-mapping>
     <servlet-name>manageservicemetadata</servlet-name>
     <url-pattern>/manageservicemetadata</url-pattern>
@@ -102,8 +116,4 @@
     <servlet-name>servlet9</servlet-name>
     <url-pattern>/h2/*</url-pattern>
   </servlet-mapping>
-
-  <session-config>
-    <session-timeout>60</session-timeout>
-  </session-config>
 </web-app>

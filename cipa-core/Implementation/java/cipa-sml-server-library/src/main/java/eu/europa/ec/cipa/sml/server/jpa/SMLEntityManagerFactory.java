@@ -45,9 +45,9 @@ import javax.annotation.Nonnull;
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
 import com.phloc.commons.annotations.ReturnsMutableCopy;
+import com.phloc.commons.annotations.UsedViaReflection;
+import com.phloc.db.jpa.AbstractGlobalEntityManagerFactory;
 
-import eu.europa.ec.cipa.commons.jpa.AbstractJPAWrapper;
-import eu.europa.ec.cipa.commons.jpa.JPAConfiguration;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 
 /**
@@ -55,9 +55,7 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class SMLJPAWrapper extends AbstractJPAWrapper {
-  private static final SMLJPAWrapper s_aInstance = new SMLJPAWrapper ();
-
+public final class SMLEntityManagerFactory extends AbstractGlobalEntityManagerFactory {
   @Nonnull
   @ReturnsMutableCopy
   private static Map <String, Object> _createSettingsMap () {
@@ -65,22 +63,16 @@ public final class SMLJPAWrapper extends AbstractJPAWrapper {
     final ConfigFile aCF = ConfigFile.getInstance ();
 
     final Map <String, Object> ret = new HashMap <String, Object> ();
-    // Read all properties from the standard configuration file
-    ret.put (PersistenceUnitProperties.JDBC_DRIVER, aCF.getString (JPAConfiguration.CONFIG_JDBC_DRIVER));
-    ret.put (PersistenceUnitProperties.JDBC_URL, aCF.getString (JPAConfiguration.CONFIG_JDBC_URL));
-    ret.put (PersistenceUnitProperties.JDBC_USER, aCF.getString (JPAConfiguration.CONFIG_JDBC_USER));
-    ret.put (PersistenceUnitProperties.JDBC_PASSWORD, aCF.getString (JPAConfiguration.CONFIG_JDBC_PASSWORD));
-    ret.put (PersistenceUnitProperties.TARGET_DATABASE, aCF.getString (JPAConfiguration.CONFIG_TARGET_DATABASE));
     // Connection pooling
     ret.put (PersistenceUnitProperties.CONNECTION_POOL_MAX,
-             aCF.getString (JPAConfiguration.CONFIG_JDBC_READ_CONNECTIONS_MAX));
+             aCF.getString (SMLJPAConfiguration.CONFIG_JDBC_READ_CONNECTIONS_MAX));
 
     // EclipseLink should create the database schema automatically
     // Values: Values: none/create-tables/drop-and-create-tables
     ret.put (PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
     ret.put (PersistenceUnitProperties.DDL_GENERATION_MODE,
-             aCF.getString (JPAConfiguration.CONFIG_DDL_GENERATION_MODE,
-                            JPAConfiguration.getDefaultDDLGenerationMode ()));
+             aCF.getString (SMLJPAConfiguration.CONFIG_DDL_GENERATION_MODE,
+                            SMLJPAConfiguration.getDefaultDDLGenerationMode ()));
     ret.put (PersistenceUnitProperties.CREATE_JDBC_DDL_FILE, "db-create-sml.sql");
     ret.put (PersistenceUnitProperties.DROP_JDBC_DDL_FILE, "db-drop-sml.sql");
 
@@ -91,12 +83,20 @@ public final class SMLJPAWrapper extends AbstractJPAWrapper {
     return ret;
   }
 
-  private SMLJPAWrapper () {
-    super ("peppol-sml", _createSettingsMap ());
+  @Deprecated
+  @UsedViaReflection
+  public SMLEntityManagerFactory () {
+    super (ConfigFile.getInstance ().getString (SMLJPAConfiguration.CONFIG_JDBC_DRIVER),
+           ConfigFile.getInstance ().getString (SMLJPAConfiguration.CONFIG_JDBC_URL),
+           ConfigFile.getInstance ().getString (SMLJPAConfiguration.CONFIG_JDBC_USER),
+           ConfigFile.getInstance ().getString (SMLJPAConfiguration.CONFIG_JDBC_PASSWORD),
+           ConfigFile.getInstance ().getString (SMLJPAConfiguration.CONFIG_TARGET_DATABASE),
+           "peppol-sml",
+           _createSettingsMap ());
   }
 
   @Nonnull
-  public static SMLJPAWrapper getInstance () {
-    return s_aInstance;
+  public static SMLEntityManagerFactory getInstance () {
+    return getGlobalSingleton (SMLEntityManagerFactory.class);
   }
 }

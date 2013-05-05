@@ -40,7 +40,9 @@ package eu.europa.ec.cipa.sml.server.jpa;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
 import org.busdox.servicemetadata.locator._1.ObjectFactory;
@@ -50,7 +52,9 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.cipa.commons.jpa.AbstractJPAEnabledManager;
+import com.phloc.db.jpa.IEntityManagerProvider;
+import com.phloc.db.jpa.JPAEnabledManager;
+
 import eu.europa.ec.cipa.sml.server.ISMPDataHandler;
 import eu.europa.ec.cipa.sml.server.ISMPDataHandlerCallback;
 import eu.europa.ec.cipa.sml.server.datamodel.DBParticipantIdentifier;
@@ -67,14 +71,21 @@ import eu.europa.ec.cipa.sml.server.exceptions.UnknownUserException;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class JPASMPDataHandler extends AbstractJPAEnabledManager implements ISMPDataHandler {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (JPASMPDataHandler.class);
+public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDataHandler {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (SMLDataHandlerSMP.class);
 
   private final ObjectFactory m_aObjFactory = new ObjectFactory ();
   private ISMPDataHandlerCallback m_aCallback;
 
-  public JPASMPDataHandler () {
-    super (SMLJPAWrapper.getInstance ());
+  public SMLDataHandlerSMP () {
+    super (new IEntityManagerProvider () {
+      // This additional indirection level is required!!!
+      // So that for every request the correct getInstance is invoked!
+      @Nonnull
+      public EntityManager getEntityManager () {
+        return SMLEntityManagerWrapper.getInstance ().getEntityManager ();
+      }
+    });
   }
 
   public void setCallback (@Nullable final ISMPDataHandlerCallback aCallback) {

@@ -48,11 +48,12 @@ import org.busdox.servicemetadata.locator._1.PublisherEndpointType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.internal.AssumptionViolatedException;
+import org.junit.rules.TestRule;
 
 import com.phloc.commons.annotations.DevelopersNote;
+import com.phloc.scopes.mock.ScopeTestRule;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
@@ -63,8 +64,8 @@ import eu.europa.ec.cipa.sml.server.exceptions.NotFoundException;
 import eu.europa.ec.cipa.sml.server.exceptions.UnauthorizedException;
 
 /**
- * Test class for class {@link JPAParticipantDataHandler} and
- * {@link JPASMPDataHandler}.
+ * Test class for class {@link SMLDataHandlerParticipant} and
+ * {@link SMLDataHandlerSMP}.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
@@ -90,22 +91,25 @@ public final class JPAParticipantDataHandlerTest {
   private static IParticipantDataHandler s_aParticipantHandler;
   private static ISMPDataHandler s_aSMPHandler;
 
+  private static final class SMLTestRule extends ScopeTestRule {
+    @Override
+    public void before () {
+      super.before ();
+      if (s_aParticipantHandler == null) {
+        // Do it only once :)
+        SMLEntityManagerFactory.getInstance ();
+        s_aParticipantHandler = new SMLDataHandlerParticipant ();
+        s_aSMPHandler = new SMLDataHandlerSMP ();
+      }
+    }
+  }
+
+  @ClassRule
+  public static TestRule s_aTestRule = new SMLTestRule ();
+
   // These variables are reset on every test.
   private ServiceMetadataPublisherServiceType m_aSMPService;
   private ParticipantIdentifierPageType m_aParticipantIdentifierPage;
-
-  @BeforeClass
-  public static void initDataHandler () {
-    try {
-      SMLJPAWrapper.getInstance ();
-    }
-    catch (final ExceptionInInitializerError ex) {
-      // No database present
-      throw new AssumptionViolatedException ("No database connection could be established");
-    }
-    s_aParticipantHandler = new JPAParticipantDataHandler ();
-    s_aSMPHandler = new JPASMPDataHandler ();
-  }
 
   @Before
   public void initTest () throws Exception {
@@ -161,22 +165,31 @@ public final class JPAParticipantDataHandlerTest {
     }
   }
 
-  @Test (expected = BadRequestException.class)
+  @Test
   public void testCreateMetadataAlreadyExist () throws Exception {
-    s_aSMPHandler.createSMPData (m_aSMPService, CLIENT_UNIQUE_ID);
-    fail ("The registry was created successfully.");
+    try {
+      s_aSMPHandler.createSMPData (m_aSMPService, CLIENT_UNIQUE_ID);
+      fail ("The registry was created successfully.");
+    }
+    catch (final BadRequestException ex) {}
   }
 
-  @Test (expected = BadRequestException.class)
+  @Test
   public void testCreateMetadataNotOwnedID () throws Exception {
-    s_aSMPHandler.createSMPData (m_aSMPService, CLIENT_UNIQUE_ID2);
-    fail ("The registry was created successfully.");
+    try {
+      s_aSMPHandler.createSMPData (m_aSMPService, CLIENT_UNIQUE_ID2);
+      fail ("The registry was created successfully.");
+    }
+    catch (final BadRequestException ex) {}
   }
 
-  @Test (expected = UnauthorizedException.class)
+  @Test
   public void testDeleteMetadataNotOwnedID () throws Exception {
-    s_aSMPHandler.deleteSMPData (SMP_ID, CLIENT_UNIQUE_ID2);
-    fail ("The registry was deleted successfully.");
+    try {
+      s_aSMPHandler.deleteSMPData (SMP_ID, CLIENT_UNIQUE_ID2);
+      fail ("The registry was deleted successfully.");
+    }
+    catch (final UnauthorizedException ex) {}
   }
 
   @Test
@@ -206,19 +219,27 @@ public final class JPAParticipantDataHandlerTest {
     assertEquals (SMP_PHYSICAL_ADDRESS2, result.getPublisherEndpoint ().getPhysicalAddress ());
   }
 
-  @Test (expected = UnauthorizedException.class)
+  @Test
   public void testUpdateMetadataNotOwned () throws Exception {
-    final PublisherEndpointType endpoint = m_aSMPService.getPublisherEndpoint ();
-    endpoint.setLogicalAddress (SMP_LOGICAL_ADDRESS2);
-    endpoint.setPhysicalAddress (SMP_PHYSICAL_ADDRESS2);
+    try {
+      final PublisherEndpointType endpoint = m_aSMPService.getPublisherEndpoint ();
+      endpoint.setLogicalAddress (SMP_LOGICAL_ADDRESS2);
+      endpoint.setPhysicalAddress (SMP_PHYSICAL_ADDRESS2);
 
-    s_aSMPHandler.updateSMPData (m_aSMPService, CLIENT_UNIQUE_ID2);
+      s_aSMPHandler.updateSMPData (m_aSMPService, CLIENT_UNIQUE_ID2);
+      fail ();
+    }
+    catch (final UnauthorizedException ex) {}
   }
 
-  @Test (expected = NotFoundException.class)
+  @Test
   public void testUpdateMetadataNotExist () throws Exception {
-    m_aSMPService.setServiceMetadataPublisherID (SMP_ID2);
-    s_aSMPHandler.updateSMPData (m_aSMPService, CLIENT_UNIQUE_ID2);
+    try {
+      m_aSMPService.setServiceMetadataPublisherID (SMP_ID2);
+      s_aSMPHandler.updateSMPData (m_aSMPService, CLIENT_UNIQUE_ID2);
+      fail ();
+    }
+    catch (final NotFoundException ex) {}
   }
 
   /*
@@ -238,13 +259,16 @@ public final class JPAParticipantDataHandlerTest {
     assertEquals (PARTICIPANT_IDENTIFIER_SCHEME, result.getParticipantIdentifier ().get (0).getScheme ());
   }
 
-  @Test (expected = NotFoundException.class)
+  @Test
   public void testCreateParticipantIdentifierNotExistID () throws Exception {
-    m_aParticipantIdentifierPage.setServiceMetadataPublisherID (SMP_ID2);
-    s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
+    try {
+      m_aParticipantIdentifierPage.setServiceMetadataPublisherID (SMP_ID2);
+      s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
+    }
+    catch (final NotFoundException ex) {}
   }
 
-  @Test (expected = UnauthorizedException.class)
+  @Test
   public void testCreateParticipantIdentifierNotOwnedID () throws Exception {
     try {
       m_aSMPService.setServiceMetadataPublisherID (SMP_ID2);
@@ -254,17 +278,25 @@ public final class JPAParticipantDataHandlerTest {
       fail ("The create of second metadata shouldn't fail.");
     }
 
-    m_aParticipantIdentifierPage.setServiceMetadataPublisherID (SMP_ID2);
-    s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
+    try {
+      m_aParticipantIdentifierPage.setServiceMetadataPublisherID (SMP_ID2);
+      s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
+      fail ();
+    }
+    catch (final UnauthorizedException ex) {}
   }
 
-  @Test (expected = BadRequestException.class)
+  @Test
   public void testCreateParticipantIdentifierAlreadySelfOwned () throws Exception {
-    s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
-    s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
+    try {
+      s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
+      s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
+      fail ();
+    }
+    catch (final BadRequestException ex) {}
   }
 
-  @Test (expected = BadRequestException.class)
+  @Test
   public void testCreateParticipantIdentifierAlreadyOwnedByOther () throws Exception {
     try {
       m_aSMPService.setServiceMetadataPublisherID (SMP_ID2);
@@ -274,9 +306,13 @@ public final class JPAParticipantDataHandlerTest {
       fail ("The create of second metadata shouldn't fail.");
     }
 
-    s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
-    m_aParticipantIdentifierPage.setServiceMetadataPublisherID (SMP_ID2);
-    s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID2);
+    try {
+      s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
+      m_aParticipantIdentifierPage.setServiceMetadataPublisherID (SMP_ID2);
+      s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID2);
+      fail ();
+    }
+    catch (final BadRequestException ex) {}
   }
 
   @Test
@@ -295,16 +331,20 @@ public final class JPAParticipantDataHandlerTest {
     assertEquals (0, result.getParticipantIdentifier ().size ());
   }
 
-  @Test (expected = UnauthorizedException.class)
+  @Test
   public void testDeleteParticipantIdentifierNotExistID () throws Exception {
-    s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
+    try {
+      s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
 
-    m_aParticipantIdentifierPage.setServiceMetadataPublisherID (SMP_ID2);
-    s_aParticipantHandler.deleteParticipantIdentifiers (m_aParticipantIdentifierPage.getParticipantIdentifier (),
-                                                        CLIENT_UNIQUE_ID2);
+      m_aParticipantIdentifierPage.setServiceMetadataPublisherID (SMP_ID2);
+      s_aParticipantHandler.deleteParticipantIdentifiers (m_aParticipantIdentifierPage.getParticipantIdentifier (),
+                                                          CLIENT_UNIQUE_ID2);
+      fail ();
+    }
+    catch (final UnauthorizedException ex) {}
   }
 
-  @Test (expected = UnauthorizedException.class)
+  @Test
   public void testDeleteParticipantIdentifierNotOwnedID () throws Exception {
     try {
       m_aSMPService.setServiceMetadataPublisherID (SMP_ID2);
@@ -314,11 +354,15 @@ public final class JPAParticipantDataHandlerTest {
       fail ("The create of second metadata shouldn't fail.");
     }
 
-    s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
+    try {
+      s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
 
-    m_aParticipantIdentifierPage.setServiceMetadataPublisherID (SMP_ID2);
-    s_aParticipantHandler.deleteParticipantIdentifiers (m_aParticipantIdentifierPage.getParticipantIdentifier (),
-                                                        CLIENT_UNIQUE_ID2);
+      m_aParticipantIdentifierPage.setServiceMetadataPublisherID (SMP_ID2);
+      s_aParticipantHandler.deleteParticipantIdentifiers (m_aParticipantIdentifierPage.getParticipantIdentifier (),
+                                                          CLIENT_UNIQUE_ID2);
+      fail ();
+    }
+    catch (final UnauthorizedException ex) {}
   }
 
   @Test
@@ -370,25 +414,33 @@ public final class JPAParticipantDataHandlerTest {
     assertEquals (0, resultID1.getParticipantIdentifier ().size ());
   }
 
-  @Test (expected = NotFoundException.class)
+  @Test
   public void testMigrateNotExistingKeyAndIdentifier () throws Exception {
-    final MigrationRecordType migrationRecord = s_aObjFactory.createMigrationRecordType ();
-    migrationRecord.setMigrationKey ("NOT_EXISTING_KEY");
-    migrationRecord.setParticipantIdentifier (SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_IDENTIFIER_DEFAULT));
-    migrationRecord.setServiceMetadataPublisherID (SMP_ID);
+    try {
+      final MigrationRecordType migrationRecord = s_aObjFactory.createMigrationRecordType ();
+      migrationRecord.setMigrationKey ("NOT_EXISTING_KEY");
+      migrationRecord.setParticipantIdentifier (SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_IDENTIFIER_DEFAULT));
+      migrationRecord.setServiceMetadataPublisherID (SMP_ID);
 
-    s_aParticipantHandler.migrate (migrationRecord, CLIENT_UNIQUE_ID);
+      s_aParticipantHandler.migrate (migrationRecord, CLIENT_UNIQUE_ID);
+      fail ();
+    }
+    catch (final NotFoundException ex) {}
   }
 
-  @Test (expected = UnauthorizedException.class)
+  @Test
   public void testPrepareToMigrateNotOwnedIdentifier () throws Exception {
-    s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
+    try {
+      s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
 
-    final MigrationRecordType migrationRecord = s_aObjFactory.createMigrationRecordType ();
-    migrationRecord.setMigrationKey ("EXISTING_KEY");
-    migrationRecord.setParticipantIdentifier (SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_IDENTIFIER_DEFAULT));
+      final MigrationRecordType migrationRecord = s_aObjFactory.createMigrationRecordType ();
+      migrationRecord.setMigrationKey ("EXISTING_KEY");
+      migrationRecord.setParticipantIdentifier (SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_IDENTIFIER_DEFAULT));
 
-    s_aParticipantHandler.prepareToMigrate (migrationRecord, CLIENT_UNIQUE_ID2);
+      s_aParticipantHandler.prepareToMigrate (migrationRecord, CLIENT_UNIQUE_ID2);
+      fail ();
+    }
+    catch (final UnauthorizedException ex) {}
   }
 
   @Test

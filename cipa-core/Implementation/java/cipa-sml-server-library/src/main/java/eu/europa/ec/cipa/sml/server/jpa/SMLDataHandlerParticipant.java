@@ -41,6 +41,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
 import org.busdox.servicemetadata.locator._1.MigrationRecordType;
@@ -52,9 +53,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.phloc.commons.collections.ContainerHelper;
+import com.phloc.db.jpa.IEntityManagerProvider;
+import com.phloc.db.jpa.JPAEnabledManager;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
-import eu.europa.ec.cipa.commons.jpa.AbstractJPAEnabledManager;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.sml.server.IParticipantDataHandler;
 import eu.europa.ec.cipa.sml.server.IParticipantDataHandlerCallback;
@@ -76,14 +78,21 @@ import eu.europa.ec.cipa.sml.server.exceptions.UnknownUserException;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class JPAParticipantDataHandler extends AbstractJPAEnabledManager implements IParticipantDataHandler {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (JPAParticipantDataHandler.class);
+public final class SMLDataHandlerParticipant extends JPAEnabledManager implements IParticipantDataHandler {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (SMLDataHandlerParticipant.class);
 
   private final ObjectFactory m_aObjFactory = new ObjectFactory ();
   private IParticipantDataHandlerCallback m_aCallback;
 
-  public JPAParticipantDataHandler () {
-    super (SMLJPAWrapper.getInstance ());
+  public SMLDataHandlerParticipant () {
+    super (new IEntityManagerProvider () {
+      // This additional indirection level is required!!!
+      // So that for every request the correct getInstance is invoked!
+      @Nonnull
+      public EntityManager getEntityManager () {
+        return SMLEntityManagerWrapper.getInstance ().getEntityManager ();
+      }
+    });
   }
 
   public void setCallback (@Nullable final IParticipantDataHandlerCallback aCallback) {

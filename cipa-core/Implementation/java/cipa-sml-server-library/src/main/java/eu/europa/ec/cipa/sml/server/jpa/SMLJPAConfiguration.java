@@ -35,36 +35,40 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.sml.server.jetty;
+package eu.europa.ec.cipa.sml.server.jpa;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.ConnectException;
-import java.net.InetAddress;
-import java.net.Socket;
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
+
+import com.phloc.commons.GlobalDebug;
+import com.phloc.commons.annotations.PresentForCodeCoverage;
 
 /**
+ * Default JPA configuration file properties
+ * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class JettyStopSML {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (JettyStopSML.class);
+@Immutable
+public final class SMLJPAConfiguration {
+  public static final String CONFIG_JDBC_DRIVER = "jdbc.driver";
+  public static final String CONFIG_JDBC_URL = "jdbc.url";
+  public static final String CONFIG_JDBC_USER = "jdbc.user";
+  public static final String CONFIG_JDBC_PASSWORD = "jdbc.password";
+  public static final String CONFIG_TARGET_DATABASE = "target-database";
+  public static final String CONFIG_JDBC_READ_CONNECTIONS_MAX = "jdbc.read-connections.max";
+  public static final String CONFIG_DDL_GENERATION_MODE = PersistenceUnitProperties.DDL_GENERATION_MODE;
 
-  public static void main (final String [] args) throws IOException {
-    try {
-      final Socket s = new Socket (InetAddress.getByName (null), JettyMonitor.STOP_PORT);
-      s.setSoLinger (false, 0);
+  @PresentForCodeCoverage
+  @SuppressWarnings ("unused")
+  private static final SMLJPAConfiguration s_aInstance = new SMLJPAConfiguration ();
 
-      final OutputStream out = s.getOutputStream ();
-      s_aLogger.info ("Sending jetty stop request");
-      out.write ((JettyMonitor.STOP_KEY + "\r\nstop\r\n").getBytes ());
-      out.flush ();
-      s.close ();
-    }
-    catch (final ConnectException ex) {
-      s_aLogger.warn ("Jetty is not running");
-    }
+  // Write SQL file only in debug mode, so that the production version can be
+  // read-only!
+  @Nonnull
+  public static String getDefaultDDLGenerationMode () {
+    return GlobalDebug.isDebugMode () ? PersistenceUnitProperties.DDL_SQL_SCRIPT_GENERATION
+                                     : PersistenceUnitProperties.NONE;
   }
 }

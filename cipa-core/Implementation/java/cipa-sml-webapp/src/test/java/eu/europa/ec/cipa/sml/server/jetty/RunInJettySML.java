@@ -43,7 +43,7 @@ import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.webapp.WebAppContext;
+import org.eclipse.jetty.webapp.WebAppContext; 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,8 +58,8 @@ import com.phloc.commons.SystemProperties;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class RunInJettySMLMgr {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (RunInJettySMLMgr.class);
+public final class RunInJettySML {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (RunInJettySML.class);
   private static final String RESOURCE_PREFIX = "target/webapp-classes";
 
   public static void main (final String... args) throws Exception {
@@ -79,7 +79,7 @@ public final class RunInJettySMLMgr {
     aWebAppCtx.setDescriptor (RESOURCE_PREFIX + "/WEB-INF/web.xml");
     aWebAppCtx.setResourceBase (RESOURCE_PREFIX);
     aWebAppCtx.setContextPath ("/");
-    aWebAppCtx.setTempDirectory (new File (SystemProperties.getTmpDir () + '/' + RunInJettySMLMgr.class.getName ()));
+    aWebAppCtx.setTempDirectory (new File (SystemProperties.getTmpDir () + '/' + RunInJettySML.class.getName ()));
     aWebAppCtx.setParentLoaderPriority (true);
     aServer.setHandler (aWebAppCtx);
     final ServletContextHandler aCtx = aWebAppCtx;
