@@ -113,7 +113,22 @@ public interface IDataManager {
    * @return The corresponding document id's.
    * @throws Throwable
    */
+  @Nonnull
+  @ReturnsMutableCopy
   List <DocumentIdentifierType> getDocumentTypes (@Nonnull ParticipantIdentifierType aServiceGroupID) throws Throwable;
+
+  /**
+   * Gets the list of service metadata objects corresponding to a given service
+   * group id.
+   * 
+   * @param aServiceGroupID
+   *        The service group id.
+   * @return A list of service metadata objects.
+   * @throws Throwable
+   */
+  @Nonnull
+  @ReturnsMutableCopy
+  Collection <ServiceMetadataType> getServices (@Nonnull ParticipantIdentifierType aServiceGroupID) throws Throwable;
 
   /**
    * Gets the service metadata corresponding to the service group id and
@@ -126,6 +141,7 @@ public interface IDataManager {
    * @return The corresponding service metadata.
    * @throws Throwable
    */
+  @Nullable
   ServiceMetadataType getService (@Nonnull ParticipantIdentifierType aServiceGroupID,
                                   @Nonnull DocumentIdentifierType aDocType) throws Throwable;
 
@@ -167,17 +183,7 @@ public interface IDataManager {
    *         place.
    * @throws Throwable
    */
+  @Nullable
   ServiceMetadataType getRedirection (@Nonnull ParticipantIdentifierType aServiceGroupID,
                                       @Nonnull DocumentIdentifierType aDocTypeID) throws Throwable;
-
-  /**
-   * Gets the list of service metadata objects corresponding to a given service
-   * group id.
-   * 
-   * @param aServiceGroupID
-   *        The service group id.
-   * @return A list of service metadata objects.
-   * @throws Throwable
-   */
-  Collection <ServiceMetadataType> getServices (@Nonnull ParticipantIdentifierType aServiceGroupID) throws Throwable;
 }

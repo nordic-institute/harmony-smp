@@ -51,7 +51,7 @@ import com.phloc.commons.annotations.PresentForCodeCoverage;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
-public final class JPAConfiguration {
+public final class SMPJPAConfiguration {
   public static final String CONFIG_JDBC_DRIVER = "jdbc.driver";
   public static final String CONFIG_JDBC_URL = "jdbc.url";
   public static final String CONFIG_JDBC_USER = "jdbc.user";
@@ -62,7 +62,7 @@ public final class JPAConfiguration {
 
   @PresentForCodeCoverage
   @SuppressWarnings ("unused")
-  private static final JPAConfiguration s_aInstance = new JPAConfiguration ();
+  private static final SMPJPAConfiguration s_aInstance = new SMPJPAConfiguration ();
 
   // Write SQL file only in debug mode, so that the production version can be
   // read-only!

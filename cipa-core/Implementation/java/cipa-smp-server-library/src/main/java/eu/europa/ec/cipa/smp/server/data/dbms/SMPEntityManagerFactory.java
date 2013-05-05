@@ -58,7 +58,7 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 public final class SMPEntityManagerFactory extends AbstractGlobalEntityManagerFactory {
   @Nonnull
   @ReturnsMutableCopy
-  private static Map <String, Object> _createSettingsMap () {
+  private static Map <String, Object> _createPropertiesMap () {
     // Standard configuration file
     final ConfigFile aCF = ConfigFile.getInstance ();
 
@@ -66,14 +66,14 @@ public final class SMPEntityManagerFactory extends AbstractGlobalEntityManagerFa
     // Read all properties from the standard configuration file
     // Connection pooling
     ret.put (PersistenceUnitProperties.CONNECTION_POOL_MAX,
-             aCF.getString (JPAConfiguration.CONFIG_JDBC_READ_CONNECTIONS_MAX));
+             aCF.getString (SMPJPAConfiguration.CONFIG_JDBC_READ_CONNECTIONS_MAX));
 
     // EclipseLink should create the database schema automatically
     // Values: Values: none/create-tables/drop-and-create-tables
     ret.put (PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
     ret.put (PersistenceUnitProperties.DDL_GENERATION_MODE,
-             aCF.getString (JPAConfiguration.CONFIG_DDL_GENERATION_MODE,
-                            JPAConfiguration.getDefaultDDLGenerationMode ()));
+             aCF.getString (SMPJPAConfiguration.CONFIG_DDL_GENERATION_MODE,
+                            SMPJPAConfiguration.getDefaultDDLGenerationMode ()));
     ret.put (PersistenceUnitProperties.CREATE_JDBC_DDL_FILE, "db-create-smp.sql");
     ret.put (PersistenceUnitProperties.DROP_JDBC_DDL_FILE, "db-drop-smp.sql");
 
@@ -87,13 +87,13 @@ public final class SMPEntityManagerFactory extends AbstractGlobalEntityManagerFa
   @Deprecated
   @UsedViaReflection
   public SMPEntityManagerFactory () {
-    super (ConfigFile.getInstance ().getString (JPAConfiguration.CONFIG_JDBC_DRIVER),
-           ConfigFile.getInstance ().getString (JPAConfiguration.CONFIG_JDBC_URL),
-           ConfigFile.getInstance ().getString (JPAConfiguration.CONFIG_JDBC_USER),
-           ConfigFile.getInstance ().getString (JPAConfiguration.CONFIG_JDBC_PASSWORD),
-           ConfigFile.getInstance ().getString (JPAConfiguration.CONFIG_TARGET_DATABASE),
+    super (ConfigFile.getInstance ().getString (SMPJPAConfiguration.CONFIG_JDBC_DRIVER),
+           ConfigFile.getInstance ().getString (SMPJPAConfiguration.CONFIG_JDBC_URL),
+           ConfigFile.getInstance ().getString (SMPJPAConfiguration.CONFIG_JDBC_USER),
+           ConfigFile.getInstance ().getString (SMPJPAConfiguration.CONFIG_JDBC_PASSWORD),
+           ConfigFile.getInstance ().getString (SMPJPAConfiguration.CONFIG_TARGET_DATABASE),
            "peppol-smp",
-           _createSettingsMap ());
+           _createPropertiesMap ());
   }
 
   @Nonnull

@@ -277,12 +277,12 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     JPAExecutionResult <?> ret;
     ret = doInTransaction (new Runnable () {
       public void run () {
-        final EntityManager aEM = getEntityManager ();
         _verifyUser (aCredentials);
 
         m_aHook.delete (aServiceGroupID);
 
         // Check if the service group is existing
+        final EntityManager aEM = getEntityManager ();
         final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID (aServiceGroupID);
         final DBServiceGroup aDBServiceGroup = aEM.find (DBServiceGroup.class, aDBServiceGroupID);
         if (aDBServiceGroup == null) {
@@ -329,30 +329,6 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     return ret.get ();
   }
 
-  @Nullable
-  public ServiceMetadataType getService (@Nonnull final ParticipantIdentifierType aServiceGroupID,
-                                         @Nonnull final DocumentIdentifierType aDocType) throws Throwable {
-    JPAExecutionResult <ServiceMetadataType> ret;
-    ret = doSelect (new Callable <ServiceMetadataType> () {
-      public ServiceMetadataType call () throws Exception {
-        final DBServiceMetadataID id = new DBServiceMetadataID (aServiceGroupID, aDocType);
-        final DBServiceMetadata aDBServiceMetadata = getEntityManager ().find (DBServiceMetadata.class, id);
-
-        if (aDBServiceMetadata == null) {
-          s_aLogger.info ("Service group ID " + id.toString () + " not found");
-          return null;
-        }
-
-        final ServiceMetadataType serviceMetadata = m_aObjFactory.createServiceMetadataType ();
-        _convertFromDBToService (aDBServiceMetadata, serviceMetadata);
-        return serviceMetadata;
-      }
-    });
-    if (ret.hasThrowable ())
-      throw ret.getThrowable ();
-    return ret.get ();
-  }
-
   @Nonnull
   @ReturnsMutableCopy
   public Collection <ServiceMetadataType> getServices (@Nonnull final ParticipantIdentifierType aServiceGroupID) throws Throwable {
@@ -376,6 +352,30 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
           aList.add (aServiceMetadata);
         }
         return aList;
+      }
+    });
+    if (ret.hasThrowable ())
+      throw ret.getThrowable ();
+    return ret.get ();
+  }
+
+  @Nullable
+  public ServiceMetadataType getService (@Nonnull final ParticipantIdentifierType aServiceGroupID,
+                                         @Nonnull final DocumentIdentifierType aDocType) throws Throwable {
+    JPAExecutionResult <ServiceMetadataType> ret;
+    ret = doSelect (new Callable <ServiceMetadataType> () {
+      public ServiceMetadataType call () throws Exception {
+        final DBServiceMetadataID id = new DBServiceMetadataID (aServiceGroupID, aDocType);
+        final DBServiceMetadata aDBServiceMetadata = getEntityManager ().find (DBServiceMetadata.class, id);
+
+        if (aDBServiceMetadata == null) {
+          s_aLogger.info ("Service group ID " + id.toString () + " not found");
+          return null;
+        }
+
+        final ServiceMetadataType serviceMetadata = m_aObjFactory.createServiceMetadataType ();
+        _convertFromDBToService (aDBServiceMetadata, serviceMetadata);
+        return serviceMetadata;
       }
     });
     if (ret.hasThrowable ())
