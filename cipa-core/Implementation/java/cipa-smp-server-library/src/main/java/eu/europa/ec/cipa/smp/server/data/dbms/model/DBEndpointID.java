@@ -47,6 +47,7 @@ import javax.persistence.Transient;
 import com.phloc.commons.annotations.UsedViaReflection;
 import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.hash.HashCodeGenerator;
+import com.phloc.commons.string.ToStringGenerator;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyDocumentTypeIdentifier;
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
@@ -61,10 +62,10 @@ import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
  */
 @Embeddable
 public class DBEndpointID implements Serializable {
-  private String m_sBusinessIdentifierScheme;
-  private String m_sBusinessIdentifier;
-  private String m_sDocumentIdentifierScheme;
-  private String m_sDocumentIdentifier;
+  private String m_sParticipantIdentifierScheme;
+  private String m_sParticipantIdentifier;
+  private String m_sDocumentTypeIdentifierScheme;
+  private String m_sDocumentTypeIdentifier;
   private String m_sProcessIdentifierScheme;
   private String m_sProcessIdentifier;
   private String m_sEndpointReference;
@@ -86,20 +87,20 @@ public class DBEndpointID implements Serializable {
 
   @Column (name = "businessIdentifierScheme", nullable = false, length = CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH)
   public String getBusinessIdentifierScheme () {
-    return m_sBusinessIdentifierScheme;
+    return m_sParticipantIdentifierScheme;
   }
 
   public void setBusinessIdentifierScheme (final String sBusinessIdentifierScheme) {
-    m_sBusinessIdentifierScheme = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifierScheme);
+    m_sParticipantIdentifierScheme = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifierScheme);
   }
 
   @Column (name = "businessIdentifier", nullable = false, length = CIdentifier.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)
   public String getBusinessIdentifier () {
-    return m_sBusinessIdentifier;
+    return m_sParticipantIdentifier;
   }
 
   public void setBusinessIdentifier (final String sBusinessIdentifier) {
-    m_sBusinessIdentifier = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifier);
+    m_sParticipantIdentifier = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifier);
   }
 
   @Transient
@@ -134,22 +135,22 @@ public class DBEndpointID implements Serializable {
 
   @Column (name = "documentIdentifierScheme", nullable = false, length = CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH)
   public String getDocumentIdentifierScheme () {
-    return m_sDocumentIdentifierScheme;
+    return m_sDocumentTypeIdentifierScheme;
   }
 
   public void setDocumentIdentifierScheme (final String sDocumentIdentifierScheme) {
-    m_sDocumentIdentifierScheme = sDocumentIdentifierScheme;
+    m_sDocumentTypeIdentifierScheme = sDocumentIdentifierScheme;
   }
 
   @Column (name = "documentIdentifier",
            nullable = false,
            length = CIdentifier.MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH)
   public String getDocumentIdentifier () {
-    return m_sDocumentIdentifier;
+    return m_sDocumentTypeIdentifier;
   }
 
   public void setDocumentIdentifier (final String sDocumentIdentifier) {
-    m_sDocumentIdentifier = sDocumentIdentifier;
+    m_sDocumentTypeIdentifier = sDocumentIdentifier;
   }
 
   @Transient
@@ -183,10 +184,10 @@ public class DBEndpointID implements Serializable {
     if (!(other instanceof DBEndpointID))
       return false;
     final DBEndpointID rhs = (DBEndpointID) other;
-    return EqualsUtils.equals (m_sBusinessIdentifierScheme, rhs.m_sBusinessIdentifierScheme) &&
-           EqualsUtils.equals (m_sBusinessIdentifier, rhs.m_sBusinessIdentifier) &&
-           EqualsUtils.equals (m_sDocumentIdentifierScheme, rhs.m_sDocumentIdentifierScheme) &&
-           EqualsUtils.equals (m_sDocumentIdentifier, rhs.m_sDocumentIdentifier) &&
+    return EqualsUtils.equals (m_sParticipantIdentifierScheme, rhs.m_sParticipantIdentifierScheme) &&
+           EqualsUtils.equals (m_sParticipantIdentifier, rhs.m_sParticipantIdentifier) &&
+           EqualsUtils.equals (m_sDocumentTypeIdentifierScheme, rhs.m_sDocumentTypeIdentifierScheme) &&
+           EqualsUtils.equals (m_sDocumentTypeIdentifier, rhs.m_sDocumentTypeIdentifier) &&
            EqualsUtils.equals (m_sProcessIdentifierScheme, rhs.m_sProcessIdentifierScheme) &&
            EqualsUtils.equals (m_sProcessIdentifier, rhs.m_sProcessIdentifier) &&
            EqualsUtils.equals (m_sEndpointReference, rhs.m_sEndpointReference) &&
@@ -195,14 +196,27 @@ public class DBEndpointID implements Serializable {
 
   @Override
   public int hashCode () {
-    return new HashCodeGenerator (this).append (m_sBusinessIdentifierScheme)
-                                       .append (m_sBusinessIdentifier)
-                                       .append (m_sDocumentIdentifierScheme)
-                                       .append (m_sDocumentIdentifier)
+    return new HashCodeGenerator (this).append (m_sParticipantIdentifierScheme)
+                                       .append (m_sParticipantIdentifier)
+                                       .append (m_sDocumentTypeIdentifierScheme)
+                                       .append (m_sDocumentTypeIdentifier)
                                        .append (m_sProcessIdentifierScheme)
                                        .append (m_sProcessIdentifier)
                                        .append (m_sEndpointReference)
                                        .append (m_sTransportProfile)
                                        .getHashCode ();
+  }
+
+  @Override
+  public String toString () {
+    return new ToStringGenerator (this).append ("participantIDScheme", m_sParticipantIdentifierScheme)
+                                       .append ("participantIDValue", m_sParticipantIdentifier)
+                                       .append ("documentTypeIDScheme", m_sDocumentTypeIdentifierScheme)
+                                       .append ("documentTypeIDValue", m_sDocumentTypeIdentifier)
+                                       .append ("processIDScheme", m_sProcessIdentifierScheme)
+                                       .append ("processIDValue", m_sProcessIdentifier)
+                                       .append ("endpointReference", m_sEndpointReference)
+                                       .append ("transportProfile", m_sTransportProfile)
+                                       .toString ();
   }
 }

@@ -45,6 +45,7 @@ import javax.persistence.Embeddable;
 
 import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.hash.HashCodeGenerator;
+import com.phloc.commons.string.ToStringGenerator;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyDocumentTypeIdentifier;
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
@@ -58,8 +59,8 @@ import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
  */
 @Embeddable
 public class DBServiceMetadataRedirectionID implements Serializable {
-  private String m_sBusinessIdentifierScheme;
-  private String m_sBusinessIdentifier;
+  private String m_sParticipantIdentifierScheme;
+  private String m_sParticipantIdentifier;
   private String m_sDocumentTypeIdentifierScheme;
   private String m_sDocumentTypeIdentifier;
 
@@ -75,20 +76,20 @@ public class DBServiceMetadataRedirectionID implements Serializable {
 
   @Column (name = "businessIdentifierScheme", nullable = false, length = CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH)
   public String getBusinessIdentifierScheme () {
-    return m_sBusinessIdentifierScheme;
+    return m_sParticipantIdentifierScheme;
   }
 
   public void setBusinessIdentifierScheme (final String sBusinessIdentifierScheme) {
-    m_sBusinessIdentifierScheme = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifierScheme);
+    m_sParticipantIdentifierScheme = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifierScheme);
   }
 
   @Column (name = "businessIdentifier", nullable = false, length = CIdentifier.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)
   public String getBusinessIdentifier () {
-    return m_sBusinessIdentifier;
+    return m_sParticipantIdentifier;
   }
 
   public void setBusinessIdentifier (final String sBusinessIdentifier) {
-    m_sBusinessIdentifier = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifier);
+    m_sParticipantIdentifier = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifier);
   }
 
   @Column (name = "documentIdentifierScheme", nullable = false, length = CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH)
@@ -118,18 +119,27 @@ public class DBServiceMetadataRedirectionID implements Serializable {
     if (!(other instanceof DBServiceMetadataRedirectionID))
       return false;
     final DBServiceMetadataRedirectionID rhs = (DBServiceMetadataRedirectionID) other;
-    return EqualsUtils.equals (m_sBusinessIdentifierScheme, rhs.m_sBusinessIdentifierScheme) &&
-           EqualsUtils.equals (m_sBusinessIdentifier, rhs.m_sBusinessIdentifier) &&
+    return EqualsUtils.equals (m_sParticipantIdentifierScheme, rhs.m_sParticipantIdentifierScheme) &&
+           EqualsUtils.equals (m_sParticipantIdentifier, rhs.m_sParticipantIdentifier) &&
            EqualsUtils.equals (m_sDocumentTypeIdentifierScheme, rhs.m_sDocumentTypeIdentifierScheme) &&
            EqualsUtils.equals (m_sDocumentTypeIdentifier, rhs.m_sDocumentTypeIdentifier);
   }
 
   @Override
   public int hashCode () {
-    return new HashCodeGenerator (this).append (m_sBusinessIdentifierScheme)
-                                       .append (m_sBusinessIdentifier)
+    return new HashCodeGenerator (this).append (m_sParticipantIdentifierScheme)
+                                       .append (m_sParticipantIdentifier)
                                        .append (m_sDocumentTypeIdentifierScheme)
                                        .append (m_sDocumentTypeIdentifier)
                                        .getHashCode ();
+  }
+
+  @Override
+  public String toString () {
+    return new ToStringGenerator (this).append ("participantIDScheme", m_sParticipantIdentifierScheme)
+                                       .append ("participantIDValue", m_sParticipantIdentifier)
+                                       .append ("documentTypeIDScheme", m_sDocumentTypeIdentifierScheme)
+                                       .append ("documentTypeIDValue", m_sDocumentTypeIdentifier)
+                                       .toString ();
   }
 }

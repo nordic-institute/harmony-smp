@@ -61,8 +61,8 @@ import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifi
  */
 @Embeddable
 public class DBServiceGroupID implements Serializable {
-  private String m_sBusinessIdentifierScheme;
-  private String m_sBusinessIdentifier;
+  private String m_sParticipantIdentifierScheme;
+  private String m_sParticipantIdentifier;
 
   @Deprecated
   @UsedViaReflection
@@ -75,26 +75,26 @@ public class DBServiceGroupID implements Serializable {
 
   @Column (name = "businessIdentifierScheme", nullable = false, length = CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH)
   public String getBusinessIdentifierScheme () {
-    return m_sBusinessIdentifierScheme;
+    return m_sParticipantIdentifierScheme;
   }
 
   public void setBusinessIdentifierScheme (final String sBusinessIdentifierScheme) {
-    m_sBusinessIdentifierScheme = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifierScheme);
+    m_sParticipantIdentifierScheme = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifierScheme);
   }
 
   @Column (name = "businessIdentifier", nullable = false, length = CIdentifier.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)
   public String getBusinessIdentifier () {
-    return m_sBusinessIdentifier;
+    return m_sParticipantIdentifier;
   }
 
   public void setBusinessIdentifier (final String sBusinessIdentifier) {
-    m_sBusinessIdentifier = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifier);
+    m_sParticipantIdentifier = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifier);
   }
 
   @Transient
   @Nonnull
   public SimpleParticipantIdentifier asBusinessIdentifier () {
-    return new SimpleParticipantIdentifier (m_sBusinessIdentifierScheme, m_sBusinessIdentifier);
+    return new SimpleParticipantIdentifier (m_sParticipantIdentifierScheme, m_sParticipantIdentifier);
   }
 
   @Override
@@ -104,21 +104,21 @@ public class DBServiceGroupID implements Serializable {
     if (!(o instanceof DBServiceGroupID))
       return false;
     final DBServiceGroupID rhs = (DBServiceGroupID) o;
-    return EqualsUtils.equals (m_sBusinessIdentifierScheme, rhs.m_sBusinessIdentifierScheme) &&
-           EqualsUtils.equals (m_sBusinessIdentifier, rhs.m_sBusinessIdentifier);
+    return EqualsUtils.equals (m_sParticipantIdentifierScheme, rhs.m_sParticipantIdentifierScheme) &&
+           EqualsUtils.equals (m_sParticipantIdentifier, rhs.m_sParticipantIdentifier);
   }
 
   @Override
   public int hashCode () {
-    return new HashCodeGenerator (this).append (m_sBusinessIdentifierScheme)
-                                       .append (m_sBusinessIdentifier)
+    return new HashCodeGenerator (this).append (m_sParticipantIdentifierScheme)
+                                       .append (m_sParticipantIdentifier)
                                        .getHashCode ();
   }
 
   @Override
   public String toString () {
-    return new ToStringGenerator (this).append ("scheme", m_sBusinessIdentifierScheme)
-                                       .append ("value", m_sBusinessIdentifier)
+    return new ToStringGenerator (this).append ("participantIDScheme", m_sParticipantIdentifierScheme)
+                                       .append ("participantIDValue", m_sParticipantIdentifier)
                                        .toString ();
   }
 }

@@ -69,8 +69,8 @@ import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
  */
 @Embeddable
 public class DBProcessID implements Serializable {
-  private String m_sBusinessIdentifierScheme;
-  private String m_sBusinessIdentifier;
+  private String m_sParticipantIdentifierScheme;
+  private String m_sParticipantIdentifier;
   private String m_sDocumentTypeIdentifierScheme;
   private String m_sDocumentTypeIdentifier;
   private String m_sProcessIdentifierScheme;
@@ -88,20 +88,20 @@ public class DBProcessID implements Serializable {
 
   @Column (name = "businessIdentifierScheme", nullable = false, length = CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH)
   public String getBusinessIdentifierScheme () {
-    return m_sBusinessIdentifierScheme;
+    return m_sParticipantIdentifierScheme;
   }
 
   public void setBusinessIdentifierScheme (final String sBusinessIdentifierScheme) {
-    m_sBusinessIdentifierScheme = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifierScheme);
+    m_sParticipantIdentifierScheme = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifierScheme);
   }
 
   @Column (name = "businessIdentifier", nullable = false, length = CIdentifier.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)
   public String getBusinessIdentifier () {
-    return m_sBusinessIdentifier;
+    return m_sParticipantIdentifier;
   }
 
   public void setBusinessIdentifier (final String sBusinessIdentifier) {
-    m_sBusinessIdentifier = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifier);
+    m_sParticipantIdentifier = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifier);
   }
 
   @Transient
@@ -163,7 +163,7 @@ public class DBProcessID implements Serializable {
   @Transient
   @Nonnull
   public ParticipantIdentifierType asBusinessIdentifier () {
-    return new SimpleParticipantIdentifier (m_sBusinessIdentifierScheme, m_sBusinessIdentifier);
+    return new SimpleParticipantIdentifier (m_sParticipantIdentifierScheme, m_sParticipantIdentifier);
   }
 
   @Transient
@@ -185,8 +185,8 @@ public class DBProcessID implements Serializable {
     if (!(other instanceof DBProcessID))
       return false;
     final DBProcessID rhs = (DBProcessID) other;
-    return EqualsUtils.equals (m_sBusinessIdentifierScheme, rhs.m_sBusinessIdentifierScheme) &&
-           EqualsUtils.equals (m_sBusinessIdentifier, rhs.m_sBusinessIdentifier) &&
+    return EqualsUtils.equals (m_sParticipantIdentifierScheme, rhs.m_sParticipantIdentifierScheme) &&
+           EqualsUtils.equals (m_sParticipantIdentifier, rhs.m_sParticipantIdentifier) &&
            EqualsUtils.equals (m_sDocumentTypeIdentifierScheme, rhs.m_sDocumentTypeIdentifierScheme) &&
            EqualsUtils.equals (m_sDocumentTypeIdentifier, rhs.m_sDocumentTypeIdentifier) &&
            EqualsUtils.equals (m_sProcessIdentifierScheme, rhs.m_sProcessIdentifierScheme) &&
@@ -195,8 +195,8 @@ public class DBProcessID implements Serializable {
 
   @Override
   public int hashCode () {
-    return new HashCodeGenerator (this).append (m_sBusinessIdentifierScheme)
-                                       .append (m_sBusinessIdentifier)
+    return new HashCodeGenerator (this).append (m_sParticipantIdentifierScheme)
+                                       .append (m_sParticipantIdentifier)
                                        .append (m_sDocumentTypeIdentifierScheme)
                                        .append (m_sDocumentTypeIdentifier)
                                        .append (m_sProcessIdentifierScheme)
@@ -206,12 +206,12 @@ public class DBProcessID implements Serializable {
 
   @Override
   public String toString () {
-    return new ToStringGenerator (this).append ("biScheme", m_sBusinessIdentifierScheme)
-                                       .append ("biValue", m_sBusinessIdentifier)
-                                       .append ("diScheme", m_sDocumentTypeIdentifierScheme)
-                                       .append ("diValue", m_sDocumentTypeIdentifier)
-                                       .append ("piScheme", m_sProcessIdentifierScheme)
-                                       .append ("piValue", m_sProcessIdentifier)
+    return new ToStringGenerator (this).append ("participantIDScheme", m_sParticipantIdentifierScheme)
+                                       .append ("participantIDValue", m_sParticipantIdentifier)
+                                       .append ("documentTypeIDScheme", m_sDocumentTypeIdentifierScheme)
+                                       .append ("documentTypeIDValue", m_sDocumentTypeIdentifier)
+                                       .append ("processIDScheme", m_sProcessIdentifierScheme)
+                                       .append ("processIDValue", m_sProcessIdentifier)
                                        .toString ();
   }
 }

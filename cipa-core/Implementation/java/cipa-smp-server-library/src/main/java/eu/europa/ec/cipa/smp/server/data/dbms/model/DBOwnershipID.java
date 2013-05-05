@@ -47,6 +47,7 @@ import javax.persistence.Transient;
 import com.phloc.commons.annotations.UsedViaReflection;
 import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.hash.HashCodeGenerator;
+import com.phloc.commons.string.ToStringGenerator;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
@@ -60,44 +61,44 @@ import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifi
  */
 @Embeddable
 public class DBOwnershipID implements Serializable {
-  private String m_sUserName;
-  private String m_sBusinessIdentifierScheme;
-  private String m_sBusinessIdentifier;
+  private String m_sUsername;
+  private String m_sParticipantIdentifierScheme;
+  private String m_sParticipantIdentifier;
 
   @Deprecated
   @UsedViaReflection
   public DBOwnershipID () {}
 
   public DBOwnershipID (final String sUserName, @Nonnull final IReadonlyParticipantIdentifier aBusinessIdentifier) {
-    m_sUserName = sUserName;
+    m_sUsername = sUserName;
     setBusinessIdentifier (aBusinessIdentifier);
   }
 
   @Column (name = "username", nullable = false, length = 256)
   public String getUsername () {
-    return m_sUserName;
+    return m_sUsername;
   }
 
   public void setUsername (final String sUserName) {
-    m_sUserName = sUserName;
+    m_sUsername = sUserName;
   }
 
   @Column (name = "businessIdentifierScheme", nullable = false, length = CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH)
   public String getBusinessIdentifierScheme () {
-    return m_sBusinessIdentifierScheme;
+    return m_sParticipantIdentifierScheme;
   }
 
   public void setBusinessIdentifierScheme (final String sBusinessIdentifierScheme) {
-    m_sBusinessIdentifierScheme = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifierScheme);
+    m_sParticipantIdentifierScheme = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifierScheme);
   }
 
   @Column (name = "businessIdentifier", nullable = false, length = CIdentifier.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)
   public String getBusinessIdentifier () {
-    return m_sBusinessIdentifier;
+    return m_sParticipantIdentifier;
   }
 
   public void setBusinessIdentifier (final String sBusinessIdentifier) {
-    m_sBusinessIdentifier = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifier);
+    m_sParticipantIdentifier = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifier);
   }
 
   @Transient
@@ -109,7 +110,7 @@ public class DBOwnershipID implements Serializable {
   @Transient
   @Nonnull
   public SimpleParticipantIdentifier asBusinessIdentifier () {
-    return new SimpleParticipantIdentifier (m_sBusinessIdentifierScheme, m_sBusinessIdentifier);
+    return new SimpleParticipantIdentifier (m_sParticipantIdentifierScheme, m_sParticipantIdentifier);
   }
 
   @Override
@@ -119,16 +120,24 @@ public class DBOwnershipID implements Serializable {
     if (!(other instanceof DBOwnershipID))
       return false;
     final DBOwnershipID rhs = (DBOwnershipID) other;
-    return EqualsUtils.equals (m_sUserName, rhs.m_sUserName) &&
-           EqualsUtils.equals (m_sBusinessIdentifierScheme, rhs.m_sBusinessIdentifierScheme) &&
-           EqualsUtils.equals (m_sBusinessIdentifier, rhs.m_sBusinessIdentifier);
+    return EqualsUtils.equals (m_sUsername, rhs.m_sUsername) &&
+           EqualsUtils.equals (m_sParticipantIdentifierScheme, rhs.m_sParticipantIdentifierScheme) &&
+           EqualsUtils.equals (m_sParticipantIdentifier, rhs.m_sParticipantIdentifier);
   }
 
   @Override
   public int hashCode () {
-    return new HashCodeGenerator (this).append (m_sUserName)
-                                       .append (m_sBusinessIdentifierScheme)
-                                       .append (m_sBusinessIdentifier)
+    return new HashCodeGenerator (this).append (m_sUsername)
+                                       .append (m_sParticipantIdentifierScheme)
+                                       .append (m_sParticipantIdentifier)
                                        .getHashCode ();
+  }
+
+  @Override
+  public String toString () {
+    return new ToStringGenerator (this).append ("username", m_sUsername)
+                                       .append ("participantIDScheme", m_sParticipantIdentifierScheme)
+                                       .append ("participantIDValue", m_sParticipantIdentifier)
+                                       .toString ();
   }
 }
