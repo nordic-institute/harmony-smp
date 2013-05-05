@@ -66,6 +66,7 @@ import org.slf4j.LoggerFactory;
 
 import com.phloc.commons.GlobalDebug;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
+import com.phloc.commons.state.EChange;
 import com.phloc.db.jpa.IEntityManagerProvider;
 import com.phloc.db.jpa.JPAEnabledManager;
 import com.phloc.db.jpa.JPAExecutionResult;
@@ -390,12 +391,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     final DocumentIdentifierType aDocTypeID = aServiceMetadata.getServiceInformation ().getDocumentIdentifier ();
 
     // Delete an eventually contained previous service in a separate transaction
-    try {
-      deleteService (aServiceGroupID, aDocTypeID, aCredentials);
-    }
-    catch (final NotFoundException ex) {
-      // Ignore
-    }
+    _deleteService (aServiceGroupID, aDocTypeID, aCredentials);
 
     // Create a new entry
     JPAExecutionResult <?> ret;
@@ -417,7 +413,6 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         // Create a new entry
         aDBServiceMetadata = new DBServiceMetadata ();
         aDBServiceMetadata.setId (aDBServiceMetadataID);
-
         _convertFromServiceToDB (aServiceMetadata, aDBServiceMetadata);
         aEM.persist (aDBServiceMetadata);
 
@@ -435,12 +430,13 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
       throw ret.getThrowable ();
   }
 
-  public void deleteService (@Nonnull final ParticipantIdentifierType aServiceGroupID,
-                             @Nonnull final DocumentIdentifierType aDocTypeID,
-                             @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
-    JPAExecutionResult <?> ret;
-    ret = doInTransaction (new Runnable () {
-      public void run () {
+  @Nonnull
+  private EChange _deleteService (@Nonnull final ParticipantIdentifierType aServiceGroupID,
+                                  @Nonnull final DocumentIdentifierType aDocTypeID,
+                                  @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
+    JPAExecutionResult <EChange> ret;
+    ret = doInTransaction (new Callable <EChange> () {
+      public EChange call () {
         final EntityManager aEM = getEntityManager ();
         _verifyUser (aCredentials);
         _verifyOwnership (aServiceGroupID, aCredentials);
@@ -450,7 +446,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         if (aDBServiceMetadata == null) {
           // There were no service to delete.
           s_aLogger.warn ("No such service to delete: " + aServiceGroupID.toString ());
-          throw new NotFoundException (aServiceGroupID.toString ());
+          return EChange.UNCHANGED;
         }
 
         // Remove all attached processes incl. their endpoints
@@ -465,10 +461,20 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
         // Remove main service data
         aEM.remove (aDBServiceMetadata);
+        return EChange.CHANGED;
       }
     });
     if (ret.hasThrowable ())
       throw ret.getThrowable ();
+    return ret.get ();
+  }
+
+  public void deleteService (@Nonnull final ParticipantIdentifierType aServiceGroupID,
+                             @Nonnull final DocumentIdentifierType aDocTypeID,
+                             @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
+    final EChange eChange = _deleteService (aServiceGroupID, aDocTypeID, aCredentials);
+    if (eChange.isUnchanged ())
+      throw new NotFoundException (aServiceGroupID.toString ());
   }
 
   @Nullable
