@@ -47,6 +47,7 @@
 
   <build>
     <plugins>
+<!-- 
       <plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
 				<executions>
@@ -59,11 +60,10 @@
 					</execution>
 				</executions>
 				<configuration>
-					<!-- This is where the name of the artifact is determined -->
+					<!- - This is where the name of the artifact is determined - ->
 					<finalName>cipa-start-receiver-external</finalName>
 					<appendAssemblyId>false</appendAssemblyId>
 					<archive>
-<!-- 						<manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile> -->
 						<manifest>
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 							<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
@@ -85,6 +85,7 @@
 					</archive>
 				</configuration>
 			</plugin>
+-->      
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
