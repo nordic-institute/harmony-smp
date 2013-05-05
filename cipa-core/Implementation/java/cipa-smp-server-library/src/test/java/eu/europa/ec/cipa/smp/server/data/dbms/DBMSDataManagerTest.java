@@ -59,7 +59,6 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
-import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.TestRule;
 
 import com.phloc.commons.annotations.DevelopersNote;
@@ -93,8 +92,8 @@ public class DBMSDataManagerTest {
   private static final String PARTICIPANT_IDENTIFIER1 = "0010:599900000000A";
   private static final String PARTICIPANT_IDENTIFIER2 = "0010:599900000000B";
 
-  private static final String TEST_DOCUMENT = "urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##OIOUBL-2.02";
-  private static final String TEST_PROCESS = "BII03";
+  private static final String TEST_DOCTYPE_ID = "urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##OIOUBL-2.02";
+  private static final String TEST_PROCESS_ID = "BII03";
 
   private static final String USERNAME = "peppol_user";
   private static final String PASSWORD = "Test1234";
@@ -113,7 +112,7 @@ public class DBMSDataManagerTest {
   private static final ParticipantIdentifierType PARTY_ID = SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_IDENTIFIER1);
   private static final ParticipantIdentifierType SERVICEGROUP_ID = PARTY_ID;
   private static final DocumentIdentifierType DOCTYPE_ID = new SimpleDocumentTypeIdentifier (DOCUMENT_SCHEME,
-                                                                                             TEST_DOCUMENT);
+                                                                                             TEST_DOCTYPE_ID);
   private static final BasicAuthClientCredentials CREDENTIALS = new BasicAuthClientCredentials (USERNAME, PASSWORD);
 
   private static DBMSDataManager s_aDataMgr;
@@ -124,27 +123,20 @@ public class DBMSDataManagerTest {
       super.before ();
       if (s_aDataMgr == null) {
         // Do it only once :)
-        try {
-          SMPEntityManagerFactory.getInstance ();
-        }
-        catch (final ExceptionInInitializerError ex) {
-          // No database present
-          throw new AssumptionViolatedException ("No database connection could be established");
-        }
-
+        SMPEntityManagerFactory.getInstance ();
         s_aDataMgr = new DBMSDataManager (new DoNothingRegistrationHook ());
       }
     }
   }
 
   @ClassRule
-  public static TestRule rule = new SMPTestRule ();
+  public static TestRule s_aTestRule = new SMPTestRule ();
 
   private ServiceGroupType m_aServiceGroup;
   private ServiceMetadataType m_aServiceMetadata;
 
   @Before
-  public void createDefaultServiceGroup () throws Throwable {
+  public void beforeTest () throws Throwable {
     final ExtensionType aExtension = ExtensionConverter.convert ("<root><any>value</any></root>");
     assertNotNull (aExtension);
     assertNotNull (aExtension.getAny ());
@@ -156,6 +148,7 @@ public class DBMSDataManagerTest {
     // Be sure to delete if it exists.
     s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, CREDENTIALS);
 
+    // Create a new one
     s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
 
     m_aServiceMetadata = aObjFactory.createServiceMetadataType ();
@@ -167,7 +160,7 @@ public class DBMSDataManagerTest {
       final ProcessListType processList = aObjFactory.createProcessListType ();
       {
         final ProcessType process = aObjFactory.createProcessType ();
-        process.setProcessIdentifier (new SimpleProcessIdentifier (PROCESS_SCHEME, TEST_PROCESS));
+        process.setProcessIdentifier (new SimpleProcessIdentifier (PROCESS_SCHEME, TEST_PROCESS_ID));
         process.setExtension (aExtension);
         {
           final ServiceEndpointList serviceEndpointList = aObjFactory.createServiceEndpointList ();

@@ -40,6 +40,7 @@ package eu.europa.ec.cipa.smp.server.data;
 import java.util.Collection;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
@@ -47,6 +48,7 @@ import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 
+import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
 
 /**
@@ -57,120 +59,125 @@ import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
  */
 public interface IDataManager {
   /**
+   * Gets the service group ids owned by the given credentials.
+   * 
+   * @param aCredentials
+   *        The credentials to get service groups id for.
+   * @return A collection of service group id's.
+   * @throws Throwable
+   */
+  @Nonnull
+  @ReturnsMutableCopy
+  Collection <ParticipantIdentifierType> getServiceGroupList (@Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
+
+  /**
    * This method returns a ServiceGroup given its id.
    * 
-   * @param id
+   * @param aServiceGroupID
    *        The service group id.
    * @return The service group corresponding to the id.
    * @throws Throwable
    */
   @Nullable
-  ServiceGroupType getServiceGroup (ParticipantIdentifierType id) throws Throwable;
+  ServiceGroupType getServiceGroup (@Nonnull ParticipantIdentifierType aServiceGroupID) throws Throwable;
 
   /**
    * Persists the service group in the underlying data layer. This operation
    * requires credentials.
    * 
-   * @param serviceGroup
+   * @param aServiceGroup
    *        The service group to save.
-   * @param creds
+   * @param aCredentials
    *        The credentials to use.
    * @throws Throwable
    */
-  void saveServiceGroup (ServiceGroupType serviceGroup, BasicAuthClientCredentials creds) throws Throwable;
+  void saveServiceGroup (@Nonnull ServiceGroupType aServiceGroup, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
 
   /**
    * Deletes the service group having the specified id.
    * 
-   * @param serviceGroupId
+   * @param aServiceGroupID
    *        The ID of the service group to delete.
-   * @param creds
+   * @param aCredentials
    *        The credentials to use.
    * @throws Throwable
    */
-  void deleteServiceGroup (ParticipantIdentifierType serviceGroupId, BasicAuthClientCredentials creds) throws Throwable;
+  void deleteServiceGroup (@Nonnull ParticipantIdentifierType aServiceGroupID,
+                           @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
 
   /**
    * Gets a list of the document id's of the given service group.
    * 
-   * @param serviceGroupId
+   * @param aServiceGroupID
    *        The id of the service group.
    * @return The corresponding document id's.
    * @throws Throwable
    */
-  List <DocumentIdentifierType> getDocumentTypes (ParticipantIdentifierType serviceGroupId) throws Throwable;
+  List <DocumentIdentifierType> getDocumentTypes (@Nonnull ParticipantIdentifierType aServiceGroupID) throws Throwable;
 
   /**
    * Gets the service metadata corresponding to the service group id and
    * document id.
    * 
-   * @param serviceGroupId
+   * @param aServiceGroupID
    *        The service group id of the service metadata.
-   * @param docType
+   * @param aDocType
    *        The document id of the service metadata.
    * @return The corresponding service metadata.
    * @throws Throwable
    */
-  ServiceMetadataType getService (ParticipantIdentifierType serviceGroupId, DocumentIdentifierType docType) throws Throwable;
+  ServiceMetadataType getService (@Nonnull ParticipantIdentifierType aServiceGroupID,
+                                  @Nonnull DocumentIdentifierType aDocType) throws Throwable;
 
   /**
    * Saves the given service metadata in the underlying data layer.
    * 
-   * @param serviceMetadata
+   * @param aServiceMetadata
    *        The service metadata to save.
-   * @param creds
+   * @param aCredentials
    *        The credentials to use.
    * @throws Throwable
    */
-  void saveService (ServiceMetadataType serviceMetadata, BasicAuthClientCredentials creds) throws Throwable;
+  void saveService (@Nonnull ServiceMetadataType aServiceMetadata, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
 
   /**
    * Deletes a service metadata object given by its service group id and
    * document id.
    * 
-   * @param serviceGroupId
+   * @param aServiceGroupID
    *        The service group id of the service metadata.
-   * @param docType
+   * @param aDocType
    *        The document id of the service metadata.
-   * @param creds
+   * @param aCredentials
    *        The credentials to use.
    * @throws Throwable
    */
-  void deleteService (ParticipantIdentifierType serviceGroupId,
-                      DocumentIdentifierType docType,
-                      BasicAuthClientCredentials creds) throws Throwable;
+  void deleteService (@Nonnull ParticipantIdentifierType aServiceGroupID,
+                      @Nonnull DocumentIdentifierType aDocType,
+                      @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
 
   /**
    * Checks whether the ServiceMetadata should be found elsewhere.
    * 
-   * @param servGroupId
+   * @param aServiceGroupID
    *        The service group id of the service metadata.
-   * @param docTypeId
+   * @param aDocTypeID
    *        The document id of the service metadata.
    * @return The URI to be redirected to. null if no redirection should take
    *         place.
    * @throws Throwable
    */
-  ServiceMetadataType getRedirection (ParticipantIdentifierType servGroupId, DocumentIdentifierType docTypeId) throws Throwable;
-
-  /**
-   * Gets the service group ids owned by the given credentials.
-   * 
-   * @param creds
-   *        The credentials to get service groups id for.
-   * @return A collection of service group id's.
-   * @throws Throwable
-   */
-  Collection <ParticipantIdentifierType> getServiceGroupList (BasicAuthClientCredentials creds) throws Throwable;
+  ServiceMetadataType getRedirection (@Nonnull ParticipantIdentifierType aServiceGroupID,
+                                      @Nonnull DocumentIdentifierType aDocTypeID) throws Throwable;
 
   /**
    * Gets the list of service metadata objects corresponding to a given service
    * group id.
    * 
-   * @param serviceGroupId
+   * @param aServiceGroupID
    *        The service group id.
    * @return A list of service metadata objects.
    * @throws Throwable
    */
-  Collection <ServiceMetadataType> getServices (ParticipantIdentifierType serviceGroupId) throws Throwable;
+  Collection <ServiceMetadataType> getServices (@Nonnull ParticipantIdentifierType aServiceGroupID) throws Throwable;
 }
