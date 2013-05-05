@@ -8,7 +8,7 @@
     <version>1.0</version>
   </parent>
   <artifactId>cipa-webgui-webapp</artifactId>
-  <version>1.0.1-SNAPSHOT</version>
+  <version>1.0.0-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>cipa-webgui-webapp</name>
 
@@ -55,7 +55,7 @@
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-webgui-api</artifactId>
-      <version>1.0.1-SNAPSHOT</version>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.vaadin</groupId>
