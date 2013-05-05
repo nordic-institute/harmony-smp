@@ -10,7 +10,6 @@
   <modules>
     <module>cipa-parent-pom</module>
     <module>cipa-commons-busdox</module>
-    <module>cipa-commons-jpa</module>
     <module>cipa-peppol-types</module>
     <module>cipa-sml-client-library</module>
     <module>cipa-sml-server-library</module>
