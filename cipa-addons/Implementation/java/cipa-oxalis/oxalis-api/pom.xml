@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>oxalis</artifactId>
-        <groupId>no.sendregning.ap</groupId>
+        <groupId>eu.europa.ec.cipa</groupId>
         <version>1.17</version>
     </parent>
     <artifactId>oxalis-api</artifactId>

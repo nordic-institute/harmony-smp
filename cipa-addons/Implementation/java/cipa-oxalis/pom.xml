@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>no.sendregning.ap</groupId>
+    <groupId>eu.europa.ec.cipa</groupId>
     <artifactId>oxalis</artifactId>
     <packaging>pom</packaging>
     <name>Oxalis - PEPPOL access point Plug-and-Play</name>
@@ -9,12 +9,11 @@
     <version>1.17</version>
     <url>https://github.com/SendRegning/sr-peppol/</url>
     <scm>
-        <connection>scm:git:git@github.com:difi/oxalis.git</connection>
-        <url>scm:git:git@github.com:difi/oxalis.git</url>
-        <developerConnection>scm:git:git@github.com:difi/oxalis.git</developerConnection>
+  		<connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-oxalis</connection>
+	  	<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-oxalis</developerConnection>
     </scm>
     <modules>
-        <module>oxalis-api</module>
+      <module>oxalis-api</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -129,18 +128,14 @@
             </plugin>
         </plugins>
     </build>
-    <distributionManagement>
-        <!-- use the following if you're not using a snapshot version. -->
-        <repository>
-            <id>nexus</id>
-            <name>Nexus repository</name>
-            <url>http://embla.sendregning.no:8081/nexus/content/repositories/sendregning/</url>
-        </repository>
-        <!-- use the following if you ARE using a snapshot version. -->
-        <snapshotRepository>
-            <id>nexus-snapshot</id>
-            <name>Nexus snapshot repository</name>
-            <url>http://embla.sendregning.no:8081/nexus/content/repositories/snapshots/</url>
-        </snapshotRepository>
-    </distributionManagement>
+   <distributionManagement>
+    <repository>
+      <id>joinup.nexus</id>
+      <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
+    </repository>
+    <snapshotRepository>
+      <id>joinup.nexus</id>
+      <url>https://joinup.ec.europa.eu/nexus/content/repositories/snapshots/</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
