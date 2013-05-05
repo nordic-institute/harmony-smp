@@ -7,12 +7,12 @@
     <version>1.0</version>
   </parent>
   <artifactId>cipa-smp-client-console</artifactId>
-  <version>1.0.1</version>
+  <version>1.0.2-SNAPSHOT</version>
   <name>cipa-smp-client-console</name>
 
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/tags/cipa-smp-client-console/cipa-smp-client-console-1.0.1</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/tags/cipa-smp-client-console/cipa-smp-client-console-1.0.1</developerConnection>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-smp-client-console</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-smp-client-console</developerConnection>
   </scm>
 
   <repositories>
