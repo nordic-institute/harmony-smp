@@ -119,39 +119,38 @@ public class AddSignatureHandler implements LogicalHandler <LogicalMessageContex
   @Override
   public boolean handleMessage (final LogicalMessageContext context) {
     // Returns if the message is an inbound message.
-    final Boolean isOutbound = (Boolean) context.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY);
-    final Boolean signResponse = Boolean.valueOf (_getConfigFile ().getString (CONFIG_SML_SIGN_RESPONSE));
-    if (isOutbound.equals (Boolean.FALSE))
+    final Boolean aIsOutbound = (Boolean) context.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+    if (Boolean.FALSE.equals (aIsOutbound))
       return true;
-    //
-    if (Boolean.FALSE.equals (signResponse)) {
-      return true;
-    }
 
-    final LogicalMessage message = context.getMessage ();
-    Source aSource = message.getPayload ();
-    if (aSource == null)
+    final Boolean aSignResponse = Boolean.valueOf (_getConfigFile ().getString (CONFIG_SML_SIGN_RESPONSE));
+    if (Boolean.FALSE.equals (aSignResponse))
+      return true;
+
+    final LogicalMessage aMessage = context.getMessage ();
+    Source aPayload = aMessage.getPayload ();
+    if (aPayload == null)
       return false;
 
     boolean bNewPayload = false;
-    if (!(aSource instanceof DOMSource)) {
+    if (!(aPayload instanceof DOMSource)) {
       // Ensure we have a DOM source present
-      s_aLogger.info ("Converting " + aSource + " to DOMSource");
+      s_aLogger.info ("Converting " + aPayload + " to DOMSource");
       try {
-        aSource = _convertToDOMSource (aSource);
+        aPayload = _convertToDOMSource (aPayload);
         bNewPayload = true;
       }
       catch (final TransformerException ex) {
-        s_aLogger.error ("Failed to convert source " + aSource + " to DOMSource", ex);
+        s_aLogger.error ("Failed to convert source " + aPayload + " to DOMSource", ex);
         return false;
       }
     }
 
-    final Node rootNode = ((DOMSource) aSource).getNode ();
-    final Element rootElement = ((Document) rootNode).getDocumentElement ();
+    final Node aRootNode = ((DOMSource) aPayload).getNode ();
+    final Element aRootElement = ((Document) aRootNode).getDocumentElement ();
 
     try {
-      _signXML (rootElement);
+      _signXML (aRootElement);
     }
     catch (final Exception e) {
       s_aLogger.error ("Error in signing xml", e);
@@ -160,59 +159,61 @@ public class AddSignatureHandler implements LogicalHandler <LogicalMessageContex
 
     if (bNewPayload) {
       // Because we converted the payload, we need to re-assign it!
-      message.setPayload (aSource);
+      aMessage.setPayload (aPayload);
     }
 
     return true;
   }
 
-  private void _signXML (final Element xmlElementToSign) throws Exception {
+  private void _signXML (@Nonnull final Element aXmlElementToSign) throws Exception {
     // Create a DOM XMLSignatureFactory that will be used to
     // generate the enveloped signature.
-    final XMLSignatureFactory fac = XMLSignatureFactory.getInstance ("DOM");
+    final XMLSignatureFactory aSignatureFactory = XMLSignatureFactory.getInstance ("DOM");
 
     // Create a Reference to the enveloped document (in this case,
     // you are signing the whole document, so a URI of "" signifies
     // that, and also specify the SHA1 digest algorithm and
     // the ENVELOPED Transform.
-    final Reference ref = fac.newReference ("",
-                                            fac.newDigestMethod (DigestMethod.SHA1, null),
-                                            Collections.singletonList (fac.newTransform (Transform.ENVELOPED,
-                                                                                         (TransformParameterSpec) null)),
-                                            null,
-                                            null);
+    final Reference aReference = aSignatureFactory.newReference ("",
+                                                                 aSignatureFactory.newDigestMethod (DigestMethod.SHA1,
+                                                                                                    null),
+                                                                 Collections.singletonList (aSignatureFactory.newTransform (Transform.ENVELOPED,
+                                                                                                                            (TransformParameterSpec) null)),
+                                                                 null,
+                                                                 null);
 
     // Create the SignedInfo.
-    final SignedInfo si = fac.newSignedInfo (fac.newCanonicalizationMethod (CanonicalizationMethod.INCLUSIVE,
-                                                                            (C14NMethodParameterSpec) null),
-                                             fac.newSignatureMethod (SignatureMethod.RSA_SHA1, null),
-                                             Collections.singletonList (ref));
+    final SignedInfo aSignedInfo = aSignatureFactory.newSignedInfo (aSignatureFactory.newCanonicalizationMethod (CanonicalizationMethod.INCLUSIVE,
+                                                                                                                 (C14NMethodParameterSpec) null),
+                                                                    aSignatureFactory.newSignatureMethod (SignatureMethod.RSA_SHA1,
+                                                                                                          null),
+                                                                    Collections.singletonList (aReference));
 
     // Load the KeyStore and get the signing key and certificate.
     final String sKeyStorePath = _getConfigFile ().getString (CONFIG_SML_KEYSTORE_PATH);
     final String sKeyStorePW = _getConfigFile ().getString (CONFIG_SML_KEYSTORE_PASSWORD);
     final String sKeyStoreAlias = _getConfigFile ().getString (CONFIG_SML_KEYSTORE_ALIAS);
-    final KeyStore ks = KeyStoreUtils.loadKeyStore (sKeyStorePath, sKeyStorePW);
-    final KeyStore.PrivateKeyEntry keyEntry = (KeyStore.PrivateKeyEntry) ks.getEntry (sKeyStoreAlias,
-                                                                                      new KeyStore.PasswordProtection (sKeyStorePW.toCharArray ()));
-    final X509Certificate cert = (X509Certificate) keyEntry.getCertificate ();
+    final KeyStore aKeyStore = KeyStoreUtils.loadKeyStore (sKeyStorePath, sKeyStorePW);
+    final KeyStore.PrivateKeyEntry aKeyEntry = (KeyStore.PrivateKeyEntry) aKeyStore.getEntry (sKeyStoreAlias,
+                                                                                              new KeyStore.PasswordProtection (sKeyStorePW.toCharArray ()));
+    final X509Certificate aCertificate = (X509Certificate) aKeyEntry.getCertificate ();
 
     // Create the KeyInfo containing the X509Data.
-    final KeyInfoFactory kif = fac.getKeyInfoFactory ();
+    final KeyInfoFactory aKeyInfoFactory = aSignatureFactory.getKeyInfoFactory ();
     final List <Object> x509Content = new ArrayList <Object> ();
-    x509Content.add (cert.getSubjectX500Principal ().getName ());
-    x509Content.add (cert);
-    final X509Data xd = kif.newX509Data (x509Content);
-    final KeyInfo ki = kif.newKeyInfo (Collections.singletonList (xd));
+    x509Content.add (aCertificate.getSubjectX500Principal ().getName ());
+    x509Content.add (aCertificate);
+    final X509Data aX509Data = aKeyInfoFactory.newX509Data (x509Content);
+    final KeyInfo aKeyInfo = aKeyInfoFactory.newKeyInfo (Collections.singletonList (aX509Data));
 
     // Create a DOMSignContext and specify the RSA PrivateKey and
     // location of the resulting XMLSignature's parent element.
-    final DOMSignContext dsc = new DOMSignContext (keyEntry.getPrivateKey (), xmlElementToSign);
+    final DOMSignContext aSignContext = new DOMSignContext (aKeyEntry.getPrivateKey (), aXmlElementToSign);
 
     // Create the XMLSignature, but don't sign it yet.
-    final XMLSignature signature = fac.newXMLSignature (si, ki);
+    final XMLSignature aSignature = aSignatureFactory.newXMLSignature (aSignedInfo, aKeyInfo);
 
     // Marshal, generate, and sign the enveloped signature.
-    signature.sign (dsc);
+    aSignature.sign (aSignContext);
   }
 }

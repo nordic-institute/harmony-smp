@@ -88,7 +88,7 @@ import eu.europa.ec.cipa.sml.server.web.WebRequestClientIdentifier;
 @BindingType (value = javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING)
 @HandlerChain (file = "handlers.xml")
 public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifierServiceSoap {
-  private static final Logger log = LoggerFactory.getLogger (ManageParticipantIdentifierImpl.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (ManageParticipantIdentifierImpl.class);
 
   @Resource
   public WebServiceContext wsContext;
@@ -147,7 +147,7 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
       // Perform action
       m_aDataHandler.createParticipantIdentifiers (createListIn, sClientUniqueID);
 
-      log.info ("Created " +
+      s_aLogger.info ("Created " +
                 createListIn.getParticipantIdentifier ().size () +
                 " participants in " +
                 createListIn.getServiceMetadataPublisherID ());
@@ -176,7 +176,7 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
       // Perform action
       m_aDataHandler.deleteParticipantIdentifiers (deleteListIn.getParticipantIdentifier (), sClientUniqueID);
 
-      log.info ("Deleted " +
+      s_aLogger.info ("Deleted " +
                 deleteListIn.getParticipantIdentifier ().size () +
                 " participants of " +
                 deleteListIn.getServiceMetadataPublisherID ());
@@ -201,7 +201,7 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
       // Perform action
       m_aDataHandler.migrate (aMigrationRecord, sClientUniqueID);
 
-      log.info ("Migrated participant " +
+      s_aLogger.info ("Migrated participant " +
                 IdentifierUtils.getIdentifierURIEncoded (aMigrationRecord.getParticipantIdentifier ()) +
                 " to " +
                 aMigrationRecord.getServiceMetadataPublisherID ());
@@ -227,7 +227,7 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
       // Perform action
       m_aDataHandler.prepareToMigrate (aMigrationRecord, sClientUniqueID);
 
-      log.info ("Prepared to migrate participant " +
+      s_aLogger.info ("Prepared to migrate participant " +
                 IdentifierUtils.getIdentifierURIEncoded (aMigrationRecord.getParticipantIdentifier ()) +
                 " from " +
                 aMigrationRecord.getServiceMetadataPublisherID ());
@@ -242,8 +242,8 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
                                                                                                 NotFoundFault,
                                                                                                 UnauthorizedFault {
     final ParticipantIdentifierType aParticipantIdentifier = aParticipantToSMP.getParticipantIdentifier ();
-    if (log.isDebugEnabled ())
-      log.debug ("Called with identifier: " +
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Called with identifier: " +
                  aParticipantIdentifier.getScheme () +
                  "::" +
                  aParticipantIdentifier.getValue ());
@@ -262,7 +262,7 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
       aJAXBPage.setServiceMetadataPublisherID (aParticipantToSMP.getServiceMetadataPublisherID ());
       m_aDataHandler.createParticipantIdentifiers (aJAXBPage, sClientUniqueID);
 
-      log.info ("Assigned participant " +
+      s_aLogger.info ("Assigned participant " +
                 IdentifierUtils.getIdentifierURIEncoded (aParticipantIdentifier) +
                 " to " +
                 aParticipantToSMP.getServiceMetadataPublisherID ());
@@ -277,8 +277,8 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
                                                                                                 NotFoundFault,
                                                                                                 UnauthorizedFault {
     final ParticipantIdentifierType aParticipantIdentifier = aParticipantToSMP.getParticipantIdentifier ();
-    if (log.isDebugEnabled ())
-      log.debug ("Called with identifier: " +
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Called with identifier: " +
                  aParticipantIdentifier.getScheme () +
                  "::" +
                  aParticipantIdentifier.getValue ());
@@ -294,7 +294,7 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
       // Perform action
       m_aDataHandler.deleteParticipantIdentifiers (ContainerHelper.newList (aParticipantIdentifier), sClientUniqueID);
 
-      log.info ("Deleted participant " + IdentifierUtils.getIdentifierURIEncoded (aParticipantIdentifier));
+      s_aLogger.info ("Deleted participant " + IdentifierUtils.getIdentifierURIEncoded (aParticipantIdentifier));
     }
     catch (final Throwable t) {
       _handleException (t);
@@ -316,7 +316,7 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
 
       // Perform action
       final ParticipantIdentifierPageType ret = m_aDataHandler.listParticipantIdentifiers (messagePart, sClientUniqueID);
-      log.info ("Retrieved " +
+      s_aLogger.info ("Retrieved " +
                 ret.getParticipantIdentifier ().size () +
                 " participants for " +
                 messagePart.getServiceMetadataPublisherID ());

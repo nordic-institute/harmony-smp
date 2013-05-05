@@ -45,6 +45,7 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.annotations.PresentForCodeCoverage;
 import com.phloc.commons.regex.RegExHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
@@ -60,6 +61,10 @@ public final class DNSUtils {
   private static final Logger s_aLogger = LoggerFactory.getLogger (DNSUtils.class);
   private static final String DOMAIN_IDENTIFIER = "((\\p{Alnum})([-]|(\\p{Alnum}))*(\\p{Alnum}))|(\\p{Alnum})";
   private static final String DOMAIN_NAME_RULE = "(" + DOMAIN_IDENTIFIER + ")((\\.)(" + DOMAIN_IDENTIFIER + "))*";
+
+  @PresentForCodeCoverage
+  @SuppressWarnings ("unused")
+  private static final DNSUtils s_aInstance = new DNSUtils ();
 
   private DNSUtils () {}
 

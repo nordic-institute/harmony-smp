@@ -95,12 +95,9 @@ public final class SMLDataHandlerParticipantTest {
     @Override
     public void before () {
       super.before ();
-      if (s_aParticipantHandler == null) {
-        // Do it only once :)
-        SMLEntityManagerFactory.getInstance ();
-        s_aParticipantHandler = new SMLDataHandlerParticipant ();
-        s_aSMPHandler = new SMLDataHandlerSMP ();
-      }
+      SMLEntityManagerFactory.getInstance ();
+      s_aParticipantHandler = new SMLDataHandlerParticipant ();
+      s_aSMPHandler = new SMLDataHandlerSMP ();
     }
   }
 

@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
@@ -56,12 +55,19 @@ import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-@Ignore
 public final class PeppolClientCertificateValidatorTest {
   @Test
   public void testValidation () throws Exception {
+
     // Main key storage
-    final KeyStore aKeyStore = KeyStoreUtils.loadKeyStore ("keys/sml_keystore.jks", "peppol");
+    KeyStore aKeyStore = null;
+    try {
+      aKeyStore = KeyStoreUtils.loadKeyStore ("keys/sml_keystore.jks", "peppol");
+    }
+    catch (final IllegalArgumentException ex) {
+      // Keystore does not exist - skip test
+      return;
+    }
 
     // Extract all certificates from the key store
     final List <X509Certificate> aCerts = new ArrayList <X509Certificate> ();

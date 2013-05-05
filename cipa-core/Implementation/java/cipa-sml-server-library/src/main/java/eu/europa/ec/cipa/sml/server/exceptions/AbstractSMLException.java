@@ -42,18 +42,20 @@ package eu.europa.ec.cipa.sml.server.exceptions;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public abstract class SMLException extends Exception {
-  public SMLException () {}
+public abstract class AbstractSMLException extends Exception {
+  public AbstractSMLException () {
+    super ();
+  }
 
-  public SMLException (final String sMsg) {
+  public AbstractSMLException (final String sMsg) {
     super (sMsg);
   }
 
-  public SMLException (final Throwable t) {
+  public AbstractSMLException (final Throwable t) {
     super (t);
   }
 
-  public SMLException (final String sMsg, final Throwable t) {
+  public AbstractSMLException (final String sMsg, final Throwable t) {
     super (sMsg, t);
   }
 }

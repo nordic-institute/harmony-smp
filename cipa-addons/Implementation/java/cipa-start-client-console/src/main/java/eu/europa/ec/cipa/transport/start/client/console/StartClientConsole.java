@@ -41,8 +41,7 @@ import eu.europa.ec.cipa.transport.PingMessageHelper;
 import eu.europa.ec.cipa.transport.start.client.AccessPointClient;
 
 public class StartClientConsole {
-
-  private static final Logger log = LoggerFactory.getLogger (StartClientConsole.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (StartClientConsole.class);
 
   private static enum EClientMode {
     DIRECT_AP,
@@ -50,18 +49,17 @@ public class StartClientConsole {
     FULL;
   }
 
-  private static void enableProxy () {
-    final ConfigFile proxyConf = new ConfigFile ("configProxy.properties");
-    if (proxyConf.getAllKeys () == null || proxyConf.getAllKeys ().isEmpty ()) {
-      log.error ("No configProxy.properties file provide proxy will not be configured ");
+  private static void _enableProxy () {
+    final ConfigFile aProxyConfig = new ConfigFile ("configProxy.properties");
+    if (aProxyConfig.getAllKeys () == null || aProxyConfig.getAllKeys ().isEmpty ()) {
+      s_aLogger.error ("No configProxy.properties file provide proxy will not be configured ");
     }
     else {
-      System.setProperty ("http.proxyHost", proxyConf.getString ("http.proxyHost"));
-      System.setProperty ("http.proxyPort", proxyConf.getString ("http.proxyPort"));
-      System.setProperty ("https.proxyHost", proxyConf.getString ("https.proxyHost"));
-      System.setProperty ("https.proxyPort", proxyConf.getString ("https.proxyPort"));
+      System.setProperty ("http.proxyHost", aProxyConfig.getString ("http.proxyHost"));
+      System.setProperty ("http.proxyPort", aProxyConfig.getString ("http.proxyPort"));
+      System.setProperty ("https.proxyHost", aProxyConfig.getString ("https.proxyHost"));
+      System.setProperty ("https.proxyPort", aProxyConfig.getString ("https.proxyPort"));
     }
-
   }
 
   @Nullable
@@ -139,7 +137,7 @@ public class StartClientConsole {
       enableDebug ();
 
     if (cmd.hasOption ("proxy") && Boolean.parseBoolean (cmd.getOptionValue ("proxy")))
-      enableProxy ();
+      _enableProxy ();
 
     if (!cmd.hasOption ("s") ||
         !cmd.hasOption ("r") ||

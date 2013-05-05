@@ -40,6 +40,7 @@ package eu.europa.ec.cipa.sml.server.management;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+import com.phloc.commons.annotations.PresentForCodeCoverage;
 import com.phloc.commons.lang.GenericReflection;
 import com.phloc.commons.string.StringHelper;
 
@@ -125,6 +126,10 @@ public final class DataHandlerFactory {
       }
     }
   }
+
+  @PresentForCodeCoverage
+  @SuppressWarnings ("unused")
+  private static final DataHandlerFactory s_aInstance = new DataHandlerFactory ();
 
   private DataHandlerFactory () {}
 

@@ -43,7 +43,7 @@ package eu.europa.ec.cipa.sml.server.exceptions;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public class InternalErrorException extends SMLException {
+public class InternalErrorException extends AbstractSMLException {
   public InternalErrorException (final String string) {
     super (string);
   }

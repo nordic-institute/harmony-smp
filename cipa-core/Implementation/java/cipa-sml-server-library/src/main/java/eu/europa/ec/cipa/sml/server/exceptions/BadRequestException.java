@@ -43,8 +43,8 @@ package eu.europa.ec.cipa.sml.server.exceptions;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public class BadRequestException extends SMLException {
-  public BadRequestException (final String string) {
-    super (string);
+public class BadRequestException extends AbstractSMLException {
+  public BadRequestException (final String sMessage) {
+    super (sMessage);
   }
 }

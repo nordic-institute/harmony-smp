@@ -77,7 +77,7 @@ public final class StressTest {
   private static final long MESSAGES = 90;
   private static final int THREADS = 6;
 
-  private static final Logger log = LoggerFactory.getLogger (StressTest.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (StressTest.class);
  
   @Test
   public void test01 () throws Exception {
@@ -158,7 +158,7 @@ public final class StressTest {
                                 "M";
 
     if (usedInMegabytes <= lastUsage - MEMORY_THRESHOLD || usedInMegabytes >= lastUsage + MEMORY_THRESHOLD) {
-      log.info ("%%% Memory usage: " + memoryStatus);
+      s_aLogger.info ("%%% Memory usage: " + memoryStatus);
       lastUsage = usedInMegabytes;
     }
 

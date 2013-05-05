@@ -42,18 +42,18 @@ package eu.europa.ec.cipa.sml.server.exceptions;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public abstract class SMLRuntimeException extends RuntimeException {
-  public SMLRuntimeException () {}
+public abstract class AbstractSMLRuntimeException extends RuntimeException {
+  public AbstractSMLRuntimeException () {}
 
-  public SMLRuntimeException (final String sMsg) {
+  public AbstractSMLRuntimeException (final String sMsg) {
     super (sMsg);
   }
 
-  public SMLRuntimeException (final Throwable t) {
+  public AbstractSMLRuntimeException (final Throwable t) {
     super (t);
   }
 
-  public SMLRuntimeException (final String sMsg, final Throwable t) {
+  public AbstractSMLRuntimeException (final String sMsg, final Throwable t) {
     super (sMsg, t);
   }
 }

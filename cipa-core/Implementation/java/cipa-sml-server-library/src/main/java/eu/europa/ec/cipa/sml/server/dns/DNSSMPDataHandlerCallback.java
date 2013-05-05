@@ -60,7 +60,7 @@ import eu.europa.ec.cipa.sml.server.exceptions.InternalErrorException;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class DNSSMPDataHandlerCallback implements ISMPDataHandlerCallback {
-  private static final Logger log = LoggerFactory.getLogger (DNSSMPDataHandlerCallback.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (DNSSMPDataHandlerCallback.class);
 
   public void serviceMetadataCreated (final ServiceMetadataPublisherServiceType registryService) throws BadRequestException,
                                                                                                 InternalErrorException {
@@ -70,18 +70,18 @@ public final class DNSSMPDataHandlerCallback implements ISMPDataHandlerCallback 
     try {
       final URL url = new URL (sLogicalAddress);
       DNSClientFactory.getInstance ().createPublisherAnchor (sSMPID, url.getHost ());
-      log.info ("DNS Created SMP " + sSMPID + " pointing to " + url.getHost ());
+      s_aLogger.info ("DNS Created SMP " + sSMPID + " pointing to " + url.getHost ());
     }
     catch (final MalformedURLException e) {
-      log.warn ("PublisherEndpoint does not have a valid host : " + sLogicalAddress + " for id " + sSMPID);
+      s_aLogger.warn ("PublisherEndpoint does not have a valid host : " + sLogicalAddress + " for id " + sSMPID);
       throw new BadRequestException ("PublisherEndpoint does not have a valid host : " + sLogicalAddress);
     }
     catch (final IllegalHostnameException e) {
-      log.error ("Illegal hostname : ", e);
+      s_aLogger.error ("Illegal hostname : ", e);
       throw new BadRequestException (e.getMessage ());
     }
     catch (final IOException e) {
-      log.error ("DNSClient Failed to create MetadataPublisher : " + sSMPID, e);
+      s_aLogger.error ("DNSClient Failed to create MetadataPublisher : " + sSMPID, e);
       throw new DNSErrorException (e);
     }
   }
@@ -98,23 +98,23 @@ public final class DNSSMPDataHandlerCallback implements ISMPDataHandlerCallback 
     for (final ParticipantIdentifierType aParticipantIdentifier : aParticipantIdentifiers) {
       try {
         DNSClientFactory.getInstance ().deleteIdentifier (aParticipantIdentifier);
-        log.info ("DNS Deleted Participant " + aParticipantIdentifier);
+        s_aLogger.info ("DNS Deleted Participant " + aParticipantIdentifier);
       }
       catch (final IOException e) {
-        log.error ("DNSClient Failed to bulk delete BusinessIdentifiers for Publisher : " + sSMPID, e);
+        s_aLogger.error ("DNSClient Failed to bulk delete BusinessIdentifiers for Publisher : " + sSMPID, e);
       }
       catch (final IllegalIdentifierSchemeException e) {
-        log.error ("Illegal Identifier : ", e);
+        s_aLogger.error ("Illegal Identifier : ", e);
         throw new BadRequestException (e.getMessage ());
       }
     }
 
     try {
       DNSClientFactory.getInstance ().deletePublisherAnchor (sSMPID);
-      log.info ("DNS Deleted SMP " + sSMPID);
+      s_aLogger.info ("DNS Deleted SMP " + sSMPID);
     }
     catch (final IOException e) {
-      log.error ("DNSClient Failed to delete MetadataPublisher : " + sSMPID, e);
+      s_aLogger.error ("DNSClient Failed to delete MetadataPublisher : " + sSMPID, e);
       throw new DNSErrorException (e);
     }
   }

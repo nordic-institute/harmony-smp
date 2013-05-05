@@ -40,7 +40,7 @@ package eu.europa.ec.cipa.sml.server.exceptions;
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public class IllegalIdentifierSchemeException extends SMLException {
+public class IllegalIdentifierSchemeException extends AbstractSMLException {
   public IllegalIdentifierSchemeException (final String m) {
     super (m);
   }

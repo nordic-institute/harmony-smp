@@ -65,11 +65,8 @@ public final class SMLDataHandlerGenericTest {
     @Override
     public void before () {
       super.before ();
-      if (s_aGenericHandler == null) {
-        // Do it only once :)
-        SMLEntityManagerFactory.getInstance ();
-        s_aGenericHandler = new SMLDataHandlerGeneric ();
-      }
+      SMLEntityManagerFactory.getInstance ();
+      s_aGenericHandler = new SMLDataHandlerGeneric ();
     }
   }
 

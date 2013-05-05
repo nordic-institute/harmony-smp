@@ -60,7 +60,7 @@ import eu.europa.ec.cipa.sml.client.ManageServiceMetadataServiceCaller;
 @Ignore
 @DevelopersNote ("You need a running test SML for this test")
 public final class FuncTestFillSML {
-  private static final Logger log = LoggerFactory.getLogger (FuncTestFillSML.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (FuncTestFillSML.class);
   private static final ISMLInfo SML_INFO = ESML.DEVELOPMENT_LOCAL;
   private static final String SMP_ID = "SMP-CRUD";
 
@@ -74,13 +74,13 @@ public final class FuncTestFillSML {
       aManageSMP.create (SMP_ID, "127.0.0.1", "http://mySMP.example.org");
     }
     catch (final Exception e) {
-      log.warn (e.getMessage ());
+      s_aLogger.warn (e.getMessage ());
     }
     try {
       aManagePI.create (SMP_ID, aPI);
     }
     catch (final Exception e) {
-      log.warn (e.getMessage ());
+      s_aLogger.warn (e.getMessage ());
     }
     final ParticipantIdentifierPageType page = aManagePI.list ("", SMP_ID);
     ManageParticipantsClient.print (page);

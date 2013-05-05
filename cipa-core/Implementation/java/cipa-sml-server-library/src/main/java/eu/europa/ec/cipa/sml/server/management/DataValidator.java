@@ -40,6 +40,7 @@ package eu.europa.ec.cipa.sml.server.management;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
 import org.busdox.servicemetadata.locator._1.MigrationRecordType;
@@ -50,6 +51,7 @@ import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForP
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 
+import com.phloc.commons.annotations.PresentForCodeCoverage;
 import com.phloc.commons.regex.RegExHelper;
 import com.phloc.commons.string.StringHelper;
 
@@ -69,12 +71,16 @@ import eu.europa.ec.cipa.sml.server.exceptions.BadRequestException;
 public final class DataValidator {
   private static final String DOMAIN_IDENTIFIER = "((\\p{Alnum})([-]|(\\p{Alnum}))*(\\p{Alnum}))|(\\p{Alnum})";
   private static final String DOMAIN_NAME_RULE = "(" + DOMAIN_IDENTIFIER + ")((\\.)(" + DOMAIN_IDENTIFIER + "))*";
-  private static final String IP_RULE = "(\\p{Digit})+(\\.)(\\p{Digit})+(\\.)(\\p{Digit})+(\\.)(\\p{Digit})+";
+  private static final String IP_V4_RULE = "(\\p{Digit})+(\\.)(\\p{Digit})+(\\.)(\\p{Digit})+(\\.)(\\p{Digit})+";
+
+  @PresentForCodeCoverage
+  @SuppressWarnings ("unused")
+  private static final DataValidator s_aInstance = new DataValidator ();
 
   private DataValidator () {}
 
-  public static void validate (final IReadonlyParticipantIdentifier pi) throws BadRequestException {
-    final String sScheme = pi.getScheme ();
+  public static void validate (@Nonnull final IReadonlyParticipantIdentifier aParticipantID) throws BadRequestException {
+    final String sScheme = aParticipantID.getScheme ();
     if (StringHelper.hasNoText (sScheme))
       throw new BadRequestException ("Participant Identifier Scheme cannot be 'null' or empty");
 
@@ -86,7 +92,7 @@ public final class DataValidator {
     if (sScheme.equals (CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME)) {
       // Check if the value matches the format "agency:id" and whether the
       // agency code is known
-      final String sValue = pi.getValue ();
+      final String sValue = aParticipantID.getValue ();
       if (StringHelper.hasNoText (sValue))
         throw new BadRequestException ("Participant Identifier Value cannot be 'null' or empty");
 
@@ -102,7 +108,7 @@ public final class DataValidator {
     }
   }
 
-  public static void validateSMPID (final String sSMPID) throws BadRequestException {
+  public static void validateSMPID (@Nonnull final String sSMPID) throws BadRequestException {
     if (StringHelper.hasNoText (sSMPID))
       throw new BadRequestException ("Publisher ID cannot be 'null' or empty");
 
@@ -110,13 +116,13 @@ public final class DataValidator {
       throw new BadRequestException ("Publisher ID cannot contain _");
   }
 
-  public static void validate (final ParticipantIdentifierPageType list) throws BadRequestException {
-    validateSMPID (list.getServiceMetadataPublisherID ());
-    for (final ParticipantIdentifierType pi : list.getParticipantIdentifier ())
+  public static void validate (@Nonnull final ParticipantIdentifierPageType aParticipantIDPage) throws BadRequestException {
+    validateSMPID (aParticipantIDPage.getServiceMetadataPublisherID ());
+    for (final ParticipantIdentifierType pi : aParticipantIDPage.getParticipantIdentifier ())
       validate (pi);
   }
 
-  public static void validate (final MigrationRecordType aMigrationRecord) throws BadRequestException {
+  public static void validate (@Nonnull final MigrationRecordType aMigrationRecord) throws BadRequestException {
     if (StringHelper.hasNoText (aMigrationRecord.getMigrationKey ()))
       throw new BadRequestException ("Migration key must not be null or empty.");
     if (aMigrationRecord.getMigrationKey ().length () > CSMLDefault.MAX_MIGRATION_CODE_LENGTH)
@@ -127,35 +133,35 @@ public final class DataValidator {
     validateSMPID (aMigrationRecord.getServiceMetadataPublisherID ());
   }
 
-  public static void validate (final ServiceMetadataPublisherServiceForParticipantType pi) throws BadRequestException {
+  public static void validate (@Nonnull final ServiceMetadataPublisherServiceForParticipantType pi) throws BadRequestException {
     validate (pi.getParticipantIdentifier ());
     validateSMPID (pi.getServiceMetadataPublisherID ());
   }
 
-  public static void validate (final PageRequestType messagePart) throws BadRequestException {
-    validateSMPID (messagePart.getServiceMetadataPublisherID ());
+  public static void validate (@Nonnull final PageRequestType aPageRequest) throws BadRequestException {
+    validateSMPID (aPageRequest.getServiceMetadataPublisherID ());
   }
 
-  public static void validate (final ServiceMetadataPublisherServiceType messagePart) throws BadRequestException {
-    validateSMPID (messagePart.getServiceMetadataPublisherID ());
-    validate (messagePart.getPublisherEndpoint ());
+  public static void validate (@Nonnull final ServiceMetadataPublisherServiceType aSMPService) throws BadRequestException {
+    validateSMPID (aSMPService.getServiceMetadataPublisherID ());
+    validate (aSMPService.getPublisherEndpoint ());
   }
 
-  public static void validate (final PublisherEndpointType publisherEndpoint) throws BadRequestException {
-    if (StringHelper.hasNoText (publisherEndpoint.getLogicalAddress ()))
+  public static void validate (@Nonnull final PublisherEndpointType aPublisherEndpoint) throws BadRequestException {
+    if (StringHelper.hasNoText (aPublisherEndpoint.getLogicalAddress ()))
       throw new BadRequestException ("Logical address must not be null or empty.");
 
-    if (StringHelper.hasNoText (publisherEndpoint.getPhysicalAddress ()))
+    if (StringHelper.hasNoText (aPublisherEndpoint.getPhysicalAddress ()))
       throw new BadRequestException ("Physical address must not be null or empty.");
 
     try {
-      new URL (publisherEndpoint.getLogicalAddress ());
+      new URL (aPublisherEndpoint.getLogicalAddress ());
     }
     catch (final MalformedURLException e) {
       throw new BadRequestException ("Logical address is malformed: " + e.getMessage ());
     }
 
-    if (!RegExHelper.stringMatchesPattern (IP_RULE, publisherEndpoint.getPhysicalAddress ()))
-      throw new BadRequestException ("Physical address is malformed: " + publisherEndpoint.getPhysicalAddress ());
+    if (!RegExHelper.stringMatchesPattern (IP_V4_RULE, aPublisherEndpoint.getPhysicalAddress ()))
+      throw new BadRequestException ("Physical address is malformed: " + aPublisherEndpoint.getPhysicalAddress ());
   }
 }

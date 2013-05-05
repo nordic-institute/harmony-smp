@@ -42,6 +42,6 @@ package eu.europa.ec.cipa.sml.server.exceptions;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public class UnknownUserException extends SMLException {
+public class UnknownUserException extends AbstractSMLException {
   public UnknownUserException () {}
 }

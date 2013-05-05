@@ -39,6 +39,7 @@ package eu.europa.ec.cipa.sml.server.management;
 
 import java.util.Set;
 
+import javax.annotation.Nonnull;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFault;
@@ -52,42 +53,31 @@ import org.slf4j.LoggerFactory;
 public class FaultHandler implements javax.xml.ws.handler.soap.SOAPHandler <SOAPMessageContext> {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AddSignatureHandler.class);
 
-  @Override
-  public void close (final MessageContext context) {
-    // TODO Auto-generated method stub
+  public void close (final MessageContext context) {}
 
-  }
-
-  @Override
-  public boolean handleFault (final SOAPMessageContext context) {
+  public boolean handleFault (@Nonnull final SOAPMessageContext context) {
     final Boolean aOutbound = (Boolean) context.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY);
-    System.out.println ("Entered the soap handler" + aOutbound);
-    s_aLogger.info ("Converting " + aOutbound + " to DOMSource");
+    s_aLogger.info ("Entered the soap handler; outbound=" + aOutbound);
     if (aOutbound != null && aOutbound.booleanValue ()) {
       final SOAPMessage sm = context.getMessage ();
-      SOAPFault fault;
+      SOAPFault aFault;
       try {
-        fault = sm.getSOAPBody ().getFault ();
-        System.out.println (fault.getFaultCode ());
-        System.out.println (fault.getFaultString ());
+        aFault = sm.getSOAPBody ().getFault ();
+        s_aLogger.warn (aFault.getFaultCode ());
+        s_aLogger.warn (aFault.getFaultString ());
       }
       catch (final SOAPException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace ();
+        s_aLogger.error ("Failed to get SOAP fault", e);
       }
-
     }
     return true;
   }
 
-  @Override
   public boolean handleMessage (final SOAPMessageContext context) {
     return true;
   }
 
-  @Override
   public Set <QName> getHeaders () {
-    // TODO Auto-generated method stub
     return null;
   }
 }

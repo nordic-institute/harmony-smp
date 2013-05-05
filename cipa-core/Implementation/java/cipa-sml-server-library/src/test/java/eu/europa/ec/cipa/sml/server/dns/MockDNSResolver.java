@@ -68,14 +68,14 @@ import com.phloc.commons.annotations.ReturnsMutableObject;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 final class MockDNSResolver implements Resolver {
-  private static final Logger log = LoggerFactory.getLogger (MockDNSResolver.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (MockDNSResolver.class);
 
   private final Name m_aZone;
   private final Cache m_aCache = new Cache ();
   private final List <Record> m_aRecordList = new ArrayList <Record> ();
 
   public MockDNSResolver (final String z) {
-    log.debug ("Create DNS Resolver for zone : " + z);
+    s_aLogger.debug ("Create DNS Resolver for zone: " + z);
     try {
       m_aZone = new Name (z);
     }
@@ -93,58 +93,63 @@ final class MockDNSResolver implements Resolver {
   @Override
   public Message send (final Message message) throws IOException {
     final int opcode = message.getHeader ().getOpcode ();
-    log.debug ("send Message : " +
-               message.getClass ().getCanonicalName () +
-               " : " +
-               opcode +
-               " : " +
-               Opcode.string (opcode));
+    s_aLogger.debug ("send Message : " +
+                     message.getClass ().getCanonicalName () +
+                     " : " +
+                     opcode +
+                     " : " +
+                     Opcode.string (opcode));
 
     final Message response = new Message ();
     response.getHeader ().setOpcode (message.getHeader ().getOpcode ());
 
     if (message instanceof Update) {
-      log.debug ("This Is Update!");
+      s_aLogger.debug ("This Is Update!");
 
       final Update update = (Update) message;
 
       final Record [] list = update.getSectionArray (Section.UPDATE);
       for (final Record r : list) {
         if (r.getName ().subdomain (m_aZone)) {
-          log.debug ("Record is in Zone!");
+          s_aLogger.debug ("Record is in Zone!");
         }
         else {
-          log.debug ("Record is NOT in Zone! " + r.getName () + " - zone : " + m_aZone);
+          s_aLogger.debug ("Record is NOT in Zone! " + r.getName () + " - zone : " + m_aZone);
           response.getHeader ().setRcode (Rcode.NOTAUTH);
           return response;
         }
 
         if (r.getTTL () == 0 && r.getType () == Type.ANY) {
-          log.debug ("This is Delete");
+          s_aLogger.debug ("This is Delete");
           // DELETE
           final RRset [] rrset = m_aCache.findAnyRecords (r.getName (), Type.ANY);
           if (rrset == null) {
-            log.debug ("NO Record to Delete ");
+            s_aLogger.debug ("NO Record to Delete ");
           }
           else {
-            log.debug ("Deleting Record " + m_aCache.getSize () + " : " + m_aRecordList.size ());
+            s_aLogger.debug ("Deleting Record " + m_aCache.getSize () + " : " + m_aRecordList.size ());
             m_aCache.flushName (r.getName ());
             m_aRecordList.remove (rrset[0].first ());
-            log.debug ("Deleting Record " + m_aCache.getSize () + " : " + m_aRecordList.size ());
+            s_aLogger.debug ("Deleting Record " + m_aCache.getSize () + " : " + m_aRecordList.size ());
           }
         }
         else {
-          log.debug ("Inserting Record " + m_aCache.getSize () + " : " + m_aRecordList.size ());
+          s_aLogger.debug ("Inserting Record " + m_aCache.getSize () + " : " + m_aRecordList.size ());
           m_aCache.addRecord (r, Credibility.NORMAL, message);
           m_aRecordList.add (r);
-          log.debug ("Inserting Record " + m_aCache.getSize () + " : " + m_aRecordList.size ());
+          s_aLogger.debug ("Inserting Record " + m_aCache.getSize () + " : " + m_aRecordList.size ());
         }
       }
 
     }
     else {
       if (opcode == Opcode.QUERY) {
-        log.debug ("Query " + message.getClass ().getCanonicalName () + " : " + opcode + " : " + Opcode.string (opcode));
+        s_aLogger.debug ("Query " +
+                         message.getClass ().getCanonicalName () +
+                         " : " +
+                         opcode +
+                         " : " +
+                         Opcode.string (opcode));
         final Record [] list = message.getSectionArray (Section.QUESTION);
         if (list.length > 0) {
           final RRset [] rrset = m_aCache.findAnyRecords (list[0].getName (), Type.ANY);
@@ -163,12 +168,12 @@ final class MockDNSResolver implements Resolver {
         }
       }
       else {
-        log.debug ("UNKNOWN " +
-                   message.getClass ().getCanonicalName () +
-                   " : " +
-                   opcode +
-                   " : " +
-                   Opcode.string (opcode));
+        s_aLogger.debug ("UNKNOWN " +
+                         message.getClass ().getCanonicalName () +
+                         " : " +
+                         opcode +
+                         " : " +
+                         Opcode.string (opcode));
       }
 
     }
@@ -178,47 +183,47 @@ final class MockDNSResolver implements Resolver {
 
   @Override
   public Object sendAsync (final Message message, final ResolverListener arg1) {
-    log.debug ("### sendAsync : " + message + " : " + arg1);
+    s_aLogger.debug ("### sendAsync : " + message + " : " + arg1);
     return null;
   }
 
   @Override
   public void setEDNS (final int arg0) {
-    log.debug ("### setEDNS : " + arg0);
+    s_aLogger.debug ("### setEDNS : " + arg0);
   }
 
   @Override
   public void setEDNS (final int arg0, final int arg1, final int arg2, @SuppressWarnings ("rawtypes") final List arg3) {
-    log.debug ("### setEDNS : " + arg0 + " : " + arg1 + " : " + arg2 + " : " + arg3);
+    s_aLogger.debug ("### setEDNS : " + arg0 + " : " + arg1 + " : " + arg2 + " : " + arg3);
   }
 
   @Override
   public void setIgnoreTruncation (final boolean arg0) {
-    log.debug ("### setIgnoreTruncation : " + arg0);
+    s_aLogger.debug ("### setIgnoreTruncation : " + arg0);
   }
 
   @Override
   public void setPort (final int arg0) {
-    log.debug ("### setPort : " + arg0);
+    s_aLogger.debug ("### setPort : " + arg0);
   }
 
   @Override
   public void setTCP (final boolean arg0) {
-    log.debug ("### setTCP : " + arg0);
+    s_aLogger.debug ("### setTCP : " + arg0);
   }
 
   @Override
   public void setTSIGKey (final TSIG arg0) {
-    log.debug ("### setTSIGKey : " + arg0);
+    s_aLogger.debug ("### setTSIGKey : " + arg0);
   }
 
   @Override
   public void setTimeout (final int arg0) {
-    log.debug ("### setTimeout : " + arg0);
+    s_aLogger.debug ("### setTimeout : " + arg0);
   }
 
   @Override
   public void setTimeout (final int arg0, final int arg1) {
-    log.debug ("### setTimeout : " + arg0 + " : " + arg1);
+    s_aLogger.debug ("### setTimeout : " + arg0 + " : " + arg1);
   }
 }

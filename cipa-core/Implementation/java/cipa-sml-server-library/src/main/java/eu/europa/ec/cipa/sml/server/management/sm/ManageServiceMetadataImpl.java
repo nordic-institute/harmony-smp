@@ -80,7 +80,7 @@ import eu.europa.ec.cipa.sml.server.web.WebRequestClientIdentifier;
 @BindingType (value = javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING)
 @HandlerChain (file = "handlers.xml")
 public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSoap {
-  private static final Logger log = LoggerFactory.getLogger (ManageServiceMetadataImpl.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (ManageServiceMetadataImpl.class);
 
   private final ObjectFactory m_aObjFactory = new ObjectFactory ();
   private final ISMPDataHandler m_aDataHandler;
@@ -127,8 +127,8 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
   public void create (final ServiceMetadataPublisherServiceType aSMPData) throws BadRequestFault,
                                                                          InternalErrorFault,
                                                                          UnauthorizedFault {
-    if (log.isDebugEnabled ())
-      log.debug ("create(ServiceMetadataPublisherServiceType arg0)");
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("create(ServiceMetadataPublisherServiceType arg0)");
 
     try {
       // Validate input data
@@ -141,7 +141,7 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
       // Perform action
       m_aDataHandler.createSMPData (aSMPData, sClientUniqueID);
 
-      log.info ("Created SMP " +
+      s_aLogger.info ("Created SMP " +
                 aSMPData.getServiceMetadataPublisherID () +
                 " with URLs " +
                 aSMPData.getPublisherEndpoint ().getPhysicalAddress () +
@@ -162,8 +162,8 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
                                                                                                          InternalErrorFault,
                                                                                                          NotFoundFault,
                                                                                                          UnauthorizedFault {
-    if (log.isDebugEnabled ())
-      log.debug ("read()");
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("read()");
 
     try {
       // Validate input data
@@ -176,7 +176,7 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
       // Perform action
       final ServiceMetadataPublisherServiceType ret = m_aDataHandler.getSMPData (messagePart.getServiceMetadataPublisherID (),
                                                                                  sClientUniqueID);
-      log.info ("Read SMP data of " + messagePart.getServiceMetadataPublisherID ());
+      s_aLogger.info ("Read SMP data of " + messagePart.getServiceMetadataPublisherID ());
       return ret;
     }
     catch (final Throwable t) {
@@ -191,8 +191,8 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
                                                                          NotFoundFault,
                                                                          UnauthorizedFault,
                                                                          BadRequestFault {
-    if (log.isDebugEnabled ())
-      log.debug ("update(ServiceMetadataPublisherServiceType arg0)");
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("update(ServiceMetadataPublisherServiceType arg0)");
 
     try {
       // Validate input data
@@ -205,7 +205,7 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
       // Perform action
       m_aDataHandler.updateSMPData (aSMPData, sClientUniqueID);
 
-      log.info ("Updated SMP " +
+      s_aLogger.info ("Updated SMP " +
                 aSMPData.getServiceMetadataPublisherID () +
                 " with URLs " +
                 aSMPData.getPublisherEndpoint ().getPhysicalAddress () +
@@ -218,8 +218,8 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
   }
 
   public void delete (final String sSMPID) throws BadRequestFault, InternalErrorFault, NotFoundFault, UnauthorizedFault {
-    if (log.isDebugEnabled ())
-      log.debug ("delete(ServiceMetadataPublisherServiceType arg0)");
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("delete(ServiceMetadataPublisherServiceType arg0)");
 
     try {
       // Validate input data
@@ -232,7 +232,7 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
       // Perform action
       m_aDataHandler.deleteSMPData (sSMPID, sClientUniqueID);
 
-      log.info ("Deleted SMP " + sSMPID);
+      s_aLogger.info ("Deleted SMP " + sSMPID);
     }
     catch (final Throwable t) {
       _handleException (t);

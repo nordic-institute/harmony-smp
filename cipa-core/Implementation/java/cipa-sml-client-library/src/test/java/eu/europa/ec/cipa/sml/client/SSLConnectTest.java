@@ -62,7 +62,7 @@ import eu.europa.ec.cipa.sml.AbstractSMLClientTest;
  */
 @Ignore
 public final class SSLConnectTest extends AbstractSMLClientTest {
-  private static final Logger log = LoggerFactory.getLogger (SSLConnectTest.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (SSLConnectTest.class);
 
   @Test
   public void testConnect () throws Exception {
@@ -71,24 +71,24 @@ public final class SSLConnectTest extends AbstractSMLClientTest {
 
     // Debug status on URL connection
     if (false) {
-      log.info ("Status code:  " + uc.getResponseCode ());
-      log.info ("Cipher suite: " + uc.getCipherSuite ());
-      log.info ("Encoding:     " + uc.getContentEncoding ());
+      s_aLogger.info ("Status code:  " + uc.getResponseCode ());
+      s_aLogger.info ("Cipher suite: " + uc.getCipherSuite ());
+      s_aLogger.info ("Encoding:     " + uc.getContentEncoding ());
       int i = 0;
       for (final Certificate aCert : uc.getServerCertificates ()) {
-        log.info (" Cert " + (++i) + ":");
-        log.info ("  Cert type:  " + aCert.getType ());
-        log.info ("  Hash code:  " + aCert.hashCode ());
-        log.info ("  Algorithm:  " + aCert.getPublicKey ().getAlgorithm ());
-        log.info ("  Format:     " + aCert.getPublicKey ().getFormat ());
+        s_aLogger.info (" Cert " + (++i) + ":");
+        s_aLogger.info ("  Cert type:  " + aCert.getType ());
+        s_aLogger.info ("  Hash code:  " + aCert.hashCode ());
+        s_aLogger.info ("  Algorithm:  " + aCert.getPublicKey ().getAlgorithm ());
+        s_aLogger.info ("  Format:     " + aCert.getPublicKey ().getFormat ());
         if (aCert instanceof X509Certificate) {
           final X509Certificate aX509 = (X509Certificate) aCert;
-          log.info ("   Principal: " + aX509.getIssuerX500Principal ());
-          log.info ("   Subject:   " + aX509.getSubjectX500Principal ());
+          s_aLogger.info ("   Principal: " + aX509.getIssuerX500Principal ());
+          s_aLogger.info ("   Subject:   " + aX509.getSubjectX500Principal ());
         }
       }
     }
     final byte [] b = StreamUtils.getAllBytes (uc.getInputStream ());
-    log.info ("\n" + new String (b, CCharset.CHARSET_UTF_8));
+    s_aLogger.info ("\n" + new String (b, CCharset.CHARSET_UTF_8));
   }
 }

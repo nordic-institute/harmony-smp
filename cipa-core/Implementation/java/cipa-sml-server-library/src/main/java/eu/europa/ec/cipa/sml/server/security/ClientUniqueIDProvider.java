@@ -50,6 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.annotations.PresentForCodeCoverage;
 import com.phloc.commons.collections.ArrayHelper;
 import com.phloc.commons.collections.ContainerHelper;
 
@@ -60,7 +61,11 @@ import com.phloc.commons.collections.ContainerHelper;
  */
 @Immutable
 public final class ClientUniqueIDProvider {
-  private static final Logger log = LoggerFactory.getLogger (ClientUniqueIDProvider.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (ClientUniqueIDProvider.class);
+
+  @PresentForCodeCoverage
+  @SuppressWarnings ("unused")
+  private static final ClientUniqueIDProvider s_aInstance = new ClientUniqueIDProvider ();
 
   private ClientUniqueIDProvider () {}
 
@@ -77,7 +82,7 @@ public final class ClientUniqueIDProvider {
   public static String getClientUniqueID (@Nonnull final HttpServletRequest aHttpRequest) {
     final Object aValue = aHttpRequest.getAttribute ("javax.servlet.request.X509Certificate");
     if (aValue == null) {
-      log.warn ("No client certificates present in the request");
+      s_aLogger.warn ("No client certificates present in the request");
       return null;
     }
     if (!(aValue instanceof X509Certificate []))
@@ -94,8 +99,7 @@ public final class ClientUniqueIDProvider {
 
     // Find all certificates that are not issuer to another certificate
     final List <X509Certificate> aNonIssuerCertList = new ArrayList <X509Certificate> ();
-    for (int i = 0; i < aRequestCerts.length; ++i) {
-      final X509Certificate aCert = aRequestCerts[i];
+    for (final X509Certificate aCert : aRequestCerts) {
       final Principal aSubject = aCert.getSubjectX500Principal ();
 
       // Search for the issuer in the available certificate array

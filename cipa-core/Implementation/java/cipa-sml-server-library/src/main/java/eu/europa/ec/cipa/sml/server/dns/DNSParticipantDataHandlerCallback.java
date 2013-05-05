@@ -52,12 +52,11 @@ import eu.europa.ec.cipa.sml.server.exceptions.IllegalHostnameException;
 import eu.europa.ec.cipa.sml.server.exceptions.IllegalIdentifierSchemeException;
 import eu.europa.ec.cipa.sml.server.exceptions.InternalErrorException;
 
-
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class DNSParticipantDataHandlerCallback implements IParticipantDataHandlerCallback {
-  private static final Logger log = LoggerFactory.getLogger (DNSParticipantDataHandlerCallback.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (DNSParticipantDataHandlerCallback.class);
 
   public void identifiersCreated (final ParticipantIdentifierPageType identifiers) throws BadRequestException,
                                                                                   InternalErrorException {
@@ -65,18 +64,18 @@ public final class DNSParticipantDataHandlerCallback implements IParticipantData
       final List <ParticipantIdentifierType> aPIs = identifiers.getParticipantIdentifier ();
       final String sSMPID = identifiers.getServiceMetadataPublisherID ();
       DNSClientFactory.getInstance ().createIdentifiers (aPIs, sSMPID);
-      log.info ("DNS Linked Participants " + aPIs + " to " + sSMPID);
+      s_aLogger.info ("DNS Linked Participants " + aPIs + " to " + sSMPID);
     }
     catch (final IOException e) {
-      log.error ("DNSClient failed to create BusinessIdentifier", e);
+      s_aLogger.error ("DNSClient failed to create BusinessIdentifier", e);
       throw new DNSErrorException (e);
     }
     catch (final IllegalIdentifierSchemeException e) {
-      log.error ("Illegal Identifier : ", e);
+      s_aLogger.error ("Illegal Identifier : ", e);
       throw new BadRequestException (e.getMessage ());
     }
     catch (final IllegalHostnameException e) {
-      log.error ("Illegal PublisherID : ", e);
+      s_aLogger.error ("Illegal PublisherID : ", e);
       throw new BadRequestException (e.getMessage ());
     }
   }
@@ -85,14 +84,14 @@ public final class DNSParticipantDataHandlerCallback implements IParticipantData
                                                                               InternalErrorException {
     try {
       DNSClientFactory.getInstance ().deleteIdentifiers (aPIs);
-      log.info ("DNS Deleted Participants " + aPIs);
+      s_aLogger.info ("DNS Deleted Participants " + aPIs);
     }
     catch (final IOException e) {
-      log.error ("DNSClient Failed to delete BusinessIdentifier", e);
+      s_aLogger.error ("DNSClient Failed to delete BusinessIdentifier", e);
       throw new InternalErrorException ("DNSClient Failed to delete BusinessIdentifier", e);
     }
     catch (final IllegalIdentifierSchemeException e) {
-      log.error ("Illegal Identifier : ", e);
+      s_aLogger.error ("Illegal Identifier : ", e);
       throw new BadRequestException (e.getMessage ());
     }
   }
