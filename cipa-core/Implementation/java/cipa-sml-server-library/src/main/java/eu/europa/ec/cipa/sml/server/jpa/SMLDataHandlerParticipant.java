@@ -167,13 +167,14 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager implement
         // iterate participant identifiers
         for (final IReadonlyParticipantIdentifier aParticipantIdentifier : aJAXBPage.getParticipantIdentifier ())
           _internalCreateParticipantIdentifier (aParticipantIdentifier, aSMP, sClientUniqueID);
+
+        // Create identifier in DNS
+        if (m_aCallback != null)
+          m_aCallback.identifiersCreated (aJAXBPage);
       }
     });
     if (ret.hasThrowable ())
       throw ret.getThrowable ();
-
-    if (m_aCallback != null)
-      m_aCallback.identifiersCreated (aJAXBPage);
   }
 
   private void _internalDeleteParticipant (@Nonnull final ParticipantIdentifierType aParticipantID,

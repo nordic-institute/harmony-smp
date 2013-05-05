@@ -39,22 +39,22 @@ package eu.europa.ec.cipa.sml.server.jpa;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 
 import org.busdox.servicemetadata.locator._1.ObjectFactory;
 import org.busdox.servicemetadata.locator._1.PublisherEndpointType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.phloc.commons.callback.DoNothingExceptionHandler;
+import com.phloc.commons.callback.IThrowingRunnable;
 import com.phloc.db.jpa.IEntityManagerProvider;
 import com.phloc.db.jpa.JPAEnabledManager;
+import com.phloc.db.jpa.JPAExecutionResult;
 
 import eu.europa.ec.cipa.sml.server.ISMPDataHandler;
 import eu.europa.ec.cipa.sml.server.ISMPDataHandlerCallback;
@@ -62,7 +62,6 @@ import eu.europa.ec.cipa.sml.server.datamodel.DBParticipantIdentifier;
 import eu.europa.ec.cipa.sml.server.datamodel.DBServiceMetadataPublisher;
 import eu.europa.ec.cipa.sml.server.datamodel.DBUser;
 import eu.europa.ec.cipa.sml.server.exceptions.BadRequestException;
-import eu.europa.ec.cipa.sml.server.exceptions.InternalErrorException;
 import eu.europa.ec.cipa.sml.server.exceptions.NotFoundException;
 import eu.europa.ec.cipa.sml.server.exceptions.UnauthorizedException;
 
@@ -72,8 +71,6 @@ import eu.europa.ec.cipa.sml.server.exceptions.UnauthorizedException;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDataHandler {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (SMLDataHandlerSMP.class);
-
   private final ObjectFactory m_aObjFactory = new ObjectFactory ();
   private ISMPDataHandlerCallback m_aCallback;
 
@@ -94,156 +91,124 @@ public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDa
     m_aCallback = aCallback;
   }
 
-  /*
-   * ==== Helper methods for getting information without having a username.
-   * These methods must not be called directly by the service interface.
-   */
-
   public void createSMPData (final ServiceMetadataPublisherServiceType aSMPData, final String sClientUniqueID) throws Throwable {
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    aTransaction.begin ();
-    try {
-      // This is the only place, where the user is automatically created if it
-      // does not exist, because this action must be the very first one!
-      DBUser aDBUser = getEntityManager ().find (DBUser.class, sClientUniqueID);
-      if (aDBUser == null) {
-        // Password may not be null -> work around hack; password is unused!
-        aDBUser = new DBUser (sClientUniqueID, "");
-        getEntityManager ().persist (aDBUser);
-      }
+    JPAExecutionResult <?> ret;
+    ret = doInTransaction (new IThrowingRunnable () {
+      public void run () throws Exception {
+        // This is the only place, where the user is automatically created if it
+        // does not exist, because this action must be the very first one!
+        DBUser aDBUser = getEntityManager ().find (DBUser.class, sClientUniqueID);
+        if (aDBUser == null) {
+          // Password may not be null -> work around hack; password is unused!
+          aDBUser = new DBUser (sClientUniqueID, "");
+          getEntityManager ().persist (aDBUser);
+        }
 
-      // Then make sure that the smp does not exist.
-      DBServiceMetadataPublisher aSMP = getEntityManager ().find (DBServiceMetadataPublisher.class,
-                                                                  aSMPData.getServiceMetadataPublisherID ());
-      if (aSMP != null)
-        throw new BadRequestException ("The service metadata does already exist.");
+        // Then make sure that the smp does not exist.
+        final String sSMPID = aSMPData.getServiceMetadataPublisherID ();
+        DBServiceMetadataPublisher aSMP = getEntityManager ().find (DBServiceMetadataPublisher.class, sSMPID);
+        if (aSMP != null)
+          throw new BadRequestException ("The service metadata publisher ID '" + sSMPID + "' is already existing.");
 
-      // Save the service metadata
-      aSMP = new DBServiceMetadataPublisher (aSMPData.getServiceMetadataPublisherID (),
-                                             aDBUser,
-                                             aSMPData.getPublisherEndpoint ().getPhysicalAddress (),
-                                             aSMPData.getPublisherEndpoint ().getLogicalAddress ());
-      getEntityManager ().persist (aSMP);
+        // Save the service metadata
+        aSMP = new DBServiceMetadataPublisher (sSMPID,
+                                               aDBUser,
+                                               aSMPData.getPublisherEndpoint ().getPhysicalAddress (),
+                                               aSMPData.getPublisherEndpoint ().getLogicalAddress ());
+        getEntityManager ().persist (aSMP);
 
-      if (m_aCallback != null) {
-        m_aCallback.serviceMetadataCreated (aSMPData);
         // If DNS create fails, then try to rollback database update.
+        if (m_aCallback != null)
+          m_aCallback.serviceMetadataCreated (aSMPData);
       }
-
-      aTransaction.commit ();
-    }
-    catch (final RuntimeException ex) {
-      s_aLogger.error ("exception", ex);
-      throw new InternalErrorException (ex);
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction in createSMPData");
-      }
-    }
+    });
+    if (ret.hasThrowable ())
+      throw ret.getThrowable ();
   }
 
+  @Nonnull
   public ServiceMetadataPublisherServiceType getSMPData (final String sSMPID, final String sClientUniqueID) throws Throwable {
-    try {
-      // Then make sure that the smp exist.
-      final DBServiceMetadataPublisher aSMP = getEntityManager ().find (DBServiceMetadataPublisher.class, sSMPID);
-      if (aSMP == null)
-        throw new NotFoundException ("The service metadata does not exist.");
+    JPAExecutionResult <ServiceMetadataPublisherServiceType> ret;
+    ret = doSelect (new Callable <ServiceMetadataPublisherServiceType> () {
+      @Nonnull
+      public ServiceMetadataPublisherServiceType call () throws Exception {
+        // Then make sure that the smp exist.
+        final DBServiceMetadataPublisher aSMP = getEntityManager ().find (DBServiceMetadataPublisher.class, sSMPID);
+        if (aSMP == null)
+          throw new NotFoundException ("The service metadata does not exist.");
 
-      // Make sure that the smp is owned by the user
-      if (!aSMP.getUser ().getUsername ().equals (sClientUniqueID))
-        throw new UnauthorizedException ("The SMP is not owned by the given username '" + sClientUniqueID + "'");
+        // Make sure that the smp is owned by the user
+        if (!aSMP.getUser ().getUsername ().equals (sClientUniqueID))
+          throw new UnauthorizedException ("The SMP is not owned by the given username '" + sClientUniqueID + "'");
 
-      // Convert the SMP.
-      final ServiceMetadataPublisherServiceType aJAXBSMPData = m_aObjFactory.createServiceMetadataPublisherServiceType ();
-      aJAXBSMPData.setServiceMetadataPublisherID (aSMP.getSmpId ());
-      final PublisherEndpointType aJAXBEndpoint = m_aObjFactory.createPublisherEndpointType ();
-      aJAXBEndpoint.setLogicalAddress (aSMP.getLogicalAddress ());
-      aJAXBEndpoint.setPhysicalAddress (aSMP.getPhysicalAddress ());
-      aJAXBSMPData.setPublisherEndpoint (aJAXBEndpoint);
+        // Convert the SMP.
+        final ServiceMetadataPublisherServiceType aJAXBSMPData = m_aObjFactory.createServiceMetadataPublisherServiceType ();
+        aJAXBSMPData.setServiceMetadataPublisherID (aSMP.getSmpId ());
+        final PublisherEndpointType aJAXBEndpoint = m_aObjFactory.createPublisherEndpointType ();
+        aJAXBEndpoint.setLogicalAddress (aSMP.getLogicalAddress ());
+        aJAXBEndpoint.setPhysicalAddress (aSMP.getPhysicalAddress ());
+        aJAXBSMPData.setPublisherEndpoint (aJAXBEndpoint);
 
-      return aJAXBSMPData;
-    }
-    catch (final RuntimeException ex) {
-      s_aLogger.error ("exception", ex);
-      throw new InternalErrorException (ex);
-    }
+        return aJAXBSMPData;
+      }
+    });
+    return ret.getOrThrow ();
   }
 
-  public void updateSMPData (final ServiceMetadataPublisherServiceType aSMPData, final String sClientUniqueID) throws Throwable {
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    try {
-      // Then make sure that the smp exist.
-      final DBServiceMetadataPublisher aSMP = getEntityManager ().find (DBServiceMetadataPublisher.class,
-                                                                        aSMPData.getServiceMetadataPublisherID ());
-      if (aSMP == null)
-        throw new NotFoundException ("The service metadata does not exist.");
+  public void updateSMPData (@Nonnull final ServiceMetadataPublisherServiceType aSMPData, final String sClientUniqueID) throws Throwable {
+    JPAExecutionResult <?> ret;
+    ret = doInTransaction (new IThrowingRunnable () {
+      public void run () throws Exception {
+        // Then make sure that the smp exist.
+        final String sSMPID = aSMPData.getServiceMetadataPublisherID ();
+        final DBServiceMetadataPublisher aSMP = getEntityManager ().find (DBServiceMetadataPublisher.class, sSMPID);
+        if (aSMP == null)
+          throw new NotFoundException ("The service metadata publisher ID '" + sSMPID + "' does not exist.");
 
-      // Make sure that the smp is owned by the user
-      if (!aSMP.getUser ().getUsername ().equals (sClientUniqueID))
-        throw new UnauthorizedException ("The SMP is not owned by the given username '" + sClientUniqueID + "'");
+        // Make sure that the smp is owned by the user
+        if (!aSMP.getUser ().getUsername ().equals (sClientUniqueID))
+          throw new UnauthorizedException ("The SMP is not owned by the given username '" + sClientUniqueID + "'");
 
-      aTransaction.begin ();
+        // Save the SMP.
+        aSMP.setLogicalAddress (aSMPData.getPublisherEndpoint ().getLogicalAddress ());
+        aSMP.setPhysicalAddress (aSMPData.getPublisherEndpoint ().getPhysicalAddress ());
+        getEntityManager ().merge (aSMP);
 
-      // Save the SMP.
-      aSMP.setLogicalAddress (aSMPData.getPublisherEndpoint ().getLogicalAddress ());
-      aSMP.setPhysicalAddress (aSMPData.getPublisherEndpoint ().getPhysicalAddress ());
-      getEntityManager ().merge (aSMP);
-
-      // Only if the DNS goes well
-      if (m_aCallback != null)
-        m_aCallback.serviceMetadataUpdated (aSMPData);
-
-      aTransaction.commit ();
-    }
-    catch (final RuntimeException ex) {
-      s_aLogger.error ("exception", ex);
-      throw new InternalErrorException (ex);
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction in updateSMPData");
+        // Only if the DNS goes well
+        if (m_aCallback != null)
+          m_aCallback.serviceMetadataUpdated (aSMPData);
       }
-    }
+    });
+    if (ret.hasThrowable ())
+      throw ret.getThrowable ();
   }
 
   public void deleteSMPData (final String sSMPID, final String sClientUniqueID) throws Throwable {
-    final EntityTransaction aTransaction = getEntityManager ().getTransaction ();
-    try {
-      // Then make sure that the smp exist.
-      final DBServiceMetadataPublisher aSMP = getEntityManager ().find (DBServiceMetadataPublisher.class, sSMPID);
-      if (aSMP == null)
-        throw new NotFoundException ("The service metadata does not exist.");
+    JPAExecutionResult <?> ret;
+    ret = doInTransaction (new IThrowingRunnable () {
+      public void run () throws Exception {
+        // Then make sure that the smp exist.
+        final DBServiceMetadataPublisher aSMP = getEntityManager ().find (DBServiceMetadataPublisher.class, sSMPID);
+        if (aSMP == null)
+          throw new NotFoundException ("The service metadata publisher ID '" + sSMPID + "' does not exist.");
 
-      // Make sure that the smp is owned by the user
-      if (!aSMP.getUser ().getUsername ().equals (sClientUniqueID))
-        throw new UnauthorizedException ("The SMP is not owned by the given username '" + sClientUniqueID + "'");
+        // Make sure that the smp is owned by the user
+        if (!aSMP.getUser ().getUsername ().equals (sClientUniqueID))
+          throw new UnauthorizedException ("The SMP is not owned by the given username '" + sClientUniqueID + "'");
 
-      aTransaction.begin ();
+        // Delete the SMP.
+        getEntityManager ().remove (aSMP);
 
-      // Delete the SMP.
-      getEntityManager ().remove (aSMP);
-
-      if (m_aCallback != null) {
-        final List <ParticipantIdentifierType> aPIs = new ArrayList <ParticipantIdentifierType> ();
-        for (final DBParticipantIdentifier aDBPI : aSMP.getRecipientParticipantIdentifiers ())
-          aPIs.add (aDBPI.getId ().asParticipantIdentifier ());
-        m_aCallback.serviceMetadataDeleted (sSMPID, aPIs);
+        // Delete in DNS
+        if (m_aCallback != null) {
+          final List <ParticipantIdentifierType> aPIs = new ArrayList <ParticipantIdentifierType> ();
+          for (final DBParticipantIdentifier aDBPI : aSMP.getRecipientParticipantIdentifiers ())
+            aPIs.add (aDBPI.getId ().asParticipantIdentifier ());
+          m_aCallback.serviceMetadataDeleted (sSMPID, aPIs);
+        }
       }
-
-      aTransaction.commit ();
-    }
-    catch (final RuntimeException ex) {
-      s_aLogger.error ("exception", ex);
-      throw new InternalErrorException (ex);
-    }
-    finally {
-      if (aTransaction.isActive ()) {
-        aTransaction.rollback ();
-        s_aLogger.warn ("Rolled back transaction in deleteSMPData");
-      }
-    }
+    });
+    if (ret.hasThrowable ())
+      throw ret.getThrowable ();
   }
 }
