@@ -196,9 +196,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return aList;
       }
     });
-    if (ret.hasThrowable ())
-      throw ret.getThrowable ();
-    return ret.get ();
+    return ret.getOrThrow ();
   }
 
   @Nullable
@@ -223,9 +221,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return aServiceGroup;
       }
     });
-    if (ret.hasThrowable ())
-      throw ret.getThrowable ();
-    return ret.get ();
+    return ret.getOrThrow ();
   }
 
   public void saveServiceGroup (@Nonnull final ServiceGroupType aServiceGroup,
@@ -325,9 +321,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return aList;
       }
     });
-    if (ret.hasThrowable ())
-      throw ret.getThrowable ();
-    return ret.get ();
+    return ret.getOrThrow ();
   }
 
   @Nonnull
@@ -355,9 +349,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return aList;
       }
     });
-    if (ret.hasThrowable ())
-      throw ret.getThrowable ();
-    return ret.get ();
+    return ret.getOrThrow ();
   }
 
   @Nullable
@@ -379,9 +371,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return serviceMetadata;
       }
     });
-    if (ret.hasThrowable ())
-      throw ret.getThrowable ();
-    return ret.get ();
+    return ret.getOrThrow ();
   }
 
   public void saveService (@Nonnull final ServiceMetadataType aServiceMetadata,
@@ -464,9 +454,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return EChange.CHANGED;
       }
     });
-    if (ret.hasThrowable ())
-      throw ret.getThrowable ();
-    return ret.get ();
+    return ret.getOrThrow ();
   }
 
   public void deleteService (@Nonnull final ParticipantIdentifierType aServiceGroupID,
@@ -508,9 +496,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return aServiceMetadata;
       }
     });
-    if (ret.hasThrowable ())
-      throw ret.getThrowable ();
-    return ret.get ();
+    return ret.getOrThrow ();
   }
 
   private void _convertFromDBToService (@Nonnull final DBServiceMetadata aDBServiceMetadata,

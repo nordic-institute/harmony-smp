@@ -107,9 +107,7 @@ public final class SMLDataHandlerGeneric extends JPAEnabledManager implements IG
         return aJAXBSMPData;
       }
     });
-    if (ret.hasThrowable ())
-      throw ret.getThrowable ();
-    return ret.get ();
+    return ret.getOrThrow ();
   }
 
   @Nonnull
@@ -122,9 +120,7 @@ public final class SMLDataHandlerGeneric extends JPAEnabledManager implements IG
                                   .getResultList ();
       }
     });
-    if (ret.hasThrowable ())
-      throw ret.getThrowable ();
-    return ret.get ();
+    return ret.getOrThrow ();
   }
 
   @Nonnull
@@ -144,9 +140,7 @@ public final class SMLDataHandlerGeneric extends JPAEnabledManager implements IG
         return aJAXBEndpoint;
       }
     });
-    if (ret.hasThrowable ())
-      throw ret.getThrowable ();
-    return ret.get ();
+    return ret.getOrThrow ();
   }
 
   @Nonnull
@@ -169,9 +163,7 @@ public final class SMLDataHandlerGeneric extends JPAEnabledManager implements IG
         return aJAXBPage;
       }
     });
-    if (ret.hasThrowable ())
-      throw ret.getThrowable ();
-    return ret.get ();
+    return ret.getOrThrow ();
   }
 
   public void verifyExistingUser (final String sClientUniqueID) throws UnknownUserException {
