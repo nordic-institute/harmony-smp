@@ -50,6 +50,7 @@ import org.busdox.servicemetadata.locator._1.PageRequestType;
 import org.busdox.servicemetadata.locator._1.ParticipantIdentifierPageType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 
+import com.phloc.commons.callback.DoNothingExceptionHandler;
 import com.phloc.commons.callback.IThrowingRunnable;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.db.jpa.IEntityManagerProvider;
@@ -90,6 +91,8 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager implement
         return SMLEntityManagerWrapper.getInstance ().getEntityManager ();
       }
     });
+    // Exceptions are handled by re-throwing them
+    setCustomExceptionHandler (new DoNothingExceptionHandler ());
   }
 
   public void setCallback (@Nullable final IParticipantDataHandlerCallback aCallback) {
@@ -157,7 +160,9 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager implement
           throw new NotFoundException ("The service metadata publisher ID '" + sSMPID + "' does not exist.");
 
         if (!aSMP.getUser ().getUsername ().equals (sClientUniqueID))
-          throw new UnauthorizedException ("The current user does not own the publisher.");
+          throw new UnauthorizedException ("The current user does not own the service metadata publisher ID '" +
+                                           sSMPID +
+                                           "'!");
 
         // iterate participant identifiers
         for (final IReadonlyParticipantIdentifier aParticipantIdentifier : aJAXBPage.getParticipantIdentifier ())

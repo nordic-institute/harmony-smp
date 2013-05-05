@@ -66,6 +66,7 @@ import org.slf4j.LoggerFactory;
 
 import com.phloc.commons.GlobalDebug;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
+import com.phloc.commons.callback.DoNothingExceptionHandler;
 import com.phloc.commons.state.EChange;
 import com.phloc.db.jpa.IEntityManagerProvider;
 import com.phloc.db.jpa.JPAEnabledManager;
@@ -118,6 +119,9 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return SMPEntityManagerWrapper.getInstance ().getEntityManager ();
       }
     });
+    // Exceptions are handled by re-throwing them
+    setCustomExceptionHandler (new DoNothingExceptionHandler ());
+
     if (aHook == null)
       throw new NullPointerException ("hook");
     m_aHook = aHook;

@@ -52,6 +52,7 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.callback.DoNothingExceptionHandler;
 import com.phloc.db.jpa.IEntityManagerProvider;
 import com.phloc.db.jpa.JPAEnabledManager;
 
@@ -85,6 +86,8 @@ public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDa
         return SMLEntityManagerWrapper.getInstance ().getEntityManager ();
       }
     });
+    // Exceptions are handled by re-throwing them
+    setCustomExceptionHandler (new DoNothingExceptionHandler ());
   }
 
   public void setCallback (@Nullable final ISMPDataHandlerCallback aCallback) {

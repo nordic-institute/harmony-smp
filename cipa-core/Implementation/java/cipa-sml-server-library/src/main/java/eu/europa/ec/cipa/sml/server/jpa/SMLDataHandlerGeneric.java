@@ -50,6 +50,7 @@ import org.busdox.servicemetadata.locator._1.PublisherEndpointType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
 
 import com.phloc.commons.annotations.UsedViaReflection;
+import com.phloc.commons.callback.DoNothingExceptionHandler;
 import com.phloc.db.jpa.IEntityManagerProvider;
 import com.phloc.db.jpa.JPAEnabledManager;
 import com.phloc.db.jpa.JPAExecutionResult;
@@ -81,6 +82,8 @@ public final class SMLDataHandlerGeneric extends JPAEnabledManager implements IG
         return SMLEntityManagerWrapper.getInstance ().getEntityManager ();
       }
     });
+    // Exceptions are handled by re-throwing them
+    setCustomExceptionHandler (new DoNothingExceptionHandler ());
   }
 
   @Nonnull
