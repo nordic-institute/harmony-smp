@@ -238,7 +238,7 @@ public final class JPADataHandlerTest {
     assertEquals (PARTICIPANT_IDENTIFIER_SCHEME, result.getParticipantIdentifier ().get (0).getScheme ());
   }
 
-  @Test (expected = BadRequestException.class)
+  @Test (expected = NotFoundException.class)
   public void testCreateParticipantIdentifierNotExistID () throws Exception {
     m_aParticipantIdentifierPage.setServiceMetadataPublisherID (SMP_ID2);
     s_aParticipantHandler.createParticipantIdentifiers (m_aParticipantIdentifierPage, CLIENT_UNIQUE_ID);
