@@ -6,12 +6,12 @@
     <version>1.0</version>
   </parent>
   <artifactId>cipa-start-filereceiver</artifactId>
-  <version>1.0.1a</version>
+  <version>1.0.2-SNAPSHOT</version>
   <name>cipa-start-filereceiver</name>
 
 	<scm>
-		<connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/tags/cipa-start-filereceiver/cipa-start-filereceiver-1.0.1a</connection>
-		<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/tags/cipa-start-filereceiver/cipa-start-filereceiver-1.0.1a</developerConnection>
+		<connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-start-filereceiver</connection>
+		<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-start-filereceiver</developerConnection>
 	</scm>
   
   <repositories>
