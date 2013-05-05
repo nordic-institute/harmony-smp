@@ -41,6 +41,7 @@ import java.io.File;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -94,31 +95,18 @@ final class TransportChannel {
   /**
    * Path of the Store.
    */
-  protected String m_sStorePath;
-
-  /**
-   * Indicates if the document was saved.
-   */
-  public boolean m_bIsSaved = false;
-
-  /**
-   * Indicates if the document was deleted.
-   */
-  public boolean m_bIsMetadataRemoved = false;
-
-  /**
-   * Indicates if the document was deleted.
-   */
-  public boolean m_bIsPayloadRemoved = false;
+  private final String m_sStorePath;
 
   /**
    * Set the path of the Store.
    * 
-   * @param storePath
+   * @param sStorePath
    *        Path of the store.
    */
-  public TransportChannel (final String storePath) {
-    m_sStorePath = storePath;
+  public TransportChannel (@Nonnull final String sStorePath) {
+    if (sStorePath == null)
+      throw new NullPointerException ("StorePath");
+    m_sStorePath = sStorePath;
   }
 
   /**
@@ -139,13 +127,11 @@ final class TransportChannel {
                                   final String sMessageID,
                                   final Document aMetadataDocument,
                                   final Document aPayloadDocument) throws Exception {
-    m_bIsSaved = false;
-
-    final File aChannelInboxDir = getChannelInboxDir (sChannelID);
+    final File aChannelInboxDir = _getChannelInboxDir (sChannelID);
     s_aLogger.info ("TransportChannel");
 
-    final File aMetadataFile = getMetadataFile (aChannelInboxDir, sMessageID);
-    final File aPayloadFile = getPayloadFile (aChannelInboxDir, sMessageID);
+    final File aMetadataFile = _getMetadataFile (aChannelInboxDir, sMessageID);
+    final File aPayloadFile = _getPayloadFile (aChannelInboxDir, sMessageID);
 
     if (!aMetadataFile.createNewFile ())
       throw new LoggedException ("Cannot create new metadata file for message ID " +
@@ -175,12 +161,10 @@ final class TransportChannel {
 
     try {
 
-      writeDocumentToFile (aMetadataFile, aMetadataDocument);
+      _writeDocumentToFile (aMetadataFile, aMetadataDocument);
       s_aLogger.info ("Metadata created: " + aMetadataFile.getName ());
-      writeDocumentToFile (aPayloadFile, aPayloadDocument);
+      _writeDocumentToFile (aPayloadFile, aPayloadDocument);
       s_aLogger.info ("Payload created: " + aPayloadFile.getName ());
-
-      m_bIsSaved = true;
     }
     catch (final Exception ex) {
       if (aMetadataFile.delete ()) {
@@ -213,15 +197,13 @@ final class TransportChannel {
    *         Throw the exception.
    */
   public final void deleteDocument (final String sChannelID, final String sMessageID) throws Exception {
-
     if (sChannelID != null && sMessageID != null) {
-      final File aChannelInboxDir = getChannelInboxDir (sChannelID);
-      final File aMetadataFile = getMetadataFile (aChannelInboxDir, sMessageID);
-      final File aPayloadFile = getPayloadFile (aChannelInboxDir, sMessageID);
+      final File aChannelInboxDir = _getChannelInboxDir (sChannelID);
+      final File aMetadataFile = _getMetadataFile (aChannelInboxDir, sMessageID);
+      final File aPayloadFile = _getPayloadFile (aChannelInboxDir, sMessageID);
 
       if (aMetadataFile.exists ()) {
         if (aMetadataFile.delete ()) {
-          m_bIsMetadataRemoved = true;
           s_aLogger.debug ("Metadata file deleted: " + aMetadataFile.getAbsolutePath ());
         }
         else {
@@ -230,7 +212,6 @@ final class TransportChannel {
       }
       if (aPayloadFile.exists ()) {
         if (aPayloadFile.delete ()) {
-          m_bIsPayloadRemoved = true;
           s_aLogger.debug ("Payload file deleted: " + aPayloadFile.getAbsolutePath ());
         }
         else {
@@ -249,15 +230,16 @@ final class TransportChannel {
    * @throws Exception
    *         Throws an exception.
    */
+  @Nonnull
   public final String [] getMessageIDs (final String sChannelID) throws Exception {
 
-    final File dir = getChannelInboxDir (sChannelID);
+    final File dir = _getChannelInboxDir (sChannelID);
     final List <File> files = FileUtils.getDirectoryContent (dir, new FilenameFilterEndsWith (EXT_PAYLOAD));
 
     final String [] messageIDs = new String [files.size ()];
     int i = 0;
     for (final File aPayloadFile : files) {
-      final String curMessageId = getMessageIDFromPayloadFile (aPayloadFile);
+      final String curMessageId = _getMessageIDFromPayloadFile (aPayloadFile);
 
       if ((System.currentTimeMillis () - aPayloadFile.lastModified ()) > MESSAGE_INVALID_TIME_IN_MILLIS) {
         deleteDocument (sChannelID, curMessageId);
@@ -281,21 +263,24 @@ final class TransportChannel {
    * @throws Exception
    *         throws an exception.
    */
+  @Nullable
   public final Document getDocumentMetadata (final String sChannelID, final String sMessageID) throws Exception {
-    final File aChannelInboxDir = getChannelInboxDir (sChannelID);
-    final File aMetadataFile = getMetadataFile (aChannelInboxDir, sMessageID);
+    final File aChannelInboxDir = _getChannelInboxDir (sChannelID);
+    final File aMetadataFile = _getMetadataFile (aChannelInboxDir, sMessageID);
     return XMLReader.readXMLDOM (aMetadataFile);
   }
 
+  @Nullable
   public final Document getDocument (final String sChannelID, final String sMessageID) throws Exception {
-    final File aChannelInboxDir = getChannelInboxDir (sChannelID);
-    final File aPayloadFile = getPayloadFile (aChannelInboxDir, sMessageID);
+    final File aChannelInboxDir = _getChannelInboxDir (sChannelID);
+    final File aPayloadFile = _getPayloadFile (aChannelInboxDir, sMessageID);
     return XMLReader.readXMLDOM (aPayloadFile);
   }
 
+  @Nonnegative
   public final long getSize (final String sChannelID, final String sMessageID) throws Exception {
-    final File aChannelInboxDir = getChannelInboxDir (sChannelID);
-    final File aPayloadFile = getPayloadFile (aChannelInboxDir, sMessageID);
+    final File aChannelInboxDir = _getChannelInboxDir (sChannelID);
+    final File aPayloadFile = _getPayloadFile (aChannelInboxDir, sMessageID);
     final long fileLength = aPayloadFile.length ();
     // calculate length in Kilobytes and round up
     final int kb = 1023;
@@ -304,32 +289,35 @@ final class TransportChannel {
     return fileLenghtInKB;
   }
 
+  @Nonnull
   public final Date getCreationTime (final String sChannelID, final String sMessageID) throws Exception {
-    final File aChannelInboxDir = getChannelInboxDir (sChannelID);
-    final File aPayloadFile = getPayloadFile (aChannelInboxDir, sMessageID);
+    final File aChannelInboxDir = _getChannelInboxDir (sChannelID);
+    final File aPayloadFile = _getPayloadFile (aChannelInboxDir, sMessageID);
     return new Date (aPayloadFile.lastModified ());
   }
 
-  private static String getMessageIDFromPayloadFile (@Nonnull final File aPayloadFile) {
+  @Nonnull
+  private static String _getMessageIDFromPayloadFile (@Nonnull final File aPayloadFile) {
     final String str = aPayloadFile.getName ();
 
     // Remove payload extension
     return StringHelper.trimEnd (str, EXT_PAYLOAD).replace ('_', ':');
   }
 
-  private static File getMetadataFile (final File aChannelInboxDir, final String sMessageID) {
+  @Nonnull
+  private static File _getMetadataFile (final File aChannelInboxDir, final String sMessageID) {
     final String sRealMessageID = _removeSpecialChars (sMessageID);
     return new File (aChannelInboxDir, sRealMessageID + EXT_METADATA);
   }
 
-  private static File getPayloadFile (final File aChannelInboxDir, final String sMessageID) {
+  @Nonnull
+  private static File _getPayloadFile (final File aChannelInboxDir, final String sMessageID) {
     final String sRealMessageID = _removeSpecialChars (sMessageID);
-    final File file = new File (aChannelInboxDir, sRealMessageID + EXT_PAYLOAD);
-
-    return file;
+    return new File (aChannelInboxDir, sRealMessageID + EXT_PAYLOAD);
   }
 
-  private File getChannelInboxDir (final String sChannelID) throws Exception {
+  @Nonnull
+  private File _getChannelInboxDir (final String sChannelID) throws LoggedException {
 
     final File inboxDir = new File (m_sStorePath, INBOX_DIR);
     if (FileOperations.createDirIfNotExisting (inboxDir).isFailure ())
@@ -355,7 +343,7 @@ final class TransportChannel {
   }
 
   @Nonnull
-  private static ESuccess writeDocumentToFile (@Nonnull final File messageFile, @Nonnull final Document document) {
+  private static ESuccess _writeDocumentToFile (@Nonnull final File messageFile, @Nonnull final Document document) {
     return XMLWriter.writeToStream (document,
                                     FileUtils.getOutputStream (messageFile),
                                     XMLWriterSettings.DEFAULT_XML_SETTINGS);
