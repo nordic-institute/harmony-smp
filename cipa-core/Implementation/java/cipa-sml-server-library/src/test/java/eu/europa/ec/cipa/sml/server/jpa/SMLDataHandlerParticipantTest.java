@@ -112,10 +112,10 @@ public final class SMLDataHandlerParticipantTest {
   public void initTest () throws Throwable {
     m_aSMPService = s_aObjFactory.createServiceMetadataPublisherServiceType ();
     m_aSMPService.setServiceMetadataPublisherID (SMP_ID);
-    final PublisherEndpointType endpoint = s_aObjFactory.createPublisherEndpointType ();
-    endpoint.setLogicalAddress (SMP_LOGICAL_ADDRESS);
-    endpoint.setPhysicalAddress (SMP_PHYSICAL_ADDRESS);
-    m_aSMPService.setPublisherEndpoint (endpoint);
+    final PublisherEndpointType aPublisherEndpoint = s_aObjFactory.createPublisherEndpointType ();
+    aPublisherEndpoint.setLogicalAddress (SMP_LOGICAL_ADDRESS);
+    aPublisherEndpoint.setPhysicalAddress (SMP_PHYSICAL_ADDRESS);
+    m_aSMPService.setPublisherEndpoint (aPublisherEndpoint);
 
     try {
       s_aSMPHandler.deleteSMPData (SMP_ID, CLIENT_UNIQUE_ID);
@@ -138,6 +138,19 @@ public final class SMLDataHandlerParticipantTest {
     m_aParticipantIdentifierPage.setServiceMetadataPublisherID (SMP_ID);
     m_aParticipantIdentifierPage.getParticipantIdentifier ()
                                 .add (SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_IDENTIFIER_DEFAULT));
+  }
+
+  @Test
+  public void testEDevlivery100 () throws Throwable {
+    final ServiceMetadataPublisherServiceType aSMPService = s_aObjFactory.createServiceMetadataPublisherServiceType ();
+    aSMPService.setServiceMetadataPublisherID ("SMP100");
+    {
+      final PublisherEndpointType aPublisherEndpoint = s_aObjFactory.createPublisherEndpointType ();
+      aPublisherEndpoint.setLogicalAddress (SMP_LOGICAL_ADDRESS);
+      aPublisherEndpoint.setPhysicalAddress (SMP_PHYSICAL_ADDRESS);
+      aSMPService.setPublisherEndpoint (aPublisherEndpoint);
+    }
+    s_aSMPHandler.createSMPData (aSMPService, SMLDataHandlerParticipantTest.class.getName () + ".testEDevlivery100");
   }
 
   /*

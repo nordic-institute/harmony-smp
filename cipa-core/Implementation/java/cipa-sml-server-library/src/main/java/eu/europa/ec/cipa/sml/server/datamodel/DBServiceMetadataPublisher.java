@@ -82,15 +82,6 @@ public class DBServiceMetadataPublisher implements Serializable {
     setLogicalAddress (sLogicalAddress);
   }
 
-  public DBServiceMetadataPublisher (final String sSMPID,
-                                     final DBUser aDBUser,
-                                     final String sPhysicalAddress,
-                                     final String sLogicalAddress,
-                                     final Set <DBParticipantIdentifier> recipientParticipantIdentifiers) {
-    this (sSMPID, aDBUser, sPhysicalAddress, sLogicalAddress);
-    setRecipientParticipantIdentifiers (recipientParticipantIdentifiers);
-  }
-
   @Id
   @Column (name = "smp_id", unique = true, nullable = false, length = CDB.MAX_SMPID_LENGTH)
   public String getSmpId () {
@@ -110,7 +101,7 @@ public class DBServiceMetadataPublisher implements Serializable {
   public void setUser (final DBUser user) {
     m_aUser = user;
   }
-  
+
   @Lob
   @Column (name = "physical_address", nullable = false, length = CDB.MAX_PHYSICAL_ADDRESS_LENGTH)
   public String getPhysicalAddress () {
@@ -120,7 +111,7 @@ public class DBServiceMetadataPublisher implements Serializable {
   public void setPhysicalAddress (final String physicalAddress) {
     m_sPhysicalAddress = physicalAddress;
   }
-  
+
   @Lob
   @Column (name = "logical_address", nullable = false, length = CDB.MAX_LOGICAL_ADDRESS_LENGTH)
   public String getLogicalAddress () {
