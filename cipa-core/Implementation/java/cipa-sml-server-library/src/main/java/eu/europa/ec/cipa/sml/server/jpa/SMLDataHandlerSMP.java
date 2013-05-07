@@ -91,7 +91,7 @@ public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDa
     m_aCallback = aCallback;
   }
 
-  public void createSMPData (final ServiceMetadataPublisherServiceType aSMPData, final String sClientUniqueID) throws Throwable {
+  public void createSMPData (@Nonnull final ServiceMetadataPublisherServiceType aSMPData, final String sClientUniqueID) throws Throwable {
     JPAExecutionResult <?> ret;
     ret = doInTransaction (new IThrowingRunnable () {
       public void run () throws Exception {

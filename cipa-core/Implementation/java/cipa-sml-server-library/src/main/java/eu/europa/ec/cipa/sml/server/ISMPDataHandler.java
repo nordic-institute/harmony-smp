@@ -37,6 +37,9 @@
  */
 package eu.europa.ec.cipa.sml.server;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
 
 /**
@@ -50,11 +53,11 @@ public interface ISMPDataHandler {
    * @param aCallback
    *        The callback handler to be invoked.
    */
-  void setCallback (ISMPDataHandlerCallback aCallback);
+  void setCallback (@Nullable ISMPDataHandlerCallback aCallback);
 
-  void createSMPData (ServiceMetadataPublisherServiceType aSMPService, String sClientUniqueID) throws Throwable;
+  void createSMPData (@Nonnull ServiceMetadataPublisherServiceType aSMPService, String sClientUniqueID) throws Throwable;
 
-  void updateSMPData (ServiceMetadataPublisherServiceType aSMPService, String sClientUniqueID) throws Throwable;
+  void updateSMPData (@Nonnull ServiceMetadataPublisherServiceType aSMPService, String sClientUniqueID) throws Throwable;
 
   void deleteSMPData (String sSMPID, String sClientUniqueID) throws Throwable;
 

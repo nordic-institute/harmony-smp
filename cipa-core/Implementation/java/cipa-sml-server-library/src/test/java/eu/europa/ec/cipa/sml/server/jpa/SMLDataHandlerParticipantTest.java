@@ -142,6 +142,14 @@ public final class SMLDataHandlerParticipantTest {
 
   @Test
   public void testEDevlivery100 () throws Throwable {
+    final String sClientUniqueID = SMLDataHandlerParticipantTest.class.getName () + ".testEDevlivery100";
+    try {
+      s_aSMPHandler.deleteSMPData ("SMP100", sClientUniqueID);
+    }
+    catch (final NotFoundException e) {
+      // This is ok, since we just want to make sure it isn't there.
+    }
+
     final ServiceMetadataPublisherServiceType aSMPService = s_aObjFactory.createServiceMetadataPublisherServiceType ();
     aSMPService.setServiceMetadataPublisherID ("SMP100");
     {
@@ -150,7 +158,7 @@ public final class SMLDataHandlerParticipantTest {
       aPublisherEndpoint.setPhysicalAddress (SMP_PHYSICAL_ADDRESS);
       aSMPService.setPublisherEndpoint (aPublisherEndpoint);
     }
-    s_aSMPHandler.createSMPData (aSMPService, SMLDataHandlerParticipantTest.class.getName () + ".testEDevlivery100");
+    s_aSMPHandler.createSMPData (aSMPService, sClientUniqueID);
   }
 
   /*
