@@ -19,6 +19,7 @@
     <module>cipa-smp-readonly-webapp</module>
     <module>cipa-smp-full-webapp</module>
     <module>cipa-transport-api</module>
+    <module>cipa-start-filereceiver</module>
     <module>cipa-start-client</module>
     <module>cipa-start-server</module>
   </modules>

@@ -15,7 +15,6 @@
     <module>cipa-start-client-console</module>
     <module>cipa-oxalis</module>
     <module>cipa-oxalis-receiver</module>
-    <module>cipa-start-filereceiver</module>
     <module>cipa-lime-client</module>
     <module>cipa-lime-server</module>
     <module>cipa-commons-cenbii</module>
