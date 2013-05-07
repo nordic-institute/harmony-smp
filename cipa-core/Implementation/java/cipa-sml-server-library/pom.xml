@@ -4,7 +4,8 @@
 	<parent>
 		<groupId>eu.europa.ec.cipa</groupId>
 		<artifactId>cipa-parent-pom</artifactId>
-		<version>1.0</version>
+		<version>1.1</version>
+    <relativePath>../cipa-parent-pom/pom.xml</relativePath>
 	</parent>
 	<artifactId>cipa-sml-server-library</artifactId>
   <version>1.0.2-SNAPSHOT</version>
@@ -15,17 +16,17 @@
     <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-sml-server-library</developerConnection>
   </scm>
 
-	<repositories>
-		<repository>
-			<id>phloc</id>
-			<url>http://repo.phloc.com/maven2/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
+  <repositories>
+    <repository>
+      <id>joinup.nexus</id>
+      <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
     <repository>
       <id>h2</id>
       <url>http://h2database.com/m2-repo/</url>
