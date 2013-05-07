@@ -46,6 +46,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import com.phloc.commons.annotations.PresentForCodeCoverage;
+import com.phloc.commons.microdom.IMicroNode;
+import com.phloc.commons.microdom.serialize.MicroWriter;
+import com.phloc.commons.string.StringHelper;
 import com.phloc.commons.typeconvert.TypeConverter;
 import com.phloc.commons.typeconvert.TypeConverterException;
 import com.phloc.commons.xml.serialize.EXMLSerializeDocType;
@@ -62,6 +66,14 @@ import com.phloc.commons.xml.serialize.XMLWriterSettings;
  */
 @Immutable
 public final class ExtensionConverter {
+  private static final XMLWriterSettings s_aXWS = new XMLWriterSettings ().setSerializeDocType (EXMLSerializeDocType.IGNORE)
+                                                                          .setIndent (EXMLSerializeIndent.NONE);
+  private static final ObjectFactory s_aOF = new ObjectFactory ();
+
+  @PresentForCodeCoverage
+  @SuppressWarnings ("unused")
+  private static final ExtensionConverter s_aInstance = new ExtensionConverter ();
+
   private ExtensionConverter () {}
 
   /**
@@ -71,6 +83,8 @@ public final class ExtensionConverter {
    *        The extension to be converted. May be <code>null</code>.
    * @return <code>null</code> if no extension was passed - the XML
    *         representation of the extension otherwise.
+   * @throws IllegalArgumentException
+   *         If the Extension cannot be converted to a String
    */
   @Nullable
   public static String convert (@Nullable final ExtensionType aExtension) {
@@ -83,12 +97,13 @@ public final class ExtensionConverter {
     if (aExtensionElement == null)
       return null;
 
-    // Handle nodes directly
-    if (aExtensionElement instanceof Node) {
-      return XMLWriter.getNodeAsString ((Node) aExtensionElement,
-                                        new XMLWriterSettings ().setSerializeDocType (EXMLSerializeDocType.IGNORE)
-                                                                .setIndent (EXMLSerializeIndent.NONE));
-    }
+    // Handle DOM nodes directly
+    if (aExtensionElement instanceof Node)
+      return XMLWriter.getNodeAsString ((Node) aExtensionElement, s_aXWS);
+
+    // Handle Micro nodes also directly
+    if (aExtensionElement instanceof IMicroNode)
+      return MicroWriter.getNodeAsString ((IMicroNode) aExtensionElement, s_aXWS);
 
     try {
       // Call the global type converter - maybe it helps :)
@@ -106,17 +121,18 @@ public final class ExtensionConverter {
    * 
    * @param sXML
    *        the XML representation to be converted.
-   * @return <code>null</code> if the passed XML could not be converted to an
-   *         extension object.
+   * @return <code>null</code> if the passed string is empty.
+   * @throws IllegalArgumentException
+   *         If the String cannot be converted to a XML node
    */
   @Nullable
   public static ExtensionType convert (@Nullable final String sXML) {
-    if (sXML != null) {
+    if (StringHelper.hasText (sXML)) {
       try {
         // Try to interpret as XML
         final Document aDoc = XMLReader.readXMLDOM (sXML);
         if (aDoc != null) {
-          final ExtensionType aExtension = new ObjectFactory ().createExtensionType ();
+          final ExtensionType aExtension = s_aOF.createExtensionType ();
           aExtension.setAny (aDoc.getDocumentElement ());
           return aExtension;
         }
