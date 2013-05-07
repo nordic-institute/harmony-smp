@@ -127,6 +127,17 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     m_aHook = aHook;
   }
 
+  @Nullable
+  private static ExtensionType _getAsExtension (@Nullable final String sXML) {
+    try {
+      return ExtensionConverter.convert (sXML);
+    }
+    catch (final IllegalArgumentException ex) {
+      // Invalid XML passed
+      return null;
+    }
+  }
+
   @Nonnull
   private DBUser _verifyUser (@Nonnull final BasicAuthClientCredentials aCredentials) throws UnknownUserException,
                                                                                      UnauthorizedException {
@@ -219,7 +230,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         // Convert service group DB to service group service
         final ServiceGroupType aServiceGroup = m_aObjFactory.createServiceGroupType ();
         aServiceGroup.setParticipantIdentifier (aServiceGroupID);
-        aServiceGroup.setExtension (ExtensionConverter.convert (aDBServiceGroup.getExtension ()));
+        aServiceGroup.setExtension (_getAsExtension (aDBServiceGroup.getExtension ()));
         // This is set by the REST interface:
         // ret.setServiceMetadataReferenceCollection(value)
         return aServiceGroup;
@@ -494,7 +505,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         final RedirectType aRedirect = m_aObjFactory.createRedirectType ();
         aRedirect.setCertificateUID (aDBServiceMetadataRedirection.getCertificateUid ());
         aRedirect.setHref (aDBServiceMetadataRedirection.getRedirectionUrl ());
-        aRedirect.setExtension (ExtensionConverter.convert (aDBServiceMetadataRedirection.getExtension ()));
+        aRedirect.setExtension (_getAsExtension (aDBServiceMetadataRedirection.getExtension ()));
         aServiceMetadata.setRedirect (aRedirect);
 
         return aServiceMetadata;
@@ -506,7 +517,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
   private void _convertFromDBToService (@Nonnull final DBServiceMetadata aDBServiceMetadata,
                                         @Nonnull final ServiceMetadataType aServiceMetadata) {
     final ParticipantIdentifierType aBusinessID = aDBServiceMetadata.getId ().asBusinessIdentifier ();
-    final ExtensionType aExtension = ExtensionConverter.convert (aDBServiceMetadata.getExtension ());
+    final ExtensionType aExtension = _getAsExtension (aDBServiceMetadata.getExtension ());
 
     final DocumentIdentifierType aDocTypeID = aDBServiceMetadata.getId ().asDocumentTypeIdentifier ();
 
@@ -527,7 +538,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         final EndpointType aEndpointType = m_aObjFactory.createEndpointType ();
 
         aEndpointType.setTransportProfile (aDBEndpoint.getId ().getTransportProfile ());
-        aEndpointType.setExtension (ExtensionConverter.convert (aDBEndpoint.getExtension ()));
+        aEndpointType.setExtension (_getAsExtension (aDBEndpoint.getExtension ()));
 
         final W3CEndpointReference endpointRef = W3CEndpointReferenceUtils.createEndpointReference (aDBEndpoint.getId ()
                                                                                                                .getEndpointReference ());
@@ -546,7 +557,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
       }
 
       aProcessType.setServiceEndpointList (endpoints);
-      aProcessType.setExtension (ExtensionConverter.convert (aDBProcess.getExtension ()));
+      aProcessType.setExtension (_getAsExtension (aDBProcess.getExtension ()));
       aProcessType.setProcessIdentifier (aDBProcess.getId ().asProcessIdentifier ());
 
       aProcessList.getProcess ().add (aProcessType);
