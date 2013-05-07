@@ -76,24 +76,14 @@ import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
  */
 @Immutable
 public final class MessageMetadataHelper {
-  private static final QName QNAME_MESSAGEID;
-  private static final QName QNAME_CHANNELID;
-  private static final QName QNAME_RECIPIENTID;
-  private static final QName QNAME_SENDERID;
-  private static final QName QNAME_DOCUMENTID;
-  private static final QName QNAME_PROCESSID;
+  private static final QName QNAME_MESSAGEID = ObjectFactory._MessageIdentifier_QNAME;
+  private static final QName QNAME_CHANNELID = ObjectFactory._ChannelIdentifier_QNAME;
+  private static final QName QNAME_RECIPIENTID = ObjectFactory._RecipientIdentifier_QNAME;
+  private static final QName QNAME_SENDERID = ObjectFactory._SenderIdentifier_QNAME;
+  private static final QName QNAME_DOCUMENTID = ObjectFactory._DocumentIdentifier_QNAME;
+  private static final QName QNAME_PROCESSID = ObjectFactory._ProcessIdentifier_QNAME;
   // Must match the attribute name used in ParticipantIdentifierType etc.
   private static final QName QNAME_SCHEME = new QName (null, CTransportIdentifiers.SCHEME_ATTR);
-
-  static {
-    final ObjectFactory aIdentifierObjFactory = new ObjectFactory ();
-    QNAME_MESSAGEID = aIdentifierObjFactory.createMessageIdentifier (null).getName ();
-    QNAME_CHANNELID = aIdentifierObjFactory.createChannelIdentifier (null).getName ();
-    QNAME_RECIPIENTID = aIdentifierObjFactory.createRecipientIdentifier (null).getName ();
-    QNAME_SENDERID = aIdentifierObjFactory.createSenderIdentifier (null).getName ();
-    QNAME_DOCUMENTID = aIdentifierObjFactory.createDocumentIdentifier (null).getName ();
-    QNAME_PROCESSID = aIdentifierObjFactory.createProcessIdentifier (null).getName ();
-  }
 
   private MessageMetadataHelper () {}
 
