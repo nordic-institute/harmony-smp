@@ -3,7 +3,8 @@
   <parent>
     <groupId>eu.europa.ec.cipa</groupId>
     <artifactId>cipa-parent-pom</artifactId>
-    <version>1.0</version>
+    <version>1.1</version>
+    <relativePath>../../../../cipa-core/Implementation/java/cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-lime-client</artifactId>
   <version>1.0.2-SNAPSHOT</version>
@@ -13,16 +14,16 @@
     <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-lime-client</connection>
     <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-lime-client</developerConnection>
   </scm>
-
+  
   <repositories>
     <repository>
-      <id>phloc</id>
-      <url>http://repo.phloc.com/maven2/</url>
+      <id>joinup.nexus</id>
+      <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
       <releases>
         <enabled>true</enabled>
       </releases>
       <snapshots>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
       </snapshots>
     </repository>
   </repositories>
