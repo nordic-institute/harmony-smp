@@ -92,6 +92,16 @@
         <enabled>false</enabled>
       </snapshots>        
     </repository>
+    <repository>
+      <id>joinup.nexus</id>
+      <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
   </repositories>
   
   <!-- Where are we looking for Maven plugins? -->
