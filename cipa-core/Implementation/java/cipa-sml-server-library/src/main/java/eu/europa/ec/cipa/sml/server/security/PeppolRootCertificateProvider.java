@@ -62,9 +62,11 @@ public final class PeppolRootCertificateProvider {
   public static final String CONFIG_SML_TRUSTSTORE_PATH = "sml.truststore.path";
   public static final String CONFIG_SML_TRUSTSTORE_PASSWORD = "sml.truststore.password";
   public static final String CONFIG_SML_TRUSTSTORE_ALIAS = "sml.truststore.alias";
+  public static final String CONFIG_SML_TRUSTSTORE_ALIAS_NEW = "sml.truststore.alias.new";
   private static final Logger s_aLogger = LoggerFactory.getLogger (PeppolRootCertificateProvider.class);
 
   private static X509Certificate s_aPeppolSMPRootCert;
+  private static X509Certificate s_aOpenPeppolSMPRootCert;
 
   static {
     final ConfigFile aConfigFile = ConfigFile.getInstance ();
@@ -74,9 +76,12 @@ public final class PeppolRootCertificateProvider {
                                                         KeyStoreUtils.TRUSTSTORE_PASSWORD);
     final String sTrustStoreAlias = aConfigFile.getString (CONFIG_SML_TRUSTSTORE_ALIAS,
                                                            KeyStoreUtils.TRUSTSTORE_ALIAS_SMP);
+    final String sTrustStoreAliasNew = aConfigFile.getString (CONFIG_SML_TRUSTSTORE_ALIAS_NEW,
+            KeyStoreUtils.TRUSTSTORE_ALIAS_SMP);
     try {
       final KeyStore aKS = KeyStoreUtils.loadKeyStore (sTrustStorePath, sTrustStorePW);
       s_aPeppolSMPRootCert = (X509Certificate) aKS.getCertificate (sTrustStoreAlias);
+      s_aOpenPeppolSMPRootCert = (X509Certificate) aKS.getCertificate (sTrustStoreAliasNew);
     }
     catch (final Throwable t) {
       final String sErrorMsg = "Failed to read SML trust store from '" + sTrustStorePath + "'";
@@ -91,6 +96,13 @@ public final class PeppolRootCertificateProvider {
                     "' with alias '" +
                     sTrustStoreAlias +
                     "'");
+    if (s_aOpenPeppolSMPRootCert == null)
+        throw new InitializationException ("Failed to resolve alias '" + sTrustStoreAliasNew + "' in trust store!");
+      s_aLogger.info ("Open PEPPOL root certificate loaded successfully from trust store '" +
+                      sTrustStorePath +
+                      "' with alias '" +
+                      sTrustStoreAliasNew +
+                      "'");
   }
 
   private PeppolRootCertificateProvider () {}
@@ -98,5 +110,9 @@ public final class PeppolRootCertificateProvider {
   @Nonnull
   public static X509Certificate getPeppolSMPRootCertificate () {
     return s_aPeppolSMPRootCert;
+  }
+  @Nonnull
+  public static X509Certificate getOpenPeppolSMPRootCertificate () {
+    return s_aOpenPeppolSMPRootCert;
   }
 }
