@@ -42,6 +42,7 @@ import java.net.URL;
 import java.security.KeyStore;
 
 import javax.annotation.concurrent.NotThreadSafe;
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -58,6 +59,7 @@ import com.phloc.commons.state.ESuccess;
 import eu.europa.ec.cipa.busdox.identifier.IParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.security.DoNothingTrustManager;
+import eu.europa.ec.cipa.peppol.security.HostnameVerifierAlwaysTrue;
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 import eu.europa.ec.cipa.sml.client.ManageParticipantIdentifierServiceCaller;
@@ -118,7 +120,8 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
       final ConfigFile aConfigFile = ConfigFile.getInstance ();
       final String sKeystorePath = aConfigFile.getString (CONFIG_HOOK_KEYSTORE_CLASSPATH);
       final String sKeystorePassword = aConfigFile.getString (CONFIG_HOOK_KEYSTORE_PASSWORD);
-
+      final String sRegLocatorUrl= aConfigFile.getString (CONFIG_HOOK_REG_LOCATOR_URL);
+      
       // Main key storage
       final KeyStore aKeyStore = KeyStoreUtils.loadKeyStore (sKeystorePath, sKeystorePassword);
 
@@ -134,6 +137,9 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
                     new TrustManager [] { new DoNothingTrustManager () },
                     VerySecureRandom.getInstance ());
       HttpsURLConnection.setDefaultSSLSocketFactory (aSSLCtx.getSocketFactory ());
+      if (sRegLocatorUrl.contains("localhost") ){
+    	  HttpsURLConnection.setDefaultHostnameVerifier( new HostnameVerifierAlwaysTrue());
+      }
     }
     catch (final Exception ex) {
       throw new IllegalStateException ("Failed to init keyStore for SML access", ex);
