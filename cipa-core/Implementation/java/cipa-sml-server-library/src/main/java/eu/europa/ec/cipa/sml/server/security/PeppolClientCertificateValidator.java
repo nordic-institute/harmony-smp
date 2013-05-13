@@ -152,13 +152,26 @@ public final class PeppolClientCertificateValidator {
     // OK, we have a non-empty, type checked Certificate array
     // Find the certificate that is issued by
     final String sIssuerToSearch = ConfigFile.getInstance ().getString (CONFIG_SML_CLIENT_CERTISSUER);
+    if (sIssuerToSearch == null)
+      throw new IllegalStateException ("The configuration file is missing the entry '" +
+                                       CONFIG_SML_CLIENT_CERTISSUER +
+                                       "'");
+
+    // Alternative (optional)
     final String sAlternativeIssuerToSearch = ConfigFile.getInstance ().getString (CONFIG_SML_CLIENT_CERTISSUER_NEW);
-    s_aLogger.info ("Searching for the following certificate issuer: '" + sIssuerToSearch + "'");
+
+    s_aLogger.info ("Searching for the following certificate issuer: '" +
+                    sIssuerToSearch +
+                    "'" +
+                    (sAlternativeIssuerToSearch == null ? "" : " or '" + sAlternativeIssuerToSearch + "'"));
+
     X509Certificate aCertToVerify = null;
     for (final X509Certificate aCert : aRequestCerts) {
       final X500Principal aIssuer = aCert.getIssuerX500Principal ();
-      s_aLogger.info ("  Found the following certificate issuer: " + aIssuer.getName ());
-      if (sIssuerToSearch.equals (aIssuer.getName ()) || sAlternativeIssuerToSearch.equals (aIssuer.getName ())) {
+      final String sIssuerName = aIssuer.getName ();
+      s_aLogger.info ("  Found the following certificate issuer: '" + sIssuerName + "'");
+      if (sIssuerToSearch.equals (sIssuerName) ||
+          (sAlternativeIssuerToSearch != null && sAlternativeIssuerToSearch.equals (sIssuerName))) {
         aCertToVerify = aCert;
         break;
       }
@@ -166,29 +179,33 @@ public final class PeppolClientCertificateValidator {
 
     // Do we have exactly 1 certificate to verify?
     if (aCertToVerify == null)
-      throw new IllegalStateException ("Found no certificate that was issued by '" + sIssuerToSearch + "'!");
+      throw new IllegalStateException ("Found no certificate that was issued by '" +
+                                       sIssuerToSearch +
+                                       "' or by '" +
+                                       sAlternativeIssuerToSearch +
+                                       "!");
 
     // This is the main verification process against the PEPPOL root
     // certificate
     final X509Certificate aRootCert = PeppolRootCertificateProvider.getPeppolSMPRootCertificate ();
-    final X509Certificate aOpenPeppolRootCert = PeppolRootCertificateProvider.getOpenPeppolSMPRootCertificate();
+    final X509Certificate aOpenPeppolRootCert = PeppolRootCertificateProvider.getOpenPeppolSMPRootCertificate ();
     final String sVerifyMsg = _verifyCertificate (aCertToVerify, aRootCert, aCRLs, aNow);
     final String sVerifyMsgOpenPeppol = _verifyCertificate (aCertToVerify, aOpenPeppolRootCert, aCRLs, aNow);
     if (sVerifyMsg != null && sVerifyMsgOpenPeppol != null) {
-    	
+
       s_aLogger.warn ("Client certificate not correct: " +
                       sVerifyMsg +
                       "; root certificate serial=" +
                       aRootCert.getSerialNumber ().toString (16) +
                       "; root certficate issuer=" +
                       aRootCert.getIssuerX500Principal ().getName ());
-      
+
       s_aLogger.warn ("Client certificate not correct: " +
-    		  sVerifyMsgOpenPeppol +
-              "; root certificate serial=" +
-              aOpenPeppolRootCert.getSerialNumber ().toString (16) +
-              "; root certficate issuer=" +
-              aOpenPeppolRootCert.getIssuerX500Principal ().getName ());
+                      sVerifyMsgOpenPeppol +
+                      "; root certificate serial=" +
+                      aOpenPeppolRootCert.getSerialNumber ().toString (16) +
+                      "; root certficate issuer=" +
+                      aOpenPeppolRootCert.getIssuerX500Principal ().getName ());
       return false;
     }
 
