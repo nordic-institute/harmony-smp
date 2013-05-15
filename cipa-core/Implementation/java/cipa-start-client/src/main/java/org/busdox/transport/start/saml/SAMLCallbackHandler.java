@@ -79,6 +79,8 @@ import com.phloc.commons.CGlobal;
 import com.phloc.commons.annotations.DevelopersNote;
 import com.phloc.commons.annotations.UsedViaReflection;
 import com.phloc.commons.collections.ContainerHelper;
+import com.phloc.commons.random.VerySecureRandom;
+import com.sun.org.apache.xml.internal.security.utils.Base64;
 import com.sun.xml.wss.impl.callback.SAMLCallback;
 import com.sun.xml.wss.impl.dsig.WSSPolicyConsumerImpl;
 import com.sun.xml.wss.saml.Assertion;
@@ -166,13 +168,13 @@ public final class SAMLCallbackHandler implements CallbackHandler {
   /**
    * Gets an Element representing SAML Assertion.
    * 
-   * @param samlCallback
+   * @param aSamlCallback
    *        the SAMLCallback.
    * @return an Element.
    * @throws Exception
    *         thrown if there is a SOAP problem.
    */
-  private static Element _createSenderVouchesSAMLAssertion (final SAMLCallback samlCallback) throws Exception {
+  private static Element _createSenderVouchesSAMLAssertion (final SAMLCallback aSamlCallback) throws Exception {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Creating and setting the SAML Sender Vouches Assertion.");
 
@@ -181,8 +183,11 @@ public final class SAMLCallbackHandler implements CallbackHandler {
 
     // id must start with letters (WIF.NET)
     // necessary to support <sp:ProtectTokens>
-    final String sAssertionID = SAML_ID_PREFIX + String.valueOf (System.currentTimeMillis ());
-    samlCallback.setAssertionId (sAssertionID);
+    // According to EDELIVERY-112 it should by a real cryptographic value
+    final byte [] aRandom = new byte [128];
+    VerySecureRandom.getInstance ().nextBytes (aRandom);
+    final String sAssertionID = SAML_ID_PREFIX + Base64.encode (aRandom);
+    aSamlCallback.setAssertionId (sAssertionID);
 
     GregorianCalendar aCal = new GregorianCalendar ();
     final long nBeforeTime = aCal.getTimeInMillis ();
