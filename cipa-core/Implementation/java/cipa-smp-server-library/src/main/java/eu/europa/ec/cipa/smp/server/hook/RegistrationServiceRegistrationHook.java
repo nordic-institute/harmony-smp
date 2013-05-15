@@ -42,7 +42,6 @@ import java.net.URL;
 import java.security.KeyStore;
 
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -120,8 +119,8 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
       final ConfigFile aConfigFile = ConfigFile.getInstance ();
       final String sKeystorePath = aConfigFile.getString (CONFIG_HOOK_KEYSTORE_CLASSPATH);
       final String sKeystorePassword = aConfigFile.getString (CONFIG_HOOK_KEYSTORE_PASSWORD);
-      final String sRegLocatorUrl= aConfigFile.getString (CONFIG_HOOK_REG_LOCATOR_URL);
-      
+      final String sRegLocatorUrl = aConfigFile.getString (CONFIG_HOOK_REG_LOCATOR_URL);
+
       // Main key storage
       final KeyStore aKeyStore = KeyStoreUtils.loadKeyStore (sKeystorePath, sKeystorePassword);
 
@@ -137,8 +136,8 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
                     new TrustManager [] { new DoNothingTrustManager () },
                     VerySecureRandom.getInstance ());
       HttpsURLConnection.setDefaultSSLSocketFactory (aSSLCtx.getSocketFactory ());
-      if (sRegLocatorUrl.contains("localhost") ){
-    	  HttpsURLConnection.setDefaultHostnameVerifier( new HostnameVerifierAlwaysTrue());
+      if (sRegLocatorUrl.contains ("localhost")) {
+        HttpsURLConnection.setDefaultHostnameVerifier (new HostnameVerifierAlwaysTrue ());
       }
     }
     catch (final Exception ex) {
