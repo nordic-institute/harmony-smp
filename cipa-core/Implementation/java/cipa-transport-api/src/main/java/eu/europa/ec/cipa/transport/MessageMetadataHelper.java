@@ -187,29 +187,29 @@ public final class MessageMetadataHelper {
   }
 
   @Nullable
-  private static ParticipantIdentifierType _getParticipantID (@Nonnull final HeaderList aHeaderList,
-                                                              @Nonnull final QName aQName) {
+  private static SimpleParticipantIdentifier _getParticipantID (@Nonnull final HeaderList aHeaderList,
+                                                                @Nonnull final QName aQName) {
     final Header aHeaderPart = aHeaderList.get (aQName, false);
     return aHeaderPart == null ? null : new SimpleParticipantIdentifier (aHeaderPart.getAttribute (QNAME_SCHEME),
                                                                          aHeaderPart.getStringContent ());
   }
 
   @Nullable
-  private static DocumentIdentifierType _getDocumentTypeID (@Nonnull final HeaderList aHeaderList) {
+  private static SimpleDocumentTypeIdentifier _getDocumentTypeID (@Nonnull final HeaderList aHeaderList) {
     final Header aHeaderPart = aHeaderList.get (QNAME_DOCUMENTID, false);
     return aHeaderPart == null ? null : new SimpleDocumentTypeIdentifier (aHeaderPart.getAttribute (QNAME_SCHEME),
                                                                           aHeaderPart.getStringContent ());
   }
 
   @Nullable
-  private static ProcessIdentifierType _getProcessID (@Nonnull final HeaderList aHeaderList) {
+  private static SimpleProcessIdentifier _getProcessID (@Nonnull final HeaderList aHeaderList) {
     final Header aHeaderPart = aHeaderList.get (QNAME_PROCESSID, false);
     return aHeaderPart == null ? null : new SimpleProcessIdentifier (aHeaderPart.getAttribute (QNAME_SCHEME),
                                                                      aHeaderPart.getStringContent ());
   }
 
   @Nonnull
-  public static IMessageMetadata createMetadataFromHeaders (@Nonnull final HeaderList aHeaderList) {
+  public static MessageMetadata createMetadataFromHeaders (@Nonnull final HeaderList aHeaderList) {
     return new MessageMetadata (getMessageID (aHeaderList),
                                 getChannelID (aHeaderList),
                                 _getParticipantID (aHeaderList, QNAME_SENDERID),
@@ -228,8 +228,8 @@ public final class MessageMetadataHelper {
    * @return The metadata object
    */
   @Nonnull
-  public static IMessageMetadata createMetadataFromHeadersWithCustomMessageID (@Nonnull final HeaderList aHeaderList,
-                                                                               @Nullable final String sMessageID) {
+  public static MessageMetadata createMetadataFromHeadersWithCustomMessageID (@Nonnull final HeaderList aHeaderList,
+                                                                              @Nullable final String sMessageID) {
     return new MessageMetadata (sMessageID,
                                 getChannelID (aHeaderList),
                                 _getParticipantID (aHeaderList, QNAME_SENDERID),

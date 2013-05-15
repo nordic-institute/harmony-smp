@@ -37,7 +37,6 @@
  */
 package eu.europa.ec.cipa.transport;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
@@ -67,24 +66,24 @@ public interface IMessageMetadata {
   /**
    * @return the senderValue
    */
-  @Nonnull
+  @Nullable
   SimpleParticipantIdentifier getSenderID ();
 
   /**
    * @return the recipientValue
    */
-  @Nonnull
+  @Nullable
   SimpleParticipantIdentifier getRecipientID ();
 
   /**
    * @return the documentIdValue
    */
-  @Nonnull
+  @Nullable
   SimpleDocumentTypeIdentifier getDocumentTypeID ();
 
   /**
    * @return the processIdValue
    */
-  @Nonnull
+  @Nullable
   SimpleProcessIdentifier getProcessID ();
 }

@@ -62,8 +62,10 @@ import javax.xml.ws.BindingType;
 import javax.xml.ws.FaultAction;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.soap.Addressing;
+import javax.xml.ws.wsaddressing.W3CEndpointReference;
 
 import org.busdox.servicemetadata.publishing._1.EndpointType;
+import org.busdox.transport.identifiers._1.ObjectFactory;
 import org.busdox.transport.start.cert.ServerConfigFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +78,9 @@ import org.w3._2009._02.ws_tra.Get;
 import org.w3._2009._02.ws_tra.GetResponse;
 import org.w3._2009._02.ws_tra.Put;
 import org.w3._2009._02.ws_tra.PutResponse;
+import org.w3._2009._02.ws_tra.ResourceCreated;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import com.phloc.commons.CGlobal;
 import com.phloc.commons.GlobalDebug;
@@ -94,6 +99,7 @@ import com.phloc.commons.stats.IStatisticsHandlerTimer;
 import com.phloc.commons.stats.StatisticsManager;
 import com.phloc.commons.string.StringHelper;
 import com.phloc.commons.timing.StopWatch;
+import com.phloc.commons.xml.XMLFactory;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.developer.JAXWSProperties;
 
@@ -104,9 +110,11 @@ import eu.europa.ec.cipa.peppol.sml.ESML;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 import eu.europa.ec.cipa.peppol.utils.CertificateUtils;
 import eu.europa.ec.cipa.peppol.utils.ExceptionUtils;
+import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 import eu.europa.ec.cipa.smp.client.SMPServiceCallerReadonly;
 import eu.europa.ec.cipa.transport.IMessageMetadata;
+import eu.europa.ec.cipa.transport.MessageMetadata;
 import eu.europa.ec.cipa.transport.MessageMetadataHelper;
 import eu.europa.ec.cipa.transport.PingMessageHelper;
 import eu.europa.ec.cipa.transport.start.util.EAPServerMode;
@@ -375,6 +383,64 @@ public class AccessPointService {
   }
 
   /**
+   * Create the endpoint reference for the response.
+   * 
+   * @param aMetadata
+   *        The metadata provided by the sender. Explicitly the implementation
+   *        class is referenced, so that the assumption that certain fields are
+   *        present can be used.
+   * @return The Endpoint reference object and never <code>null</code>.
+   */
+  @Nonnull
+  private static W3CEndpointReference _createEndpointReference (@Nonnull final MessageMetadata aMetadata) {
+    final Document aDummyDoc = XMLFactory.newDocument ();
+    final List <Element> aReferenceParameters = new ArrayList <Element> ();
+
+    // Message ID (optional)
+    if (aMetadata.getMessageID () != null) {
+      final Element aElement = aDummyDoc.createElementNS (ObjectFactory._MessageIdentifier_QNAME.getNamespaceURI (),
+                                                          ObjectFactory._MessageIdentifier_QNAME.getLocalPart ());
+      aElement.appendChild (aDummyDoc.createTextNode (aMetadata.getMessageID ()));
+      aReferenceParameters.add (aElement);
+    }
+
+    // Channel ID (optional)
+    if (aMetadata.getChannelID () != null) {
+      final Element aElement = aDummyDoc.createElementNS (ObjectFactory._ChannelIdentifier_QNAME.getNamespaceURI (),
+                                                          ObjectFactory._ChannelIdentifier_QNAME.getLocalPart ());
+      aElement.appendChild (aDummyDoc.createTextNode (aMetadata.getChannelID ()));
+      aReferenceParameters.add (aElement);
+    }
+
+    // Sender ID
+    Element aElement = aDummyDoc.createElementNS (ObjectFactory._SenderIdentifier_QNAME.getNamespaceURI (),
+                                                  ObjectFactory._SenderIdentifier_QNAME.getLocalPart ());
+    aElement.appendChild (aDummyDoc.createTextNode (aMetadata.getSenderID ().getURIEncoded ()));
+    aReferenceParameters.add (aElement);
+
+    // Recipient ID
+    aElement = aDummyDoc.createElementNS (ObjectFactory._RecipientIdentifier_QNAME.getNamespaceURI (),
+                                          ObjectFactory._RecipientIdentifier_QNAME.getLocalPart ());
+    aElement.appendChild (aDummyDoc.createTextNode (aMetadata.getRecipientID ().getURIEncoded ()));
+    aReferenceParameters.add (aElement);
+
+    // DocumentType ID
+    aElement = aDummyDoc.createElementNS (ObjectFactory._DocumentIdentifier_QNAME.getNamespaceURI (),
+                                          ObjectFactory._DocumentIdentifier_QNAME.getLocalPart ());
+    aElement.appendChild (aDummyDoc.createTextNode (aMetadata.getDocumentTypeID ().getURIEncoded ()));
+    aReferenceParameters.add (aElement);
+
+    // Process ID
+    aElement = aDummyDoc.createElementNS (ObjectFactory._ProcessIdentifier_QNAME.getNamespaceURI (),
+                                          ObjectFactory._ProcessIdentifier_QNAME.getLocalPart ());
+    aElement.appendChild (aDummyDoc.createTextNode (aMetadata.getProcessID ().getURIEncoded ()));
+    aReferenceParameters.add (aElement);
+
+    // Main build
+    return W3CEndpointReferenceUtils.createEndpointReference (ServerConfigFile.getOwnAPURL (), aReferenceParameters);
+  }
+
+  /**
    * Main action for receiving.
    * 
    * @param aBody
@@ -398,7 +464,7 @@ public class AccessPointService {
       // Grabs the list of headers from the SOAP message
       final HeaderList aHeaderList = (HeaderList) webServiceContext.getMessageContext ()
                                                                    .get (JAXWSProperties.INBOUND_HEADER_LIST_PROPERTY);
-      final IMessageMetadata aMetadata = MessageMetadataHelper.createMetadataFromHeaders (aHeaderList);
+      final MessageMetadata aMetadata = MessageMetadataHelper.createMetadataFromHeaders (aHeaderList);
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("Extracted the following metadata from the headers\n" +
                          MessageMetadataHelper.getDebugInfo (aMetadata));
@@ -498,8 +564,11 @@ public class AccessPointService {
       if (GlobalDebug.isDebugMode ())
         _checkMemoryUsage ();
 
-      // Create an empty response
+      // Create a valid response
       final CreateResponse aResponse = new CreateResponse ();
+      final ResourceCreated aResourceCreated = new ResourceCreated ();
+      aResourceCreated.getEndpointReference ().add (_createEndpointReference (aMetadata));
+      aResponse.setResourceCreated (aResourceCreated);
       return aResponse;
     }
     catch (final FaultMessage ex) {
