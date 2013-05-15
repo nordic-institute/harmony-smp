@@ -36,6 +36,11 @@
     </dependency>
     <dependency>
       <groupId>com.phloc</groupId>
+      <artifactId>phloc-commons</artifactId>
+      <version>4.0.6</version>
+    </dependency>
+    <dependency>
+      <groupId>com.phloc</groupId>
       <artifactId>phloc-db</artifactId>
       <version>3.0.0</version>
     </dependency>
