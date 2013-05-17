@@ -72,9 +72,21 @@ public final class BaseServiceGroupInterfaceImpl {
 
   private BaseServiceGroupInterfaceImpl () {}
 
+  /**
+   * @param aUriInfo
+   *        Request URI info
+   * @param sServiceGroupId
+   *        Requested service group ID
+   * @param aServiceMetadataInterface
+   *        The implementation class of the MetadataInterface
+   * @return <code>null</code> in case of a syntactical invalid service group ID
+   * @throws Throwable
+   *         in case of an error
+   */
   @Nullable
-  public static JAXBElement <ServiceGroupType> getServiceGroup (@Nonnull final UriInfo uriInfo,
-                                                                @Nullable final String sServiceGroupId) throws Throwable {
+  public static JAXBElement <ServiceGroupType> getServiceGroup (@Nonnull final UriInfo aUriInfo,
+                                                                @Nullable final String sServiceGroupId,
+                                                                @Nonnull final Class <?> aServiceMetadataInterface) throws Throwable {
     s_aLogger.info ("GET /" + sServiceGroupId);
     ParticipantIdentifierType aServiceGroupID = null;
     try {
@@ -94,7 +106,7 @@ public final class BaseServiceGroupInterfaceImpl {
       final ServiceGroupType aServiceGroup = aDataManager.getServiceGroup (aServiceGroupID);
       if (aServiceGroup == null) {
         // No such service group
-        throw new NotFoundException ("serviceGroup", uriInfo.getAbsolutePath ());
+        throw new NotFoundException ("serviceGroup", aUriInfo.getAbsolutePath ());
       }
 
       // Then add the service metadata references
@@ -104,11 +116,11 @@ public final class BaseServiceGroupInterfaceImpl {
       final List <DocumentIdentifierType> aDocTypeIds = aDataManager.getDocumentTypes (aServiceGroupID);
       for (final DocumentIdentifierType aDocTypeId : aDocTypeIds) {
         final ServiceMetadataReferenceType aMetadataReference = aObjFactory.createServiceMetadataReferenceType ();
-        aMetadataReference.setHref (uriInfo.getBaseUriBuilder ()
-                                           .path (BaseServiceMetadataInterfaceImpl.class)
-                                           .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID),
-                                                              IdentifierUtils.getIdentifierURIPercentEncoded (aDocTypeId))
-                                           .toString ());
+        aMetadataReference.setHref (aUriInfo.getBaseUriBuilder ()
+                                            .path (aServiceMetadataInterface)
+                                            .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID),
+                                                               IdentifierUtils.getIdentifierURIPercentEncoded (aDocTypeId))
+                                            .toString ());
         aMetadataReferences.add (aMetadataReference);
       }
       aServiceGroup.setServiceMetadataReferenceCollection (aCollectionType);
