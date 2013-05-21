@@ -55,7 +55,6 @@ import eu.europa.ec.cipa.sml.server.exceptions.IllegalHostnameException;
 import eu.europa.ec.cipa.sml.server.exceptions.IllegalIdentifierSchemeException;
 import eu.europa.ec.cipa.sml.server.exceptions.InternalErrorException;
 
-
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
  */

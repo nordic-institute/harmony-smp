@@ -77,7 +77,7 @@ public final class PeppolRootCertificateProvider {
     final String sTrustStoreAlias = aConfigFile.getString (CONFIG_SML_TRUSTSTORE_ALIAS,
                                                            KeyStoreUtils.TRUSTSTORE_ALIAS_SMP);
     final String sTrustStoreAliasNew = aConfigFile.getString (CONFIG_SML_TRUSTSTORE_ALIAS_NEW,
-            KeyStoreUtils.TRUSTSTORE_ALIAS_SMP);
+                                                              KeyStoreUtils.TRUSTSTORE_ALIAS_SMP);
     try {
       final KeyStore aKS = KeyStoreUtils.loadKeyStore (sTrustStorePath, sTrustStorePW);
       s_aPeppolSMPRootCert = (X509Certificate) aKS.getCertificate (sTrustStoreAlias);
@@ -97,12 +97,12 @@ public final class PeppolRootCertificateProvider {
                     sTrustStoreAlias +
                     "'");
     if (s_aOpenPeppolSMPRootCert == null)
-        throw new InitializationException ("Failed to resolve alias '" + sTrustStoreAliasNew + "' in trust store!");
-      s_aLogger.info ("Open PEPPOL root certificate loaded successfully from trust store '" +
-                      sTrustStorePath +
-                      "' with alias '" +
-                      sTrustStoreAliasNew +
-                      "'");
+      throw new InitializationException ("Failed to resolve alias '" + sTrustStoreAliasNew + "' in trust store!");
+    s_aLogger.info ("Open PEPPOL root certificate loaded successfully from trust store '" +
+                    sTrustStorePath +
+                    "' with alias '" +
+                    sTrustStoreAliasNew +
+                    "'");
   }
 
   private PeppolRootCertificateProvider () {}
@@ -111,6 +111,7 @@ public final class PeppolRootCertificateProvider {
   public static X509Certificate getPeppolSMPRootCertificate () {
     return s_aPeppolSMPRootCert;
   }
+
   @Nonnull
   public static X509Certificate getOpenPeppolSMPRootCertificate () {
     return s_aOpenPeppolSMPRootCert;

@@ -142,11 +142,11 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
       m_aDataHandler.createSMPData (aSMPData, sClientUniqueID);
 
       s_aLogger.info ("Created SMP " +
-                aSMPData.getServiceMetadataPublisherID () +
-                " with URLs " +
-                aSMPData.getPublisherEndpoint ().getPhysicalAddress () +
-                "/" +
-                aSMPData.getPublisherEndpoint ().getLogicalAddress ());
+                      aSMPData.getServiceMetadataPublisherID () +
+                      " with URLs " +
+                      aSMPData.getPublisherEndpoint ().getPhysicalAddress () +
+                      "/" +
+                      aSMPData.getPublisherEndpoint ().getLogicalAddress ());
     }
     catch (final Throwable t) {
       try {
@@ -206,11 +206,11 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
       m_aDataHandler.updateSMPData (aSMPData, sClientUniqueID);
 
       s_aLogger.info ("Updated SMP " +
-                aSMPData.getServiceMetadataPublisherID () +
-                " with URLs " +
-                aSMPData.getPublisherEndpoint ().getPhysicalAddress () +
-                "/" +
-                aSMPData.getPublisherEndpoint ().getLogicalAddress ());
+                      aSMPData.getServiceMetadataPublisherID () +
+                      " with URLs " +
+                      aSMPData.getPublisherEndpoint ().getPhysicalAddress () +
+                      "/" +
+                      aSMPData.getPublisherEndpoint ().getLogicalAddress ());
     }
     catch (final Throwable t) {
       _handleException (t);

@@ -37,8 +37,6 @@
  */
 package eu.europa.ec.cipa.transport;
 
-
-
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
@@ -48,7 +46,6 @@ import com.phloc.commons.mock.PhlocTestUtils;
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
-import eu.europa.ec.cipa.transport.MessageMetadata;
 
 /**
  * Test class for class {@link MessageMetadata}.

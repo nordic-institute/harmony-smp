@@ -148,9 +148,9 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
       m_aDataHandler.createParticipantIdentifiers (createListIn, sClientUniqueID);
 
       s_aLogger.info ("Created " +
-                createListIn.getParticipantIdentifier ().size () +
-                " participants in " +
-                createListIn.getServiceMetadataPublisherID ());
+                      createListIn.getParticipantIdentifier ().size () +
+                      " participants in " +
+                      createListIn.getServiceMetadataPublisherID ());
     }
     catch (final Throwable t) {
       _handleException (t);
@@ -177,9 +177,9 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
       m_aDataHandler.deleteParticipantIdentifiers (deleteListIn.getParticipantIdentifier (), sClientUniqueID);
 
       s_aLogger.info ("Deleted " +
-                deleteListIn.getParticipantIdentifier ().size () +
-                " participants of " +
-                deleteListIn.getServiceMetadataPublisherID ());
+                      deleteListIn.getParticipantIdentifier ().size () +
+                      " participants of " +
+                      deleteListIn.getServiceMetadataPublisherID ());
     }
     catch (final Throwable t) {
       _handleException (t);
@@ -202,9 +202,9 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
       m_aDataHandler.migrate (aMigrationRecord, sClientUniqueID);
 
       s_aLogger.info ("Migrated participant " +
-                IdentifierUtils.getIdentifierURIEncoded (aMigrationRecord.getParticipantIdentifier ()) +
-                " to " +
-                aMigrationRecord.getServiceMetadataPublisherID ());
+                      IdentifierUtils.getIdentifierURIEncoded (aMigrationRecord.getParticipantIdentifier ()) +
+                      " to " +
+                      aMigrationRecord.getServiceMetadataPublisherID ());
     }
     catch (final Throwable t) {
       _handleException (t);
@@ -228,9 +228,9 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
       m_aDataHandler.prepareToMigrate (aMigrationRecord, sClientUniqueID);
 
       s_aLogger.info ("Prepared to migrate participant " +
-                IdentifierUtils.getIdentifierURIEncoded (aMigrationRecord.getParticipantIdentifier ()) +
-                " from " +
-                aMigrationRecord.getServiceMetadataPublisherID ());
+                      IdentifierUtils.getIdentifierURIEncoded (aMigrationRecord.getParticipantIdentifier ()) +
+                      " from " +
+                      aMigrationRecord.getServiceMetadataPublisherID ());
     }
     catch (final Throwable t) {
       _handleException (t);
@@ -244,9 +244,9 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
     final ParticipantIdentifierType aParticipantIdentifier = aParticipantToSMP.getParticipantIdentifier ();
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Called with identifier: " +
-                 aParticipantIdentifier.getScheme () +
-                 "::" +
-                 aParticipantIdentifier.getValue ());
+                       aParticipantIdentifier.getScheme () +
+                       "::" +
+                       aParticipantIdentifier.getValue ());
 
     try {
       // Validate input
@@ -263,9 +263,9 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
       m_aDataHandler.createParticipantIdentifiers (aJAXBPage, sClientUniqueID);
 
       s_aLogger.info ("Assigned participant " +
-                IdentifierUtils.getIdentifierURIEncoded (aParticipantIdentifier) +
-                " to " +
-                aParticipantToSMP.getServiceMetadataPublisherID ());
+                      IdentifierUtils.getIdentifierURIEncoded (aParticipantIdentifier) +
+                      " to " +
+                      aParticipantToSMP.getServiceMetadataPublisherID ());
     }
     catch (final Throwable t) {
       _handleException (t);
@@ -279,9 +279,9 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
     final ParticipantIdentifierType aParticipantIdentifier = aParticipantToSMP.getParticipantIdentifier ();
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Called with identifier: " +
-                 aParticipantIdentifier.getScheme () +
-                 "::" +
-                 aParticipantIdentifier.getValue ());
+                       aParticipantIdentifier.getScheme () +
+                       "::" +
+                       aParticipantIdentifier.getValue ());
 
     try {
       // Validate input
@@ -317,9 +317,9 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
       // Perform action
       final ParticipantIdentifierPageType ret = m_aDataHandler.listParticipantIdentifiers (messagePart, sClientUniqueID);
       s_aLogger.info ("Retrieved " +
-                ret.getParticipantIdentifier ().size () +
-                " participants for " +
-                messagePart.getServiceMetadataPublisherID ());
+                      ret.getParticipantIdentifier ().size () +
+                      " participants for " +
+                      messagePart.getServiceMetadataPublisherID ());
       return ret;
     }
     catch (final Throwable t) {

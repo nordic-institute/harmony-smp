@@ -53,7 +53,6 @@ import org.slf4j.LoggerFactory;
 import eu.europa.ec.cipa.sml.server.security.ClientUniqueIDProvider;
 import eu.europa.ec.cipa.sml.server.security.PeppolClientCertificateValidator;
 
-
 /**
  * This servlet filter checks each request for a valid client certificate.
  * 

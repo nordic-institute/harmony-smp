@@ -53,8 +53,9 @@ import com.phloc.commons.SystemProperties;
  * Run this as an application and your SML will be up and running on port 8080
  * of your local machine. Please ensure that you have adopted the Hibernate
  * configuration file.<br>
- * To stop the running Jetty simply invoke the {@link JettyStopSMPReadonly} application
- * in this package. It performs a graceful shutdown of the App Server.
+ * To stop the running Jetty simply invoke the {@link JettyStopSMPReadonly}
+ * application in this package. It performs a graceful shutdown of the App
+ * Server.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */

@@ -54,9 +54,9 @@ import eu.europa.ec.cipa.smp.client.tools.SMPUtils;
 public final class SMPServiceGroupCompleteList {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SMPServiceGroupCompleteList.class);
 
-  public static void main (final String [] args) throws Exception { 
+  public static void main (final String [] args) throws Exception {
     final URI SMP_URI = CFunctestConfig.getSMPURI ();
-    final SimpleParticipantIdentifier PARTICIPANT_ID = CFunctestConfig.getParticipantID (); 
+    final SimpleParticipantIdentifier PARTICIPANT_ID = CFunctestConfig.getParticipantID ();
 
     // The main SMP client
     final SMPServiceCaller aClient = new SMPServiceCaller (SMP_URI);

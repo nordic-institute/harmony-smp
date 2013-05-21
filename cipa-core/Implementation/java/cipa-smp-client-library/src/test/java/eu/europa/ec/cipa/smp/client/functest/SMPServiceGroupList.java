@@ -67,6 +67,6 @@ public final class SMPServiceGroupList {
     else
       s_aLogger.info (SMPUtils.getAsString (aServiceGroup));
 
-    s_aLogger.info ("Done"); 
+    s_aLogger.info ("Done");
   }
 }

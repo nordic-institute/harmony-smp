@@ -62,7 +62,7 @@ public final class SMPServiceRegistrationList {
     // The main SMP client
     final SMPServiceCaller aClient = new SMPServiceCaller (SMP_URI);
 
-    // Get the service group reference list 
+    // Get the service group reference list
     final SignedServiceMetadataType aSignedServiceMetadata = aClient.getServiceRegistrationOrNull (PARTICIPANT_ID,
                                                                                                    DOCUMENT_ID);
 

@@ -45,7 +45,6 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import eu.europa.ec.cipa.sml.server.exceptions.BadRequestException;
 import eu.europa.ec.cipa.sml.server.exceptions.InternalErrorException;
 
-
 /**
  * This interface is used in a DataHandler to inform another class about changed
  * to the underlying data. Example: DNSSMPDataHandlerCallback informs DNS code

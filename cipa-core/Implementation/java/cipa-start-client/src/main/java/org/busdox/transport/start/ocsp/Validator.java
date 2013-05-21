@@ -58,8 +58,7 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
  * 
  * @author Alexander Aguirre Julcapoma(alex@alfa1lab.com) Jose Gorvenia<br>
  *         Narvaez(jose@alfa1lab.com)<br>
- *         PEPPOL.AT, BRZ, Philip Helger
- *         JLB
+ *         PEPPOL.AT, BRZ, Philip Helger JLB
  */
 public final class Validator implements CertificateValidator {
   /**
@@ -96,7 +95,11 @@ public final class Validator implements CertificateValidator {
    * @return {@link EValidity}
    */
   @Nonnull
-  public static final EValidity certificateValidate (final X509Certificate aCert, @Nonnull final String sTrustStorePath) { // Is the OCSP check enabled?
+  public static final EValidity certificateValidate (final X509Certificate aCert, @Nonnull final String sTrustStorePath) { // Is
+                                                                                                                           // the
+                                                                                                                           // OCSP
+                                                                                                                           // check
+                                                                                                                           // enabled?
     // Note: use "enabled" as the default value, in case none is defined
     final boolean bEnabled = s_aConf.getBoolean (CONFIG_ENABLED, true);
     if (!bEnabled) {
@@ -114,8 +117,10 @@ public final class Validator implements CertificateValidator {
       final X509Certificate aRootCert = (X509Certificate) aTrustStore.getCertificate (sTrustStoreAlias);
       // Get certificate from new PKI by alias
       final String sTrustStoreAliasNew = s_aConf.getString (CONFIG_TRUSTORE_ALIAS_NEW);
-      final X509Certificate aRootCertNew = (sTrustStoreAliasNew == null || sTrustStoreAliasNew.equals("")) ? null : (X509Certificate) aTrustStore.getCertificate (sTrustStoreAliasNew);  
-      
+      final X509Certificate aRootCertNew = (sTrustStoreAliasNew == null || sTrustStoreAliasNew.equals (""))
+                                                                                                           ? null
+                                                                                                           : (X509Certificate) aTrustStore.getCertificate (sTrustStoreAliasNew);
+
       if (aRootCert == null && aRootCertNew == null) {
         s_aLogger.error ("Failed to resolve trust store alias '" + sTrustStoreAlias + "'");
       }
@@ -133,12 +138,13 @@ public final class Validator implements CertificateValidator {
                            DEFAULT_RESPONDER_URL);
         }
         else {
-          // Start the main OCSP check, we try with both old and new root certs if possible.
+          // Start the main OCSP check, we try with both old and new root certs
+          // if possible.
           EValidity result = EValidity.INVALID;
           if (aRootCert != null)
-        	  result = OCSP.check (aCert, aRootCert, sResponderURL);
-          if (result.isInvalid() && aRootCertNew != null)
-        	  result = OCSP.check (aCert, aRootCertNew, sResponderURL);
+            result = OCSP.check (aCert, aRootCert, sResponderURL);
+          if (result.isInvalid () && aRootCertNew != null)
+            result = OCSP.check (aCert, aRootCertNew, sResponderURL);
           return result;
         }
       }

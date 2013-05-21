@@ -48,7 +48,6 @@ import org.busdox.transport.identifiers._1.ProcessIdentifierType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-
 import com.phloc.commons.xml.XMLFactory;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyDocumentTypeIdentifier;
