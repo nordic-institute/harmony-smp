@@ -44,7 +44,6 @@ import org.junit.Test;
 
 import eu.europa.ec.cipa.peppol.identifier.issuingagency.EPredefinedIdentifierIssuingAgency;
 
-
 /**
  * Test class for class {@link IdentifierValidator}.
  * 

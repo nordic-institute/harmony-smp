@@ -46,9 +46,6 @@ import java.util.TimeZone;
 
 import org.junit.Test;
 
-import eu.europa.ec.cipa.busdox.types.DateAdapter;
-
-
 /**
  * Test class for class {@link DateAdapter}.
  * 

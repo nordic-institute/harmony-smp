@@ -114,8 +114,8 @@ public final class MappedDNSHostTest {
   }
 
   /**
-   * Test method for {@link eu.europa.ec.cipa.peppol.ipmapper.MappedDNSHost#hashCode()}
-   * .
+   * Test method for
+   * {@link eu.europa.ec.cipa.peppol.ipmapper.MappedDNSHost#hashCode()} .
    */
   @Test
   public void testHashCode () {
@@ -133,7 +133,8 @@ public final class MappedDNSHostTest {
 
   /**
    * Test method for
-   * {@link eu.europa.ec.cipa.peppol.ipmapper.MappedDNSHost#create(java.lang.String)} .
+   * {@link eu.europa.ec.cipa.peppol.ipmapper.MappedDNSHost#create(java.lang.String)}
+   * .
    */
   @Test
   public void testCreateSocketTypeWithDnsResolution () {
@@ -150,7 +151,8 @@ public final class MappedDNSHostTest {
 
   /**
    * Test method for
-   * {@link eu.europa.ec.cipa.peppol.ipmapper.MappedDNSHost#equals(java.lang.Object)}.
+   * {@link eu.europa.ec.cipa.peppol.ipmapper.MappedDNSHost#equals(java.lang.Object)}
+   * .
    */
   @Test
   public void testEqualsObject () {
@@ -174,7 +176,8 @@ public final class MappedDNSHostTest {
   }
 
   /**
-   * Test method for {@link eu.europa.ec.cipa.peppol.ipmapper.MappedDNSHost#getHost()}.
+   * Test method for
+   * {@link eu.europa.ec.cipa.peppol.ipmapper.MappedDNSHost#getHost()}.
    */
   @Test
   public void testGetHost () {
@@ -188,7 +191,8 @@ public final class MappedDNSHostTest {
   }
 
   /**
-   * Test method for {@link eu.europa.ec.cipa.peppol.ipmapper.MappedDNSHost#getPort()}.
+   * Test method for
+   * {@link eu.europa.ec.cipa.peppol.ipmapper.MappedDNSHost#getPort()}.
    */
   @Test
   public void testGetPort () {

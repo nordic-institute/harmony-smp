@@ -44,9 +44,6 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import eu.europa.ec.cipa.busdox.CBusDox;
-
-
 /**
  * Test class for class {@link CBusDox}.
  * 

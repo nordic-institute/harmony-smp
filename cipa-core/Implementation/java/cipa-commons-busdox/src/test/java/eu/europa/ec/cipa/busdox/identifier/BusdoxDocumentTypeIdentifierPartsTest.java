@@ -43,9 +43,6 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import eu.europa.ec.cipa.busdox.identifier.BusdoxDocumentTypeIdentifierParts;
-import eu.europa.ec.cipa.busdox.identifier.IBusdoxDocumentTypeIdentifierParts;
-
 /**
  * Test class for class {@link BusdoxDocumentTypeIdentifierParts}.
  * 
