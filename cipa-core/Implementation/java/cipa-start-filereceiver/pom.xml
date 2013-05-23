@@ -10,10 +10,10 @@
   <version>1.0.2-SNAPSHOT</version>
   <name>cipa-start-filereceiver</name>
 
-	<scm>
-		<connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-start-filereceiver</connection>
-		<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-start-filereceiver</developerConnection>
-	</scm>
+  <scm>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-start-filereceiver</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-start-filereceiver</developerConnection>
+  </scm>
   
   <repositories>
     <repository>
