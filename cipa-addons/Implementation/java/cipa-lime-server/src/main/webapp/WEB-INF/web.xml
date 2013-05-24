@@ -48,7 +48,7 @@
     <listener-class>com.sun.xml.ws.transport.http.servlet.WSServletContextListener</listener-class>
   </listener>
   <listener>
-    <listener-class>com.phloc.scopes.web.servlet.WebScopeListener</listener-class>
+    <listener-class>com.phloc.webscopes.servlet.WebScopeListener</listener-class>
   </listener>
 
   <servlet>
