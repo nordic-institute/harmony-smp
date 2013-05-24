@@ -65,6 +65,7 @@ public final class ServiceMetadataInterface {
   @Produces (MediaType.TEXT_XML)
   public JAXBElement <SignedServiceMetadataType> getServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
                                                                          @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
+    // Delegate to common implementation
     return BaseServiceMetadataInterfaceImpl.getServiceRegistration (uriInfo, sServiceGroupID, sDocumentTypeID);
   }
 }

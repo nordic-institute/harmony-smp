@@ -45,6 +45,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.charset.CCharset;
 import com.phloc.commons.collections.ArrayHelper;
 import com.phloc.commons.equals.EqualsUtils;
@@ -375,6 +376,7 @@ public final class IdentifierUtils {
    * @see #getIdentifierURIPercentEncoded(IReadonlyIdentifier)
    */
   @Nonnull
+  @Nonempty
   public static String getIdentifierURIEncoded (@Nonnull final IReadonlyIdentifier aIdentifier) {
     if (aIdentifier == null)
       throw new NullPointerException ("identifier");

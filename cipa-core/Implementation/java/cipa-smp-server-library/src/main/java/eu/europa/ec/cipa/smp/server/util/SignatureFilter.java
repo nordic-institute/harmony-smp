@@ -114,6 +114,7 @@ public final class SignatureFilter implements ContainerResponseFilter {
     // Make sure that the signature is only added to GET/OK on service metadata.
     if (aRequest.getMethod ().equals ("GET") && aResponse.getResponse ().getStatus () == Status.OK.getStatusCode ()) {
       final String sRequestPath = aRequest.getPath (false);
+      // Only handle requests that contain "/services/" but don't end with it
       if (sRequestPath.contains ("/services/") && !sRequestPath.endsWith ("/services/")) {
         if (s_aLogger.isDebugEnabled ())
           s_aLogger.debug ("Will sign response to " + sRequestPath);

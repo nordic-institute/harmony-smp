@@ -57,14 +57,21 @@ public final class RegistrationHookFactory {
 
   private RegistrationHookFactory () {}
 
+  /**
+   * Create a new instance every time this method is invoked.
+   * 
+   * @return A new instance of {@link IRegistrationHook} according to the
+   *         configuration file.
+   * @throws IllegalStateException
+   *         If the class could not be instantiated
+   */
   @Nonnull
-  public static IRegistrationHook getInstance () {
+  public static IRegistrationHook createInstance () {
     final String sRegHookName = ConfigFile.getInstance ().getString (CONFIG_REGISTRATION_HOOK_CLASS);
     final IRegistrationHook aHook = GenericReflection.newInstance (sRegHookName, IRegistrationHook.class);
     if (aHook == null)
-      throw new IllegalStateException ("Failed to create registration hook instance from class " + sRegHookName);
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Registration hook class '" + sRegHookName + "' instantiated");
+      throw new IllegalStateException ("Failed to create registration hook instance from class '" + sRegHookName + "'");
+    s_aLogger.info ("Registration hook class '" + sRegHookName + "' instantiated");
     return aHook;
   }
 }

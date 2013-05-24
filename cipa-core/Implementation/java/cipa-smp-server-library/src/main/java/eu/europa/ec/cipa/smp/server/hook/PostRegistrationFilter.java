@@ -134,30 +134,34 @@ public final class PostRegistrationFilter implements Filter {
 
       // Success or failure?
       if (aResponseWrapper.getStatus () >= 400) {
-        s_aLogger.debug ("Operation failed, status: " + aResponseWrapper.getStatus ());
+        if (s_aLogger.isDebugEnabled ())
+          s_aLogger.debug ("Operation failed, status: " + aResponseWrapper.getStatus ());
         _notifyRegistrationHook (ESuccess.FAILURE);
       }
       else {
-        s_aLogger.debug ("Operation ok, status: " + aResponseWrapper.getStatus ());
+        if (s_aLogger.isDebugEnabled ())
+          s_aLogger.debug ("Operation ok, status: " + aResponseWrapper.getStatus ());
         _notifyRegistrationHook (ESuccess.SUCCESS);
       }
     }
     catch (final IOException e) {
-      s_aLogger.debug ("Got IOException", e);
+      s_aLogger.warn ("Got IOException " + e.getMessage ());
       _notifyRegistrationHook (ESuccess.FAILURE);
       throw e;
     }
     catch (final ServletException e) {
-      s_aLogger.debug ("Got ServletException", e);
+      s_aLogger.warn ("Got ServletException " + e.getMessage ());
       _notifyRegistrationHook (ESuccess.FAILURE);
       throw e;
     }
     catch (final RuntimeException e) {
-      s_aLogger.debug ("Got RuntimeException", e);
+      s_aLogger.warn ("Got RuntimeException " + e.getMessage ());
       _notifyRegistrationHook (ESuccess.FAILURE);
       throw e;
     }
   }
 
-  public void destroy () {}
+  public void destroy () {
+    // empty
+  }
 }

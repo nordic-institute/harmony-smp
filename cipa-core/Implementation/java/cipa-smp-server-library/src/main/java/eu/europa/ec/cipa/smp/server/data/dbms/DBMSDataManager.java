@@ -66,7 +66,7 @@ import org.slf4j.LoggerFactory;
 
 import com.phloc.commons.GlobalDebug;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.callback.DoNothingExceptionHandler;
+import com.phloc.commons.callback.LoggingExceptionHandler;
 import com.phloc.commons.state.EChange;
 import com.phloc.db.jpa.IEntityManagerProvider;
 import com.phloc.db.jpa.JPAEnabledManager;
@@ -74,6 +74,7 @@ import com.phloc.db.jpa.JPAExecutionResult;
 import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.NotFoundException;
 
+import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
@@ -107,7 +108,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
   private final ObjectFactory m_aObjFactory = new ObjectFactory ();
 
   public DBMSDataManager () {
-    this (RegistrationHookFactory.getInstance ());
+    this (RegistrationHookFactory.createInstance ());
   }
 
   public DBMSDataManager (@Nonnull final IRegistrationHook aHook) {
@@ -119,8 +120,9 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return SMPEntityManagerWrapper.getInstance ().getEntityManager ();
       }
     });
-    // Exceptions are handled by re-throwing them
-    setCustomExceptionHandler (new DoNothingExceptionHandler ());
+
+    // Exceptions are handled by logging them
+    setCustomExceptionHandler (new LoggingExceptionHandler ());
 
     if (aHook == null)
       throw new NullPointerException ("hook");
@@ -145,16 +147,12 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     final DBUser aDBUser = getEntityManager ().find (DBUser.class, sUsername);
 
     // Check that the user exists
-    if (aDBUser == null) {
-      s_aLogger.warn ("No such user '" + sUsername + "'");
+    if (aDBUser == null)
       throw new UnknownUserException (sUsername);
-    }
 
     // Check that the password is correct
-    if (!aDBUser.getPassword ().equals (aCredentials.getPassword ())) {
-      s_aLogger.warn ("Illegal password for user '" + sUsername + "'");
+    if (!aDBUser.getPassword ().equals (aCredentials.getPassword ()))
       throw new UnauthorizedException ("Illegal password for user '" + sUsername + "'");
-    }
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Verified credentials of user '" + sUsername + "' successfully");
@@ -167,21 +165,15 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     final DBOwnershipID aOwnershipID = new DBOwnershipID (aCredentials.getUserName (), aServiceGroupID);
     final DBOwnership aOwnership = getEntityManager ().find (DBOwnership.class, aOwnershipID);
     if (aOwnership == null) {
-      final String sErrorMsg = "User '" +
-                               aCredentials.getUserName () +
-                               "' does not own " +
-                               aServiceGroupID.getScheme () +
-                               "::" +
-                               aServiceGroupID.getValue ();
-      s_aLogger.warn (sErrorMsg);
-      throw new UnauthorizedException (sErrorMsg);
+      throw new UnauthorizedException ("User '" +
+                                       aCredentials.getUserName () +
+                                       "' does not own " +
+                                       IdentifierUtils.getIdentifierURIEncoded (aServiceGroupID));
     }
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Verified service group ID " +
-                       aServiceGroupID.getScheme () +
-                       "::" +
-                       aServiceGroupID.getValue () +
+                       IdentifierUtils.getIdentifierURIEncoded (aServiceGroupID) +
                        " is owned by user '" +
                        aCredentials.getUserName () +
                        "'");
@@ -257,8 +249,11 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         if (aDBServiceGroup != null) {
           // The business did exist. So it must be owned by the passed user.
           if (aEM.find (DBOwnership.class, aDBOwnershipID) == null) {
-            s_aLogger.warn ("No such ownership: " + aServiceGroup.getParticipantIdentifier ().toString ());
-            throw new UnauthorizedException ();
+            throw new UnauthorizedException ("The passed service group " +
+                                             IdentifierUtils.getIdentifierURIEncoded (aServiceGroup.getParticipantIdentifier ()) +
+                                             " is not owned by '" +
+                                             aCredentials.getUserName () +
+                                             "'");
           }
 
           // Simply update the extension

@@ -88,6 +88,7 @@ public final class ServiceMetadataInterface {
   @Produces (MediaType.TEXT_XML)
   public JAXBElement <SignedServiceMetadataType> getServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
                                                                          @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
+    // Delegate to common implementation
     return BaseServiceMetadataInterfaceImpl.getServiceRegistration (uriInfo, sServiceGroupID, sDocumentTypeID);
   }
 
@@ -105,7 +106,7 @@ public final class ServiceMetadataInterface {
       final ParticipantIdentifierType aServiceGroupId = SimpleParticipantIdentifier.createFromURIPart (sServiceGroupId);
       if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getParticipantIdentifier (), aServiceGroupId)) {
         s_aLogger.info ("Save service metadata was called with bad parameters. serviceInfo:" +
-                        aServiceInformationType.getParticipantIdentifier () +
+                        IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getParticipantIdentifier ()) +
                         " param:" +
                         aServiceGroupId);
         return Response.status (Status.BAD_REQUEST).build ();
@@ -114,7 +115,7 @@ public final class ServiceMetadataInterface {
       final DocumentIdentifierType aDocTypeId = IdentifierUtils.createDocumentTypeIdentifierFromURIPart (sDocumentTypeId);
       if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getDocumentIdentifier (), aDocTypeId)) {
         s_aLogger.info ("Save service metadata was called with bad parameters. serviceInfo:" +
-                        aServiceInformationType.getDocumentIdentifier () +
+                        IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getDocumentIdentifier ()) +
                         " param:" +
                         aDocTypeId);
         // Document type must equal path

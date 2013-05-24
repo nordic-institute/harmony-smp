@@ -37,11 +37,34 @@
  */
 package eu.europa.ec.cipa.smp.server.exception;
 
+import javax.annotation.Nullable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.phloc.commons.exceptions.LoggedRuntimeException;
+
 /**
+ * This exception is thrown if the provided user name does not exist.
+ * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public class UnknownUserException extends RuntimeException {
-  public UnknownUserException (final String sUserName) {
+public class UnknownUserException extends LoggedRuntimeException {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (UnknownUserException.class);
+
+  private final String m_sUserName;
+
+  public UnknownUserException (@Nullable final String sUserName) {
     super ("Unknown user '" + sUserName + "'");
+    s_aLogger.warn (getMessage ());
+    m_sUserName = sUserName;
+  }
+
+  /**
+   * @return The user name which was not found. May be <code>null</code>.
+   */
+  @Nullable
+  public String getUserName () {
+    return m_sUserName;
   }
 }

@@ -63,7 +63,9 @@ public final class RequestHelper {
   public static BasicAuthClientCredentials getAuth (@Nonnull final HttpHeaders headers) throws UnauthorizedException {
     final List <String> aHeaders = headers.getRequestHeader (HttpHeaders.AUTHORIZATION);
     if (ContainerHelper.isEmpty (aHeaders))
-      throw new UnauthorizedException ("Missing required HTTP header for Authorization");
+      throw new UnauthorizedException ("Missing required HTTP header '" +
+                                       HttpHeaders.AUTHORIZATION +
+                                       "' for user authentication");
 
     final String sAuthHeader = ContainerHelper.getFirstElement (aHeaders);
     return HTTPBasicAuth.getBasicAuthClientCredentials (sAuthHeader);

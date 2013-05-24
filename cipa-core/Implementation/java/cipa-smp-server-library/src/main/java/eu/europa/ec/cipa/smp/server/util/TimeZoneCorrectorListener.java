@@ -47,6 +47,7 @@ import javax.servlet.ServletContextListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.collections.ArrayHelper;
 import com.phloc.commons.exceptions.InitializationException;
 
 /**
@@ -61,7 +62,15 @@ public final class TimeZoneCorrectorListener implements ServletContextListener {
   private static final Logger s_aLogger = LoggerFactory.getLogger (TimeZoneCorrectorListener.class);
 
   public void contextInitialized (@Nonnull final ServletContextEvent aServletContextEvent) {
+    // CHeck if the timezone is supported
+    if (!ArrayHelper.contains (TimeZone.getAvailableIDs (), DEFAULT_TIMEZONE)) {
+      final String sErrorMsg = "The default time zone '" + DEFAULT_TIMEZONE + "' is not supported!";
+      s_aLogger.error (sErrorMsg);
+      throw new InitializationException (sErrorMsg);
+    }
+
     try {
+      // Set the default timezone
       TimeZone.setDefault (TimeZone.getTimeZone (DEFAULT_TIMEZONE));
       s_aLogger.info ("Default time zone set to '" + DEFAULT_TIMEZONE + "'");
     }

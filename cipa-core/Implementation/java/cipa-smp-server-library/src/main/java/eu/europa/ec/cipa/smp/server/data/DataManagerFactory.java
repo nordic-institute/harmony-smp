@@ -57,20 +57,22 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 public final class DataManagerFactory {
   private static final Logger s_aLogger = LoggerFactory.getLogger (DataManagerFactory.class);
   private static final String CONFIG_DATA_MANAGER_CLASS = "dataManager.class";
-
   private static final IDataManager s_aInstance;
 
   static {
     final String sDataManagerName = ConfigFile.getInstance ().getString (CONFIG_DATA_MANAGER_CLASS);
-    s_aLogger.info ("Data Manager class nmame: " + sDataManagerName);
     final IDataManager ret = GenericReflection.newInstance (sDataManagerName, IDataManager.class);
     if (ret == null)
-      throw new IllegalStateException ("Failed to create DataManager instance of class " + sDataManagerName);
+      throw new IllegalStateException ("Failed to instantiate IDataManager class '" + sDataManagerName + "'");
+    s_aLogger.info ("IDataManager class '" + sDataManagerName + "' instantiated");
     s_aInstance = ret;
   }
 
   private DataManagerFactory () {}
 
+  /**
+   * @return The same instance over and over again. Never <code>null</code>.
+   */
   @Nonnull
   public static IDataManager getInstance () {
     return s_aInstance;

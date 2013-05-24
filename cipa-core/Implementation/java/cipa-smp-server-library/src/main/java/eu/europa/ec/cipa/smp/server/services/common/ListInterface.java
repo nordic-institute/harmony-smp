@@ -90,8 +90,13 @@ public final class ListInterface {
     try {
       final ObjectFactory aObjFactory = new ObjectFactory ();
       final BasicAuthClientCredentials aCredentials = RequestHelper.getAuth (headers);
-      if (!aCredentials.getUserName ().equals (sUserId))
-        throw new UnauthorizedException ();
+      if (!aCredentials.getUserName ().equals (sUserId)) {
+        throw new UnauthorizedException ("URL user name '" +
+                                         sUserId +
+                                         "' does not match HTTP Basic Auth user name '" +
+                                         aCredentials.getUserName () +
+                                         "'");
+      }
 
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
       final Collection <ParticipantIdentifierType> aServiceGroupList = aDataManager.getServiceGroupList (aCredentials);

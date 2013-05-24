@@ -53,9 +53,9 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.busdox.servicemetadata.publishing._1.ExtensionType;
-import org.glassfish.ha.store.annotations.Transient;
 
 import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
 

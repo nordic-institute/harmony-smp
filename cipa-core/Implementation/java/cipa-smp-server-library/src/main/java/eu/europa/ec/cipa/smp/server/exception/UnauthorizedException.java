@@ -37,19 +37,22 @@
  */
 package eu.europa.ec.cipa.smp.server.exception;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
+ * Exception to be thrown if there is an ownership mismatch between object. This
+ * exception is only thrown if the provided user credentials are valid.
+ * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public class UnauthorizedException extends RuntimeException {
-  public UnauthorizedException () {
-    super ();
-  }
-
-  public UnauthorizedException (final Throwable e) {
-    super (e);
-  }
+  private static final Logger s_aLogger = LoggerFactory.getLogger (UnauthorizedException.class);
 
   public UnauthorizedException (final String sMsg) {
     super (sMsg);
+
+    // Always log!
+    s_aLogger.warn (sMsg);
   }
 }

@@ -83,6 +83,7 @@ public final class ServiceGroupInterface {
   @GET
   @Produces (MediaType.TEXT_XML)
   public JAXBElement <ServiceGroupType> getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId) throws Throwable {
+    // Delegate to common implementation
     return BaseServiceGroupInterfaceImpl.getServiceGroup (uriInfo, sServiceGroupId, ServiceMetadataInterface.class);
   }
 
