@@ -42,16 +42,19 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
 import com.phloc.commons.charset.CCharset;
 import com.phloc.commons.io.streams.StreamUtils;
+import com.phloc.commons.random.VerySecureRandom;
 
+import eu.europa.ec.cipa.peppol.security.DoNothingTrustManager;
 import eu.europa.ec.cipa.sml.AbstractSMLClientTest;
 
 /**
@@ -66,11 +69,24 @@ public final class SSLConnectTest extends AbstractSMLClientTest {
 
   @Test
   public void testConnect () throws Exception {
-    final HttpsURLConnection uc = (HttpsURLConnection) new URL (SML_INFO.getManagementServiceURL () + "/index.jsp").openConnection ();
+    System.setProperty ("http.proxyHost", "172.30.9.12");
+    System.setProperty ("http.proxyPort", "8080");
+    System.setProperty ("https.proxyHost", "172.30.9.12");
+    System.setProperty ("https.proxyPort", "8080");
+    // System.setProperty ("https.protocols", "TLSv1");
+    System.setProperty ("https.protocols", "SSLv3");
+    System.setProperty ("javax.net.debug", "ssl");
+    final TrustManager [] trustAllCerts = new TrustManager [] { new DoNothingTrustManager (false) };
+    final SSLContext sc = SSLContext.getInstance ("SSL");
+    sc.init (null, trustAllCerts, VerySecureRandom.getInstance ());
+    SSLContext.setDefault (sc);
+    HttpsURLConnection.setDefaultSSLSocketFactory (sc.getSocketFactory ());
+
+    final HttpsURLConnection uc = (HttpsURLConnection) new URL ("https://sml.peppolcentral.org/index.jsp").openConnection ();
     uc.setRequestMethod ("GET");
 
     // Debug status on URL connection
-    if (false) {
+    if (true) {
       s_aLogger.info ("Status code:  " + uc.getResponseCode ());
       s_aLogger.info ("Cipher suite: " + uc.getCipherSuite ());
       s_aLogger.info ("Encoding:     " + uc.getContentEncoding ());
