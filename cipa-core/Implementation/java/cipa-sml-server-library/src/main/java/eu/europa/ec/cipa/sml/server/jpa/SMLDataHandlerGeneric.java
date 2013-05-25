@@ -56,6 +56,7 @@ import com.phloc.db.jpa.JPAEnabledManager;
 import com.phloc.db.jpa.JPAExecutionResult;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
+import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.sml.server.IGenericDataHandler;
 import eu.europa.ec.cipa.sml.server.datamodel.DBParticipantIdentifier;
 import eu.europa.ec.cipa.sml.server.datamodel.DBParticipantIdentifierID;
@@ -96,7 +97,9 @@ public final class SMLDataHandlerGeneric extends JPAEnabledManager implements IG
         final DBParticipantIdentifier aDBIdentifier = getEntityManager ().find (DBParticipantIdentifier.class,
                                                                                 new DBParticipantIdentifierID (aRecipientIdentifier));
         if (aDBIdentifier == null)
-          throw new NotFoundException ("The given identifier was not found.");
+          throw new NotFoundException ("The given identifier '" +
+                                       IdentifierUtils.getIdentifierURIEncoded (aRecipientIdentifier) +
+                                       "' was not found.");
 
         final DBServiceMetadataPublisher aPublisher = aDBIdentifier.getServiceMetadataPublisher ();
 
@@ -159,7 +162,7 @@ public final class SMLDataHandlerGeneric extends JPAEnabledManager implements IG
         final DBServiceMetadataPublisher aPublisher = getEntityManager ().find (DBServiceMetadataPublisher.class,
                                                                                 sSMPID);
         if (aPublisher == null)
-          throw new NotFoundException ("The given service metadata publisher does not exist.");
+          throw new NotFoundException ("The service metadata publisher ID '" + sSMPID + "' was not found");
 
         final ParticipantIdentifierPageType aJAXBPage = m_aObjFactory.createParticipantIdentifierPageType ();
         for (final DBParticipantIdentifier aDBIdentifier : aPublisher.getRecipientParticipantIdentifiers ())

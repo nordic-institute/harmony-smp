@@ -108,7 +108,7 @@ public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDa
         final String sSMPID = aSMPData.getServiceMetadataPublisherID ();
         DBServiceMetadataPublisher aSMP = getEntityManager ().find (DBServiceMetadataPublisher.class, sSMPID);
         if (aSMP != null)
-          throw new BadRequestException ("The service metadata publisher ID '" + sSMPID + "' is already existing.");
+          throw new BadRequestException ("The SMP '" + sSMPID + "' is already existing.");
 
         // Save the service metadata
         aSMP = new DBServiceMetadataPublisher (sSMPID,
@@ -139,7 +139,11 @@ public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDa
 
         // Make sure that the smp is owned by the user
         if (!aSMP.getUser ().getUsername ().equals (sClientUniqueID))
-          throw new UnauthorizedException ("The SMP is not owned by the given username '" + sClientUniqueID + "'");
+          throw new UnauthorizedException ("The SMP '" +
+                                           sSMPID +
+                                           "' is not owned by the given username '" +
+                                           sClientUniqueID +
+                                           "'");
 
         // Convert the SMP.
         final ServiceMetadataPublisherServiceType aJAXBSMPData = m_aObjFactory.createServiceMetadataPublisherServiceType ();
@@ -167,7 +171,11 @@ public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDa
 
         // Make sure that the smp is owned by the user
         if (!aSMP.getUser ().getUsername ().equals (sClientUniqueID))
-          throw new UnauthorizedException ("The SMP is not owned by the given username '" + sClientUniqueID + "'");
+          throw new UnauthorizedException ("The SMP '" +
+                                           sSMPID +
+                                           "' is not owned by the given username '" +
+                                           sClientUniqueID +
+                                           "'");
 
         // Save the SMP.
         aSMP.setLogicalAddress (aSMPData.getPublisherEndpoint ().getLogicalAddress ());
@@ -194,7 +202,11 @@ public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDa
 
         // Make sure that the smp is owned by the user
         if (!aSMP.getUser ().getUsername ().equals (sClientUniqueID))
-          throw new UnauthorizedException ("The SMP is not owned by the given username '" + sClientUniqueID + "'");
+          throw new UnauthorizedException ("The SMP '" +
+                                           sSMPID +
+                                           "' is not owned by the given username '" +
+                                           sClientUniqueID +
+                                           "'");
 
         // Delete the SMP.
         getEntityManager ().remove (aSMP);
