@@ -118,7 +118,8 @@ public final class IdentifierUtils {
    */
   public static boolean isValidParticipantIdentifierScheme (@Nullable final String sScheme) {
     return isValidIdentifierScheme (sScheme) &&
-           RegExHelper.stringMatchesPattern (CIdentifier.PARTICIPANT_IDENTIFIER_SCHEME_REGEX, sScheme.toLowerCase ());
+           RegExHelper.stringMatchesPattern (CIdentifier.PARTICIPANT_IDENTIFIER_SCHEME_REGEX,
+                                             sScheme.toLowerCase (BusdoxURLUtils.URL_LOCALE));
   }
 
   /**
