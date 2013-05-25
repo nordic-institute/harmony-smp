@@ -68,6 +68,7 @@ import org.xbill.DNS.ZoneTransferException;
 import org.xbill.DNS.ZoneTransferIn;
 
 import com.phloc.commons.annotations.Nonempty;
+import com.phloc.commons.annotations.OverrideOnDemand;
 import com.phloc.commons.exceptions.InitializationException;
 import com.phloc.commons.string.StringHelper;
 import com.phloc.commons.string.ToStringGenerator;
@@ -161,6 +162,7 @@ public class DNSClientImpl implements IDNSClient {
   }
 
   @Nonnull
+  @OverrideOnDemand
   protected Resolver createResolver () throws IOException {
     return new SimpleResolver (m_sServerName);
   }
