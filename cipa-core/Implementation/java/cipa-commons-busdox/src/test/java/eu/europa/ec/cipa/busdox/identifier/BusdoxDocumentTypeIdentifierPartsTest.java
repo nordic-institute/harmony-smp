@@ -85,6 +85,13 @@ public final class BusdoxDocumentTypeIdentifierPartsTest {
     catch (final IllegalArgumentException ex) {}
 
     try {
+      // null String is not allowed
+      BusdoxDocumentTypeIdentifierParts.extractFromString (null);
+      fail ();
+    }
+    catch (final IllegalArgumentException ex) {}
+
+    try {
       // Empty String is not allowed
       BusdoxDocumentTypeIdentifierParts.extractFromString ("");
       fail ();
