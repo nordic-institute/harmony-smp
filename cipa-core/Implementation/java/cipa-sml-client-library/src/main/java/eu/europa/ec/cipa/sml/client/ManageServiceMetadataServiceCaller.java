@@ -50,6 +50,8 @@ import org.busdox.servicemetadata.manageservicemetadataservice._1.ManageServiceM
 import org.busdox.servicemetadata.manageservicemetadataservice._1.ManageServiceMetadataServiceSoap;
 import org.busdox.servicemetadata.manageservicemetadataservice._1.NotFoundFault;
 import org.busdox.servicemetadata.manageservicemetadataservice._1.UnauthorizedFault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 
@@ -60,6 +62,8 @@ import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
  *         PEPPOL.AT, BRZ, Philip Helger
  */
 public final class ManageServiceMetadataServiceCaller {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (ManageServiceMetadataServiceCaller.class);
+
   private final URL m_aEndpointAddress;
 
   /**
@@ -82,6 +86,9 @@ public final class ManageServiceMetadataServiceCaller {
     if (aEndpointAddress == null)
       throw new NullPointerException ("endpointAddress");
     m_aEndpointAddress = aEndpointAddress;
+
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Using SML endpoint address '" + m_aEndpointAddress.toExternalForm () + "'");
   }
 
   /**
@@ -94,8 +101,8 @@ public final class ManageServiceMetadataServiceCaller {
     // Use default WSDL and default QName
     final ManageServiceMetadataService aService = new ManageServiceMetadataService ();
     final ManageServiceMetadataServiceSoap aPort = aService.getManageServiceMetadataServicePort ();
-    final BindingProvider aPortBP = (BindingProvider) aPort;
-    aPortBP.getRequestContext ().put (BindingProvider.ENDPOINT_ADDRESS_PROPERTY, m_aEndpointAddress.toString ());
+    ((BindingProvider) aPort).getRequestContext ().put (BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+                                                        m_aEndpointAddress.toString ());
     return aPort;
   }
 
@@ -139,9 +146,16 @@ public final class ManageServiceMetadataServiceCaller {
    * @throws UnauthorizedFault
    *         The username or password was not correct.
    */
-  public void create (final ServiceMetadataPublisherServiceType aServiceMetadata) throws BadRequestFault,
-                                                                                 InternalErrorFault,
-                                                                                 UnauthorizedFault {
+  public void create (@Nonnull final ServiceMetadataPublisherServiceType aServiceMetadata) throws BadRequestFault,
+                                                                                          InternalErrorFault,
+                                                                                          UnauthorizedFault {
+    s_aLogger.info ("Trying to create new SMP '" +
+                    aServiceMetadata.getServiceMetadataPublisherID () +
+                    "' with physical address '" +
+                    aServiceMetadata.getPublisherEndpoint ().getPhysicalAddress () +
+                    "' and logical address '" +
+                    aServiceMetadata.getPublisherEndpoint ().getLogicalAddress () +
+                    "'");
     _createPort ().create (aServiceMetadata);
   }
 
@@ -190,10 +204,17 @@ public final class ManageServiceMetadataServiceCaller {
    * @throws BadRequestFault
    *         The request was not well formed.
    */
-  public void update (final ServiceMetadataPublisherServiceType aServiceMetadata) throws InternalErrorFault,
-                                                                                 NotFoundFault,
-                                                                                 UnauthorizedFault,
-                                                                                 BadRequestFault {
+  public void update (@Nonnull final ServiceMetadataPublisherServiceType aServiceMetadata) throws InternalErrorFault,
+                                                                                          NotFoundFault,
+                                                                                          UnauthorizedFault,
+                                                                                          BadRequestFault {
+    s_aLogger.info ("Trying to update SMP '" +
+                    aServiceMetadata.getServiceMetadataPublisherID () +
+                    "' with physical address '" +
+                    aServiceMetadata.getPublisherEndpoint ().getPhysicalAddress () +
+                    "' and logical address '" +
+                    aServiceMetadata.getPublisherEndpoint ().getLogicalAddress () +
+                    "'");
     _createPort ().update (aServiceMetadata);
   }
 
@@ -212,6 +233,7 @@ public final class ManageServiceMetadataServiceCaller {
    *         The request was not well formed.
    */
   public void delete (final String sSMPID) throws InternalErrorFault, NotFoundFault, UnauthorizedFault, BadRequestFault {
+    s_aLogger.info ("Trying to delete SMP '" + sSMPID + "'");
     _createPort ().delete (sSMPID);
   }
 
@@ -254,10 +276,11 @@ public final class ManageServiceMetadataServiceCaller {
    * @throws BadRequestFault
    *         The request was not well formed.
    */
-  public ServiceMetadataPublisherServiceType read (final ServiceMetadataPublisherServiceType aSMPService) throws InternalErrorFault,
-                                                                                                         NotFoundFault,
-                                                                                                         UnauthorizedFault,
-                                                                                                         BadRequestFault {
+  public ServiceMetadataPublisherServiceType read (@Nonnull final ServiceMetadataPublisherServiceType aSMPService) throws InternalErrorFault,
+                                                                                                                  NotFoundFault,
+                                                                                                                  UnauthorizedFault,
+                                                                                                                  BadRequestFault {
+    s_aLogger.info ("Trying to read SMP '" + aSMPService.getServiceMetadataPublisherID () + "'");
     return _createPort ().read (aSMPService);
   }
 }

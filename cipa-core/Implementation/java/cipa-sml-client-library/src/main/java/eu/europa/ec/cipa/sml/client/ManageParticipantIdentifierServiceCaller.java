@@ -101,6 +101,9 @@ public final class ManageParticipantIdentifierServiceCaller {
     if (aEndpointAddress == null)
       throw new NullPointerException ("endpointAddress");
     m_aEndpointAddress = aEndpointAddress;
+
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Using SML endpoint address '" + m_aEndpointAddress.toExternalForm () + "'");
   }
 
   /**
@@ -112,8 +115,8 @@ public final class ManageParticipantIdentifierServiceCaller {
   private ManageBusinessIdentifierServiceSoap _createPort () {
     final ManageBusinessIdentifierService aService = new ManageBusinessIdentifierService ();
     final ManageBusinessIdentifierServiceSoap aPort = aService.getManageBusinessIdentifierServicePort ();
-    final BindingProvider aPortBP = (BindingProvider) aPort;
-    aPortBP.getRequestContext ().put (BindingProvider.ENDPOINT_ADDRESS_PROPERTY, m_aEndpointAddress.toString ());
+    ((BindingProvider) aPort).getRequestContext ().put (BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
+                                                        m_aEndpointAddress.toString ());
     return aPort;
   }
 
