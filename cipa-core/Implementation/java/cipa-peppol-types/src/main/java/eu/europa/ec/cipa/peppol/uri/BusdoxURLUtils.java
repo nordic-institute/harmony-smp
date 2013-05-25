@@ -113,6 +113,8 @@ public final class BusdoxURLUtils {
    * @param aSML
    *        The SML information object to be used. May not be <code>null</code>.
    * @return DNS record
+   * @throws IllegalArgumentException
+   *         In case one argument is invalid
    */
   @Nonnull
   public static String getDNSNameOfParticipant (@Nonnull final IReadonlyParticipantIdentifier aParticipantIdentifier,
@@ -133,6 +135,8 @@ public final class BusdoxURLUtils {
    *        must end with a dot!
    * @return DNS record. It does not contain any prefix like http:// or any path
    *         suffix. It is the plain DNS host name.
+   * @throws IllegalArgumentException
+   *         In case one argument is invalid
    */
   @Nonnull
   public static String getDNSNameOfParticipant (@Nonnull final IReadonlyParticipantIdentifier aParticipantIdentifier,
