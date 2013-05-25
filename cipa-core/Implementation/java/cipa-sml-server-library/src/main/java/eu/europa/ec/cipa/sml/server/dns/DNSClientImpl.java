@@ -65,9 +65,11 @@ import org.xbill.DNS.Update;
 import org.xbill.DNS.ZoneTransferException;
 import org.xbill.DNS.ZoneTransferIn;
 
+import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.string.StringHelper;
 import com.phloc.commons.string.ToStringGenerator;
 
+import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.peppol.sml.CSMLDefault;
 import eu.europa.ec.cipa.peppol.uri.BusdoxURLUtils;
 import eu.europa.ec.cipa.sml.server.exceptions.DNSErrorException;
@@ -102,14 +104,13 @@ public class DNSClientImpl implements IDNSClient {
     if (nTTL < 0)
       throw new IllegalArgumentException ("TTL is invalid: " + nTTL);
 
-    s_aLogger.info ("DnsClientImpl init : " + sServerName + " : " + sDNSZoneName + " : " + sSMLZoneName + " : " + nTTL);
+    s_aLogger.info ("DnsClientImpl init: " + sServerName + " : " + sDNSZoneName + " : " + sSMLZoneName + " : " + nTTL);
     m_sServerName = sServerName;
-    m_sDNSZoneName = sDNSZoneName.toLowerCase ();
-    if (!m_sDNSZoneName.endsWith (".")) {
-      m_sDNSZoneName += ".";
-    }
+    m_sDNSZoneName = sDNSZoneName.toLowerCase (BusdoxURLUtils.URL_LOCALE);
+    if (!m_sDNSZoneName.endsWith ("."))
+      m_sDNSZoneName += '.';
 
-    final String sSMLZoneNameLC = sSMLZoneName.toLowerCase ();
+    final String sSMLZoneNameLC = sSMLZoneName.toLowerCase (BusdoxURLUtils.URL_LOCALE);
     if (sSMLZoneNameLC.equals (m_sDNSZoneName))
       m_sSMLZoneName = sSMLZoneNameLC;
     else
@@ -123,7 +124,7 @@ public class DNSClientImpl implements IDNSClient {
 
     m_nTTLSecs = nTTL;
 
-    s_aLogger.info ("DnsClientImpl init done - DNS Zone : " + m_sDNSZoneName + " - SML Zone : " + m_sSMLZoneName);
+    s_aLogger.info ("DnsClientImpl init done. DNS Zone=" + m_sDNSZoneName + "; SML Zone=" + m_sSMLZoneName);
   }
 
   @Nonnull
@@ -146,93 +147,86 @@ public class DNSClientImpl implements IDNSClient {
     return m_sServerName;
   }
 
-  public void createIdentifier (final ParticipantIdentifierType aParticipantIdentifier, final String sSMPID) throws IOException,
-                                                                                                            IllegalIdentifierSchemeException,
-                                                                                                            IllegalHostnameException {
+  @Nonnull
+  @Nonempty
+  private String _createPublisherDNSName (@Nonnull @Nonempty final String sSMPID) throws IllegalHostnameException {
+    // check that host name is ok
+    DNSUtils.verifyHostname (sSMPID);
+
+    // Build name
+    return sSMPID + "." + CSMLDefault.DNS_PUBLISHER_SUBZONE + m_sSMLZoneName;
+  }
+
+  public void createIdentifier (@Nonnull final ParticipantIdentifierType aParticipantIdentifier,
+                                @Nonnull final String sSMPID) throws IOException,
+                                                             IllegalIdentifierSchemeException,
+                                                             IllegalHostnameException {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Create Identifier : " +
-                       aParticipantIdentifier.getScheme () +
-                       "::" +
-                       aParticipantIdentifier.getValue () +
+                       IdentifierUtils.getIdentifierURIEncoded (aParticipantIdentifier) +
                        " -> " +
                        sSMPID);
 
-    // check that host name is ok
-    DNSUtils.verifyHostname (sSMPID);
+    // Create the publisher anchor
+    final String sDNSAnchor = _createPublisherDNSName (sSMPID);
 
-    final String sDNSAnchor = sSMPID + ".publisher." + m_sSMLZoneName;
-    String sPIDNSName;
-    try {
-      sPIDNSName = getDNSNameOfParticipant (aParticipantIdentifier);
-    }
-    catch (final IllegalArgumentException ex) {
-      throw new IllegalIdentifierSchemeException (ex.getMessage ());
-    }
-    final Resolver aDNSResolver = getResolver ();
-
-    //
+    // Start update
     final Name aDNSZone = Name.fromString (m_sDNSZoneName);
-    final Name aPIHost = Name.fromString (sPIDNSName);
-
     final Update aDNSUpdate = new Update (aDNSZone);
-    final Record aRecord = new CNAMERecord (aPIHost, Type.A, m_nTTLSecs, new Name (sDNSAnchor));
-    aDNSUpdate.add (aRecord);
 
-    final Message response = aDNSResolver.send (aDNSUpdate);
-    validateDNSResponse (response);
+    // What to add
+    final String sPIDNSName = getDNSNameOfParticipant (aParticipantIdentifier);
+    final Name aPIHost = Name.fromString (sPIDNSName);
+    aDNSUpdate.add (new CNAMERecord (aPIHost, Type.A, m_nTTLSecs, new Name (sDNSAnchor)));
+
+    final Message aResponse = getResolver ().send (aDNSUpdate);
+    _validateDNSResponse (aResponse);
   }
 
-  public void createIdentifiers (final List <ParticipantIdentifierType> aParticipantIdentifiers, final String sSMPID) throws IOException,
-                                                                                                                     IllegalIdentifierSchemeException,
-                                                                                                                     IllegalHostnameException {
+  public void createIdentifiers (@Nonnull final List <ParticipantIdentifierType> aParticipantIdentifiers,
+                                 @Nonnull final String sSMPID) throws IOException,
+                                                              IllegalIdentifierSchemeException,
+                                                              IllegalHostnameException {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Create List of Identifier for : " + sSMPID);
 
-    // check that host name is ok
-    DNSUtils.verifyHostname (sSMPID);
-
-    final Resolver aDNSResolver = getResolver ();
-
-    //
+    // What to update
     final Name aDNSZone = Name.fromString (m_sDNSZoneName);
-    final Name aSMLAnchor = new Name (sSMPID + ".publisher." + m_sSMLZoneName);
     final Update aDNSUpdate = new Update (aDNSZone);
 
+    final Name aSMLAnchor = new Name (_createPublisherDNSName (sSMPID));
     for (final ParticipantIdentifierType aParticipantIdentifier : aParticipantIdentifiers) {
-      final String sPIName = getDNSNameOfParticipant (aParticipantIdentifier);
-      final Name aPIHost = Name.fromString (sPIName);
-      final Record aPIRecord = new CNAMERecord (aPIHost, Type.A, m_nTTLSecs, aSMLAnchor);
-      aDNSUpdate.add (aPIRecord);
+      final String sPIDNSName = getDNSNameOfParticipant (aParticipantIdentifier);
+      final Name aPIHost = Name.fromString (sPIDNSName);
+      aDNSUpdate.add (new CNAMERecord (aPIHost, Type.A, m_nTTLSecs, aSMLAnchor));
     }
 
-    final Message response = aDNSResolver.send (aDNSUpdate);
-    validateDNSResponse (response);
+    final Message response = getResolver ().send (aDNSUpdate);
+    _validateDNSResponse (response);
   }
 
-  public void deleteIdentifier (final ParticipantIdentifierType pi) throws IllegalIdentifierSchemeException,
-                                                                   IOException {
-    final String sPIDNSName = getDNSNameOfParticipant (pi);
+  public void deleteIdentifier (final ParticipantIdentifierType aParticipantIdentifier) throws IllegalIdentifierSchemeException,
+                                                                                       IOException {
+    final String sPIDNSName = getDNSNameOfParticipant (aParticipantIdentifier);
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Delete Identifier : " + sPIDNSName);
 
-    deleteZoneRecord (sPIDNSName);
+    _deleteZoneRecord (sPIDNSName);
   }
 
   public void deleteIdentifiers (final List <ParticipantIdentifierType> aParticipantIdentifiers) throws IOException,
                                                                                                 IllegalIdentifierSchemeException {
     final Name aDNSZone = Name.fromString (m_sDNSZoneName);
-
     final Update aDNSUpdate = new Update (aDNSZone);
-    final Resolver aDNSResolver = getResolver ();
 
     for (final ParticipantIdentifierType aParticipantIdentifier : aParticipantIdentifiers) {
-      final String sPIName = getDNSNameOfParticipant (aParticipantIdentifier);
-      final Name aPIHost = Name.fromString (sPIName, aDNSZone);
+      final String sPIDNSName = getDNSNameOfParticipant (aParticipantIdentifier);
+      final Name aPIHost = Name.fromString (sPIDNSName, aDNSZone);
       aDNSUpdate.delete (aPIHost);
     }
 
-    final Message response = aDNSResolver.send (aDNSUpdate);
-    validateDNSResponse (response);
+    final Message response = getResolver ().send (aDNSUpdate);
+    _validateDNSResponse (response);
   }
 
   public void createPublisherAnchor (final String sSMPID, final String sEndpoint) throws IOException,
@@ -240,36 +234,29 @@ public class DNSClientImpl implements IDNSClient {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Create Publisher Anchor : " + sSMPID + " in zone : " + m_sDNSZoneName + " -> " + sEndpoint);
 
-    // check that host name is ok
-    DNSUtils.verifyHostname (sSMPID);
-
-    final String sSMPHostName = sSMPID + ".publisher." + m_sSMLZoneName;
-
     //
     final Name aDNSZone = Name.fromString (m_sDNSZoneName);
-    final Name aSMPHost = Name.fromString (sSMPHostName);
-
     final Update aDNSUpdate = new Update (aDNSZone);
-    final Resolver aDNSResolver = getResolver ();
 
     // Delete old host - if exists!
+    final Name aSMPHost = Name.fromString (_createPublisherDNSName (sSMPID));
     aDNSUpdate.delete (aSMPHost);
 
     Record aRecord = null;
-    byte [] ipAddressBytes = Address.toByteArray (sEndpoint, Address.IPv4);
-    if (ipAddressBytes != null) {
+    byte [] aIPAddressBytes = Address.toByteArray (sEndpoint, Address.IPv4);
+    if (aIPAddressBytes != null) {
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug (" - IPV4");
-      final InetAddress ipAddress = InetAddress.getByAddress (ipAddressBytes);
+      final InetAddress ipAddress = InetAddress.getByAddress (aIPAddressBytes);
       aRecord = new ARecord (aSMPHost, Type.A, m_nTTLSecs, ipAddress);
     }
     else {
-      ipAddressBytes = Address.toByteArray (sEndpoint, Address.IPv6);
-      // NO IPv6 yet
-      if (false && ipAddressBytes != null) {
+      aIPAddressBytes = Address.toByteArray (sEndpoint, Address.IPv6);
+      // FIXME NO IPv6 yet
+      if (false && aIPAddressBytes != null) {
         if (s_aLogger.isDebugEnabled ())
           s_aLogger.debug (" - IPV6");
-        final InetAddress ipAddress = InetAddress.getByAddress (ipAddressBytes);
+        final InetAddress ipAddress = InetAddress.getByAddress (aIPAddressBytes);
         // FIXME
         final int nPrefixBits = 0;
         final Name aPrefix = null;
@@ -300,31 +287,16 @@ public class DNSClientImpl implements IDNSClient {
     }
     aDNSUpdate.add (aRecord);
 
-    final Message response = aDNSResolver.send (aDNSUpdate);
-    validateDNSResponse (response);
+    final Message response = getResolver ().send (aDNSUpdate);
+    _validateDNSResponse (response);
   }
 
-  public void deletePublisherAnchor (final String sSMPID) throws IOException {
-    final String aSMPAnchor = sSMPID + ".publisher." + m_sSMLZoneName;
+  public void deletePublisherAnchor (final String sSMPID) throws IOException, IllegalHostnameException {
+    final String aSMPAnchor = _createPublisherDNSName (sSMPID);
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Delete Publisher Anchor : " + aSMPAnchor);
 
-    deleteZoneRecord (aSMPAnchor);
-  }
-
-  @SuppressWarnings ("unused")
-  private void createZoneRecord (final Record aRecord) throws IOException {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Insert Zone Record : " + aRecord);
-
-    final Name aDNSZone = Name.fromString (m_sDNSZoneName);
-    final Update aDNSUpdate = new Update (aDNSZone);
-    final Resolver aDNSResolver = getResolver ();
-
-    aDNSUpdate.add (aRecord);
-
-    final Message response = aDNSResolver.send (aDNSUpdate);
-    validateDNSResponse (response);
+    _deleteZoneRecord (aSMPAnchor);
   }
 
   public List <Record> getAllRecords () throws IOException, ZoneTransferException {
@@ -336,10 +308,11 @@ public class DNSClientImpl implements IDNSClient {
   }
 
   @Nullable
-  public String lookupPeppolPublisherById (@Nonnull final String sSMPID) throws IOException {
+  public String lookupPeppolPublisherById (@Nonnull final String sSMPID) throws IOException, IllegalHostnameException {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Lookup Publisher By ID : " + sSMPID);
-    final String sName = sSMPID + "." + CSMLDefault.DNS_PUBLISHER_SUBZONE + m_sSMLZoneName;
+
+    final String sName = _createPublisherDNSName (sSMPID);
     return lookupDNSRecord (sName);
   }
 
@@ -348,7 +321,6 @@ public class DNSClientImpl implements IDNSClient {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Lookup Publisher: " + sName);
 
-    final Resolver aResolver = getResolver ();
     Name aHost;
     if (sName.endsWith (".")) {
       aHost = Name.fromString (sName);
@@ -358,7 +330,7 @@ public class DNSClientImpl implements IDNSClient {
       aHost = Name.fromString (sName, aZone);
     }
     final Lookup aLookup = new Lookup (aHost, Type.ANY); // , Type.CNAME);
-    aLookup.setResolver (aResolver);
+    aLookup.setResolver (getResolver ());
     aLookup.setCache (null);
 
     if (s_aLogger.isDebugEnabled ())
@@ -388,11 +360,9 @@ public class DNSClientImpl implements IDNSClient {
    * @param name
    * @throws IOException
    */
-  private void deleteZoneRecord (final String name) throws IOException {
+  private void _deleteZoneRecord (final String name) throws IOException {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Delete Zone Record : " + name);
-
-    final Resolver aDNSResolver = getResolver ();
 
     final Name aDNSZone = Name.fromString (m_sDNSZoneName);
     Name host;
@@ -404,30 +374,8 @@ public class DNSClientImpl implements IDNSClient {
     final Update aDNSUpdate = new Update (aDNSZone);
     aDNSUpdate.delete (host);
 
-    final Message response = aDNSResolver.send (aDNSUpdate);
-    validateDNSResponse (response);
-  }
-
-  /**
-   * Helper for deleting records.
-   * 
-   * @param aDNSRecord
-   * @throws IOException
-   */
-  @SuppressWarnings ("unused")
-  private void deleteZoneRecord (final Record aDNSRecord) throws IOException {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("Delete Zone Record : " + aDNSRecord);
-
-    final Resolver aDNSResolver = getResolver ();
-
-    final Name aDNSZone = Name.fromString (m_sDNSZoneName);
-    final Update aDNSUpdate = new Update (aDNSZone);
-
-    aDNSUpdate.delete (aDNSRecord);
-
-    final Message response = aDNSResolver.send (aDNSUpdate);
-    validateDNSResponse (response);
+    final Message response = getResolver ().send (aDNSUpdate);
+    _validateDNSResponse (response);
   }
 
   /**
@@ -435,11 +383,13 @@ public class DNSClientImpl implements IDNSClient {
    * 
    * @param aResponse
    */
-  private static void validateDNSResponse (final Message aResponse) {
+  private static void _validateDNSResponse (@Nonnull final Message aResponse) {
     final int nRetCode = aResponse.getRcode ();
+
     final String sRetCode = Rcode.string (nRetCode);
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("validateDNSResponse : " + sRetCode);
+
     if (nRetCode != Rcode.NOERROR) {
       // Error - not handling special cases yet
       s_aLogger.error ("Error performing DNS request : " + sRetCode + "\n" + aResponse);
@@ -447,14 +397,22 @@ public class DNSClientImpl implements IDNSClient {
     }
   }
 
+  @Nullable
   public ParticipantIdentifierType getIdentifierFromDnsName (final String sDnsName) {
     return DNSUtils.getIdentiferFromDnsName (sDnsName, m_sSMLZoneName);
   }
 
+  @Nonnull
   public String getDNSNameOfParticipant (@Nonnull final ParticipantIdentifierType aParticipantIdentifier) throws IllegalIdentifierSchemeException {
-    return BusdoxURLUtils.getDNSNameOfParticipant (aParticipantIdentifier, m_sSMLZoneName);
+    try {
+      return BusdoxURLUtils.getDNSNameOfParticipant (aParticipantIdentifier, m_sSMLZoneName);
+    }
+    catch (final IllegalArgumentException ex) {
+      throw new IllegalIdentifierSchemeException (String.valueOf (aParticipantIdentifier), ex);
+    }
   }
 
+  @Nullable
   public String getPublisherAnchorFromDnsName (@Nonnull final String sDnsName) {
     return DNSUtils.getPublisherAnchorFromDnsName (sDnsName, m_sSMLZoneName);
   }

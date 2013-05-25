@@ -112,7 +112,7 @@ public final class DNSSMPDataHandlerCallback implements ISMPDataHandlerCallback 
       DNSClientFactory.getInstance ().deletePublisherAnchor (sSMPID);
       s_aLogger.info ("DNS Deleted SMP " + sSMPID);
     }
-    catch (final IOException e) {
+    catch (final Exception e) {
       s_aLogger.error ("DNSClient Failed to delete MetadataPublisher : " + sSMPID, e);
       throw new DNSErrorException (e);
     }

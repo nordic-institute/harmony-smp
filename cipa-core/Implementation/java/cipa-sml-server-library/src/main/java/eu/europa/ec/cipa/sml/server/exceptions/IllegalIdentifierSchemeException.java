@@ -44,4 +44,8 @@ public class IllegalIdentifierSchemeException extends AbstractSMLException {
   public IllegalIdentifierSchemeException (final String sMsg) {
     super (sMsg);
   }
+
+  public IllegalIdentifierSchemeException (final String sMsg, final Throwable t) {
+    super (sMsg, t);
+  }
 }

@@ -69,6 +69,7 @@ import com.phloc.commons.string.StringHelper;
 import com.phloc.commons.url.URLUtils;
 
 import eu.europa.ec.cipa.sml.server.IGenericDataHandler;
+import eu.europa.ec.cipa.sml.server.exceptions.IllegalHostnameException;
 import eu.europa.ec.cipa.sml.server.exceptions.InternalErrorException;
 import eu.europa.ec.cipa.sml.server.exceptions.NotFoundException;
 import eu.europa.ec.cipa.sml.server.management.DataHandlerFactory;
@@ -478,7 +479,7 @@ public class ServletVerifyDNS extends HttpServlet {
   // ===== Test Methods
 
   @SuppressWarnings ("unused")
-  private static void _deleteAllDNSRecords () throws IOException, ZoneTransferException {
+  private static void _deleteAllDNSRecords () throws IOException, ZoneTransferException, IllegalHostnameException {
     final IDNSClient dnsClient = DNSClientFactory.getInstance ();
 
     final List <Record> records = dnsClient.getAllRecords ();

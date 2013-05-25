@@ -88,24 +88,25 @@ public interface IDNSClient {
    * running the MetadataPublisher. ParticipantIdentifier Registrations for the
    * Publisher will point to this 'anchor'
    * 
-   * @param smpId
+   * @param sSMPID
    *        unique id for Publisher
    * @param host
    *        hostname/server for publisher
    * @throws IOException
    * @throws IllegalHostnameException
    */
-  void createPublisherAnchor (String smpId, String host) throws IOException, IllegalHostnameException;
+  void createPublisherAnchor (String sSMPID, String host) throws IOException, IllegalHostnameException;
 
   /**
    * Delete the 'anchor'/CNAME for a Publisher which points to the host/server
    * running the MetadataPublisher.
    * 
-   * @param smpId
+   * @param sSMPID
    *        unique id for Publisher
    * @throws IOException
+   * @throws IllegalHostnameException
    */
-  void deletePublisherAnchor (String smpId) throws IOException;
+  void deletePublisherAnchor (String sSMPID) throws IOException, IllegalHostnameException;
 
   /**
    * Creates a DNS entry/CNAME for a ParticipantIdentifier pointing to the
@@ -113,15 +114,15 @@ public interface IDNSClient {
    * 
    * @param pi
    *        ParticipantIdentifier
-   * @param smpId
+   * @param sSMPID
    *        unique id for Publisher
    * @throws IOException
    * @throws IllegalIdentifierSchemeException
    * @throws IllegalHostnameException
    */
-  void createIdentifier (ParticipantIdentifierType pi, String smpId) throws IOException,
-                                                                    IllegalIdentifierSchemeException,
-                                                                    IllegalHostnameException;
+  void createIdentifier (ParticipantIdentifierType pi, String sSMPID) throws IOException,
+                                                                     IllegalIdentifierSchemeException,
+                                                                     IllegalHostnameException;
 
   /**
    * Creates a list of : DNS entry/CNAME for a ParticipantIdentifier.
@@ -132,9 +133,9 @@ public interface IDNSClient {
    * @throws IllegalIdentifierSchemeException
    * @throws IllegalHostnameException
    */
-  void createIdentifiers (List <ParticipantIdentifierType> list, String smpId) throws IOException,
-                                                                              IllegalIdentifierSchemeException,
-                                                                              IllegalHostnameException;
+  void createIdentifiers (List <ParticipantIdentifierType> list, String sSMPID) throws IOException,
+                                                                               IllegalIdentifierSchemeException,
+                                                                               IllegalHostnameException;
 
   /**
    * Deletes a DNS entry/CNAME for a ParticipantIdentifier.
@@ -180,12 +181,13 @@ public interface IDNSClient {
   /**
    * Find host/server registration for Publisher.
    * 
-   * @param dnsPublisher
+   * @param sSMPID
    * @return host
    * @throws IOException
+   * @throws IllegalHostnameException
    */
   @Nullable
-  String lookupPeppolPublisherById (String dnsPublisher) throws IOException;
+  String lookupPeppolPublisherById (String sSMPID) throws IOException, IllegalHostnameException;
 
   /**
    * Create ParticipantIdentifier from DNS Name.
