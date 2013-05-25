@@ -58,23 +58,10 @@ public final class DNSClientFactory {
       if (DNSClientConfiguration.isEnabled ()) {
         // DNS enabled
         final String sServer = DNSClientConfiguration.getServer ();
-        final String sZone = DNSClientConfiguration.getZone ();
+        final String sZoneName = DNSClientConfiguration.getZone ();
         final String sSMLZoneName = DNSClientConfiguration.getSMLZoneName ();
         final int nTTL = DNSClientConfiguration.getTTL ();
-        s_aLogger.info ("Init DnsClientFactory : " +
-                        sServer +
-                        " - " +
-                        sZone +
-                        " - " +
-                        sSMLZoneName +
-                        "  (" +
-                        sSMLZoneName +
-                        "." +
-                        sZone +
-                        ")  - " +
-                        nTTL);
-
-        s_aInstance = new DNSClientImpl (sServer, sZone, sSMLZoneName, nTTL);
+        s_aInstance = new DNSClientImpl (sServer, sZoneName, sSMLZoneName, nTTL);
       }
       else {
         // DNS disabled

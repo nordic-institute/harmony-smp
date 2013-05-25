@@ -40,6 +40,7 @@ package eu.europa.ec.cipa.sml.server.dns;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
@@ -53,11 +54,11 @@ import com.phloc.commons.string.ToStringGenerator;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class DoNothingDNSClient implements IDNSClient {
-  public void createIdentifier (final ParticipantIdentifierType pi, final String smpId) {
+  public void createIdentifier (final ParticipantIdentifierType pi, final String sSMPID) {
     // Do nothing...
   }
 
-  public void createIdentifiers (final List <ParticipantIdentifierType> list, final String smpId) {
+  public void createIdentifiers (final List <ParticipantIdentifierType> list, final String sSMPID) {
     // Do nothing...
   }
 
@@ -69,11 +70,11 @@ public final class DoNothingDNSClient implements IDNSClient {
     // Do nothing...
   }
 
-  public void createPublisherAnchor (final String smpId, final String host) {
+  public void createPublisherAnchor (final String sSMPID, final String host) {
     // Do nothing...
   }
 
-  public void deletePublisherAnchor (final String smpId) {
+  public void deletePublisherAnchor (final String sSMPID) {
     // Do nothing...
   }
 
@@ -87,7 +88,7 @@ public final class DoNothingDNSClient implements IDNSClient {
     return null;
   }
 
-  @Nullable
+  @Nonnull
   public List <Record> getAllRecords () {
     return new ArrayList <Record> ();
   }

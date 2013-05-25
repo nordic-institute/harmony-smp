@@ -45,12 +45,16 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.PresentForCodeCoverage;
 import com.phloc.commons.regex.RegExHelper;
+import com.phloc.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
+import eu.europa.ec.cipa.peppol.sml.CSMLDefault;
+import eu.europa.ec.cipa.peppol.uri.BusdoxURLUtils;
 import eu.europa.ec.cipa.sml.server.exceptions.IllegalHostnameException;
 
 /**
@@ -185,8 +189,8 @@ public final class DNSUtils {
       return null;
     }
 
-    final String sDnsNameLC = sDnsName.toLowerCase ();
-    final String sSuffix = ".publisher." + sSmlZoneName;
+    final String sDnsNameLC = sDnsName.toLowerCase (BusdoxURLUtils.URL_LOCALE);
+    final String sSuffix = "." + CSMLDefault.DNS_PUBLISHER_SUBZONE + sSmlZoneName;
     if (sDnsNameLC.endsWith (sSuffix))
       return sDnsName.substring (0, sDnsName.length () - sSuffix.length ());
 
@@ -199,15 +203,15 @@ public final class DNSUtils {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("isHandledZone : " + sDnsName + " : " + sSmlZoneName);
 
-    return sDnsName.toLowerCase ().endsWith ("." + sSmlZoneName);
+    return sDnsName.toLowerCase (BusdoxURLUtils.URL_LOCALE).endsWith ("." + sSmlZoneName);
   }
 
-  public static void verifyHostname (@Nonnull final String sHostname) throws IllegalHostnameException {
+  public static void verifyHostname (@Nonnull @Nonempty final String sHostname) throws IllegalHostnameException {
     if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("verifyHostname : " + sHostname);
+      s_aLogger.debug ("verifyHostname '" + sHostname + "'");
 
-    if (sHostname == null)
-      throw new IllegalHostnameException ("Hostname cannot be 'null'");
+    if (StringHelper.hasNoText (sHostname))
+      throw new IllegalHostnameException ("Hostname cannot be empty");
 
     if (sHostname.length () > 253)
       throw new IllegalHostnameException ("Hostname total length > 253 : " + sHostname + " : " + sHostname.length ());
@@ -221,7 +225,7 @@ public final class DNSUtils {
         throw new IllegalHostnameException ("Hostname part length > 63 : " + sHostname);
   }
 
-  public static boolean isValidHostname (final String sHostname) {
+  public static boolean isValidHostname (@Nullable final String sHostname) {
     try {
       verifyHostname (sHostname);
       return true;

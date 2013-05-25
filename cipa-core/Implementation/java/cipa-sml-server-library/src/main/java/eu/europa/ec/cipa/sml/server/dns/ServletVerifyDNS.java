@@ -480,25 +480,25 @@ public class ServletVerifyDNS extends HttpServlet {
 
   @SuppressWarnings ("unused")
   private static void _deleteAllDNSRecords () throws IOException, ZoneTransferException, IllegalHostnameException {
-    final IDNSClient dnsClient = DNSClientFactory.getInstance ();
+    final IDNSClient aDnsClient = DNSClientFactory.getInstance ();
 
-    final List <Record> records = dnsClient.getAllRecords ();
+    final List <Record> records = aDnsClient.getAllRecords ();
     for (final Record record : records) {
       final String name = record.getName ().toString ();
       if (record.getType () == Type.NS || record.getType () == Type.SOA) {
         s_aLogger.debug ("SOA / NS : " + name);
         continue;
       }
-      final ParticipantIdentifierType pi = dnsClient.getIdentifierFromDnsName (name);
+      final ParticipantIdentifierType pi = aDnsClient.getIdentifierFromDnsName (name);
       if (pi != null) {
         s_aLogger.debug ("PI : " + name);
         // dnsClient.deleteZoneRecord (name);
       }
       else
-        if (dnsClient.getPublisherAnchorFromDnsName (name) != null) {
+        if (aDnsClient.getPublisherAnchorFromDnsName (name) != null) {
           s_aLogger.debug ("ANCHOR : " + name);
-          final String anchor = dnsClient.getPublisherAnchorFromDnsName (name);
-          dnsClient.deletePublisherAnchor (anchor);
+          final String anchor = aDnsClient.getPublisherAnchorFromDnsName (name);
+          aDnsClient.deletePublisherAnchor (anchor);
         }
         else {
           s_aLogger.debug ("OTHER RECORD : " + name);

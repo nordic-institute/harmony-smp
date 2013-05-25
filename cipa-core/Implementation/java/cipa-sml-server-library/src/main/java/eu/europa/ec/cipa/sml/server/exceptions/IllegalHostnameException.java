@@ -44,4 +44,8 @@ public class IllegalHostnameException extends AbstractSMLException {
   public IllegalHostnameException (final String sMsg) {
     super (sMsg);
   }
+
+  public IllegalHostnameException (final String sMsg, final Throwable t) {
+    super (sMsg, t);
+  }
 }

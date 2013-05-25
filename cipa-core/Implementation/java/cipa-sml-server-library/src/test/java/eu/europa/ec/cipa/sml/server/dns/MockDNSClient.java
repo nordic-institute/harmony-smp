@@ -46,20 +46,20 @@ import org.xbill.DNS.Resolver;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 final class MockDNSClient extends DNSClientImpl {
-  private final MockDNSResolver m_aResolver;
+  private final MockDNSResolver m_aMockResolver;
 
   public MockDNSClient (final String sServerName, final String sDNSZoneName, final String sSMLZoneName, final int nTTL) {
     super (sServerName, sDNSZoneName, sSMLZoneName, nTTL);
-    m_aResolver = new MockDNSResolver (getDNSZoneName ());
+    m_aMockResolver = new MockDNSResolver (getDNSZoneName ());
   }
 
   @Override
-  protected Resolver getResolver () {
-    return m_aResolver;
+  protected Resolver createResolver () {
+    return m_aMockResolver;
   }
 
   @Override
   public List <Record> getAllRecords () {
-    return m_aResolver.getAllRecords ();
+    return m_aMockResolver.getAllRecords ();
   }
 }
