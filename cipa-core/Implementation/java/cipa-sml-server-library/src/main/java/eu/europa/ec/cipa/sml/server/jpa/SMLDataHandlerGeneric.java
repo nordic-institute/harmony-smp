@@ -183,6 +183,6 @@ public final class SMLDataHandlerGeneric extends JPAEnabledManager implements IG
       }
     }).get ();
     if (aDBUser == null)
-      throw new UnknownUserException ();
+      throw new UnknownUserException (sClientUniqueID);
   }
 }

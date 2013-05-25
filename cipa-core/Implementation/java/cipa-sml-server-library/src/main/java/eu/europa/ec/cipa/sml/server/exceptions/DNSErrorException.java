@@ -41,8 +41,8 @@ package eu.europa.ec.cipa.sml.server.exceptions;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public class DNSErrorException extends AbstractSMLRuntimeException {
-  public DNSErrorException (final String string) {
-    super (string);
+  public DNSErrorException (final String sMsg) {
+    super (sMsg);
   }
 
   public DNSErrorException (final Throwable t) {

@@ -41,7 +41,7 @@ package eu.europa.ec.cipa.sml.server.exceptions;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public class IllegalHostnameException extends AbstractSMLException {
-  public IllegalHostnameException (final String m) {
-    super (m);
+  public IllegalHostnameException (final String sMsg) {
+    super (sMsg);
   }
 }

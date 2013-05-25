@@ -43,7 +43,7 @@ package eu.europa.ec.cipa.sml.server.exceptions;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public class NotFoundException extends AbstractSMLException {
-  public NotFoundException (final String string) {
-    super (string);
+  public NotFoundException (final String sMsg) {
+    super (sMsg);
   }
 }

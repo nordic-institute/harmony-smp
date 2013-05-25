@@ -43,7 +43,7 @@ package eu.europa.ec.cipa.sml.server.exceptions;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public class UnauthorizedException extends AbstractSMLException {
-  public UnauthorizedException (final String desc) {
-    super (desc);
+  public UnauthorizedException (final String sMsg) {
+    super (sMsg);
   }
 }
