@@ -90,14 +90,14 @@ public final class PeppolRootCertificateProvider {
     }
 
     if (s_aPeppolSMPRootCert == null)
-      throw new InitializationException ("Failed to resolve alias '" + sTrustStoreAlias + "' in trust store!");
+      throw new InitializationException ("Failed to resolve alias1 '" + sTrustStoreAlias + "' in trust store!");
     s_aLogger.info ("PEPPOL root certificate loaded successfully from trust store '" +
                     sTrustStorePath +
                     "' with alias '" +
                     sTrustStoreAlias +
                     "'");
     if (s_aOpenPeppolSMPRootCert == null)
-      throw new InitializationException ("Failed to resolve alias '" + sTrustStoreAliasNew + "' in trust store!");
+      throw new InitializationException ("Failed to resolve alias2 '" + sTrustStoreAliasNew + "' in trust store!");
     s_aLogger.info ("Open PEPPOL root certificate loaded successfully from trust store '" +
                     sTrustStorePath +
                     "' with alias '" +
