@@ -552,11 +552,19 @@ public class AccessPointService {
         if (eOverallSuccess.isFailure ()) {
           bFailure = true;
           s_aLogger.error (sMessageID + " Failed to handle incoming document from PEPPOL");
+          
+          //EDELIVERY-108: in case the error comes from  duplicate message ID, give some details
+          if (aProcessingMessages != null && !aProcessingMessages.isEmpty() && aProcessingMessages.get(0).getThrowable().getMessage().startsWith("Cannot create new metadata file for message ID"))
+          {
+              throw ExceptionUtils.createFaultMessage (new IllegalStateException (sMessageID + " Duplicate message ID: another message with the same ID was already sent to this channel"), "Internal error in processing the incoming PEPPOL document");
+          }
+          //in the rest of cases
+          else
           throw ExceptionUtils.createFaultMessage (new IllegalStateException (sMessageID +
                                                                               " Failure in processing document from PEPPOL"),
                                                    "Internal error in processing the incoming PEPPOL document");
         }
-
+        
         // Log success
         s_aLogger.info (sMessageID + " Done handling incoming document via START");
       }
