@@ -41,6 +41,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Resource;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
+import javax.persistence.RollbackException;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.WebServiceContext;
 
@@ -125,6 +126,15 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
       final FaultType faultInfo = m_aObjFactory.createFaultType ();
       faultInfo.setFaultMessage (e.getMessage ());
       throw new BadRequestFault (e.getMessage (), faultInfo, e);
+    }
+    //EDELIVERY-118: in case it´s because of a duplicate entry, give a better detailed message response
+    if (e instanceof RollbackException) {
+        final FaultType faultInfo = m_aObjFactory.createFaultType ();
+        String message = e.getMessage ();
+        if (message.contains("Duplicate entry"))
+        	message = message.substring(0, message.indexOf("Error Code:"));
+        faultInfo.setFaultMessage (message);
+        throw new BadRequestFault (message, faultInfo, e);
     }
     // All others as internal errors
     final FaultType faultInfo = m_aObjFactory.createFaultType ();
