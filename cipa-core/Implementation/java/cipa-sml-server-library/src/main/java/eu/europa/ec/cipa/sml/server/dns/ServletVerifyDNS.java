@@ -419,7 +419,7 @@ public class ServletVerifyDNS extends HttpServlet {
         do {
           final ParticipantIdentifierPageType aParticipantIDPage = aGenericHandler.listParticipantIdentifiers (sNextPageIdentifier,
                                                                                                                sSMPID);
-          _infoLog (aOS, " - # of identifiers: " + aParticipantIDPage.getParticipantIdentifier() == null ? "0" : String.valueOf(aParticipantIDPage.getParticipantIdentifier().size()));
+          _infoLog (aOS, " - # of identifiers: " + aParticipantIDPage.getParticipantIdentifierCount ());
           for (final ParticipantIdentifierType aParticipantID : aParticipantIDPage.getParticipantIdentifier ())
             _verifyDBParticipantIdentifier (aOS, aDNSClient, sSMPID, aParticipantID);
 
