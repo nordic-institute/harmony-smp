@@ -9,8 +9,6 @@ import java.util.logging.Level;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.HelpFormatter;
@@ -27,6 +25,8 @@ import com.phloc.commons.charset.CCharset;
 import com.phloc.commons.io.streams.NonBlockingStringWriter;
 import com.phloc.commons.io.streams.StringInputStream;
 import com.phloc.commons.lang.CGStringHelper;
+import com.phloc.commons.xml.XMLFactory;
+import com.phloc.commons.xml.serialize.XMLReader;
 
 import eu.europa.ec.cipa.busdox.CBusDox;
 import eu.europa.ec.cipa.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
@@ -185,11 +185,18 @@ public class StartClientConsole {
       System.out.println (aSW);
       System.exit (-3);
     }
+
     IMessageMetadata md = null;
+    Document d = null;
 
     if (cmd.hasOption ("ping") && Boolean.parseBoolean (cmd.getOptionValue ("ping"))) {
       System.out.println ("Sending Ping Messsage");
       md = _createPingMetadata ();
+
+      // Create a ping document
+      d = XMLFactory.newDocument ();
+      // start is the namespace URi :)
+      d.appendChild (d.createElementNS ("start", "Ping"));
     }
     else {
       final ParticipantIdentifierType aSender = SimpleParticipantIdentifier.createWithDefaultScheme (cmd.getOptionValue ('s'));
@@ -207,12 +214,12 @@ public class StartClientConsole {
       }
 
       md = new MessageMetadata (sMessageID, "test-channel", aSender, aRecipient, aDocumentType, aProcessIdentifier);
-
+      final File f = new File (cmd.getOptionValue ("dpath"));
+      d = XMLReader.readXMLDOM (f);
+      if (d == null)
+        throw new IllegalArgumentException ("Failed to read XML document from " + f);
     }
 
-    final File f = new File (cmd.getOptionValue ("dpath"));
-    final DocumentBuilder builder = DocumentBuilderFactory.newInstance ().newDocumentBuilder ();
-    final Document d = builder.parse (f);
     String apURL = null;
     switch (mode) {
       case DIRECT_AP:
@@ -227,10 +234,6 @@ public class StartClientConsole {
         apURL = _getAccessPointUrl (md);
         AccessPointClient.send (apURL, md, d);
         break;
-      default:
-        break;
     }
-
   }
-
 }
