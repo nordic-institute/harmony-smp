@@ -187,7 +187,8 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager implement
 
     // Check that the user owns the identifier
     if (!aDBIdentifier.getServiceMetadataPublisher ().getUser ().getUsername ().equals (sClientUniqueID))
-      throw new UnauthorizedException ("The user does not own the identifier " + aParticipantID);
+      throw new UnauthorizedException ("The user does not own the identifier " +
+                                       IdentifierUtils.getIdentifierURIEncoded (aParticipantID));
 
     // Remove from SMP as well
     final DBServiceMetadataPublisher aSMP = aDBIdentifier.getServiceMetadataPublisher ();
@@ -230,7 +231,8 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager implement
 
         // Check that the user owns the identifier
         if (!aDBIdentifier.getServiceMetadataPublisher ().getUser ().getUsername ().equals (sClientUniqueID))
-          throw new UnauthorizedException ("The user does not own the identifier " + aParticipantID.toString ());
+          throw new UnauthorizedException ("The user does not own the identifier " +
+                                           IdentifierUtils.getIdentifierURIEncoded (aParticipantID));
 
         // Update entry, if already present - this solution seems to be a more
         // appealing fix for EDELIVERY-118
@@ -252,9 +254,7 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager implement
                                                                                 new DBParticipantIdentifierID (aParticipantID));
         if (aDBIdentifier == null)
           throw new NotFoundException ("The participant identifier '" +
-                                       aParticipantID.getScheme () +
-                                       "::" +
-                                       aParticipantID.getValue () +
+                                       IdentifierUtils.getIdentifierURIEncoded (aParticipantID) +
                                        "' was not registered in the SML.");
 
         // Get the old SMP
