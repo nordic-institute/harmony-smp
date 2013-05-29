@@ -55,6 +55,8 @@ import org.busdox.servicemetadata.manageservicemetadataservice._1.UnauthorizedFa
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.xml.ws.developer.SchemaValidation;
+
 import eu.europa.ec.cipa.sml.server.IRequestAuthenticationHandler;
 import eu.europa.ec.cipa.sml.server.ISMPDataHandler;
 import eu.europa.ec.cipa.sml.server.exceptions.BadRequestException;
@@ -70,7 +72,7 @@ import eu.europa.ec.cipa.sml.server.web.WebRequestClientIdentifier;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-// @SchemaValidation
+@SchemaValidation (outbound = false)
 // We can't use this, since the XMLDSIG isn't set until in the handlers.
 @WebService (serviceName = "ManageServiceMetadataService",
              portName = "ManageServiceMetadataServicePort",
