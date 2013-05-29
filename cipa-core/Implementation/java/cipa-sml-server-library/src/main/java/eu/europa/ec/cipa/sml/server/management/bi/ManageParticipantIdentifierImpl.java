@@ -127,16 +127,10 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
       faultInfo.setFaultMessage (e.getMessage ());
       throw new BadRequestFault (e.getMessage (), faultInfo, e);
     }
-    // EDELIVERY-118: in case it´s because of a duplicate entry, give a better
-    // detailed message response
     if (e instanceof RollbackException) {
       final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      String message = e.getMessage ();
-      // FIXME this is very bad practice, to rely on exception texts!
-      if (message.contains ("Duplicate entry"))
-        message = message.substring (0, message.indexOf ("Error Code:"));
-      faultInfo.setFaultMessage (message);
-      throw new BadRequestFault (message, faultInfo, e);
+      faultInfo.setFaultMessage (e.getMessage ());
+      throw new BadRequestFault (e.getMessage (), faultInfo, e);
     }
     // All others as internal errors
     final FaultType faultInfo = m_aObjFactory.createFaultType ();
