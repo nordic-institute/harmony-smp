@@ -557,18 +557,20 @@ public class AccessPointService {
         if (eOverallSuccess.isFailure ()) {
           bFailure = true;
 
+          // Assemble all errors messages
           final StringBuilder aProcessingDetails = new StringBuilder ();
-          for (final LogMessage aLogMsg : aProcessingMessages) {
-            if (aProcessingDetails.length () > 0)
-              aProcessingDetails.append (CGlobal.LINE_SEPARATOR);
+          for (final LogMessage aLogMsg : aProcessingMessages)
+            if (aLogMsg.isError ()) {
+              if (aProcessingDetails.length () > 0)
+                aProcessingDetails.append (CGlobal.LINE_SEPARATOR);
 
-            aProcessingDetails.append ('[')
-                              .append (aLogMsg.getErrorLevel ().getID ())
-                              .append ("] ")
-                              .append (aLogMsg.getMessage ());
-            if (aLogMsg.getThrowable () != null)
-              aProcessingDetails.append (' ').append (aLogMsg.getThrowable ().getMessage ());
-          }
+              aProcessingDetails.append ('[')
+                                .append (aLogMsg.getErrorLevel ().getID ())
+                                .append ("] ")
+                                .append (aLogMsg.getMessage ());
+              if (aLogMsg.getThrowable () != null)
+                aProcessingDetails.append (' ').append (aLogMsg.getThrowable ().getMessage ());
+            }
 
           throw ExceptionUtils.createFaultMessage (sMessageID +
                                                        " Internal error in processing the incoming PEPPOL document via START",
