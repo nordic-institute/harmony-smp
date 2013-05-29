@@ -232,7 +232,10 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager implement
         if (!aDBIdentifier.getServiceMetadataPublisher ().getUser ().getUsername ().equals (sClientUniqueID))
           throw new UnauthorizedException ("The user does not own the identifier " + aParticipantID.toString ());
 
-        getEntityManager ().persist (new DBMigrate (new DBMigrateID (aMigrationRecord)));
+        // Update entry, if already present - this solution seems to be a more
+        // appealing fix for EDELIVERY-118
+        final DBMigrate aMigrate = new DBMigrate (new DBMigrateID (aMigrationRecord));
+        getEntityManager ().merge (aMigrate);
       }
     });
     if (ret.hasThrowable ())

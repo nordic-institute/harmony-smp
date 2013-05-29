@@ -414,6 +414,9 @@ public final class SMLDataHandlerParticipantTest {
 
     s_aParticipantHandler.prepareToMigrate (migrationRecord, CLIENT_UNIQUE_ID);
 
+    // Create the same migration record (as test for EDELIVERY-118)
+    s_aParticipantHandler.prepareToMigrate (migrationRecord, CLIENT_UNIQUE_ID);
+
     migrationRecord.setServiceMetadataPublisherID (SMP_ID2);
     s_aParticipantHandler.migrate (migrationRecord, CLIENT_UNIQUE_ID2);
 
