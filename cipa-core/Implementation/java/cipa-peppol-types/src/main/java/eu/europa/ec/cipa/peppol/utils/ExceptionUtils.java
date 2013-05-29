@@ -38,6 +38,7 @@
 package eu.europa.ec.cipa.peppol.utils;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import org.busdox._2010._02.channel.fault.StartException;
@@ -61,26 +62,41 @@ public final class ExceptionUtils {
   /**
    * Create a {@link StartException} from an existing {@link Throwable}.
    * 
-   * @param t
-   *        The throwable to be converted. May not be <code>null</code>.
    * @param sAction
    *        The action describing what went wrong.
+   * @param t
+   *        The throwable to be converted. May be <code>null</code>.
    * @return The newly created {@link StartException} object. Never
    *         <code>null</code>.
    */
   @Nonnull
-  public static StartException createStartException (@Nonnull final Throwable t, @Nonnull final String sAction) {
+  public static StartException createStartException (@Nonnull final String sAction,
+                                                     @Nonnull final String sDetails,
+                                                     @Nullable final Throwable t) {
     final StartException aStartEx = new StartException ();
     aStartEx.setAction (sAction);
     aStartEx.setFaultcode (t instanceof Exception ? "exception" : "error");
-    aStartEx.setFaultstring (t.getMessage ());
-    aStartEx.setDetails (StackTraceHelper.getStackAsString (t));
+    aStartEx.setFaultstring (t != null ? t.getMessage () : sAction);
+    aStartEx.setDetails (sDetails);
     return aStartEx;
   }
 
   @Nonnull
-  public static FaultMessage createFaultMessage (@Nonnull final Throwable t, @Nonnull final String sAction) {
+  public static FaultMessage createFaultMessage (@Nonnull final String sAction) {
+    return createFaultMessage (sAction, (String) null);
+  }
+
+  @Nonnull
+  public static FaultMessage createFaultMessage (@Nonnull final String sAction, @Nullable final String sDetails) {
+    s_aLogger.warn ("Will throw FaultMessage: " + sAction);
+    return new FaultMessage (sAction, createStartException (sAction,
+                                                            sDetails != null ? sDetails : sAction,
+                                                            (Throwable) null));
+  }
+
+  @Nonnull
+  public static FaultMessage createFaultMessage (@Nonnull final String sAction, @Nonnull final Throwable t) {
     s_aLogger.warn ("Will throw FaultMessage: " + sAction + " caused by " + t.getMessage ());
-    return new FaultMessage (sAction, createStartException (t, sAction));
+    return new FaultMessage (sAction, createStartException (sAction, StackTraceHelper.getStackAsString (t), t));
   }
 }

@@ -92,6 +92,7 @@ import com.phloc.commons.io.misc.SizeHelper;
 import com.phloc.commons.lang.ClassHelper;
 import com.phloc.commons.lang.ServiceLoaderUtils;
 import com.phloc.commons.log.LogMessage;
+import com.phloc.commons.log.LogUtils;
 import com.phloc.commons.state.ESuccess;
 import com.phloc.commons.state.impl.SuccessWithValue;
 import com.phloc.commons.stats.IStatisticsHandlerCounter;
@@ -248,9 +249,10 @@ public class AccessPointService {
       return aSMPClient.getEndpoint (aRecipientID, aMetadata.getDocumentTypeID (), aMetadata.getProcessID ());
     }
     catch (final Throwable t) {
-      throw ExceptionUtils.createFaultMessage (t, sMessageID +
-                                                  " Failed to retrieve endpoint of recipient " +
-                                                  aRecipientID.getURIEncoded ());
+      throw ExceptionUtils.createFaultMessage (sMessageID +
+                                                   " Failed to retrieve endpoint of recipient " +
+                                                   aRecipientID.getURIEncoded (),
+                                               t);
     }
   }
 
@@ -275,12 +277,12 @@ public class AccessPointService {
       s_aLogger.error (sMessageID + "    Our URL is: " + sOwnAPUrl);
 
       // Avoid endless loop
-      throw ExceptionUtils.createFaultMessage (new IllegalStateException (sMessageID +
-                                                                          " Receiver(" +
-                                                                          sRecipientAPUrl +
-                                                                          ") invalid for us (" +
-                                                                          sOwnAPUrl +
-                                                                          ")"), "The received document is not for us!");
+      throw ExceptionUtils.createFaultMessage (sMessageID +
+                                               " Internal error: The request is targeted for '" +
+                                               sRecipientAPUrl +
+                                               "' and is not for us (" +
+                                               sOwnAPUrl +
+                                               ")");
     }
   }
 
@@ -329,10 +331,10 @@ public class AccessPointService {
       // registered
       // in an SMP
       if (!GlobalDebug.isDebugMode ())
-        throw ExceptionUtils.createFaultMessage (t, sMessageID +
-                                                    " Failed to convert endpoint certificate string '" +
-                                                    sCertString +
-                                                    "'");
+        throw ExceptionUtils.createFaultMessage (sMessageID +
+                                                 " Internal error: Failed to convert endpoint certificate string '" +
+                                                 sCertString +
+                                                 "'", t);
     }
 
     if (aRecipientSMPCert == null)
@@ -349,9 +351,8 @@ public class AccessPointService {
                        ") does not match Access Point Certificate (" +
                        s_aConfiguredCert +
                        ") - ignoring document");
-      throw ExceptionUtils.createFaultMessage (new IllegalStateException (sMessageID +
-                                                                          " Metadata Certificate does not match AP Certificate - ignoring document"),
-                                               "Internal error: certificate mismatch!");
+      throw ExceptionUtils.createFaultMessage (sMessageID +
+                                               " Internal error: Metadata Certificate does not match AP Certificate");
     }
 
     if (s_aLogger.isDebugEnabled ())
@@ -540,33 +541,42 @@ public class AccessPointService {
           // Log all messages from processing in a structured and aggregated way
           s_aLogger.info (sMessageID +
                           " Messages from " +
-                          (eOverallSuccess.isSuccess () ? "successfuly" : "failed") +
-                          " processing of document " +
-                          aMetadata.getMessageID () +
-                          ":");
-          for (final LogMessage aLogMsg : aProcessingMessages)
-            s_aLogger.info (sMessageID + "  [" + aLogMsg.getErrorLevel ().getID () + "] " + aLogMsg.getMessage (),
-                            aLogMsg.getThrowable ());
+                          (eOverallSuccess.isSuccess () ? "successfully" : "failed") +
+                          " processing of START message with " +
+                          s_aReceivers.size () +
+                          "receivers:");
+          for (final LogMessage aLogMsg : aProcessingMessages) {
+            // Log with the correct error level
+            LogUtils.log (s_aLogger,
+                          aLogMsg.getErrorLevel (),
+                          String.valueOf (aLogMsg.getMessage ()),
+                          aLogMsg.getThrowable ());
+          }
         }
 
         if (eOverallSuccess.isFailure ()) {
           bFailure = true;
-          s_aLogger.error (sMessageID + " Failed to handle incoming document from PEPPOL");
-          
-          //EDELIVERY-108: in case the error comes from  duplicate message ID, give some details
-          if (aProcessingMessages != null && !aProcessingMessages.isEmpty() && aProcessingMessages.get(0).getThrowable().getMessage().startsWith("Cannot create new metadata file for message ID"))
-          {
-              throw ExceptionUtils.createFaultMessage (new IllegalStateException (sMessageID + " Duplicate message ID: another message with the same ID was already sent to this channel"), "Internal error in processing the incoming PEPPOL document");
+
+          final StringBuilder aProcessingDetails = new StringBuilder ();
+          for (final LogMessage aLogMsg : aProcessingMessages) {
+            if (aProcessingDetails.length () > 0)
+              aProcessingDetails.append (CGlobal.LINE_SEPARATOR);
+
+            aProcessingDetails.append ('[')
+                              .append (aLogMsg.getErrorLevel ().getID ())
+                              .append ("] ")
+                              .append (aLogMsg.getMessage ());
+            if (aLogMsg.getThrowable () != null)
+              aProcessingDetails.append (' ').append (aLogMsg.getThrowable ().getMessage ());
           }
-          //in the rest of cases
-          else
-          throw ExceptionUtils.createFaultMessage (new IllegalStateException (sMessageID +
-                                                                              " Failure in processing document from PEPPOL"),
-                                                   "Internal error in processing the incoming PEPPOL document");
+
+          throw ExceptionUtils.createFaultMessage (sMessageID +
+                                                       " Internal error in processing the incoming PEPPOL document via START",
+                                                   aProcessingDetails.toString ());
         }
-        
+
         // Log success
-        s_aLogger.info (sMessageID + " Done handling incoming document via START");
+        s_aLogger.info (sMessageID + " Successfully handled incoming document via START.");
       }
 
       if (GlobalDebug.isDebugMode ())
