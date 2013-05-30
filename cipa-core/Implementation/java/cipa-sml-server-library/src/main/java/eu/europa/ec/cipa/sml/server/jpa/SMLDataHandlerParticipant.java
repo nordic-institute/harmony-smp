@@ -43,6 +43,7 @@ import java.util.concurrent.Callable;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
+import javax.persistence.Query;
 
 import org.busdox.servicemetadata.locator._1.MigrationRecordType;
 import org.busdox.servicemetadata.locator._1.ObjectFactory;
@@ -236,8 +237,19 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager implement
 
         // Update entry, if already present - this solution seems to be a more
         // appealing fix for EDELIVERY-118
+        //JLB: this doesn´t merge with other rows containing same Participant but different MigrationCode, as in the DB the 3 columns are primary keys
+        //final DBMigrate aMigrate = new DBMigrate (new DBMigrateID (aMigrationRecord));
+        //getEntityManager ().merge (aMigrate);
+        
+        //alternative solution: first we delete the row with similar Participant (in case that exists)
+        Query query = getEntityManager ().createNativeQuery("DELETE FROM sml_migrate WHERE recipient_participant_identifier_scheme = ?1 AND recipient_participant_identifier_value = ?2");
+        query.setParameter(1, aMigrationRecord.getParticipantIdentifier().getScheme());
+        query.setParameter(2, aMigrationRecord.getParticipantIdentifier().getValue());
+        query.executeUpdate();
+        //and now we make the actual insert
         final DBMigrate aMigrate = new DBMigrate (new DBMigrateID (aMigrationRecord));
-        getEntityManager ().merge (aMigrate);
+        getEntityManager ().persist (aMigrate);
+        
       }
     });
     if (ret.hasThrowable ())
