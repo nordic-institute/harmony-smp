@@ -186,7 +186,9 @@ public final class SAMLCallbackHandler implements CallbackHandler {
     // According to EDELIVERY-112 it should by a real cryptographic value
     final byte [] aRandom = new byte [128];
     VerySecureRandom.getInstance ().nextBytes (aRandom);
-    final String sAssertionID = SAML_ID_PREFIX + Base64.encode (aRandom);
+    String sAssertionID = SAML_ID_PREFIX + Base64.encode (aRandom);
+    //EDELIVERY-130: quick fix to problem of sAssertionID always containing two '\n' at the same position [82] and [159] and hence failing later when we try to sign with it.
+    sAssertionID = sAssertionID.replace("\n", "+");
     aSamlCallback.setAssertionId (sAssertionID);
 
     GregorianCalendar aCal = new GregorianCalendar ();
