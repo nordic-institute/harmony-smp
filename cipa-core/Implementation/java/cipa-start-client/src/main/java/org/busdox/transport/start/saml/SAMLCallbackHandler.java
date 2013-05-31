@@ -147,7 +147,7 @@ public final class SAMLCallbackHandler implements CallbackHandler {
    *         of the Callbacks specified in the callbacks parameter.
    */
   @Override
-  public void handle (final Callback [] aCallbacks) throws IOException, UnsupportedCallbackException {
+  public void handle (@Nonnull final Callback [] aCallbacks) throws IOException, UnsupportedCallbackException {
     for (final Callback aCallback : aCallbacks) {
       if (aCallback instanceof SAMLCallback) {
         try {
@@ -227,7 +227,7 @@ public final class SAMLCallbackHandler implements CallbackHandler {
 
     final AuthnStatement aStatement = aSAMLFactory.createAuthnStatement (aIssueInstant, null, aCtx, null, null);
     aStatements.add (aStatement);
-    aStatements.add (_getAussuranceLevelStatement (SAML_ASSURANCE_LEVEL, aSAMLFactory));
+    aStatements.add (_getAssuranceLevelStatement (SAML_ASSURANCE_LEVEL, aSAMLFactory));
     final Conditions aConditions = aSAMLFactory.createConditions (aBefore, aAfter, null, null, null, null);
     final Assertion aAssertion = aSAMLFactory.createAssertion (sAssertionID,
                                                                aAccessPointNameID,
@@ -260,8 +260,8 @@ public final class SAMLCallbackHandler implements CallbackHandler {
    * @throws SAMLException
    *         Throws a SAMLException.
    */
-  private static AttributeStatement _getAussuranceLevelStatement (final String sAssuranceLevel,
-                                                                  final SAMLAssertionFactory aSAMLFactory) throws SAMLException {
+  private static AttributeStatement _getAssuranceLevelStatement (final String sAssuranceLevel,
+                                                                 final SAMLAssertionFactory aSAMLFactory) throws SAMLException {
     return aSAMLFactory.createAttributeStatement (ContainerHelper.newList (aSAMLFactory.createAttribute (ATTRIBUTE_NAME,
                                                                                                          ATTRIBUTE_NAMESPACE,
                                                                                                          ContainerHelper.newList (sAssuranceLevel))));
