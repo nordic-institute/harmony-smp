@@ -320,6 +320,7 @@ resource instances.
       </xs:documentation>
     </xs:annotation>
     <xs:sequence>
+      <!-- TODO processContents="skip" will be added after 1.1.0 -->
       <xs:any />
     </xs:sequence>
   </xs:complexType>
