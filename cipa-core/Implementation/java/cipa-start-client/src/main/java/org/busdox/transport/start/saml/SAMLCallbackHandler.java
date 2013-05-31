@@ -190,7 +190,7 @@ public final class SAMLCallbackHandler implements CallbackHandler {
     // EDELIVERY-130: quick fix to problem of sAssertionID always containing two
     // '\n' at the same position [82] and [159] and hence failing later when we
     // try to sign with it.
-    sAssertionID = sAssertionID.replace ("\n", "+");
+    sAssertionID = sAssertionID.replace ('\n', '+');
     aSamlCallback.setAssertionId (sAssertionID);
 
     GregorianCalendar aCal = new GregorianCalendar ();

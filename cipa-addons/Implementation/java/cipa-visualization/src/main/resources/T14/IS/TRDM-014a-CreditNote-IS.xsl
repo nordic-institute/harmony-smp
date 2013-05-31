@@ -1,6 +1,45 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- Útgáfa 1.02, 4. október 2011 -->
-<!-- Þorkell Pétursson, thorkell.petursson@fjs.is -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Version: MPL 1.1/EUPL 1.1
+
+    The contents of this file are subject to the Mozilla Public License Version
+    1.1 (the "License"); you may not use this file except in compliance with
+    the License. You may obtain a copy of the License at:
+    http://www.mozilla.org/MPL/
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+    for the specific language governing rights and limitations under the
+    License.
+
+    The Original Code is Copyright The PEPPOL project (http://www.peppol.eu)
+
+    Alternatively, the contents of this file may be used under the
+    terms of the EUPL, Version 1.1 or - as soon they will be approved
+    by the European Commission - subsequent versions of the EUPL
+    (the "Licence"); You may not use this work except in compliance
+    with the Licence.
+    You may obtain a copy of the Licence at:
+    http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the Licence is distributed on an "AS IS" basis,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the Licence for the specific language governing permissions and
+    limitations under the Licence.
+
+    If you wish to allow use of your version of this file only
+    under the terms of the EUPL License and not to allow others to use
+    your version of this file under the MPL, indicate your decision by
+    deleting the provisions above and replace them with the notice and
+    other provisions required by the EUPL License. If you do not delete
+    the provisions above, a recipient may use your version of this file
+    under either the MPL or the EUPL License.
+
+-->
+<!-- ÃštgÃ¡fa 1.02, 4. oktÃ³ber 2011 -->
+<!-- Ãžorkell PÃ©tursson, thorkell.petursson@fjs.is -->
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:clm54217="urn:un:unece:uncefact:codelist:specification:54217:2001" xmlns:clm5639="urn:un:unece:uncefact:codelist:specification:5639:1988" xmlns:clm66411="urn:un:unece:uncefact:codelist:specification:66411:2001" xmlns:clmIANAMIMEMediaType="urn:un:unece:uncefact:codelist:specification:IANAMIMEMediaType:2003" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:n1="urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2" xmlns:qdt="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2" xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2" xmlns:xdt="http://www.w3.org/2005/xpath-datatypes" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<xsl:output version="4.0" method="html" indent="no" encoding="ISO-8859-1" media-type="text/html" doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN" doctype-system="http://www.w3.org/TR/html4/loose.dtd"/>
 	<xsl:decimal-format name="IcelandicNumber" decimal-separator="," grouping-separator="."/>
@@ -45,7 +84,7 @@
 							<div id="greidandi" class="leftgreidandi">
 								<xsl:call-template name="Greidandi"/>
 							</div>
-							<!-- Greiðandi -->
+							<!-- GreiÃ°andi -->
 							<div id="haussummur" class="righthaussummur">
 								<xsl:call-template name="Summur"/>
 							</div>
@@ -58,7 +97,7 @@
 							<div id="lysing" class="rightlysing">
 								<xsl:call-template name="Lysing"/>
 							</div><p class="clear" />
-							<!-- Lýsing -->
+							<!-- LÃ½sing -->
 
 						<!-- hausnedri -->
 					</div>
@@ -203,7 +242,7 @@
 			
 		</div>
 	</xsl:template>
-	<!-- Greiðandi -->
+	<!-- GreiÃ°andi -->
 	<xsl:template name="Summur">
 		<div id="haussummurgjalddagi" class="righhaussummurgjalddagi">
 			<div class="dalkfyrirsognbold">IssueDate</div>
@@ -224,12 +263,12 @@
 		</div>
 
 
-		<!-- Til greiðslu -->
+		<!-- Til greiÃ°slu -->
 		<div class="letur1" style="text-align: right">DocumentCurrencyCode:&#160;<xsl:value-of select="cbc:DocumentCurrencyCode"/>&#160;</div>
 	</xsl:template>
 	<!-- Summur -->
 	<xsl:template name="Greidsluupplysingar">
-		<div class="leftgreidsluupplysingarhaus">Tilvísanir í fyrri reikninga:</div>
+		<div class="leftgreidsluupplysingarhaus">TilvÃ­sanir Ã­ fyrri reikninga:</div>
 		<table width="100%" cellspacing="0" cellpadding="3" summary="Totals2" class="ntablenoborder">
 				<tr>
 					<xsl:if test="cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID[.!='']">
@@ -344,7 +383,7 @@
 			</div>
 		</div>
 	</xsl:template>
-	<!-- Lýsing -->
+	<!-- LÃ½sing -->
 	<xsl:template name="Linur">
 		<div>&#160;</div>
 		<div id="linur" class="linur">
@@ -368,11 +407,11 @@
 							<xsl:value-of select="cbc:ID"/>.&#160;
 						</td>
 						<td width="6%" valign="top" align="left" class="hdrcol23" nowrap="nowrap">
-							<!-- vörunúmer -->
+							<!-- vÃ¶runÃºmer -->
 							<xsl:value-of select="cac:Item/cac:SellersItemIdentification/cbc:ID"/>
 						</td>
 						<td width="33%" valign="top" align="left" class="hdrcol23">
-							<!-- Lýsing -->
+							<!-- LÃ½sing -->
 							<xsl:value-of select="cac:Item/cbc:Name"/>
 						</td>
 						<td width="6%" valign="top" align="right" class="hdrcol23" nowrap="nowrap">
@@ -388,7 +427,7 @@
 							</xsl:call-template>
 						</td>
 						<td width="6%" valign="top" align="right" class="hdrcol23" nowrap="nowrap">
-							<!-- Ein.verð*-->
+							<!-- Ein.verÃ°*-->
 							<xsl:call-template name="icenumberdecdef">
 								<xsl:with-param name="text" select="cac:Price/cbc:PriceAmount"/>
 							</xsl:call-template>
@@ -402,13 +441,13 @@
 							<xsl:call-template name="afslatturlinu"/>
 						</td>
 						<td width="11%" valign="top" align="right" class="hdrcol23" nowrap="nowrap">
-							<!-- Upphæð -->
+							<!-- UpphÃ¦Ã° -->
 							<xsl:call-template name="icenumberdecdef">
 								<xsl:with-param name="text" select="cbc:LineExtensionAmount"/>
 							</xsl:call-template>
 						</td>
 						<td width="11%" valign="top" align="right" class="hdrcol23" nowrap="nowrap">
-							<!-- Upphæð m.vsk-->
+							<!-- UpphÃ¦Ã° m.vsk-->
 							<xsl:call-template name="upphaedmvsk"/>
 							<!--<xsl:with-param name="text" select="cac:Price/cbc:PriceAmount"/>-->&#160;
 						</td>
@@ -700,7 +739,7 @@
 </div>
 </xsl:if>
 	</xsl:template>
-	<!-- template tengiliður seljanda-->
+	<!-- template tengiliÃ°ur seljanda-->
 	<xsl:template name="TengilidurKaupanda">
 		<xsl:if test="(cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:FirstName) or (cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:MiddleName) or (cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:FamilyName) or (cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:JobTitle) or (cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:ElectronicMail) or
 (cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:Telephone) or
@@ -773,7 +812,7 @@
 			</div>
 			</xsl:if>
 	</xsl:template>
-	<!-- template tengiliður kaupanda-->
+	<!-- template tengiliÃ°ur kaupanda-->
 	<xsl:template name="AnnadItarupplLinu">
 		<table>
 			<tr height="10">
@@ -797,31 +836,31 @@
 				<tr>
 					<td class="hdrcol23" align="left" nowrap="nowrap">&#160;</td>
 					<td valign="top" align="left" class="hdrcol23" nowrap="nowrap">
-						<!-- vörunúmer -->
+						<!-- vÃ¶runÃºmer -->
 						<xsl:value-of select="cbc:ID"/>
 					</td>
 					<td valign="top" align="left" class="hdrcol23" nowrap="nowrap">
-						<!-- vörunúmer -->
+						<!-- vÃ¶runÃºmer -->
 						<xsl:value-of select="cac:Item/cac:SellersItemIdentification/cbc:ID"/>
 					</td>
 					<td valign="top" align="left" class="hdrcol23">
-						<!-- Lýsing -->
+						<!-- LÃ½sing -->
 						<xsl:value-of select="cac:Item/cac:StandardItemIdentification/cbc:ID"/>
 					</td>
 					<td valign="top" align="left" class="hdrcol23" nowrap="nowrap">
-						<!-- vörunúmer -->
+						<!-- vÃ¶runÃºmer -->
 						<xsl:value-of select="cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode"/>
 					</td>
 					<td valign="top" align="left" class="hdrcol23">
-						<!-- Lýsing -->
+						<!-- LÃ½sing -->
 
 					</td>
 					<td valign="top" align="left" class="hdrcol23" nowrap="nowrap">
-						<!-- vörunúmer -->
+						<!-- vÃ¶runÃºmer -->
 
 					</td>
 					<td valign="top" align="left" class="hdrcol23">
-						<!-- Lýsing -->
+						<!-- LÃ½sing -->
 
 					</td>
 					<td valign="top" align="left" class="hdrcol23"/>
@@ -961,7 +1000,7 @@
 					</tr>
 				</table>
 				<div class="itarupplBig">Attachment:</div>
-				<table class="ntable" cellpadding="1" cellspacing="0" width="100%" summary="Viðhengi" border="0">
+				<table class="ntable" cellpadding="1" cellspacing="0" width="100%" summary="ViÃ°hengi" border="0">
 					<tr height="25">
 						<td width="10%" class="hdrcol22" align="left" nowrap="nowrap">&#160;&#160;ID.</td>
 						<td width="18%" class="hdrcol22" align="left" nowrap="nowrap">Type</td>
@@ -995,7 +1034,7 @@
 			<xsl:otherwise>&#160;</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-	<!-- template höfuðbók -->
+	<!-- template hÃ¶fuÃ°bÃ³k -->
 	<xsl:template name="hofudbok">
 		<xsl:param name="text"/>
 		<xsl:choose>
@@ -1112,10 +1151,10 @@
 		<xsl:param name="afsl" select="cbc:ChargeIndicator"/>
 		<xsl:choose>
 			<xsl:when test="$afsl[.='true']">
-        Gjöld
+        GjÃ¶ld
       </xsl:when>
 			<xsl:when test="$afsl[.='false']">
-        Afsláttur
+        AfslÃ¡ttur
       </xsl:when>
 			<xsl:otherwise/>
 		</xsl:choose>
@@ -1177,8 +1216,8 @@
 			<xsl:when test="$text[.='KGS']">kg</xsl:when>
 			<xsl:when test="$text[.='MTR']">m</xsl:when>
 			<xsl:when test="$text[.='LTR']">l</xsl:when>
-			<xsl:when test="$text[.='MTK']">m²</xsl:when>
-			<xsl:when test="$text[.='MTQ']">m³</xsl:when>
+			<xsl:when test="$text[.='MTK']">mÂ²</xsl:when>
+			<xsl:when test="$text[.='MTQ']">mÂ³</xsl:when>
 			<xsl:when test="$text[.='KMT']">km</xsl:when>
 			<xsl:when test="$text[.='TNE']">t</xsl:when>
 			<xsl:when test="$text[.='KWH']">kWh</xsl:when>

@@ -1,6 +1,45 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
-<!-- Útgáfa 1.61 BII, 15. nóvember 2011 -->
-<!-- Þorkell Pétursson, thorkell.petursson@fjs.is -->
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Version: MPL 1.1/EUPL 1.1
+
+    The contents of this file are subject to the Mozilla Public License Version
+    1.1 (the "License"); you may not use this file except in compliance with
+    the License. You may obtain a copy of the License at:
+    http://www.mozilla.org/MPL/
+
+    Software distributed under the License is distributed on an "AS IS" basis,
+    WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+    for the specific language governing rights and limitations under the
+    License.
+
+    The Original Code is Copyright The PEPPOL project (http://www.peppol.eu)
+
+    Alternatively, the contents of this file may be used under the
+    terms of the EUPL, Version 1.1 or - as soon they will be approved
+    by the European Commission - subsequent versions of the EUPL
+    (the "Licence"); You may not use this work except in compliance
+    with the Licence.
+    You may obtain a copy of the Licence at:
+    http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the Licence is distributed on an "AS IS" basis,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the Licence for the specific language governing permissions and
+    limitations under the Licence.
+
+    If you wish to allow use of your version of this file only
+    under the terms of the EUPL License and not to allow others to use
+    your version of this file under the MPL, indicate your decision by
+    deleting the provisions above and replace them with the notice and
+    other provisions required by the EUPL License. If you do not delete
+    the provisions above, a recipient may use your version of this file
+    under either the MPL or the EUPL License.
+
+-->
+<!-- ÃštgÃ¡fa 1.61 BII, 15. nÃ³vember 2011 -->
+<!-- Ãžorkell PÃ©tursson, thorkell.petursson@fjs.is -->
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:clm54217="urn:un:unece:uncefact:codelist:specification:54217:2001" xmlns:clm5639="urn:un:unece:uncefact:codelist:specification:5639:1988" xmlns:clm66411="urn:un:unece:uncefact:codelist:specification:66411:2001" xmlns:clmIANAMIMEMediaType="urn:un:unece:uncefact:codelist:specification:IANAMIMEMediaType:2003" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:n1="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:qdt="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2" xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2" xmlns:xdt="http://www.w3.org/2005/xpath-datatypes" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	<xsl:output version="4.0" method="html" indent="no" encoding="ISO-8859-1" media-type="text/html" doctype-public="-//W3C//DTD HTML 4.01 Transitional//EN" doctype-system="http://www.w3.org/TR/html4/loose.dtd"/>
 	<xsl:decimal-format name="IcelandicNumber" decimal-separator="," grouping-separator="."/>
@@ -42,7 +81,7 @@
 							<div id="greidandi" class="leftgreidandi">
 								<xsl:call-template name="Greidandi"/>
 							</div>
-							<!-- Greiðandi -->
+							<!-- GreiÃ°andi -->
 							<div id="haussummur" class="righthaussummur">
 								<xsl:call-template name="Summur"/>
 							</div>
@@ -57,7 +96,7 @@
 							<div id="lysing" class="rightlysing">
 								<xsl:call-template name="Lysing"/>
 							</div>
-							<!-- Lýsing -->
+							<!-- LÃ½sing -->
 						</div><p class="clear" />
 						<!-- hausnedri -->
 					<!-- haus -->
@@ -84,7 +123,7 @@
 				</div>
 				<div>
 					<xsl:value-of select="cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:StreetName"/>&#160;<xsl:value-of select="cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:BuildingNumber"/>
-					<xsl:if test="cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:Postbox[.!='']">,&#160;Pósthólf:&#160;<xsl:value-of select="cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:Postbox"/>
+					<xsl:if test="cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:Postbox[.!='']">,&#160;PÃ³sthÃ³lf:&#160;<xsl:value-of select="cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:Postbox"/>
 					</xsl:if>
 				</div>
 				<xsl:choose>
@@ -195,7 +234,7 @@
 			
 		</div>
 	</xsl:template>
-	<!-- Greiðandi -->
+	<!-- GreiÃ°andi -->
 	<xsl:template name="Summur">
 		<div id="haussummurgjalddagi" class="righhaussummurgjalddagi">
 			<div class="dalkfyrirsognbold">Due Date</div>
@@ -241,7 +280,7 @@
 				</div>
 			</xsl:if>
 		</div>
-		<!-- Útgáfudagur reiknings -->
+		<!-- ÃštgÃ¡fudagur reiknings -->
 		<div id="haussummurtilgreidslu" class="righhaussummurtilgreidslu">
 			<div class="dalkfyrirsognbold">PayableAmount</div>
 			<div class="letur9" style="font-weight: bold;text-align: center;">
@@ -250,7 +289,7 @@
 				</xsl:call-template>
 			</div>
 		</div>
-		<!-- Til greiðslu -->
+		<!-- Til greiÃ°slu -->
 		<div class="letur1" style="text-align: right">DocumentCurrencyCode:&#160;<xsl:value-of select="cbc:DocumentCurrencyCode"/>&#160;</div>
 	</xsl:template>
 	<!-- Summur -->
@@ -276,7 +315,7 @@
 				<xsl:call-template name="GreidslumatiAvisun"/>
 			</xsl:when>			
 			<xsl:when test="cac:PaymentMeans/cbc:PaymentMeansCode[.='31']">
-				<!--Hér þarf að greina á milli með IBAN hvort erlend eða innlend millifærsla-->
+				<!--HÃ©r Ã¾arf aÃ° greina Ã¡ milli meÃ° IBAN hvort erlend eÃ°a innlend millifÃ¦rsla-->
 				<!--<xsl:call-template name="GreidslumatiErlendMillifaersla"></xsl:call-template>-->
 				<xsl:choose>
 					<xsl:when test="cac:PaymentMeans/cbc:PaymentChannelCode[.='IBAN']">
@@ -351,11 +390,11 @@
 			</div>
 		</xsl:if>
 	</xsl:template>
-	<!-- Lýsing -->
+	<!-- LÃ½sing -->
 	<xsl:template name="Linur">
 		<div>&#160;</div>
 		<div id="linur" class="linur">
-			<table width="100%" cellspacing="0" cellpadding="3" class="ntable" summary="Línur á reikningi">
+			<table width="100%" cellspacing="0" cellpadding="3" class="ntable" summary="LÃ­nur Ã¡ reikningi">
 				<tr height="25">
 					<td width="4%" class="hdrcol22" align="right" nowrap="nowrap">&#160;</td>
 					<td width="6%" class="hdrcol22" align="left" nowrap="nowrap">ItemID.</td>
@@ -375,11 +414,11 @@
 							<xsl:value-of select="cbc:ID"/>.&#160;
 						</td>
 						<td width="6%" valign="top" align="left" class="hdrcol23" nowrap="nowrap">
-							<!-- vörunúmer -->
+							<!-- vÃ¶runÃºmer -->
 							<xsl:value-of select="cac:Item/cac:SellersItemIdentification/cbc:ID"/>
 						</td>
 						<td width="33%" valign="top" align="left" class="hdrcol23">
-							<!-- Lýsing -->
+							<!-- LÃ½sing -->
 							<xsl:value-of select="cac:Item/cbc:Name"/>
 						</td>
 						<td width="6%" valign="top" align="right" class="hdrcol23" nowrap="nowrap">
@@ -395,7 +434,7 @@
 							</xsl:call-template>
 						</td>
 						<td width="6%" valign="top" align="right" class="hdrcol23" nowrap="nowrap">
-							<!-- Ein.verð*-->
+							<!-- Ein.verÃ°*-->
 							<xsl:call-template name="icenumberdecdef">
 								<xsl:with-param name="text" select="cac:Price/cbc:PriceAmount"/>
 							</xsl:call-template>
@@ -409,13 +448,13 @@
 							<xsl:call-template name="afslatturlinu"/>
 						</td>
 						<td width="11%" valign="top" align="right" class="hdrcol23" nowrap="nowrap">
-							<!-- Upphæð -->
+							<!-- UpphÃ¦Ã° -->
 							<xsl:call-template name="icenumberdecdef">
 								<xsl:with-param name="text" select="cbc:LineExtensionAmount"/>
 							</xsl:call-template>
 						</td>
 						<td width="11%" valign="top" align="right" class="hdrcol23" nowrap="nowrap">
-							<!-- Upphæð m.vat-->
+							<!-- UpphÃ¦Ã° m.vat-->
 							<xsl:call-template name="upphaedmvsk"/>
 							<!--<xsl:with-param name="text" select="cac:Price/cbc:PriceAmount"/>-->&#160;
 						</td>
@@ -525,7 +564,7 @@
 <xsl:template name="SkattarOgAfslnytt">
 <div class="vsksamantekt">
 						<div class="hdrcolSmall" align="left" nowrap="nowrap">&#160;&#160;&#160;&#160;No. of lines: <xsl:value-of select='format-number(count(cac:InvoiceLine/cbc:ID), "###.###", "IcelandicNumber")'/>&#160;&#160;&#160;&#160;&#160;&#160;&#160;*Unit Price is excluding VAT.</div><br/>
-						<table width="100%" cellspacing="0" cellpadding="2" class="ntable" summary="Skattar samtölur">
+						<table width="100%" cellspacing="0" cellpadding="2" class="ntable" summary="Skattar samtÃ¶lur">
 							<thead>
 								<tr height="25">
 									<td align="right" class="hdrcol22" colspan="3">VAT Category / %.</td>
@@ -735,7 +774,7 @@
 </div>
 </xsl:if>
 	</xsl:template>
-	<!-- template tengiliður seljanda-->
+	<!-- template tengiliÃ°ur seljanda-->
 	<xsl:template name="TengilidurKaupanda">
 		<xsl:if test="(cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:FirstName) or (cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:MiddleName) or (cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:FamilyName) or (cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:JobTitle) or (cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:ElectronicMail) or
 (cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:Telephone) or
@@ -808,7 +847,7 @@
 			</div>
 			</xsl:if>
 	</xsl:template>
-	<!-- template tengiliður kaupanda-->
+	<!-- template tengiliÃ°ur kaupanda-->
 	<xsl:template name="AnnadItarupplLinu">
 		<table>
 			<tr height="10">
@@ -816,7 +855,7 @@
 			</tr>
 		</table>
 		<div class="itarupplBig">Additional line information:</div>
-		<table class="ntable" cellpadding="1" cellspacing="0" width="100%" summary="Greiðsluupplýsingar" border="0">
+		<table class="ntable" cellpadding="1" cellspacing="0" width="100%" summary="GreiÃ°sluupplÃ½singar" border="0">
 			<tr height="25">
 				<td width="1%" class="hdrcol22" align="center" nowrap="nowrap">&#160;</td>
 				<td width="3%" class="hdrcol22" align="left" nowrap="nowrap">&#160;</td>
@@ -832,31 +871,31 @@
 				<tr>
 					<td class="hdrcol23" align="left" nowrap="nowrap">&#160;</td>
 					<td valign="top" align="left" class="hdrcol23" nowrap="nowrap">
-						<!-- vörunúmer -->
+						<!-- vÃ¶runÃºmer -->
 						<xsl:value-of select="cbc:ID"/>
 					</td>
 					<td valign="top" align="left" class="hdrcol23" nowrap="nowrap">
-						<!-- vörunúmer -->
+						<!-- vÃ¶runÃºmer -->
 						<xsl:value-of select="cac:Item/cac:SellersItemIdentification/cbc:ID"/>
 					</td>
 					<td valign="top" align="left" class="hdrcol23">
-						<!-- Lýsing -->
+						<!-- LÃ½sing -->
 						<xsl:value-of select="cac:Item/cac:StandardItemIdentification/cbc:ID"/>
 					</td>
 					<td valign="top" align="left" class="hdrcol23" nowrap="nowrap">
-						<!-- vörunúmer -->
+						<!-- vÃ¶runÃºmer -->
 						<xsl:value-of select="cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode"/>
 					</td>
 					<td valign="top" align="left" class="hdrcol23">
-						<!-- Lýsing -->
+						<!-- LÃ½sing -->
 						<xsl:value-of select="cbc:AccountingCost"/>
 					</td>
 					<td valign="top" align="left" class="hdrcol23" nowrap="nowrap">
-						<!-- vörunúmer -->
+						<!-- vÃ¶runÃºmer -->
 						<xsl:value-of select="cac:OrderLineReference/cac:OrderReference/cbc:ID"/>
 					</td>
 					<td valign="top" align="left" class="hdrcol23">
-						<!-- Lýsing -->
+						<!-- LÃ½sing -->
 						<xsl:value-of select="cac:OrderLineReference/cbc:LineID"/>
 					</td>
 					<td valign="top" align="left" class="hdrcol23"/>
@@ -877,7 +916,7 @@
 					<tr valign="top">
 						<td/>
 						<td colspan="8">
-							<table summary="Lýsing vöru" border="0" width="100%" cellpadding="0" cellspacing="0">
+							<table summary="LÃ½sing vÃ¶ru" border="0" width="100%" cellpadding="0" cellspacing="0">
 								<xsl:for-each select="cac:Item/cac:AdditionalItemProperty">
 									<tr>
 										<td height="5px" valign="bottom" align="left" class="hdrcolimage"/>
@@ -915,7 +954,7 @@
 				</tr>
 			</table>
 			<div class="itarupplBig">InvoiceLine Price/AllowanceCharge (informative):</div>
-			<table class="ntable" cellpadding="1" cellspacing="0" width="100%" summary="Ítarupplýsingar um afslætti og gjöld á einingum" border="0">
+			<table class="ntable" cellpadding="1" cellspacing="0" width="100%" summary="ÃtarupplÃ½singar um afslÃ¦tti og gjÃ¶ld Ã¡ einingum" border="0">
 				<xsl:call-template name="AfslHeader"/>
 				<xsl:for-each select="cac:InvoiceLine/cac:Price/cac:AllowanceCharge">
 					<xsl:if test=".!=''">
@@ -1056,7 +1095,7 @@
 				</tr>
 			</table>
 			<div class="itarupplBig">Attachment:</div>
-			<table class="ntable" cellpadding="1" cellspacing="0" width="100%" summary="Viðhengi" border="0">
+			<table class="ntable" cellpadding="1" cellspacing="0" width="100%" summary="ViÃ°hengi" border="0">
 				<tr height="25">
 					<td width="10%" class="hdrcol22" align="left" nowrap="nowrap">&#160;&#160;ID.</td>
 					<td width="18%" class="hdrcol22" align="left" nowrap="nowrap">Type</td>
@@ -1097,7 +1136,7 @@
 					<xsl:otherwise>Fund transfer (national level)</xsl:otherwise>
 				</xsl:choose>
 			</xsl:when>
-			<!--Hér þarf að horfa á IBAN PaymentChannelCode ef IS:BANK þá innlend Millifærsla ef IBAN þá erlend millifærsla-->
+			<!--HÃ©r Ã¾arf aÃ° horfa Ã¡ IBAN PaymentChannelCode ef IS:BANK Ã¾Ã¡ innlend MillifÃ¦rsla ef IBAN Ã¾Ã¡ erlend millifÃ¦rsla-->
 			<xsl:otherwise>Unknown</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
@@ -1110,7 +1149,7 @@
 						<div class="letur1b">Kennitala:</div>
 					</td>
 					<td width="18%" align="left">
-						<div class="letur1b">Kröfunr.</div>
+						<div class="letur1b">KrÃ¶funr.</div>
 					</td>
 					<td width="10%" align="left">
 						<div class="letur1b">Fl.</div>
@@ -1119,7 +1158,7 @@
 						<div class="letur1b">Banki:</div>
 					</td>
 					<td width="18%" align="left">
-						<div class="letur1b">Höfuðbók:</div>
+						<div class="letur1b">HÃ¶fuÃ°bÃ³k:</div>
 					</td>
 					<td width="16%" align="left">
 						<div class="letur1b">Gjalddagi:</div>
@@ -1185,7 +1224,7 @@
 					<xsl:if test="cac:PaymentMeans/cbc:PaymentID[.!='']">
 						<td>
 							<div class="letur1">&#160;</div>
-							<div class="letur1b">Tilvísun greiðslu:</div>
+							<div class="letur1b">TilvÃ­sun greiÃ°slu:</div>
 							<div class="letur1">
 								<xsl:value-of select="cac:PaymentMeans/cbc:PaymentID"/>
 							</div>
@@ -1204,7 +1243,7 @@
 						<div class="letur1b">Banki:</div>
 					</td>
 					<td width="20%" align="left">
-						<div class="letur1b">Höfuðbók:</div>
+						<div class="letur1b">HÃ¶fuÃ°bÃ³k:</div>
 					</td>
 					<td width="25%" align="left">
 						<div class="letur1b">Reikningsnr.</div>
@@ -1258,7 +1297,7 @@
 					<xsl:if test="cac:PaymentMeans/cbc:PaymentID[.!='']">
 						<td>
 							<div class="letur1">&#160;</div>
-							<div class="letur1b">Tilvísun greiðslu:</div>
+							<div class="letur1b">TilvÃ­sun greiÃ°slu:</div>
 							<div class="letur1">
 								<xsl:value-of select="cac:PaymentMeans/cbc:PaymentID"/>
 							</div>
@@ -1274,7 +1313,7 @@
 			<table width="100%" cellspacing="0" cellpadding="0" class="ntablenoborder" border="0">
 				<tr height="70">
 					<td height="100%" align="center" valign="middle">
-						<div class="letur1b">Engar Greiðsluupplýsingar</div>
+						<div class="letur1b">Engar GreiÃ°sluupplÃ½singar</div>
 					</td>
 				</tr>
 			</table>
@@ -1285,7 +1324,7 @@
 			<table width="100%" cellspacing="0" cellpadding="0" class="ntablenoborder" border="0">
 				<tr height="70">
 					<td height="100%" align="center" valign="middle">
-						<div class="letur1b">Reikningur Staðgreiddur</div>
+						<div class="letur1b">Reikningur StaÃ°greiddur</div>
 					</td>
 				</tr>
 			</table>
@@ -1295,7 +1334,7 @@
 			<table width="100%" cellspacing="0" cellpadding="0" class="ntablenoborder" border="0">
 				<tr height="70">
 					<td height="100%" align="center" valign="middle">
-						<div class="letur1b">Greitt með ávísun</div>
+						<div class="letur1b">Greitt meÃ° Ã¡vÃ­sun</div>
 					</td>
 				</tr>
 			</table>
@@ -1340,13 +1379,13 @@
 			<table width="100%" cellspacing="0" cellpadding="0" class="ntablenoborder">
 				<tr>
 					<td width="40%" align="left">
-						<div class="letur1b">IBAN Númer:</div>
+						<div class="letur1b">IBAN NÃºmer:</div>
 					</td>
 					<td width="20%" align="left">
-						<div class="letur1b">Gjaldmiðill:</div>
+						<div class="letur1b">GjaldmiÃ°ill:</div>
 					</td>
 					<td width="20%" align="left">
-						<div class="letur1b">BIC númer:.</div>
+						<div class="letur1b">BIC nÃºmer:.</div>
 					</td>
 				</tr>
 				<tr>
@@ -1374,10 +1413,10 @@
 			<table width="100%" cellspacing="0" cellpadding="0" class="ntablenoborder">
 				<tr>
 					<td width="28%" align="left">
-						<div class="letur1b">Tilvísunarnr./kt</div>
+						<div class="letur1b">TilvÃ­sunarnr./kt</div>
 					</td>
 					<td width="15%" align="left">
-						<div class="letur1b">Seðilnr.</div>
+						<div class="letur1b">SeÃ°ilnr.</div>
 					</td>
 					<td width="7%" align="left">
 						<div class="letur1b">Fl.</div>
@@ -1386,7 +1425,7 @@
 						<div class="letur1b">Banki:</div>
 					</td>
 					<td width="17%" align="left">
-						<div class="letur1b">Höfuðbók:</div>
+						<div class="letur1b">HÃ¶fuÃ°bÃ³k:</div>
 					</td>
 					<td width="18%" align="left">
 						<div class="letur1b">Reikningsnr.</div>
@@ -1434,7 +1473,7 @@
 						</div>
 					</td>
 					<td width="50%" colspan="3" align="left">
-						<div class="letur1">A/B Gíró - Flokkur 31</div>
+						<div class="letur1">A/B GÃ­rÃ³ - Flokkur 31</div>
 					</td>
 				</tr>
 				<tr>
@@ -1444,7 +1483,7 @@
 						</div>
 					</td>
 					<td align="left" colspan="3">
-						<div class="letur1">C Gíró - Flokkur 33</div>
+						<div class="letur1">C GÃ­rÃ³ - Flokkur 33</div>
 					</td>
 				</tr>
 			</table>
@@ -1453,7 +1492,7 @@
 	<xsl:template name="MottakandiGreidsluFyrirsogn">
 		<xsl:choose>
 			<xsl:when test="cac:PayeeParty">
-        Móttakandi greiðslu:
+        MÃ³ttakandi greiÃ°slu:
       </xsl:when>
 			<xsl:otherwise>
         &#160;
@@ -1479,7 +1518,7 @@
 			<xsl:otherwise>&#160;</xsl:otherwise>
 		</xsl:choose>
 	</xsl:template>
-	<!-- template höfuðbók -->
+	<!-- template hÃ¶fuÃ°bÃ³k -->
 	<xsl:template name="hofudbok">
 		<xsl:param name="text"/>
 		<xsl:choose>
@@ -1661,8 +1700,8 @@
 			<xsl:when test="$text[.='KGS']">kg</xsl:when>
 			<xsl:when test="$text[.='MTR']">m</xsl:when>
 			<xsl:when test="$text[.='LTR']">l</xsl:when>
-			<xsl:when test="$text[.='MTK']">m²</xsl:when>
-			<xsl:when test="$text[.='MTQ']">m³</xsl:when>
+			<xsl:when test="$text[.='MTK']">mÂ²</xsl:when>
+			<xsl:when test="$text[.='MTQ']">mÂ³</xsl:when>
 			<xsl:when test="$text[.='KMT']">km</xsl:when>
 			<xsl:when test="$text[.='TNE']">t</xsl:when>
 			<xsl:when test="$text[.='KWH']">kWh</xsl:when>

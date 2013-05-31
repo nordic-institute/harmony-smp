@@ -35,6 +35,7 @@
     the provisions above, a recipient may use your version of this file
     under either the MPL or the EUPL License.
 ====
+
 This project holds all the Busdox Types it use Jaxb and jaxws ws import to generate java objects 
 from the different wsdl and xsd's used by the busdox specification
  
