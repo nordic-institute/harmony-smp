@@ -232,8 +232,8 @@ public class StartClientConsole {
 
       // Create a ping document
       d = XMLFactory.newDocument ();
-      // start is the namespace URi :)
-      d.appendChild (d.createElementNS ("start", "Ping"));
+      // See START-Types-1.0.xsd for details
+      d.appendChild (d.createElementNS ("http://busdox.org/transport/start/1.0/", "Ping"));
     }
     else {
       final ParticipantIdentifierType aSender = SimpleParticipantIdentifier.createWithDefaultScheme (cmd.getOptionValue ('s'));
