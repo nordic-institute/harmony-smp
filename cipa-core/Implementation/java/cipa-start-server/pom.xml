@@ -48,7 +48,7 @@
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-smp-client-library</artifactId>
-      <version>1.0.2-SNAPSHOT</version>
+      <version>1.1.0</version>
     </dependency>
     <!-- Dummy, so that any receiver is present :)  Comment out if you use the receiver externalisation mechanism see config server.properties-->
     <dependency>
