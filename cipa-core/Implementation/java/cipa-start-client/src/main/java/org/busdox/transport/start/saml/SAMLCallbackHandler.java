@@ -78,9 +78,9 @@ import org.w3c.dom.NodeList;
 import com.phloc.commons.CGlobal;
 import com.phloc.commons.annotations.DevelopersNote;
 import com.phloc.commons.annotations.UsedViaReflection;
+import com.phloc.commons.base64.Base64;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.random.VerySecureRandom;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
 import com.sun.xml.wss.impl.callback.SAMLCallback;
 import com.sun.xml.wss.impl.dsig.WSSPolicyConsumerImpl;
 import com.sun.xml.wss.saml.Assertion;
@@ -186,9 +186,11 @@ public final class SAMLCallbackHandler implements CallbackHandler {
     // According to EDELIVERY-112 it should by a real cryptographic value
     final byte [] aRandom = new byte [128];
     VerySecureRandom.getInstance ().nextBytes (aRandom);
-    String sAssertionID = SAML_ID_PREFIX + Base64.encode (aRandom);
-    //EDELIVERY-130: quick fix to problem of sAssertionID always containing two '\n' at the same position [82] and [159] and hence failing later when we try to sign with it.
-    sAssertionID = sAssertionID.replace("\n", "+");
+    String sAssertionID = SAML_ID_PREFIX + Base64.encodeBytes (aRandom);
+    // EDELIVERY-130: quick fix to problem of sAssertionID always containing two
+    // '\n' at the same position [82] and [159] and hence failing later when we
+    // try to sign with it.
+    sAssertionID = sAssertionID.replace ("\n", "+");
     aSamlCallback.setAssertionId (sAssertionID);
 
     GregorianCalendar aCal = new GregorianCalendar ();
