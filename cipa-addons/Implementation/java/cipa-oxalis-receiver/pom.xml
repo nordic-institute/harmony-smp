@@ -7,13 +7,13 @@
     <relativePath>../../../../cipa-core/Implementation/java/cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-oxalis-receiver</artifactId>
-  <version>1.1.0</version>
+  <version>1.1.1-SNAPSHOT</version>
   <name>cipa-oxalis-receiver</name>
   <description>This module is meant to integrate the cipa access point and the oxalis open source implementation of the access point</description>
 
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/tags/cipa-oxalis-receiver/cipa-oxalis-receiver-1.1.0</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/tags/cipa-oxalis-receiver/cipa-oxalis-receiver-1.1.0</developerConnection>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-oxalis-receiver</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-oxalis-receiver</developerConnection>
   </scm>
 
   <repositories>
