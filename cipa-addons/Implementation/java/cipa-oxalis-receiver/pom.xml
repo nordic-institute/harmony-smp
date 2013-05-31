@@ -1,21 +1,22 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
     <groupId>eu.europa.ec.cipa</groupId>
-		<artifactId>cipa-parent-pom</artifactId>
+    <artifactId>cipa-parent-pom</artifactId>
     <version>1.1</version>
     <relativePath>../../../../cipa-core/Implementation/java/cipa-parent-pom/pom.xml</relativePath>
-	</parent>
-	<artifactId>cipa-oxalis-receiver</artifactId>
+  </parent>
+  <artifactId>cipa-oxalis-receiver</artifactId>
   <version>1.0.2-SNAPSHOT</version>
   <name>cipa-oxalis-receiver</name>
-	<description>This module is meant to integrate the cipa access point and the oxalis open source implementation of the access point</description>
-  
-	<scm>
-		<connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-oxalis-receiver</connection>
-		<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-oxalis-receiver</developerConnection>
-	</scm>
-  
+  <description>This module is meant to integrate the cipa access point and the oxalis open source implementation of the access point</description>
+
+  <scm>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-oxalis-receiver</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-oxalis-receiver</developerConnection>
+  </scm>
+
   <repositories>
     <repository>
       <id>joinup.nexus</id>
@@ -29,49 +30,49 @@
     </repository>
   </repositories>
 
-	<dependencies>
-		<dependency>
-			<groupId>eu.europa.ec.cipa</groupId>
-			<artifactId>cipa-transport-api</artifactId>
-			<version>1.0.2-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>eu.europa.ec.cipa</groupId>
-			<artifactId>oxalis-api</artifactId>
-			<version>1.17</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.testng</groupId>
-					<artifactId>testng</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-	</dependencies>
+  <dependencies>
+    <dependency>
+      <groupId>eu.europa.ec.cipa</groupId>
+      <artifactId>cipa-transport-api</artifactId>
+      <version>1.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>eu.europa.ec.cipa</groupId>
+      <artifactId>oxalis-api</artifactId>
+      <version>1.17</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.testng</groupId>
+          <artifactId>testng</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>com.mycila.maven-license-plugin</groupId>
-				<artifactId>maven-license-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>src/main/resources/META-INF/**</exclude>
-						<exclude>src/main/resources/WEB-INF/wsdl/**</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<configuration>
-					<tagBase>https://joinup.ec.europa.eu/svn/cipaedelivery/tags/${project.name}</tagBase>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.mycila.maven-license-plugin</groupId>
+        <artifactId>maven-license-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>src/main/resources/META-INF/**</exclude>
+            <exclude>src/main/resources/WEB-INF/wsdl/**</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>https://joinup.ec.europa.eu/svn/cipaedelivery/tags/${project.name}</tagBase>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
