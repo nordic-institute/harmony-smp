@@ -62,7 +62,6 @@ import org.slf4j.LoggerFactory;
 
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.collections.ContainerHelper;
-import com.sun.xml.ws.developer.SchemaValidation;
 
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.sml.server.IGenericDataHandler;
@@ -80,7 +79,8 @@ import eu.europa.ec.cipa.sml.server.web.WebRequestClientIdentifier;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-@SchemaValidation
+// FIXME to be re-enabled after 1.1.0 because backward incompatible
+// @SchemaValidation
 @WebService (serviceName = "ManageBusinessIdentifierService",
              portName = "ManageBusinessIdentifierServicePort",
              endpointInterface = "org.busdox.servicemetadata.managebusinessidentifierservice._1.ManageBusinessIdentifierServiceSoap",

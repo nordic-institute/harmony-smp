@@ -55,8 +55,6 @@ import org.busdox.servicemetadata.manageservicemetadataservice._1.UnauthorizedFa
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.xml.ws.developer.SchemaValidation;
-
 import eu.europa.ec.cipa.sml.server.IRequestAuthenticationHandler;
 import eu.europa.ec.cipa.sml.server.ISMPDataHandler;
 import eu.europa.ec.cipa.sml.server.exceptions.BadRequestException;
@@ -72,8 +70,10 @@ import eu.europa.ec.cipa.sml.server.web.WebRequestClientIdentifier;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-@SchemaValidation (outbound = false)
-// We can't use this, since the XMLDSIG isn't set until in the handlers.
+// FIXME to be re-enabled after 1.1.0 because backward incompatible
+// We can't use this on outbound messages, since the XMLDSIG isn't set until in
+// the handlers.
+// @SchemaValidation (outbound = false)
 @WebService (serviceName = "ManageServiceMetadataService",
              portName = "ManageServiceMetadataServicePort",
              endpointInterface = "org.busdox.servicemetadata.manageservicemetadataservice._1.ManageServiceMetadataServiceSoap",
@@ -219,9 +219,12 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
     }
   }
 
-  public void delete (final String sSMPID) throws BadRequestFault, InternalErrorFault, NotFoundFault, UnauthorizedFault {
+  public void delete (@Nonnull final String sSMPID) throws BadRequestFault,
+                                                   InternalErrorFault,
+                                                   NotFoundFault,
+                                                   UnauthorizedFault {
     if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("delete(ServiceMetadataPublisherServiceType arg0)");
+      s_aLogger.debug ("delete('" + sSMPID + "')");
 
     try {
       // Validate input data
@@ -234,7 +237,7 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
       // Perform action
       m_aDataHandler.deleteSMPData (sSMPID, sClientUniqueID);
 
-      s_aLogger.info ("Deleted SMP " + sSMPID);
+      s_aLogger.info ("Deleted SMP '" + sSMPID + "'");
     }
     catch (final Throwable t) {
       _handleException (t);
