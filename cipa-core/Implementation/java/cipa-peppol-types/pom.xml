@@ -8,12 +8,12 @@
     <relativePath>../cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-peppol-types</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.1.0</version>
   <name>cipa-peppol-types</name>
 
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-peppol-types</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-peppol-types</developerConnection>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/tags/cipa-peppol-types/cipa-peppol-types-1.1.0</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/tags/cipa-peppol-types/cipa-peppol-types-1.1.0</developerConnection>
   </scm>
   
   <repositories>
