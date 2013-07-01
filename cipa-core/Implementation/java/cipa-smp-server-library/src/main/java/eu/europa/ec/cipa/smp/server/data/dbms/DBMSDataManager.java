@@ -470,7 +470,6 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
       public EChange call () {
         final EntityManager aEM = getEntityManager ();
         _verifyUser (aCredentials);
-        _verifyOwnership (aServiceGroupID, aCredentials);
 
         final DBServiceMetadataID aDBServiceMetadataID = new DBServiceMetadataID (aServiceGroupID, aDocTypeID);
         final DBServiceMetadata aDBServiceMetadata = aEM.find (DBServiceMetadata.class, aDBServiceMetadataID);
@@ -479,6 +478,10 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
           s_aLogger.warn ("No such service to delete: " + aServiceGroupID.toString ());
           return EChange.UNCHANGED;
         }
+
+        // Verify after existence check, because otherwise an
+        // UnauthorizedException is thrown
+        _verifyOwnership (aServiceGroupID, aCredentials);
 
         // Remove all attached processes incl. their endpoints
         for (final DBProcess aDBProcess : aDBServiceMetadata.getProcesses ()) {
