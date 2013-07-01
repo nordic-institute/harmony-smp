@@ -307,6 +307,7 @@ public class SMPServiceCallerReadonly {
     }
   }
 
+  @Nonnull
   private static CompleteServiceGroupType _getCompleteServiceGroup (@Nonnull final WebResource aFullResource) throws Exception {
     if (aFullResource == null)
       throw new NullPointerException ("fullResource");
@@ -330,7 +331,7 @@ public class SMPServiceCallerReadonly {
    *        The service group id corresponding to the service group which one
    *        wants to get.
    * @return The complete service group containing service group and service
-   *         metadata
+   *         metadata. Never <code>null</code>.
    * @throws UnauthorizedException
    *         A HTTP Forbidden was received, should not happen.
    * @throws NotFoundException
@@ -350,6 +351,22 @@ public class SMPServiceCallerReadonly {
     return _getCompleteServiceGroup (aFullResource);
   }
 
+  /**
+   * Returns a complete service group. A complete service group contains both
+   * the service group and the service metadata.
+   * 
+   * @param aServiceGroupID
+   *        The service group id corresponding to the service group which one
+   *        wants to get.
+   * @return The complete service group containing service group and service
+   *         metadata or <code>null</code> if no such service group exists.
+   * @throws UnauthorizedException
+   *         A HTTP Forbidden was received, should not happen.
+   * @throws UnknownException
+   *         An unknown HTTP exception was received.
+   * @throws BadRequestException
+   *         The request was not well formed.
+   */
   @Nullable
   public CompleteServiceGroupType getCompleteServiceGroupOrNull (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) throws Exception {
     try {
@@ -369,7 +386,7 @@ public class SMPServiceCallerReadonly {
    * @param aURI
    *        The URI containing the complete service group
    * @return The complete service group containing service group and service
-   *         metadata
+   *         metadata. Never <code>null</code>.
    * @throws UnauthorizedException
    *         A HTTP Forbidden was received, should not happen.
    * @throws NotFoundException
@@ -379,8 +396,36 @@ public class SMPServiceCallerReadonly {
    * @throws BadRequestException
    *         The request was not well formed.
    */
+  @Nonnull
   public static CompleteServiceGroupType getCompleteServiceGroup (@Nonnull final URI aURI) throws Exception {
     return _getCompleteServiceGroup (_getResource (aURI));
+  }
+
+  /**
+   * Returns a complete service group. A complete service group contains both
+   * the service group and the service metadata. This method is handy when using
+   * the results from
+   * {@link #getServiceGroupReferenceList(String, BasicAuthClientCredentials)}
+   * 
+   * @param aURI
+   *        The URI containing the complete service group
+   * @return The complete service group containing service group and service
+   *         metadata or <code>null</code> if no such service group exists.
+   * @throws UnauthorizedException
+   *         A HTTP Forbidden was received, should not happen.
+   * @throws UnknownException
+   *         An unknown HTTP exception was received.
+   * @throws BadRequestException
+   *         The request was not well formed.
+   */
+  @Nullable
+  public static CompleteServiceGroupType getCompleteServiceGroupOrNull (@Nonnull final URI aURI) throws Exception {
+    try {
+      return getCompleteServiceGroup (aURI);
+    }
+    catch (final NotFoundException ex) {
+      return null;
+    }
   }
 
   /**
@@ -486,6 +531,7 @@ public class SMPServiceCallerReadonly {
     return new SMPServiceCallerReadonly (aServiceGroupID, aSMLInfo).getServiceGroup (aServiceGroupID);
   }
 
+  @Nonnull
   private static SignedServiceMetadataType _getSignedServiceMetadata (@Nonnull final WebResource aFullResource) throws Exception {
     if (aFullResource == null)
       throw new NullPointerException ("fullResource");
