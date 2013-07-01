@@ -347,7 +347,6 @@ public class SMPServiceCallerReadonly {
 
     final WebResource aFullResource = m_aWebResource.path ("/complete/" +
                                                            IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID));
-    System.out.println (aFullResource);
     return _getCompleteServiceGroup (aFullResource);
   }
 
