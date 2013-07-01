@@ -532,12 +532,12 @@ public class SMPServiceCallerReadonly {
   }
 
   @Nonnull
-  private static SignedServiceMetadataType _getSignedServiceMetadata (@Nonnull final WebResource aFullResource) throws Exception {
+  public static SignedServiceMetadataType getServiceRegistration (@Nonnull final WebResource aFullResource) throws Exception {
     if (aFullResource == null)
       throw new NullPointerException ("fullResource");
 
     if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("_getSignedServiceMetadata from " + aFullResource.getURI ());
+      s_aLogger.debug ("getServiceRegistration from " + aFullResource.getURI ());
 
     try {
       SignedServiceMetadataType aMetadata = aFullResource.get (TYPE_SIGNEDSERVICEMETADATA).getValue ();
@@ -620,7 +620,7 @@ public class SMPServiceCallerReadonly {
                          "/services/" +
                          IdentifierUtils.getIdentifierURIPercentEncoded (aDocumentTypeID);
     final WebResource aFullResource = m_aWebResourceWithSignatureCheck.path (sPath);
-    return _getSignedServiceMetadata (aFullResource);
+    return getServiceRegistration (aFullResource);
   }
 
   @Nullable
