@@ -140,6 +140,20 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     }
   }
 
+  /**
+   * Check if an SMP user matching the user name of the BasicAuth credentials
+   * exists, and that the passwords match. So this method verifies that the
+   * BasicAuth credentials are valid.
+   * 
+   * @param aCredentials
+   *        The credentials to be validated. May not be <code>null</code>.
+   * @return The matching non-<code>null</code> {@link DBUser}.
+   * @throws UnknownUserException
+   *         If no user matching the passed user name is present
+   * @throws UnauthorizedException
+   *         If the password in the credentials does not match the stored
+   *         password
+   */
   @Nonnull
   private DBUser _verifyUser (@Nonnull final BasicAuthClientCredentials aCredentials) throws UnknownUserException,
                                                                                      UnauthorizedException {
@@ -159,6 +173,19 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     return aDBUser;
   }
 
+  /**
+   * Verify that the passed service group is owned by the user specified in the
+   * credentials.
+   * 
+   * @param aServiceGroupID
+   *        The service group to be verified
+   * @param aCredentials
+   *        The credentials to be checked
+   * @return The non-<code>null</code> ownership object
+   * @throws UnauthorizedException
+   *         If the participant identifier is not owned by the user specified in
+   *         the credentials
+   */
   @Nonnull
   private DBOwnership _verifyOwnership (@Nonnull final ParticipantIdentifierType aServiceGroupID,
                                         @Nonnull final BasicAuthClientCredentials aCredentials) throws UnauthorizedException {
@@ -281,9 +308,10 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
   public void deleteServiceGroup (@Nonnull final ParticipantIdentifierType aServiceGroupID,
                                   @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
-    JPAExecutionResult <?> ret;
-    ret = doInTransaction (new Runnable () {
-      public void run () {
+    JPAExecutionResult <EChange> ret;
+    ret = doInTransaction (new Callable <EChange> () {
+      @Nonnull
+      public EChange call () {
         _verifyUser (aCredentials);
 
         m_aHook.delete (aServiceGroupID);
@@ -294,7 +322,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         final DBServiceGroup aDBServiceGroup = aEM.find (DBServiceGroup.class, aDBServiceGroupID);
         if (aDBServiceGroup == null) {
           s_aLogger.warn ("No such service group to delete: " + aServiceGroupID.toString ());
-          return;
+          return EChange.UNCHANGED;
         }
 
         // Check the ownership afterwards, so that only existing serviceGroups
@@ -303,10 +331,13 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
         aEM.remove (aDBOwnership);
         aEM.remove (aDBServiceGroup);
+        return EChange.CHANGED;
       }
     });
     if (ret.hasThrowable ())
       throw ret.getThrowable ();
+    if (ret.get ().isUnchanged ())
+      throw new NotFoundException (aServiceGroupID.toString ());
   }
 
   @Nonnull
