@@ -544,7 +544,9 @@ public class AccessPointService {
                           (eOverallSuccess.isSuccess () ? "successfully" : "failed") +
                           " processing of START message with " +
                           s_aReceivers.size () +
-                          "receivers:");
+                          "receivers [" +
+                          aProcessingMessages.size () +
+                          "]:");
           for (final LogMessage aLogMsg : aProcessingMessages) {
             // Log with the correct error level
             LogUtils.log (s_aLogger,
@@ -555,9 +557,10 @@ public class AccessPointService {
         }
 
         if (eOverallSuccess.isFailure ()) {
+          // Processing failed
           bFailure = true;
 
-          // Assemble all errors messages
+          // Assemble all errors messages to a single message
           final StringBuilder aProcessingDetails = new StringBuilder ();
           for (final LogMessage aLogMsg : aProcessingMessages)
             if (aLogMsg.isError ()) {
