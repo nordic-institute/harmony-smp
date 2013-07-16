@@ -56,7 +56,7 @@ public interface IValidationTransaction extends IHasStringRepresentation {
    * @return The syntax binding of this transaction.
    */
   @Nonnull
-  EValidationSyntaxBinding getSyntaxBinding ();
+  IValidationSyntaxBinding getSyntaxBinding ();
 
   /**
    * @return The transaction of this validation rule set.

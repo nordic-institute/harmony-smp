@@ -55,23 +55,23 @@ import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
  */
 @Immutable
 public final class ValidationTransaction implements IValidationTransaction {
-  private final EValidationSyntaxBinding m_eSyntaxBinding;
+  private final IValidationSyntaxBinding m_aSyntaxBinding;
   private final ETransaction m_eTransaction;
 
-  public ValidationTransaction (@Nonnull final EValidationSyntaxBinding eSyntaxBinding,
+  public ValidationTransaction (@Nonnull final IValidationSyntaxBinding aSyntaxBinding,
                                 @Nonnull final ETransaction eTransaction) {
-    if (eSyntaxBinding == null)
+    if (aSyntaxBinding == null)
       throw new NullPointerException ("syntaxBinding");
     if (eTransaction == null)
       throw new NullPointerException ("transactionID");
 
-    m_eSyntaxBinding = eSyntaxBinding;
+    m_aSyntaxBinding = aSyntaxBinding;
     m_eTransaction = eTransaction;
   }
 
   @Nonnull
-  public EValidationSyntaxBinding getSyntaxBinding () {
-    return m_eSyntaxBinding;
+  public IValidationSyntaxBinding getSyntaxBinding () {
+    return m_aSyntaxBinding;
   }
 
   @Nonnull
@@ -81,7 +81,7 @@ public final class ValidationTransaction implements IValidationTransaction {
 
   @Nonnull
   public String getAsString () {
-    return m_eSyntaxBinding.getFileNamePart () + "-" + m_eTransaction.name ();
+    return m_aSyntaxBinding.getFileNamePart () + "-" + m_eTransaction.name ();
   }
 
   @Override
@@ -91,17 +91,17 @@ public final class ValidationTransaction implements IValidationTransaction {
     if (!(o instanceof ValidationTransaction))
       return false;
     final ValidationTransaction rhs = (ValidationTransaction) o;
-    return m_eSyntaxBinding.equals (rhs.m_eSyntaxBinding) && m_eTransaction.equals (rhs.m_eTransaction);
+    return m_aSyntaxBinding.equals (rhs.m_aSyntaxBinding) && m_eTransaction.equals (rhs.m_eTransaction);
   }
 
   @Override
   public int hashCode () {
-    return new HashCodeGenerator (this).append (m_eSyntaxBinding).append (m_eTransaction).getHashCode ();
+    return new HashCodeGenerator (this).append (m_aSyntaxBinding).append (m_eTransaction).getHashCode ();
   }
 
   @Override
   public String toString () {
-    return new ToStringGenerator (this).append ("syntaxBinding", m_eSyntaxBinding)
+    return new ToStringGenerator (this).append ("syntaxBinding", m_aSyntaxBinding)
                                        .append ("transaction", m_eTransaction)
                                        .toString ();
   }

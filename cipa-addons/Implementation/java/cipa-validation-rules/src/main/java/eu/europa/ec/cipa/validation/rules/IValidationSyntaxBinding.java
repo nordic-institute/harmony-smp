@@ -38,41 +38,24 @@
 package eu.europa.ec.cipa.validation.rules;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
+import com.phloc.commons.annotations.MustImplementEqualsAndHashcode;
 import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.lang.EnumHelper;
+import com.phloc.commons.id.IHasID;
 
 /**
- * Represents all possible syntax bindings supported by the PEPPOL validation
- * artefacts.
+ * Represents the basic requirements for syntax bindings supported by the PEPPOL
+ * validation artefacts.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public enum EValidationSyntaxBinding implements IValidationSyntaxBinding {
-  /** UBL syntax binding */
-  UBL ("UBL");
-
-  private final String m_sFileNamePart;
-
-  private EValidationSyntaxBinding (@Nonnull @Nonempty final String sFileNamePart) {
-    m_sFileNamePart = sFileNamePart;
-  }
-
+@MustImplementEqualsAndHashcode
+public interface IValidationSyntaxBinding extends IHasID <String> {
+  /**
+   * @return The identifier how this syntax binding is represented in a file
+   *         name.
+   */
   @Nonnull
   @Nonempty
-  public String getFileNamePart () {
-    return m_sFileNamePart;
-  }
-
-  @Nonnull
-  @Nonempty
-  public String getID () {
-    return m_sFileNamePart;
-  }
-
-  @Nullable
-  public static EValidationSyntaxBinding getFromIDOrNull (@Nullable final String sID) {
-    return EnumHelper.getFromIDOrNull (EValidationSyntaxBinding.class, sID);
-  }
+  String getFileNamePart ();
 }
