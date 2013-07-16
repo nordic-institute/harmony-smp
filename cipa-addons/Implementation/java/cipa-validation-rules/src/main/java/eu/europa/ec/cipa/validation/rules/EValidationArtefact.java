@@ -68,12 +68,13 @@ import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public enum EValidationArtefact implements IValidationArtefact {
-  // Technical
+  // Technical structure:
   ORDER_BII_CORE (EValidationLevel.TECHNICAL_STRUCTURE, EValidationDocumentType.ORDER, "biicore", null, ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T01))),
   INVOICE_BII_CORE (EValidationLevel.TECHNICAL_STRUCTURE, EValidationDocumentType.INVOICE, "biicore", null, ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10),
                                                                                                                                   ValidationTransaction.createUBLTransaction (ETransaction.T15))),
   CREDITNOTE_BII_CORE (EValidationLevel.TECHNICAL_STRUCTURE, EValidationDocumentType.CREDIT_NOTE, "biicore", null, ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T14))),
-  // Transaction
+
+  // Transaction requirements:
   CATALOGUE_EU_GEN (EValidationLevel.TRANSACTION_REQUIREMENTS, EValidationDocumentType.CATALOGUE, "eugen", null, ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T19))),
   ORDER_EU_GEN (EValidationLevel.TRANSACTION_REQUIREMENTS, EValidationDocumentType.ORDER, "eugen", null, ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T01))),
   INVOICE_EU_GEN (EValidationLevel.TRANSACTION_REQUIREMENTS, EValidationDocumentType.INVOICE, "eugen", null, ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10),
@@ -85,11 +86,13 @@ public enum EValidationArtefact implements IValidationArtefact {
   INVOICE_BII_RULES (EValidationLevel.TRANSACTION_REQUIREMENTS, EValidationDocumentType.INVOICE, "biirules", null, ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10),
                                                                                                                                          ValidationTransaction.createUBLTransaction (ETransaction.T15))),
   CREDITNOTE_BII_RULES (EValidationLevel.TRANSACTION_REQUIREMENTS, EValidationDocumentType.CREDIT_NOTE, "biirules", null, ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T14))),
-  // Profile
+
+  // Profile requirements:
   INVOICE_BII_PROFILES (EValidationLevel.PROFILE_REQUIREMENTS, EValidationDocumentType.INVOICE, "biiprofiles", null, ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10),
                                                                                                                                            ValidationTransaction.createUBLTransaction (ETransaction.T15))),
   CREDITNOTE_BII_PROFILES (EValidationLevel.PROFILE_REQUIREMENTS, EValidationDocumentType.CREDIT_NOTE, "biiprofiles", null, ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T14))),
-  // Legal
+
+  // Legal requirements:
   INVOICE_AUSTRIA_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.INVOICE, "atnat", CountryCache.getCountry ("AT"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10))),
   INVOICE_DENMARK_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.INVOICE, "dknat", CountryCache.getCountry ("DK"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10))),
   INVOICE_ITALY_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.INVOICE, "itnat", CountryCache.getCountry ("IT"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10))),
@@ -97,7 +100,8 @@ public enum EValidationArtefact implements IValidationArtefact {
                                                                                                                                                                 ValidationTransaction.createUBLTransaction (ETransaction.T15),
                                                                                                                                                                 ValidationTransaction.createUBLTransaction (ETransaction.T17))),
   CREDITNOTE_NORWAY_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.CREDIT_NOTE, "nonat", CountryCache.getCountry ("NO"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T14))),
-  // Industry
+
+  // Industry specific:
   INVOICE_AUSTRIA_GOVERNMENT (EValidationLevel.INDUSTRY_SPECIFIC, EValidationDocumentType.INVOICE, "atgov", CountryCache.getCountry ("AT"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10))),
   INVOICE_NORWAY_GOVERNMENT (EValidationLevel.INDUSTRY_SPECIFIC, EValidationDocumentType.INVOICE, "nogov", CountryCache.getCountry ("NO"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10),
                                                                                                                                                                  ValidationTransaction.createUBLTransaction (ETransaction.T15))),
@@ -217,11 +221,10 @@ public enum EValidationArtefact implements IValidationArtefact {
 
     // Assemble the file name:
     // 1. The directory name of this artefact
-    // 2. Constant part "validation-xslt"
-    // 3. The file name itself:
-    // 3.1. The directory name of this artefact in uppercase
-    // 3.2. The syntax binding
-    // 3.3. The transaction ID
+    // 2. The file name itself:
+    // 2.1. The directory name of this artefact in uppercase
+    // 2.2. The syntax binding
+    // 2.3. The transaction ID
     final String sFileName = BASE_DIRECTORY +
                              m_sDirName +
                              "/" +
@@ -255,11 +258,10 @@ public enum EValidationArtefact implements IValidationArtefact {
 
     // Assemble the file name:
     // 1. The directory name of this artefact
-    // 2. Constant part "validation-xslt"
-    // 3. The file name itself:
-    // 3.1. The directory name of this artefact in uppercase
-    // 3.2. The syntax binding
-    // 3.3. The transaction ID
+    // 2. The file name itself:
+    // 2.1. The directory name of this artefact in uppercase
+    // 2.2. The syntax binding
+    // 2.3. The transaction ID
     final String sFileName = BASE_DIRECTORY +
                              m_sDirName +
                              "/" +
