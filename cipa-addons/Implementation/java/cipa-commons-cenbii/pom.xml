@@ -9,6 +9,7 @@
   </parent>
   <artifactId>cipa-commons-cenbii</artifactId>
   <version>1.1.1-SNAPSHOT</version>
+  <packaging>bundle</packaging>
   <name>cipa-commons-cenbii</name>
 
   <scm>
@@ -33,7 +34,7 @@
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-commons</artifactId>
-      <version>4.0.7</version>
+      <version>4.0.8</version>
     </dependency>
 
     <dependency>
@@ -45,6 +46,18 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Export-Package>
+              eu.europa.ec.cipa.commons.cenbii.*
+            </Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>

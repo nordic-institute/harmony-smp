@@ -8,6 +8,7 @@
   </parent>
   <artifactId>cipa-oxalis-receiver</artifactId>
   <version>1.1.1-SNAPSHOT</version>
+  <packaging>bundle</packaging>
   <name>cipa-oxalis-receiver</name>
   <description>This module is meant to integrate the cipa access point and the oxalis open source implementation of the access point</description>
 
@@ -55,6 +56,18 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Export-Package>
+              eu.europa.ec.cipa.transport.start.oxalis.*
+            </Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>com.mycila.maven-license-plugin</groupId>
         <artifactId>maven-license-plugin</artifactId>

@@ -8,6 +8,7 @@
   </parent>
   <artifactId>cipa-test-files</artifactId>
   <version>1.1.1-SNAPSHOT</version>
+  <packaging>bundle</packaging>
   <name>cipa-test-files</name>
 
   <scm>
@@ -38,6 +39,18 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Export-Package>
+              eu.europa.ec.cipa.test.*
+            </Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
