@@ -46,6 +46,7 @@ import javax.annotation.Nullable;
 
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
+import com.phloc.commons.id.IHasID;
 import com.phloc.commons.io.IReadableResource;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
@@ -55,7 +56,7 @@ import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public interface IValidationArtefact {
+public interface IValidationArtefact extends IHasID <String> {
   /**
    * @return The validation level. May not be <code>null</code>.
    */
@@ -63,7 +64,8 @@ public interface IValidationArtefact {
   EValidationLevel getValidationLevel ();
 
   /**
-   * @return The document type. May not be <code>null</code>.
+   * @return The document type to which this artefact can be applied. May not be
+   *         <code>null</code>.
    */
   @Nonnull
   IValidationDocumentType getValidationDocumentType ();
@@ -77,8 +79,8 @@ public interface IValidationArtefact {
 
   /**
    * @return <code>true</code> if this artefact is country independent,
-   *         <code>false</code> otherwise. Is a shortcut for
-   *         <code>getCountry () == null</code>.
+   *         <code>false</code> otherwise. This is a shortcut for
+   *         <code>getValidationCountry () == null</code>.
    */
   boolean isValidationCountryIndependent ();
 

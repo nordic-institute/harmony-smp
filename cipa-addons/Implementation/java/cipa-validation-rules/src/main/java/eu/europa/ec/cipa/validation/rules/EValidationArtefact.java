@@ -57,6 +57,7 @@ import com.phloc.commons.collections.ArrayHelper;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.io.IReadableResource;
 import com.phloc.commons.io.resource.ClassPathResource;
+import com.phloc.commons.lang.EnumHelper;
 import com.phloc.commons.locale.country.CountryCache;
 import com.phloc.commons.string.StringHelper;
 
@@ -163,6 +164,16 @@ public enum EValidationArtefact implements IValidationArtefact {
     m_sFileNamePrefix = sDirName.toUpperCase ();
     m_aCountry = aCountry;
     m_aTransactions = ContainerHelper.newUnmodifiableSet (aTransactions);
+  }
+
+  /**
+   * Get the ID of this validation artifact. This corresponds to the directory
+   * name, where the artifacts for the different transactions reside.
+   */
+  @Nonnull
+  @Nonempty
+  public String getID () {
+    return m_sDirName;
   }
 
   @Nonnull
@@ -384,5 +395,10 @@ public enum EValidationArtefact implements IValidationArtefact {
       if (eArtefact.containsTransaction (eTransaction))
         ret.add (eArtefact);
     return ret;
+  }
+
+  @Nullable
+  public static EValidationArtefact getFromIDOrNull (@Nullable final String sID) {
+    return EnumHelper.getFromIDOrNull (EValidationArtefact.class, sID);
   }
 }
