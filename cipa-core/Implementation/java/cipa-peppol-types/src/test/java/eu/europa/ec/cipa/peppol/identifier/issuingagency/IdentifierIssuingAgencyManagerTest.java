@@ -56,7 +56,7 @@ public final class IdentifierIssuingAgencyManagerTest {
   @Test
   public void testAll () {
     assertNotNull (IdentifierIssuingAgencyManager.getAllAgencies ());
-    assertEquals (61, IdentifierIssuingAgencyManager.getAllAgencies ().size ());
+    assertEquals (62, IdentifierIssuingAgencyManager.getAllAgencies ().size ());
 
     // test valid
     assertNotNull (IdentifierIssuingAgencyManager.getAgencyOfISO6523Code ("0088"));
