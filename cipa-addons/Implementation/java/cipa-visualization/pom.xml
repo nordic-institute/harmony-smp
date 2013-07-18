@@ -34,12 +34,12 @@
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-commons-cenbii</artifactId>
-      <version>1.1.0</version>
+      <version>1.1.1</version>
     </dependency>
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-commons</artifactId>
-      <version>4.0.7</version>
+      <version>4.0.8</version>
     </dependency>
     <dependency>
       <groupId>xerces</groupId>
@@ -55,7 +55,7 @@
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-test-files</artifactId>
-      <version>1.1.0</version>
+      <version>1.1.1</version>
       <scope>test</scope>
     </dependency>
     <dependency>
