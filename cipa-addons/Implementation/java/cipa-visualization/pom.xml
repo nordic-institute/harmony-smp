@@ -8,13 +8,13 @@
     <relativePath>../../../../cipa-core/Implementation/java/cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-visualization</artifactId>
-  <version>1.1.1</version>
+  <version>1.1.2-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>cipa-visualization</name>
   
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/tags/cipa-visualization/cipa-visualization-1.1.1</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/tags/cipa-visualization/cipa-visualization-1.1.1</developerConnection>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-visualization</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-visualization</developerConnection>
   </scm>
   
   <repositories>
