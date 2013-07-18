@@ -7,12 +7,12 @@
     <relativePath>..//cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-start-filereceiver</artifactId>
-  <version>1.1.1-SNAPSHOT</version>
+  <version>1.1.1</version>
   <name>cipa-start-filereceiver</name>
 
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-start-filereceiver</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-start-filereceiver</developerConnection>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/tags/cipa-start-filereceiver/cipa-start-filereceiver-1.1.1</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/tags/cipa-start-filereceiver/cipa-start-filereceiver-1.1.1</developerConnection>
   </scm>
   
   <repositories>
