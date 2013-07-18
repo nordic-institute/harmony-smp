@@ -146,7 +146,10 @@ public class DBMSDataManagerTest {
     m_aServiceGroup.setParticipantIdentifier (PARTY_ID);
 
     // Be sure to delete if it exists.
-    s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, CREDENTIALS);
+    try {
+      s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, CREDENTIALS);
+    }
+    catch (final NotFoundException ex) {}
 
     // Create a new one
     s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
@@ -236,8 +239,10 @@ public class DBMSDataManagerTest {
   @Test
   public void testDeleteServiceGroupUnknownID () throws Throwable {
     final ParticipantIdentifierType aServiceGroupID2 = SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_IDENTIFIER2);
-    s_aDataMgr.deleteServiceGroup (aServiceGroupID2, CREDENTIALS);
-
+    try {
+      s_aDataMgr.deleteServiceGroup (aServiceGroupID2, CREDENTIALS);
+    }
+    catch (final NotFoundException ex) {}
     assertNull (s_aDataMgr.getServiceGroup (aServiceGroupID2));
   }
 
