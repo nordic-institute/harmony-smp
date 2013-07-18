@@ -39,10 +39,8 @@ package eu.europa.ec.cipa.peppol.identifier.issuingagency;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.version.Version;
-
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 
 /**
@@ -105,6 +103,13 @@ public enum EPredefinedIdentifierIssuingAgency implements IIdentifierIssuingAgen
    * @since code list 1.0.0
    */
   IT_FTI ("IT:FTI", "FTI - Ediforum Italia", "0097", false, new Version ("1.0.0")),
+
+  /**
+   * Prefix <code>0106</code>, scheme ID <code>NL:KVK</code><br>
+   * 
+   * @since code list 1.1.2
+   */
+  NL_KVK ("NL:KVK", "Vereniging van Kamers van Koophandel en Fabrieken in Nederland, Scheme", "0106", false, new Version ("1.1.2")),
 
   /**
    * Prefix <code>0135</code>, scheme ID <code>IT:SIA</code><br>

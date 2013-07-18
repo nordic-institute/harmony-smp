@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Version: MPL 1.1/EUPL 1.1
@@ -39,7 +39,7 @@
 
 -->
 <!--This file was automatically generated. Do NOT edit!-->
-<root version="1.1.1">
+<root version="1.1.2">
   <issuingAgency schemeid="FR:SIRENE" agencyname="Institut National de la Statistique et des Etudes Economiques, (I.N.S.E.E.)" iso6523="0002" since="1.0.0">
     <structure>1) Number of characters: 9 characters (&quot;SIREN&quot;) 14 &quot; 9+5 (&quot;SIRET&quot;), The 9 character number designates an organization, The 14 character number designates a specific establishment of the organization designated by the first 9 characters. 2) Check digits: 9th &amp; 14th character respectively</structure>
   </issuingAgency>
@@ -68,6 +68,7 @@
   <issuingAgency schemeid="IT:FTI" agencyname="FTI - Ediforum Italia" iso6523="0097" since="1.0.0">
     <structure>Character repertoire, The EDI identifier consists of digits only. The identifier has a fixed length. No separators are required. Structure: [123] [123456] [123456] [12], 17, &lt; &gt;, A B C D, A: numerical value allocated by the RA to the regional sub-authority, (3 digits), B: numerical value allocated by the sub-authority to the registered organization (mandatory part of the identifier; 6 digits), C: numerical value used by the registered organization (free part; 6 digits), D: numerical check digit calculated by the registered organization; (2 digits), Check digit computation, The check digit is modular 97 computed on ABC as one number.</structure>
   </issuingAgency>
+  <issuingAgency schemeid="NL:KVK" agencyname="Vereniging van Kamers van Koophandel en Fabrieken in Nederland, Scheme" iso6523="0106" since="1.1.2" />
   <issuingAgency schemeid="IT:SIA" agencyname="SIA-Società Interbancaria per l&#39;Automazione S.p.A." iso6523="0135" since="1.0.0">
     <structure>Structure of EDI identifier, Character repertoire, The EDI identifier consists of digits only. The identifier has a fixed length. No separators are required. Structure:
 [1234567] [123] [1] [12345], min 11- max 16, &lt; &gt;, A B C D, A: numerical value (7 digits) assigned by Uffico Provinciale IVA (local branch of Ministry of Finance); B: numerical value a (3 digits) identifying the County; C: numerical check digit (1 digit); D: optional numerical value (up to 5 digits0 used by the registered organization (free part). Check digit computation, The check digit algorithm is the one published in the Gazzetta Ufficiale no 345 of December 29 1976.</structure>

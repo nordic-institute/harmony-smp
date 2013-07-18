@@ -46,7 +46,7 @@
   </Annotation>
   <Identification>
     <ShortName>PeppolIdentifierIssuingAgencies</ShortName>
-    <Version>1.1.1</Version>
+    <Version>1.1.2</Version>
     <CanonicalUri>urn:peppol.eu:names:identifier:issuingagencies</CanonicalUri>
     <CanonicalVersionUri>urn:peppol.eu:names:identifier:issuingagencies-1.0</CanonicalVersionUri>
   </Identification>
@@ -247,6 +247,23 @@
       </Value>
       <Value ColumnRef="structure">
         <SimpleValue>Character repertoire, The EDI identifier consists of digits only. The identifier has a fixed length. No separators are required. Structure: [123] [123456] [123456] [12], 17, &lt; &gt;, A B C D, A: numerical value allocated by the RA to the regional sub-authority, (3 digits), B: numerical value allocated by the sub-authority to the registered organization (mandatory part of the identifier; 6 digits), C: numerical value used by the registered organization (free part; 6 digits), D: numerical check digit calculated by the registered organization; (2 digits), Check digit computation, The check digit is modular 97 computed on ABC as one number.</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="schemeid">
+        <SimpleValue>NL:KVK</SimpleValue>
+      </Value>
+      <Value ColumnRef="iso6523">
+        <SimpleValue>0106</SimpleValue>
+      </Value>
+      <Value ColumnRef="schemeagency">
+        <SimpleValue>Vereniging van Kamers van Koophandel en Fabrieken in Nederland, Scheme</SimpleValue>
+      </Value>
+      <Value ColumnRef="deprecated">
+        <SimpleValue>false</SimpleValue>
+      </Value>
+      <Value ColumnRef="since">
+        <SimpleValue>1.1.2</SimpleValue>
       </Value>
     </Row>
     <Row>

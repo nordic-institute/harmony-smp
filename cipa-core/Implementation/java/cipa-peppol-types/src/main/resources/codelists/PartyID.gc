@@ -46,9 +46,9 @@
   </Annotation>
   <Identification>
     <ShortName>Scheme Agency</ShortName>
-    <Version>1.1.1</Version>
+    <Version>1.1.2</Version>
     <CanonicalUri>PEPPOL</CanonicalUri>
-    <CanonicalVersionUri>PEPPOL-1.1.1</CanonicalVersionUri>
+    <CanonicalVersionUri>PEPPOL-1.1.2</CanonicalVersionUri>
     <LocationUri>PartyID.gc</LocationUri>
   </Identification>
   <ColumnSet>
@@ -128,6 +128,14 @@
       </Value>
       <Value ColumnRef="name">
         <SimpleValue>FTI - Ediforum Italia</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>NL:KVK</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Vereniging van Kamers van Koophandel en Fabrieken in Nederland, Scheme</SimpleValue>
       </Value>
     </Row>
     <Row>
