@@ -53,7 +53,7 @@ import oasis.names.specification.ubl.schema.xsd.invoice_2.InvoiceType;
 
 import com.phloc.appbasics.security.user.IUser;
 import com.phloc.ubl.AbstractUBLDocumentMarshaller;
-import com.phloc.ubl.UBL20DocumentMarshaller;
+import com.phloc.ubl.UBL20Reader;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 import eu.europa.ec.cipa.webgui.app.InvoiceBean;
@@ -195,8 +195,8 @@ public class UserDirManager extends UserFolderManager <File> {
         try {
           vh.clearErrors ();
           final String fullPath = folder.getFolder ().getAbsolutePath () + fileSep + filename;
-          final InvoiceType inv = UBL20DocumentMarshaller.readInvoice (new StreamSource (new FileInputStream (new File (fullPath))),
-                                                                       vh);
+          final InvoiceType inv = UBL20Reader.readInvoice (new StreamSource (new FileInputStream (new File (fullPath))),
+                                                           vh);
           if (inv != null) {
             final InvoiceBean bean = new InvoiceBean (inv);
             bean.setFolderEntryID (fullPath);

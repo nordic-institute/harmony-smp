@@ -66,7 +66,8 @@ import org.slf4j.LoggerFactory;
 import un.unece.uncefact.codelist.specification._54217._2001.CurrencyCodeContentType;
 
 import com.phloc.ubl.AbstractUBLDocumentMarshaller;
-import com.phloc.ubl.UBL20DocumentMarshaller;
+import com.phloc.ubl.UBL20Reader;
+import com.phloc.ubl.UBL20Writer;
 import com.vaadin.data.Container.ItemSetChangeEvent;
 import com.vaadin.data.Container.ItemSetChangeListener;
 import com.vaadin.ui.Button;
@@ -308,14 +309,11 @@ public class InvoiceTabForm extends Form {
         else {
           try {
             if (invoiceFilePath.equals ("")) {
-              UBL20DocumentMarshaller.writeInvoice (invoice,
-                                                    new StreamResult (new File (um.getDrafts ()
-                                                                                  .getFolder ()
-                                                                                  .toString () +
-                                                                                System.getProperty ("file.separator") +
-                                                                                "invoice" +
-                                                                                System.currentTimeMillis () +
-                                                                                ".xml")));
+              UBL20Writer.writeInvoice (invoice, new StreamResult (new File (um.getDrafts ().getFolder ().toString () +
+                                                                             System.getProperty ("file.separator") +
+                                                                             "invoice" +
+                                                                             System.currentTimeMillis () +
+                                                                             ".xml")));
               invoiceFilePath = um.getDrafts ().getFolder ().toString () +
                                 System.getProperty ("file.separator") +
                                 "invoice" +
@@ -323,7 +321,7 @@ public class InvoiceTabForm extends Form {
                                 ".xml";
             }
             else {
-              UBL20DocumentMarshaller.writeInvoice (invoice, new StreamResult (new File (invoiceFilePath)));
+              UBL20Writer.writeInvoice (invoice, new StreamResult (new File (invoiceFilePath)));
             }
             getWindow ().showNotification ("Validation passed. Invoice saved in " +
                                                um.getDrafts ().getName ().toUpperCase () +
@@ -375,7 +373,7 @@ public class InvoiceTabForm extends Form {
       public void buttonClick (final Button.ClickEvent event) {
         try {
           SetCommonCurrency ();
-          final InvoiceType inv = UBL20DocumentMarshaller.readInvoice (new StreamSource (new FileInputStream (new File ("invoice.xml"))));
+          final InvoiceType inv = UBL20Reader.readInvoice (new StreamSource (new FileInputStream (new File ("invoice.xml"))));
         }
         catch (final Exception ex) {
           LOGGER.error ("Error creating files. ", ex);
