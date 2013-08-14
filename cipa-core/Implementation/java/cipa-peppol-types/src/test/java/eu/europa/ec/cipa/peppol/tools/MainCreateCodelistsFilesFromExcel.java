@@ -113,8 +113,8 @@ import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
  */
 public final class MainCreateCodelistsFilesFromExcel {
   private static final Logger s_aLogger = LoggerFactory.getLogger (MainCreateCodelistsFilesFromExcel.class);
-  private static final Version CODELIST_VERSION = new Version (1, 1, 2);
-  private static final String EXCEL_FILE = "src/main/codelists/PEPPOL Code Lists 1.1.2.xls";
+  private static final Version CODELIST_VERSION = new Version (1, 1, 3);
+  private static final String EXCEL_FILE = "src/main/codelists/PEPPOL Code Lists 1.1.3.xls";
   private static final String SHEET_PARTICIPANT = "Participant";
   private static final String SHEET_DOCUMENT = "Document";
   private static final String SHEET_PROCESS = "Process";

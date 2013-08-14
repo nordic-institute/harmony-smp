@@ -486,7 +486,14 @@ public enum EPredefinedIdentifierIssuingAgency implements IIdentifierIssuingAgen
    * 
    * @since code list 1.1.0
    */
-  VA_VAT ("VA:VAT", "Holy See (Vatican City State) VAT number", "9953", false, new Version ("1.1.0"));
+  VA_VAT ("VA:VAT", "Holy See (Vatican City State) VAT number", "9953", false, new Version ("1.1.0")),
+
+  /**
+   * Prefix <code>9954</code>, scheme ID <code>NL:ION</code><br>
+   * 
+   * @since code list 1.1.3
+   */
+  NL_ION ("NL:ION", "Dutch 'ION' number", "9954", false, new Version ("1.1.3"));
   private final String m_sSchemeID;
   private final String m_sSchemeAgency;
   private final String m_sISO6523;

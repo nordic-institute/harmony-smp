@@ -46,9 +46,9 @@
   </Annotation>
   <Identification>
     <ShortName>Scheme Agency</ShortName>
-    <Version>1.1.2</Version>
+    <Version>1.1.3</Version>
     <CanonicalUri>PEPPOL</CanonicalUri>
-    <CanonicalVersionUri>PEPPOL-1.1.2</CanonicalVersionUri>
+    <CanonicalVersionUri>PEPPOL-1.1.3</CanonicalVersionUri>
     <LocationUri>PartyID.gc</LocationUri>
   </Identification>
   <ColumnSet>
@@ -557,6 +557,14 @@
       </Value>
       <Value ColumnRef="name">
         <SimpleValue>Holy See (Vatican City State) VAT number</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="code">
+        <SimpleValue>NL:ION</SimpleValue>
+      </Value>
+      <Value ColumnRef="name">
+        <SimpleValue>Dutch &#39;ION&#39; number</SimpleValue>
       </Value>
     </Row>
   </SimpleCodeList>

@@ -46,7 +46,7 @@
   </Annotation>
   <Identification>
     <ShortName>PeppolIdentifierIssuingAgencies</ShortName>
-    <Version>1.1.2</Version>
+    <Version>1.1.3</Version>
     <CanonicalUri>urn:peppol.eu:names:identifier:issuingagencies</CanonicalUri>
     <CanonicalVersionUri>urn:peppol.eu:names:identifier:issuingagencies-1.0</CanonicalVersionUri>
   </Identification>
@@ -1175,6 +1175,23 @@
       </Value>
       <Value ColumnRef="since">
         <SimpleValue>1.1.0</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="schemeid">
+        <SimpleValue>NL:ION</SimpleValue>
+      </Value>
+      <Value ColumnRef="iso6523">
+        <SimpleValue>9954</SimpleValue>
+      </Value>
+      <Value ColumnRef="schemeagency">
+        <SimpleValue>Dutch &#39;ION&#39; number</SimpleValue>
+      </Value>
+      <Value ColumnRef="deprecated">
+        <SimpleValue>false</SimpleValue>
+      </Value>
+      <Value ColumnRef="since">
+        <SimpleValue>1.1.3</SimpleValue>
       </Value>
     </Row>
   </SimpleCodeList>
