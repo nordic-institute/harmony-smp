@@ -42,8 +42,23 @@
     </dependency>
     <dependency>
       <groupId>com.phloc</groupId>
+      <artifactId>phloc-datetime</artifactId>
+      <version>3.0.6</version>
+    </dependency>
+    <dependency>
+      <groupId>com.phloc</groupId>
+      <artifactId>phloc-db-api</artifactId>
+      <version>1.0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>com.phloc</groupId>
       <artifactId>phloc-db</artifactId>
       <version>3.1.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.phloc</groupId>
+      <artifactId>phloc-web</artifactId>
+      <version>5.0.6</version>
     </dependency>
     <dependency>
       <groupId>com.phloc</groupId>
