@@ -594,7 +594,7 @@ public class AccessPointService
             // Log with the correct error level
             LogUtils.log (s_aLogger,
                           aLogMsg.getErrorLevel (),
-                          sMessageID + String.valueOf (aLogMsg.getMessage ()),
+                          "  " + sMessageID + " " + String.valueOf (aLogMsg.getMessage ()),
                           aLogMsg.getThrowable ());
           }
         }
