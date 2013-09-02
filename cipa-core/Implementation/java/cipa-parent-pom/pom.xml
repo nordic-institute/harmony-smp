@@ -52,7 +52,7 @@
     <slf4j.version>1.7.5</slf4j.version>
     <servlet-api.version>2.5</servlet-api.version>
     <jersey.version>1.17.1</jersey.version>
-    <jetty.version>7.6.10.v20130312</jetty.version>
+    <jetty.version>7.6.12.v20130726</jetty.version>
   </properties>
 
   <!-- Who are we? -->
@@ -66,7 +66,7 @@
     <developer>
       <id>phax</id>
       <name>Philip Helger</name>
-      <organization>Austrian Federal Computing Center/Bundesrechenzentrum</organization>
+      <organization>Austrian Federal Computing Center/Bundesrechenzentrum, Vienna, Austria</organization>
     </developer>
   </developers>
   
@@ -583,12 +583,12 @@ Please remove or make sure it appears in the correct subdirectory of the classpa
         <plugin>
           <groupId>com.phloc.maven</groupId>
           <artifactId>closure-maven-plugin</artifactId>
-          <version>1.0.7</version>
+          <version>1.0.8</version>
         </plugin>
         <plugin>
           <groupId>com.phloc.maven</groupId>
           <artifactId>csscompress-maven-plugin</artifactId>
-          <version>1.0.13</version>
+          <version>1.0.18</version>
           <configuration>
             <forceCompress>false</forceCompress>
             <removeUnnecessaryCode>true</removeUnnecessaryCode>

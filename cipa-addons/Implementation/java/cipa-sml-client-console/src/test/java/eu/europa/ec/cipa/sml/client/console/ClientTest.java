@@ -62,17 +62,22 @@ import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 @DevelopersNote ("You need a running test SML for this test")
 public final class ClientTest {
   // SML specific data
-  private static ISMLInfo SML_INFO = ESML.TEST;
+  private static ISMLInfo SML_INFO = ESML.PRODUCTION;
 
   // SML unspecific data
   private static final String PI_SCHEMA = CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME;
-  private static final String PI_ID_CRUD = "0088:clienttest";
+  private static final String PI_ID_CRUD = "9915:tmp";
   private static final ParticipantIdentifierType PI = SimpleParticipantIdentifier.createWithDefaultScheme (PI_ID_CRUD);
   private static final String SMP_ID_CRUD = "SMP-CLIENTTEST";
   private static final String SMP_ID_MIGRATETO = "SMP-CLIENTTEST2";
 
   @Before
   public void initiate () {
+    System.setProperty ("http.proxyHost", "172.30.9.12");
+    System.setProperty ("http.proxyPort", "8080");
+    System.setProperty ("https.proxyHost", "172.30.9.12");
+    System.setProperty ("https.proxyPort", "8080");
+
     // Where is the SML located?
     Main.setHost (SML_INFO);
 
@@ -134,6 +139,19 @@ public final class ClientTest {
     Main.main (new String [] { "delete", "participant", PI_ID_CRUD, PI_SCHEMA });
     Main.main (new String [] { "list", "participant" });
     Main.main (new String [] { "delete", "metadata" });
+  }
+
+  /**
+   * This unit test creates a new participant on the SML (not on the SMP!),
+   * lists all participants registered for the SMP (on the SML, no lookup on the
+   * SMP performed!) and deletes the participant.
+   */
+  @Test
+  public void testIdentifierCRUD_ParticipantOnly () {
+    Main.main (new String [] { "create", "participant", PI_ID_CRUD, PI_SCHEMA });
+    Main.main (new String [] { "list", "participant" });
+    Main.main (new String [] { "delete", "participant", PI_ID_CRUD, PI_SCHEMA });
+    Main.main (new String [] { "list", "participant" });
   }
 
   @Test
