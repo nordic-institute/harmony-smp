@@ -37,11 +37,14 @@
  */
 package eu.europa.ec.cipa.sml.client;
 
+import java.io.IOException;
 import java.net.URL;
+import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 
 import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
@@ -56,6 +59,7 @@ import com.phloc.commons.random.VerySecureRandom;
 
 import eu.europa.ec.cipa.peppol.security.DoNothingTrustManager;
 import eu.europa.ec.cipa.peppol.security.HostnameVerifierAlwaysTrue;
+import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
 import eu.europa.ec.cipa.sml.AbstractSMLClientTest;
 
 /**
@@ -79,14 +83,22 @@ public final class SSLConnectTest extends AbstractSMLClientTest {
     if (false)
       System.setProperty ("javax.net.debug", "ssl");
 
-    final TrustManager [] aTrustMgrs = new TrustManager [] { new DoNothingTrustManager (false) };
-    final SSLContext sc = SSLContext.getInstance ("SSL");
-    sc.init (null, aTrustMgrs, VerySecureRandom.getInstance ());
-    SSLContext.setDefault (sc);
-    HttpsURLConnection.setDefaultSSLSocketFactory (sc.getSocketFactory ());
-    HttpsURLConnection.setDefaultHostnameVerifier (new HostnameVerifierAlwaysTrue (true));
+    // Load the client certificate
+    final KeyStore aKeyStore = KeyStoreUtils.loadKeyStore ("keys/sml_client_keystore.jks", "peppol");
+    final KeyManagerFactory aKMF = KeyManagerFactory.getInstance ("SunX509");
+    aKMF.init (aKeyStore, "peppol".toCharArray ());
 
-    final HttpsURLConnection uc = (HttpsURLConnection) new URL ("https://smk.peppolcentral.org/").openConnection ();
+    // Trust all
+    final TrustManager [] aTrustMgrs = new TrustManager [] { new DoNothingTrustManager (false) };
+
+    // SSL context
+    final SSLContext aSSLContext = SSLContext.getInstance ("SSL");
+    aSSLContext.init (aKMF.getKeyManagers (), aTrustMgrs, VerySecureRandom.getInstance ());
+
+    // Configure and open connection
+    final HttpsURLConnection uc = (HttpsURLConnection) new URL ("https://sml.peppolcentral.org/").openConnection ();
+    uc.setSSLSocketFactory (aSSLContext.getSocketFactory ());
+    uc.setHostnameVerifier (new HostnameVerifierAlwaysTrue (true));
     uc.setRequestMethod ("GET");
 
     // Debug status on URL connection
@@ -94,21 +106,32 @@ public final class SSLConnectTest extends AbstractSMLClientTest {
       s_aLogger.info ("Status code:  " + uc.getResponseCode ());
       s_aLogger.info ("Cipher suite: " + uc.getCipherSuite ());
       s_aLogger.info ("Encoding:     " + uc.getContentEncoding ());
-      int i = 0;
-      for (final Certificate aCert : uc.getServerCertificates ()) {
-        s_aLogger.info (" Cert " + (++i) + ":");
-        s_aLogger.info ("  Cert type:  " + aCert.getType ());
-        s_aLogger.info ("  Hash code:  " + aCert.hashCode ());
-        s_aLogger.info ("  Algorithm:  " + aCert.getPublicKey ().getAlgorithm ());
-        s_aLogger.info ("  Format:     " + aCert.getPublicKey ().getFormat ());
-        if (aCert instanceof X509Certificate) {
-          final X509Certificate aX509 = (X509Certificate) aCert;
-          s_aLogger.info ("   Principal: " + aX509.getIssuerX500Principal ());
-          s_aLogger.info ("   Subject:   " + aX509.getSubjectX500Principal ());
+      if (false) {
+        int i = 0;
+        for (final Certificate aCert : uc.getServerCertificates ()) {
+          s_aLogger.info (" Cert " + (++i) + ":");
+          s_aLogger.info ("  Cert type:  " + aCert.getType ());
+          s_aLogger.info ("  Hash code:  " + aCert.hashCode ());
+          s_aLogger.info ("  Algorithm:  " + aCert.getPublicKey ().getAlgorithm ());
+          s_aLogger.info ("  Format:     " + aCert.getPublicKey ().getFormat ());
+          if (aCert instanceof X509Certificate) {
+            final X509Certificate aX509 = (X509Certificate) aCert;
+            s_aLogger.info ("   Principal: " + aX509.getIssuerX500Principal ());
+            s_aLogger.info ("   Subject:   " + aX509.getSubjectX500Principal ());
+          }
         }
       }
     }
-    final byte [] b = StreamUtils.getAllBytes (uc.getInputStream ());
-    s_aLogger.info ("\n" + new String (b, CCharset.CHARSET_UTF_8));
+
+    try {
+      // Show success
+      final String sResult = StreamUtils.getAllBytesAsString (uc.getInputStream (), CCharset.CHARSET_UTF_8_OBJ);
+      s_aLogger.info ("\n" + sResult);
+    }
+    catch (final IOException ex) {
+      // Show error
+      final String sError = StreamUtils.getAllBytesAsString (uc.getErrorStream (), CCharset.CHARSET_UTF_8_OBJ);
+      s_aLogger.info ("\n" + sError);
+    }
   }
 }

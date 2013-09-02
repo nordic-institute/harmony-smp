@@ -85,9 +85,9 @@ public abstract class AbstractSMLClientTest {
     s_aLogger.info ("Using Java version " + SystemProperties.getJavaVersion ());
     if (aSMLInfo.requiresClientCertificate ()) {
       // initialize debug properties
-      if (true)
+      if (false)
         System.setProperty ("javax.net.debug", "all");
-      if (true)
+      if (false)
         System.setProperty ("java.security.debug", "all");
 
       // Main key storage
