@@ -55,6 +55,7 @@ import com.phloc.commons.io.streams.StreamUtils;
 import com.phloc.commons.random.VerySecureRandom;
 
 import eu.europa.ec.cipa.peppol.security.DoNothingTrustManager;
+import eu.europa.ec.cipa.peppol.security.HostnameVerifierAlwaysTrue;
 import eu.europa.ec.cipa.sml.AbstractSMLClientTest;
 
 /**
@@ -74,15 +75,18 @@ public final class SSLConnectTest extends AbstractSMLClientTest {
     System.setProperty ("https.proxyHost", "172.30.9.12");
     System.setProperty ("https.proxyPort", "8080");
     // System.setProperty ("https.protocols", "TLSv1");
-    System.setProperty ("https.protocols", "SSLv3");
-    System.setProperty ("javax.net.debug", "ssl");
-    final TrustManager [] trustAllCerts = new TrustManager [] { new DoNothingTrustManager (false) };
+    // System.setProperty ("https.protocols", "SSLv3");
+    if (false)
+      System.setProperty ("javax.net.debug", "ssl");
+
+    final TrustManager [] aTrustMgrs = new TrustManager [] { new DoNothingTrustManager (false) };
     final SSLContext sc = SSLContext.getInstance ("SSL");
-    sc.init (null, trustAllCerts, VerySecureRandom.getInstance ());
+    sc.init (null, aTrustMgrs, VerySecureRandom.getInstance ());
     SSLContext.setDefault (sc);
     HttpsURLConnection.setDefaultSSLSocketFactory (sc.getSocketFactory ());
+    HttpsURLConnection.setDefaultHostnameVerifier (new HostnameVerifierAlwaysTrue (true));
 
-    final HttpsURLConnection uc = (HttpsURLConnection) new URL ("https://sml.peppolcentral.org/index.jsp").openConnection ();
+    final HttpsURLConnection uc = (HttpsURLConnection) new URL ("https://smk.peppolcentral.org/").openConnection ();
     uc.setRequestMethod ("GET");
 
     // Debug status on URL connection

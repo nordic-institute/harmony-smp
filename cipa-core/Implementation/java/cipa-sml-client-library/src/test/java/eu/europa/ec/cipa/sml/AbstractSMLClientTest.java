@@ -45,14 +45,19 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
 import org.junit.BeforeClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.SystemProperties;
 import com.phloc.commons.annotations.DevelopersNote;
 import com.phloc.commons.random.VerySecureRandom;
 
 import eu.europa.ec.cipa.peppol.security.DoNothingTrustManager;
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
+import eu.europa.ec.cipa.peppol.sml.CSMLDefault;
 import eu.europa.ec.cipa.peppol.sml.ESML;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
+import eu.europa.ec.cipa.peppol.sml.SimpleSMLInfo;
 
 /**
  * This class tests the URL connection to the SML that is secured with client
@@ -62,23 +67,28 @@ import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
  */
 @DevelopersNote ("You need to create a keystore file !")
 public abstract class AbstractSMLClientTest {
-  public static final ISMLInfo SML_INFO = ESML.DEVELOPMENT_LOCAL;
+  public static final ISMLInfo SML_INFO = true ? ESML.TEST : new SimpleSMLInfo (CSMLDefault.TEST_DNS_ZONE,
+                                                                                "http://plixvdp2:8080",
+                                                                                "http://plixvdp2:8080/smk/",
+                                                                                true);
 
+  private static final Logger s_aLogger = LoggerFactory.getLogger (AbstractSMLClientTest.class);
   private static final String KEYSTORE_PATH = "keys/sml_client_keystore.jks";
   private static final String KEYSTORE_PASSWORD = "peppol";
 
   @BeforeClass
-  public static final void initSSL () throws Exception {
+  public static final void initClass () throws Exception {
     initSSL (SML_INFO);
   }
 
   public static final void initSSL (final ISMLInfo aSMLInfo) throws Exception {
+    s_aLogger.info ("Using Java version " + SystemProperties.getJavaVersion ());
     if (aSMLInfo.requiresClientCertificate ()) {
-      if (false) {
-        // initialize debug properties
-        System.setProperty ("javax.net.debug", "SSL,handshake");
+      // initialize debug properties
+      if (true)
+        System.setProperty ("javax.net.debug", "all");
+      if (true)
         System.setProperty ("java.security.debug", "all");
-      }
 
       // Main key storage
       final KeyStore aKeyStore = KeyStoreUtils.loadKeyStore (KEYSTORE_PATH, KEYSTORE_PASSWORD);
@@ -92,7 +102,7 @@ public abstract class AbstractSMLClientTest {
       // Assign key manager and empty trust manager to SSL context
       final SSLContext aSSLCtx = SSLContext.getInstance ("TLS");
       aSSLCtx.init (aKeyManagerFactory.getKeyManagers (),
-                    new TrustManager [] { new DoNothingTrustManager () },
+                    new TrustManager [] { new DoNothingTrustManager (true) },
                     VerySecureRandom.getInstance ());
       HttpsURLConnection.setDefaultSSLSocketFactory (aSSLCtx.getSocketFactory ());
     }

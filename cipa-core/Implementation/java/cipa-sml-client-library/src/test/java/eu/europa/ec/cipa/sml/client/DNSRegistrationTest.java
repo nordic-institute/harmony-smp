@@ -41,6 +41,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
 import java.net.InetAddress;
+import java.util.Arrays;
 
 import javax.annotation.Nullable;
 
@@ -50,12 +51,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.Type;
+
+import com.phloc.commons.collections.ArrayHelper;
+import com.phloc.commons.lang.CGStringHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.uri.BusdoxURLUtils;
@@ -68,24 +74,34 @@ import eu.europa.ec.cipa.sml.AbstractSMLClientTest;
  */
 @Ignore
 public final class DNSRegistrationTest extends AbstractSMLClientTest {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (DNSRegistrationTest.class);
+
   /*
    * Wildcard user.
    */
-  private static final String SML_ID = "wildcard-user1";
+  private static final String SMP_ID = "dns-test1";
 
-  private static final String SMP_1_LOGICAL_ADDRESS = "http://ec2-174-129-36-65.compute-1.amazonaws.com";
-  private static final String SMP_1_PHYSICAL_ADDRESS = "174.129.36.65";
-  private static final String SMP_1_LOGICAL_ADDRESS_VALIDATION = "ec2-174-129-36-65.compute-1.amazonaws.com.";
+  private static final String SMP_1_LOGICAL_ADDRESS = "http://mySMP.com";
+  private static final String SMP_1_PHYSICAL_ADDRESS = "127.0.0.1";
+  private static final String SMP_1_LOGICAL_ADDRESS_VALIDATION = "mySMP.com.";
 
-  private static final String SMP_2_LOGICAL_ADDRESS = "http://ec2-174-129-190-34.compute-1.amazonaws.com";
-  private static final String SMP_2_PHYSICAL_ADDRESS = "174.129.190.34";
-  private static final String SMP_2_LOGICAL_ADDRESS_VALIDATION = "ec2-174-129-190-34.compute-1.amazonaws.com.";
+  private static final String SMP_2_LOGICAL_ADDRESS = "http://mySMP2.com";
+  private static final String SMP_2_PHYSICAL_ADDRESS = "127.0.0.1";
+  private static final String SMP_2_LOGICAL_ADDRESS_VALIDATION = "mySMP2.com.";
 
-  private static final String PI_VALUE = "0088:1111100001111";
+  private static final String PI_VALUE = "0088:1111199991111";
   private static final String PI_SCHEME = "dns-actorid-test";
   private static final String PI_WILDCARD_SCHEME = "wildcard-actorid-allowed";
 
-  private static final String INTERNAL_DNS_SERVER = "blixdns1";
+  private static final String INTERNAL_DNS_SERVER = "blixdns0";
+
+  static {
+    System.setProperty ("http.proxyHost", "172.30.9.12");
+    System.setProperty ("http.proxyPort", "8080");
+    System.setProperty ("https.proxyHost", "172.30.9.12");
+    System.setProperty ("https.proxyPort", "8080");
+    s_aLogger.info ("Set proxies");
+  }
 
   @Nullable
   private static String _DNSLookupPI (final ParticipantIdentifierType aPI) throws Exception {
@@ -99,48 +115,64 @@ public final class DNSRegistrationTest extends AbstractSMLClientTest {
   }
 
   @Nullable
-  private static String _DNSLookup (final String host) throws Exception {
+  private static String _DNSLookup (final String sHost) throws Exception {
     // Wait to let dns propagate : DNS TTL = 60 secs
+    s_aLogger.info ("Waiting 10 seconds to lookup '" + sHost + "'");
     Thread.sleep (10000);
 
-    final SimpleResolver resolver = new SimpleResolver (INTERNAL_DNS_SERVER);
+    final Lookup aDNSLookup = new Lookup (sHost, Type.ANY);
+    aDNSLookup.setResolver (new SimpleResolver (INTERNAL_DNS_SERVER));
+    aDNSLookup.setCache (null);
 
-    final Lookup lookup = new Lookup (host, Type.ANY);
-    lookup.setResolver (resolver);
-    lookup.setCache (null);
+    final Record [] aRecords = aDNSLookup.run ();
+    s_aLogger.info ("Lookup returned [" + ArrayHelper.getSize (aRecords) + "]: " + Arrays.toString (aRecords));
 
-    final Record [] records = lookup.run ();
-
-    if (records == null || records.length == 0)
+    if (aRecords == null || aRecords.length == 0)
       return null;
 
-    if (records[0] instanceof CNAMERecord)
-      return ((CNAMERecord) records[0]).getAlias ().toString ();
+    final Record aRecord = aRecords[0];
+    if (aRecord instanceof CNAMERecord)
+      return ((CNAMERecord) aRecord).getAlias ().toString ();
 
-    if (records[0] instanceof ARecord) {
-      final InetAddress inetAddress = ((ARecord) records[0]).getAddress ();
-      return inetAddress.getHostAddress ();
+    if (aRecord instanceof ARecord) {
+      final InetAddress aInetAddress = ((ARecord) aRecord).getAddress ();
+      return aInetAddress.getHostAddress ();
     }
 
-    return records[0].toString ();
+    s_aLogger.info ("Unknown record type found: " + CGStringHelper.getClassLocalName (aRecord));
+    return aRecord.toString ();
   }
 
   @Before
   public void setupSMPBeforeTests () throws Exception {
-    final ManageServiceMetadataServiceCaller manageServiceMetaData = new ManageServiceMetadataServiceCaller (SML_INFO);
+    s_aLogger.info ("Creating an SMP");
+    try {
+      final ManageServiceMetadataServiceCaller manageServiceMetaData = new ManageServiceMetadataServiceCaller (SML_INFO);
 
-    manageServiceMetaData.create (SML_ID, SMP_1_PHYSICAL_ADDRESS, SMP_1_LOGICAL_ADDRESS);
+      manageServiceMetaData.create (SMP_ID, SMP_1_PHYSICAL_ADDRESS, SMP_1_LOGICAL_ADDRESS);
+      s_aLogger.info ("Created an SMP");
+    }
+    catch (final Exception ex) {
+      s_aLogger.error ("Failed: " + ex.getMessage ());
+      throw ex;
+    }
   }
 
   @After
   public void deleteSMPAfterTests () throws Exception {
+    s_aLogger.info ("Deleting an SMP");
     final ManageServiceMetadataServiceCaller manageServiceMetaData = new ManageServiceMetadataServiceCaller (SML_INFO);
 
     try {
-      manageServiceMetaData.delete (SML_ID);
+      manageServiceMetaData.delete (SMP_ID);
+      s_aLogger.info ("Deleted an SMP");
     }
     catch (final NotFoundFault e) {
       // this is ok
+    }
+    catch (final Exception ex) {
+      s_aLogger.error ("Failed: " + ex.getMessage ());
+      throw ex;
     }
   }
 
@@ -151,23 +183,23 @@ public final class DNSRegistrationTest extends AbstractSMLClientTest {
     // @Before creates new SMP!
 
     // verify created
-    final String publisher = _DNSLookupPublisher (SML_ID);
+    final String publisher = _DNSLookupPublisher (SMP_ID);
     assertEquals (SMP_1_LOGICAL_ADDRESS_VALIDATION, publisher);
 
     // Update SML address
     final ManageServiceMetadataServiceCaller manageServiceMetaData = new ManageServiceMetadataServiceCaller (SML_INFO);
 
-    manageServiceMetaData.update (SML_ID, SMP_2_PHYSICAL_ADDRESS, SMP_2_LOGICAL_ADDRESS);
+    manageServiceMetaData.update (SMP_ID, SMP_2_PHYSICAL_ADDRESS, SMP_2_LOGICAL_ADDRESS);
 
     // verify update
-    final String updatedPublisher = _DNSLookupPublisher (SML_ID);
+    final String updatedPublisher = _DNSLookupPublisher (SMP_ID);
     assertEquals (SMP_2_LOGICAL_ADDRESS_VALIDATION, updatedPublisher);
 
     // Delete SML
-    manageServiceMetaData.delete (SML_ID);
+    manageServiceMetaData.delete (SMP_ID);
 
     // verify delete
-    final String deletedPublisher = _DNSLookupPublisher (SML_ID);
+    final String deletedPublisher = _DNSLookupPublisher (SMP_ID);
     assertNull (deletedPublisher);
   }
 
@@ -180,11 +212,11 @@ public final class DNSRegistrationTest extends AbstractSMLClientTest {
     // create PI
     final ManageParticipantIdentifierServiceCaller client = new ManageParticipantIdentifierServiceCaller (SML_INFO);
     final ParticipantIdentifierType aPI = new SimpleParticipantIdentifier (PI_SCHEME, PI_VALUE);
-    client.create (SML_ID, aPI);
+    client.create (SMP_ID, aPI);
 
     // verify PI in DNS
     final String host = _DNSLookupPI (aPI);
-    assertEquals (SML_ID + "." + SML_INFO.getPublisherDNSName (), host);
+    assertEquals (SMP_ID + "." + SML_INFO.getPublisherDNSName (), host);
 
     // delete PI
     client.delete (aPI);
@@ -202,15 +234,15 @@ public final class DNSRegistrationTest extends AbstractSMLClientTest {
     final ManageParticipantIdentifierServiceCaller client = new ManageParticipantIdentifierServiceCaller (SML_INFO);
 
     final ParticipantIdentifierType aPI = new SimpleParticipantIdentifier (PI_WILDCARD_SCHEME, "*");
-    client.create (SML_ID, aPI);
+    client.create (SMP_ID, aPI);
 
     // verify that PI can be found in Wildcard domain.
     final String piHost = _DNSLookupPI (new SimpleParticipantIdentifier (PI_WILDCARD_SCHEME, PI_VALUE));
-    assertEquals (SML_ID + "." + SML_INFO.getPublisherDNSName (), piHost);
+    assertEquals (SMP_ID + "." + SML_INFO.getPublisherDNSName (), piHost);
 
     // verify that Wildcard can be found
     final String wildHost = _DNSLookupPI (aPI);
-    assertEquals (SML_ID + "." + SML_INFO.getPublisherDNSName (), wildHost);
+    assertEquals (SMP_ID + "." + SML_INFO.getPublisherDNSName (), wildHost);
 
     // delete wildcard
     client.delete (aPI);
