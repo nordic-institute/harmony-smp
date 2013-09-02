@@ -64,6 +64,8 @@ import org.w3._2009._02.ws_tra.Resource;
 import org.w3c.dom.Document;
 
 import com.phloc.commons.annotations.Nonempty;
+import com.phloc.commons.exceptions.InitializationException;
+import com.phloc.commons.lang.GenericReflection;
 import com.phloc.commons.random.VerySecureRandom;
 import com.phloc.commons.state.ESuccess;
 import com.phloc.commons.string.StringHelper;
@@ -85,14 +87,22 @@ import eu.europa.ec.cipa.transport.cert.AccessPointX509TrustManager;
  *         Narvaez(jose@alfa1lab.com)<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-public final class AccessPointClient {
+public final class AccessPointClient
+{
   /** String that represents the SSL security provided. */
   public static final String SSL_PROTOCOL = "SSL";
 
   /** Logger to follow this class behavior. */
   private static final Logger s_aLogger = LoggerFactory.getLogger (AccessPointClient.class);
 
-  private AccessPointClient () {}
+  static
+  {
+    if (GenericReflection.getClassFromNameSafe ("com.sun.xml.ws.Closeable") == null)
+      throw new InitializationException ("Seems like Metro is not in the classpath. If you are using Maven please ensure the dependency 'org.glassfish.metro:webservices-rt' is added in scope 'provided' and that Metro is in your application server 'endorsed' directory.");
+  }
+
+  private AccessPointClient ()
+  {}
 
   /**
    * Sets up the certificate TrustManager.
@@ -100,7 +110,8 @@ public final class AccessPointClient {
    * @throws NoSuchAlgorithmException
    */
   @Nonnull
-  private static SSLSocketFactory _createSSLSocketFactory () throws Exception {
+  private static SSLSocketFactory _createSSLSocketFactory () throws Exception
+  {
     final KeyManager [] aKeyManagers = null;
     final TrustManager [] aTrustManagers = new TrustManager [] { new AccessPointX509TrustManager (null, null) };
     final SSLContext aSSLContext = SSLContext.getInstance (SSL_PROTOCOL);
@@ -112,14 +123,17 @@ public final class AccessPointClient {
    * Sets up the certificate TrustManager.
    */
   @Nonnull
-  private static ESuccess _setupCertificateTrustManager () {
-    try {
+  private static ESuccess _setupCertificateTrustManager ()
+  {
+    try
+    {
       HttpsURLConnection.setDefaultSSLSocketFactory (_createSSLSocketFactory ());
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug (">> Set Certificate Trust Manager");
       return ESuccess.SUCCESS;
     }
-    catch (final Exception e) {
+    catch (final Exception e)
+    {
       s_aLogger.error ("Error setting the Certificate Trust Manager.", e);
       return ESuccess.FAILURE;
     }
@@ -134,11 +148,13 @@ public final class AccessPointClient {
    * @return the port.
    */
   @Nullable
-  public static Resource createPort (@Nonnull @Nonempty final String sAddress) {
+  public static Resource createPort (@Nonnull @Nonempty final String sAddress)
+  {
     if (StringHelper.hasNoText (sAddress))
       throw new IllegalArgumentException ("Address may not be empty!");
 
-    try {
+    try
+    {
       // Host name verifier
       HttpsURLConnection.setDefaultHostnameVerifier (new HostnameVerifierAlwaysTrue ());
       if (s_aLogger.isDebugEnabled ())
@@ -151,7 +167,8 @@ public final class AccessPointClient {
       final Resource aPort = aService.getResourceBindingPort ();
       final Map <String, Object> aRequestContext = ((BindingProvider) aPort).getRequestContext ();
       aRequestContext.put (BindingProvider.ENDPOINT_ADDRESS_PROPERTY, sAddress);
-      if (false) {
+      if (false)
+      {
         // According to the JAX-WS specs, this should work, but because of RM it
         // does not!
         // See Metro bug WSIT-1632
@@ -160,7 +177,8 @@ public final class AccessPointClient {
       }
       return aPort;
     }
-    catch (final Exception e) {
+    catch (final Exception e)
+    {
       s_aLogger.error ("Error creating the START WS Port for URL '" + sAddress + "'", e);
       return null;
     }
@@ -182,7 +200,8 @@ public final class AccessPointClient {
   @Nonnull
   public static ESuccess send (@Nonnull final Resource aPort,
                                @Nonnull final IMessageMetadata aMetadata,
-                               @Nonnull final Create aBody) {
+                               @Nonnull final Create aBody)
+  {
     if (aPort == null)
       throw new NullPointerException ("port");
     if (aMetadata == null)
@@ -196,7 +215,8 @@ public final class AccessPointClient {
                     MessageMetadataHelper.getDebugInfo (aMetadata) +
                     "\n\tReceiver AP:\t" +
                     ((BindingProvider) aPort).getRequestContext ().get (BindingProvider.ENDPOINT_ADDRESS_PROPERTY));
-    try {
+    try
+    {
       // Assign the headers
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("Adding BUSDOX headers to SOAP-envelope");
@@ -209,12 +229,15 @@ public final class AccessPointClient {
       // Build response log message
       final StringBuilder aResponseMsg = new StringBuilder ();
       aResponseMsg.append ("Message ").append (aMetadata.getMessageID ()).append (" has been successfully delivered!");
-      if (aResponse != null) {
+      if (aResponse != null)
+      {
         if (aResponse.getResourceCreated () != null &&
-            !aResponse.getResourceCreated ().getEndpointReference ().isEmpty ()) {
+            !aResponse.getResourceCreated ().getEndpointReference ().isEmpty ())
+        {
           aResponseMsg.append ("\n  EndpointReferences: ");
           int nIndex = 0;
-          for (final W3CEndpointReference aEPRef : aResponse.getResourceCreated ().getEndpointReference ()) {
+          for (final W3CEndpointReference aEPRef : aResponse.getResourceCreated ().getEndpointReference ())
+          {
             if (nIndex++ > 0)
               aResponseMsg.append (", ");
             aResponseMsg.append (W3CEndpointReferenceUtils.getAddress (aEPRef));
@@ -230,19 +253,23 @@ public final class AccessPointClient {
       // Done
       return ESuccess.SUCCESS;
     }
-    catch (final JAXBException ex) {
+    catch (final JAXBException ex)
+    {
       // Usually a JAXB marshalling error
       s_aLogger.error ("An error occurred while marshalling headers.", ex);
     }
-    catch (final FaultMessage ex) {
+    catch (final FaultMessage ex)
+    {
       // A wrapped error from the START server
       s_aLogger.error ("Error while sending the message.", ex);
     }
-    catch (final WebServiceException ex) {
+    catch (final WebServiceException ex)
+    {
       // An error from the Metro framework
       s_aLogger.error ("Internal error while sending the message", ex);
     }
-    finally {
+    finally
+    {
       // Close the port directly after sending.
       // This is important for WSRM!
       ((com.sun.xml.ws.Closeable) aPort).close ();
@@ -253,9 +280,11 @@ public final class AccessPointClient {
   @Nonnull
   public static ESuccess send (@Nonnull final String sAddressURL,
                                @Nonnull final IMessageMetadata aMetadata,
-                               @Nonnull final Create aBody) {
+                               @Nonnull final Create aBody)
+  {
     final Resource aPort = createPort (sAddressURL);
-    if (aPort == null) {
+    if (aPort == null)
+    {
       // Warning was already emitted
       return ESuccess.FAILURE;
     }
@@ -279,7 +308,8 @@ public final class AccessPointClient {
   @Nonnull
   public static ESuccess send (@Nonnull final String sAddressURL,
                                @Nonnull final IMessageMetadata aMetadata,
-                               @Nonnull final Document aXMLDoc) {
+                               @Nonnull final Document aXMLDoc)
+  {
     if (aXMLDoc == null)
       throw new NullPointerException ("XMLDocument");
 
