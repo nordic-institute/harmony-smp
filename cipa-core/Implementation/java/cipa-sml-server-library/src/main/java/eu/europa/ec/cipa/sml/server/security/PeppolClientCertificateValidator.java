@@ -42,6 +42,7 @@ import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -53,6 +54,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.phloc.commons.collections.ArrayHelper;
+import com.phloc.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 
@@ -163,40 +165,45 @@ public final class PeppolClientCertificateValidator {
     // final boolean revoked = crl.isRevoked (certificate);
 
     // OK, we have a non-empty, type checked Certificate array
-    // Find the certificate that is issued by
-    final String sIssuerToSearch = ConfigFile.getInstance ().getString (CONFIG_SML_CLIENT_CERTISSUER);
-    if (sIssuerToSearch == null)
-      throw new IllegalStateException ("The configuration file is missing the entry '" +
-                                       CONFIG_SML_CLIENT_CERTISSUER +
-                                       "'");
 
-    // Alternative (optional)
-    final String sAlternativeIssuerToSearch = ConfigFile.getInstance ().getString (CONFIG_SML_CLIENT_CERTISSUER_NEW);
+    // Build list of principals to search - this is assumed to be more safe than
+    // to simply search by name!
+    final List <X500Principal> aSearchIssuers = new ArrayList <X500Principal> ();
+    {
+      // Find the certificate that is issued by
+      final String sIssuerToSearch = ConfigFile.getInstance ().getString (CONFIG_SML_CLIENT_CERTISSUER);
+      if (StringHelper.hasNoText (sIssuerToSearch))
+        throw new IllegalStateException ("The configuration file is missing the entry '" +
+                                         CONFIG_SML_CLIENT_CERTISSUER +
+                                         "'");
+      // Throws a runtime exception on syntax error anyway :)
+      aSearchIssuers.add (new X500Principal (sIssuerToSearch));
 
-    s_aLogger.info ("Searching for the following certificate issuer: '" +
-                    sIssuerToSearch +
-                    "'" +
-                    (sAlternativeIssuerToSearch == null ? "" : " or '" + sAlternativeIssuerToSearch + "'"));
-
-    X509Certificate aCertToVerify = null;
-    for (final X509Certificate aCert : aRequestCerts) {
-      final X500Principal aIssuer = aCert.getIssuerX500Principal ();
-      final String sIssuerName = aIssuer.getName ();
-      s_aLogger.info ("  Found the following certificate issuer: '" + sIssuerName + "'");
-      if (sIssuerToSearch.equals (sIssuerName) ||
-          (sAlternativeIssuerToSearch != null && sAlternativeIssuerToSearch.equals (sIssuerName))) {
-        aCertToVerify = aCert;
-        break;
+      // Alternative (optional)
+      final String sAlternativeIssuerToSearch = ConfigFile.getInstance ().getString (CONFIG_SML_CLIENT_CERTISSUER_NEW);
+      if (StringHelper.hasText (sAlternativeIssuerToSearch)) {
+        // Throws a runtime exception on syntax error anyway :)
+        aSearchIssuers.add (new X500Principal (sAlternativeIssuerToSearch));
       }
+
+      s_aLogger.info ("Searching for the following certificate issuer(s): " + aSearchIssuers);
     }
 
-    // Do we have exactly 1 certificate to verify?
-    if (aCertToVerify == null)
-      throw new IllegalStateException ("Found no certificate that was issued by '" +
-                                       sIssuerToSearch +
-                                       "' or by '" +
-                                       sAlternativeIssuerToSearch +
-                                       "!");
+    X509Certificate aCertToVerify = null;
+    {
+      for (final X509Certificate aCert : aRequestCerts) {
+        final X500Principal aIssuer = aCert.getIssuerX500Principal ();
+        s_aLogger.info ("  Found the following certificate issuer: '" + aIssuer + "'");
+        if (aSearchIssuers.contains (aIssuer)) {
+          s_aLogger.info ("    and using it!");
+          aCertToVerify = aCert;
+          break;
+        }
+      }
+      // Do we have a certificate to verify?
+      if (aCertToVerify == null)
+        throw new IllegalStateException ("Found no certificate that was issued by the specified issuers.");
+    }
 
     // This is the main verification process against the PEPPOL SMP root
     // certificate
@@ -204,6 +211,7 @@ public final class PeppolClientCertificateValidator {
     final String sPeppolVerifyMsg = _verifyCertificate (aCertToVerify, aPeppolRootCert, aCRLs, aNow);
     if (sPeppolVerifyMsg == null) {
       // Passed certificate is a PEPPOL certificate
+      s_aLogger.info ("  Passed certificate is a PEPPOL certificate");
       return true;
     }
 
@@ -213,6 +221,7 @@ public final class PeppolClientCertificateValidator {
     final String sOpenPeppolVerifyMsg = _verifyCertificate (aCertToVerify, aOpenPeppolRootCert, aCRLs, aNow);
     if (sOpenPeppolVerifyMsg == null) {
       // Passed certificate is an OpenPEPPOL certificate
+      s_aLogger.info ("  Passed certificate is an OpenPEPPOL certificate");
       return true;
     }
 

@@ -37,7 +37,6 @@
  */
 package eu.europa.ec.cipa.sml.server.security;
 
-import java.security.Principal;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +44,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import javax.security.auth.x500.X500Principal;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
@@ -99,10 +99,10 @@ public final class ClientUniqueIDProvider {
 
     // Find all certificates that are not issuer to another certificate
     final List <X509Certificate> aNonIssuerCertList = new ArrayList <X509Certificate> ();
-    for (final X509Certificate aCert : aRequestCerts) {
-      final Principal aSubject = aCert.getSubjectX500Principal ();
+    for (final X509Certificate aRequestCert : aRequestCerts) {
+      final X500Principal aSubject = aRequestCert.getSubjectX500Principal ();
 
-      // Search for the issuer in the available certificate array
+      // Search for the issuer of the current certificate
       boolean bFound = false;
       for (final X509Certificate aIssuerCert : aRequestCerts)
         if (aSubject.equals (aIssuerCert.getIssuerX500Principal ())) {
@@ -110,7 +110,7 @@ public final class ClientUniqueIDProvider {
           break;
         }
       if (!bFound)
-        aNonIssuerCertList.add (aCert);
+        aNonIssuerCertList.add (aRequestCert);
     }
 
     // Do we have exactly 1 certificate to verify?
