@@ -70,17 +70,30 @@ public final class PeppolClientCertificateValidator {
 
   private PeppolClientCertificateValidator () {}
 
+  /**
+   * @param aCert
+   *        The certificate to validate. May not be <code>null</code>.
+   * @param aTrustedRootCert
+   *        The trusted root certificate. E.g. the PEPPOL or the OpenPEPPOL SMP
+   *        root certificate.
+   * @param aCRLs
+   *        A non-<code>null</code> list with revocation lists to handle
+   * @param aDT
+   *        The date and time which should be used for checking. May be
+   *        <code>null</code> to indicate "now".
+   * @return <code>null</code> in case of success!
+   */
   @Nullable
   private static String _verifyCertificate (@Nonnull final X509Certificate aCert,
-                                            @Nonnull final X509Certificate aIssuerCert,
-                                            @Nullable final Collection <CRL> aCRLs,
+                                            @Nonnull final X509Certificate aTrustedRootCert,
+                                            @Nonnull final Collection <CRL> aCRLs,
                                             @Nullable final Date aDT) {
     if (aCert.hasUnsupportedCriticalExtension ())
       return "Certificate has unsupported critical extension";
 
     // Verify the current certificate using the issuer certificate
     try {
-      aCert.verify (aIssuerCert.getPublicKey ());
+      aCert.verify (aTrustedRootCert.getPublicKey ());
     }
     catch (final Exception ex) {
       return ex.getMessage ();
@@ -185,30 +198,36 @@ public final class PeppolClientCertificateValidator {
                                        sAlternativeIssuerToSearch +
                                        "!");
 
-    // This is the main verification process against the PEPPOL root
+    // This is the main verification process against the PEPPOL SMP root
     // certificate
-    final X509Certificate aRootCert = PeppolRootCertificateProvider.getPeppolSMPRootCertificate ();
-    final X509Certificate aOpenPeppolRootCert = PeppolRootCertificateProvider.getOpenPeppolSMPRootCertificate ();
-    final String sVerifyMsg = _verifyCertificate (aCertToVerify, aRootCert, aCRLs, aNow);
-    final String sVerifyMsgOpenPeppol = _verifyCertificate (aCertToVerify, aOpenPeppolRootCert, aCRLs, aNow);
-    if (sVerifyMsg != null && sVerifyMsgOpenPeppol != null) {
-
-      s_aLogger.warn ("Client certificate not correct: " +
-                      sVerifyMsg +
-                      "; root certificate serial=" +
-                      aRootCert.getSerialNumber ().toString (16) +
-                      "; root certficate issuer=" +
-                      aRootCert.getIssuerX500Principal ().getName ());
-
-      s_aLogger.warn ("Client certificate not correct: " +
-                      sVerifyMsgOpenPeppol +
-                      "; root certificate serial=" +
-                      aOpenPeppolRootCert.getSerialNumber ().toString (16) +
-                      "; root certficate issuer=" +
-                      aOpenPeppolRootCert.getIssuerX500Principal ().getName ());
-      return false;
+    final X509Certificate aPeppolRootCert = PeppolRootCertificateProvider.getPeppolSMPRootCertificate ();
+    final String sPeppolVerifyMsg = _verifyCertificate (aCertToVerify, aPeppolRootCert, aCRLs, aNow);
+    if (sPeppolVerifyMsg == null) {
+      // Passed certificate is a PEPPOL certificate
+      return true;
     }
 
-    return true;
+    // This is the main verification process against the OpenPEPPOL SMP root
+    // certificate
+    final X509Certificate aOpenPeppolRootCert = PeppolRootCertificateProvider.getOpenPeppolSMPRootCertificate ();
+    final String sOpenPeppolVerifyMsg = _verifyCertificate (aCertToVerify, aOpenPeppolRootCert, aCRLs, aNow);
+    if (sOpenPeppolVerifyMsg == null) {
+      // Passed certificate is an OpenPEPPOL certificate
+      return true;
+    }
+
+    s_aLogger.warn ("Client certificate is not a PEPPOL certificate: " +
+                    sPeppolVerifyMsg +
+                    "; root certificate serial=" +
+                    aPeppolRootCert.getSerialNumber ().toString (16) +
+                    "; root certficate issuer=" +
+                    aPeppolRootCert.getIssuerX500Principal ().getName ());
+    s_aLogger.warn ("Client certificate is also not an OpenPEPPOL certificate: " +
+                    sOpenPeppolVerifyMsg +
+                    "; root certificate serial=" +
+                    aOpenPeppolRootCert.getSerialNumber ().toString (16) +
+                    "; root certficate issuer=" +
+                    aOpenPeppolRootCert.getIssuerX500Principal ().getName ());
+    return false;
   }
 }
