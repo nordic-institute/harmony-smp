@@ -214,6 +214,12 @@ public final class PeppolClientCertificateValidator {
       s_aLogger.info ("  Passed certificate is a PEPPOL certificate");
       return true;
     }
+    s_aLogger.warn ("Client certificate is not a PEPPOL certificate: " +
+                    sPeppolVerifyMsg +
+                    "; root certificate serial=" +
+                    aPeppolRootCert.getSerialNumber ().toString (16) +
+                    "; root certficate issuer=" +
+                    aPeppolRootCert.getIssuerX500Principal ().getName ());
 
     // This is the main verification process against the OpenPEPPOL SMP root
     // certificate
@@ -224,13 +230,6 @@ public final class PeppolClientCertificateValidator {
       s_aLogger.info ("  Passed certificate is an OpenPEPPOL certificate");
       return true;
     }
-
-    s_aLogger.warn ("Client certificate is not a PEPPOL certificate: " +
-                    sPeppolVerifyMsg +
-                    "; root certificate serial=" +
-                    aPeppolRootCert.getSerialNumber ().toString (16) +
-                    "; root certficate issuer=" +
-                    aPeppolRootCert.getIssuerX500Principal ().getName ());
     s_aLogger.warn ("Client certificate is also not an OpenPEPPOL certificate: " +
                     sOpenPeppolVerifyMsg +
                     "; root certificate serial=" +

@@ -62,7 +62,7 @@ public final class PeppolClientCertificateValidatorTest {
     // Main key storage
     KeyStore aKeyStore = null;
     try {
-      aKeyStore = KeyStoreUtils.loadKeyStore ("keys/sml_keystore.jks", "peppol");
+      aKeyStore = KeyStoreUtils.loadKeyStore ("keys/sml2.jks", "peppol");
     }
     catch (final IllegalArgumentException ex) {
       // Keystore does not exist - skip test
@@ -83,7 +83,7 @@ public final class PeppolClientCertificateValidatorTest {
     assertTrue (!aCerts.isEmpty ());
 
     // Convert to array
-    final X509Certificate [] aCertArray = aCerts.toArray (new X509Certificate [0]);
+    final X509Certificate [] aCertArray = aCerts.toArray (new X509Certificate [aCerts.size ()]);
 
     // And test
     assertTrue (PeppolClientCertificateValidator.isClientCertificateValid (aCertArray));
