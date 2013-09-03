@@ -98,7 +98,7 @@ public final class MainSendDocument {
 
   private static void _sendDocument (final IReadableResource aXmlRes) throws Exception {
     final IMessageMetadata aMetadata = _createMetadata ();
-    final String sAccessPointURL = USE_LOCAL_AP ? "http://localhost:8080/cipa-start-server/accessPointService"
+    final String sAccessPointURL = USE_LOCAL_AP ? "http://localhost:8090/accessPointService"
                                                : _getAccessPointUrl (aMetadata);
     final Document aXMLDoc = XMLReader.readXMLDOM (aXmlRes);
     AccessPointClient.send (sAccessPointURL, aMetadata, aXMLDoc);
