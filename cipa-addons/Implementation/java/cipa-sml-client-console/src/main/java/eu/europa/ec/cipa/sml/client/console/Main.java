@@ -213,6 +213,9 @@ public final class Main {
     final ESMLObjectType eObject = ESMLObjectType.getFromNameOrNull (sObject);
     if (eObject != null)
       switch (eObject) {
+        case PARTICIPANT:
+          // not supported
+          break;
         case METADATA:
           _getSMClient ().update (m_sSMPID, args, index + 1);
           return;
@@ -279,6 +282,9 @@ public final class Main {
     final ESMLObjectType eObject = ESMLObjectType.getFromNameOrNull (sObject);
     if (eObject != null)
       switch (eObject) {
+        case PARTICIPANT:
+          // not supported
+          break;
         case METADATA:
           _getSMClient ().read (m_sSMPID, args, index + 1);
           return;
@@ -296,6 +302,9 @@ public final class Main {
         case PARTICIPANT:
           _getMPClient ().list (m_sSMPID, args, index + 1);
           return;
+        case METADATA:
+          // not supported
+          break;
       }
     System.err.println ("CANNOT DO LIST ON " + sObject);
     printHelp ();
@@ -313,6 +322,9 @@ public final class Main {
         case PARTICIPANT:
           _getMPClient ().prepareToMigrate (m_sSMPID, args, index + 1);
           return;
+        case METADATA:
+          // not supported
+          break;
       }
     System.err.println ("CANNOT DO PREPARETOMIGRATE ON " + sObject);
     printHelp ();
@@ -330,6 +342,9 @@ public final class Main {
         case PARTICIPANT:
           _getMPClient ().migrate (m_sSMPID, args, index + 1);
           return;
+        case METADATA:
+          // not supported
+          break;
       }
     System.err.println ("CANNOT DO MIGRATE ON " + sObject);
     printHelp ();

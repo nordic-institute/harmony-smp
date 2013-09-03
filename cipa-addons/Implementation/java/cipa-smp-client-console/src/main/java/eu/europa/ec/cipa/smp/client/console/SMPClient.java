@@ -91,11 +91,7 @@ import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
  */
 public final class SMPClient {
   private static enum ECommand {
-    ADDGROUP,
-    ADD,
-    DELGROUP,
-    DEL,
-    LIST;
+    ADDGROUP, ADD, DELGROUP, DEL, LIST;
 
     @Nullable
     public static ECommand getFromNameOrNull (@Nullable final String sName) {
@@ -245,6 +241,10 @@ public final class SMPClient {
               s_aLogger.error ("No Document Type ID specified use -d to specify Document Type ID");
               bGoodCmd = false;
             }
+            break;
+          case LIST:
+            // No options
+            break;
         }
     }
 
