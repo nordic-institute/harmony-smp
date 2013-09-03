@@ -33,7 +33,7 @@
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-commons</artifactId>
-      <version>4.0.9</version>
+      <version>4.0.10</version>
     </dependency>
     <dependency>
       <groupId>com.phloc</groupId>
@@ -61,10 +61,17 @@
       <version>1.1.2-SNAPSHOT</version>
     </dependency>
     <!-- Dummy, so that any receiver is present :)  Comment out if you use the receiver externalisation mechanism see config server.properties-->
+    <!-- 
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-start-filereceiver</artifactId>
       <version>1.1.2-SNAPSHOT</version>
+    </dependency>
+     -->
+    <dependency>
+      <groupId>com.helger</groupId>
+      <artifactId>cipa-start-jmsreceiver</artifactId>
+      <version>1.0.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
