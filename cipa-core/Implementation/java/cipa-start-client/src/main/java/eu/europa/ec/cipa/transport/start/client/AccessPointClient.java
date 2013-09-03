@@ -72,6 +72,8 @@ import com.phloc.commons.string.StringHelper;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.developer.JAXWSProperties;
 import com.sun.xml.ws.developer.WSBindingProvider;
+import com.sun.xml.ws.rx.rm.api.ReliableMessagingFeatureBuilder;
+import com.sun.xml.ws.rx.rm.api.RmProtocolVersion;
 
 import eu.europa.ec.cipa.peppol.security.HostnameVerifierAlwaysTrue;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
@@ -164,7 +166,8 @@ public final class AccessPointClient
       _setupCertificateTrustManager ();
 
       final AccessPointService aService = new AccessPointService ();
-      final Resource aPort = aService.getResourceBindingPort ();
+      final Resource aPort = aService.getResourceBindingPort (new ReliableMessagingFeatureBuilder (RmProtocolVersion.WSRM200702).closeSequenceOperationTimeout (1)
+                                                                                                                                .build ());
       final Map <String, Object> aRequestContext = ((BindingProvider) aPort).getRequestContext ();
       aRequestContext.put (BindingProvider.ENDPOINT_ADDRESS_PROPERTY, sAddress);
       if (false)
