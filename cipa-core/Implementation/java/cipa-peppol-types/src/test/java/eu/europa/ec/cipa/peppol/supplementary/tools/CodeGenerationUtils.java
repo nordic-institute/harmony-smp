@@ -35,7 +35,7 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.peppol.tools;
+package eu.europa.ec.cipa.peppol.supplementary.tools;
 
 import java.util.Locale;
 

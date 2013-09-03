@@ -35,7 +35,7 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.peppol.tools;
+package eu.europa.ec.cipa.peppol.supplementary.tools;
 
 import java.io.File;
 
@@ -81,6 +81,7 @@ public final class MainCreateTrustStoreHashFiles {
 
   public static void main (final String [] args) {
     _create (KeyStoreUtils.TRUSTSTORE_CLASSPATH);
+    _create (KeyStoreUtils.TRUSTSTORE_CLASSPATH_PEPPOL);
     _create (KeyStoreUtils.TRUSTSTORE_CLASSPATH_OPENPEPPOL);
   }
 }

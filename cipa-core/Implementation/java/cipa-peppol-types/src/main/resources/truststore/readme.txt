@@ -36,18 +36,27 @@
     under either the MPL or the EUPL License.
 ====
 
-global-truststore.jks is the global trust store for PEPPOL
-global-truststore-openpeppol.jks is the global trust store for OpenPEPPOL 
+global-truststore.jks
+  Is the global trust store for PEPPOL and OpenPEPPOL. It works for SML, SMP and AP.
+  It is the merged version of the separate truststores.
 
-This global truststore works for SMP and AP.
+global-truststore-peppol.jks
+  Is the global trust store for PEPPOL and works for SML, SMP and AP
+  The contained aliases are:
+  * peppol root test ca
+  * peppol access point test ca (peppol root test ca)
+  * peppol security token service test ca (peppol root test ca)
+  * peppol service metadata publisher test ca (peppol root test ca)
 
-The contained aliases are:
-peppol root test ca
-peppol access point test ca (peppol root test ca)
-peppol security token service test ca (peppol root test ca)
-peppol service metadata publisher test ca (peppol root test ca)
+global-truststore-openpeppol.jks 
+  Is the global trust store for OpenPEPPOL and works as well for SML, SMP and AP 
+  The contained aliases are:
+  * peppol root ca
+  * peppol access point ca (peppol root ca)
+  * peppol security token service ca (peppol root ca)
+  * peppol service metadata publisher ca (peppol root ca)
 
-The password to access the trust stores is:
+The password to access all trust stores is:
 peppol
 
 --[EOF]--
