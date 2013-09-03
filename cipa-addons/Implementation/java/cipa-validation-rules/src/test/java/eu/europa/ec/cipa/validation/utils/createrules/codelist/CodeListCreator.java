@@ -52,20 +52,6 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMResult;
 
-import org.oasis.cva.v10.Context;
-import org.oasis.cva.v10.ContextValueAssociation;
-import org.oasis.cva.v10.Contexts;
-import org.oasis.cva.v10.Message;
-import org.oasis.cva.v10.ValueList;
-import org.oasis.cva.v10.ValueLists;
-import org.oasis.genericode.v10.CodeListDocument;
-import org.oasis.genericode.v10.Column;
-import org.oasis.genericode.v10.ColumnSet;
-import org.oasis.genericode.v10.Identification;
-import org.oasis.genericode.v10.Row;
-import org.oasis.genericode.v10.SimpleCodeList;
-import org.oasis.genericode.v10.UseType;
-import org.oasis.genericode.v10.Value;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;
 import org.w3c.dom.Document;
@@ -86,8 +72,22 @@ import com.phloc.commons.xml.transform.DefaultTransformURIResolver;
 import com.phloc.commons.xml.transform.TransformSourceFactory;
 import com.phloc.commons.xml.transform.XMLTransformerFactory;
 import com.phloc.cva.CVA10Marshaller;
+import com.phloc.cva.v10.Context;
+import com.phloc.cva.v10.ContextValueAssociation;
+import com.phloc.cva.v10.Contexts;
+import com.phloc.cva.v10.Message;
+import com.phloc.cva.v10.ValueList;
+import com.phloc.cva.v10.ValueLists;
 import com.phloc.genericode.Genericode10CodeListMarshaller;
 import com.phloc.genericode.Genericode10Utils;
+import com.phloc.genericode.v10.CodeListDocument;
+import com.phloc.genericode.v10.Column;
+import com.phloc.genericode.v10.ColumnSet;
+import com.phloc.genericode.v10.Identification;
+import com.phloc.genericode.v10.Row;
+import com.phloc.genericode.v10.SimpleCodeList;
+import com.phloc.genericode.v10.UseType;
+import com.phloc.genericode.v10.Value;
 import com.phloc.schematron.CSchematron;
 
 import eu.europa.ec.cipa.validation.utils.createrules.utils.ODFUtils;
@@ -161,7 +161,7 @@ public final class CodeListCreator {
       final File aCVAFile = aCodeList.getCVAFile (aCVAData.getTransaction ());
       Utils.log ("    Creating " + aCVAFile.getName ());
 
-      final org.oasis.cva.v10.ObjectFactory aFactory = new org.oasis.cva.v10.ObjectFactory ();
+      final com.phloc.cva.v10.ObjectFactory aFactory = new com.phloc.cva.v10.ObjectFactory ();
       final ContextValueAssociation aCVA = aFactory.createContextValueAssociation ();
       aCVA.setName (FilenameHelper.getBaseName (aCVAFile));
 
@@ -232,7 +232,7 @@ public final class CodeListCreator {
       final String sLocationURI = ODFUtils.getText (aSheet, 3, 1);
 
       // Start creating Genericode
-      final org.oasis.genericode.v10.ObjectFactory aFactory = new org.oasis.genericode.v10.ObjectFactory ();
+      final com.phloc.genericode.v10.ObjectFactory aFactory = new com.phloc.genericode.v10.ObjectFactory ();
       final CodeListDocument aGC = aFactory.createCodeListDocument ();
 
       // create identification

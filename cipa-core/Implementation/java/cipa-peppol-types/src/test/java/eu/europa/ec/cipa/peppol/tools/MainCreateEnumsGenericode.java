@@ -61,11 +61,6 @@ import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import org.oasis.genericode.v10.CodeListDocument;
-import org.oasis.genericode.v10.Column;
-import org.oasis.genericode.v10.Row;
-import org.oasis.genericode.v10.SimpleCodeList;
-
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.id.IHasID;
 import com.phloc.commons.io.file.filter.FilenameFilterEndsWith;
@@ -76,6 +71,10 @@ import com.phloc.commons.name.IHasDisplayName;
 import com.phloc.commons.regex.RegExHelper;
 import com.phloc.genericode.Genericode10CodeListMarshaller;
 import com.phloc.genericode.Genericode10Utils;
+import com.phloc.genericode.v10.CodeListDocument;
+import com.phloc.genericode.v10.Column;
+import com.phloc.genericode.v10.Row;
+import com.phloc.genericode.v10.SimpleCodeList;
 import com.sun.codemodel.JClassAlreadyExistsException;
 import com.sun.codemodel.JCodeModel;
 import com.sun.codemodel.JDefinedClass;

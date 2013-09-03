@@ -52,9 +52,6 @@ import javax.annotation.Nullable;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.oasis.genericode.v10.CodeListDocument;
-import org.oasis.genericode.v10.Row;
-import org.oasis.genericode.v10.UseType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -80,7 +77,10 @@ import com.phloc.commons.xml.serialize.XMLWriterSettings;
 import com.phloc.genericode.Genericode10CodeListMarshaller;
 import com.phloc.genericode.Genericode10Utils;
 import com.phloc.genericode.excel.ExcelReadOptions;
-import com.phloc.genericode.excel.ExcelSheetToCodeList;
+import com.phloc.genericode.excel.ExcelSheetToCodeList10;
+import com.phloc.genericode.v10.CodeListDocument;
+import com.phloc.genericode.v10.Row;
+import com.phloc.genericode.v10.UseType;
 import com.sun.codemodel.CodeWriter;
 import com.sun.codemodel.JArray;
 import com.sun.codemodel.JCodeModel;
@@ -135,25 +135,27 @@ public final class MainCreateCodelistsFilesFromExcel {
 
   private static void _writeValidationPartyIdFile (final Sheet aParticipantSheet) throws URISyntaxException {
     // Read excel file
-    final ExcelReadOptions aReadOptions = new ExcelReadOptions ().setLinesToSkip (1).setLineIndexShortName (0);
+    final ExcelReadOptions <UseType> aReadOptions = new ExcelReadOptions <UseType> ().setLinesToSkip (1)
+                                                                                     .setLineIndexShortName (0);
     aReadOptions.addColumn (0, "code", UseType.REQUIRED, "string", true);
     aReadOptions.addColumn (2, "name", UseType.OPTIONAL, "string", false);
 
     // Convert to GeneriCode
-    final CodeListDocument aCodeList = ExcelSheetToCodeList.convertToSimpleCodeList (aParticipantSheet,
-                                                                                     aReadOptions,
-                                                                                     "Scheme Agency",
-                                                                                     CODELIST_VERSION.getAsString (),
-                                                                                     new URI ("PEPPOL"),
-                                                                                     new URI ("PEPPOL-" +
-                                                                                              CODELIST_VERSION.getAsString ()),
-                                                                                     new URI ("PartyID.gc"));
+    final CodeListDocument aCodeList = ExcelSheetToCodeList10.convertToSimpleCodeList (aParticipantSheet,
+                                                                                       aReadOptions,
+                                                                                       "Scheme Agency",
+                                                                                       CODELIST_VERSION.getAsString (),
+                                                                                       new URI ("PEPPOL"),
+                                                                                       new URI ("PEPPOL-" +
+                                                                                                CODELIST_VERSION.getAsString ()),
+                                                                                       new URI ("PartyID.gc"));
     _writeGenericodeFile (aCodeList, RESULT_DIRECTORY + "PartyID.gc");
   }
 
   private static void _emitIdentifierIssuingAgency (final Sheet aParticipantSheet) throws URISyntaxException {
     // Read excel file
-    final ExcelReadOptions aReadOptions = new ExcelReadOptions ().setLinesToSkip (1).setLineIndexShortName (0);
+    final ExcelReadOptions <UseType> aReadOptions = new ExcelReadOptions <UseType> ().setLinesToSkip (1)
+                                                                                     .setLineIndexShortName (0);
     aReadOptions.addColumn (0, "schemeid", UseType.REQUIRED, "string", true);
     aReadOptions.addColumn (1, "iso6523", UseType.REQUIRED, "string", true);
     aReadOptions.addColumn (2, "schemeagency", UseType.OPTIONAL, "string", false);
@@ -162,13 +164,13 @@ public final class MainCreateCodelistsFilesFromExcel {
     aReadOptions.addColumn (6, "structure", UseType.OPTIONAL, "string", false);
 
     // Convert to GeneriCode
-    final CodeListDocument aCodeList = ExcelSheetToCodeList.convertToSimpleCodeList (aParticipantSheet,
-                                                                                     aReadOptions,
-                                                                                     "PeppolIdentifierIssuingAgencies",
-                                                                                     CODELIST_VERSION.getAsString (),
-                                                                                     new URI ("urn:peppol.eu:names:identifier:issuingagencies"),
-                                                                                     new URI ("urn:peppol.eu:names:identifier:issuingagencies-1.0"),
-                                                                                     null);
+    final CodeListDocument aCodeList = ExcelSheetToCodeList10.convertToSimpleCodeList (aParticipantSheet,
+                                                                                       aReadOptions,
+                                                                                       "PeppolIdentifierIssuingAgencies",
+                                                                                       CODELIST_VERSION.getAsString (),
+                                                                                       new URI ("urn:peppol.eu:names:identifier:issuingagencies"),
+                                                                                       new URI ("urn:peppol.eu:names:identifier:issuingagencies-1.0"),
+                                                                                       null);
     _writeGenericodeFile (aCodeList, RESULT_DIRECTORY + "PeppolIdentifierIssuingAgencies.gc");
 
     _writeValidationPartyIdFile (aParticipantSheet);
@@ -327,17 +329,18 @@ public final class MainCreateCodelistsFilesFromExcel {
 
   private static void _emitDocumentIdentifiers (final Sheet aDocumentSheet) throws URISyntaxException {
     // Create GeneriCode file
-    final ExcelReadOptions aReadOptions = new ExcelReadOptions ().setLinesToSkip (1).setLineIndexShortName (0);
+    final ExcelReadOptions <UseType> aReadOptions = new ExcelReadOptions <UseType> ().setLinesToSkip (1)
+                                                                                     .setLineIndexShortName (0);
     aReadOptions.addColumn (0, "name", UseType.OPTIONAL, "string", false);
     aReadOptions.addColumn (1, "docid", UseType.REQUIRED, "string", true);
     aReadOptions.addColumn (2, "since", UseType.REQUIRED, "string", false);
-    final CodeListDocument aCodeList = ExcelSheetToCodeList.convertToSimpleCodeList (aDocumentSheet,
-                                                                                     aReadOptions,
-                                                                                     "PeppolDocumentTypeIdentifier",
-                                                                                     CODELIST_VERSION.getAsString (),
-                                                                                     new URI ("urn:peppol.eu:names:identifier:document"),
-                                                                                     new URI ("urn:peppol.eu:names:identifier:document-1.0"),
-                                                                                     null);
+    final CodeListDocument aCodeList = ExcelSheetToCodeList10.convertToSimpleCodeList (aDocumentSheet,
+                                                                                       aReadOptions,
+                                                                                       "PeppolDocumentTypeIdentifier",
+                                                                                       CODELIST_VERSION.getAsString (),
+                                                                                       new URI ("urn:peppol.eu:names:identifier:document"),
+                                                                                       new URI ("urn:peppol.eu:names:identifier:document-1.0"),
+                                                                                       null);
     _writeGenericodeFile (aCodeList, RESULT_DIRECTORY + "PeppolDocumentTypeIdentifier.gc");
 
     // Save as XML
@@ -544,19 +547,20 @@ public final class MainCreateCodelistsFilesFromExcel {
   }
 
   private static void _emitProcessIdentifier (final Sheet aProcessSheet) throws URISyntaxException {
-    final ExcelReadOptions aReadOptions = new ExcelReadOptions ().setLinesToSkip (1).setLineIndexShortName (0);
+    final ExcelReadOptions <UseType> aReadOptions = new ExcelReadOptions <UseType> ().setLinesToSkip (1)
+                                                                                     .setLineIndexShortName (0);
     aReadOptions.addColumn (0, "name", UseType.REQUIRED, "string", true);
     aReadOptions.addColumn (1, "id", UseType.REQUIRED, "string", true);
     aReadOptions.addColumn (2, "bisid", UseType.REQUIRED, "string", true);
     aReadOptions.addColumn (3, "docids", UseType.REQUIRED, "string", false);
     aReadOptions.addColumn (4, "since", UseType.REQUIRED, "string", false);
-    final CodeListDocument aCodeList = ExcelSheetToCodeList.convertToSimpleCodeList (aProcessSheet,
-                                                                                     aReadOptions,
-                                                                                     "PeppolProcessIdentifier",
-                                                                                     CODELIST_VERSION.getAsString (),
-                                                                                     new URI ("urn:peppol.eu:names:identifier:process"),
-                                                                                     new URI ("urn:peppol.eu:names:identifier:process-1.0"),
-                                                                                     null);
+    final CodeListDocument aCodeList = ExcelSheetToCodeList10.convertToSimpleCodeList (aProcessSheet,
+                                                                                       aReadOptions,
+                                                                                       "PeppolProcessIdentifier",
+                                                                                       CODELIST_VERSION.getAsString (),
+                                                                                       new URI ("urn:peppol.eu:names:identifier:process"),
+                                                                                       new URI ("urn:peppol.eu:names:identifier:process-1.0"),
+                                                                                       null);
     _writeGenericodeFile (aCodeList, RESULT_DIRECTORY + "PeppolProcessIdentifier.gc");
 
     // Save as XML
@@ -607,8 +611,7 @@ public final class MainCreateCodelistsFilesFromExcel {
         final JArray jArray = JExpr.newArray (s_jEnumPredefinedDoc);
         for (final String sDocTypeID : RegExHelper.getSplitToList (sDocTypeIDs, "\n")) {
           // Use the short name for better readability
-          final String sIdentifier = true
-                                         ? CodeGenerationUtils.createShortcutDocumentTypeIDName (PeppolDocumentTypeIdentifierParts.extractFromString (sDocTypeID))
+          final String sIdentifier = true ? CodeGenerationUtils.createShortcutDocumentTypeIDName (PeppolDocumentTypeIdentifierParts.extractFromString (sDocTypeID))
                                          : RegExHelper.getAsIdentifier (sDocTypeID);
           jArray.add (s_jEnumPredefinedDoc.staticRef (sIdentifier));
         }
