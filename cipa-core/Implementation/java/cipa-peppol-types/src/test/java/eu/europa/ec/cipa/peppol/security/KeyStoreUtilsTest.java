@@ -136,4 +136,26 @@ public final class KeyStoreUtilsTest {
     }
     catch (final IOException ex) {}
   }
+
+  @Test
+  public void testLoadTrustStore () throws Exception {
+    // Load trust store
+    final KeyStore aTrustStore = KeyStoreUtils.loadKeyStore (KeyStoreUtils.TRUSTSTORE_CLASSPATH,
+                                                             KeyStoreUtils.TRUSTSTORE_PASSWORD);
+    assertNotNull (aTrustStore);
+
+    // Ensure all name entries are contained
+    assertNotNull (aTrustStore.getCertificate (KeyStoreUtils.TRUSTSTORE_ALIAS_AP_PEPPOL));
+    assertNotNull (aTrustStore.getCertificate (KeyStoreUtils.TRUSTSTORE_ALIAS_AP_OPENPEPPOL));
+    assertNotNull (aTrustStore.getCertificate (KeyStoreUtils.TRUSTSTORE_ALIAS_SMP_PEPPOL));
+    assertNotNull (aTrustStore.getCertificate (KeyStoreUtils.TRUSTSTORE_ALIAS_SMP_OPENPEPPOL));
+
+    // System.out.println (SystemProperties.getJavaVersion ());
+    final X509Certificate aCertAPOld = (X509Certificate) aTrustStore.getCertificate (KeyStoreUtils.TRUSTSTORE_ALIAS_AP_PEPPOL);
+    final String sIssuerName = aCertAPOld.getIssuerX500Principal ().getName ();
+    assertEquals ("CN=PEPPOL Root TEST CA,OU=FOR TEST PURPOSES ONLY,O=NATIONAL IT AND TELECOM AGENCY,C=DK", sIssuerName);
+    final String sSubjectName = aCertAPOld.getSubjectX500Principal ().getName ();
+    assertEquals ("CN=PEPPOL ACCESS POINT TEST CA,OU=FOR TEST PURPOSES ONLY,O=NATIONAL IT AND TELECOM AGENCY,C=DK",
+                  sSubjectName);
+  }
 }
