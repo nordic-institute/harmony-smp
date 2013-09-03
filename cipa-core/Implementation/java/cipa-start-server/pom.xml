@@ -61,18 +61,22 @@
       <version>1.1.2-SNAPSHOT</version>
     </dependency>
     <!-- Dummy, so that any receiver is present :)  Comment out if you use the receiver externalisation mechanism see config server.properties-->
-    <!-- 
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-start-filereceiver</artifactId>
       <version>1.1.2-SNAPSHOT</version>
     </dependency>
+    <!-- Alternatively you may use the JMS base receiver.
+         Locations: https://github.com/phax/cipa-start-jmsreceiver-api
+                    https://github.com/phax/cipa-start-jmsreceiver 
      -->
+    <!-- 
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>cipa-start-jmsreceiver</artifactId>
       <version>1.0.0-SNAPSHOT</version>
     </dependency>
+     -->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
