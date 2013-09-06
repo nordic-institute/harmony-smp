@@ -43,6 +43,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import org.busdox.servicemetadata.publishing._1.EndpointType;
@@ -84,7 +85,8 @@ import eu.europa.ec.cipa.smp.server.hook.DoNothingRegistrationHook;
 // @Ignore
 // ("Cannot be enabled by default, because it would fail without the correct configuration")
 @DevelopersNote ("You need to adjust your local config.properties file to run this test")
-public class DBMSDataManagerTest {
+public class DBMSDataManagerTest
+{
   private static final String PARTICIPANT_IDENTIFIER_SCHEME = CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME;
   private static final String DOCUMENT_SCHEME = CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME;
   private static final String PROCESS_SCHEME = CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME;
@@ -117,11 +119,14 @@ public class DBMSDataManagerTest {
 
   private static DBMSDataManager s_aDataMgr;
 
-  private static final class SMPTestRule extends ScopeTestRule {
+  private static final class SMPTestRule extends ScopeTestRule
+  {
     @Override
-    public void before () {
+    public void before ()
+    {
       super.before ();
-      if (s_aDataMgr == null) {
+      if (s_aDataMgr == null)
+      {
         // Do it only once :)
         SMPEntityManagerFactory.getInstance ();
         s_aDataMgr = new DBMSDataManager (new DoNothingRegistrationHook ());
@@ -136,7 +141,8 @@ public class DBMSDataManagerTest {
   private ServiceMetadataType m_aServiceMetadata;
 
   @Before
-  public void beforeTest () throws Throwable {
+  public void beforeTest () throws Throwable
+  {
     final ExtensionType aExtension = ExtensionConverter.convert ("<root><any>value</any></root>");
     assertNotNull (aExtension);
     assertNotNull (aExtension.getAny ());
@@ -146,10 +152,12 @@ public class DBMSDataManagerTest {
     m_aServiceGroup.setParticipantIdentifier (PARTY_ID);
 
     // Be sure to delete if it exists.
-    try {
+    try
+    {
       s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, CREDENTIALS);
     }
-    catch (final NotFoundException ex) {}
+    catch (final NotFoundException ex)
+    {}
 
     // Create a new one
     s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
@@ -192,7 +200,8 @@ public class DBMSDataManagerTest {
   }
 
   @Test
-  public void testCreateServiceGroup () throws Throwable {
+  public void testCreateServiceGroup () throws Throwable
+  {
     m_aServiceGroup.getParticipantIdentifier ().setValue (PARTICIPANT_IDENTIFIER2);
     s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
 
@@ -206,68 +215,85 @@ public class DBMSDataManagerTest {
   }
 
   @Test
-  public void testCreateServiceGroupInvalidPassword () throws Throwable {
+  public void testCreateServiceGroupInvalidPassword () throws Throwable
+  {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WRONG_PASSWORD");
 
     m_aServiceGroup.getParticipantIdentifier ().setValue (PARTICIPANT_IDENTIFIER2);
-    try {
+    try
+    {
       s_aDataMgr.saveServiceGroup (m_aServiceGroup, aCredentials);
       fail ();
     }
-    catch (final UnauthorizedException ex) {}
+    catch (final UnauthorizedException ex)
+    {}
   }
 
   @Test
-  public void testCreateServiceGroupUnknownUser () throws Throwable {
+  public void testCreateServiceGroupUnknownUser () throws Throwable
+  {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
 
     m_aServiceGroup.getParticipantIdentifier ().setValue (PARTICIPANT_IDENTIFIER2);
-    try {
+    try
+    {
       s_aDataMgr.saveServiceGroup (m_aServiceGroup, aCredentials);
       fail ();
     }
-    catch (final UnknownUserException ex) {}
+    catch (final UnknownUserException ex)
+    {}
   }
 
   @Test
-  public void testDeleteServiceGroup () throws Throwable {
+  public void testDeleteServiceGroup () throws Throwable
+  {
     s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, CREDENTIALS);
 
     assertNull (s_aDataMgr.getServiceGroup (SERVICEGROUP_ID));
   }
 
   @Test
-  public void testDeleteServiceGroupUnknownID () throws Throwable {
+  public void testDeleteServiceGroupUnknownID () throws Throwable
+  {
     final ParticipantIdentifierType aServiceGroupID2 = SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_IDENTIFIER2);
-    try {
+    try
+    {
       s_aDataMgr.deleteServiceGroup (aServiceGroupID2, CREDENTIALS);
     }
-    catch (final NotFoundException ex) {}
+    catch (final NotFoundException ex)
+    {}
     assertNull (s_aDataMgr.getServiceGroup (aServiceGroupID2));
   }
 
   @Test
-  public void testDeleteServiceGroupUnknownUser () throws Throwable {
+  public void testDeleteServiceGroupUnknownUser () throws Throwable
+  {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
-    try {
+    try
+    {
       s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, aCredentials);
       fail ();
     }
-    catch (final UnknownUserException ex) {}
+    catch (final UnknownUserException ex)
+    {}
   }
 
   @Test
-  public void testDeleteServiceGroupWrongPass () throws Throwable {
+  public void testDeleteServiceGroupWrongPass () throws Throwable
+  {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WrongPassword");
-    try {
+    try
+    {
       s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, aCredentials);
       fail ();
     }
-    catch (final UnauthorizedException ex) {}
+    catch (final UnauthorizedException ex)
+    {}
   }
 
   @Test
-  public void testCreateServiceMetadata () throws Throwable {
+  public void testCreateServiceMetadata () throws Throwable
+  {
     // Save to DB
     s_aDataMgr.saveService (m_aServiceMetadata, CREDENTIALS);
 
@@ -304,57 +330,96 @@ public class DBMSDataManagerTest {
   }
 
   @Test
-  public void testCreateServiceMetadataUnknownUser () throws Throwable {
+  public void testCreateServiceMetadataUnknownUser () throws Throwable
+  {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
-    try {
+    try
+    {
       s_aDataMgr.saveService (m_aServiceMetadata, aCredentials);
       fail ();
     }
-    catch (final UnknownUserException ex) {}
+    catch (final UnknownUserException ex)
+    {}
   }
 
   @Test
-  public void testCreateServiceMetadataWrongPass () throws Throwable {
+  public void testCreateServiceMetadataWrongPass () throws Throwable
+  {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WrongPassword");
-    try {
+    try
+    {
       s_aDataMgr.saveService (m_aServiceMetadata, aCredentials);
       fail ();
     }
-    catch (final UnauthorizedException ex) {}
+    catch (final UnauthorizedException ex)
+    {}
   }
 
   @Test
-  public void testDeleteServiceMetadata () throws Throwable {
+  public void testDeleteServiceMetadata () throws Throwable
+  {
     // Ensure something is present :)
     s_aDataMgr.saveService (m_aServiceMetadata, CREDENTIALS);
 
     // First deletion succeeds
     s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, CREDENTIALS);
-    try {
+    try
+    {
       // Second deletion fails
       s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, CREDENTIALS);
       fail ();
     }
-    catch (final NotFoundException ex) {}
+    catch (final NotFoundException ex)
+    {}
   }
 
   @Test
-  public void testDeleteServiceMetadataUnknownUser () throws Throwable {
+  public void testDeleteServiceMetadataUnknownUser () throws Throwable
+  {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
-    try {
+    try
+    {
       s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, aCredentials);
       fail ();
     }
-    catch (final UnknownUserException ex) {}
+    catch (final UnknownUserException ex)
+    {}
   }
 
   @Test
-  public void testDeleteServiceMetadataWrongPass () throws Throwable {
+  public void testDeleteServiceMetadataWrongPass () throws Throwable
+  {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WrongPassword");
-    try {
+    try
+    {
       s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, aCredentials);
       fail ();
     }
-    catch (final UnauthorizedException ex) {}
+    catch (final UnauthorizedException ex)
+    {}
+  }
+
+  @Test
+  public void testGetRFC1421CompliantString ()
+  {
+    assertNull (DBMSDataManager._getRFC1421CompliantString (null));
+    assertEquals ("", DBMSDataManager._getRFC1421CompliantString (""));
+
+    // for up to 64 chars it makes no difference
+    for (int i = 0; i <= 64; ++i)
+    {
+      final char [] aChars = new char [i];
+      Arrays.fill (aChars, 'a');
+      final String sText = new String (aChars);
+      assertEquals (sText, DBMSDataManager._getRFC1421CompliantString (sText));
+    }
+
+    final String sLong = "123456789012345678901234567890123456789012345678901234567890abcd"
+                         + "123456789012345678901234567890123456789012345678901234567890abcd"
+                         + "xyz";
+    final String sFormatted = DBMSDataManager._getRFC1421CompliantString (sLong);
+    assertEquals ("123456789012345678901234567890123456789012345678901234567890abcd\r\n"
+                  + "123456789012345678901234567890123456789012345678901234567890abcd\r\n"
+                  + "xyz", sFormatted);
   }
 }
