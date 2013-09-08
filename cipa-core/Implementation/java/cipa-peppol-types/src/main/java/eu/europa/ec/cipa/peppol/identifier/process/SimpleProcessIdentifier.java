@@ -70,7 +70,7 @@ public class SimpleProcessIdentifier extends ProcessIdentifierType implements IP
   }
 
   public boolean isDefaultScheme () {
-    return IdentifierUtils.hasDefaultScheme (this);
+    return IdentifierUtils.hasDefaultProcessIdentifierScheme (this);
   }
 
   @Nonnull

@@ -94,7 +94,7 @@ public final class ReadonlyDocumentTypeIdentifier extends DocumentIdentifierType
   }
 
   public boolean isDefaultScheme () {
-    return IdentifierUtils.hasDefaultScheme (this);
+    return IdentifierUtils.hasDefaultDocumentTypeIdentifierScheme (this);
   }
 
   @Nonnull

@@ -93,7 +93,7 @@ public final class ReadonlyProcessIdentifier extends ProcessIdentifierType imple
   }
 
   public boolean isDefaultScheme () {
-    return IdentifierUtils.hasDefaultScheme (this);
+    return IdentifierUtils.hasDefaultProcessIdentifierScheme (this);
   }
 
   @Nonnull

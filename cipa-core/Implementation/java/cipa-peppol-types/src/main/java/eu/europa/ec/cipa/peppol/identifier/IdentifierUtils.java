@@ -38,6 +38,7 @@
 package eu.europa.ec.cipa.peppol.identifier;
 
 import java.nio.charset.Charset;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -103,26 +104,6 @@ public final class IdentifierUtils {
   }
 
   /**
-   * Check if the given scheme is a valid participant identifier scheme. It is
-   * valid if it has at least 1 character and at last 25 characters and matches
-   * a certain regular expression. Please note that the regular expression is
-   * applied case insensitive!<br>
-   * This limitation is important, because the participant identifier scheme is
-   * directly encoded into the SML DNS name record.
-   * 
-   * @param sScheme
-   *        The scheme to check.
-   * @return <code>true</code> if the passed scheme is a valid participant
-   *         identifier scheme, <code>false</code> otherwise.
-   * @see CIdentifier#PARTICIPANT_IDENTIFIER_SCHEME_REGEX
-   */
-  public static boolean isValidParticipantIdentifierScheme (@Nullable final String sScheme) {
-    return isValidIdentifierScheme (sScheme) &&
-           RegExHelper.stringMatchesPattern (CIdentifier.PARTICIPANT_IDENTIFIER_SCHEME_REGEX,
-                                             sScheme.toLowerCase (BusdoxURLUtils.URL_LOCALE));
-  }
-
-  /**
    * Check if the given identifier is valid. It is valid if it has at least 1
    * character and at last 25 characters. This method applies to all identifier
    * schemes, but there is a special version for participant identifier schemes,
@@ -142,15 +123,39 @@ public final class IdentifierUtils {
   }
 
   /**
+   * Check if the given scheme is a valid participant identifier scheme (like
+   * {@link CIdentifier#DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME}). It is valid if
+   * it has at least 1 character and at last 25 characters and matches a certain
+   * regular expression. Please note that the regular expression is applied case
+   * insensitive!<br>
+   * This limitation is important, because the participant identifier scheme is
+   * directly encoded into the SML DNS name record.
+   * 
+   * @param sScheme
+   *        The scheme to check.
+   * @return <code>true</code> if the passed scheme is a valid participant
+   *         identifier scheme, <code>false</code> otherwise.
+   * @see CIdentifier#PARTICIPANT_IDENTIFIER_SCHEME_REGEX
+   * @see #isValidIdentifierScheme(String)
+   */
+  public static boolean isValidParticipantIdentifierScheme (@Nullable final String sScheme) {
+    return isValidIdentifierScheme (sScheme) &&
+           RegExHelper.stringMatchesPattern (CIdentifier.PARTICIPANT_IDENTIFIER_SCHEME_REGEX,
+                                             sScheme.toLowerCase (BusdoxURLUtils.URL_LOCALE));
+  }
+
+  /**
    * Check if the passed participant identifier value is valid. A valid
    * identifier must have at least 1 character and at last
    * {@link CIdentifier#MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH} characters.
-   * Also it must be US ASCII encoded.
+   * Also it must be US ASCII encoded. This check method considers only the
+   * value and not the identifier scheme!
    * 
    * @param sValue
-   *        The participant identifier value to be checked (without the scheme)
+   *        The participant identifier value to be checked (without the scheme).
+   *        May be <code>null</code>.
    * @return <code>true</code> if the participant identifier value is valid,
-   *         <code>false</code> otherwise
+   *         <code>false</code> otherwise.
    */
   public static boolean isValidParticipantIdentifierValue (@Nullable final String sValue) {
     final int nLength = StringHelper.getLength (sValue);
@@ -169,7 +174,7 @@ public final class IdentifierUtils {
    * 
    * @param sValue
    *        The document type identifier value to be checked (without the
-   *        scheme)
+   *        scheme). May be <code>null</code>.
    * @return <code>true</code> if the document type identifier value is valid,
    *         <code>false</code> otherwise
    */
@@ -189,7 +194,8 @@ public final class IdentifierUtils {
    * must be ISO-8859-1 encoded.
    * 
    * @param sValue
-   *        The process identifier value to be checked (without the scheme)
+   *        The process identifier value to be checked (without the scheme). May
+   *        be <code>null</code>.
    * @return <code>true</code> if the process identifier value is valid,
    *         <code>false</code> otherwise
    */
@@ -323,18 +329,19 @@ public final class IdentifierUtils {
   }
 
   /**
-   * Check if the passed document type identifier is using the default scheme.
+   * Check if the passed participant identifier is using the default scheme.
    * 
    * @param aIdentifier
    *        The identifier to be checked. May not be <code>null</code>.
    * @return <code>true</code> if the passed identifier uses the default scheme,
    *         <code>false</code> otherwise
+   * @deprecated Use
+   *             {@link #hasDefaultParticipantIdentifierScheme(IReadonlyParticipantIdentifier)}
+   *             instead
    */
-  public static boolean hasDefaultScheme (@Nonnull final IReadonlyDocumentTypeIdentifier aIdentifier) {
-    if (aIdentifier == null)
-      throw new NullPointerException ("documentTypeIdentifier");
-
-    return CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME.equals (aIdentifier.getScheme ());
+  @Deprecated
+  public static boolean hasDefaultScheme (@Nonnull final IReadonlyParticipantIdentifier aIdentifier) {
+    return hasDefaultParticipantIdentifierScheme (aIdentifier);
   }
 
   /**
@@ -345,11 +352,84 @@ public final class IdentifierUtils {
    * @return <code>true</code> if the passed identifier uses the default scheme,
    *         <code>false</code> otherwise
    */
-  public static boolean hasDefaultScheme (@Nonnull final IReadonlyParticipantIdentifier aIdentifier) {
+  public static boolean hasDefaultParticipantIdentifierScheme (@Nonnull final IReadonlyParticipantIdentifier aIdentifier) {
     if (aIdentifier == null)
       throw new NullPointerException ("participantIdentifier");
 
     return CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME.equals (aIdentifier.getScheme ());
+  }
+
+  /**
+   * Check if the passed participant identifier is using the default scheme.
+   * 
+   * @param sIdentifier
+   *        The identifier to be checked. May be <code>null</code>.
+   * @return <code>true</code> if the passed identifier uses the default scheme,
+   *         <code>false</code> otherwise
+   */
+  public static boolean hasDefaultParticipantIdentifierScheme (@Nullable final String sIdentifier) {
+    return StringHelper.startsWith (sIdentifier, CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME +
+                                                 CIdentifier.URL_SCHEME_VALUE_SEPARATOR);
+  }
+
+  /**
+   * Check if the passed document type identifier is using the default scheme.
+   * 
+   * @param aIdentifier
+   *        The identifier to be checked. May not be <code>null</code>.
+   * @return <code>true</code> if the passed identifier uses the default scheme,
+   *         <code>false</code> otherwise
+   * @deprecated Use
+   *             {@link #hasDefaultDocumentTypeIdentifierScheme(IReadonlyDocumentTypeIdentifier)}
+   *             instead
+   */
+  @Deprecated
+  public static boolean hasDefaultScheme (@Nonnull final IReadonlyDocumentTypeIdentifier aIdentifier) {
+    return hasDefaultDocumentTypeIdentifierScheme (aIdentifier);
+  }
+
+  /**
+   * Check if the passed document type identifier is using the default scheme.
+   * 
+   * @param aIdentifier
+   *        The identifier to be checked. May not be <code>null</code>.
+   * @return <code>true</code> if the passed identifier uses the default scheme,
+   *         <code>false</code> otherwise
+   */
+  public static boolean hasDefaultDocumentTypeIdentifierScheme (@Nonnull final IReadonlyDocumentTypeIdentifier aIdentifier) {
+    if (aIdentifier == null)
+      throw new NullPointerException ("documentTypeIdentifier");
+
+    return CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME.equals (aIdentifier.getScheme ());
+  }
+
+  /**
+   * Check if the passed document type identifier is using the default scheme.
+   * 
+   * @param sIdentifier
+   *        The identifier to be checked. May be <code>null</code>.
+   * @return <code>true</code> if the passed identifier uses the default scheme,
+   *         <code>false</code> otherwise
+   */
+  public static boolean hasDefaultDocumentTypeIdentifierScheme (@Nullable final String sIdentifier) {
+    return StringHelper.startsWith (sIdentifier, CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME +
+                                                 CIdentifier.URL_SCHEME_VALUE_SEPARATOR);
+  }
+
+  /**
+   * Check if the passed process identifier is using the default scheme.
+   * 
+   * @param aIdentifier
+   *        The identifier to be checked. May not be <code>null</code>.
+   * @return <code>true</code> if the passed identifier uses the default scheme,
+   *         <code>false</code> otherwise
+   * @deprecated Use
+   *             {@link #hasDefaultProcessIdentifierScheme(IReadonlyProcessIdentifier)}
+   *             instead
+   */
+  @Deprecated
+  public static boolean hasDefaultScheme (@Nonnull final IReadonlyProcessIdentifier aIdentifier) {
+    return hasDefaultProcessIdentifierScheme (aIdentifier);
   }
 
   /**
@@ -360,11 +440,24 @@ public final class IdentifierUtils {
    * @return <code>true</code> if the passed identifier uses the default scheme,
    *         <code>false</code> otherwise
    */
-  public static boolean hasDefaultScheme (@Nonnull final IReadonlyProcessIdentifier aIdentifier) {
+  public static boolean hasDefaultProcessIdentifierScheme (@Nonnull final IReadonlyProcessIdentifier aIdentifier) {
     if (aIdentifier == null)
       throw new NullPointerException ("processIdentifier");
 
     return CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME.equals (aIdentifier.getScheme ());
+  }
+
+  /**
+   * Check if the passed process identifier is using the default scheme.
+   * 
+   * @param sIdentifier
+   *        The identifier to be checked. May be <code>null</code>.
+   * @return <code>true</code> if the passed identifier uses the default scheme,
+   *         <code>false</code> otherwise
+   */
+  public static boolean hasDefaultProcessIdentifierScheme (@Nullable final String sIdentifier) {
+    return StringHelper.startsWith (sIdentifier, CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME +
+                                                 CIdentifier.URL_SCHEME_VALUE_SEPARATOR);
   }
 
   /**
@@ -403,7 +496,8 @@ public final class IdentifierUtils {
    */
   @Nonnull
   public static String getIdentifierURIPercentEncoded (@Nonnull final IReadonlyIdentifier aIdentifier) {
-    return BusdoxURLUtils.createPercentEncodedURL (getIdentifierURIEncoded (aIdentifier));
+    final String sURIEncoded = getIdentifierURIEncoded (aIdentifier);
+    return BusdoxURLUtils.createPercentEncodedURL (sURIEncoded);
   }
 
   /**
@@ -413,23 +507,68 @@ public final class IdentifierUtils {
    * @param sURIPart
    *        The URI part to be scanned. May not be <code>null</code> if a
    *        correct result is expected.
-   * @return The document identifier matching the passed URI part
-   * @throws IllegalArgumentException
-   *         If the passed identifier is not a valid URI encoded identifier
+   * @return The document identifier matching the passed URI part or
+   *         <code>null</code> if this string is in an illegal format.
    */
-  @Nonnull
-  public static SimpleDocumentTypeIdentifier createDocumentTypeIdentifierFromURIPart (@Nonnull final String sURIPart) {
+  @Nullable
+  public static SimpleDocumentTypeIdentifier createDocumentTypeIdentifierFromURIPartOrNull (@Nonnull final String sURIPart) {
     if (sURIPart == null)
       throw new NullPointerException ("URIPart");
 
-    final String [] aSplitted = RegExHelper.getSplitToArray (sURIPart, CIdentifier.URL_SCHEME_VALUE_SEPARATOR, 2);
-    if (aSplitted.length != 2)
+    // This is quicker than splitting with RegEx!
+    final List <String> aSplitted = StringHelper.getExploded (CIdentifier.URL_SCHEME_VALUE_SEPARATOR, sURIPart, 2);
+    if (aSplitted.size () != 2) {
+      // Illegal format
+      return null;
+    }
+    return new SimpleDocumentTypeIdentifier (aSplitted.get (0), aSplitted.get (1));
+  }
+
+  /**
+   * Take the passed URI part and try to convert it back to a document
+   * identifier. The URI part must have the layout <code>scheme::value</code>
+   * 
+   * @param sURIPart
+   *        The URI part to be scanned. May not be <code>null</code> if a
+   *        correct result is expected.
+   * @return The document identifier matching the passed URI part. Never
+   *         <code>null</code>.
+   * @throws IllegalArgumentException
+   *         If the passed identifier is not a valid URI encoded identifier
+   * @see #createDocumentTypeIdentifierFromURIPartOrNull(String)
+   */
+  @Nonnull
+  public static SimpleDocumentTypeIdentifier createDocumentTypeIdentifierFromURIPart (@Nonnull final String sURIPart) {
+    final SimpleDocumentTypeIdentifier ret = createDocumentTypeIdentifierFromURIPartOrNull (sURIPart);
+    if (ret == null)
       throw new IllegalArgumentException ("Document type identifier '" +
                                           sURIPart +
                                           "' did not include correct delimiter: " +
                                           CIdentifier.URL_SCHEME_VALUE_SEPARATOR);
+    return ret;
+  }
 
-    return new SimpleDocumentTypeIdentifier (aSplitted[0], aSplitted[1]);
+  /**
+   * Take the passed URI part and try to convert it back to a participant
+   * identifier. The URI part must have the layout <code>scheme::value</code>
+   * 
+   * @param sURIPart
+   *        The URI part to be scanned. May not be <code>null</code> if a
+   *        correct result is expected.
+   * @return The participant identifier matching the passed URI part or
+   *         <code>null</code> if this string is in an illegal format.
+   */
+  @Nullable
+  public static SimpleParticipantIdentifier createParticipantIdentifierFromURIPartOrNull (@Nonnull final String sURIPart) {
+    if (sURIPart == null)
+      throw new NullPointerException ("URIPart");
+
+    // This is quicker than splitting with RegEx!
+    final List <String> aSplitted = StringHelper.getExploded (CIdentifier.URL_SCHEME_VALUE_SEPARATOR, sURIPart, 2);
+    if (aSplitted.size () != 2)
+      return null;
+
+    return new SimpleParticipantIdentifier (aSplitted.get (0), aSplitted.get (1));
   }
 
   /**
@@ -442,20 +581,41 @@ public final class IdentifierUtils {
    * @return The participant identifier matching the passed URI part
    * @throws IllegalArgumentException
    *         If the passed identifier is not a valid URI encoded identifier
+   * @see #createParticipantIdentifierFromURIPartOrNull(String)
    */
   @Nonnull
   public static SimpleParticipantIdentifier createParticipantIdentifierFromURIPart (@Nonnull final String sURIPart) {
-    if (sURIPart == null)
-      throw new NullPointerException ("URIPart");
-
-    final String [] aSplitted = RegExHelper.getSplitToArray (sURIPart, CIdentifier.URL_SCHEME_VALUE_SEPARATOR, 2);
-    if (aSplitted.length != 2)
+    final SimpleParticipantIdentifier ret = createParticipantIdentifierFromURIPartOrNull (sURIPart);
+    if (ret == null)
       throw new IllegalArgumentException ("Participant identifier '" +
                                           sURIPart +
                                           "' did not include correct delimiter: " +
                                           CIdentifier.URL_SCHEME_VALUE_SEPARATOR);
 
-    return new SimpleParticipantIdentifier (aSplitted[0], aSplitted[1]);
+    return ret;
+  }
+
+  /**
+   * Take the passed URI part and try to convert it back to a process
+   * identifier. The URI part must have the layout <code>scheme::value</code>
+   * 
+   * @param sURIPart
+   *        The URI part to be scanned. May not be <code>null</code> if a
+   *        correct result is expected.
+   * @return The process identifier matching the passed URI part or
+   *         <code>null</code> if this string is in an illegal format.
+   */
+  @Nullable
+  public static SimpleProcessIdentifier createProcessIdentifierFromURIPartOrNull (@Nonnull final String sURIPart) {
+    if (sURIPart == null)
+      throw new NullPointerException ("URIPart");
+
+    // This is quicker than splitting with RegEx!
+    final List <String> aSplitted = StringHelper.getExploded (CIdentifier.URL_SCHEME_VALUE_SEPARATOR, sURIPart, 2);
+    if (aSplitted.size () != 2)
+      return null;
+
+    return new SimpleProcessIdentifier (aSplitted.get (0), aSplitted.get (1));
   }
 
   /**
@@ -468,20 +628,18 @@ public final class IdentifierUtils {
    * @return The process identifier matching the passed URI part
    * @throws IllegalArgumentException
    *         If the passed identifier is not a valid URI encoded identifier
+   * @see #createProcessIdentifierFromURIPartOrNull(String)
    */
   @Nonnull
   public static SimpleProcessIdentifier createProcessIdentifierFromURIPart (@Nonnull final String sURIPart) {
-    if (sURIPart == null)
-      throw new NullPointerException ("URIPart");
-
-    final String [] aSplitted = RegExHelper.getSplitToArray (sURIPart, CIdentifier.URL_SCHEME_VALUE_SEPARATOR, 2);
-    if (aSplitted.length != 2)
+    final SimpleProcessIdentifier ret = createProcessIdentifierFromURIPartOrNull (sURIPart);
+    if (ret == null)
       throw new IllegalArgumentException ("Process identifier '" +
                                           sURIPart +
                                           "' did not include correct delimiter: " +
                                           CIdentifier.URL_SCHEME_VALUE_SEPARATOR);
 
-    return new SimpleProcessIdentifier (aSplitted[0], aSplitted[1]);
+    return ret;
   }
 
   /**
@@ -502,7 +660,10 @@ public final class IdentifierUtils {
   /**
    * Extract the issuing agency ID from the passed participant identifier value.<br>
    * Example: extract the <code>0088</code> from the participant identifier
-   * <code>iso6523-actorid-upis::0088:123456</code>
+   * <code>iso6523-actorid-upis::0088:123456</code>.<br>
+   * Note: this only works for participant identifiers that are using the
+   * default scheme (iso6523-actorid-upis) because for the other schemes, I just
+   * can't tell!
    * 
    * @param aIdentifier
    *        The participant identifier to extract the value from.
@@ -525,7 +686,10 @@ public final class IdentifierUtils {
    * Extract the local participant ID from the passed participant identifier
    * value.<br>
    * Example: extract the <code>123456</code> from the participant identifier
-   * <code>iso6523-actorid-upis::0088:123456</code>
+   * <code>iso6523-actorid-upis::0088:123456</code><br>
+   * Note: this only works for participant identifiers that are using the
+   * default scheme (iso6523-actorid-upis) because for the other schemes, I just
+   * can't tell!
    * 
    * @param aIdentifier
    *        The participant identifier to extract the value from.

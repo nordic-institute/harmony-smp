@@ -71,7 +71,7 @@ public class SimpleDocumentTypeIdentifier extends DocumentIdentifierType impleme
   }
 
   public boolean isDefaultScheme () {
-    return IdentifierUtils.hasDefaultScheme (this);
+    return IdentifierUtils.hasDefaultDocumentTypeIdentifierScheme (this);
   }
 
   @Nonnull

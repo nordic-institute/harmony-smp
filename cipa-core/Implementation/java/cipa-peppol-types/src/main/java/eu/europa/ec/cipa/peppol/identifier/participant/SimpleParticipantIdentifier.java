@@ -72,7 +72,7 @@ public class SimpleParticipantIdentifier extends ParticipantIdentifierType imple
   }
 
   public boolean isDefaultScheme () {
-    return IdentifierUtils.hasDefaultScheme (this);
+    return IdentifierUtils.hasDefaultParticipantIdentifierScheme (this);
   }
 
   @Nonnull

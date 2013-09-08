@@ -48,7 +48,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import com.google.gdata.util.common.base.CharEscapers;
+import org.apache.commons.codec.EncoderException;
+import org.apache.commons.codec.net.URLCodec;
+
 import com.phloc.commons.charset.CCharset;
 import com.phloc.commons.messagedigest.EMessageDigestAlgorithm;
 import com.phloc.commons.messagedigest.MessageDigestGeneratorHelper;
@@ -76,11 +78,18 @@ public final class BusdoxURLUtils {
    * 
    * @param sURL
    *        The input URL or URL part. May be <code>null</code>.
-   * @return <code>null</code> if the input stream was <code>null</code>.
+   * @return <code>null</code> if the input string was <code>null</code>.
    */
   @Nullable
   public static String createPercentEncodedURL (@Nullable final String sURL) {
-    return sURL == null ? null : CharEscapers.uriEscaper (false).escape (sURL);
+    if (sURL != null)
+      try {
+        return new URLCodec ().encode (sURL);
+      }
+      catch (final EncoderException ex) {
+        throw new IllegalArgumentException ("Error creating percent encoded URL from '" + sURL + "'", ex);
+      }
+    return null;
   }
 
   /**

@@ -96,7 +96,7 @@ public final class ReadonlyParticipantIdentifier extends ParticipantIdentifierTy
   }
 
   public boolean isDefaultScheme () {
-    return IdentifierUtils.hasDefaultScheme (this);
+    return IdentifierUtils.hasDefaultParticipantIdentifierScheme (this);
   }
 
   @Nonnull
