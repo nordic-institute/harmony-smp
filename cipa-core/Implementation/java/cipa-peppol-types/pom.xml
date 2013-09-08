@@ -87,7 +87,6 @@
         <configuration>
           <instructions>
             <Export-Package>
-              com.google.gdata.util.common.base,
               eu.europa.ec.cipa.peppol.*
             </Export-Package>
           </instructions>
