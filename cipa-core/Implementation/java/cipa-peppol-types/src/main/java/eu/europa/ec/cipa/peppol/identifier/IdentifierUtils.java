@@ -724,7 +724,7 @@ public final class IdentifierUtils {
     if (aIdentifier == null)
       throw new NullPointerException ("identifier");
 
-    if (!aIdentifier.isDefaultScheme ())
+    if (!hasDefaultParticipantIdentifierScheme (aIdentifier))
       return null;
     return ArrayHelper.getSafeElement (RegExHelper.getAllMatchingGroupValues (PATTERN_PARTICIPANT_ID,
                                                                               aIdentifier.getValue ()),
@@ -750,7 +750,7 @@ public final class IdentifierUtils {
     if (aIdentifier == null)
       throw new NullPointerException ("identifier");
 
-    if (!aIdentifier.isDefaultScheme ())
+    if (!hasDefaultParticipantIdentifierScheme (aIdentifier))
       return null;
     return ArrayHelper.getSafeElement (RegExHelper.getAllMatchingGroupValues (PATTERN_PARTICIPANT_ID,
                                                                               aIdentifier.getValue ()),

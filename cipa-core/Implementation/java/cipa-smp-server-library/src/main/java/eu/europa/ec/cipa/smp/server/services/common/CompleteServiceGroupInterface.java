@@ -87,11 +87,18 @@ public final class CompleteServiceGroupInterface {
 
   @GET
   @Produces (MediaType.TEXT_XML)
-  public JAXBElement <CompleteServiceGroupType> getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId) throws Throwable {
-    s_aLogger.info ("GET /complete/" + sServiceGroupId);
+  public JAXBElement <CompleteServiceGroupType> getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupID) throws Throwable {
+    s_aLogger.info ("GET /complete/" + sServiceGroupID);
+
+    final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
+    if (aServiceGroupID == null) {
+      // Invalid identifier
+      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
+      return null;
+    }
+
     try {
       final ObjectFactory aObjFactory = new ObjectFactory ();
-      final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createFromURIPart (sServiceGroupId);
 
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
       final ServiceGroupType aServiceGroup = aDataManager.getServiceGroup (aServiceGroupID);
@@ -123,7 +130,7 @@ public final class CompleteServiceGroupInterface {
       for (final ServiceMetadataType aService : aDataManager.getServices (aServiceGroupID))
         aCompleteServiceGroup.getServiceMetadata ().add (aService);
 
-      s_aLogger.info ("Finished getServiceGroup(" + sServiceGroupId + ")");
+      s_aLogger.info ("Finished getServiceGroup(" + sServiceGroupID + ")");
 
       return aObjFactory.createCompleteServiceGroup (aCompleteServiceGroup);
     }

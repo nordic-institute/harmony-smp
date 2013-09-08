@@ -176,9 +176,11 @@ public interface IDataManager {
    * Checks whether the ServiceMetadata should be found elsewhere.
    * 
    * @param aServiceGroupID
-   *        The service group id of the service metadata.
+   *        The service group id of the service metadata. May not be
+   *        <code>null</code>.
    * @param aDocTypeID
-   *        The document id of the service metadata.
+   *        The document id of the service metadata. May not be
+   *        <code>null</code>.
    * @return The URI to be redirected to. null if no redirection should take
    *         place.
    * @throws Throwable

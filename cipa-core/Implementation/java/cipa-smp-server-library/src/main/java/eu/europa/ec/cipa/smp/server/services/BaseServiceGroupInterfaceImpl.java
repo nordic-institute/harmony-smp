@@ -75,7 +75,7 @@ public final class BaseServiceGroupInterfaceImpl {
   /**
    * @param aUriInfo
    *        Request URI info
-   * @param sServiceGroupId
+   * @param sServiceGroupID
    *        Requested service group ID
    * @param aServiceMetadataInterface
    *        The implementation class of the MetadataInterface
@@ -85,16 +85,14 @@ public final class BaseServiceGroupInterfaceImpl {
    */
   @Nullable
   public static JAXBElement <ServiceGroupType> getServiceGroup (@Nonnull final UriInfo aUriInfo,
-                                                                @Nullable final String sServiceGroupId,
+                                                                @Nullable final String sServiceGroupID,
                                                                 @Nonnull final Class <?> aServiceMetadataInterface) throws Throwable {
-    s_aLogger.info ("GET /" + sServiceGroupId);
-    ParticipantIdentifierType aServiceGroupID = null;
-    try {
-      aServiceGroupID = SimpleParticipantIdentifier.createFromURIPart (sServiceGroupId);
-    }
-    catch (final IllegalArgumentException ex) {
+    s_aLogger.info ("GET /" + sServiceGroupID);
+
+    final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
+    if (aServiceGroupID == null) {
       // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupId + "'");
+      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
       return null;
     }
 
@@ -125,7 +123,7 @@ public final class BaseServiceGroupInterfaceImpl {
       }
       aServiceGroup.setServiceMetadataReferenceCollection (aCollectionType);
 
-      s_aLogger.info ("Finished getServiceGroup(" + sServiceGroupId + ")");
+      s_aLogger.info ("Finished getServiceGroup(" + sServiceGroupID + ")");
 
       /*
        * Finally return it

@@ -38,6 +38,7 @@
 package eu.europa.ec.cipa.peppol.identifier.participant;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -82,6 +83,7 @@ public final class SimpleParticipantIdentifierTest {
     final SimpleParticipantIdentifier aID2 = SimpleParticipantIdentifier.createFromURIPart ("scheme-actorid-test::value1");
     assertEquals (aID1, aID2);
 
+    assertNull (SimpleParticipantIdentifier.createFromURIPartOrNull ("scheme1"));
     try {
       // No separator
       SimpleParticipantIdentifier.createFromURIPart ("scheme1");

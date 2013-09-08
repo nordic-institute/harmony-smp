@@ -75,10 +75,22 @@ public final class BaseServiceMetadataInterfaceImpl {
                                                                                 @Nullable final String sDocumentTypeID) throws Throwable {
     s_aLogger.info ("GET /" + sServiceGroupID + "/services/" + sDocumentTypeID);
 
+    final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
+    if (aServiceGroupID == null) {
+      // Invalid identifier
+      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
+      return null;
+    }
+
+    final DocumentIdentifierType aDocTypeID = IdentifierUtils.createDocumentTypeIdentifierFromURIPartOrNull (sDocumentTypeID);
+    if (aDocTypeID == null) {
+      // Invalid identifier
+      s_aLogger.info ("Failed to parse document type identifier '" + sDocumentTypeID + "'");
+      return null;
+    }
+
     try {
       final ObjectFactory aObjFactory = new ObjectFactory ();
-      final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createFromURIPart (sServiceGroupID);
-      final DocumentIdentifierType aDocTypeID = IdentifierUtils.createDocumentTypeIdentifierFromURIPart (sDocumentTypeID);
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
 
       // First check for redirection, then for actual service

@@ -38,6 +38,7 @@
 package eu.europa.ec.cipa.peppol.identifier.process;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.busdox.transport.identifiers._1.ProcessIdentifierType;
 
@@ -89,7 +90,12 @@ public class SimpleProcessIdentifier extends ProcessIdentifierType implements IP
   }
 
   @Nonnull
-  public static SimpleProcessIdentifier createFromURIPart (@Nonnull final String sURIPart) {
+  public static SimpleProcessIdentifier createFromURIPart (@Nonnull final String sURIPart) throws IllegalArgumentException {
     return IdentifierUtils.createProcessIdentifierFromURIPart (sURIPart);
+  }
+
+  @Nullable
+  public static SimpleProcessIdentifier createFromURIPartOrNull (@Nonnull final String sURIPart) {
+    return IdentifierUtils.createProcessIdentifierFromURIPartOrNull (sURIPart);
   }
 }

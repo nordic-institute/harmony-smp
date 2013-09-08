@@ -88,16 +88,14 @@ public final class ServiceGroupInterface {
   }
 
   @PUT
-  public Response saveServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId,
+  public Response saveServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupID,
                                     final ServiceGroupType aServiceGroup) throws Throwable {
-    s_aLogger.info ("PUT /" + sServiceGroupId + " ==> " + aServiceGroup);
-    ParticipantIdentifierType aServiceGroupID = null;
-    try {
-      aServiceGroupID = SimpleParticipantIdentifier.createFromURIPart (sServiceGroupId);
-    }
-    catch (final IllegalArgumentException ex) {
+    s_aLogger.info ("PUT /" + sServiceGroupID + " ==> " + aServiceGroup);
+
+    final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
+    if (aServiceGroupID == null) {
       // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupId + "'");
+      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
       return Response.status (Status.BAD_REQUEST).build ();
     }
 
@@ -110,7 +108,7 @@ public final class ServiceGroupInterface {
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
       aDataManager.saveServiceGroup (aServiceGroup, RequestHelper.getAuth (headers));
 
-      s_aLogger.info ("Finished saveServiceGroup(" + sServiceGroupId + "," + aServiceGroup + ")");
+      s_aLogger.info ("Finished saveServiceGroup(" + sServiceGroupID + "," + aServiceGroup + ")");
 
       return Response.ok ().build ();
     }
@@ -121,15 +119,13 @@ public final class ServiceGroupInterface {
   }
 
   @DELETE
-  public Response deleteServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId) throws Throwable {
-    s_aLogger.info ("DELETE /" + sServiceGroupId);
-    ParticipantIdentifierType aServiceGroupID = null;
-    try {
-      aServiceGroupID = SimpleParticipantIdentifier.createFromURIPart (sServiceGroupId);
-    }
-    catch (final IllegalArgumentException ex) {
+  public Response deleteServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupID) throws Throwable {
+    s_aLogger.info ("DELETE /" + sServiceGroupID);
+
+    final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
+    if (aServiceGroupID == null) {
       // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupId + "'");
+      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
       return Response.status (Status.BAD_REQUEST).build ();
     }
 
@@ -137,7 +133,7 @@ public final class ServiceGroupInterface {
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
       aDataManager.deleteServiceGroup (aServiceGroupID, RequestHelper.getAuth (headers));
 
-      s_aLogger.info ("Finished deleteServiceGroup(" + sServiceGroupId + ")");
+      s_aLogger.info ("Finished deleteServiceGroup(" + sServiceGroupID + ")");
 
       return Response.ok ().build ();
     }

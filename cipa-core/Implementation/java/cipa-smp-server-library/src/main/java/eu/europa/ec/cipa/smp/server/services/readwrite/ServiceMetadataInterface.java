@@ -54,12 +54,11 @@ import javax.xml.bind.JAXBElement;
 import org.busdox.servicemetadata.publishing._1.ServiceInformationType;
 import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.busdox.servicemetadata.publishing._1.SignedServiceMetadataType;
-import org.busdox.transport.identifiers._1.DocumentIdentifierType;
-import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
+import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
@@ -93,31 +92,43 @@ public final class ServiceMetadataInterface {
   }
 
   @PUT
-  public Response saveServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupId,
-                                           @PathParam ("DocumentTypeId") final String sDocumentTypeId,
+  public Response saveServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
+                                           @PathParam ("DocumentTypeId") final String sDocumentTypeID,
                                            final ServiceMetadataType aServiceMetadata) throws Throwable {
-    s_aLogger.info ("PUT /" + sServiceGroupId + "/services/" + sDocumentTypeId + " ==> " + aServiceMetadata);
+    s_aLogger.info ("PUT /" + sServiceGroupID + "/services/" + sDocumentTypeID + " ==> " + aServiceMetadata);
+
+    final SimpleParticipantIdentifier aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
+    if (aServiceGroupID == null) {
+      // Invalid identifier
+      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
+      return Response.status (Status.BAD_REQUEST).build ();
+    }
+
+    final SimpleDocumentTypeIdentifier aDocTypeID = SimpleDocumentTypeIdentifier.createFromURIPartOrNull (sDocumentTypeID);
+    if (aDocTypeID == null) {
+      // Invalid identifier
+      s_aLogger.info ("Failed to parse document type identifier '" + sDocumentTypeID + "'");
+      return null;
+    }
 
     try {
       final ServiceInformationType aServiceInformationType = aServiceMetadata.getServiceInformation ();
 
       // Business identifiers from path (ServiceGroupID) and from service
       // metadata (body) must equal path
-      final ParticipantIdentifierType aServiceGroupId = SimpleParticipantIdentifier.createFromURIPart (sServiceGroupId);
-      if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getParticipantIdentifier (), aServiceGroupId)) {
+      if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getParticipantIdentifier (), aServiceGroupID)) {
         s_aLogger.info ("Save service metadata was called with bad parameters. serviceInfo:" +
                         IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getParticipantIdentifier ()) +
                         " param:" +
-                        aServiceGroupId);
+                        aServiceGroupID);
         return Response.status (Status.BAD_REQUEST).build ();
       }
 
-      final DocumentIdentifierType aDocTypeId = IdentifierUtils.createDocumentTypeIdentifierFromURIPart (sDocumentTypeId);
-      if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getDocumentIdentifier (), aDocTypeId)) {
+      if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getDocumentIdentifier (), aDocTypeID)) {
         s_aLogger.info ("Save service metadata was called with bad parameters. serviceInfo:" +
                         IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getDocumentIdentifier ()) +
                         " param:" +
-                        aDocTypeId);
+                        aDocTypeID);
         // Document type must equal path
         return Response.status (Status.BAD_REQUEST).build ();
       }
@@ -127,9 +138,9 @@ public final class ServiceMetadataInterface {
       aDataManager.saveService (aServiceMetadata, RequestHelper.getAuth (headers));
 
       s_aLogger.info ("Finished saveServiceRegistration(" +
-                      sServiceGroupId +
+                      sServiceGroupID +
                       "," +
-                      sDocumentTypeId +
+                      sDocumentTypeID +
                       "," +
                       aServiceMetadata +
                       ")");
@@ -143,18 +154,29 @@ public final class ServiceMetadataInterface {
   }
 
   @DELETE
-  public Response deleteServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupId,
-                                             @PathParam ("DocumentTypeId") final String sDocumentTypeId) throws Throwable {
-    s_aLogger.info ("DELETE /" + sServiceGroupId + "/services/" + sDocumentTypeId);
+  public Response deleteServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
+                                             @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
+    s_aLogger.info ("DELETE /" + sServiceGroupID + "/services/" + sDocumentTypeID);
+
+    final SimpleParticipantIdentifier aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
+    if (aServiceGroupID == null) {
+      // Invalid identifier
+      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
+      return Response.status (Status.BAD_REQUEST).build ();
+    }
+
+    final SimpleDocumentTypeIdentifier aDocTypeID = SimpleDocumentTypeIdentifier.createFromURIPartOrNull (sDocumentTypeID);
+    if (aDocTypeID == null) {
+      // Invalid identifier
+      s_aLogger.info ("Failed to parse document type identifier '" + sDocumentTypeID + "'");
+      return null;
+    }
 
     try {
-      final ParticipantIdentifierType aServiceGroupId = SimpleParticipantIdentifier.createFromURIPart (sServiceGroupId);
-      final DocumentIdentifierType aDocTypeId = IdentifierUtils.createDocumentTypeIdentifierFromURIPart (sDocumentTypeId);
-
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
-      aDataManager.deleteService (aServiceGroupId, aDocTypeId, RequestHelper.getAuth (headers));
+      aDataManager.deleteService (aServiceGroupID, aDocTypeID, RequestHelper.getAuth (headers));
 
-      s_aLogger.info ("Finished deleteServiceRegistration(" + sServiceGroupId + "," + sDocumentTypeId);
+      s_aLogger.info ("Finished deleteServiceRegistration(" + sServiceGroupID + "," + sDocumentTypeID);
 
       return Response.ok ().build ();
     }

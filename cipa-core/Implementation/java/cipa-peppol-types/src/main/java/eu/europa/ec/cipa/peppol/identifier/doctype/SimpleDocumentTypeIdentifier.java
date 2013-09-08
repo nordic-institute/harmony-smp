@@ -95,7 +95,12 @@ public class SimpleDocumentTypeIdentifier extends DocumentIdentifierType impleme
   }
 
   @Nonnull
-  public static SimpleDocumentTypeIdentifier createFromURIPart (@Nonnull final String sURIPart) {
+  public static SimpleDocumentTypeIdentifier createFromURIPart (@Nonnull final String sURIPart) throws IllegalArgumentException {
     return IdentifierUtils.createDocumentTypeIdentifierFromURIPart (sURIPart);
+  }
+
+  @Nullable
+  public static SimpleDocumentTypeIdentifier createFromURIPartOrNull (@Nonnull final String sURIPart) {
+    return IdentifierUtils.createDocumentTypeIdentifierFromURIPartOrNull (sURIPart);
   }
 }

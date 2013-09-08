@@ -105,7 +105,12 @@ public class SimpleParticipantIdentifier extends ParticipantIdentifierType imple
   }
 
   @Nonnull
-  public static SimpleParticipantIdentifier createFromURIPart (@Nonnull final String sURIPart) {
+  public static SimpleParticipantIdentifier createFromURIPart (@Nonnull final String sURIPart) throws IllegalArgumentException {
     return IdentifierUtils.createParticipantIdentifierFromURIPart (sURIPart);
+  }
+
+  @Nullable
+  public static SimpleParticipantIdentifier createFromURIPartOrNull (@Nonnull final String sURIPart) {
+    return IdentifierUtils.createParticipantIdentifierFromURIPartOrNull (sURIPart);
   }
 }

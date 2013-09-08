@@ -38,6 +38,7 @@
 package eu.europa.ec.cipa.peppol.identifier.doctype;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -84,6 +85,7 @@ public final class SimpleDocumentTypeIdentifierTest {
     final SimpleDocumentTypeIdentifier aID2 = SimpleDocumentTypeIdentifier.createFromURIPart ("scheme1::value1");
     assertEquals (aID1, aID2);
 
+    assertNull (SimpleDocumentTypeIdentifier.createFromURIPartOrNull ("scheme1"));
     try {
       // No separator
       SimpleDocumentTypeIdentifier.createFromURIPart ("scheme1");

@@ -38,6 +38,7 @@
 package eu.europa.ec.cipa.peppol.identifier.process;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
 
 import org.junit.Test;
@@ -83,6 +84,7 @@ public final class SimpleProcessIdentifierTest {
     final SimpleProcessIdentifier aID2 = SimpleProcessIdentifier.createFromURIPart ("scheme1::value1");
     assertEquals (aID1, aID2);
 
+    assertNull (SimpleProcessIdentifier.createFromURIPartOrNull ("scheme1"));
     try {
       // No separator
       SimpleProcessIdentifier.createFromURIPart ("scheme1");
