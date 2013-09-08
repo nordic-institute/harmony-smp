@@ -145,6 +145,27 @@ public final class IdentifierUtils {
   }
 
   /**
+   * Check if the passed document type identifier value is valid. A valid
+   * identifier must have at least 1 character and at last
+   * {@link CIdentifier#MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH} characters.
+   * Also it must be ISO-8859-1 encoded.
+   * 
+   * @param sValue
+   *        The document type identifier value to be checked (without the
+   *        scheme). May be <code>null</code>.
+   * @return <code>true</code> if the document type identifier value is valid,
+   *         <code>false</code> otherwise
+   */
+  public static boolean isValidDocumentTypeIdentifierValue (@Nullable final String sValue) {
+    final int nLength = StringHelper.getLength (sValue);
+    if (nLength == 0 || nLength > CIdentifier.MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH)
+      return false;
+
+    // Check if the value is ISO-8859-1 encoded
+    return areCharsetChecksDisabled () || CHARSET_ISO88591.newEncoder ().canEncode (sValue);
+  }
+
+  /**
    * Check if the passed participant identifier value is valid. A valid
    * identifier must have at least 1 character and at last
    * {@link CIdentifier#MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH} characters.
@@ -167,27 +188,6 @@ public final class IdentifierUtils {
   }
 
   /**
-   * Check if the passed document type identifier value is valid. A valid
-   * identifier must have at least 1 character and at last
-   * {@link CIdentifier#MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH} characters.
-   * Also it must be ISO-8859-1 encoded.
-   * 
-   * @param sValue
-   *        The document type identifier value to be checked (without the
-   *        scheme). May be <code>null</code>.
-   * @return <code>true</code> if the document type identifier value is valid,
-   *         <code>false</code> otherwise
-   */
-  public static boolean isValidDocumentTypeIdentifierValue (@Nullable final String sValue) {
-    final int nLength = StringHelper.getLength (sValue);
-    if (nLength == 0 || nLength > CIdentifier.MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH)
-      return false;
-
-    // Check if the value is ISO-8859-1 encoded
-    return areCharsetChecksDisabled () || CHARSET_ISO88591.newEncoder ().canEncode (sValue);
-  }
-
-  /**
    * Check if the passed process identifier value is valid. A valid identifier
    * must have at least 1 character and at last
    * {@link CIdentifier#MAX_PROCESS_IDENTIFIER_VALUE_LENGTH} characters. Also it
@@ -206,6 +206,55 @@ public final class IdentifierUtils {
 
     // Check if the value is ISO-8859-1 encoded
     return areCharsetChecksDisabled () || CHARSET_ISO88591.newEncoder ().canEncode (sValue);
+  }
+
+  /**
+   * Check if the passed document type identifier is valid. This method checks
+   * for the existence of the scheme and the value and validates both.
+   * 
+   * @param sValue
+   *        The document type identifier to be checked (including the scheme).
+   *        May be <code>null</code>.
+   * @return <code>true</code> if the document type identifier is valid,
+   *         <code>false</code> otherwise
+   */
+  public static boolean isValidDocumentTypeIdentifier (@Nullable final String sValue) {
+    final SimpleDocumentTypeIdentifier aID = createDocumentTypeIdentifierFromURIPartOrNull (sValue);
+    return aID != null &&
+           isValidIdentifierScheme (aID.getScheme ()) &&
+           isValidDocumentTypeIdentifierValue (aID.getValue ());
+  }
+
+  /**
+   * Check if the passed participant identifier is valid. This method checks for
+   * the existence of the scheme and the value and validates both.
+   * 
+   * @param sValue
+   *        The participant identifier to be checked (including the scheme). May
+   *        be <code>null</code>.
+   * @return <code>true</code> if the document type identifier is valid,
+   *         <code>false</code> otherwise
+   */
+  public static boolean isValidParticipantIdentifier (@Nullable final String sValue) {
+    final SimpleParticipantIdentifier aID = createParticipantIdentifierFromURIPartOrNull (sValue);
+    return aID != null &&
+           isValidParticipantIdentifierScheme (aID.getScheme ()) &&
+           isValidParticipantIdentifierValue (aID.getValue ());
+  }
+
+  /**
+   * Check if the passed process identifier is valid. This method checks for the
+   * existence of the scheme and the value and validates both.
+   * 
+   * @param sValue
+   *        The process identifier to be checked (including the scheme). May be
+   *        <code>null</code>.
+   * @return <code>true</code> if the process identifier is valid,
+   *         <code>false</code> otherwise
+   */
+  public static boolean isValidProcessIdentifier (@Nullable final String sValue) {
+    final SimpleProcessIdentifier aID = createProcessIdentifierFromURIPartOrNull (sValue);
+    return aID != null && isValidIdentifierScheme (aID.getScheme ()) && isValidProcessIdentifierValue (aID.getValue ());
   }
 
   /**
