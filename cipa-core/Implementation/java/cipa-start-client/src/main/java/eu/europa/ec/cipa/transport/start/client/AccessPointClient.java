@@ -131,14 +131,14 @@ public final class AccessPointClient {
    * Configures and returns a port that points to the a specific endpoint
    * address.
    * 
-   * @param sAddress
-   *        the address of the receiving side.
-   * @return the port.
+   * @param sEndpointAddressURL
+   *        the endpoint address of the receiving side.
+   * @return The port. May be <code>null</code> in case of an error.
    */
   @Nullable
-  public static Resource createPort (@Nonnull @Nonempty final String sAddress) {
-    if (StringHelper.hasNoText (sAddress))
-      throw new IllegalArgumentException ("Address may not be empty!");
+  public static Resource createPort (@Nonnull @Nonempty final String sEndpointAddressURL) {
+    if (StringHelper.hasNoText (sEndpointAddressURL))
+      throw new IllegalArgumentException ("EndpointAddressURL may not be empty!");
 
     try {
       // Set globally as long as WSIT-1632 is not resolved!
@@ -158,7 +158,7 @@ public final class AccessPointClient {
       final Resource aPort = aService.getResourceBindingPort (new ReliableMessagingFeatureBuilder (RmProtocolVersion.WSRM200702).closeSequenceOperationTimeout (1)
                                                                                                                                 .build ());
       final Map <String, Object> aRequestContext = ((BindingProvider) aPort).getRequestContext ();
-      aRequestContext.put (BindingProvider.ENDPOINT_ADDRESS_PROPERTY, sAddress);
+      aRequestContext.put (BindingProvider.ENDPOINT_ADDRESS_PROPERTY, sEndpointAddressURL);
       if (false) {
         // According to the JAX-WS specs, this should work, but because of RM it
         // does not!
@@ -169,7 +169,7 @@ public final class AccessPointClient {
       return aPort;
     }
     catch (final Exception e) {
-      s_aLogger.error ("Error creating the START WS Port for URL '" + sAddress + "'", e);
+      s_aLogger.error ("Error creating the START WS Port for URL '" + sEndpointAddressURL + "'", e);
       return null;
     }
   }
@@ -185,12 +185,12 @@ public final class AccessPointClient {
    *        will be attached into the SOAP-envelope.
    * @param aBody
    *        Create object holding the SOAP-envelope payload.
-   * @return {@link ESuccess}.
+   * @return Never <code>null</code>.
    */
   @Nonnull
-  public static ESuccess send (@Nonnull final Resource aPort,
-                               @Nonnull final IMessageMetadata aMetadata,
-                               @Nonnull final Create aBody) {
+  public static AccessPointClientSendResult send (@Nonnull final Resource aPort,
+                                                  @Nonnull final IMessageMetadata aMetadata,
+                                                  @Nonnull final Create aBody) {
     if (aPort == null)
       throw new NullPointerException ("port");
     if (aMetadata == null)
@@ -214,7 +214,7 @@ public final class AccessPointClient {
       // Main client call
       final CreateResponse aResponse = aPort.create (aBody);
 
-      // Build response log message
+      // Build response log message - for debugging purposes only
       final StringBuilder aResponseMsg = new StringBuilder ();
       aResponseMsg.append ("Message ").append (aMetadata.getMessageID ()).append (" has been successfully delivered!");
       if (aResponse != null) {
@@ -235,37 +235,42 @@ public final class AccessPointClient {
       }
       s_aLogger.info (aResponseMsg.toString ());
 
-      // Done
-      return ESuccess.SUCCESS;
+      // Done successfully
+      return new AccessPointClientSendResult (ESuccess.SUCCESS);
     }
     catch (final JAXBException ex) {
       // Usually a JAXB marshalling error
       s_aLogger.error ("An error occurred while marshalling headers.", ex);
+      return new AccessPointClientSendResult (ESuccess.FAILURE).addErrorMessage ("Internal JAXB error: " +
+                                                                                 ex.getMessage ());
     }
     catch (final FaultMessage ex) {
       // A wrapped error from the START server
       s_aLogger.error ("Error while sending the message.", ex);
+      return new AccessPointClientSendResult (ESuccess.FAILURE).addErrorMessage ("A SOAP Fault was thrown: " +
+                                                                                 String.valueOf (ex.getFaultInfo ()));
     }
     catch (final WebServiceException ex) {
       // An error from the Metro framework
       s_aLogger.error ("Internal error while sending the message", ex);
+      return new AccessPointClientSendResult (ESuccess.FAILURE).addErrorMessage ("Internal WebService error: " +
+                                                                                 ex.getMessage ());
     }
     finally {
       // Close the port directly after sending.
       // This is important for WSRM!
       ((com.sun.xml.ws.Closeable) aPort).close ();
     }
-    return ESuccess.FAILURE;
   }
 
   @Nonnull
-  public static ESuccess send (@Nonnull final String sAddressURL,
-                               @Nonnull final IMessageMetadata aMetadata,
-                               @Nonnull final Create aBody) {
-    final Resource aPort = createPort (sAddressURL);
+  public static AccessPointClientSendResult send (@Nonnull @Nonempty final String sEndpointAddressURL,
+                                                  @Nonnull final IMessageMetadata aMetadata,
+                                                  @Nonnull final Create aBody) {
+    final Resource aPort = createPort (sEndpointAddressURL);
     if (aPort == null) {
       // Warning was already emitted
-      return ESuccess.FAILURE;
+      return new AccessPointClientSendResult (ESuccess.FAILURE).addErrorMessage ("Failed to create port");
     }
     return send (aPort, aMetadata, aBody);
   }
@@ -273,30 +278,31 @@ public final class AccessPointClient {
   /**
    * Send an XML document via START to the destination AP.
    * 
-   * @param sAddressURL
+   * @param sEndpointAddressURL
    *        The absolute URL of the receiving AP. Must include the service name!
    * @param aMetadata
    *        The metadata of the document to send. May not be <code>null</code>.
    * @param aXMLDoc
    *        The XML document to be transmitted as the payload. May not be
    *        <code>null</code> and must contain a document element!
-   * @return {@link ESuccess#SUCCESS} if sending succeeded,
-   *         {@link ESuccess#FAILURE} otherwise. In case of a failure check the
-   *         log-file.
+   * @return Never <code>null</code>. Use
+   *         {@link AccessPointClientSendResult#isSuccess()} to check for
+   *         successful sending. In case of a failure check the log-file.
    */
   @Nonnull
-  public static ESuccess send (@Nonnull final String sAddressURL,
-                               @Nonnull final IMessageMetadata aMetadata,
-                               @Nonnull final Document aXMLDoc) {
+  public static AccessPointClientSendResult send (@Nonnull @Nonempty final String sEndpointAddressURL,
+                                                  @Nonnull final IMessageMetadata aMetadata,
+                                                  @Nonnull final Document aXMLDoc) {
     if (aXMLDoc == null)
-      throw new NullPointerException ("XMLDocument");
-
-    // Check if a document-element is present
+      throw new NullPointerException ("Passed XML document is null!");
     if (aXMLDoc.getDocumentElement () == null)
-      throw new IllegalArgumentException ("Passed XML node does not belong to a Document that has a DocumentElement!");
+      throw new IllegalArgumentException ("Passed XML document has no DocumentElement!");
 
+    // Create the WS-Transfer body object
     final Create aCreateBody = new Create ();
     aCreateBody.getAny ().add (aXMLDoc.getDocumentElement ());
-    return send (sAddressURL, aMetadata, aCreateBody);
+
+    // Continue sending
+    return send (sEndpointAddressURL, aMetadata, aCreateBody);
   }
 }
