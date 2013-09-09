@@ -48,10 +48,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import org.apache.commons.codec.EncoderException;
-import org.apache.commons.codec.net.URLCodec;
-
 import com.phloc.commons.charset.CCharset;
+import com.phloc.commons.codec.URLCodec;
 import com.phloc.commons.messagedigest.EMessageDigestAlgorithm;
 import com.phloc.commons.messagedigest.MessageDigestGeneratorHelper;
 import com.phloc.commons.string.StringHelper;
@@ -83,12 +81,7 @@ public final class BusdoxURLUtils {
   @Nullable
   public static String createPercentEncodedURL (@Nullable final String sURL) {
     if (sURL != null)
-      try {
-        return new URLCodec ().encode (sURL);
-      }
-      catch (final EncoderException ex) {
-        throw new IllegalArgumentException ("Error creating percent encoded URL from '" + sURL + "'", ex);
-      }
+      return new URLCodec ().encodeText (sURL);
     return null;
   }
 
