@@ -65,7 +65,8 @@ import com.phloc.commons.xml.XMLHelper;
  * extract information from it (get....). This class offers a workaround by
  * using DOM serialization to access the content of a
  * {@link W3CEndpointReference}. In case the serialization tag names of
- * {@link W3CEndpointReference} change, this implementation has to be adopted!
+ * {@link W3CEndpointReference} change, this implementation has to be adopted!<br>
+ * The JIRA issue JAX_WS-1132 was filed to help dealing with this issue.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
@@ -117,7 +118,7 @@ public final class W3CEndpointReferenceUtils {
    * @return The document element called "EndpointReference"
    */
   @Nonnull
-  private static Element _convertReference (@Nonnull final W3CEndpointReference aEndpointReference) {
+  private static Element _convertReferenceToXML (@Nonnull final W3CEndpointReference aEndpointReference) {
     final Document aDoc = XMLFactory.newDocument ();
     final DOMResult ret = new DOMResult (aDoc);
     aEndpointReference.writeTo (ret);
@@ -134,7 +135,7 @@ public final class W3CEndpointReferenceUtils {
    */
   @Nullable
   public static String getAddress (@Nonnull final W3CEndpointReference aEndpointReference) {
-    final Element eAddress = XMLHelper.getFirstChildElementOfName (_convertReference (aEndpointReference), "Address");
+    final Element eAddress = XMLHelper.getFirstChildElementOfName (_convertReferenceToXML (aEndpointReference), "Address");
     return eAddress == null ? null : eAddress.getTextContent ();
   }
 
@@ -149,7 +150,7 @@ public final class W3CEndpointReferenceUtils {
    */
   @Nullable
   public static List <Element> getReferenceParameters (@Nonnull final W3CEndpointReference aEndpointReference) {
-    final Element eRefParams = XMLHelper.getFirstChildElementOfName (_convertReference (aEndpointReference),
+    final Element eRefParams = XMLHelper.getFirstChildElementOfName (_convertReferenceToXML (aEndpointReference),
                                                                      "ReferenceParameters");
     if (eRefParams == null)
       return null;
