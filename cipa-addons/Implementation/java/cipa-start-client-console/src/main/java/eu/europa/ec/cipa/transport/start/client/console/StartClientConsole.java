@@ -53,6 +53,7 @@ import org.apache.commons.cli.PosixParser;
 import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.busdox.transport.identifiers._1.ProcessIdentifierType;
+import org.busdox.transport.start._1.ObjectFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -76,6 +77,7 @@ import eu.europa.ec.cipa.transport.IMessageMetadata;
 import eu.europa.ec.cipa.transport.MessageMetadata;
 import eu.europa.ec.cipa.transport.PingMessageHelper;
 import eu.europa.ec.cipa.transport.start.client.AccessPointClient;
+import eu.europa.ec.cipa.transport.start.client.AccessPointClientSendResult;
 
 public class StartClientConsole {
   private static final Logger s_aLogger = LoggerFactory.getLogger (StartClientConsole.class);
@@ -88,8 +90,8 @@ public class StartClientConsole {
 
   private static void _enableProxy () {
     final ConfigFile aProxyConfig = new ConfigFile ("configProxy.properties");
-    if (aProxyConfig.getAllKeys () == null || aProxyConfig.getAllKeys ().isEmpty ()) {
-      s_aLogger.error ("No configProxy.properties file provide proxy will not be configured ");
+    if (!aProxyConfig.isRead ()) {
+      s_aLogger.error ("No configProxy.properties file provided - proxy will not be configured ");
     }
     else {
       System.setProperty ("http.proxyHost", aProxyConfig.getString ("http.proxyHost"));
@@ -100,9 +102,9 @@ public class StartClientConsole {
   }
 
   @Nullable
-  private static String _getAccessPointUrl (@Nonnull final URI smpAddress, @Nonnull final IMessageMetadata aMetadata) throws Exception {
+  private static String _getAccessPointUrl (@Nonnull final URI aSMPAddress, @Nonnull final IMessageMetadata aMetadata) throws Exception {
     // SMP client
-    final SMPServiceCaller aServiceCaller = new SMPServiceCaller (smpAddress);
+    final SMPServiceCaller aServiceCaller = new SMPServiceCaller (aSMPAddress);
     // get service info
     return aServiceCaller.getEndpointAddress (aMetadata.getRecipientID (),
                                               aMetadata.getDocumentTypeID (),
@@ -157,7 +159,6 @@ public class StartClientConsole {
     SystemProperties.setPropertyValue ("com.sun.xml.ws.rx.mc.runtime.McTubeFactory.dump.endpoint.before", "true");
     SystemProperties.setPropertyValue ("com.sun.xml.wss.provider.wsit.SecurityTubeFactory.dump.client.after", "true");
     SystemProperties.setPropertyValue ("com.sun.xml.wss.provider.wsit.SecurityTubeFactory.dump.endpoint.before", "true");
-
   }
 
   /**
@@ -166,7 +167,7 @@ public class StartClientConsole {
   public static void main (final String [] args) throws Exception {
     final StartClientOptions aOptions = new StartClientOptions ();
     final CommandLine cmd = new PosixParser ().parse (aOptions, args);
-    EClientMode mode = null;
+    EClientMode eMode = null;
     boolean bGoodCmd = true;
     System.setProperty ("java.net.useSystemProxies", "true");
 
@@ -189,8 +190,8 @@ public class StartClientConsole {
       bGoodCmd = false;
     }
     else {
-      mode = EClientMode.valueOf (cmd.getOptionValue ("m"));
-      switch (mode) {
+      eMode = EClientMode.valueOf (cmd.getOptionValue ("m"));
+      switch (eMode) {
         case DIRECT_AP:
           if (!cmd.hasOption ("ap")) {
             System.out.println ("AP url required in DIRECT_AP mode ");
@@ -223,17 +224,18 @@ public class StartClientConsole {
       System.exit (-3);
     }
 
-    IMessageMetadata md = null;
-    Document d = null;
+    IMessageMetadata aMetadata = null;
+    Document aDoc = null;
 
     if (cmd.hasOption ("ping") && Boolean.parseBoolean (cmd.getOptionValue ("ping"))) {
       System.out.println ("Sending Ping Messsage");
-      md = _createPingMetadata ();
+      aMetadata = _createPingMetadata ();
 
       // Create a ping document
-      d = XMLFactory.newDocument ();
+      aDoc = XMLFactory.newDocument ();
       // See START-Types-1.0.xsd for details
-      d.appendChild (d.createElementNS ("http://busdox.org/transport/start/1.0/", "Ping"));
+      aDoc.appendChild (aDoc.createElementNS (ObjectFactory._Ping_QNAME.getNamespaceURI (),
+                                              ObjectFactory._Ping_QNAME.getLocalPart ()));
     }
     else {
       final ParticipantIdentifierType aSender = SimpleParticipantIdentifier.createWithDefaultScheme (cmd.getOptionValue ('s'));
@@ -250,27 +252,34 @@ public class StartClientConsole {
         sMessageID = "uuid:" + UUID.randomUUID ().toString ();
       }
 
-      md = new MessageMetadata (sMessageID, "test-channel", aSender, aRecipient, aDocumentType, aProcessIdentifier);
-      final File f = new File (cmd.getOptionValue ("dpath"));
-      d = XMLReader.readXMLDOM (f);
-      if (d == null)
-        throw new IllegalArgumentException ("Failed to read XML document from " + f);
+      aMetadata = new MessageMetadata (sMessageID,
+                                       "test-channel",
+                                       aSender,
+                                       aRecipient,
+                                       aDocumentType,
+                                       aProcessIdentifier);
+      final File aFile = new File (cmd.getOptionValue ("dpath"));
+      aDoc = XMLReader.readXMLDOM (aFile);
+      if (aDoc == null)
+        throw new IllegalArgumentException ("Failed to read XML document from " + aFile);
     }
 
-    String apURL = null;
-    switch (mode) {
+    String sAPURL;
+    AccessPointClientSendResult aResult = null;
+    switch (eMode) {
       case DIRECT_AP:
-        apURL = cmd.getOptionValue ("ap");
-        AccessPointClient.send (apURL, md, d);
+        sAPURL = cmd.getOptionValue ("ap");
+        aResult = AccessPointClient.send (sAPURL, aMetadata, aDoc);
         break;
       case DIRECT_SMP:
-        apURL = _getAccessPointUrl (new URI (cmd.getOptionValue ("smp")), md);
-        AccessPointClient.send (apURL, md, d);
+        sAPURL = _getAccessPointUrl (new URI (cmd.getOptionValue ("smp")), aMetadata);
+        aResult = AccessPointClient.send (sAPURL, aMetadata, aDoc);
         break;
       case FULL:
-        apURL = _getAccessPointUrl (md);
-        AccessPointClient.send (apURL, md, d);
+        sAPURL = _getAccessPointUrl (aMetadata);
+        aResult = AccessPointClient.send (sAPURL, aMetadata, aDoc);
         break;
     }
+    System.out.println ("Send result: " + (aResult.isSuccess () ? "success" : "failure"));
   }
 }

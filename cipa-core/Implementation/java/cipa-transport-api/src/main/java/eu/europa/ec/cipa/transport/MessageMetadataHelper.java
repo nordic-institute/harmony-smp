@@ -55,6 +55,7 @@ import org.busdox.transport.identifiers._1.ProcessIdentifierType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.jaxb.JAXBContextCache;
 import com.phloc.commons.string.StringHelper;
 import com.phloc.commons.xml.ChildElementIterator;
@@ -75,7 +76,8 @@ import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
  *         PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
-public final class MessageMetadataHelper {
+public final class MessageMetadataHelper
+{
   private static final QName QNAME_MESSAGEID = ObjectFactory._MessageIdentifier_QNAME;
   private static final QName QNAME_CHANNELID = ObjectFactory._ChannelIdentifier_QNAME;
   private static final QName QNAME_RECIPIENTID = ObjectFactory._RecipientIdentifier_QNAME;
@@ -85,10 +87,12 @@ public final class MessageMetadataHelper {
   // Must match the attribute name used in ParticipantIdentifierType etc.
   private static final QName QNAME_SCHEME = new QName (null, CTransportIdentifiers.SCHEME_ATTR);
 
-  private MessageMetadataHelper () {}
+  private MessageMetadataHelper ()
+  {}
 
   @Nonnull
-  public static String getDebugInfo (@Nonnull final IMessageMetadata aMetadata) {
+  public static String getDebugInfo (@Nonnull final IMessageMetadata aMetadata)
+  {
     return "\tMessageID:\t" +
            aMetadata.getMessageID () +
            "\n\tChannelID:\t" +
@@ -103,8 +107,33 @@ public final class MessageMetadataHelper {
            IdentifierUtils.getIdentifierURIEncoded (aMetadata.getProcessID ());
   }
 
+  /**
+   * Convert the passed metadata to a single DOM document from which they can be
+   * collected for further processing. The root element of the created document
+   * has the namespace URL {@link CTransportIdentifiers#NAMESPACE_TRANSPORT_IDS}
+   * and the local name {@link CTransportIdentifiers#ELEMENT_HEADERS}. The order
+   * of the metadata elements is:
+   * <ol>
+   * <li>message ID</li>
+   * <li>channel ID</li>
+   * <li>sender ID</li>
+   * <li>recipient ID</li>
+   * <li>document type ID</li>
+   * <li>process ID</li>
+   * </ol>
+   * But note that only metadata elements that are contained are serialized. So
+   * if the passed metadata object is empty (all values are <code>null</code>),
+   * the returned document only contains the document element!
+   * 
+   * @param aMetadata
+   *        The message data object to be converted. May not be
+   *        <code>null</code>.
+   * @return A new DOM document. Never <code>null</code>.
+   * @throws JAXBException
+   */
   @Nonnull
-  public static Document createHeadersDocument (@Nonnull final IMessageMetadata aMetadata) throws JAXBException {
+  public static Document createHeadersDocument (@Nonnull final IMessageMetadata aMetadata) throws JAXBException
+  {
     // Set headers direct, without a handler
     final ObjectFactory aObjFactory = new ObjectFactory ();
     final Document aDoc = XMLFactory.newDocument ();
@@ -114,42 +143,48 @@ public final class MessageMetadataHelper {
 
     // Write message ID (may be null for LIME)
     final String sMessageID = aMetadata.getMessageID ();
-    if (StringHelper.hasText (sMessageID)) {
+    if (StringHelper.hasText (sMessageID))
+    {
       aMarshaller = JAXBContext.newInstance (String.class).createMarshaller ();
       aMarshaller.marshal (aObjFactory.createMessageIdentifier (sMessageID), eRoot);
     }
 
     // Write channel ID
     final String sChannelID = aMetadata.getChannelID ();
-    if (StringHelper.hasText (sChannelID)) {
+    if (StringHelper.hasText (sChannelID))
+    {
       aMarshaller = JAXBContext.newInstance (String.class).createMarshaller ();
       aMarshaller.marshal (aObjFactory.createChannelIdentifier (sChannelID), eRoot);
     }
 
     // Write sender
     final SimpleParticipantIdentifier aSenderID = aMetadata.getSenderID ();
-    if (aSenderID != null) {
+    if (aSenderID != null)
+    {
       aMarshaller = JAXBContextCache.getInstance ().getFromCache (ParticipantIdentifierType.class).createMarshaller ();
       aMarshaller.marshal (aObjFactory.createSenderIdentifier (aSenderID), eRoot);
     }
 
     // Write recipient
     final SimpleParticipantIdentifier aRecipientID = aMetadata.getRecipientID ();
-    if (aRecipientID != null) {
+    if (aRecipientID != null)
+    {
       aMarshaller = JAXBContextCache.getInstance ().getFromCache (ParticipantIdentifierType.class).createMarshaller ();
       aMarshaller.marshal (aObjFactory.createRecipientIdentifier (aRecipientID), eRoot);
     }
 
     // Write document type
     final SimpleDocumentTypeIdentifier aDocumentTypeID = aMetadata.getDocumentTypeID ();
-    if (aDocumentTypeID != null) {
+    if (aDocumentTypeID != null)
+    {
       aMarshaller = JAXBContextCache.getInstance ().getFromCache (DocumentIdentifierType.class).createMarshaller ();
       aMarshaller.marshal (aObjFactory.createDocumentIdentifier (aDocumentTypeID), eRoot);
     }
 
     // Write process type
     final SimpleProcessIdentifier aProcessID = aMetadata.getProcessID ();
-    if (aProcessID != null) {
+    if (aProcessID != null)
+    {
       aMarshaller = JAXBContextCache.getInstance ().getFromCache (ProcessIdentifierType.class).createMarshaller ();
       aMarshaller.marshal (aObjFactory.createProcessIdentifier (aProcessID), eRoot);
     }
@@ -157,8 +192,18 @@ public final class MessageMetadataHelper {
     return aDoc;
   }
 
+  /**
+   * Create the web service headers to be included in AP client calls
+   * 
+   * @param aMetadata
+   *        The source metadata object
+   * @return A non-<code>null</code> mutable copy with all headers
+   * @throws JAXBException
+   */
   @Nonnull
-  public static List <Header> createHeadersFromMetadata (@Nonnull final IMessageMetadata aMetadata) throws JAXBException {
+  @ReturnsMutableCopy
+  public static List <Header> createHeadersFromMetadata (@Nonnull final IMessageMetadata aMetadata) throws JAXBException
+  {
     final Document aDoc = createHeadersDocument (aMetadata);
 
     // Collect headers
@@ -168,73 +213,160 @@ public final class MessageMetadataHelper {
     return aHeaders;
   }
 
+  /**
+   * Get the header value as a string
+   * 
+   * @param aHeader
+   *        The header to be investigated. May be <code>null</code>.
+   * @return <code>null</code> if either the header is <code>null</code> or the
+   *         header is empty.
+   */
   @Nullable
-  public static String getStringContent (@Nullable final Header aHeader) {
+  public static String getStringContent (@Nullable final Header aHeader)
+  {
     if (aHeader == null)
       return null;
     final String sContent = aHeader.getStringContent ();
     return StringHelper.hasNoText (sContent) ? null : sContent;
   }
 
+  /**
+   * Extract the message ID from the passed header list. Used in the AP server.
+   * 
+   * @param aHeaderList
+   *        The provided header list from the service. May not be
+   *        <code>null</code>.
+   * @return <code>null</code> if no such header is present.
+   */
   @Nullable
-  public static String getMessageID (@Nonnull final HeaderList aHeaderList) {
+  public static String getMessageID (@Nonnull final HeaderList aHeaderList)
+  {
     return getStringContent (aHeaderList.get (QNAME_MESSAGEID, false));
   }
 
+  /**
+   * Extract the channel ID from the passed header list. Used in the AP server.
+   * 
+   * @param aHeaderList
+   *        The provided header list from the service. May not be
+   *        <code>null</code>.
+   * @return <code>null</code> if no such header is present.
+   */
   @Nullable
-  public static String getChannelID (@Nonnull final HeaderList aHeaderList) {
+  public static String getChannelID (@Nonnull final HeaderList aHeaderList)
+  {
     return getStringContent (aHeaderList.get (QNAME_CHANNELID, false));
   }
 
   @Nullable
   private static SimpleParticipantIdentifier _getParticipantID (@Nonnull final HeaderList aHeaderList,
-                                                                @Nonnull final QName aQName) {
+                                                                @Nonnull final QName aQName)
+  {
     final Header aHeaderPart = aHeaderList.get (aQName, false);
     return aHeaderPart == null ? null : new SimpleParticipantIdentifier (aHeaderPart.getAttribute (QNAME_SCHEME),
                                                                          aHeaderPart.getStringContent ());
   }
 
+  /**
+   * Extract the sender ID from the passed header list. Used in the AP server.
+   * 
+   * @param aHeaderList
+   *        The provided header list from the service. May not be
+   *        <code>null</code>.
+   * @return <code>null</code> if no such header is present.
+   */
   @Nullable
-  private static SimpleDocumentTypeIdentifier _getDocumentTypeID (@Nonnull final HeaderList aHeaderList) {
+  public static SimpleParticipantIdentifier getSenderID (@Nonnull final HeaderList aHeaderList)
+  {
+    return _getParticipantID (aHeaderList, QNAME_SENDERID);
+  }
+
+  /**
+   * Extract the recipient ID from the passed header list. Used in the AP
+   * server.
+   * 
+   * @param aHeaderList
+   *        The provided header list from the service. May not be
+   *        <code>null</code>.
+   * @return <code>null</code> if no such header is present.
+   */
+  @Nullable
+  public static SimpleParticipantIdentifier getRecipientID (@Nonnull final HeaderList aHeaderList)
+  {
+    return _getParticipantID (aHeaderList, QNAME_RECIPIENTID);
+  }
+
+  /**
+   * Extract the document type ID from the passed header list. Used in the AP
+   * server.
+   * 
+   * @param aHeaderList
+   *        The provided header list from the service. May not be
+   *        <code>null</code>.
+   * @return <code>null</code> if no such header is present.
+   */
+  @Nullable
+  public static SimpleDocumentTypeIdentifier getDocumentTypeID (@Nonnull final HeaderList aHeaderList)
+  {
     final Header aHeaderPart = aHeaderList.get (QNAME_DOCUMENTID, false);
     return aHeaderPart == null ? null : new SimpleDocumentTypeIdentifier (aHeaderPart.getAttribute (QNAME_SCHEME),
                                                                           aHeaderPart.getStringContent ());
   }
 
+  /**
+   * Extract the process ID from the passed header list. Used in the AP server.
+   * 
+   * @param aHeaderList
+   *        The provided header list from the service. May not be
+   *        <code>null</code>.
+   * @return <code>null</code> if no such header is present.
+   */
   @Nullable
-  private static SimpleProcessIdentifier _getProcessID (@Nonnull final HeaderList aHeaderList) {
+  public static SimpleProcessIdentifier getProcessID (@Nonnull final HeaderList aHeaderList)
+  {
     final Header aHeaderPart = aHeaderList.get (QNAME_PROCESSID, false);
     return aHeaderPart == null ? null : new SimpleProcessIdentifier (aHeaderPart.getAttribute (QNAME_SCHEME),
                                                                      aHeaderPart.getStringContent ());
   }
 
+  /**
+   * Extract all PEPPOL metadata from the passed header list.
+   * 
+   * @param aHeaderList
+   *        The provided header list from the service. May not be
+   *        <code>null</code>.
+   * @return A non-<code>null</code> {@link MessageMetadata} object. May contain
+   *         <code>null</code> values!
+   */
   @Nonnull
-  public static MessageMetadata createMetadataFromHeaders (@Nonnull final HeaderList aHeaderList) {
+  public static MessageMetadata createMetadataFromHeaders (@Nonnull final HeaderList aHeaderList)
+  {
     return new MessageMetadata (getMessageID (aHeaderList),
                                 getChannelID (aHeaderList),
-                                _getParticipantID (aHeaderList, QNAME_SENDERID),
-                                _getParticipantID (aHeaderList, QNAME_RECIPIENTID),
-                                _getDocumentTypeID (aHeaderList),
-                                _getProcessID (aHeaderList));
+                                getSenderID (aHeaderList),
+                                getRecipientID (aHeaderList),
+                                getDocumentTypeID (aHeaderList),
+                                getProcessID (aHeaderList));
   }
 
   /**
    * For LIME the message ID is created on the AP side.
    * 
    * @param aHeaderList
-   *        The incoming SOAP headers
+   *        The incoming SOAP headers. May not be <code>null</code>.
    * @param sMessageID
    *        The message ID to be used
    * @return The metadata object
    */
   @Nonnull
   public static MessageMetadata createMetadataFromHeadersWithCustomMessageID (@Nonnull final HeaderList aHeaderList,
-                                                                              @Nullable final String sMessageID) {
+                                                                              @Nullable final String sMessageID)
+  {
     return new MessageMetadata (sMessageID,
                                 getChannelID (aHeaderList),
-                                _getParticipantID (aHeaderList, QNAME_SENDERID),
-                                _getParticipantID (aHeaderList, QNAME_RECIPIENTID),
-                                _getDocumentTypeID (aHeaderList),
-                                _getProcessID (aHeaderList));
+                                getSenderID (aHeaderList),
+                                getRecipientID (aHeaderList),
+                                getDocumentTypeID (aHeaderList),
+                                getProcessID (aHeaderList));
   }
 }

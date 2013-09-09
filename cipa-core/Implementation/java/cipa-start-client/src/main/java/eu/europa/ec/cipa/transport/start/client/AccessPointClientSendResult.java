@@ -50,6 +50,7 @@ import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.state.ESuccess;
 import com.phloc.commons.state.ISuccessIndicator;
 import com.phloc.commons.string.StringHelper;
+import com.phloc.commons.string.ToStringGenerator;
 
 /**
  * The result of the START client sending a document
@@ -61,6 +62,13 @@ public class AccessPointClientSendResult implements ISuccessIndicator {
   private final ESuccess m_eSuccess;
   private final List <String> m_aErrorMessages = new ArrayList <String> ();
 
+  /**
+   * Constructor
+   * 
+   * @param eSuccess
+   *        The sending result. Either success or failure. May not be
+   *        <code>null</code>.
+   */
   public AccessPointClientSendResult (@Nonnull final ESuccess eSuccess) {
     if (eSuccess == null)
       throw new NullPointerException ("Success");
@@ -75,12 +83,18 @@ public class AccessPointClientSendResult implements ISuccessIndicator {
     return m_eSuccess.isFailure ();
   }
 
+  /**
+   * @return A copy of all contained error messages. Never <code>null</code>.
+   */
   @Nonnull
   @ReturnsMutableCopy
   public List <String> getAllErrorMessages () {
     return ContainerHelper.newList (m_aErrorMessages);
   }
 
+  /**
+   * @return The number of contained error messages. Always &ge; 0.
+   */
   @Nonnegative
   public int getErrorMessageCount () {
     return m_aErrorMessages.size ();
@@ -99,5 +113,12 @@ public class AccessPointClientSendResult implements ISuccessIndicator {
       throw new NullPointerException ("ErrorMsg");
     m_aErrorMessages.add (sErrorMsg);
     return this;
+  }
+
+  @Override
+  public String toString () {
+    return new ToStringGenerator (this).append ("success", m_eSuccess)
+                                       .append ("errorMessages", m_aErrorMessages)
+                                       .toString ();
   }
 }

@@ -89,7 +89,7 @@ import eu.europa.ec.cipa.transport.cert.AccessPointX509TrustManager;
  *         Narvaez(jose@alfa1lab.com)<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-public final class AccessPointClient {
+public class AccessPointClient {
   /** String that represents the SSL security provided. */
   public static final String SSL_PROTOCOL = "SSL";
 
