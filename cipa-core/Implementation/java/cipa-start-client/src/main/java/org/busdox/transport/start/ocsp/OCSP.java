@@ -100,7 +100,7 @@ final class OCSP {
 
       // this configuration property allows to bypass the certificate revocation
       // check (for debug/test only)
-      final boolean revocationCheckEnabled = s_aConf.getBoolean (REVOCATION_ENABLED, true);
+      final boolean bRevocationCheckEnabled = s_aConf.getBoolean (REVOCATION_ENABLED, true);
 
       // Instantiate a CertificateFactory for X.509
       final CertificateFactory cf = CertificateFactory.getInstance ("X.509");
@@ -116,16 +116,14 @@ final class OCSP {
 
       // Set the PKIX parameters
       final PKIXParameters aParams = new PKIXParameters (ContainerHelper.newSet (aTrustAnchor));
+      aParams.setRevocationEnabled (bRevocationCheckEnabled);
 
-      aParams.setRevocationEnabled (revocationCheckEnabled);
-
-      if (revocationCheckEnabled) {
+      if (bRevocationCheckEnabled) {
         /*
          * list of additional signer certificates for populating the trust store
          */
         Security.setProperty ("ocsp.enable", "true");
         Security.setProperty ("ocsp.responderURL", sResponderUrl);
-
       }
 
       // Validate and obtain results

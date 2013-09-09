@@ -95,11 +95,8 @@ public final class Validator implements CertificateValidator {
    * @return {@link EValidity}
    */
   @Nonnull
-  public static final EValidity certificateValidate (final X509Certificate aCert, @Nonnull final String sTrustStorePath) { // Is
-                                                                                                                           // the
-                                                                                                                           // OCSP
-                                                                                                                           // check
-                                                                                                                           // enabled?
+  public static final EValidity certificateValidate (final X509Certificate aCert, @Nonnull final String sTrustStorePath) {
+    // Is the OCSP check enabled?
     // Note: use "enabled" as the default value, in case none is defined
     final boolean bEnabled = s_aConf.getBoolean (CONFIG_ENABLED, true);
     if (!bEnabled) {
@@ -117,8 +114,7 @@ public final class Validator implements CertificateValidator {
       final X509Certificate aRootCert = (X509Certificate) aTrustStore.getCertificate (sTrustStoreAlias);
       // Get certificate from new PKI by alias
       final String sTrustStoreAliasNew = s_aConf.getString (CONFIG_TRUSTORE_ALIAS_NEW);
-      final X509Certificate aRootCertNew = (sTrustStoreAliasNew == null || sTrustStoreAliasNew.equals (""))
-                                                                                                           ? null
+      final X509Certificate aRootCertNew = (sTrustStoreAliasNew == null || sTrustStoreAliasNew.equals ("")) ? null
                                                                                                            : (X509Certificate) aTrustStore.getCertificate (sTrustStoreAliasNew);
 
       if (aRootCert == null && aRootCertNew == null) {

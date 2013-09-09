@@ -73,6 +73,7 @@ public final class TrustStoreCallbackHandler implements CallbackHandler {
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Loading TrustStore from '" + sTrustStorePath + "'");
+
     KeyStore aKeyStore;
     try {
       aKeyStore = KeyStoreUtils.loadKeyStore (sTrustStorePath, sTrustStorePassword);
@@ -93,7 +94,7 @@ public final class TrustStoreCallbackHandler implements CallbackHandler {
       else
         if (aCallback instanceof PrivateKeyCallback) {
           // TODO
-          s_aLogger.info ("Why is the trust store handler requesting a private key????");
+          s_aLogger.warn ("Why is the trust store handler requesting a private key????");
           try {
             final PrivateKey privateKey = (PrivateKey) aKeyStore.getKey (sTrustStoreAlias, aTrustStoreAliasPassword);
             ((PrivateKeyCallback) aCallback).setKey (privateKey);
