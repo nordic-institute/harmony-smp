@@ -37,6 +37,8 @@
  */
 package eu.europa.ec.cipa.sml.server.dns;
 
+import javax.annotation.Nonnull;
+
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -46,11 +48,22 @@ import org.junit.Test;
  * @author Philip Helger
  */
 public class DNSClientImplTest {
+  @Nonnull
+  private DNSClientImpl _createDNS () {
+    return new DNSClientImpl ("blixdns0", "peppolcentral.org.", "smk.peppolcentral.org.", 60);
+  }
+
   @Test
   @Ignore
-  public void testCreateDelete () throws Exception {
-    final DNSClientImpl aClient = new DNSClientImpl ("blixdns0", "peppolcentral.org.", "smk.peppolcentral.org.", 60);
+  public void testCreate () throws Exception {
+    final DNSClientImpl aClient = _createDNS ();
     aClient.createPublisherAnchor ("BRZ-DNS-TEST", "http://127.0.0.1");
+  }
+
+  @Test
+  @Ignore
+  public void testDelete () throws Exception {
+    final DNSClientImpl aClient = _createDNS ();
     aClient.deletePublisherAnchor ("BRZ-DNS-TEST");
   }
 }
