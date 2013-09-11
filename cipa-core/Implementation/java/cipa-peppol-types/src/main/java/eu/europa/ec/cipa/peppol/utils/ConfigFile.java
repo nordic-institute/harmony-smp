@@ -74,10 +74,8 @@ import com.phloc.commons.string.ToStringGenerator;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
-public class ConfigFile
-{
-  private static final class SingletonHolder
-  {
+public class ConfigFile {
+  private static final class SingletonHolder {
     static final ConfigFile s_aInstance = new ConfigFile ();
   }
 
@@ -96,8 +94,7 @@ public class ConfigFile
    * Default constructor for the default file paths (private-config.properties
    * and afterwards config.properties)
    */
-  private ConfigFile ()
-  {
+  private ConfigFile () {
     this (DEFAULT_PRIVATE_CONFIG_PROPERTIES, DEFAULT_CONFIG_PROPERTIES);
   }
 
@@ -108,21 +105,18 @@ public class ConfigFile
    *        The array of paths to the config files to be read. Must be
    *        classpath-relative. The first file that could be read will be taken
    */
-  public ConfigFile (@Nonnull @Nonempty final String... aConfigPaths)
-  {
+  public ConfigFile (@Nonnull @Nonempty final String... aConfigPaths) {
     if (ArrayHelper.isEmpty (aConfigPaths))
       throw new IllegalArgumentException ("No config file paths have been specified!");
 
     boolean bRead = false;
     for (final String sConfigPath : aConfigPaths)
-      if (_readConfigFile (sConfigPath).isSuccess ())
-      {
+      if (_readConfigFile (sConfigPath).isSuccess ()) {
         bRead = true;
         break;
       }
 
-    if (!bRead)
-    {
+    if (!bRead) {
       // No config file found at all
       s_aLogger.warn ("Failed to resolve config file paths: " + ContainerHelper.newList (aConfigPaths).toString ());
     }
@@ -130,31 +124,25 @@ public class ConfigFile
   }
 
   @Nonnull
-  private ESuccess _readConfigFile (@Nonnull final String sPath)
-  {
+  private ESuccess _readConfigFile (@Nonnull final String sPath) {
     // Try to get the input stream for the passed property file name
     InputStream aIS = ClassPathResource.getInputStream (sPath);
-    if (aIS == null)
-    {
+    if (aIS == null) {
       // Fallback to file system - maybe this helps...
       aIS = new FileSystemResource (sPath).getInputStream ();
     }
-    if (aIS != null)
-    {
-      try
-      {
+    if (aIS != null) {
+      try {
         // Does not close the input stream!
         m_aProps.load (aIS);
         if (s_aLogger.isDebugEnabled ())
           s_aLogger.debug ("Loaded configuration from '" + sPath + "': " + Collections.list (m_aProps.keys ()));
         return ESuccess.SUCCESS;
       }
-      catch (final IOException ex)
-      {
+      catch (final IOException ex) {
         s_aLogger.error ("Failed to read config file '" + sPath + "'", ex);
       }
-      finally
-      {
+      finally {
         // Manually close the input stream!
         StreamUtils.close (aIS);
       }
@@ -168,8 +156,7 @@ public class ConfigFile
    *         {@value #DEFAULT_CONFIG_PROPERTIES}.
    */
   @Nonnull
-  public static ConfigFile getInstance ()
-  {
+  public static ConfigFile getInstance () {
     return SingletonHolder.s_aInstance;
   }
 
@@ -177,8 +164,7 @@ public class ConfigFile
    * @return <code>true</code> if reading succeeded, <code>false</code> if
    *         reading failed (warning was already logged)
    */
-  public boolean isRead ()
-  {
+  public boolean isRead () {
     return m_bRead;
   }
 
@@ -190,8 +176,7 @@ public class ConfigFile
    * @return <code>null</code> if no such value is in the configuration file.
    */
   @Nullable
-  public final String getString (@Nonnull final String sKey)
-  {
+  public final String getString (@Nonnull final String sKey) {
     return getString (sKey, null);
   }
 
@@ -207,32 +192,27 @@ public class ConfigFile
    *         file.
    */
   @Nullable
-  public final String getString (@Nonnull final String sKey, @Nullable final String sDefault)
-  {
+  public final String getString (@Nonnull final String sKey, @Nullable final String sDefault) {
     final String sValue = m_aProps.getProperty (sKey);
     return sValue != null ? StringHelper.trim (sValue) : sDefault;
   }
 
   @Nullable
-  public final char [] getCharArray (@Nonnull final String sKey)
-  {
+  public final char [] getCharArray (@Nonnull final String sKey) {
     return getCharArray (sKey, null);
   }
 
   @Nullable
-  public final char [] getCharArray (@Nonnull final String sKey, final char [] aDefault)
-  {
+  public final char [] getCharArray (@Nonnull final String sKey, final char [] aDefault) {
     final String ret = getString (sKey, null);
     return ret == null ? aDefault : ret.toCharArray ();
   }
 
-  public final boolean getBoolean (@Nonnull final String sKey, final boolean bDefault)
-  {
+  public final boolean getBoolean (@Nonnull final String sKey, final boolean bDefault) {
     return StringParser.parseBool (getString (sKey), bDefault);
   }
 
-  public final int getInt (@Nonnull final String sKey, final int nDefault)
-  {
+  public final int getInt (@Nonnull final String sKey, final int nDefault) {
     return StringParser.parseInt (getString (sKey), nDefault);
   }
 
@@ -241,8 +221,7 @@ public class ConfigFile
    */
   @Nonnull
   @ReturnsMutableCopy
-  public final Set <String> getAllKeys ()
-  {
+  public final Set <String> getAllKeys () {
     // Convert from Set<Object> to Set<String>
     final Set <String> ret = new HashSet <String> ();
     for (final Object o : m_aProps.keySet ())
@@ -251,8 +230,7 @@ public class ConfigFile
   }
 
   @Override
-  public String toString ()
-  {
+  public String toString () {
     return new ToStringGenerator (this).append ("read", m_bRead).append ("props", m_aProps).toString ();
   }
 }

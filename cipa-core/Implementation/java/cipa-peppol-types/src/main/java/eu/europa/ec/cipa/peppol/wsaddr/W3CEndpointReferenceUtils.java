@@ -135,7 +135,8 @@ public final class W3CEndpointReferenceUtils {
    */
   @Nullable
   public static String getAddress (@Nonnull final W3CEndpointReference aEndpointReference) {
-    final Element eAddress = XMLHelper.getFirstChildElementOfName (_convertReferenceToXML (aEndpointReference), "Address");
+    final Element eAddress = XMLHelper.getFirstChildElementOfName (_convertReferenceToXML (aEndpointReference),
+                                                                   "Address");
     return eAddress == null ? null : eAddress.getTextContent ();
   }
 

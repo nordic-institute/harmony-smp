@@ -80,9 +80,8 @@ public class SimpleSMLInfo implements ISMLInfo {
       throw new IllegalArgumentException ("managementService");
     m_sDNSZone = sDNSZone;
     m_sManagementHostName = sManagementHostName;
-    m_sManagementServiceURL = sManagementService.endsWith ("/")
-                                                               ? sManagementService.substring (0,
-                                                                                               sManagementService.length () - 1)
+    m_sManagementServiceURL = sManagementService.endsWith ("/") ? sManagementService.substring (0,
+                                                                                                sManagementService.length () - 1)
                                                                : sManagementService;
     m_bRequiresClientCertficate = bRequiresClientCertficate;
   }

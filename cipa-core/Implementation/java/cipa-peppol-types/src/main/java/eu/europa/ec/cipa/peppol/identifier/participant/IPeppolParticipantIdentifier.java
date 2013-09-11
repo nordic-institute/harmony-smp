@@ -45,9 +45,6 @@ import eu.europa.ec.cipa.peppol.identifier.IPeppolIdentifier;
  * 
  * @author philip
  */
-public interface IPeppolParticipantIdentifier extends
-                                             IPeppolReadonlyParticipantIdentifier,
-                                             IPeppolIdentifier,
-                                             IParticipantIdentifier {
+public interface IPeppolParticipantIdentifier extends IPeppolReadonlyParticipantIdentifier, IPeppolIdentifier, IParticipantIdentifier {
   /* empty */
 }

@@ -45,9 +45,6 @@ import eu.europa.ec.cipa.peppol.identifier.IPeppolIdentifier;
  * 
  * @author philip
  */
-public interface IPeppolProcessIdentifier extends
-                                         IPeppolReadonlyProcessIdentifier,
-                                         IPeppolIdentifier,
-                                         IProcessIdentifier {
+public interface IPeppolProcessIdentifier extends IPeppolReadonlyProcessIdentifier, IPeppolIdentifier, IProcessIdentifier {
   /* empty */
 }

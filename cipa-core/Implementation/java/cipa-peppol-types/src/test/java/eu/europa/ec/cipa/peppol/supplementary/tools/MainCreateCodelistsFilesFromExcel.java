@@ -56,6 +56,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
+import com.helger.jcodemodel.JArray;
+import com.helger.jcodemodel.JCodeModel;
+import com.helger.jcodemodel.JDefinedClass;
+import com.helger.jcodemodel.JEnumConstant;
+import com.helger.jcodemodel.JExpr;
+import com.helger.jcodemodel.JFieldVar;
+import com.helger.jcodemodel.JInvocation;
+import com.helger.jcodemodel.JMethod;
+import com.helger.jcodemodel.JMod;
+import com.helger.jcodemodel.JVar;
+import com.helger.jcodemodel.writer.FileCodeWriter;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.charset.CCharset;
@@ -81,18 +92,6 @@ import com.phloc.genericode.excel.ExcelSheetToCodeList10;
 import com.phloc.genericode.v10.CodeListDocument;
 import com.phloc.genericode.v10.Row;
 import com.phloc.genericode.v10.UseType;
-import com.sun.codemodel.CodeWriter;
-import com.sun.codemodel.JArray;
-import com.sun.codemodel.JCodeModel;
-import com.sun.codemodel.JDefinedClass;
-import com.sun.codemodel.JEnumConstant;
-import com.sun.codemodel.JExpr;
-import com.sun.codemodel.JFieldVar;
-import com.sun.codemodel.JInvocation;
-import com.sun.codemodel.JMethod;
-import com.sun.codemodel.JMod;
-import com.sun.codemodel.JVar;
-import com.sun.codemodel.writer.FileCodeWriter;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
@@ -747,7 +746,7 @@ public final class MainCreateCodelistsFilesFromExcel {
     _emitProcessIdentifier (aProcessSheet);
 
     // Write all Java source files
-    final CodeWriter aWriter = new FileCodeWriter (new File ("src/main/java"), CCharset.CHARSET_UTF_8);
+    final FileCodeWriter aWriter = new FileCodeWriter (new File ("src/main/java"), CCharset.CHARSET_UTF_8_OBJ);
     s_aCodeModel.build (aWriter);
 
     s_aLogger.info ("Done creating code");
