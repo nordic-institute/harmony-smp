@@ -85,6 +85,8 @@ public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDa
     });
     // Exceptions are handled by re-throwing them
     setCustomExceptionHandler (new DoNothingExceptionHandler ());
+    // To avoid some EclipseLink logging issues
+    setUseTransactionsForSelect (true);
   }
 
   public void setCallback (@Nullable final ISMPDataHandlerCallback aCallback) {
