@@ -38,9 +38,14 @@
 package eu.europa.ec.cipa.sml.server.dns;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.xbill.DNS.Lookup;
+import org.xbill.DNS.Record;
+import org.xbill.DNS.SimpleResolver;
+import org.xbill.DNS.Type;
 
 /**
  * Test class for class {@link DNSClientImpl} - for BRZ internal usage only!
@@ -48,6 +53,8 @@ import org.junit.Test;
  * @author Philip Helger
  */
 public class DNSClientImplTest {
+  private static final String SMP_TEST_NAME = "BRZ-DNS-TEST";
+
   @Nonnull
   private DNSClientImpl _createDNS () {
     return new DNSClientImpl ("blixdns0", "peppolcentral.org.", "smk.peppolcentral.org.", 60);
@@ -57,13 +64,39 @@ public class DNSClientImplTest {
   @Ignore
   public void testCreate () throws Exception {
     final DNSClientImpl aClient = _createDNS ();
-    aClient.createPublisherAnchor ("BRZ-DNS-TEST", "http://127.0.0.1");
+    aClient.createPublisherAnchor (SMP_TEST_NAME, "127.0.0.1");
+  }
+
+  @Nonnull
+  private static String _getAsString (@Nullable final Record [] aRecords) {
+    final StringBuilder aSB = new StringBuilder ();
+    if (aRecords == null)
+      aSB.append ("null");
+    else
+      for (final Record aRecord : aRecords) {
+        final String sText = aRecord.toString ().replace ('\t', ' ');
+        if (aSB.length () > 0)
+          aSB.append ('\n');
+        aSB.append (sText);
+      }
+    return aSB.toString ();
+  }
+
+  @Test
+  // @Ignore
+  public void testFetch () throws Exception {
+    final DNSClientImpl aClient = _createDNS ();
+    final Lookup aLookup = new Lookup (aClient.createPublisherDNSName (SMP_TEST_NAME), Type.ANY);
+    aLookup.setResolver (new SimpleResolver ("cna-gdwi-1.cna.at"));
+    aLookup.setCache (null);
+    final Record [] aRecords = aLookup.run ();
+    System.out.println (_getAsString (aRecords));
   }
 
   @Test
   @Ignore
   public void testDelete () throws Exception {
     final DNSClientImpl aClient = _createDNS ();
-    aClient.deletePublisherAnchor ("BRZ-DNS-TEST");
+    aClient.deletePublisherAnchor (SMP_TEST_NAME);
   }
 }

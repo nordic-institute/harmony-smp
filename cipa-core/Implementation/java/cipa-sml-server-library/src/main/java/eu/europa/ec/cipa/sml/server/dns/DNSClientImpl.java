@@ -196,7 +196,7 @@ public class DNSClientImpl implements IDNSClient {
    */
   @Nonnull
   @Nonempty
-  private String _createPublisherDNSName (@Nonnull @Nonempty final String sSMPID) throws IllegalHostnameException {
+  public String createPublisherDNSName (@Nonnull @Nonempty final String sSMPID) throws IllegalHostnameException {
     // check that host name is ok
     DNSUtils.verifyHostname (sSMPID);
 
@@ -206,7 +206,7 @@ public class DNSClientImpl implements IDNSClient {
 
   @Nonnull
   private Name _createPublisherDNSNameObject (@Nonnull @Nonempty final String sSMPID) throws IllegalHostnameException {
-    final String sName = _createPublisherDNSName (sSMPID);
+    final String sName = createPublisherDNSName (sSMPID);
     try {
       return Name.fromString (sName);
     }
@@ -358,7 +358,7 @@ public class DNSClientImpl implements IDNSClient {
   public void deletePublisherAnchor (final String sSMPID) throws IOException, IllegalHostnameException {
     s_aLogger.info ("Delete Publisher Anchor " + sSMPID);
 
-    final String aSMPAnchor = _createPublisherDNSName (sSMPID);
+    final String aSMPAnchor = createPublisherDNSName (sSMPID);
     _deleteZoneRecord (aSMPAnchor);
   }
 
@@ -376,7 +376,7 @@ public class DNSClientImpl implements IDNSClient {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("Lookup Publisher By ID : " + sSMPID);
 
-    final String sName = _createPublisherDNSName (sSMPID);
+    final String sName = createPublisherDNSName (sSMPID);
     return lookupDNSRecord (sName);
   }
 
