@@ -71,7 +71,7 @@
       <plugin>
         <groupId>org.jvnet.jax-ws-commons</groupId>
         <artifactId>jaxws-maven-plugin</artifactId>
-        <version>2.2</version>
+        <version>2.3</version>
         <executions>
           <!-- Use one execution per WSDL file, as the wsdlLocation can specify only one file at a time. The wsdlLocation is the location how the WSDL file will be referenced in the code (using class.getResource). Also important: use a different stale file for each WSDL file! Also important: path must be "/WEB-INF/wsdl" because this is how the deployment descriptor needs it. It must be absolute because class.getResource is used and we therefore need an asbolute path! -->
           <execution>
