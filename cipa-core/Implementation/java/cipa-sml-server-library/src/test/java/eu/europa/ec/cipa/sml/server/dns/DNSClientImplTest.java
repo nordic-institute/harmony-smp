@@ -83,7 +83,7 @@ public class DNSClientImplTest {
   }
 
   @Test
-  // @Ignore
+  @Ignore
   public void testFetch () throws Exception {
     final DNSClientImpl aClient = _createDNS ();
     final Lookup aLookup = new Lookup (aClient.createPublisherDNSName (SMP_TEST_NAME), Type.ANY);
