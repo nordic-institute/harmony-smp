@@ -86,11 +86,27 @@ public class DNSClientImplTest {
   @Ignore
   public void testFetch () throws Exception {
     final DNSClientImpl aClient = _createDNS ();
-    final Lookup aLookup = new Lookup (aClient.createPublisherDNSName (SMP_TEST_NAME), Type.ANY);
-    aLookup.setResolver (new SimpleResolver ("cna-gdwi-1.cna.at"));
-    aLookup.setCache (null);
-    final Record [] aRecords = aLookup.run ();
-    System.out.println (_getAsString (aRecords));
+    {
+      final Lookup aLookup = new Lookup (aClient.createPublisherDNSName (SMP_TEST_NAME), Type.ANY);
+      aLookup.setResolver (new SimpleResolver ("cna-gdwi-0.cna.at"));
+      aLookup.setCache (null);
+      final Record [] aRecords = aLookup.run ();
+      System.out.println ("0er: " + _getAsString (aRecords));
+    }
+    {
+      final Lookup aLookup = new Lookup (aClient.createPublisherDNSName (SMP_TEST_NAME), Type.ANY);
+      aLookup.setResolver (new SimpleResolver ("cna-gdwi-1.cna.at"));
+      aLookup.setCache (null);
+      final Record [] aRecords = aLookup.run ();
+      System.out.println ("1er: " + _getAsString (aRecords));
+    }
+    {
+      final Lookup aLookup = new Lookup (aClient.createPublisherDNSName (SMP_TEST_NAME), Type.ANY);
+      aLookup.setResolver (new SimpleResolver ("cna-gdwi-2.cna.at"));
+      aLookup.setCache (null);
+      final Record [] aRecords = aLookup.run ();
+      System.out.println ("2er: " + _getAsString (aRecords));
+    }
   }
 
   @Test
