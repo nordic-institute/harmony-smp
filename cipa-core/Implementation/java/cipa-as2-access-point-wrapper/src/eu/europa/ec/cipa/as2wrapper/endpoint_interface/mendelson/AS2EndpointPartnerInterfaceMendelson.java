@@ -1,0 +1,189 @@
+package eu.europa.ec.cipa.as2wrapper.endpoint_interface.mendelson;
+
+import java.security.MessageDigest;
+import java.security.cert.X509Certificate;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import javax.xml.bind.DatatypeConverter;
+
+import org.bouncycastle.jce.provider.X509CertificateObject;
+
+
+import eu.europa.ec.cipa.as2wrapper.endpoint_interface.AS2EndpointPartnerInterface;
+import eu.europa.ec.cipa.as2wrapper.util.KeystoreUtil;
+
+public class AS2EndpointPartnerInterfaceMendelson extends AS2EndpointPartnerInterface
+{
+
+	public boolean isPartnerKown(String CN) throws SQLException
+	{
+		if (CN == null || CN.isEmpty())
+			return false;
+		
+		Connection con = getConnection();
+		PreparedStatement statement = con.prepareStatement("select 1 from PARTNER where AS2IDENT = ?");
+		statement.setString(1, CN);
+        ResultSet result = statement.executeQuery();
+        
+        if (result==null || result.next()==false)
+        	return false;
+        else
+        	return true;
+	}
+
+	
+	public boolean isPartnerUrlKnown (String CN) throws SQLException
+	{
+		if (CN == null || CN.isEmpty())
+			return false;
+		
+		Connection con = getConnection();
+		PreparedStatement statement = con.prepareStatement("select url from PARTNER where AS2IDENT = ?");
+		statement.setString(1, CN);
+        ResultSet result = statement.executeQuery();
+        String url;
+        
+        if (result==null || result.next()==false)
+        	return false;
+        else
+        {
+        	url = result.getString(1);
+        	if (url==null || url.isEmpty())
+        		return false;
+        }
+        
+        return true;
+	}
+	
+	
+	public void createNewPartner(String as2Id, String name, String endpointUrl, String mdnURL, X509Certificate cert) throws Exception
+	{
+		Connection con  = getConnection();
+		try
+		{
+			//before anything, we calculate the certificate's SHA-1 fingerprint
+			String fingerprint = cert==null? null : calculateHash(cert);
+			
+			//first operation: we insert the partner's certificate in the AS2Endpoint keystore
+			KeystoreUtil keyStoreAccess = new KeystoreUtil();
+			String definitiveAlias = keyStoreAccess.installNewPartnerCertificate((X509CertificateObject)cert, as2Id);
+			
+			//then we create the partner in the DB
+			String insert = "insert into PARTNER (	AS2IDENT,	NAME,	ISLOCAL,	SIGN,	ENCRYPT,	URL,	MDNURL,	SUBJECT,	SYNCMDN,	POLLIGNORELIST,	POLLINTERVAL,	COMPRESSION,	SIGNEDMDN,	USECOMMANDONRECEIPT,USEHTTPAUTH,USEHTTPAUTHASYNCMDN,KEEPORIGINALFILENAMEONRECEIPT,	NOTIFYSEND,	NOTIFYRECEIVE,	NOTIFYSENDRECEIVE,	NOTIFYSENDENABLED,	NOTIFYRECEIVEENABLED,	NOTIFYSENDRECEIVEENABLED,	USECOMMANDONSENDERROR,	USECOMMANDONSENDSUCCESS,CONTENTTRANSFERENCODING,HTTPVERSION,MAXPOLLFILES)" +
+										" values (	?,			?,		0,			2,		1,			?,		?,		'',			1,			null,			10,				1,				1,			0,					0,			0,					0,								0,			0,				0,					0,					0,						0,							0,						0,						1,						'1.1',		100);";
+			PreparedStatement statement = con.prepareStatement(insert);
+			statement.setString(1, definitiveAlias);
+			statement.setString(2, name);
+			statement.setString(3, endpointUrl);
+			statement.setString(4, mdnURL);
+			statement.executeUpdate();
+			
+			if (fingerprint!=null)
+			{
+				//we retrieve the ID of the partner just created
+				statement = con.prepareStatement("select ID from PARTNER where AS2IDENT = ? and NAME = ?");
+				statement.setString(1, definitiveAlias);
+				statement.setString(2, name);
+				ResultSet result = statement.executeQuery();
+				result.next();
+				int newId = result.getInt("id");
+				
+				//we add the certificate linked to the partner
+				statement = con.prepareStatement("insert into CERTIFICATES (PARTNERID, FINGERPRINTSHA1, CATEGORY, PRIO) values (?, ?, 2, 1)"); //category 2 means the cert is used for signature. category 1 is for encryption, but we dont use encryption.
+				statement.setInt(1, newId);
+				statement.setString(2, fingerprint);
+				statement.executeUpdate();
+			}
+						
+			//and if it went ok, we commit
+			con.commit();
+		}
+		catch (Exception e)
+		{
+			if (con!=null)
+				con.rollback();
+			throw new Exception (e);
+		}
+	}
+
+
+	/**Gives the possibility of updating the endpointUrl, mdnUrl, or certificate fingerprint for an existing partner. If any of the parameters is null, that field won't be deleted in the DB but just left as it was.
+	 */
+	public void updatePartner(String as2Id, String name, String endpointUrl, String mdnUrl, X509Certificate cert) throws Exception
+	{
+		Connection con = getConnection();
+		
+		String fingerprint = cert==null? null : calculateHash(cert);
+		
+		try
+		{
+			//first we retrieve the partner's data that we have
+			PreparedStatement statement = con.prepareStatement("select id, url, mdnurl from PARTNER where AS2IDENT = ? and NAME = ?");
+			statement.setString(1, as2Id);
+			statement.setString(2, name);
+			ResultSet result = statement.executeQuery();
+			result.next();
+			int id = result.getInt("id");
+			String dbUrl = result.getString("url");
+			String dbMdnUrl = result.getString("mdnurl");
+			
+			//now we fill whatever was missing
+			if (endpointUrl!= null && !endpointUrl.isEmpty())
+				dbUrl = endpointUrl;
+			if (mdnUrl!=null && !mdnUrl.isEmpty())
+				dbMdnUrl = mdnUrl;
+			
+			//and we update in the DB
+			String update = "update PARTNER set URL = ? , MDNURL = ? where AS2IDENT = ? and NAME = ?";
+			statement = con.prepareStatement(update);
+			statement.setString(1, dbUrl);
+			statement.setString(2, dbMdnUrl);
+			statement.setString(3, as2Id);
+			statement.setString(4, name);
+			statement.executeUpdate();
+			
+			//and finally we update the cert fingerprint
+			if (fingerprint!=null)
+			{
+				statement = con.prepareStatement("update CERTIFICATES set FINGERPRINTSHA1 = ? where PARTNERID = ?");
+				statement.setString(1, fingerprint);
+				statement.setInt(2, id);
+				statement.executeUpdate();
+			}
+						
+			//we finished
+			con.commit();		
+		}
+		catch (Exception e)
+		{
+			if (con!=null)
+				con.rollback();
+			throw new Exception (e);
+		}
+	}
+
+	
+	
+	private String calculateHash(X509Certificate cert) throws Exception
+	{
+		MessageDigest md = MessageDigest.getInstance("SHA1");
+		md.update(cert.getEncoded());
+		byte[] fingerprintBytes = md.digest();
+		String fingerprint_aux = DatatypeConverter.printHexBinary(fingerprintBytes);
+		StringBuffer fingerprint = new StringBuffer("");
+		if (fingerprint_aux.length() > 2)
+		{
+			for (int i=0 ; i<fingerprint_aux.length() ; i=i+2) //sha-1 output's length is always an even number, so no risks here
+			{
+				fingerprint.append(fingerprint_aux.substring(i, i+2));
+				fingerprint.append(':');
+			}
+		}
+		
+		return fingerprint.toString().substring(0, fingerprint.length()-1);
+	}
+
+}
