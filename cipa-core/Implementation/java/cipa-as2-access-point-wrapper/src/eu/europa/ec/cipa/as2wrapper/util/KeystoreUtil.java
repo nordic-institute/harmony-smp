@@ -54,8 +54,6 @@ public class KeystoreUtil
         		if (!success)
         			throw new Exception("Couldn't load the keystore");
         		
-        		this.pathToFile = pathToFile;
-        		this.password = password;
             }
         }
         finally
@@ -83,16 +81,8 @@ public class KeystoreUtil
 		return alias;
 	}
 	
-	
-	/** Deletes the old partner's certificate in the truststore and creates a new one
-	 * @return
+	/**	retrieves the PEPPOL AP CA certificate from the keystore
 	 */
-	public void updatePartnerCertificate (String CN, String cert)
-	{
-		
-	}
-	
-	
 	public X509Certificate getApCaCertificate() throws Exception
 	{
 		return (X509Certificate) keyStore.getCertificate(properties.getProperty(PropertiesUtil.KEYSTORE_AP_AC_ALIAS));

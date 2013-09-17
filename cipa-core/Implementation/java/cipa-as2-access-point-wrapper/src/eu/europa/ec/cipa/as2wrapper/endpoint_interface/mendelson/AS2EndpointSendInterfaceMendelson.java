@@ -11,12 +11,12 @@ import org.unece.cefact.namespaces.standardbusinessdocumentheader.Scope;
 import org.unece.cefact.namespaces.standardbusinessdocumentheader.StandardBusinessDocument;
 
 
-import eu.europa.ec.cipa.as2wrapper.endpoint_interface.AS2EndpointSendInterface;
+import eu.europa.ec.cipa.as2wrapper.endpoint_interface.IAS2EndpointSendInterface;
 import eu.europa.ec.cipa.as2wrapper.types.DocumentType;
 import eu.europa.ec.cipa.as2wrapper.types.MessageMetaDataType;
 import eu.europa.ec.cipa.as2wrapper.util.PropertiesUtil;
 
-public class AS2EndpointSendInterfaceMendelson extends AS2EndpointSendInterface
+public class AS2EndpointSendInterfaceMendelson extends IAS2EndpointSendInterface
 {
 	
 	public static final String MENDELSON_INSTALLATION_PATH = "mendelson_installation_path";

@@ -33,8 +33,8 @@ import org.unece.cefact.namespaces.standardbusinessdocumentheader.Scope;
 import org.unece.cefact.namespaces.standardbusinessdocumentheader.StandardBusinessDocument;
 import org.unece.cefact.namespaces.standardbusinessdocumentheader.StandardBusinessDocumentHeader;
 
-import eu.europa.ec.cipa.as2wrapper.endpoint_interface.AS2EndpointPartnerInterface;
-import eu.europa.ec.cipa.as2wrapper.endpoint_interface.AS2EndpointSendInterface;
+import eu.europa.ec.cipa.as2wrapper.endpoint_interface.IAS2EndpointPartnerInterface;
+import eu.europa.ec.cipa.as2wrapper.endpoint_interface.IAS2EndpointSendInterface;
 import eu.europa.ec.cipa.as2wrapper.endpoint_interface.mendelson.AS2EndpointPartnerInterfaceMendelson;
 import eu.europa.ec.cipa.as2wrapper.types.DocumentType;
 import eu.europa.ec.cipa.as2wrapper.types.MessageMetaDataType;
@@ -72,7 +72,7 @@ public class SendWebService
 			
 			//If the AS2 endpoint doesn't know about the recipient, we download the metadata from the SMP
 			String className = properties.getProperty(PropertiesUtil.PARTNER_INTERFACE_IMPLEMENTATION_CLASS);
-			AS2EndpointPartnerInterface partnerInterface = (AS2EndpointPartnerInterface) Class.forName(className).newInstance();
+			IAS2EndpointPartnerInterface partnerInterface = (IAS2EndpointPartnerInterface) Class.forName(className).newInstance();
 			try
 			{
 				String receiverId = request.getMetaData().getRecipient().getValue();
@@ -119,7 +119,7 @@ public class SendWebService
 			
 			//perform the actual send, implementation dependent
 			className = properties.getProperty(PropertiesUtil.SEND_INTERFACE_IMPLEMENTATION_CLASS);
-			AS2EndpointSendInterface sendInterface = (AS2EndpointSendInterface) Class.forName(className).newInstance();
+			IAS2EndpointSendInterface sendInterface = (IAS2EndpointSendInterface) Class.forName(className).newInstance();
 			
 			String result = sendInterface.send(sbdhDoc);
 			

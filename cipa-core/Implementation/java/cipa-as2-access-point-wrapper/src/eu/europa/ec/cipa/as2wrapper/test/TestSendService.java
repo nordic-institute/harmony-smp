@@ -1,27 +1,18 @@
 package eu.europa.ec.cipa.as2wrapper.test;
 
-import java.io.StringReader;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.X509TrustManager;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.xml.crypto.dsig.XMLObject;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.busdox.transport.identifiers._1.DocumentIdentifierType;
-import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
-import org.busdox.transport.identifiers._1.ProcessIdentifierType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.xml.sax.InputSource;
 
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -86,10 +77,10 @@ public class TestSendService {
 			Element rootElement = doc.createElement("document");
 			doc.appendChild(rootElement);
 			Element tag1 = doc.createElement("tag1");
-			tag1.appendChild(doc.createTextNode("value11111111111111111111111"));
+			tag1.appendChild(doc.createTextNode("value11111111"));
 			rootElement.appendChild(tag1);
 			Element tag2 = doc.createElement("tag2");
-			tag2.appendChild(doc.createTextNode("value22222222222222222222222"));
+			tag2.appendChild(doc.createTextNode("value22222222"));
 			rootElement.appendChild(tag2);
 			document.setDocument(doc.getDocumentElement());
 	    	
@@ -137,7 +128,6 @@ public class TestSendService {
 	}
 
 }
-
 
 
 

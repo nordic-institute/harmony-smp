@@ -43,7 +43,7 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
 
-import eu.europa.ec.cipa.as2wrapper.endpoint_interface.AS2EndpointPartnerInterface;
+import eu.europa.ec.cipa.as2wrapper.endpoint_interface.IAS2EndpointPartnerInterface;
 import eu.europa.ec.cipa.as2wrapper.util.KeystoreUtil;
 import eu.europa.ec.cipa.as2wrapper.util.PropertiesUtil;
 
@@ -77,7 +77,7 @@ public class AS2ReceiverServlet extends HttpServlet
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 	{
 		if (isMDN(req))
-			handleMDN(req, resp);
+			handleIncomingMDN(req, resp);
 		else if (isIncomingAS2Message(req))
 			handleIncomingAS2Message(req, resp);
 		else
@@ -113,7 +113,7 @@ public class AS2ReceiverServlet extends HttpServlet
 	
 	/** Just takes care the message has been signed by a PEPPOL certificate, and that the CN matches the expected one
 	 */
-	private void handleMDN(HttpServletRequest req, HttpServletResponse resp)
+	private void handleIncomingMDN(HttpServletRequest req, HttpServletResponse resp)
 	{
 		try
 		{
@@ -127,7 +127,7 @@ public class AS2ReceiverServlet extends HttpServlet
 			if (principal==null)
 				principal = ((X509CertificateObject)cert).getSubjectX500Principal();
 						
-			//check the certificate was signed by our AP CA, if not, it's not a valid request
+			//check the certificate was signed by our AP CA, if not, it's not a valid MDN
 			String trustError = checkSignatureTrust((X509Certificate) cert);
 			if (trustError != null)
 			{
@@ -202,7 +202,7 @@ public class AS2ReceiverServlet extends HttpServlet
 			
 			//check that the AS2 endpoint knows the sender, if not, create a new Partner
 			String className = properties.getProperty(PropertiesUtil.PARTNER_INTERFACE_IMPLEMENTATION_CLASS);
-			AS2EndpointPartnerInterface partnerInterface = (AS2EndpointPartnerInterface) Class.forName(className).newInstance();
+			IAS2EndpointPartnerInterface partnerInterface = (IAS2EndpointPartnerInterface) Class.forName(className).newInstance();
 			if (!partnerInterface.isPartnerKown(commonName))
 				partnerInterface.createNewPartner(commonName, as2_from, "", mdnURL, (X509Certificate)cert); //we dont know the partner's endpointUrl at this point, so we can't provide it.
 			

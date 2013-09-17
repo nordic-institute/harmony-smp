@@ -9,7 +9,7 @@ import org.apache.commons.dbcp.BasicDataSource;
 
 import eu.europa.ec.cipa.as2wrapper.util.PropertiesUtil;
 
-public abstract class AS2EndpointPartnerInterface
+public abstract class IAS2EndpointPartnerInterface
 {
 	
 
@@ -28,20 +28,19 @@ public abstract class AS2EndpointPartnerInterface
 	public abstract boolean isPartnerUrlKnown (String CN) throws SQLException;
 	
 	
-	/** Creates a partner in the AS2 endpoint DB (depending if the endpointUrl field is given or not, we'll be able to send to the new partner or only to receive from it)
-	 * @return true if creation successful
+	/** Creates a partner in the AS2 endpoint DB with all the given values, that can be null (depending if the endpointUrl field is given or not, we'll be able to send to the new partner or only to receive from it)
 	 */
 	public abstract void createNewPartner (String as2Id, String name, String endpointUrl, String mdnURL, X509Certificate cert) throws Exception;
 	
 	
-	/** Modifies the partner's endpointUrl, mdnUrl and/or certificate fingerprint in the AS2 endpoint DB
-	 * @return true if modification successful
+	/** If the partner exists in the DB, modifies the partner's endpointUrl, mdnUrl and/or certificate fingerprint in the AS2 endpoint DB. If any of the parameters is null, that field won't be deleted in the DB but just left as it was.
+	 *  If the partner didn't exist yet, it'll create it with all the given values.
 	 */
 	public abstract void updatePartner (String as2Id, String name, String endpointUrl, String mdnURL, X509Certificate cert) throws Exception;
 	
 
 	
-	public AS2EndpointPartnerInterface()
+	public IAS2EndpointPartnerInterface()
 	{
 		properties = PropertiesUtil.getProperties();
 		

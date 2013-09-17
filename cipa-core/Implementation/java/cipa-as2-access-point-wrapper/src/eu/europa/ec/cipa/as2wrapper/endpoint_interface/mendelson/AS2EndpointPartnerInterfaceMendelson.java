@@ -12,10 +12,10 @@ import javax.xml.bind.DatatypeConverter;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
 
-import eu.europa.ec.cipa.as2wrapper.endpoint_interface.AS2EndpointPartnerInterface;
+import eu.europa.ec.cipa.as2wrapper.endpoint_interface.IAS2EndpointPartnerInterface;
 import eu.europa.ec.cipa.as2wrapper.util.KeystoreUtil;
 
-public class AS2EndpointPartnerInterfaceMendelson extends AS2EndpointPartnerInterface
+public class AS2EndpointPartnerInterfaceMendelson extends IAS2EndpointPartnerInterface
 {
 
 	public boolean isPartnerKown(String CN) throws SQLException
@@ -59,46 +59,13 @@ public class AS2EndpointPartnerInterfaceMendelson extends AS2EndpointPartnerInte
 	}
 	
 	
-	public void createNewPartner(String as2Id, String name, String endpointUrl, String mdnURL, X509Certificate cert) throws Exception
+	public void createNewPartner(String as2Id, String name, String endpointUrl, String mdnUrl, X509Certificate cert) throws Exception
 	{
 		Connection con  = getConnection();
 		try
 		{
-			//before anything, we calculate the certificate's SHA-1 fingerprint
-			String fingerprint = cert==null? null : calculateHash(cert);
-			
-			//first operation: we insert the partner's certificate in the AS2Endpoint keystore
-			KeystoreUtil keyStoreAccess = new KeystoreUtil();
-			String definitiveAlias = keyStoreAccess.installNewPartnerCertificate((X509CertificateObject)cert, as2Id);
-			
-			//then we create the partner in the DB
-			String insert = "insert into PARTNER (	AS2IDENT,	NAME,	ISLOCAL,	SIGN,	ENCRYPT,	URL,	MDNURL,	SUBJECT,	SYNCMDN,	POLLIGNORELIST,	POLLINTERVAL,	COMPRESSION,	SIGNEDMDN,	USECOMMANDONRECEIPT,USEHTTPAUTH,USEHTTPAUTHASYNCMDN,KEEPORIGINALFILENAMEONRECEIPT,	NOTIFYSEND,	NOTIFYRECEIVE,	NOTIFYSENDRECEIVE,	NOTIFYSENDENABLED,	NOTIFYRECEIVEENABLED,	NOTIFYSENDRECEIVEENABLED,	USECOMMANDONSENDERROR,	USECOMMANDONSENDSUCCESS,CONTENTTRANSFERENCODING,HTTPVERSION,MAXPOLLFILES)" +
-										" values (	?,			?,		0,			2,		1,			?,		?,		'',			1,			null,			10,				1,				1,			0,					0,			0,					0,								0,			0,				0,					0,					0,						0,							0,						0,						1,						'1.1',		100);";
-			PreparedStatement statement = con.prepareStatement(insert);
-			statement.setString(1, definitiveAlias);
-			statement.setString(2, name);
-			statement.setString(3, endpointUrl);
-			statement.setString(4, mdnURL);
-			statement.executeUpdate();
-			
-			if (fingerprint!=null)
-			{
-				//we retrieve the ID of the partner just created
-				statement = con.prepareStatement("select ID from PARTNER where AS2IDENT = ? and NAME = ?");
-				statement.setString(1, definitiveAlias);
-				statement.setString(2, name);
-				ResultSet result = statement.executeQuery();
-				result.next();
-				int newId = result.getInt("id");
-				
-				//we add the certificate linked to the partner
-				statement = con.prepareStatement("insert into CERTIFICATES (PARTNERID, FINGERPRINTSHA1, CATEGORY, PRIO) values (?, ?, 2, 1)"); //category 2 means the cert is used for signature. category 1 is for encryption, but we dont use encryption.
-				statement.setInt(1, newId);
-				statement.setString(2, fingerprint);
-				statement.executeUpdate();
-			}
+			createPartner(con, as2Id, name, endpointUrl, mdnUrl, cert);
 						
-			//and if it went ok, we commit
 			con.commit();
 		}
 		catch (Exception e)
@@ -109,9 +76,47 @@ public class AS2EndpointPartnerInterfaceMendelson extends AS2EndpointPartnerInte
 		}
 	}
 
+	
+	private void createPartner(Connection con, String as2Id, String name, String endpointUrl, String mdnUrl, X509Certificate cert) throws Exception
+	{
+		//before anything, we calculate the certificate's SHA-1 fingerprint
+		String fingerprint = cert==null? null : calculateHash(cert);
+		
+		//first operation: we insert the partner's certificate in the AS2Endpoint keystore
+		KeystoreUtil keyStoreAccess = new KeystoreUtil();
+		String definitiveAlias = keyStoreAccess.installNewPartnerCertificate((X509CertificateObject)cert, as2Id);
+		
+		//then we create the partner in the DB
+		String insert = "insert into PARTNER (	AS2IDENT,	NAME,	ISLOCAL,	SIGN,	ENCRYPT,	URL,	MDNURL,	SUBJECT,	SYNCMDN,	POLLIGNORELIST,	POLLINTERVAL,	COMPRESSION,	SIGNEDMDN,	USECOMMANDONRECEIPT,USEHTTPAUTH,USEHTTPAUTHASYNCMDN,KEEPORIGINALFILENAMEONRECEIPT,	NOTIFYSEND,	NOTIFYRECEIVE,	NOTIFYSENDRECEIVE,	NOTIFYSENDENABLED,	NOTIFYRECEIVEENABLED,	NOTIFYSENDRECEIVEENABLED,	USECOMMANDONSENDERROR,	USECOMMANDONSENDSUCCESS,CONTENTTRANSFERENCODING,HTTPVERSION,MAXPOLLFILES)" +
+									" values (	?,			?,		0,			2,		1,			?,		?,		'',			1,			null,			10,				1,				1,			0,					0,			0,					0,								0,			0,				0,					0,					0,						0,							0,						0,						1,						'1.1',		100);";
+		PreparedStatement statement = con.prepareStatement(insert);
+		statement.setString(1, definitiveAlias);
+		statement.setString(2, name);
+		statement.setString(3, endpointUrl);
+		statement.setString(4, mdnUrl);
+		statement.executeUpdate();
+		
+		if (fingerprint!=null)
+		{	
+			//we retrieve the ID of the partner just created
+			statement = con.prepareStatement("select ID from PARTNER where AS2IDENT = ? and NAME = ?");
+			statement.setString(1, definitiveAlias);
+			statement.setString(2, name);
+			ResultSet result = statement.executeQuery();
+			result.next();
+			int newId = result.getInt("id");
+			
+			//we add the certificate linked to the partner
+			statement = con.prepareStatement("insert into CERTIFICATES (PARTNERID, FINGERPRINTSHA1, CATEGORY, PRIO) values (?, ?, 2, 1)"); //category 2 means the cert is used for signature. category 1 is for encryption, but we dont use encryption.
+			statement.setInt(1, newId);
+			statement.setString(2, fingerprint);
+			statement.executeUpdate();
+		}
+		
+		return;
+	}
 
-	/**Gives the possibility of updating the endpointUrl, mdnUrl, or certificate fingerprint for an existing partner. If any of the parameters is null, that field won't be deleted in the DB but just left as it was.
-	 */
+
 	public void updatePartner(String as2Id, String name, String endpointUrl, String mdnUrl, X509Certificate cert) throws Exception
 	{
 		Connection con = getConnection();
@@ -125,33 +130,45 @@ public class AS2EndpointPartnerInterfaceMendelson extends AS2EndpointPartnerInte
 			statement.setString(1, as2Id);
 			statement.setString(2, name);
 			ResultSet result = statement.executeQuery();
-			result.next();
-			int id = result.getInt("id");
-			String dbUrl = result.getString("url");
-			String dbMdnUrl = result.getString("mdnurl");
 			
-			//now we fill whatever was missing
-			if (endpointUrl!= null && !endpointUrl.isEmpty())
-				dbUrl = endpointUrl;
-			if (mdnUrl!=null && !mdnUrl.isEmpty())
-				dbMdnUrl = mdnUrl;
-			
-			//and we update in the DB
-			String update = "update PARTNER set URL = ? , MDNURL = ? where AS2IDENT = ? and NAME = ?";
-			statement = con.prepareStatement(update);
-			statement.setString(1, dbUrl);
-			statement.setString(2, dbMdnUrl);
-			statement.setString(3, as2Id);
-			statement.setString(4, name);
-			statement.executeUpdate();
-			
-			//and finally we update the cert fingerprint
-			if (fingerprint!=null)
+			if (!result.next())
 			{
-				statement = con.prepareStatement("update CERTIFICATES set FINGERPRINTSHA1 = ? where PARTNERID = ?");
-				statement.setString(1, fingerprint);
-				statement.setInt(2, id);
+				//if the partner doesn't exist yet, we create it
+				createPartner(con, as2Id, name, endpointUrl, mdnUrl, cert);
+			}
+			else
+			{
+				int id;
+				String url_finalValue;
+				String mdnUrl_finalValue;
+				
+				id = result.getInt("id");
+				url_finalValue = result.getString("url");
+				mdnUrl_finalValue = result.getString("mdnurl");
+				
+				//we override the values if something was passed as parameter
+				if (endpointUrl!= null && !endpointUrl.isEmpty())
+					url_finalValue = endpointUrl;
+				if (mdnUrl!=null && !mdnUrl.isEmpty())
+					mdnUrl_finalValue = mdnUrl;
+				
+				//and we update in the DB
+				String update = "update PARTNER set URL = ? , MDNURL = ? where AS2IDENT = ? and NAME = ?";
+				statement = con.prepareStatement(update);
+				statement.setString(1, url_finalValue);
+				statement.setString(2, mdnUrl_finalValue);
+				statement.setString(3, as2Id);
+				statement.setString(4, name);
 				statement.executeUpdate();
+				
+				//and finally we update the cert fingerprint
+				if (fingerprint!=null)
+				{
+					statement = con.prepareStatement("update CERTIFICATES set FINGERPRINTSHA1 = ? where PARTNERID = ?");
+					statement.setString(1, fingerprint);
+					statement.setInt(2, id);
+					statement.executeUpdate();
+				}
 			}
 						
 			//we finished
