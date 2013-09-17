@@ -60,13 +60,6 @@ public class DNSClientImplTest {
     return new DNSClientImpl ("blixdns0", "peppolcentral.org.", "smk.peppolcentral.org.", 60);
   }
 
-  @Test
-  @Ignore
-  public void testCreate () throws Exception {
-    final DNSClientImpl aClient = _createDNS ();
-    aClient.createPublisherAnchor (SMP_TEST_NAME, "127.0.0.1");
-  }
-
   @Nonnull
   private static String _getAsString (@Nullable final Record [] aRecords) {
     final StringBuilder aSB = new StringBuilder ();
@@ -80,6 +73,13 @@ public class DNSClientImplTest {
         aSB.append (sText);
       }
     return aSB.toString ();
+  }
+
+  @Test
+  @Ignore
+  public void testCreate () throws Exception {
+    final DNSClientImpl aClient = _createDNS ();
+    aClient.createPublisherAnchor (SMP_TEST_NAME, "127.0.0.1");
   }
 
   @Test
