@@ -26,7 +26,9 @@ public class AS2EndpointSendInterfaceMendelson extends IAS2EndpointSendInterface
 	{
 		String result = "";
 		String senderId = sbdh.getStandardBusinessDocumentHeader().getSender().get(0).getIdentifier().getValue();
+		senderId = senderId.replace('-', '_');
 		String recipientId = sbdh.getStandardBusinessDocumentHeader().getReceiver().get(0).getIdentifier().getValue();
+		recipientId = recipientId.replace('-', '_');
 		String documentId = "";
 		List<Scope> scopes = sbdh.getStandardBusinessDocumentHeader().getBusinessScope().getScope();
 		for (Scope scope : scopes)
@@ -55,7 +57,7 @@ public class AS2EndpointSendInterfaceMendelson extends IAS2EndpointSendInterface
 		}
 		catch (Exception e)
 		{
-			result = e.getMessage();
+			result = (e.getMessage()!=null && !e.getMessage().isEmpty())? e.getMessage() : e.getCause().getLocalizedMessage();
 		}
 		
 		return result;
