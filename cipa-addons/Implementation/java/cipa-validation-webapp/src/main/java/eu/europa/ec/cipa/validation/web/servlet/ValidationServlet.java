@@ -60,8 +60,8 @@ import com.phloc.commons.xml.serialize.XMLReader;
 import com.phloc.html.css.DefaultCSSClassProvider;
 import com.phloc.html.css.ICSSClassProvider;
 import com.phloc.html.hc.CHCParam;
+import com.phloc.html.hc.IHCCell;
 import com.phloc.html.hc.conversion.HCSettings;
-import com.phloc.html.hc.html.AbstractHCCell;
 import com.phloc.html.hc.html.HCBody;
 import com.phloc.html.hc.html.HCButton_Submit;
 import com.phloc.html.hc.html.HCCheckBox;
@@ -94,7 +94,8 @@ import eu.europa.ec.cipa.validation.web.ctrl.DocumentTypeSelect;
 import eu.europa.ec.cipa.validation.web.ctrl.SyntaxBindingSelect;
 import eu.europa.ec.cipa.validation.web.ctrl.TransactionSelect;
 
-public final class ValidationServlet extends AbstractUnifiedResponseServlet {
+public final class ValidationServlet extends AbstractUnifiedResponseServlet
+{
   private static final String FIELD_SYNTAX_BINDING = "syntaxbinding";
   private static final String FIELD_DOCTYPE = "doctype";
   private static final String FIELD_TRANSACTION = "transaction";
@@ -112,17 +113,20 @@ public final class ValidationServlet extends AbstractUnifiedResponseServlet {
 
   @Nonnull
   private static ISimpleURL _makeContextAwareURL (@Nonnull final IRequestWebScopeWithoutResponse aHttpRequest,
-                                                  @Nonnull final String sPath) {
+                                                  @Nonnull final String sPath)
+  {
     return new SimpleURL (aHttpRequest.getFullContextPath () + sPath);
   }
 
   @Nonnull
-  private static HCDiv _createError (final String s) {
+  private static HCDiv _createError (final String s)
+  {
     return HCDiv.create (s).addClass (CSS_CLASS_ERROR);
   }
 
   private static boolean _containsTransaction (@Nullable final EValidationDocumentType eDocType,
-                                               @Nonnull final ETransaction eTransaction) {
+                                               @Nonnull final ETransaction eTransaction)
+  {
     for (final EValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null, eDocType, null))
       if (eArtefact.getAllTransactions ().contains (eTransaction))
         return true;
@@ -140,7 +144,8 @@ public final class ValidationServlet extends AbstractUnifiedResponseServlet {
    */
   @Override
   protected void handleRequest (@Nonnull final IRequestWebScopeWithoutResponse aRequestScope,
-                                @Nonnull final UnifiedResponse aUnifiedResponse) throws Exception {
+                                @Nonnull final UnifiedResponse aUnifiedResponse) throws Exception
+  {
     final Locale aDisplayLocale = Locale.US;
 
     // Request parameter values
@@ -153,10 +158,8 @@ public final class ValidationServlet extends AbstractUnifiedResponseServlet {
     final String sSelectedCountry = aRequestScope.getAttributeAsString (FIELD_COUNTRY);
     final Locale aSelectedCountry = LocaleCache.getLocale (sSelectedCountry);
     final String sSelectedIndustryLevel = aRequestScope.getAttributeAsString (FIELD_INDUSTRY_SPECIFIC);
-    final boolean bSelectedIndustryLevel = sSelectedIndustryLevel != null
-                                                                         ? Boolean.parseBoolean (sSelectedIndustryLevel)
-                                                                         : aRequestScope.getAttributeAsString (HCCheckBox.getHiddenFieldName (FIELD_INDUSTRY_SPECIFIC)) != null
-                                                                                                                                                                               ? false
+    final boolean bSelectedIndustryLevel = sSelectedIndustryLevel != null ? Boolean.parseBoolean (sSelectedIndustryLevel)
+                                                                         : aRequestScope.getAttributeAsString (HCCheckBox.getHiddenFieldName (FIELD_INDUSTRY_SPECIFIC)) != null ? false
                                                                                                                                                                                : DEFAULT_INDUSTRY_SPECIFIC;
     final String sSelectedXML = aRequestScope.getAttributeAsString (FIELD_XML);
 
@@ -169,7 +172,8 @@ public final class ValidationServlet extends AbstractUnifiedResponseServlet {
     final HCBody aBody = aHtml.getBody ();
 
     boolean bShowForm = true;
-    if (CHCParam.STATE_SUBMITTED.equals (aRequestScope.getAttributeAsString (CHCParam.PARAM_STATE))) {
+    if (CHCParam.STATE_SUBMITTED.equals (aRequestScope.getAttributeAsString (CHCParam.PARAM_STATE)))
+    {
       // User pressed submit
       final List <String> aErrors = new ArrayList <String> ();
       if (eSelectedSyntax == null)
@@ -186,20 +190,24 @@ public final class ValidationServlet extends AbstractUnifiedResponseServlet {
       Source aXMLSource = null;
       if (StringHelper.hasNoText (sSelectedXML))
         aErrors.add ("No XML content supplied");
-      else {
-        try {
+      else
+      {
+        try
+        {
           final Document aDoc = XMLReader.readXMLDOM (sSelectedXML);
           if (aDoc == null)
             aErrors.add ("Failed to parse passed XML");
           else
             aXMLSource = new DOMSource (aDoc);
         }
-        catch (final SAXException e) {
+        catch (final SAXException e)
+        {
           aErrors.add ("Failed to parse passed XML: " + e.getMessage ());
         }
       }
 
-      if (aErrors.isEmpty ()) {
+      if (aErrors.isEmpty ())
+      {
         // No form errors
         final ValidationPyramid aVP = new ValidationPyramid (eSelectedDocType,
                                                              new ValidationTransaction (eSelectedSyntax,
@@ -219,7 +227,8 @@ public final class ValidationServlet extends AbstractUnifiedResponseServlet {
 
         // List all failures
         final IResourceErrorGroup aFailures = aREG.getAllFailures ();
-        if (!aFailures.isEmpty ()) {
+        if (!aFailures.isEmpty ())
+        {
           final HCUL aUL = aBody.addAndReturnChild (new HCUL ());
           for (final IResourceError aResError : aREG)
             aUL.addItem (_createError (aResError.getAsString (aDisplayLocale)));
@@ -239,7 +248,8 @@ public final class ValidationServlet extends AbstractUnifiedResponseServlet {
 
         bShowForm = false;
       }
-      else {
+      else
+      {
         // Show all error messages
         final HCUL aUL = aBody.addAndReturnChild (new HCUL ());
         for (final String sErrMsg : aErrors)
@@ -247,7 +257,8 @@ public final class ValidationServlet extends AbstractUnifiedResponseServlet {
       }
     }
 
-    if (bShowForm) {
+    if (bShowForm)
+    {
       aBody.addChild (HCH1.create ("PEPPOL document validation"));
       final HCForm aForm = aBody.addAndReturnChild (new HCForm (_makeContextAwareURL (aRequestScope, "/validation/")));
 
@@ -256,9 +267,8 @@ public final class ValidationServlet extends AbstractUnifiedResponseServlet {
       // Syntax binding
       aTable.addBodyRow ()
             .addCells (HCSpan.create ("Syntax:").addClass (CSS_CLASS_FIELDNAME),
-                       new SyntaxBindingSelect (FIELD_SYNTAX_BINDING, eSelectedSyntax != null
-                                                                                             ? eSelectedSyntax.getID ()
-                                                                                             : null).addClass (CSS_CLASS_FIELDCTRL));
+                       new SyntaxBindingSelect (FIELD_SYNTAX_BINDING,
+                                                eSelectedSyntax != null ? eSelectedSyntax.getID () : null).addClass (CSS_CLASS_FIELDCTRL));
 
       // Document type
       aTable.addBodyRow ()
@@ -290,7 +300,7 @@ public final class ValidationServlet extends AbstractUnifiedResponseServlet {
                                                                              .addClass (CSS_CLASS_FIELDCTRL));
 
       // Toolbar
-      final AbstractHCCell aCell = aTable.addBodyRow ().addCell ().setColspan (aTable.getColumnCount ());
+      final IHCCell <?> aCell = aTable.addBodyRow ().addCell ().setColspan (aTable.getColumnCount ());
       final HCDiv aToolbar = aCell.addAndReturnChild (new HCDiv ());
       aToolbar.addClass (CSS_CLASS_BUTTONBAR);
       aToolbar.addChild (new HCHiddenField (CHCParam.PARAM_STATE, CHCParam.STATE_SUBMITTED));
