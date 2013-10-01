@@ -43,7 +43,7 @@
   </repositories>
 
   <properties>
-    <vaadin.version>6.8.10</vaadin.version>
+    <vaadin.version>6.8.12</vaadin.version>
     <!-- Use 1.7.1 for vaadin7; 1.6.6 for vaadin6 -->
     <vaadin.animator.version>1.6.6</vaadin.animator.version>
   </properties>
@@ -124,7 +124,7 @@
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>jetty-maven-plugin</artifactId>
-        <version>7.6.12.v20130726</version>
+        <version>7.6.13.v20130916</version>
         <configuration>
           <scanIntervalSeconds>1</scanIntervalSeconds>
           <!-- Set stopKey and stopPort to be used in run configurations like this: jetty:stop -Dstop.port=9999 -Dstop.key=stopme -->
