@@ -68,6 +68,7 @@ public final class Validator implements CertificateValidator {
 
   private static final String CONFIG_ENABLED = "ocsp.enabled";
   private static final String CONFIG_RESPONDER_URL = "ocsp.responderurl";
+  private static final String CONFIG_RESPONDER_URL_NEW = "ocsp.responderurl.new";
   private static final String CONFIG_TRUSTSTORE_PATH = "ocsp.truststore.path";
   private static final String CONFIG_TRUSTSTORE_PASSWORD = "ocsp.truststore.password";
   private static final String CONFIG_TRUSTORE_ALIAS = "ocsp.truststore.alias";
@@ -122,14 +123,15 @@ public final class Validator implements CertificateValidator {
       }
       else {
         // Get the responder URL from the configuration
-        // Note: use the old constant as the default value, in case none is
-        // defined
+        // Note: use the old constant as the default value, in case none is defined
         final String DEFAULT_RESPONDER_URL = "http://pilot-ocsp.verisign.com:80";
         final String sResponderURL = s_aConf.getString (CONFIG_RESPONDER_URL, DEFAULT_RESPONDER_URL);
-        if (StringHelper.hasNoText (sResponderURL)) {
+        final String DEFAULT_RESPONDER_URL_NEW = "http://pki-ocsp.symauth.com:80";
+        final String sNewResponderURL = s_aConf.getString (CONFIG_RESPONDER_URL_NEW, DEFAULT_RESPONDER_URL_NEW);
+        if (StringHelper.hasNoText (sResponderURL) && StringHelper.hasNoText (sNewResponderURL)) {
           // Error
           s_aLogger.error ("No OCSP responder URL configured (property '" +
-                           CONFIG_RESPONDER_URL +
+                           CONFIG_RESPONDER_URL + "' or '" + CONFIG_RESPONDER_URL_NEW +
                            "'). The old default URL was: " +
                            DEFAULT_RESPONDER_URL);
         }
@@ -140,7 +142,7 @@ public final class Validator implements CertificateValidator {
           if (aRootCert != null)
             result = OCSP.check (aCert, aRootCert, sResponderURL);
           if (result.isInvalid () && aRootCertNew != null)
-            result = OCSP.check (aCert, aRootCertNew, sResponderURL);
+            result = OCSP.check (aCert, aRootCertNew, sNewResponderURL);
           return result;
         }
       }
