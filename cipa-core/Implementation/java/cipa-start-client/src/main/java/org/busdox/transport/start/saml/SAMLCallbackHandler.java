@@ -346,6 +346,9 @@ public final class SAMLCallbackHandler implements CallbackHandler {
 
       final Element aAssertionElement = aAssertion.toElement (aDoc);
       final DOMSignContext dsc = new DOMSignContext (aPrivKey, aAssertionElement);
+      
+      //see https://github.com/difi/oxalis/issues/42
+      aAssertionElement.setIdAttribute("ID", true);
 
       final XMLSignature aXMLSignature = aXMLSignatureFactory.newXMLSignature (aSignedInfo, aKeyInfo);
       dsc.putNamespacePrefix ("http://www.w3.org/2000/09/xmldsig#", "ds");
