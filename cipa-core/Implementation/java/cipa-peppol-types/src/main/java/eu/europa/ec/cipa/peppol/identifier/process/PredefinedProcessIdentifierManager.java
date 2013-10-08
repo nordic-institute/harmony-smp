@@ -38,9 +38,9 @@
 package eu.europa.ec.cipa.peppol.identifier.process;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,7 +48,8 @@ import javax.annotation.concurrent.Immutable;
 
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.annotations.ReturnsImmutableObject;
+import com.phloc.commons.annotations.ReturnsMutableCopy;
+import com.phloc.commons.collections.ContainerHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 
@@ -77,13 +78,23 @@ public final class PredefinedProcessIdentifierManager {
   private PredefinedProcessIdentifierManager () {}
 
   /**
-   * @return A non-modifiable list of all PEPPOL process identifiers.
+   * @return A non-<code>null</code> list of all PEPPOL process identifiers.
    */
   @Nonnull
   @Nonempty
-  @ReturnsImmutableObject
+  @ReturnsMutableCopy
   public static Collection <IPeppolPredefinedProcessIdentifier> getAllProcessIdentifiers () {
-    return Collections.unmodifiableCollection (s_aCodes.values ());
+    return ContainerHelper.newList (s_aCodes.values ());
+  }
+
+  /**
+   * @return A non-<code>null</code> list of all PEPPOL process identifier IDs.
+   */
+  @Nonnull
+  @Nonempty
+  @ReturnsMutableCopy
+  public static Set <String> getAllProcessIdentifierIDs () {
+    return ContainerHelper.newSet (s_aCodes.keySet ());
   }
 
   /**

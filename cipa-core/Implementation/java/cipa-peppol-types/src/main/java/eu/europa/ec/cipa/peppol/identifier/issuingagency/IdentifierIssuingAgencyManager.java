@@ -38,7 +38,6 @@
 package eu.europa.ec.cipa.peppol.identifier.issuingagency;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -46,7 +45,8 @@ import javax.annotation.Nullable;
 
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.annotations.ReturnsImmutableObject;
+import com.phloc.commons.annotations.ReturnsMutableCopy;
+import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.state.ETriState;
 import com.phloc.commons.string.StringHelper;
 
@@ -76,9 +76,9 @@ public final class IdentifierIssuingAgencyManager {
    */
   @Nonnull
   @Nonempty
-  @ReturnsImmutableObject
+  @ReturnsMutableCopy
   public static List <? extends IIdentifierIssuingAgency> getAllAgencies () {
-    return Collections.unmodifiableList (s_aCodes);
+    return ContainerHelper.newList (s_aCodes);
   }
 
   /**

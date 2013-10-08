@@ -54,6 +54,7 @@ public final class PredefinedDocumentTypeIdentifierManagerTest {
   @Test
   public void testAll () {
     assertNotNull (PredefinedDocumentTypeIdentifierManager.getAllDocumentTypeIdentifiers ());
+    assertNotNull (PredefinedDocumentTypeIdentifierManager.getAllDocumentTypeIdentifierIDs ());
 
     assertNotNull (PredefinedDocumentTypeIdentifierManager.getDocumentTypeIdentifierOfID ("urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:www.cenbii.eu:transaction:biicoretrdm001:ver1.0:#urn:www.peppol.eu:bis:peppol3a:ver1.0::2.0"));
     assertNull (PredefinedDocumentTypeIdentifierManager.getDocumentTypeIdentifierOfID ("urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:www.cenbii.eu:transaction:biicoretrdm001:ver1.0:#urn:www.peppol.eu:bis:peppol3a:ver1.0::2.0a"));
