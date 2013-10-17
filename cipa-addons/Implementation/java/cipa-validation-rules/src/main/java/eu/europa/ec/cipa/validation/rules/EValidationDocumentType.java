@@ -77,8 +77,8 @@ public enum EValidationDocumentType implements IValidationDocumentType {
   /** Call for tenders document type */
   CALL_FOR_TENDERS ("callfortenders", EUBL21DocumentType.CALL_FOR_TENDERS);
 
-  private String m_sID;
-  private IUBLDocumentType m_aUBLDocType;
+  private final String m_sID;
+  private final IUBLDocumentType m_aUBLDocType;
 
   private EValidationDocumentType (@Nonnull @Nonempty final String sID, @Nullable final IUBLDocumentType aUBLDocType) {
     m_sID = sID;

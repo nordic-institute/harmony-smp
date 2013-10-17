@@ -64,7 +64,7 @@ import com.phloc.commons.string.StringHelper;
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 
 /**
- * Contains all available invoice validation artefacts.
+ * Contains all available validation artefacts.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
@@ -111,8 +111,8 @@ public enum EValidationArtefact implements IValidationArtefact {
   private static final Logger s_aLogger = LoggerFactory.getLogger (EValidationArtefact.class);
   private static final String BASE_DIRECTORY = "/rules/";
 
-  private EValidationLevel m_eLevel;
-  private IValidationDocumentType m_aDocType;
+  private final EValidationLevel m_eLevel;
+  private final IValidationDocumentType m_aDocType;
   private final String m_sDirName;
   private final String m_sFileNamePrefix;
   private final Locale m_aCountry;

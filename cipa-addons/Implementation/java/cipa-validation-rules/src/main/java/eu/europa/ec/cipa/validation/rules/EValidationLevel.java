@@ -77,8 +77,8 @@ public enum EValidationLevel implements IHasID <String> {
   /** Entity (=company) specific validation rules */
   ENTITY_SPECIFC ("entity", 60);
 
-  private String m_sID;
-  private int m_nLevel;
+  private final String m_sID;
+  private final int m_nLevel;
 
   private EValidationLevel (@Nonnull @Nonempty final String sID, @Nonnegative final int nLevel) {
     m_sID = sID;
