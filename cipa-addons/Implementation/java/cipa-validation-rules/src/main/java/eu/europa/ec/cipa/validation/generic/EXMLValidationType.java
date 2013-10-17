@@ -53,7 +53,7 @@ public enum EXMLValidationType implements IHasID <String> {
   XSD ("xsd"),
   SCHEMATRON ("schematron");
 
-  private String m_sID;
+  private final String m_sID;
 
   private EXMLValidationType (@Nonnull @Nonempty final String sID) {
     m_sID = sID;

@@ -41,7 +41,7 @@ import javax.annotation.Nonnull;
 
 import com.phloc.commons.error.IResourceErrorGroup;
 import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.xml.transform.ResourceStreamSource;
+import com.phloc.commons.xml.transform.TransformSourceFactory;
 
 /**
  * Abstract implementation of the {@link IXMLValidator}.
@@ -51,6 +51,6 @@ import com.phloc.commons.xml.transform.ResourceStreamSource;
 public abstract class AbstractXMLValidator implements IXMLValidator {
   @Nonnull
   public final IResourceErrorGroup validateXMLInstance (@Nonnull final IReadableResource aXML) {
-    return validateXMLInstance (aXML.getPath (), new ResourceStreamSource (aXML));
+    return validateXMLInstance (aXML.getPath (), TransformSourceFactory.create (aXML));
   }
 }

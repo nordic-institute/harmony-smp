@@ -57,7 +57,8 @@ public interface IXMLValidator {
   EXMLValidationType getValidationType ();
 
   /**
-   * Validate the passed XML
+   * Validate the passed XML. This is a shortcut for
+   * <code>validateXMLInstance (aXML.getPath (), TransformSourceFactory.create (aXML))</code>
    * 
    * @param aXML
    *        The XML to be validated. May not be <code>null</code>.
