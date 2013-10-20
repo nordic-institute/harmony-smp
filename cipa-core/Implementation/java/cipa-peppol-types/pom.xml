@@ -4,7 +4,7 @@
   <parent>
     <groupId>eu.europa.ec.cipa</groupId>
     <artifactId>cipa-parent-pom</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
     <relativePath>../cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-peppol-types</artifactId>
@@ -34,7 +34,7 @@
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-commons-busdox</artifactId>
-      <version>1.1.2-SNAPSHOT</version>
+      <version>1.1.2</version>
     </dependency>
     <dependency>
       <groupId>com.phloc</groupId>
@@ -99,13 +99,6 @@
           <excludes>
             <exclude>src/main/java/com/google/**</exclude>
           </excludes>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <tagBase>https://joinup.ec.europa.eu/svn/cipaedelivery/tags/${project.name}</tagBase>
         </configuration>
       </plugin>
     </plugins>
