@@ -72,7 +72,7 @@ public interface IValidationArtefact extends IHasID <String> {
 
   /**
    * @return The country for which this artefact is relevant. May be
-   *         <code>null</code> for country independent artefacts.
+   *         <code>null</code> for country-independent artefacts.
    */
   @Nullable
   Locale getValidationCountry ();
@@ -122,7 +122,7 @@ public interface IValidationArtefact extends IHasID <String> {
   /**
    * @return A list of all Schematron resources (.SCH) for the current artefact.
    *         Never <code>null</code>. The returned list always contains at least
-   *         one entry.
+   *         one item.
    */
   @Nonnull
   @Nonempty

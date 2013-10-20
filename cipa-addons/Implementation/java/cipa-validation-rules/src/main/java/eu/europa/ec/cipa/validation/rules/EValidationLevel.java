@@ -47,7 +47,7 @@ import javax.annotation.Nullable;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.compare.AbstractNumericComparator;
+import com.phloc.commons.compare.AbstractIntegerComparator;
 import com.phloc.commons.compare.ESortOrder;
 import com.phloc.commons.id.IHasID;
 import com.phloc.commons.lang.EnumHelper;
@@ -59,23 +59,43 @@ import com.phloc.commons.lang.EnumHelper;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public enum EValidationLevel implements IHasID <String> {
-  /** Technical structure validation (e.g. XML schema) */
+  /** Technical structure validation (e.g. XML schema) - never country specific */
   TECHNICAL_STRUCTURE ("technical", 10),
 
-  /** Validation rules based on BII transaction requirements */
+  /**
+   * Validation rules based on BII transaction requirements - never country
+   * specific
+   */
   TRANSACTION_REQUIREMENTS ("transaction", 20),
 
-  /** Validation rules based on BII profile (=process) requirements */
+  /**
+   * Validation rules based on BII profile (=process) requirements - never
+   * country specific
+   */
   PROFILE_REQUIREMENTS ("profile", 30),
 
-  /** Validation rules based on legal obligations */
+  /** Validation rules based on legal obligations - maybe country specific */
   LEGAL_REQUIREMENTS ("legal", 40),
 
-  /** Industry specific validation rules */
+  /** Industry specific validation rules - maybe country specific */
   INDUSTRY_SPECIFIC ("industry", 50),
 
-  /** Entity (=company) specific validation rules */
+  /**
+   * Entity (=company) specific validation rules - this level represents
+   * bilateral agreements - maybe country specific
+   */
   ENTITY_SPECIFC ("entity", 60);
+
+  public static final class ComparatorLevel extends AbstractIntegerComparator <EValidationLevel> {
+    public ComparatorLevel (@Nonnull final ESortOrder eSortOrder) {
+      super (eSortOrder);
+    }
+
+    @Override
+    protected long asLong (final EValidationLevel eLevel) {
+      return eLevel.getLevel ();
+    }
+  }
 
   private final String m_sID;
   private final int m_nLevel;
@@ -167,10 +187,12 @@ public enum EValidationLevel implements IHasID <String> {
   }
 
   /**
-   * @return All validation levels in the order they must be executed.
+   * @return All validation levels in the order they must be executed. Neither
+   *         <code>null</code> nor empty.
    */
   @Nonnull
   @Nonempty
+  @ReturnsMutableCopy
   public static List <EValidationLevel> getAllLevelsInValidationOrder () {
     return ContainerHelper.newList (values ());
   }
@@ -186,12 +208,7 @@ public enum EValidationLevel implements IHasID <String> {
   @ReturnsMutableCopy
   public static List <EValidationLevel> getAllLevelsInValidationOrder (@Nullable final EValidationLevel... aLevels) {
     return ContainerHelper.getSortedInline (ContainerHelper.newList (aLevels),
-                                            new AbstractNumericComparator <EValidationLevel> (ESortOrder.ASCENDING) {
-                                              @Override
-                                              protected double asDouble (final EValidationLevel eLevel) {
-                                                return eLevel.getLevel ();
-                                              }
-                                            });
+                                            new ComparatorLevel (ESortOrder.ASCENDING));
   }
 
   /**

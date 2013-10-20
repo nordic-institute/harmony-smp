@@ -62,6 +62,18 @@ public final class XMLSchemaValidator extends AbstractXMLValidator {
   private final Schema m_aSchema;
 
   /**
+   * Constructor for schema validation based on a single resources.
+   * 
+   * @param aXSD
+   *        The resource where the XSD file can be found. May not be
+   *        <code>null</code>.
+   * @see XMLSchemaCache
+   */
+  public XMLSchemaValidator (@Nonnull final IReadableResource aXSD) {
+    this (XMLSchemaCache.getInstance ().getSchema (aXSD));
+  }
+
+  /**
    * Constructor for schema validation based on the given resources (order is
    * important).
    * 

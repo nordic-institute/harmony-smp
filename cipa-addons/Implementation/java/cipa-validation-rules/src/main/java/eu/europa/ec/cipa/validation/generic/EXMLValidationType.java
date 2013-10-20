@@ -50,7 +50,9 @@ import com.phloc.commons.lang.EnumHelper;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public enum EXMLValidationType implements IHasID <String> {
+  /** XML Schema validation */
   XSD ("xsd"),
+  /** Schematron validation */
   SCHEMATRON ("schematron");
 
   private final String m_sID;

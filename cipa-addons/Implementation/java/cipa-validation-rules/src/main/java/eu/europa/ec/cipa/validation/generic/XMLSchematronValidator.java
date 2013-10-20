@@ -55,8 +55,6 @@ import com.phloc.commons.string.ToStringGenerator;
 import com.phloc.schematron.ISchematronResource;
 import com.phloc.schematron.SchematronHelper;
 import com.phloc.schematron.pure.SchematronResourcePure;
-import com.phloc.schematron.xslt.SchematronResourceSCH;
-import com.phloc.schematron.xslt.SchematronResourceXSLT;
 
 /**
  * Implementation of the {@link IXMLValidator} for XML Schema.
@@ -93,7 +91,7 @@ public final class XMLSchematronValidator extends AbstractXMLValidator {
     try {
       aSVRL = SchematronHelper.applySchematron (m_aSchematronRes, aXML);
     }
-    catch (final IllegalArgumentException ex) {
+    catch (final Exception ex) {
       // Validation failed - whysoever
       s_aLogger.error ("Failed to apply Schematron", ex);
       sErrorMsg += ": resolve any previous errors and try again";
@@ -110,18 +108,6 @@ public final class XMLSchematronValidator extends AbstractXMLValidator {
   @Override
   public String toString () {
     return new ToStringGenerator (this).append ("schematronRes", m_aSchematronRes).toString ();
-  }
-
-  @Nonnull
-  @Deprecated
-  public static XMLSchematronValidator createFromXSLT (@Nonnull final IReadableResource aXSLT) {
-    return new XMLSchematronValidator (new SchematronResourceXSLT (aXSLT));
-  }
-
-  @Nonnull
-  @Deprecated
-  public static XMLSchematronValidator createFromSCH (@Nonnull final IReadableResource aSCH) {
-    return new XMLSchematronValidator (new SchematronResourceSCH (aSCH));
   }
 
   @Nonnull

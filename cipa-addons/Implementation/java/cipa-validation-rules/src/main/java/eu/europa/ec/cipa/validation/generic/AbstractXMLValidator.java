@@ -51,6 +51,8 @@ import com.phloc.commons.xml.transform.TransformSourceFactory;
 public abstract class AbstractXMLValidator implements IXMLValidator {
   @Nonnull
   public final IResourceErrorGroup validateXMLInstance (@Nonnull final IReadableResource aXML) {
+    if (aXML == null)
+      throw new NullPointerException ("XML");
     return validateXMLInstance (aXML.getPath (), TransformSourceFactory.create (aXML));
   }
 }

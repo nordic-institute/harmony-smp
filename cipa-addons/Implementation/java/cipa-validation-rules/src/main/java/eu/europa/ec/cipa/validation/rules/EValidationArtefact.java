@@ -64,7 +64,7 @@ import com.phloc.commons.string.StringHelper;
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 
 /**
- * Contains all available validation artefacts.
+ * Contains all available PEPPOL validation artefacts.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
@@ -93,7 +93,8 @@ public enum EValidationArtefact implements IValidationArtefact {
                                                                                                                                            ValidationTransaction.createUBLTransaction (ETransaction.T15))),
   CREDITNOTE_BII_PROFILES (EValidationLevel.PROFILE_REQUIREMENTS, EValidationDocumentType.CREDIT_NOTE, "biiprofiles", null, ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T14))),
 
-  // Legal requirements:
+  // Legal requirements - per transaction and country only one artifact should
+  // be present:
   INVOICE_AUSTRIA_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.INVOICE, "atnat", CountryCache.getCountry ("AT"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10))),
   INVOICE_DENMARK_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.INVOICE, "dknat", CountryCache.getCountry ("DK"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10))),
   INVOICE_ITALY_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.INVOICE, "itnat", CountryCache.getCountry ("IT"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10))),
@@ -102,11 +103,13 @@ public enum EValidationArtefact implements IValidationArtefact {
                                                                                                                                                                 ValidationTransaction.createUBLTransaction (ETransaction.T17))),
   CREDITNOTE_NORWAY_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.CREDIT_NOTE, "nonat", CountryCache.getCountry ("NO"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T14))),
 
-  // Industry specific:
+  // Industry specific - per transaction and country, multiple artifacts may be
+  // present. They need to be identified by ID!
   INVOICE_AUSTRIA_GOVERNMENT (EValidationLevel.INDUSTRY_SPECIFIC, EValidationDocumentType.INVOICE, "atgov", CountryCache.getCountry ("AT"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10))),
   INVOICE_NORWAY_GOVERNMENT (EValidationLevel.INDUSTRY_SPECIFIC, EValidationDocumentType.INVOICE, "nogov", CountryCache.getCountry ("NO"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10),
                                                                                                                                                                  ValidationTransaction.createUBLTransaction (ETransaction.T15))),
   CREDITNOTE_NORWAY_GOVERNMENT (EValidationLevel.INDUSTRY_SPECIFIC, EValidationDocumentType.CREDIT_NOTE, "nogov", CountryCache.getCountry ("NO"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T14)));
+  // Entity specific - no such default artefact is present
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (EValidationArtefact.class);
   private static final String BASE_DIRECTORY = "/rules/";
@@ -142,12 +145,14 @@ public enum EValidationArtefact implements IValidationArtefact {
                                @Nonnull @Nonempty final IValidationTransaction [] aTransactions) {
     if (StringHelper.hasNoText (sDirName))
       throw new IllegalArgumentException ("dirName is empty");
+
     if (aCountry != null && !eLevel.canHaveCountrySpecificArtefacts ())
       throw new IllegalArgumentException ("The validation level " +
                                           eLevel +
                                           " cannot have country specific artefacts but the country '" +
                                           aCountry.getCountry () +
                                           "' is provided!");
+
     if (ArrayHelper.isEmpty (aTransactions))
       throw new IllegalArgumentException ("no transaction specified");
 
@@ -161,7 +166,7 @@ public enum EValidationArtefact implements IValidationArtefact {
     m_eLevel = eLevel;
     m_aDocType = aDocType;
     m_sDirName = sDirName;
-    m_sFileNamePrefix = sDirName.toUpperCase ();
+    m_sFileNamePrefix = sDirName.toUpperCase (Locale.US);
     m_aCountry = aCountry;
     m_aTransactions = ContainerHelper.newUnmodifiableSet (aTransactions);
   }

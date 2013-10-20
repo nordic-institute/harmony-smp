@@ -53,7 +53,7 @@ import org.xml.sax.SAXException;
 
 import com.phloc.commons.CGlobal;
 import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.ReturnsImmutableObject;
+import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.error.IResourceErrorGroup;
 import com.phloc.commons.io.IReadableResource;
@@ -158,6 +158,7 @@ public class ValidationPyramid {
     m_aValidationTransaction = aValidationTransaction;
     m_aValidationCountry = aValidationCountry;
 
+    // Check if an XML schema is present for the technical structure
     final Schema aXMLSchema = aValidationDocumentType.getSchema ();
     if (aXMLSchema != null) {
       // Add the XML schema validator first
@@ -176,10 +177,12 @@ public class ValidationPyramid {
                                                                                               aLookupCountry)) {
         // Get the Schematron SCH for the specified transaction in this level
         final IReadableResource aSCH = eArtefact.getValidationSchematronResource (m_aValidationTransaction);
-        if (aSCH != null)
+        if (aSCH != null) {
+          // We found a matching layer
           m_aValidationLayers.add (new ValidationPyramidLayer (eLevel,
                                                                XMLSchematronValidator.createFromSCHPure (aSCH),
                                                                false));
+        }
       }
     }
   }
@@ -224,13 +227,13 @@ public class ValidationPyramid {
    * @return A non-<code>null</code> list of all contained validation layers.
    */
   @Nonnull
-  @ReturnsImmutableObject
+  @ReturnsMutableCopy
   public List <ValidationPyramidLayer> getAllValidationLayers () {
-    return ContainerHelper.makeUnmodifiable (m_aValidationLayers);
+    return ContainerHelper.newList (m_aValidationLayers);
   }
 
   /**
-   * Apply the validation pyramid on the passed resource.
+   * Apply the validation pyramid on the passed XML resource.
    * 
    * @param aRes
    *        The XML resource to apply the validation pyramid on. May not be
@@ -287,9 +290,14 @@ public class ValidationPyramid {
                                                                      m_aValidationCountry);
     final int nMaxLayers = m_aValidationLayers.size ();
     int nLayerIndex = 0;
+
+    // For all validation layers
     for (final ValidationPyramidLayer aValidationLayer : m_aValidationLayers) {
+      // The validator to use
       final IXMLValidator aValidator = aValidationLayer.getValidator ();
+      // Perform the validation
       final IResourceErrorGroup aErrors = aValidator.validateXMLInstance (sResourceName, aXML);
+      // Add the single result to the validation pyramid
       ret.addValidationResultLayer (new ValidationPyramidResultLayer (aValidationLayer.getValidationLevel (),
                                                                       aValidator.getValidationType (),
                                                                       aValidationLayer.isStopValidatingOnError (),

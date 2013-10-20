@@ -85,10 +85,23 @@ public enum EValidationDocumentType implements IValidationDocumentType {
     m_aUBLDocType = aUBLDocType;
   }
 
+  /**
+   * @return The internal ID of the document type. Has no association to
+   *         anything outside.
+   */
   @Nonnull
   @Nonempty
   public String getID () {
     return m_sID;
+  }
+
+  /**
+   * @return The underlying UBL document type. May be <code>null</code> for
+   *         certain special document types.
+   */
+  @Nullable
+  public IUBLDocumentType getUBLDocumentType () {
+    return m_aUBLDocType;
   }
 
   @Nullable

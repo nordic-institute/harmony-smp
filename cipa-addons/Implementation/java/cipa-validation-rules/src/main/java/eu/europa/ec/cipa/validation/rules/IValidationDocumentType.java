@@ -51,7 +51,8 @@ import com.phloc.commons.xml.schema.IHasSchema;
  */
 public interface IValidationDocumentType extends IHasID <String>, IHasSchema {
   /**
-   * @return The {@link Schema} or <code>null</code> if no XML schema is present
+   * @return The XML {@link Schema} to validate this document type agains or
+   *         <code>null</code> if no XML schema is present
    */
   @Nullable
   Schema getSchema ();

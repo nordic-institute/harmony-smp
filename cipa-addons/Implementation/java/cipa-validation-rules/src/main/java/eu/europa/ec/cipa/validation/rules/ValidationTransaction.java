@@ -58,6 +58,14 @@ public final class ValidationTransaction implements IValidationTransaction {
   private final IValidationSyntaxBinding m_aSyntaxBinding;
   private final ETransaction m_eTransaction;
 
+  /**
+   * Constructor
+   * 
+   * @param aSyntaxBinding
+   *        Syntax binding to use. May not be <code>null</code>.
+   * @param eTransaction
+   *        BII transaction to use. May not be <code>null</code>.
+   */
   public ValidationTransaction (@Nonnull final IValidationSyntaxBinding aSyntaxBinding,
                                 @Nonnull final ETransaction eTransaction) {
     if (aSyntaxBinding == null)

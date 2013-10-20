@@ -53,13 +53,14 @@ import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 @MustImplementEqualsAndHashcode
 public interface IValidationTransaction extends IHasStringRepresentation {
   /**
-   * @return The syntax binding of this transaction.
+   * @return The syntax binding of this transaction. Never <code>null</code>.
    */
   @Nonnull
   IValidationSyntaxBinding getSyntaxBinding ();
 
   /**
-   * @return The transaction of this validation rule set.
+   * @return The transaction of this validation rule set. Never
+   *         <code>null</code>.
    */
   @Nonnull
   ETransaction getTransaction ();

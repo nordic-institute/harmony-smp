@@ -59,6 +59,8 @@ public final class UBLLocationBeautifierSPI implements ISVRLLocationBeautifierSP
       return "cac:" + sLocalName;
     if (sNamespaceURI.equals ("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2"))
       return "cbc:" + sLocalName;
+    if (sNamespaceURI.equals ("urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2"))
+      return "cec:" + sLocalName;
 
     // Is it a valid UBL 2.0 document type?
     if (UBL20DocumentTypes.getDocumentTypeOfNamespace (sNamespaceURI) != null)
