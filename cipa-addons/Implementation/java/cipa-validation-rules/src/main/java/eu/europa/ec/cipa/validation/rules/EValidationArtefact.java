@@ -330,12 +330,26 @@ public enum EValidationArtefact implements IValidationArtefact {
   }
 
   /**
+   * Shortcut for <code>getAllMatchingArtefacts (aLevel, null, null)</code>
+   * 
+   * @param aLevel
+   *        The desired validation level. If it is <code>null</code> all
+   *        artefacts are considered.
+   * @return A non-<code>null</code> list of all matching validation artefacts
+   */
+  @Nonnull
+  @ReturnsMutableCopy
+  public static List <EValidationArtefact> getAllArtefactsOfLevel (@Nullable final IValidationLevel aLevel) {
+    return getAllMatchingArtefacts (aLevel, null, null);
+  }
+
+  /**
    * Get all matching artefacts, in the correct order.
    * 
-   * @param eLevel
+   * @param aLevel
    *        The desired validation level. If it is <code>null</code> all levels
    *        are considered.
-   * @param eDocType
+   * @param aDocType
    *        The desired document type. If it is <code>null</code> all document
    *        types are considered.
    * @param aCountry
@@ -348,15 +362,15 @@ public enum EValidationArtefact implements IValidationArtefact {
    */
   @Nonnull
   @ReturnsMutableCopy
-  public static List <EValidationArtefact> getAllMatchingArtefacts (@Nullable final IValidationLevel eLevel,
-                                                                    @Nullable final IValidationDocumentType eDocType,
+  public static List <EValidationArtefact> getAllMatchingArtefacts (@Nullable final IValidationLevel aLevel,
+                                                                    @Nullable final IValidationDocumentType aDocType,
                                                                     @Nullable final Locale aCountry) {
     final List <EValidationArtefact> ret = new ArrayList <EValidationArtefact> ();
     for (final EValidationArtefact eArtefact : values ()) {
       // Does the level match?
-      if (eLevel == null || eArtefact.getValidationLevel ().equals (eLevel)) {
+      if (aLevel == null || eArtefact.getValidationLevel ().equals (aLevel)) {
         // Does the document type match?
-        if (eDocType == null || eArtefact.getValidationDocumentType ().equals (eDocType)) {
+        if (aDocType == null || eArtefact.getValidationDocumentType ().equals (aDocType)) {
           // Does the country match?
           if (!eArtefact.getValidationLevel ().canHaveCountrySpecificArtefacts () ||
               aCountry == null ||
@@ -384,10 +398,10 @@ public enum EValidationArtefact implements IValidationArtefact {
    * Get a set of all countries that have specific rules, matching the
    * parameters.
    * 
-   * @param eLevel
+   * @param aLevel
    *        The desired validation level. If it is <code>null</code> all levels
    *        are considered.
-   * @param eDocType
+   * @param aDocType
    *        The desired document type. If it is <code>null</code> all document
    *        types are considered.
    * @return A set of all countries (Locale objects) for which at least one
@@ -395,16 +409,16 @@ public enum EValidationArtefact implements IValidationArtefact {
    */
   @Nonnull
   @ReturnsMutableCopy
-  public static Set <Locale> getAllCountriesWithSpecialRules (@Nullable final IValidationLevel eLevel,
-                                                              @Nullable final IValidationDocumentType eDocType) {
+  public static Set <Locale> getAllCountriesWithSpecialRules (@Nullable final IValidationLevel aLevel,
+                                                              @Nullable final IValidationDocumentType aDocType) {
     final Set <Locale> ret = new HashSet <Locale> ();
     for (final IValidationArtefact eArtefact : values ()) {
       // Is the artefact country dependent?
       if (!eArtefact.isValidationCountryIndependent ()) {
         // Does the validation level match?
-        if (eLevel == null || eArtefact.getValidationLevel ().equals (eLevel)) {
+        if (aLevel == null || eArtefact.getValidationLevel ().equals (aLevel)) {
           // Does the document type match?
-          if (eDocType == null || eArtefact.getValidationDocumentType ().equals (eDocType)) {
+          if (aDocType == null || eArtefact.getValidationDocumentType ().equals (aDocType)) {
             // We found a match
             ret.add (eArtefact.getValidationCountry ());
           }
