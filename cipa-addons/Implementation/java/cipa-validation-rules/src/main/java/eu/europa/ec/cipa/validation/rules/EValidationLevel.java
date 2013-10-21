@@ -52,6 +52,8 @@ import com.phloc.commons.compare.ESortOrder;
 import com.phloc.commons.id.IHasID;
 import com.phloc.commons.lang.EnumHelper;
 
+import eu.europa.ec.cipa.validation.generic.EXMLValidationType;
+
 /**
  * This enum represents the validation hierarchy. The hierarchy must be iterated
  * from top to bottom.
@@ -60,31 +62,31 @@ import com.phloc.commons.lang.EnumHelper;
  */
 public enum EValidationLevel implements IHasID <String> {
   /** Technical structure validation (e.g. XML schema) - never country specific */
-  TECHNICAL_STRUCTURE ("technical", 10),
+  TECHNICAL_STRUCTURE ("technical", 10, EXMLValidationType.XSD),
 
   /**
    * Validation rules based on BII transaction requirements - never country
    * specific
    */
-  TRANSACTION_REQUIREMENTS ("transaction", 20),
+  TRANSACTION_REQUIREMENTS ("transaction", 20, EXMLValidationType.SCHEMATRON),
 
   /**
    * Validation rules based on BII profile (=process) requirements - never
    * country specific
    */
-  PROFILE_REQUIREMENTS ("profile", 30),
+  PROFILE_REQUIREMENTS ("profile", 30, EXMLValidationType.SCHEMATRON),
 
   /** Validation rules based on legal obligations - maybe country specific */
-  LEGAL_REQUIREMENTS ("legal", 40),
+  LEGAL_REQUIREMENTS ("legal", 40, EXMLValidationType.SCHEMATRON),
 
   /** Industry specific validation rules - maybe country specific */
-  INDUSTRY_SPECIFIC ("industry", 50),
+  INDUSTRY_SPECIFIC ("industry", 50, EXMLValidationType.SCHEMATRON),
 
   /**
    * Entity (=company) specific validation rules - this level represents
    * bilateral agreements - maybe country specific
    */
-  ENTITY_SPECIFC ("entity", 60);
+  ENTITY_SPECIFC ("entity", 60, EXMLValidationType.SCHEMATRON);
 
   public static final class ComparatorLevel extends AbstractIntegerComparator <EValidationLevel> {
     public ComparatorLevel (@Nonnull final ESortOrder eSortOrder) {
@@ -99,10 +101,14 @@ public enum EValidationLevel implements IHasID <String> {
 
   private final String m_sID;
   private final int m_nLevel;
+  private final EXMLValidationType m_eValidationType;
 
-  private EValidationLevel (@Nonnull @Nonempty final String sID, @Nonnegative final int nLevel) {
+  private EValidationLevel (@Nonnull @Nonempty final String sID,
+                            @Nonnegative final int nLevel,
+                            @Nonnull final EXMLValidationType eValidationType) {
     m_sID = sID;
     m_nLevel = nLevel;
+    m_eValidationType = eValidationType;
   }
 
   /**
@@ -179,6 +185,15 @@ public enum EValidationLevel implements IHasID <String> {
    */
   public boolean canHaveCountrySpecificArtefacts () {
     return isHigherOrEqualLevelThan (LEGAL_REQUIREMENTS);
+  }
+
+  /**
+   * @return The type of validation to be applied on this level - XML Schema or
+   *         Schematron. Never <code>null</code>.
+   */
+  @Nonnull
+  public EXMLValidationType getValidationType () {
+    return m_eValidationType;
   }
 
   @Nullable

@@ -42,6 +42,7 @@ import javax.annotation.concurrent.Immutable;
 
 import com.phloc.commons.string.ToStringGenerator;
 
+import eu.europa.ec.cipa.validation.generic.EXMLValidationType;
 import eu.europa.ec.cipa.validation.generic.IXMLValidator;
 import eu.europa.ec.cipa.validation.rules.EValidationLevel;
 
@@ -74,6 +75,14 @@ public final class ValidationPyramidLayer {
       throw new NullPointerException ("level");
     if (aValidator == null)
       throw new NullPointerException ("validator");
+
+    // Both must be XSD or Schematron
+    if (eValidationLevel.getValidationType () != aValidator.getValidationType ())
+      throw new IllegalArgumentException ("The validation level " +
+                                          eValidationLevel +
+                                          " does not work with the validator " +
+                                          aValidator);
+
     m_eValidationLevel = eValidationLevel;
     m_aValidator = aValidator;
     m_bStopValidatingOnError = bStopValidatingOnError;
@@ -85,6 +94,15 @@ public final class ValidationPyramidLayer {
   @Nonnull
   public EValidationLevel getValidationLevel () {
     return m_eValidationLevel;
+  }
+
+  /**
+   * @return The validation type - XML Schema or Schematron. Never
+   *         <code>null</code>.
+   */
+  @Nonnull
+  public EXMLValidationType getValidationType () {
+    return m_eValidationLevel.getValidationType ();
   }
 
   /**
@@ -108,6 +126,7 @@ public final class ValidationPyramidLayer {
   public String toString () {
     return new ToStringGenerator (this).append ("level", m_eValidationLevel)
                                        .append ("validator", m_aValidator)
+                                       .append ("stopValidatingOnError", m_bStopValidatingOnError)
                                        .toString ();
   }
 }

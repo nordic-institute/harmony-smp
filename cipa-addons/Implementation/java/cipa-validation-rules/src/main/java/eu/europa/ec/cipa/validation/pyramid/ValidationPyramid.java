@@ -66,6 +66,7 @@ import eu.europa.ec.cipa.validation.generic.XMLSchematronValidator;
 import eu.europa.ec.cipa.validation.rules.EValidationArtefact;
 import eu.europa.ec.cipa.validation.rules.EValidationDocumentType;
 import eu.europa.ec.cipa.validation.rules.EValidationLevel;
+import eu.europa.ec.cipa.validation.rules.IValidationArtefact;
 import eu.europa.ec.cipa.validation.rules.IValidationDocumentType;
 import eu.europa.ec.cipa.validation.rules.IValidationTransaction;
 import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
@@ -92,7 +93,9 @@ public class ValidationPyramid {
    * available levels.
    * 
    * @param aValidationDocumentType
-   *        Document type. May not be <code>null</code>.
+   *        Document type. Determines the
+   *        {@link EValidationLevel#TECHNICAL_STRUCTURE} layer. May not be
+   *        <code>null</code>.
    * @param aValidationTransaction
    *        Transaction. May not be <code>null</code>.
    * @see EValidationDocumentType
@@ -107,7 +110,9 @@ public class ValidationPyramid {
    * Create a new validation pyramid that handles all available levels.
    * 
    * @param aValidationDocumentType
-   *        Document type. May not be <code>null</code>.
+   *        Document type. Determines the
+   *        {@link EValidationLevel#TECHNICAL_STRUCTURE} layer. May not be
+   *        <code>null</code>.
    * @param aValidationTransaction
    *        Transaction. May not be <code>null</code>.
    * @param aValidationCountry
@@ -129,7 +134,9 @@ public class ValidationPyramid {
    * Create a new validation pyramid
    * 
    * @param aValidationDocumentType
-   *        Document type. May not be <code>null</code>.
+   *        Document type. Determines the
+   *        {@link EValidationLevel#TECHNICAL_STRUCTURE} layer. May not be
+   *        <code>null</code>.
    * @param aValidationTransaction
    *        Transaction. May not be <code>null</code>.
    * @param aValidationCountry
@@ -164,7 +171,7 @@ public class ValidationPyramid {
       // Add the XML schema validator first
       final XMLSchemaValidator aValidator = new XMLSchemaValidator (aXMLSchema);
       // true: If the XSD validation fails no Schematron validation is needed
-      m_aValidationLayers.add (new ValidationPyramidLayer (EValidationLevel.TECHNICAL_STRUCTURE, aValidator, true));
+      addValidationLayer (new ValidationPyramidLayer (EValidationLevel.TECHNICAL_STRUCTURE, aValidator, true));
     }
 
     final Locale aLookupCountry = m_aValidationCountry == null ? CGlobal.LOCALE_INDEPENDENT : m_aValidationCountry;
@@ -172,19 +179,35 @@ public class ValidationPyramid {
     // Iterate over all validation levels in the correct order
     for (final EValidationLevel eLevel : aValidationLevelsInOrder) {
       // Determine all validation artefacts that match
-      for (final EValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (eLevel,
+      for (final IValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (eLevel,
                                                                                               m_aValidationDocType,
                                                                                               aLookupCountry)) {
         // Get the Schematron SCH for the specified transaction in this level
         final IReadableResource aSCH = eArtefact.getValidationSchematronResource (m_aValidationTransaction);
         if (aSCH != null) {
           // We found a matching layer
-          m_aValidationLayers.add (new ValidationPyramidLayer (eLevel,
-                                                               XMLSchematronValidator.createFromSCHPure (aSCH),
-                                                               false));
+          addValidationLayer (new ValidationPyramidLayer (eLevel,
+                                                          XMLSchematronValidator.createFromSCHPure (aSCH),
+                                                          false));
         }
       }
     }
+  }
+
+  /**
+   * Add a new validation layer
+   * 
+   * @param aLayer
+   *        The layer to add. May not be <code>null</code>.
+   * @return this
+   */
+  @Nonnull
+  public ValidationPyramid addValidationLayer (@Nonnull final ValidationPyramidLayer aLayer) {
+    if (aLayer == null)
+      throw new NullPointerException ("layer");
+
+    m_aValidationLayers.add (aLayer);
+    return this;
   }
 
   /**

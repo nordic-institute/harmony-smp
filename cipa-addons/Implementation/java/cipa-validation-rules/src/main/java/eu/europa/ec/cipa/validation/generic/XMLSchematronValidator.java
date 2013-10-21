@@ -61,7 +61,7 @@ import com.phloc.schematron.pure.SchematronResourcePure;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class XMLSchematronValidator extends AbstractXMLValidator {
+public class XMLSchematronValidator extends AbstractXMLValidator {
   private static final Logger s_aLogger = LoggerFactory.getLogger (XMLSchematronValidator.class);
 
   private final ISchematronResource m_aSchematronRes;
@@ -77,6 +77,11 @@ public final class XMLSchematronValidator extends AbstractXMLValidator {
   @Nonnull
   public EXMLValidationType getValidationType () {
     return EXMLValidationType.SCHEMATRON;
+  }
+
+  @Nonnull
+  public ISchematronResource getSchematronResource () {
+    return m_aSchematronRes;
   }
 
   @Nonnull

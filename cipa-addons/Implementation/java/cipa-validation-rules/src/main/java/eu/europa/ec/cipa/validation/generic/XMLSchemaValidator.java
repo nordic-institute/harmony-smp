@@ -58,7 +58,7 @@ import com.phloc.commons.xml.schema.XMLSchemaValidationHelper;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class XMLSchemaValidator extends AbstractXMLValidator {
+public class XMLSchemaValidator extends AbstractXMLValidator {
   private final Schema m_aSchema;
 
   /**
@@ -96,6 +96,14 @@ public final class XMLSchemaValidator extends AbstractXMLValidator {
     if (aSchema == null)
       throw new NullPointerException ("schema");
     m_aSchema = aSchema;
+  }
+
+  /**
+   * @return The {@link Schema} to be used. Never <code>null</code>.
+   */
+  @Nonnull
+  public Schema getSchema () {
+    return m_aSchema;
   }
 
   @Nonnull
