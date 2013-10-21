@@ -94,6 +94,7 @@ public interface IValidationArtefact extends IHasID <String> {
 
   /**
    * @return A set with all validation transactions supported by this artefact.
+   *         Neither <code>null</code> nor empty.
    */
   @Nonnull
   @Nonempty
@@ -101,7 +102,8 @@ public interface IValidationArtefact extends IHasID <String> {
   Set <IValidationTransaction> getAllValidationTransactions ();
 
   /**
-   * @return A set with all BII transaction supported by this artefact.
+   * @return A set with all BII transaction supported by this artefact. Neither
+   *         <code>null</code> nor empty.
    */
   @Nonnull
   @Nonempty

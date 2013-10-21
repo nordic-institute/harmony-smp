@@ -49,6 +49,7 @@ import com.phloc.commons.CGlobal;
 import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.io.IReadableResource;
 
+import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 import eu.europa.ec.cipa.validation.generic.IXMLValidator;
 import eu.europa.ec.cipa.validation.generic.XMLSchemaValidator;
 import eu.europa.ec.cipa.validation.generic.XMLSchematronValidator;
@@ -58,6 +59,7 @@ import eu.europa.ec.cipa.validation.rules.EValidationLevel;
 import eu.europa.ec.cipa.validation.rules.IValidationArtefact;
 import eu.europa.ec.cipa.validation.rules.IValidationDocumentType;
 import eu.europa.ec.cipa.validation.rules.IValidationLevel;
+import eu.europa.ec.cipa.validation.rules.IValidationSyntaxBinding;
 import eu.europa.ec.cipa.validation.rules.IValidationTransaction;
 import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
 
@@ -318,6 +320,33 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
   public static ValidationPyramid2 createDefault (@Nonnull final IValidationDocumentType aValidationDocumentType,
                                                   @Nonnull final IValidationTransaction aValidationTransaction) {
     return createDefault (aValidationDocumentType, aValidationTransaction, (Locale) null);
+  }
+
+  /**
+   * Factory method that creates a pre-filled validation pyramid that contains
+   * the first 3 or 4 levels.
+   * 
+   * @param aValidationDocumentType
+   *        Document type. Determines the
+   *        {@link EValidationLevel#TECHNICAL_STRUCTURE} layer. May not be
+   *        <code>null</code>.
+   * @param aValidationSyntaxBinding
+   *        Syntax binding to use. May not be <code>null</code>.
+   * @param eValidationTransaction
+   *        BII transaction to use. May not be <code>null</code>.
+   * @param aValidationCountry
+   *        The validation country. May be <code>null</code> to use only the
+   *        country independent validation levels (the first three levels).
+   * @return The created validation pyramid and never <code>null</code>.
+   */
+  @Nonnull
+  public static ValidationPyramid2 createDefault (@Nonnull final IValidationDocumentType aValidationDocumentType,
+                                                  @Nonnull final IValidationSyntaxBinding aValidationSyntaxBinding,
+                                                  @Nonnull final ETransaction eValidationTransaction,
+                                                  @Nullable final Locale aValidationCountry) {
+    return createDefault (aValidationDocumentType,
+                          new ValidationTransaction (aValidationSyntaxBinding, eValidationTransaction),
+                          aValidationCountry);
   }
 
   /**
