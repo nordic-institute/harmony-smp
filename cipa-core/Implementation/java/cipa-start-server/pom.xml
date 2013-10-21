@@ -3,7 +3,7 @@
   <parent>
     <groupId>eu.europa.ec.cipa</groupId>
     <artifactId>cipa-parent-pom</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
     <relativePath>../cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-start-server</artifactId>
@@ -53,18 +53,18 @@
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-start-client</artifactId>
-      <version>1.1.2-SNAPSHOT</version>
+      <version>1.1.2</version>
     </dependency>
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-smp-client-library</artifactId>
-      <version>1.1.2-SNAPSHOT</version>
+      <version>1.1.2</version>
     </dependency>
     <!-- Dummy, so that any receiver is present :)  Comment out if you use the receiver externalisation mechanism see config server.properties-->
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-start-filereceiver</artifactId>
-      <version>1.1.2-SNAPSHOT</version>
+      <version>1.1.2</version>
     </dependency>
     <!-- Alternatively you may use the JMS base receiver.
          Locations: https://github.com/phax/cipa-start-jmsreceiver-api
@@ -132,13 +132,6 @@
           <excludes>
             <exclude>src/main/webapp/WEB-INF/wsdl/**</exclude>
           </excludes>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <tagBase>https://joinup.ec.europa.eu/svn/cipaedelivery/tags/${project.name}</tagBase>
         </configuration>
       </plugin>
     </plugins>
