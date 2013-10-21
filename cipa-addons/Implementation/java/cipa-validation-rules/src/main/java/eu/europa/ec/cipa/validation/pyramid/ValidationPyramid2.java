@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -84,8 +85,8 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
   private final List <ValidationPyramidLayer> m_aValidationLayers = new ArrayList <ValidationPyramidLayer> ();
 
   /**
-   * Create a new validation pyramid that is country independent and handles all
-   * available levels.
+   * Create a new validation pyramid that is country independent and handles the
+   * first three levels (without legal requirements).
    * 
    * @param aValidationDocumentType
    *        Document type. Determines the
@@ -102,7 +103,7 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
   }
 
   /**
-   * Create a new validation pyramid that handles all country-unspecific levels.
+   * Create a new validation pyramid that handles the first four levels.
    * 
    * @param aValidationDocumentType
    *        Document type. Determines the
@@ -112,7 +113,7 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
    *        Transaction. May not be <code>null</code>.
    * @param aValidationCountry
    *        The validation country. May be <code>null</code> to use only the
-   *        country independent validation levels.
+   *        country independent validation levels (the first three levels).
    * @see EValidationDocumentType
    * @see ValidationTransaction
    */
@@ -293,6 +294,11 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
   @Nullable
   public Locale getValidationCountry () {
     return m_aValidationCountry;
+  }
+
+  @Nonnegative
+  public int getValidationLayerCount () {
+    return m_aValidationLayers.size ();
   }
 
   @Nonnull

@@ -3,6 +3,7 @@ package eu.europa.ec.cipa.validation.pyramid;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.transform.Source;
@@ -46,6 +47,12 @@ public interface IValidationPyramid {
    */
   @Nullable
   Locale getValidationCountry ();
+
+  /**
+   * @return The number of contained validation layers. Always &ge; 0.
+   */
+  @Nonnegative
+  int getValidationLayerCount ();
 
   /**
    * @return A non-<code>null</code> list of all contained validation layers in

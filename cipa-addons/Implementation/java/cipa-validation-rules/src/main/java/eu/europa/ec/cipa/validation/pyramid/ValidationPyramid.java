@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
@@ -229,6 +230,11 @@ public class ValidationPyramid extends AbstractValidationPyramid {
   @Nullable
   public Locale getValidationCountry () {
     return m_aValidationCountry;
+  }
+
+  @Nonnegative
+  public int getValidationLayerCount () {
+    return m_aValidationLayers.size ();
   }
 
   @Nonnull
