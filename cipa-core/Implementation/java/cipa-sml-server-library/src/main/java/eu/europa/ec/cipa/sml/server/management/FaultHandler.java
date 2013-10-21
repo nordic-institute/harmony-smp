@@ -51,20 +51,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class FaultHandler implements javax.xml.ws.handler.soap.SOAPHandler <SOAPMessageContext> {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (AddSignatureHandler.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (FaultHandler.class);
 
   public void close (final MessageContext context) {}
 
   public boolean handleFault (@Nonnull final SOAPMessageContext context) {
     final Boolean aOutbound = (Boolean) context.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY);
-    s_aLogger.info ("Entered the soap handler; outbound=" + aOutbound);
+    s_aLogger.info ("Entered the soap fault handler; outbound=" + aOutbound);
     if (aOutbound != null && aOutbound.booleanValue ()) {
       final SOAPMessage sm = context.getMessage ();
       SOAPFault aFault;
       try {
         aFault = sm.getSOAPBody ().getFault ();
-        s_aLogger.warn (aFault.getFaultCode ());
-        s_aLogger.warn (aFault.getFaultString ());
+        s_aLogger.warn (" Fault code: " + aFault.getFaultCode ());
+        s_aLogger.warn ("  Fault string: " + aFault.getFaultString ());
       }
       catch (final SOAPException e) {
         s_aLogger.error ("Failed to get SOAP fault", e);
