@@ -56,6 +56,7 @@ import eu.europa.ec.cipa.validation.generic.EXMLValidationType;
  * Interface for a single validation artefact.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
+ * @see EValidationArtefact
  */
 public interface IValidationArtefact extends IHasID <String> {
   /**

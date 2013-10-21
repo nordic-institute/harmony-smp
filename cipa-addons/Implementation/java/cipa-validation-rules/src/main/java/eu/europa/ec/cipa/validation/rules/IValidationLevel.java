@@ -47,6 +47,7 @@ import com.phloc.commons.id.IHasID;
  * Base interface for a single validation level.
  * 
  * @author Philip Helger
+ * @see EValidationLevel
  */
 public interface IValidationLevel extends IHasID <String> {
   /**

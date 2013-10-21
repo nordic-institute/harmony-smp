@@ -65,7 +65,8 @@ import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
 
 /**
  * Second version of the validation pyramid - can handle industry and entity
- * specific artifacts much better. By default this validation pyramid is empty!
+ * specific artifacts much better. By default this validation pyramid is empty
+ * compared to the old ValidationPyramid!
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
@@ -309,7 +310,7 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
    * the first 3 levels.
    * 
    * @param aValidationDocumentType
-   *        Document type. Determines the
+   *        Document type. Determines the XML Schema of
    *        {@link EValidationLevel#TECHNICAL_STRUCTURE} layer. May not be
    *        <code>null</code>.
    * @param aValidationTransaction
@@ -327,7 +328,7 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
    * the first 3 or 4 levels.
    * 
    * @param aValidationDocumentType
-   *        Document type. Determines the
+   *        Document type. Determines the XML Schema of
    *        {@link EValidationLevel#TECHNICAL_STRUCTURE} layer. May not be
    *        <code>null</code>.
    * @param aValidationSyntaxBinding
@@ -354,7 +355,7 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
    * the first 3 or 4 levels.
    * 
    * @param aValidationDocumentType
-   *        Document type. Determines the
+   *        Document type. Determines the XML Schema of
    *        {@link EValidationLevel#TECHNICAL_STRUCTURE} layer. May not be
    *        <code>null</code>.
    * @param aValidationTransaction
@@ -363,6 +364,7 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
    *        The validation country. May be <code>null</code> to use only the
    *        country independent validation levels (the first three levels).
    * @return The created validation pyramid and never <code>null</code>.
+   * @see #addDefaultLayers()
    */
   @Nonnull
   public static ValidationPyramid2 createDefault (@Nonnull final IValidationDocumentType aValidationDocumentType,

@@ -52,7 +52,7 @@ import eu.europa.ec.cipa.validation.rules.IValidationLevel;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
-public final class ValidationPyramidResultLayer {
+public class ValidationPyramidResultLayer {
   private final IValidationLevel m_aValidationLevel;
   private final EXMLValidationType m_eXMLValidationType;
   private final boolean m_bStopValidatingOnError;

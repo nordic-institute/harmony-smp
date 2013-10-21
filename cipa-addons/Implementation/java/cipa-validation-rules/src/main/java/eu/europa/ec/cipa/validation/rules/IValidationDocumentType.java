@@ -49,6 +49,7 @@ import com.phloc.commons.xml.schema.IHasSchema;
  * XML {@link Schema} objects.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
+ * @see EValidationDocumentType
  */
 @MustImplementEqualsAndHashcode
 public interface IValidationDocumentType extends IHasID <String>, IHasSchema {

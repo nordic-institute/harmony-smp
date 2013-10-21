@@ -65,7 +65,8 @@ import eu.europa.ec.cipa.validation.generic.EXMLValidationType;
 
 /**
  * Contains all available PEPPOL Schematron validation artefacts. XML Schema
- * artifacts need to be handled manually from the respective document type!
+ * artifacts need to be handled manually from the respective validation document
+ * type!
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */

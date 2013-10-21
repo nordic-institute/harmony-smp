@@ -54,7 +54,7 @@ import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
-public final class ValidationTransaction implements IValidationTransaction {
+public class ValidationTransaction implements IValidationTransaction {
   private final IValidationSyntaxBinding m_aSyntaxBinding;
   private final ETransaction m_eTransaction;
 

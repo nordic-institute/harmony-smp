@@ -62,7 +62,7 @@ import eu.europa.ec.cipa.validation.rules.IValidationTransaction;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @NotThreadSafe
-public final class ValidationPyramidResult {
+public class ValidationPyramidResult {
   private final IValidationDocumentType m_aValidationDocumentType;
   private final IValidationTransaction m_aValidationTransaction;
   private final Locale m_aValidationCountry;

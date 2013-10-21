@@ -48,12 +48,13 @@ import com.phloc.commons.id.IHasID;
  * validation artefacts.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
+ * @see EValidationSyntaxBinding
  */
 @MustImplementEqualsAndHashcode
 public interface IValidationSyntaxBinding extends IHasID <String> {
   /**
-   * @return The identifier how this syntax binding is represented in a file
-   *         name.
+   * @return The identifier how this syntax binding is represented in the file
+   *         name of the validation resources within this project.
    */
   @Nonnull
   @Nonempty

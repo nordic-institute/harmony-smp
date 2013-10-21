@@ -81,7 +81,7 @@ public class ValidationPyramid extends AbstractValidationPyramid {
    * available levels.
    * 
    * @param aValidationDocumentType
-   *        Document type. Determines the
+   *        Document type. Determines the XML Schema of
    *        {@link EValidationLevel#TECHNICAL_STRUCTURE} layer. May not be
    *        <code>null</code>.
    * @param aValidationTransaction
@@ -98,7 +98,7 @@ public class ValidationPyramid extends AbstractValidationPyramid {
    * Create a new validation pyramid that handles all available levels.
    * 
    * @param aValidationDocumentType
-   *        Document type. Determines the
+   *        Document type. Determines the XML Schema of
    *        {@link EValidationLevel#TECHNICAL_STRUCTURE} layer. May not be
    *        <code>null</code>.
    * @param aValidationTransaction
@@ -122,7 +122,7 @@ public class ValidationPyramid extends AbstractValidationPyramid {
    * Create a new validation pyramid
    * 
    * @param aValidationDocumentType
-   *        Document type. Determines the
+   *        Document type. Determines the XML Schema of
    *        {@link EValidationLevel#TECHNICAL_STRUCTURE} layer. May not be
    *        <code>null</code>.
    * @param aValidationTransaction
