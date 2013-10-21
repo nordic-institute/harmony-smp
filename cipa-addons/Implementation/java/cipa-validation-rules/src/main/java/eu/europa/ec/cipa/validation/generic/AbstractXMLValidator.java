@@ -53,6 +53,7 @@ public abstract class AbstractXMLValidator implements IXMLValidator {
   public final IResourceErrorGroup validateXMLInstance (@Nonnull final IReadableResource aXML) {
     if (aXML == null)
       throw new NullPointerException ("XML");
+
     return validateXMLInstance (aXML.getPath (), TransformSourceFactory.create (aXML));
   }
 }

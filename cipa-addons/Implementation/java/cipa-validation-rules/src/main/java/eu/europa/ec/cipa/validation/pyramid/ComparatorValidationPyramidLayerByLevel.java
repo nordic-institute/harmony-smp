@@ -96,12 +96,14 @@ public class ComparatorValidationPyramidLayerByLevel extends AbstractComparator 
   }
 
   @Override
-  protected int mainCompare (final ValidationPyramidLayer aLayer1, final ValidationPyramidLayer aLayer2) {
+  protected int mainCompare (@Nonnull final ValidationPyramidLayer aLayer1,
+                             @Nonnull final ValidationPyramidLayer aLayer2) {
+    // First compare validation level
     final int nLevel1 = aLayer1.getValidationLevel ().getLevel ();
     final int nLevel2 = aLayer2.getValidationLevel ().getLevel ();
     int ret = CompareUtils.compare (nLevel1, nLevel2);
     if (ret == 0) {
-      // XSD before Schematron
+      // Equal validation level: XSD before Schematron
       ret = aLayer1.getValidationType ().compareTo (aLayer2.getValidationType ());
     }
     return ret;

@@ -45,7 +45,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.phloc.commons.annotations.ReturnsImmutableObject;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.error.IResourceErrorGroup;
@@ -172,17 +171,17 @@ public class ValidationPyramidResult {
    * Check if this result set contains results for the specified validation
    * level.
    * 
-   * @param eValidationLevel
+   * @param aValidationLevel
    *        The validation level to check. May not be <code>null</code>.
    * @return <code>true</code> if results are contained for the specified level,
    *         <code>false</code> otherwise.
    */
-  public boolean containsValidationResultLayerForLevel (@Nonnull final IValidationLevel eValidationLevel) {
-    if (eValidationLevel == null)
+  public boolean containsValidationResultLayerForLevel (@Nonnull final IValidationLevel aValidationLevel) {
+    if (aValidationLevel == null)
       throw new NullPointerException ("validationLevel");
 
     for (final ValidationPyramidResultLayer aValidationResultLayer : m_aValidationResultLayers)
-      if (aValidationResultLayer.getValidationLevel ().equals (eValidationLevel))
+      if (aValidationResultLayer.getValidationLevel ().equals (aValidationLevel))
         return true;
     return false;
   }
@@ -190,20 +189,20 @@ public class ValidationPyramidResult {
   /**
    * Get all validation result layers for the passed validation level.
    * 
-   * @param eValidationLevel
+   * @param aValidationLevel
    *        The validation level to use. May not be <code>null</code>.
    * @return A non-<code>null</code> potentially empty list of all validation
    *         result layers.
    */
   @Nonnull
   @ReturnsMutableCopy
-  public List <ValidationPyramidResultLayer> getValidationResultLayersForLevel (@Nonnull final IValidationLevel eValidationLevel) {
-    if (eValidationLevel == null)
+  public List <ValidationPyramidResultLayer> getValidationResultLayersForLevel (@Nonnull final IValidationLevel aValidationLevel) {
+    if (aValidationLevel == null)
       throw new NullPointerException ("validationLevel");
 
     final List <ValidationPyramidResultLayer> ret = new ArrayList <ValidationPyramidResultLayer> ();
     for (final ValidationPyramidResultLayer aValidationResultLayer : m_aValidationResultLayers)
-      if (aValidationResultLayer.getValidationLevel ().equals (eValidationLevel))
+      if (aValidationResultLayer.getValidationLevel ().equals (aValidationLevel))
         ret.add (aValidationResultLayer);
     return ret;
   }
@@ -215,7 +214,7 @@ public class ValidationPyramidResult {
    * @return A non-<code>null</code> aggregated result error object.
    */
   @Nonnull
-  @ReturnsImmutableObject
+  @ReturnsMutableCopy
   public IResourceErrorGroup getAggregatedResults () {
     final ResourceErrorGroup aAggregatedResults = new ResourceErrorGroup ();
     for (final ValidationPyramidResultLayer aValidationResultLayer : m_aValidationResultLayers)

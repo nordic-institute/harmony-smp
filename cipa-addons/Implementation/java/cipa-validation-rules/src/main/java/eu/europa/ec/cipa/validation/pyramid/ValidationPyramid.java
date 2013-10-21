@@ -70,6 +70,8 @@ import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
  * profile contained in the UBL document. If a certain profile is present, it's
  * rules are applied when the corresponding level is applied.
  * 
+ * @deprecated See {@link ValidationPyramid2} - offers better support for
+ *             validation layer selection!
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @NotThreadSafe
