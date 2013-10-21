@@ -46,11 +46,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.Source;
-import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
-
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 import com.phloc.commons.CGlobal;
 import com.phloc.commons.annotations.Nonempty;
@@ -59,7 +55,6 @@ import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.error.IResourceErrorGroup;
 import com.phloc.commons.io.IReadableResource;
 import com.phloc.commons.string.ToStringGenerator;
-import com.phloc.commons.xml.serialize.XMLReader;
 
 import eu.europa.ec.cipa.validation.generic.IXMLValidator;
 import eu.europa.ec.cipa.validation.generic.XMLSchemaValidator;
@@ -83,7 +78,7 @@ import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @NotThreadSafe
-public class ValidationPyramid {
+public class ValidationPyramid extends AbstractValidationPyramid {
   private final IValidationDocumentType m_aValidationDocType;
   private final IValidationTransaction m_aValidationTransaction;
   private final Locale m_aValidationCountry;
@@ -213,19 +208,11 @@ public class ValidationPyramid {
     return this;
   }
 
-  /**
-   * @return The validation document to which the pyramid can be applied. Never
-   *         <code>null</code>.
-   */
   @Nonnull
   public IValidationDocumentType getValidationDocumentType () {
     return m_aValidationDocType;
   }
 
-  /**
-   * @return The validation transaction to which the pyramid can be applied.
-   *         Never <code>null</code>.
-   */
   @Nonnull
   public IValidationTransaction getValidationTransaction () {
     return m_aValidationTransaction;
@@ -249,71 +236,21 @@ public class ValidationPyramid {
     return m_aValidationCountry;
   }
 
-  /**
-   * @return A non-<code>null</code> list of all contained validation layers.
-   */
   @Nonnull
   @ReturnsMutableCopy
   public List <ValidationPyramidLayer> getAllValidationLayers () {
     return ContainerHelper.newList (m_aValidationLayers);
   }
 
-  /**
-   * Apply the validation pyramid on the passed XML resource.
-   * 
-   * @param aRes
-   *        The XML resource to apply the validation pyramid on. May not be
-   *        <code>null</code>.
-   * @return The validation pyramid result. Never <code>null</code>.
-   */
   @Nonnull
-  public ValidationPyramidResult applyValidation (@Nonnull final IReadableResource aRes) {
-    if (aRes == null)
-      throw new NullPointerException ("resource");
-
-    try {
-      final Document aDoc = XMLReader.readXMLDOM (aRes);
-      return applyValidation (aRes.getPath (), new DOMSource (aDoc));
-    }
-    catch (final SAXException ex) {
-      throw new IllegalArgumentException ("Failed to parse XML", ex);
-    }
-  }
-
-  /**
-   * Apply the pyramid on the passed {@link Source} object.
-   * 
-   * @param aXML
-   *        The XML {@link Source}. IMPORTANT: Must be a {@link Source} that can
-   *        be opened multiple times. Using e.g. a StreamSource with a
-   *        StringReader will result in an error!
-   * @return a non-<code>null</code> validation pyramid result.
-   */
-  @Nonnull
-  public ValidationPyramidResult applyValidation (@Nonnull final Source aXML) {
-    return applyValidation (null, aXML);
-  }
-
-  /**
-   * Apply the pyramid on the passed {@link Source} object.
-   * 
-   * @param sResourceName
-   *        The optional name of the source. Only used for error messages. May
-   *        be <code>null</code>.
-   * @param aXML
-   *        The XML {@link Source}. IMPORTANT: Must be a {@link Source} that can
-   *        be opened multiple times. Using e.g. a StreamSource with a
-   *        StringReader will result in an error!
-   * @return a non-<code>null</code> validation pyramid result.
-   */
-  @Nonnull
-  public ValidationPyramidResult applyValidation (@Nullable final String sResourceName, @Nonnull final Source aXML) {
+  public ValidationPyramidResult applyValidation (final String sResourceName, @Nonnull final Source aXML) {
     if (aXML == null)
       throw new NullPointerException ("XML");
 
     final ValidationPyramidResult ret = new ValidationPyramidResult (m_aValidationDocType,
                                                                      m_aValidationTransaction,
                                                                      m_aValidationCountry);
+
     final int nMaxLayers = m_aValidationLayers.size ();
     int nLayerIndex = 0;
 

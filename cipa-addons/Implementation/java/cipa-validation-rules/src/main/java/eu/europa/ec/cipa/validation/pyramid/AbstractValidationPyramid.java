@@ -37,65 +37,46 @@
  */
 package eu.europa.ec.cipa.validation.pyramid;
 
-import java.util.Comparator;
-
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import javax.annotation.concurrent.NotThreadSafe;
+import javax.xml.transform.Source;
+import javax.xml.transform.dom.DOMSource;
 
-import com.phloc.commons.compare.AbstractIntegerComparator;
-import com.phloc.commons.compare.ESortOrder;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import com.phloc.commons.io.IReadableResource;
+import com.phloc.commons.string.ToStringGenerator;
+import com.phloc.commons.xml.serialize.XMLReader;
 
 /**
- * Sort {@link ValidationPyramidLayer} objects by their respective validation
- * level.
+ * Abstract base class for {@link IValidationPyramid}.
  * 
- * @author Philip Helger
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public class ComparatorValidationPyramidLayerByLevel extends AbstractIntegerComparator <ValidationPyramidLayer> {
-  /**
-   * Comparator with default sort order and no nested comparator.
-   */
-  public ComparatorValidationPyramidLayerByLevel () {
-    super ();
+@NotThreadSafe
+public abstract class AbstractValidationPyramid implements IValidationPyramid {
+  @Nonnull
+  public ValidationPyramidResult applyValidation (@Nonnull final IReadableResource aRes) {
+    if (aRes == null)
+      throw new NullPointerException ("resource");
+
+    try {
+      final Document aDoc = XMLReader.readXMLDOM (aRes);
+      return applyValidation (aRes.getPath (), new DOMSource (aDoc));
+    }
+    catch (final SAXException ex) {
+      throw new IllegalArgumentException ("Failed to parse XML", ex);
+    }
   }
 
-  /**
-   * Constructor with sort order.
-   * 
-   * @param eSortOrder
-   *        The sort order to use. May not be <code>null</code>.
-   */
-  public ComparatorValidationPyramidLayerByLevel (@Nonnull final ESortOrder eSortOrder) {
-    super (eSortOrder);
-  }
-
-  /**
-   * Comparator with default sort order and a nested comparator.
-   * 
-   * @param aNestedComparator
-   *        The nested comparator to be invoked, when the main comparison
-   *        resulted in 0.
-   */
-  public ComparatorValidationPyramidLayerByLevel (@Nullable final Comparator <? super ValidationPyramidLayer> aNestedComparator) {
-    super (aNestedComparator);
-  }
-
-  /**
-   * Comparator with sort order and a nested comparator.
-   * 
-   * @param eSortOrder
-   *        The sort order to use. May not be <code>null</code>.
-   * @param aNestedComparator
-   *        The nested comparator to be invoked, when the main comparison
-   *        resulted in 0.
-   */
-  public ComparatorValidationPyramidLayerByLevel (@Nonnull final ESortOrder eSortOrder,
-                                                  @Nullable final Comparator <? super ValidationPyramidLayer> aNestedComparator) {
-    super (eSortOrder, aNestedComparator);
+  @Nonnull
+  public ValidationPyramidResult applyValidation (@Nonnull final Source aXML) {
+    return applyValidation (null, aXML);
   }
 
   @Override
-  protected long asLong (@Nonnull final ValidationPyramidLayer aLayer) {
-    return aLayer.getValidationLevel ().getLevel ();
+  public String toString () {
+    return new ToStringGenerator (this).toString ();
   }
 }
