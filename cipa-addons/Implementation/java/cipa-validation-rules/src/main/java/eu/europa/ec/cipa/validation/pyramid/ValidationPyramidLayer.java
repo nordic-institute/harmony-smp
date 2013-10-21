@@ -44,7 +44,7 @@ import com.phloc.commons.string.ToStringGenerator;
 
 import eu.europa.ec.cipa.validation.generic.EXMLValidationType;
 import eu.europa.ec.cipa.validation.generic.IXMLValidator;
-import eu.europa.ec.cipa.validation.rules.EValidationLevel;
+import eu.europa.ec.cipa.validation.rules.IValidationLevel;
 
 /**
  * Represent a single validation layer within the validation pyramid.
@@ -53,14 +53,14 @@ import eu.europa.ec.cipa.validation.rules.EValidationLevel;
  */
 @Immutable
 public final class ValidationPyramidLayer {
-  private final EValidationLevel m_eValidationLevel;
+  private final IValidationLevel m_aValidationLevel;
   private final IXMLValidator m_aValidator;
   private final boolean m_bStopValidatingOnError;
 
   /**
    * Constructor
    * 
-   * @param eValidationLevel
+   * @param aValidationLevel
    *        The validation level of this layer. May not be <code>null</code>.
    * @param aValidator
    *        The validator implementation. May not be <code>null</code>.
@@ -68,22 +68,15 @@ public final class ValidationPyramidLayer {
    *        indicates whether the validation should be stopped if validation
    *        fails on this layer.
    */
-  public ValidationPyramidLayer (@Nonnull final EValidationLevel eValidationLevel,
+  public ValidationPyramidLayer (@Nonnull final IValidationLevel aValidationLevel,
                                  @Nonnull final IXMLValidator aValidator,
                                  final boolean bStopValidatingOnError) {
-    if (eValidationLevel == null)
+    if (aValidationLevel == null)
       throw new NullPointerException ("level");
     if (aValidator == null)
       throw new NullPointerException ("validator");
 
-    // Both must be XSD or Schematron
-    if (eValidationLevel.getValidationType () != aValidator.getValidationType ())
-      throw new IllegalArgumentException ("The validation level " +
-                                          eValidationLevel +
-                                          " does not work with the validator " +
-                                          aValidator);
-
-    m_eValidationLevel = eValidationLevel;
+    m_aValidationLevel = aValidationLevel;
     m_aValidator = aValidator;
     m_bStopValidatingOnError = bStopValidatingOnError;
   }
@@ -92,8 +85,8 @@ public final class ValidationPyramidLayer {
    * @return The validation level. Never <code>null</code>.
    */
   @Nonnull
-  public EValidationLevel getValidationLevel () {
-    return m_eValidationLevel;
+  public IValidationLevel getValidationLevel () {
+    return m_aValidationLevel;
   }
 
   /**
@@ -102,7 +95,7 @@ public final class ValidationPyramidLayer {
    */
   @Nonnull
   public EXMLValidationType getValidationType () {
-    return m_eValidationLevel.getValidationType ();
+    return m_aValidator.getValidationType ();
   }
 
   /**
@@ -124,7 +117,7 @@ public final class ValidationPyramidLayer {
 
   @Override
   public String toString () {
-    return new ToStringGenerator (this).append ("level", m_eValidationLevel)
+    return new ToStringGenerator (this).append ("level", m_aValidationLevel)
                                        .append ("validator", m_aValidator)
                                        .append ("stopValidatingOnError", m_bStopValidatingOnError)
                                        .toString ();

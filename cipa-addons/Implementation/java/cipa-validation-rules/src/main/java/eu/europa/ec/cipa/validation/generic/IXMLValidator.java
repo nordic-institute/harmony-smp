@@ -51,7 +51,8 @@ import com.phloc.commons.io.IReadableResource;
  */
 public interface IXMLValidator {
   /**
-   * @return The non-<code>null</code> validation type.
+   * @return The non-<code>null</code> validation type - XML Schema or
+   *         Schematron.
    */
   @Nonnull
   EXMLValidationType getValidationType ();

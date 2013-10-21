@@ -65,7 +65,8 @@ import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 import eu.europa.ec.cipa.validation.generic.EXMLValidationType;
 
 /**
- * Contains all available PEPPOL validation artefacts.
+ * Contains all available PEPPOL Schematron validation artefacts. XML Schema
+ * artifacts need to be handled manually from the respective document type!
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
@@ -116,7 +117,7 @@ public enum EValidationArtefact implements IValidationArtefact {
   private static final String BASE_DIRECTORY = "/rules/";
 
   private final EValidationLevel m_eLevel;
-  private final IValidationDocumentType m_aDocType;
+  private final EValidationDocumentType m_eDocType;
   private final String m_sDirName;
   private final String m_sFileNamePrefix;
   private final Locale m_aCountry;
@@ -127,7 +128,7 @@ public enum EValidationArtefact implements IValidationArtefact {
    * 
    * @param eLevel
    *        The validation level of this artefact. May not be <code>null</code>.
-   * @param aDocType
+   * @param eDocType
    *        The document type of this artefact. May not be <code>null</code>.
    * @param sDirName
    *        The name of the directory with this document type. May neither be
@@ -140,7 +141,7 @@ public enum EValidationArtefact implements IValidationArtefact {
    *        be <code>null</code> nor empty.
    */
   private EValidationArtefact (@Nonnull final EValidationLevel eLevel,
-                               @Nonnull final IValidationDocumentType aDocType,
+                               @Nonnull final EValidationDocumentType eDocType,
                                @Nonnull @Nonempty final String sDirName,
                                @Nullable final Locale aCountry,
                                @Nonnull @Nonempty final IValidationTransaction [] aTransactions) {
@@ -165,7 +166,7 @@ public enum EValidationArtefact implements IValidationArtefact {
                                             "' is not supported by the BII core data set!");
 
     m_eLevel = eLevel;
-    m_aDocType = aDocType;
+    m_eDocType = eDocType;
     m_sDirName = sDirName;
     m_sFileNamePrefix = sDirName.toUpperCase (Locale.US);
     m_aCountry = aCountry;
@@ -189,12 +190,13 @@ public enum EValidationArtefact implements IValidationArtefact {
 
   @Nonnull
   public EXMLValidationType getValidationType () {
-    return m_eLevel.getValidationType ();
+    // Always Schematron in here!
+    return EXMLValidationType.SCHEMATRON;
   }
 
   @Nonnull
-  public IValidationDocumentType getValidationDocumentType () {
-    return m_aDocType;
+  public EValidationDocumentType getValidationDocumentType () {
+    return m_eDocType;
   }
 
   @Nullable
@@ -324,7 +326,7 @@ public enum EValidationArtefact implements IValidationArtefact {
    */
   @Nonnull
   @ReturnsMutableCopy
-  public static List <EValidationArtefact> getAllMatchingArtefacts (@Nullable final EValidationLevel eLevel,
+  public static List <EValidationArtefact> getAllMatchingArtefacts (@Nullable final IValidationLevel eLevel,
                                                                     @Nullable final IValidationDocumentType eDocType,
                                                                     @Nullable final Locale aCountry) {
     final List <EValidationArtefact> ret = new ArrayList <EValidationArtefact> ();
@@ -371,7 +373,7 @@ public enum EValidationArtefact implements IValidationArtefact {
    */
   @Nonnull
   @ReturnsMutableCopy
-  public static Set <Locale> getAllCountriesWithSpecialRules (@Nullable final EValidationLevel eLevel,
+  public static Set <Locale> getAllCountriesWithSpecialRules (@Nullable final IValidationLevel eLevel,
                                                               @Nullable final IValidationDocumentType eDocType) {
     final Set <Locale> ret = new HashSet <Locale> ();
     for (final IValidationArtefact eArtefact : values ()) {

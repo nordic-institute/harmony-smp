@@ -44,7 +44,7 @@ import com.phloc.commons.error.IResourceErrorGroup;
 import com.phloc.commons.string.ToStringGenerator;
 
 import eu.europa.ec.cipa.validation.generic.EXMLValidationType;
-import eu.europa.ec.cipa.validation.rules.EValidationLevel;
+import eu.europa.ec.cipa.validation.rules.IValidationLevel;
 
 /**
  * Represents a single result layer of the validation pyramid.
@@ -53,7 +53,7 @@ import eu.europa.ec.cipa.validation.rules.EValidationLevel;
  */
 @Immutable
 public final class ValidationPyramidResultLayer {
-  private final EValidationLevel m_eValidationLevel;
+  private final IValidationLevel m_aValidationLevel;
   private final EXMLValidationType m_eXMLValidationType;
   private final boolean m_bStopValidatingOnError;
   private final IResourceErrorGroup m_aValidationErrors;
@@ -61,7 +61,7 @@ public final class ValidationPyramidResultLayer {
   /**
    * Constructor.
    * 
-   * @param eValidationLevel
+   * @param aValidationLevel
    *        The validation level. May not be <code>null</code>.
    * @param eXMLValidationType
    *        The validation type. May not be <code>null</code>.
@@ -72,17 +72,17 @@ public final class ValidationPyramidResultLayer {
    *        The result of this layer. May not be <code>null</code> but may be
    *        empty.
    */
-  public ValidationPyramidResultLayer (@Nonnull final EValidationLevel eValidationLevel,
+  public ValidationPyramidResultLayer (@Nonnull final IValidationLevel aValidationLevel,
                                        @Nonnull final EXMLValidationType eXMLValidationType,
                                        final boolean bStopValidatingOnError,
                                        @Nonnull final IResourceErrorGroup aValidationErrors) {
-    if (eValidationLevel == null)
+    if (aValidationLevel == null)
       throw new NullPointerException ("validationLevel");
     if (eXMLValidationType == null)
       throw new NullPointerException ("validationType");
     if (aValidationErrors == null)
       throw new NullPointerException ("errors");
-    m_eValidationLevel = eValidationLevel;
+    m_aValidationLevel = aValidationLevel;
     m_eXMLValidationType = eXMLValidationType;
     m_bStopValidatingOnError = bStopValidatingOnError;
     m_aValidationErrors = aValidationErrors;
@@ -92,8 +92,8 @@ public final class ValidationPyramidResultLayer {
    * @return The validation level. Never <code>null</code>.
    */
   @Nonnull
-  public EValidationLevel getValidationLevel () {
-    return m_eValidationLevel;
+  public IValidationLevel getValidationLevel () {
+    return m_aValidationLevel;
   }
 
   /**
@@ -122,7 +122,7 @@ public final class ValidationPyramidResultLayer {
 
   @Override
   public String toString () {
-    return new ToStringGenerator (this).append ("validationLevel", m_eValidationLevel)
+    return new ToStringGenerator (this).append ("validationLevel", m_aValidationLevel)
                                        .append ("xmlValidationType", m_eXMLValidationType)
                                        .append ("validationErrors", m_aValidationErrors)
                                        .toString ();

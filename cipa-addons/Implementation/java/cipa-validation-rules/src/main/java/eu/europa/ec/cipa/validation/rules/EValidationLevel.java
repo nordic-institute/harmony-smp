@@ -49,10 +49,7 @@ import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.compare.AbstractIntegerComparator;
 import com.phloc.commons.compare.ESortOrder;
-import com.phloc.commons.id.IHasID;
 import com.phloc.commons.lang.EnumHelper;
-
-import eu.europa.ec.cipa.validation.generic.EXMLValidationType;
 
 /**
  * This enum represents the validation hierarchy. The hierarchy must be iterated
@@ -60,123 +57,78 @@ import eu.europa.ec.cipa.validation.generic.EXMLValidationType;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public enum EValidationLevel implements IHasID <String> {
+public enum EValidationLevel implements IValidationLevel {
   /** Technical structure validation (e.g. XML schema) - never country specific */
-  TECHNICAL_STRUCTURE ("technical", 10, EXMLValidationType.XSD),
+  TECHNICAL_STRUCTURE ("technical", 10),
 
   /**
    * Validation rules based on BII transaction requirements - never country
    * specific
    */
-  TRANSACTION_REQUIREMENTS ("transaction", 20, EXMLValidationType.SCHEMATRON),
+  TRANSACTION_REQUIREMENTS ("transaction", 20),
 
   /**
    * Validation rules based on BII profile (=process) requirements - never
    * country specific
    */
-  PROFILE_REQUIREMENTS ("profile", 30, EXMLValidationType.SCHEMATRON),
+  PROFILE_REQUIREMENTS ("profile", 30),
 
   /** Validation rules based on legal obligations - maybe country specific */
-  LEGAL_REQUIREMENTS ("legal", 40, EXMLValidationType.SCHEMATRON),
+  LEGAL_REQUIREMENTS ("legal", 40),
 
   /** Industry specific validation rules - maybe country specific */
-  INDUSTRY_SPECIFIC ("industry", 50, EXMLValidationType.SCHEMATRON),
+  INDUSTRY_SPECIFIC ("industry", 50),
 
   /**
    * Entity (=company) specific validation rules - this level represents
    * bilateral agreements - maybe country specific
    */
-  ENTITY_SPECIFC ("entity", 60, EXMLValidationType.SCHEMATRON);
+  ENTITY_SPECIFC ("entity", 60);
 
-  public static final class ComparatorLevel extends AbstractIntegerComparator <EValidationLevel> {
+  public static final class ComparatorLevel extends AbstractIntegerComparator <IValidationLevel> {
     public ComparatorLevel (@Nonnull final ESortOrder eSortOrder) {
       super (eSortOrder);
     }
 
     @Override
-    protected long asLong (final EValidationLevel eLevel) {
+    protected long asLong (final IValidationLevel eLevel) {
       return eLevel.getLevel ();
     }
   }
 
   private final String m_sID;
   private final int m_nLevel;
-  private final EXMLValidationType m_eValidationType;
 
-  private EValidationLevel (@Nonnull @Nonempty final String sID,
-                            @Nonnegative final int nLevel,
-                            @Nonnull final EXMLValidationType eValidationType) {
+  private EValidationLevel (@Nonnull @Nonempty final String sID, @Nonnegative final int nLevel) {
     m_sID = sID;
     m_nLevel = nLevel;
-    m_eValidationType = eValidationType;
   }
 
-  /**
-   * @return The ID of this level. Mainly to be used for serialization.
-   */
   @Nonnull
   @Nonempty
   public String getID () {
     return m_sID;
   }
 
-  /**
-   * @return The int level representation of this level. The lower the number
-   *         the more generic are the validation rules. This number is only
-   *         present for easy ordering of the validation level and does not
-   *         serve any other purpose.
-   */
   @Nonnegative
   public int getLevel () {
     return m_nLevel;
   }
 
-  /**
-   * Check if this level is lower than the passed level.
-   * 
-   * @param eLevel
-   *        The level to check against. May not be <code>null</code>.
-   * @return <code>true</code> if this level is lower than the passed level,
-   *         <code>false</code> otherwise.
-   */
-  public boolean isLowerLevelThan (@Nonnull final EValidationLevel eLevel) {
-    return m_nLevel < eLevel.getLevel ();
+  public boolean isLowerLevelThan (@Nonnull final IValidationLevel aLevel) {
+    return m_nLevel < aLevel.getLevel ();
   }
 
-  /**
-   * Check if this level is lower or equal than the passed level.
-   * 
-   * @param eLevel
-   *        The level to check against. May not be <code>null</code>.
-   * @return <code>true</code> if this level is lower or equal than the passed
-   *         level, <code>false</code> otherwise.
-   */
-  public boolean isLowerOrEqualLevelThan (@Nonnull final EValidationLevel eLevel) {
-    return m_nLevel <= eLevel.getLevel ();
+  public boolean isLowerOrEqualLevelThan (@Nonnull final IValidationLevel aLevel) {
+    return m_nLevel <= aLevel.getLevel ();
   }
 
-  /**
-   * Check if this level is higher than the passed level.
-   * 
-   * @param eLevel
-   *        The level to check against. May not be <code>null</code>.
-   * @return <code>true</code> if this level is higher than the passed level,
-   *         <code>false</code> otherwise.
-   */
-  public boolean isHigherLevelThan (@Nonnull final EValidationLevel eLevel) {
-    return m_nLevel > eLevel.getLevel ();
+  public boolean isHigherLevelThan (@Nonnull final IValidationLevel aLevel) {
+    return m_nLevel > aLevel.getLevel ();
   }
 
-  /**
-   * Check if this level is higher or equal than the passed level.
-   * 
-   * @param eLevel
-   *        The level to check against. May not be <code>null</code>.
-   * @return <code>true</code> if this level is higher or equal than the passed
-   *         level, <code>false</code> otherwise.
-   */
-  public boolean isHigherOrEqualLevelThan (@Nonnull final EValidationLevel eLevel) {
-    return m_nLevel >= eLevel.getLevel ();
+  public boolean isHigherOrEqualLevelThan (@Nonnull final IValidationLevel aLevel) {
+    return m_nLevel >= aLevel.getLevel ();
   }
 
   /**
@@ -187,17 +139,8 @@ public enum EValidationLevel implements IHasID <String> {
     return isHigherOrEqualLevelThan (LEGAL_REQUIREMENTS);
   }
 
-  /**
-   * @return The type of validation to be applied on this level - XML Schema or
-   *         Schematron. Never <code>null</code>.
-   */
-  @Nonnull
-  public EXMLValidationType getValidationType () {
-    return m_eValidationType;
-  }
-
   @Nullable
-  public static EValidationLevel getFromIDOrNull (@Nullable final String sID) {
+  public static IValidationLevel getFromIDOrNull (@Nullable final String sID) {
     return EnumHelper.getFromIDOrNull (EValidationLevel.class, sID);
   }
 

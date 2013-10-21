@@ -64,6 +64,7 @@ import eu.europa.ec.cipa.validation.rules.EValidationDocumentType;
 import eu.europa.ec.cipa.validation.rules.EValidationLevel;
 import eu.europa.ec.cipa.validation.rules.IValidationArtefact;
 import eu.europa.ec.cipa.validation.rules.IValidationDocumentType;
+import eu.europa.ec.cipa.validation.rules.IValidationLevel;
 import eu.europa.ec.cipa.validation.rules.IValidationTransaction;
 import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
 
@@ -149,7 +150,7 @@ public class ValidationPyramid extends AbstractValidationPyramid {
   public ValidationPyramid (@Nonnull final IValidationDocumentType aValidationDocumentType,
                             @Nonnull final IValidationTransaction aValidationTransaction,
                             @Nullable final Locale aValidationCountry,
-                            @Nonnull @Nonempty final List <EValidationLevel> aValidationLevelsInOrder) {
+                            @Nonnull @Nonempty final List <? extends IValidationLevel> aValidationLevelsInOrder) {
     if (aValidationDocumentType == null)
       throw new NullPointerException ("documentType");
     if (aValidationTransaction == null)
@@ -173,7 +174,7 @@ public class ValidationPyramid extends AbstractValidationPyramid {
     final Locale aLookupCountry = m_aValidationCountry == null ? CGlobal.LOCALE_INDEPENDENT : m_aValidationCountry;
 
     // Iterate over all validation levels in the correct order
-    for (final EValidationLevel eLevel : aValidationLevelsInOrder) {
+    for (final IValidationLevel eLevel : aValidationLevelsInOrder) {
       // Determine all validation artefacts that match
       for (final IValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (eLevel,
                                                                                               m_aValidationDocType,

@@ -52,8 +52,8 @@ import com.phloc.commons.error.IResourceErrorGroup;
 import com.phloc.commons.error.ResourceErrorGroup;
 import com.phloc.commons.string.ToStringGenerator;
 
-import eu.europa.ec.cipa.validation.rules.EValidationLevel;
 import eu.europa.ec.cipa.validation.rules.IValidationDocumentType;
+import eu.europa.ec.cipa.validation.rules.IValidationLevel;
 import eu.europa.ec.cipa.validation.rules.IValidationTransaction;
 
 /**
@@ -177,7 +177,7 @@ public final class ValidationPyramidResult {
    * @return <code>true</code> if results are contained for the specified level,
    *         <code>false</code> otherwise.
    */
-  public boolean containsValidationResultLayerForLevel (@Nonnull final EValidationLevel eValidationLevel) {
+  public boolean containsValidationResultLayerForLevel (@Nonnull final IValidationLevel eValidationLevel) {
     if (eValidationLevel == null)
       throw new NullPointerException ("validationLevel");
 
@@ -197,7 +197,7 @@ public final class ValidationPyramidResult {
    */
   @Nonnull
   @ReturnsMutableCopy
-  public List <ValidationPyramidResultLayer> getValidationResultLayersForLevel (@Nonnull final EValidationLevel eValidationLevel) {
+  public List <ValidationPyramidResultLayer> getValidationResultLayersForLevel (@Nonnull final IValidationLevel eValidationLevel) {
     if (eValidationLevel == null)
       throw new NullPointerException ("validationLevel");
 

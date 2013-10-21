@@ -62,7 +62,7 @@ public interface IValidationArtefact extends IHasID <String> {
    * @return The validation level. May not be <code>null</code>.
    */
   @Nonnull
-  EValidationLevel getValidationLevel ();
+  IValidationLevel getValidationLevel ();
 
   /**
    * @return The validation type - XML Schema or Schematron. May not be
