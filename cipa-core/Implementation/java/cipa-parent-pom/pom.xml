@@ -354,6 +354,7 @@
             <strictCheck>true</strictCheck>
             <encoding>${project.build.sourceEncoding}</encoding>
             <mapping>
+              <cva>XML_STYLE</cva>
               <gc>XML_STYLE</gc>
               <jav>JAVADOC_STYLE</jav>
               <jjt>JAVADOC_STYLE</jjt>
