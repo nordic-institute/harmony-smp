@@ -69,23 +69,6 @@ import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
 @NotThreadSafe
 public class ValidationPyramid2 extends AbstractValidationPyramid {
   /**
-   * Create a new validation pyramid that is country independent.
-   * 
-   * @param aValidationDocumentType
-   *        Document type. Determines the
-   *        {@link EValidationLevel#TECHNICAL_STRUCTURE} layer. May not be
-   *        <code>null</code>.
-   * @param aValidationTransaction
-   *        Transaction. May not be <code>null</code>.
-   * @see EValidationDocumentType
-   * @see ValidationTransaction
-   */
-  public ValidationPyramid2 (@Nonnull final IValidationDocumentType aValidationDocumentType,
-                             @Nonnull final IValidationTransaction aValidationTransaction) {
-    super (aValidationDocumentType, aValidationTransaction, null);
-  }
-
-  /**
    * Create a new validation pyramid with a specified country.
    * 
    * @param aValidationDocumentType
@@ -161,7 +144,7 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
       throw new NullPointerException ("layer");
 
     m_aValidationLayers.add (aLayer);
-    // Sort validation layers
+    // Sort validation layers, so that the basic layers always come first
     Collections.sort (m_aValidationLayers, new ComparatorValidationPyramidLayerByLevel ());
     return this;
   }
@@ -304,6 +287,7 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
     final ValidationPyramid2 ret = new ValidationPyramid2 (aValidationDocumentType,
                                                            aValidationTransaction,
                                                            aValidationCountry);
+    // Add the first 3 or 4 layers
     ret.addDefaultLayers ();
     return ret;
   }

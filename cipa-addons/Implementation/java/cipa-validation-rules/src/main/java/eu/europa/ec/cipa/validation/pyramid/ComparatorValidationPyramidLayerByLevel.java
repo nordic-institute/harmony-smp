@@ -42,7 +42,8 @@ import java.util.Comparator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.compare.AbstractIntegerComparator;
+import com.phloc.commons.compare.AbstractComparator;
+import com.phloc.commons.compare.CompareUtils;
 import com.phloc.commons.compare.ESortOrder;
 
 /**
@@ -51,7 +52,7 @@ import com.phloc.commons.compare.ESortOrder;
  * 
  * @author Philip Helger
  */
-public class ComparatorValidationPyramidLayerByLevel extends AbstractIntegerComparator <ValidationPyramidLayer> {
+public class ComparatorValidationPyramidLayerByLevel extends AbstractComparator <ValidationPyramidLayer> {
   /**
    * Comparator with default sort order and no nested comparator.
    */
@@ -95,7 +96,14 @@ public class ComparatorValidationPyramidLayerByLevel extends AbstractIntegerComp
   }
 
   @Override
-  protected long asLong (@Nonnull final ValidationPyramidLayer aLayer) {
-    return aLayer.getValidationLevel ().getLevel ();
+  protected int mainCompare (final ValidationPyramidLayer aLayer1, final ValidationPyramidLayer aLayer2) {
+    final int nLevel1 = aLayer1.getValidationLevel ().getLevel ();
+    final int nLevel2 = aLayer2.getValidationLevel ().getLevel ();
+    int ret = CompareUtils.compare (nLevel1, nLevel2);
+    if (ret == 0) {
+      // XSD before Schematron
+      ret = aLayer1.getValidationType ().compareTo (aLayer2.getValidationType ());
+    }
+    return ret;
   }
 }
