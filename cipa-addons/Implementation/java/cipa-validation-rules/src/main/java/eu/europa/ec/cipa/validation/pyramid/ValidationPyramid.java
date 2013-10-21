@@ -222,19 +222,10 @@ public class ValidationPyramid extends AbstractValidationPyramid {
     return m_aValidationTransaction;
   }
 
-  /**
-   * @return <code>true</code> if the validation pyramid is country independent,
-   *         <code>false</code> if a specific country is defined
-   * @see #getValidationCountry()
-   */
   public boolean isValidationCountryIndependent () {
     return m_aValidationCountry == null;
   }
 
-  /**
-   * @return <code>null</code> if no specific country is used in validation.
-   * @see #isValidationCountryIndependent()
-   */
   @Nullable
   public Locale getValidationCountry () {
     return m_aValidationCountry;

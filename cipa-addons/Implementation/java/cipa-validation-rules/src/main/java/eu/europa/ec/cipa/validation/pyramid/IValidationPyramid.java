@@ -1,6 +1,7 @@
 package eu.europa.ec.cipa.validation.pyramid;
 
 import java.util.List;
+import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,7 +34,22 @@ public interface IValidationPyramid {
   IValidationTransaction getValidationTransaction ();
 
   /**
-   * @return A non-<code>null</code> list of all contained validation layers.
+   * @return <code>true</code> if the validation pyramid is country independent,
+   *         <code>false</code> if a specific country is defined
+   * @see #getValidationCountry()
+   */
+  boolean isValidationCountryIndependent ();
+
+  /**
+   * @return <code>null</code> if no specific country is used in validation.
+   * @see #isValidationCountryIndependent()
+   */
+  @Nullable
+  Locale getValidationCountry ();
+
+  /**
+   * @return A non-<code>null</code> list of all contained validation layers in
+   *         the order they are executed.
    */
   @Nonnull
   @ReturnsMutableCopy

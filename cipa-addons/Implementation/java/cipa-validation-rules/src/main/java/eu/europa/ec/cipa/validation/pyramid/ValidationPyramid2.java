@@ -68,8 +68,11 @@ import eu.europa.ec.cipa.validation.rules.IValidationTransaction;
 import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
 
 /**
- * Second version of the validation pyramid - can handle entity artifacts much
- * better.
+ * Second version of the validation pyramid - can handle industry and entity
+ * specific artifacts much better. By default this validation pyramid only
+ * auto-determines the first 4 levels (technical structure, transaction
+ * requirements, profile requirements and legal requirements). The industry and
+ * entity specific artifacts must be added manually.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
@@ -175,6 +178,104 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
     return this;
   }
 
+  /**
+   * Add an industry specific XML Schema to the validation
+   * 
+   * @param aXSD
+   *        The XML schema to be validated. May not be <code>null</code>.
+   * @return this
+   */
+  @Nonnull
+  public ValidationPyramid2 addIndustrySpecificXSDLayer (@Nonnull final IReadableResource aXSD) {
+    if (aXSD == null)
+      throw new NullPointerException ("Schematron Resource");
+
+    return addIndustrySpecificLayer (new XMLSchemaValidator (aXSD));
+  }
+
+  /**
+   * Add an industry specific Schematron to the validation
+   * 
+   * @param aSCH
+   *        The Schematron to be validated. May not be <code>null</code>.
+   * @return this
+   */
+  @Nonnull
+  public ValidationPyramid2 addIndustrySpecificSchematronLayer (@Nonnull final IReadableResource aSCH) {
+    if (aSCH == null)
+      throw new NullPointerException ("Schematron Resource");
+
+    return addIndustrySpecificLayer (XMLSchematronValidator.createFromSCHPure (aSCH));
+  }
+
+  /**
+   * Add an industry specific layer to the validation
+   * 
+   * @param aValidator
+   *        The validator to be applied on this layer. May not be
+   *        <code>null</code>.
+   * @return this
+   */
+  @Nonnull
+  public ValidationPyramid2 addIndustrySpecificLayer (@Nonnull final IXMLValidator aValidator) {
+    if (aValidator == null)
+      throw new NullPointerException ("Validator");
+
+    final ValidationPyramidLayer aLayer = new ValidationPyramidLayer (EValidationLevel.INDUSTRY_SPECIFIC,
+                                                                      aValidator,
+                                                                      false);
+    return addValidationLayer (aLayer);
+  }
+
+  /**
+   * Add an entity specific XML Schema to the validation
+   * 
+   * @param aXSD
+   *        The XML schema to be validated. May not be <code>null</code>.
+   * @return this
+   */
+  @Nonnull
+  public ValidationPyramid2 addEntitySpecificXSDLayer (@Nonnull final IReadableResource aXSD) {
+    if (aXSD == null)
+      throw new NullPointerException ("XSD Resource");
+
+    return addEntitySpecificLayer (new XMLSchemaValidator (aXSD));
+  }
+
+  /**
+   * Add an entity specific Schematron to the validation
+   * 
+   * @param aSCH
+   *        The Schematron to be validated. May not be <code>null</code>.
+   * @return this
+   */
+  @Nonnull
+  public ValidationPyramid2 addEntitySpecificSchematronLayer (@Nonnull final IReadableResource aSCH) {
+    if (aSCH == null)
+      throw new NullPointerException ("Schematron Resource");
+
+    return addEntitySpecificLayer (XMLSchematronValidator.createFromSCHPure (aSCH));
+  }
+
+  /**
+   * Add an entity specific layer to the validation
+   * 
+   * @param aValidator
+   *        The validator to be applied on this layer. May not be
+   *        <code>null</code>.
+   * @return this
+   */
+  @Nonnull
+  public ValidationPyramid2 addEntitySpecificLayer (@Nonnull final IXMLValidator aValidator) {
+    if (aValidator == null)
+      throw new NullPointerException ("Validator");
+
+    final ValidationPyramidLayer aLayer = new ValidationPyramidLayer (EValidationLevel.ENTITY_SPECIFC,
+                                                                      aValidator,
+                                                                      false);
+    return addValidationLayer (aLayer);
+  }
+
   @Nonnull
   public IValidationDocumentType getValidationDocumentType () {
     return m_aValidationDocType;
@@ -185,19 +286,10 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
     return m_aValidationTransaction;
   }
 
-  /**
-   * @return <code>true</code> if the validation pyramid is country independent,
-   *         <code>false</code> if a specific country is defined
-   * @see #getValidationCountry()
-   */
   public boolean isValidationCountryIndependent () {
     return m_aValidationCountry == null;
   }
 
-  /**
-   * @return <code>null</code> if no specific country is used in validation.
-   * @see #isValidationCountryIndependent()
-   */
   @Nullable
   public Locale getValidationCountry () {
     return m_aValidationCountry;
@@ -225,8 +317,10 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
     for (final ValidationPyramidLayer aValidationLayer : m_aValidationLayers) {
       // The validator to use
       final IXMLValidator aValidator = aValidationLayer.getValidator ();
+
       // Perform the validation
       final IResourceErrorGroup aErrors = aValidator.validateXMLInstance (sResourceName, aXML);
+
       // Add the single result to the validation pyramid
       ret.addValidationResultLayer (new ValidationPyramidResultLayer (aValidationLayer.getValidationLevel (),
                                                                       aValidator.getValidationType (),
