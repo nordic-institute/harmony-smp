@@ -40,6 +40,7 @@ package eu.europa.ec.cipa.validation.pyramid;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.Locale;
 
@@ -86,6 +87,13 @@ public final class ValidationPyramid2Test {
                                                                     ValidationTransaction.createUBLTransaction (ETransaction.T10),
                                                                     aCountry);
     vp.addValidationLayer (EValidationArtefact.INVOICE_AUSTRIA_GOVERNMENT);
+    try {
+      // Country mismatch
+      vp.addValidationLayer (EValidationArtefact.INVOICE_NORWAY_GOVERNMENT);
+      fail ();
+    }
+    catch (final IllegalArgumentException ex) {}
+
     for (final IReadableResource aTestFile : TestFiles.getSuccessFiles (ETestFileType.INVOICE, aCountry)) {
       // Do validation
       final ValidationPyramidResult aResult = vp.applyValidation (aTestFile);
