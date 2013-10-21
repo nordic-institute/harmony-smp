@@ -59,18 +59,17 @@ import eu.europa.ec.cipa.validation.rules.EValidationLevel;
 import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
 
 /**
- * Test class for class {@link ValidationPyramid}.
+ * Test class for class {@link ValidationPyramid2}.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-@SuppressWarnings ({ "deprecation", "javadoc" })
-public final class ValidationPyramidTest {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (ValidationPyramidTest.class);
+public final class ValidationPyramid2Test {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (ValidationPyramid2Test.class);
 
   @Test
   public void testInvoice () {
-    final ValidationPyramid vp = new ValidationPyramid (EValidationDocumentType.INVOICE,
-                                                        ValidationTransaction.createUBLTransaction (ETransaction.T10));
+    final ValidationPyramid2 vp = ValidationPyramid2.createDefault (EValidationDocumentType.INVOICE,
+                                                                    ValidationTransaction.createUBLTransaction (ETransaction.T10));
     for (final IReadableResource aTestFile : TestFiles.getSuccessFiles (ETestFileType.INVOICE)) {
       for (final ValidationPyramidResultLayer aResultLayer : vp.applyValidation (aTestFile)
                                                                .getAllValidationResultLayers ())
@@ -82,9 +81,9 @@ public final class ValidationPyramidTest {
   @Test
   public void testInvoiceAT () {
     final Locale aCountry = CountryCache.getCountry ("AT");
-    final ValidationPyramid vp = new ValidationPyramid (EValidationDocumentType.INVOICE,
-                                                        ValidationTransaction.createUBLTransaction (ETransaction.T10),
-                                                        aCountry);
+    final ValidationPyramid2 vp = ValidationPyramid2.createDefault (EValidationDocumentType.INVOICE,
+                                                                    ValidationTransaction.createUBLTransaction (ETransaction.T10),
+                                                                    aCountry);
     for (final IReadableResource aTestFile : TestFiles.getSuccessFiles (ETestFileType.INVOICE, aCountry)) {
       // Do validation
       final ValidationPyramidResult aResult = vp.applyValidation (aTestFile);
@@ -93,7 +92,7 @@ public final class ValidationPyramidTest {
       // Check that we have results for all levels except entity specific (even
       // of they may be empty)
       for (final EValidationLevel eValidationLevel : EValidationLevel.values ())
-        if (!eValidationLevel.equals (EValidationLevel.ENTITY_SPECIFC))
+        if (eValidationLevel.isLowerOrEqualLevelThan (EValidationLevel.LEGAL_REQUIREMENTS))
           assertTrue (eValidationLevel.getID () + " is not contained",
                       aResult.containsValidationResultLayerForLevel (eValidationLevel));
 

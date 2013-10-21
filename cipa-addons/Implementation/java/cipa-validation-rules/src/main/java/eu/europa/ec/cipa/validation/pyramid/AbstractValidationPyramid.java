@@ -37,7 +37,13 @@
  */
 package eu.europa.ec.cipa.validation.pyramid;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+
+import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
@@ -45,9 +51,19 @@ import javax.xml.transform.dom.DOMSource;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import com.phloc.commons.annotations.ReturnsMutableCopy;
+import com.phloc.commons.collections.ContainerHelper;
+import com.phloc.commons.error.IResourceErrorGroup;
 import com.phloc.commons.io.IReadableResource;
 import com.phloc.commons.string.ToStringGenerator;
 import com.phloc.commons.xml.serialize.XMLReader;
+
+import eu.europa.ec.cipa.validation.generic.IXMLValidator;
+import eu.europa.ec.cipa.validation.rules.EValidationDocumentType;
+import eu.europa.ec.cipa.validation.rules.EValidationLevel;
+import eu.europa.ec.cipa.validation.rules.IValidationDocumentType;
+import eu.europa.ec.cipa.validation.rules.IValidationTransaction;
+import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
 
 /**
  * Abstract base class for {@link IValidationPyramid}.
@@ -56,6 +72,69 @@ import com.phloc.commons.xml.serialize.XMLReader;
  */
 @NotThreadSafe
 public abstract class AbstractValidationPyramid implements IValidationPyramid {
+  protected final IValidationDocumentType m_aValidationDocType;
+  protected final IValidationTransaction m_aValidationTransaction;
+  protected final Locale m_aValidationCountry;
+  protected final List <ValidationPyramidLayer> m_aValidationLayers = new ArrayList <ValidationPyramidLayer> ();
+
+  /**
+   * Create a new validation pyramid that handles the first four levels.
+   * 
+   * @param aValidationDocumentType
+   *        Document type. Determines the
+   *        {@link EValidationLevel#TECHNICAL_STRUCTURE} layer. May not be
+   *        <code>null</code>.
+   * @param aValidationTransaction
+   *        Transaction. May not be <code>null</code>.
+   * @param aValidationCountry
+   *        The validation country. May be <code>null</code> to use only the
+   *        country independent validation levels (the first three levels).
+   * @see EValidationDocumentType
+   * @see ValidationTransaction
+   */
+  public AbstractValidationPyramid (@Nonnull final IValidationDocumentType aValidationDocumentType,
+                                    @Nonnull final IValidationTransaction aValidationTransaction,
+                                    @Nullable final Locale aValidationCountry) {
+    if (aValidationDocumentType == null)
+      throw new NullPointerException ("documentType");
+    if (aValidationTransaction == null)
+      throw new NullPointerException ("transaction");
+
+    m_aValidationDocType = aValidationDocumentType;
+    m_aValidationTransaction = aValidationTransaction;
+    m_aValidationCountry = aValidationCountry;
+  }
+
+  @Nonnull
+  public IValidationDocumentType getValidationDocumentType () {
+    return m_aValidationDocType;
+  }
+
+  @Nonnull
+  public IValidationTransaction getValidationTransaction () {
+    return m_aValidationTransaction;
+  }
+
+  public boolean isValidationCountryIndependent () {
+    return m_aValidationCountry == null;
+  }
+
+  @Nullable
+  public Locale getValidationCountry () {
+    return m_aValidationCountry;
+  }
+
+  @Nonnegative
+  public int getValidationLayerCount () {
+    return m_aValidationLayers.size ();
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public List <ValidationPyramidLayer> getAllValidationLayers () {
+    return ContainerHelper.newList (m_aValidationLayers);
+  }
+
   @Nonnull
   public ValidationPyramidResult applyValidation (@Nonnull final IReadableResource aRes) {
     if (aRes == null)
@@ -75,8 +154,47 @@ public abstract class AbstractValidationPyramid implements IValidationPyramid {
     return applyValidation (null, aXML);
   }
 
+  @Nonnull
+  public ValidationPyramidResult applyValidation (final String sResourceName, @Nonnull final Source aXML) {
+    if (aXML == null)
+      throw new NullPointerException ("XML");
+
+    final ValidationPyramidResult ret = new ValidationPyramidResult (m_aValidationDocType,
+                                                                     m_aValidationTransaction,
+                                                                     m_aValidationCountry);
+
+    final int nMaxLayers = m_aValidationLayers.size ();
+    int nLayerIndex = 0;
+
+    // For all validation layers
+    for (final ValidationPyramidLayer aValidationLayer : m_aValidationLayers) {
+      // The validator to use
+      final IXMLValidator aValidator = aValidationLayer.getValidator ();
+
+      // Perform the validation
+      final IResourceErrorGroup aErrors = aValidator.validateXMLInstance (sResourceName, aXML);
+
+      // Add the single result to the validation pyramid
+      ret.addValidationResultLayer (new ValidationPyramidResultLayer (aValidationLayer.getValidationLevel (),
+                                                                      aValidator.getValidationType (),
+                                                                      aValidationLayer.isStopValidatingOnError (),
+                                                                      aErrors));
+      if (aValidationLayer.isStopValidatingOnError () && aErrors.containsAtLeastOneError ()) {
+        // Stop validating the whole pyramid!
+        ret.setValidationInterrupted (nLayerIndex < (nMaxLayers - 1));
+        break;
+      }
+      ++nLayerIndex;
+    }
+    return ret;
+  }
+
   @Override
   public String toString () {
-    return new ToStringGenerator (this).toString ();
+    return new ToStringGenerator (this).append ("docType", m_aValidationDocType)
+                                       .append ("transaction", m_aValidationTransaction)
+                                       .append ("country", m_aValidationCountry)
+                                       .append ("layers", m_aValidationLayers)
+                                       .toString ();
   }
 }

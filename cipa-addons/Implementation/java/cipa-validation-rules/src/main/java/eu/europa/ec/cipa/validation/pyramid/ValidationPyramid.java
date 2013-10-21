@@ -37,28 +37,20 @@
  */
 package eu.europa.ec.cipa.validation.pyramid;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
-import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
 
 import com.phloc.commons.CGlobal;
 import com.phloc.commons.annotations.DevelopersNote;
 import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.error.IResourceErrorGroup;
 import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.string.ToStringGenerator;
 
-import eu.europa.ec.cipa.validation.generic.IXMLValidator;
 import eu.europa.ec.cipa.validation.generic.XMLSchemaValidator;
 import eu.europa.ec.cipa.validation.generic.XMLSchematronValidator;
 import eu.europa.ec.cipa.validation.rules.EValidationArtefact;
@@ -82,13 +74,8 @@ import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
  */
 @NotThreadSafe
 @Deprecated
-@DevelopersNote ("See ValidationPyramid2 - offers better support for industry specific artifact selection!")
+@DevelopersNote ("See ValidationPyramid2 - offers better support for validation layer selection!")
 public class ValidationPyramid extends AbstractValidationPyramid {
-  private final IValidationDocumentType m_aValidationDocType;
-  private final IValidationTransaction m_aValidationTransaction;
-  private final Locale m_aValidationCountry;
-  private final List <ValidationPyramidLayer> m_aValidationLayers = new ArrayList <ValidationPyramidLayer> ();
-
   /**
    * Create a new validation pyramid that is country independent and handles all
    * available levels.
@@ -155,16 +142,9 @@ public class ValidationPyramid extends AbstractValidationPyramid {
                             @Nonnull final IValidationTransaction aValidationTransaction,
                             @Nullable final Locale aValidationCountry,
                             @Nonnull @Nonempty final List <? extends IValidationLevel> aValidationLevelsInOrder) {
-    if (aValidationDocumentType == null)
-      throw new NullPointerException ("documentType");
-    if (aValidationTransaction == null)
-      throw new NullPointerException ("transaction");
+    super (aValidationDocumentType, aValidationTransaction, aValidationCountry);
     if (ContainerHelper.isEmpty (aValidationLevelsInOrder))
       throw new IllegalArgumentException ("No validation levels passed!");
-
-    m_aValidationDocType = aValidationDocumentType;
-    m_aValidationTransaction = aValidationTransaction;
-    m_aValidationCountry = aValidationCountry;
 
     // Check if an XML schema is present for the technical structure
     final Schema aXMLSchema = aValidationDocumentType.getSchema ();
@@ -172,7 +152,7 @@ public class ValidationPyramid extends AbstractValidationPyramid {
       // Add the XML schema validator first
       final XMLSchemaValidator aValidator = new XMLSchemaValidator (aXMLSchema);
       // true: If the XSD validation fails no Schematron validation is needed
-      _addValidationLayer (new ValidationPyramidLayer (EValidationLevel.TECHNICAL_STRUCTURE, aValidator, true));
+      m_aValidationLayers.add (new ValidationPyramidLayer (EValidationLevel.TECHNICAL_STRUCTURE, aValidator, true));
     }
 
     final Locale aLookupCountry = m_aValidationCountry == null ? CGlobal.LOCALE_INDEPENDENT : m_aValidationCountry;
@@ -187,101 +167,11 @@ public class ValidationPyramid extends AbstractValidationPyramid {
         final IReadableResource aSCH = eArtefact.getValidationSchematronResource (m_aValidationTransaction);
         if (aSCH != null) {
           // We found a matching layer
-          _addValidationLayer (new ValidationPyramidLayer (eLevel,
-                                                           XMLSchematronValidator.createFromSCHPure (aSCH),
-                                                           false));
+          m_aValidationLayers.add (new ValidationPyramidLayer (eLevel,
+                                                               XMLSchematronValidator.createFromSCHPure (aSCH),
+                                                               false));
         }
       }
     }
-  }
-
-  /**
-   * Add a new validation layer
-   * 
-   * @param aLayer
-   *        The layer to add. May not be <code>null</code>.
-   * @return this
-   */
-  @Nonnull
-  private ValidationPyramid _addValidationLayer (@Nonnull final ValidationPyramidLayer aLayer) {
-    if (aLayer == null)
-      throw new NullPointerException ("layer");
-
-    m_aValidationLayers.add (aLayer);
-    // Sort validation layers
-    Collections.sort (m_aValidationLayers, new ComparatorValidationPyramidLayerByLevel ());
-    return this;
-  }
-
-  @Nonnull
-  public IValidationDocumentType getValidationDocumentType () {
-    return m_aValidationDocType;
-  }
-
-  @Nonnull
-  public IValidationTransaction getValidationTransaction () {
-    return m_aValidationTransaction;
-  }
-
-  public boolean isValidationCountryIndependent () {
-    return m_aValidationCountry == null;
-  }
-
-  @Nullable
-  public Locale getValidationCountry () {
-    return m_aValidationCountry;
-  }
-
-  @Nonnegative
-  public int getValidationLayerCount () {
-    return m_aValidationLayers.size ();
-  }
-
-  @Nonnull
-  @ReturnsMutableCopy
-  public List <ValidationPyramidLayer> getAllValidationLayers () {
-    return ContainerHelper.newList (m_aValidationLayers);
-  }
-
-  @Nonnull
-  public ValidationPyramidResult applyValidation (final String sResourceName, @Nonnull final Source aXML) {
-    if (aXML == null)
-      throw new NullPointerException ("XML");
-
-    final ValidationPyramidResult ret = new ValidationPyramidResult (m_aValidationDocType,
-                                                                     m_aValidationTransaction,
-                                                                     m_aValidationCountry);
-
-    final int nMaxLayers = m_aValidationLayers.size ();
-    int nLayerIndex = 0;
-
-    // For all validation layers
-    for (final ValidationPyramidLayer aValidationLayer : m_aValidationLayers) {
-      // The validator to use
-      final IXMLValidator aValidator = aValidationLayer.getValidator ();
-      // Perform the validation
-      final IResourceErrorGroup aErrors = aValidator.validateXMLInstance (sResourceName, aXML);
-      // Add the single result to the validation pyramid
-      ret.addValidationResultLayer (new ValidationPyramidResultLayer (aValidationLayer.getValidationLevel (),
-                                                                      aValidator.getValidationType (),
-                                                                      aValidationLayer.isStopValidatingOnError (),
-                                                                      aErrors));
-      if (aValidationLayer.isStopValidatingOnError () && aErrors.containsAtLeastOneError ()) {
-        // Stop validating the whole pyramid!
-        ret.setValidationInterrupted (nLayerIndex < (nMaxLayers - 1));
-        break;
-      }
-      ++nLayerIndex;
-    }
-    return ret;
-  }
-
-  @Override
-  public String toString () {
-    return new ToStringGenerator (this).append ("docType", m_aValidationDocType)
-                                       .append ("transaction", m_aValidationTransaction)
-                                       .append ("country", m_aValidationCountry)
-                                       .append ("layers", m_aValidationLayers)
-                                       .toString ();
   }
 }

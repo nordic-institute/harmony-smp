@@ -140,13 +140,13 @@ public final class ValidationPyramidResult {
   }
 
   /**
-   * @return A non-<code>null</code> unmodifiable list of all contained
-   *         validation result layers.
+   * @return A non-<code>null</code> list of all contained validation result
+   *         layers.
    */
   @Nonnull
-  @ReturnsImmutableObject
+  @ReturnsMutableCopy
   public List <ValidationPyramidResultLayer> getAllValidationResultLayers () {
-    return ContainerHelper.makeUnmodifiable (m_aValidationResultLayers);
+    return ContainerHelper.newList (m_aValidationResultLayers);
   }
 
   /**

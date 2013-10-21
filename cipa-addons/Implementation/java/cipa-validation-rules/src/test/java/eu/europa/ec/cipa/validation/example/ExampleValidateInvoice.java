@@ -44,16 +44,22 @@ import com.phloc.commons.error.IResourceError;
 import com.phloc.commons.io.resource.ClassPathResource;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
-import eu.europa.ec.cipa.validation.pyramid.ValidationPyramid;
+import eu.europa.ec.cipa.validation.pyramid.ValidationPyramid2;
 import eu.europa.ec.cipa.validation.pyramid.ValidationPyramidResultLayer;
 import eu.europa.ec.cipa.validation.rules.EValidationDocumentType;
 import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
 
+/**
+ * A simple main application that shows how to apply {@link ValidationPyramid2}
+ * in the correct way.
+ * 
+ * @author Philip Helger
+ */
 public final class ExampleValidateInvoice {
   public static void main (final String [] args) {
     // Main validation object
-    final ValidationPyramid vp = new ValidationPyramid (EValidationDocumentType.INVOICE,
-                                                        ValidationTransaction.createUBLTransaction (ETransaction.T10));
+    final ValidationPyramid2 vp = ValidationPyramid2.createDefault (EValidationDocumentType.INVOICE,
+                                                                    ValidationTransaction.createUBLTransaction (ETransaction.T10));
 
     // Perform the validation
     System.out.println ("Performing validation");
