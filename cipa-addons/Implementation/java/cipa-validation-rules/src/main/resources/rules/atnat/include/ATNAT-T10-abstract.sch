@@ -48,5 +48,6 @@
     <assert flag="fatal" test="$ATNAT-T10-R001">[ATNAT-T10-R001]-If the invoice total exceeds € 10.000, the VAT number of the customer MUST be provided, if the supplier has a registered office in Austria</assert>
     <assert flag="fatal" test="$ATNAT-T10-R003">[ATNAT-T10-R003]-The invoice MUST contain either the actual delivery date or the delivery period.</assert>
     <assert flag="fatal" test="$ATNAT-T10-R004">[ATNAT-T10-R004]-If products or services are subject to the Reverse Charge System (customer has to bear the tax, not the supplier - Austria: UStG § 19) the VAT id number of the customer MUST be provided</assert>
+    <assert flag="fatal" test="$ATNAT-T10-R005">[ATNAT-T10-R005]-If the invoice total exceeds € 150, the VAT number of the supplier MUST be provided, if the supplier has a registered office in Austria</assert>
   </rule>
 </pattern>

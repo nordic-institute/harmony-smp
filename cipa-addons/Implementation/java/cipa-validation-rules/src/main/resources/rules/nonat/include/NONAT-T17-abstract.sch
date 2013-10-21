@@ -55,7 +55,7 @@
     <assert flag="fatal" test="$NONAT-T17-R010">[NONAT-T17-R010]-A customer postal address in a reminder document MUST contain at least, Street name, city name, zip code and country code.</assert>
     <assert flag="warning" test="$NONAT-T17-R024">[NONAT-T17-R024]-A customer number for AccountingCustomerParty SHOULD be provided.</assert>
     <assert flag="fatal" test="$NONAT-T17-R027">[NONAT-T17-R027]-The Norwegian legal registration ID for the customer MUST be provided.</assert>
-    <assert flag="fatal" test="$NONAT-T17-R028">[NONAT-T17-R028]-A customer contact reference identifier MUST be provided. </assert>
+    <assert flag="fatal" test="$NONAT-T17-R028">[NONAT-T17-R028]-A customer contact reference identifier MUST be provided.</assert>
   </rule>
   <rule context="$Total_Amounts">
     <assert flag="fatal" test="$NONAT-T17-R008">[NONAT-T17-R008]-Reminder total line extension amount MUST equal the sum of the line totals.</assert>

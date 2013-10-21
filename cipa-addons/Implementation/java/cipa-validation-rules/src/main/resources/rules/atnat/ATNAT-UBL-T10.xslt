@@ -283,6 +283,20 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
+
+		<!--ASSERT -->
+<xsl:choose>
+      <xsl:when test="((number(//cbc:TaxInclusiveAmount[@currencyID=&#39;EUR&#39;]) &gt; 150 and //cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or (number(//cbc:TaxInclusiveAmount) &lt;= 150)) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;AT&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;AT&#39;))" />
+      <xsl:otherwise>
+        <svrl:failed-assert test="((number(//cbc:TaxInclusiveAmount[@currencyID=&#39;EUR&#39;]) &gt; 150 and //cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or (number(//cbc:TaxInclusiveAmount) &lt;= 150)) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;AT&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;AT&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+          <xsl:attribute name="flag">fatal</xsl:attribute>
+          <xsl:attribute name="location">
+            <xsl:apply-templates mode="schematron-select-full-path" select="." />
+          </xsl:attribute>
+          <svrl:text>[ATNAT-T10-R005]-If the invoice total exceeds € 150, the VAT number of the supplier MUST be provided, if the supplier has a registered office in Austria</svrl:text>
+        </svrl:failed-assert>
+      </xsl:otherwise>
+    </xsl:choose>
     <xsl:apply-templates mode="M5" select="*|comment()|processing-instruction()" />
   </xsl:template>
   <xsl:template match="text()" mode="M5" priority="-1" />

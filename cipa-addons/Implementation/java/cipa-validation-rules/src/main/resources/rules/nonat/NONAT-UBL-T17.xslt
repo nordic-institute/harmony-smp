@@ -463,7 +463,7 @@
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[NONAT-T17-R028]-A customer contact reference identifier MUST be provided. </svrl:text>
+          <svrl:text>[NONAT-T17-R028]-A customer contact reference identifier MUST be provided.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
@@ -642,9 +642,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = &#39;AE&#39;  or not ((//cac:TaxCategory/cbc:ID) = &#39;AE&#39; )" />
+      <xsl:when test="//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = &#39;AE&#39; or not ((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = &#39;AE&#39; or not ((//cac:TaxCategory/cbc:ID) = &#39;AE&#39; )" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = &#39;AE&#39; or not ((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
