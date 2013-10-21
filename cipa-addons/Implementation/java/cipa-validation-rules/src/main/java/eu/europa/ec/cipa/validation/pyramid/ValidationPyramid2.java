@@ -49,8 +49,6 @@ import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
 
 import com.phloc.commons.CGlobal;
-import com.phloc.commons.annotations.DevelopersNote;
-import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.error.IResourceErrorGroup;
@@ -70,19 +68,13 @@ import eu.europa.ec.cipa.validation.rules.IValidationTransaction;
 import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
 
 /**
- * This class represents the PEPPOL validation pyramid. It evaluates all
- * applicable rules for a document based on the specified parameters. All
- * validation levels (see {@link EValidationLevel}) are handled.<br>
- * Note: the profile to be validated is automatically determined from the
- * profile contained in the UBL document. If a certain profile is present, it's
- * rules are applied when the corresponding level is applied.
+ * Second version of the validation pyramid - can handle entity artifacts much
+ * better.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @NotThreadSafe
-@Deprecated
-@DevelopersNote ("See ValidationPyramid2 - offers better support for industry specific artifact selection!")
-public class ValidationPyramid extends AbstractValidationPyramid {
+public class ValidationPyramid2 extends AbstractValidationPyramid {
   private final IValidationDocumentType m_aValidationDocType;
   private final IValidationTransaction m_aValidationTransaction;
   private final Locale m_aValidationCountry;
@@ -101,13 +93,13 @@ public class ValidationPyramid extends AbstractValidationPyramid {
    * @see EValidationDocumentType
    * @see ValidationTransaction
    */
-  public ValidationPyramid (@Nonnull final IValidationDocumentType aValidationDocumentType,
-                            @Nonnull final IValidationTransaction aValidationTransaction) {
+  public ValidationPyramid2 (@Nonnull final IValidationDocumentType aValidationDocumentType,
+                             @Nonnull final IValidationTransaction aValidationTransaction) {
     this (aValidationDocumentType, aValidationTransaction, null);
   }
 
   /**
-   * Create a new validation pyramid that handles all available levels.
+   * Create a new validation pyramid that handles all country-unspecific levels.
    * 
    * @param aValidationDocumentType
    *        Document type. Determines the
@@ -121,45 +113,13 @@ public class ValidationPyramid extends AbstractValidationPyramid {
    * @see EValidationDocumentType
    * @see ValidationTransaction
    */
-  public ValidationPyramid (@Nonnull final IValidationDocumentType aValidationDocumentType,
-                            @Nonnull final IValidationTransaction aValidationTransaction,
-                            @Nullable final Locale aValidationCountry) {
-    this (aValidationDocumentType,
-          aValidationTransaction,
-          aValidationCountry,
-          EValidationLevel.getAllLevelsInValidationOrder ());
-  }
-
-  /**
-   * Create a new validation pyramid
-   * 
-   * @param aValidationDocumentType
-   *        Document type. Determines the
-   *        {@link EValidationLevel#TECHNICAL_STRUCTURE} layer. May not be
-   *        <code>null</code>.
-   * @param aValidationTransaction
-   *        Transaction. May not be <code>null</code>.
-   * @param aValidationCountry
-   *        The validation country. May be <code>null</code> to use only the
-   *        country independent levels.
-   * @param aValidationLevelsInOrder
-   *        All validation levels to consider in the order they should be
-   *        executed. May neither be <code>null</code> nor empty. See
-   *        {@link EValidationLevel#getAllLevelsInValidationOrder(EValidationLevel...)}
-   *        for ordering of levels.
-   * @see EValidationDocumentType
-   * @see ValidationTransaction
-   */
-  public ValidationPyramid (@Nonnull final IValidationDocumentType aValidationDocumentType,
-                            @Nonnull final IValidationTransaction aValidationTransaction,
-                            @Nullable final Locale aValidationCountry,
-                            @Nonnull @Nonempty final List <? extends IValidationLevel> aValidationLevelsInOrder) {
+  public ValidationPyramid2 (@Nonnull final IValidationDocumentType aValidationDocumentType,
+                             @Nonnull final IValidationTransaction aValidationTransaction,
+                             @Nullable final Locale aValidationCountry) {
     if (aValidationDocumentType == null)
       throw new NullPointerException ("documentType");
     if (aValidationTransaction == null)
       throw new NullPointerException ("transaction");
-    if (ContainerHelper.isEmpty (aValidationLevelsInOrder))
-      throw new IllegalArgumentException ("No validation levels passed!");
 
     m_aValidationDocType = aValidationDocumentType;
     m_aValidationTransaction = aValidationTransaction;
@@ -171,27 +131,30 @@ public class ValidationPyramid extends AbstractValidationPyramid {
       // Add the XML schema validator first
       final XMLSchemaValidator aValidator = new XMLSchemaValidator (aXMLSchema);
       // true: If the XSD validation fails no Schematron validation is needed
-      _addValidationLayer (new ValidationPyramidLayer (EValidationLevel.TECHNICAL_STRUCTURE, aValidator, true));
+      addValidationLayer (new ValidationPyramidLayer (EValidationLevel.TECHNICAL_STRUCTURE, aValidator, true));
     }
 
     final Locale aLookupCountry = m_aValidationCountry == null ? CGlobal.LOCALE_INDEPENDENT : m_aValidationCountry;
 
-    // Iterate over all validation levels in the correct order
-    for (final IValidationLevel eLevel : aValidationLevelsInOrder) {
-      // Determine all validation artefacts that match
-      for (final IValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (eLevel,
-                                                                                              m_aValidationDocType,
-                                                                                              aLookupCountry)) {
-        // Get the Schematron SCH for the specified transaction in this level
-        final IReadableResource aSCH = eArtefact.getValidationSchematronResource (m_aValidationTransaction);
-        if (aSCH != null) {
-          // We found a matching layer
-          _addValidationLayer (new ValidationPyramidLayer (eLevel,
-                                                           XMLSchematronValidator.createFromSCHPure (aSCH),
-                                                           false));
+    // Iterate over all country independent validation levels in the correct
+    // order + legal requirements - this means industry specific rules are not
+    // automatically added!
+    for (final IValidationLevel eLevel : EValidationLevel.getAllLevelsInValidationOrder ())
+      if (eLevel.isLowerOrEqualLevelThan (EValidationLevel.LEGAL_REQUIREMENTS)) {
+        // Determine all validation artefacts that match
+        for (final IValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (eLevel,
+                                                                                                m_aValidationDocType,
+                                                                                                aLookupCountry)) {
+          // Get the Schematron SCH for the specified transaction in this level
+          final IReadableResource aSCH = eArtefact.getValidationSchematronResource (m_aValidationTransaction);
+          if (aSCH != null) {
+            // We found a matching layer
+            addValidationLayer (new ValidationPyramidLayer (eLevel,
+                                                            XMLSchematronValidator.createFromSCHPure (aSCH),
+                                                            false));
+          }
         }
       }
-    }
   }
 
   /**
@@ -202,7 +165,7 @@ public class ValidationPyramid extends AbstractValidationPyramid {
    * @return this
    */
   @Nonnull
-  private ValidationPyramid _addValidationLayer (@Nonnull final ValidationPyramidLayer aLayer) {
+  public ValidationPyramid2 addValidationLayer (@Nonnull final ValidationPyramidLayer aLayer) {
     if (aLayer == null)
       throw new NullPointerException ("layer");
 
