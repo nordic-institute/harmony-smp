@@ -54,6 +54,7 @@ import com.phloc.commons.locale.country.CountryCache;
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 import eu.europa.ec.cipa.test.ETestFileType;
 import eu.europa.ec.cipa.test.TestFiles;
+import eu.europa.ec.cipa.validation.rules.EValidationArtefact;
 import eu.europa.ec.cipa.validation.rules.EValidationDocumentType;
 import eu.europa.ec.cipa.validation.rules.EValidationLevel;
 import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
@@ -84,6 +85,7 @@ public final class ValidationPyramid2Test {
     final ValidationPyramid2 vp = ValidationPyramid2.createDefault (EValidationDocumentType.INVOICE,
                                                                     ValidationTransaction.createUBLTransaction (ETransaction.T10),
                                                                     aCountry);
+    vp.addValidationLayer (EValidationArtefact.INVOICE_AUSTRIA_GOVERNMENT);
     for (final IReadableResource aTestFile : TestFiles.getSuccessFiles (ETestFileType.INVOICE, aCountry)) {
       // Do validation
       final ValidationPyramidResult aResult = vp.applyValidation (aTestFile);
