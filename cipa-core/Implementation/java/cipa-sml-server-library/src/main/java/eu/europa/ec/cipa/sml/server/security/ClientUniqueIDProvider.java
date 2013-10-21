@@ -122,6 +122,7 @@ public final class ClientUniqueIDProvider {
     final X509Certificate aNonIssuerCert = ContainerHelper.getFirstElement (aNonIssuerCertList);
 
     // principal-name + ":" + serialnumber-hexstring
+    // FIXME subject principal name must be in the order CN=XX,O=YY,C=ZZ
     return aNonIssuerCert.getSubjectX500Principal ().getName () + ':' + aNonIssuerCert.getSerialNumber ().toString (16);
   }
 }
