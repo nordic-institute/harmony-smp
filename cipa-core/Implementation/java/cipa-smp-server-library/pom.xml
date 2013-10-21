@@ -3,7 +3,7 @@
   <parent>
     <groupId>eu.europa.ec.cipa</groupId>
     <artifactId>cipa-parent-pom</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
     <relativePath>../cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-smp-server-library</artifactId>
@@ -33,7 +33,7 @@
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-sml-client-library</artifactId>
-      <version>1.1.2-SNAPSHOT</version>
+      <version>1.1.2</version>
     </dependency>
     <dependency>
       <groupId>com.phloc</groupId>
@@ -103,7 +103,7 @@
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-smp-client-library</artifactId>
-      <version>1.1.2-SNAPSHOT</version>
+      <version>1.1.2</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -120,13 +120,6 @@
               eu.europa.ec.cipa.smp.server.*
             </Export-Package>
           </instructions>
-        </configuration>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <tagBase>https://joinup.ec.europa.eu/svn/cipaedelivery/tags/${project.name}</tagBase>
         </configuration>
       </plugin>
     </plugins>
