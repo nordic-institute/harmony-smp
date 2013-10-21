@@ -4,7 +4,7 @@
   <parent>
     <groupId>eu.europa.ec.cipa</groupId>
     <artifactId>cipa-parent-pom</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
     <relativePath>../../../../cipa-core/Implementation/java/cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-validation-webapp</artifactId>
@@ -84,13 +84,6 @@
     </resources>
 
     <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-release-plugin</artifactId>
-        <configuration>
-          <tagBase>https://joinup.ec.europa.eu/svn/cipaedelivery/tags/${project.name}</tagBase>
-        </configuration>
-      </plugin>
     </plugins>
   </build>
 </project>
