@@ -38,12 +38,13 @@
 package eu.europa.ec.cipa.validation.pyramid;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
+import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.transform.Source;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
@@ -81,7 +82,7 @@ import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-@Immutable
+@NotThreadSafe
 public class ValidationPyramid {
   private final IValidationDocumentType m_aValidationDocType;
   private final IValidationTransaction m_aValidationTransaction;
@@ -207,6 +208,8 @@ public class ValidationPyramid {
       throw new NullPointerException ("layer");
 
     m_aValidationLayers.add (aLayer);
+    // Sort validation layers
+    Collections.sort (m_aValidationLayers, new ComparatorValidationPyramidLayerByLevel ());
     return this;
   }
 

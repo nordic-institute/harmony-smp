@@ -50,6 +50,7 @@ import com.phloc.commons.id.IHasID;
 import com.phloc.commons.io.IReadableResource;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
+import eu.europa.ec.cipa.validation.generic.EXMLValidationType;
 
 /**
  * Interface for a single validation artefact.
@@ -62,6 +63,13 @@ public interface IValidationArtefact extends IHasID <String> {
    */
   @Nonnull
   EValidationLevel getValidationLevel ();
+
+  /**
+   * @return The validation type - XML Schema or Schematron. May not be
+   *         <code>null</code>.
+   */
+  @Nonnull
+  EXMLValidationType getValidationType ();
 
   /**
    * @return The document type to which this artefact can be applied. May not be

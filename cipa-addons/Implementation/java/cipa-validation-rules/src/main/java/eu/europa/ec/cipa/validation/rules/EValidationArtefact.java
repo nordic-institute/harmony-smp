@@ -62,6 +62,7 @@ import com.phloc.commons.locale.country.CountryCache;
 import com.phloc.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
+import eu.europa.ec.cipa.validation.generic.EXMLValidationType;
 
 /**
  * Contains all available PEPPOL validation artefacts.
@@ -184,6 +185,11 @@ public enum EValidationArtefact implements IValidationArtefact {
   @Nonnull
   public EValidationLevel getValidationLevel () {
     return m_eLevel;
+  }
+
+  @Nonnull
+  public EXMLValidationType getValidationType () {
+    return m_eLevel.getValidationType ();
   }
 
   @Nonnull
