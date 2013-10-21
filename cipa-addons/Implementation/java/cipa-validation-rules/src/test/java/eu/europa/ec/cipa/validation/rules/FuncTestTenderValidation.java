@@ -75,7 +75,7 @@ public class FuncTestTenderValidation {
       assertNotNull (aUBLTender);
 
       // Test the country-independent catalogue layers
-      for (final IValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
+      for (final EValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
                                                                                               EValidationDocumentType.TENDER,
                                                                                               CGlobal.LOCALE_INDEPENDENT)) {
         // Get the XSLT for transaction T44
@@ -107,7 +107,7 @@ public class FuncTestTenderValidation {
       assertNotNull (aUBLCallForTenders);
 
       // Test the country-independent catalogue layers
-      for (final IValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
+      for (final EValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
                                                                                               EValidationDocumentType.TENDER,
                                                                                               CGlobal.LOCALE_INDEPENDENT)) {
         // Get the XSLT for transaction T44

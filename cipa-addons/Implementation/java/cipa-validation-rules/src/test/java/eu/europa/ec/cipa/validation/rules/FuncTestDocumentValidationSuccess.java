@@ -87,7 +87,7 @@ public final class FuncTestDocumentValidationSuccess {
       assertNotNull (aUBLCatalogue);
 
       // Test the country-independent catalogue layers
-      for (final IValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
+      for (final EValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
                                                                                               EValidationDocumentType.CATALOGUE,
                                                                                               CGlobal.LOCALE_INDEPENDENT)) {
         // Get the XSLT for transaction T19
@@ -120,7 +120,7 @@ public final class FuncTestDocumentValidationSuccess {
       assertNotNull (aUBLOrder);
 
       // Test the country-independent orders layers
-      for (final IValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
+      for (final EValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
                                                                                               EValidationDocumentType.ORDER,
                                                                                               CGlobal.LOCALE_INDEPENDENT)) {
         // Get the XSLT for transaction T01
@@ -155,7 +155,7 @@ public final class FuncTestDocumentValidationSuccess {
       assertNotNull (aUBLOrderResponse);
 
       // Test the country-independent orders layers
-      for (final IValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
+      for (final EValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
                                                                                               EValidationDocumentType.ORDERRESPONSE,
                                                                                               CGlobal.LOCALE_INDEPENDENT)) {
         // Get the XSLT for transaction T01
@@ -190,7 +190,7 @@ public final class FuncTestDocumentValidationSuccess {
       assertNotNull (aUBLCreditNote);
 
       // Test the country-independent orders layers
-      for (final IValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
+      for (final EValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
                                                                                               EValidationDocumentType.CREDIT_NOTE,
                                                                                               CGlobal.LOCALE_INDEPENDENT)) {
         // Get the XSLT for transaction T14
@@ -226,7 +226,7 @@ public final class FuncTestDocumentValidationSuccess {
       assertNotNull (aUBLInvoice);
 
       // Test the country-independent invoice layers
-      for (final IValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
+      for (final EValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
                                                                                               EValidationDocumentType.INVOICE,
                                                                                               CGlobal.LOCALE_INDEPENDENT)) {
         // Get the XSLT for transaction T10
@@ -262,7 +262,7 @@ public final class FuncTestDocumentValidationSuccess {
       assertNotNull (aUBLInvoice);
 
       // Test the country-independent invoice layers
-      for (final IValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
+      for (final EValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
                                                                                               EValidationDocumentType.INVOICE,
                                                                                               aCountry)) {
         // Get the XSLT for transaction T10

@@ -51,7 +51,6 @@ import org.slf4j.LoggerFactory;
 
 import com.phloc.commons.CGlobal;
 import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.ReturnsImmutableObject;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ArrayHelper;
 import com.phloc.commons.collections.ContainerHelper;
@@ -170,7 +169,7 @@ public enum EValidationArtefact implements IValidationArtefact {
     m_sDirName = sDirName;
     m_sFileNamePrefix = sDirName.toUpperCase (Locale.US);
     m_aCountry = aCountry;
-    m_aTransactions = ContainerHelper.newUnmodifiableSet (aTransactions);
+    m_aTransactions = ContainerHelper.newSet (aTransactions);
   }
 
   /**
@@ -209,15 +208,15 @@ public enum EValidationArtefact implements IValidationArtefact {
   }
 
   @Nonnull
-  @ReturnsImmutableObject
   @Nonempty
+  @ReturnsMutableCopy
   public Set <IValidationTransaction> getAllValidationTransactions () {
-    return m_aTransactions;
+    return ContainerHelper.newSet (m_aTransactions);
   }
 
   @Nonnull
-  @ReturnsMutableCopy
   @Nonempty
+  @ReturnsMutableCopy
   public Set <ETransaction> getAllTransactions () {
     final Set <ETransaction> ret = new HashSet <ETransaction> ();
     for (final IValidationTransaction aTransaction : m_aTransactions)
@@ -231,6 +230,20 @@ public enum EValidationArtefact implements IValidationArtefact {
         if (aTransaction.getTransaction ().equals (eTransaction))
           return true;
     return false;
+  }
+
+  @Nullable
+  public IReadableResource getValidationXSDResource (@Nonnull final IValidationTransaction aTransaction) {
+    // Only Schematrons are contained
+    return null;
+  }
+
+  @Nonnull
+  @Nonempty
+  @ReturnsMutableCopy
+  public List <IReadableResource> getAllValidationXSDResources () {
+    // Only Schematrons are contained
+    return new ArrayList <IReadableResource> ();
   }
 
   @Nullable
@@ -265,8 +278,12 @@ public enum EValidationArtefact implements IValidationArtefact {
   @ReturnsMutableCopy
   public List <IReadableResource> getAllValidationSchematronResources () {
     final List <IReadableResource> aList = new ArrayList <IReadableResource> ();
-    for (final IValidationTransaction aTransaction : m_aTransactions)
-      aList.add (getValidationSchematronResource (aTransaction));
+    for (final IValidationTransaction aTransaction : m_aTransactions) {
+      final IReadableResource aSCH = getValidationSchematronResource (aTransaction);
+      // May be null on internal error
+      if (aSCH != null)
+        aList.add (aSCH);
+    }
     return aList;
   }
 
@@ -302,8 +319,12 @@ public enum EValidationArtefact implements IValidationArtefact {
   @ReturnsMutableCopy
   public List <IReadableResource> getAllValidationXSLTResources () {
     final List <IReadableResource> aList = new ArrayList <IReadableResource> ();
-    for (final IValidationTransaction aTransaction : m_aTransactions)
-      aList.add (getValidationXSLTResource (aTransaction));
+    for (final IValidationTransaction aTransaction : m_aTransactions) {
+      final IReadableResource aXSLT = getValidationXSLTResource (aTransaction);
+      // May be null on internal error
+      if (aXSLT != null)
+        aList.add (aXSLT);
+    }
     return aList;
   }
 

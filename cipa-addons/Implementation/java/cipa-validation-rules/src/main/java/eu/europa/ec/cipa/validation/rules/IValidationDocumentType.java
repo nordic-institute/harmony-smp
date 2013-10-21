@@ -40,6 +40,7 @@ package eu.europa.ec.cipa.validation.rules;
 import javax.annotation.Nullable;
 import javax.xml.validation.Schema;
 
+import com.phloc.commons.annotations.MustImplementEqualsAndHashcode;
 import com.phloc.commons.id.IHasID;
 import com.phloc.commons.xml.schema.IHasSchema;
 
@@ -49,6 +50,7 @@ import com.phloc.commons.xml.schema.IHasSchema;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
+@MustImplementEqualsAndHashcode
 public interface IValidationDocumentType extends IHasID <String>, IHasSchema {
   /**
    * @return The XML {@link Schema} to validate this document type agains or

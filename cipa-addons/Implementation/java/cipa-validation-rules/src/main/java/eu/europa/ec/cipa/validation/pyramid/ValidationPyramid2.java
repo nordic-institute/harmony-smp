@@ -46,6 +46,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.validation.Schema;
 
 import com.phloc.commons.CGlobal;
+import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.io.IReadableResource;
 
 import eu.europa.ec.cipa.validation.generic.IXMLValidator;
@@ -132,7 +133,7 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
   }
 
   /**
-   * Add a new validation layer
+   * Add a new generic validation layer
    * 
    * @param aLayer
    *        The layer to add. May not be <code>null</code>.
@@ -147,6 +148,60 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
     // Sort validation layers, so that the basic layers always come first
     Collections.sort (m_aValidationLayers, new ComparatorValidationPyramidLayerByLevel ());
     return this;
+  }
+
+  /**
+   * Add a new validation layer
+   * 
+   * @param aValidationArtefact
+   *        The artefact to add. May not be <code>null</code>.
+   * @return this
+   */
+  @Nonnull
+  public ValidationPyramid2 addValidationLayer (@Nonnull final IValidationArtefact aValidationArtefact) {
+    if (aValidationArtefact == null)
+      throw new NullPointerException ("ValidationArtefact");
+
+    if (!aValidationArtefact.getValidationDocumentType ().equals (m_aValidationDocType))
+      throw new IllegalArgumentException ("The passed validation artefact belongs to a different document type than this pyramid (" +
+                                          m_aValidationDocType.getID () +
+                                          ")");
+
+    if (!EqualsUtils.equals (aValidationArtefact.getValidationCountry (), m_aValidationCountry))
+      throw new IllegalArgumentException ("The passed validation artefact belongs to a different country than this pyramid (" +
+                                          m_aValidationCountry +
+                                          ")");
+
+    if (!aValidationArtefact.containsTransaction (m_aValidationTransaction.getTransaction ()))
+      throw new IllegalArgumentException ("The passed validation artefact has no support for transaction " +
+                                          m_aValidationTransaction.getTransaction ());
+
+    // Build the corresponding validation
+    IXMLValidator aValidator = null;
+    switch (aValidationArtefact.getValidationType ()) {
+      case XSD:
+        final IReadableResource aXSD = aValidationArtefact.getValidationXSDResource (m_aValidationTransaction);
+        if (aXSD != null)
+          aValidator = new XMLSchemaValidator (aXSD);
+        break;
+      case SCHEMATRON:
+        final IReadableResource aSCH = aValidationArtefact.getValidationSchematronResource (m_aValidationTransaction);
+        if (aSCH != null)
+          aValidator = XMLSchematronValidator.createFromSCHPure (aSCH);
+        break;
+      default:
+        throw new IllegalStateException ("Unsupported validation type " + aValidationArtefact.getValidationType ());
+    }
+
+    if (aValidator == null) {
+      // No action needed because e.g. no UBL syntax binding is present
+      return this;
+    }
+
+    final ValidationPyramidLayer aLayer = new ValidationPyramidLayer (aValidationArtefact.getValidationLevel (),
+                                                                      aValidator,
+                                                                      false);
+    return addValidationLayer (aLayer);
   }
 
   /**

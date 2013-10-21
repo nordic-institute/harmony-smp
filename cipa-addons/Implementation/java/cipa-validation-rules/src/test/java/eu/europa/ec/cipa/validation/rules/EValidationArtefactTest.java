@@ -63,14 +63,14 @@ public final class EValidationArtefactTest {
   @Test
   public void testXSLTExisting () {
     // Check if all referenced XSLT artefacts exist
-    for (final IValidationArtefact aArtefacts : EValidationArtefact.values ())
+    for (final EValidationArtefact aArtefacts : EValidationArtefact.values ())
       for (final IReadableResource aXSLT : aArtefacts.getAllValidationXSLTResources ())
         assertTrue ("Does not exist: " + aXSLT.toString (), aXSLT.exists ());
   }
 
   @Test
   public void testGetAllValidationXSLTResources () {
-    for (final IValidationArtefact aArtefacts : EValidationArtefact.values ()) {
+    for (final EValidationArtefact aArtefacts : EValidationArtefact.values ()) {
       // Don't run the Schematron compilation because on some artefacts it takes
       // up to 15 minutes to compile one!!!!!
       for (final IReadableResource aXSLT : aArtefacts.getAllValidationXSLTResources ()) {

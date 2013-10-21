@@ -97,6 +97,7 @@ public interface IValidationArtefact extends IHasID <String> {
    */
   @Nonnull
   @Nonempty
+  @ReturnsMutableCopy
   Set <IValidationTransaction> getAllValidationTransactions ();
 
   /**
@@ -104,6 +105,7 @@ public interface IValidationArtefact extends IHasID <String> {
    */
   @Nonnull
   @Nonempty
+  @ReturnsMutableCopy
   Set <ETransaction> getAllTransactions ();
 
   /**
@@ -115,6 +117,26 @@ public interface IValidationArtefact extends IHasID <String> {
    *         <code>null</code> and is contained in this artefact
    */
   boolean containsTransaction (@Nullable ETransaction eTransaction);
+
+  /**
+   * Get the XML Schema resource (.XSD) of this artefact for the specified
+   * transaction.
+   * 
+   * @param aTransaction
+   *        The transaction to be searched. May not be <code>null</code>.
+   * @return <code>null</code> if no such transaction is present.
+   */
+  @Nullable
+  IReadableResource getValidationXSDResource (@Nonnull IValidationTransaction aTransaction);
+
+  /**
+   * @return A list of all XML Schema resources (.XSD) for the current artefact.
+   *         Never <code>null</code>. The returned list may be empty if this is
+   *         a Schematron artifact.
+   */
+  @Nonnull
+  @ReturnsMutableCopy
+  List <IReadableResource> getAllValidationXSDResources ();
 
   /**
    * Get the Schematron resource (.SCH) of this artefact for the specified
@@ -129,31 +151,10 @@ public interface IValidationArtefact extends IHasID <String> {
 
   /**
    * @return A list of all Schematron resources (.SCH) for the current artefact.
-   *         Never <code>null</code>. The returned list always contains at least
-   *         one item.
+   *         Never <code>null</code>. The returned list may be empty if this is
+   *         a XSD artifact.
    */
   @Nonnull
-  @Nonempty
   @ReturnsMutableCopy
   List <IReadableResource> getAllValidationSchematronResources ();
-
-  /**
-   * Get the XSLT resource of this artefact for the specified transaction.
-   * 
-   * @param aRuleSet
-   *        The transaction to be searched. May not be <code>null</code>.
-   * @return <code>null</code> if no such transaction is present.
-   */
-  @Nullable
-  IReadableResource getValidationXSLTResource (@Nonnull IValidationTransaction aRuleSet);
-
-  /**
-   * @return A list of all XSLT resources for the current artefact. Never
-   *         <code>null</code>. The returned list always contains at least one
-   *         entry.
-   */
-  @Nonnull
-  @Nonempty
-  @ReturnsMutableCopy
-  List <IReadableResource> getAllValidationXSLTResources ();
 }
