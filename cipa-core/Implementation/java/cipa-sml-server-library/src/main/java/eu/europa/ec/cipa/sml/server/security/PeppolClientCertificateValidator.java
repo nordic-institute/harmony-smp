@@ -53,6 +53,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.annotations.PresentForCodeCoverage;
 import com.phloc.commons.collections.ArrayHelper;
 import com.phloc.commons.string.StringHelper;
 
@@ -69,6 +70,10 @@ public final class PeppolClientCertificateValidator {
   public static final String CONFIG_SML_CLIENT_CERTISSUER = "sml.client.certissuer";
   public static final String CONFIG_SML_CLIENT_CERTISSUER_NEW = "sml.client.certissuer.new";
   private static final Logger s_aLogger = LoggerFactory.getLogger (PeppolClientCertificateValidator.class);
+
+  @PresentForCodeCoverage
+  @SuppressWarnings ("unused")
+  private static final PeppolClientCertificateValidator s_aInstance = new PeppolClientCertificateValidator ();
 
   private PeppolClientCertificateValidator () {}
 

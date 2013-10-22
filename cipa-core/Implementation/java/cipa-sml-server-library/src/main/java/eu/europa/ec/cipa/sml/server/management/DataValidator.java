@@ -157,8 +157,8 @@ public final class DataValidator {
     try {
       new URL (aPublisherEndpoint.getLogicalAddress ());
     }
-    catch (final MalformedURLException e) {
-      throw new BadRequestException ("Logical address is malformed: " + e.getMessage ());
+    catch (final MalformedURLException ex) {
+      throw new BadRequestException ("Logical address is malformed: " + ex.getMessage ());
     }
 
     if (!RegExHelper.stringMatchesPattern (IP_V4_RULE, aPublisherEndpoint.getPhysicalAddress ()))

@@ -46,6 +46,7 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.annotations.PresentForCodeCoverage;
 import com.phloc.commons.exceptions.InitializationException;
 
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
@@ -110,6 +111,10 @@ public final class PeppolRootCertificateProvider {
                     sTrustStoreAliasNew +
                     "'");
   }
+
+  @PresentForCodeCoverage
+  @SuppressWarnings ("unused")
+  private static final PeppolRootCertificateProvider s_aInstance = new PeppolRootCertificateProvider ();
 
   private PeppolRootCertificateProvider () {}
 

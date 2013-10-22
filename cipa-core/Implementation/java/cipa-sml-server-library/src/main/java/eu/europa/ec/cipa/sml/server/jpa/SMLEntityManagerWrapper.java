@@ -54,6 +54,7 @@ public final class SMLEntityManagerWrapper extends AbstractPerRequestEntityManag
   @UsedViaReflection
   public SMLEntityManagerWrapper () {}
 
+  @Nonnull
   public static SMLEntityManagerWrapper getInstance () {
     return getRequestSingleton (SMLEntityManagerWrapper.class);
   }

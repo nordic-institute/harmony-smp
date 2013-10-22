@@ -45,35 +45,36 @@ import javax.xml.soap.SOAPException;
 import javax.xml.soap.SOAPFault;
 import javax.xml.soap.SOAPMessage;
 import javax.xml.ws.handler.MessageContext;
+import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class FaultHandler implements javax.xml.ws.handler.soap.SOAPHandler <SOAPMessageContext> {
+public class FaultHandler implements SOAPHandler <SOAPMessageContext> {
   private static final Logger s_aLogger = LoggerFactory.getLogger (FaultHandler.class);
 
-  public void close (final MessageContext context) {}
+  public void close (final MessageContext aContext) {}
 
-  public boolean handleFault (@Nonnull final SOAPMessageContext context) {
-    final Boolean aOutbound = (Boolean) context.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY);
-    s_aLogger.info ("Entered the soap fault handler; outbound=" + aOutbound);
+  public boolean handleFault (@Nonnull final SOAPMessageContext aContext) {
+    final Boolean aOutbound = (Boolean) aContext.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+    s_aLogger.info ("Entered the SOAP Fault handler; outbound=" + aOutbound);
     if (aOutbound != null && aOutbound.booleanValue ()) {
-      final SOAPMessage sm = context.getMessage ();
+      final SOAPMessage aSOAPMessage = aContext.getMessage ();
       SOAPFault aFault;
       try {
-        aFault = sm.getSOAPBody ().getFault ();
-        s_aLogger.warn (" Fault code: " + aFault.getFaultCode ());
+        aFault = aSOAPMessage.getSOAPBody ().getFault ();
+        s_aLogger.warn ("  Fault code: " + aFault.getFaultCode ());
         s_aLogger.warn ("  Fault string: " + aFault.getFaultString ());
       }
-      catch (final SOAPException e) {
-        s_aLogger.error ("Failed to get SOAP fault", e);
+      catch (final SOAPException ex) {
+        s_aLogger.error ("  Failed to get SOAP fault :(", ex);
       }
     }
     return true;
   }
 
-  public boolean handleMessage (final SOAPMessageContext context) {
+  public boolean handleMessage (final SOAPMessageContext aContext) {
     return true;
   }
 

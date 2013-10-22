@@ -71,8 +71,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
+import com.phloc.commons.xml.XMLHelper;
 import com.phloc.commons.xml.transform.XMLTransformerFactory;
 
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
@@ -86,10 +86,10 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public class AddSignatureHandler implements LogicalHandler <LogicalMessageContext> {
-  private static final String CONFIG_SML_KEYSTORE_PATH = "sml.keystore.path";
-  private static final String CONFIG_SML_KEYSTORE_PASSWORD = "sml.keystore.password";
-  private static final String CONFIG_SML_KEYSTORE_ALIAS = "sml.keystore.alias";
-  private static final String CONFIG_SML_SIGN_RESPONSE = "sml.response.sign";
+  public static final String CONFIG_SML_KEYSTORE_PATH = "sml.keystore.path";
+  public static final String CONFIG_SML_KEYSTORE_PASSWORD = "sml.keystore.password";
+  public static final String CONFIG_SML_KEYSTORE_ALIAS = "sml.keystore.alias";
+  public static final String CONFIG_SML_SIGN_RESPONSE = "sml.response.sign";
   private static final Logger s_aLogger = LoggerFactory.getLogger (AddSignatureHandler.class);
 
   /**
@@ -100,12 +100,9 @@ public class AddSignatureHandler implements LogicalHandler <LogicalMessageContex
     return ConfigFile.getInstance ();
   }
 
-  @Override
   public void close (final MessageContext context) {}
 
-  @Override
   public boolean handleFault (final LogicalMessageContext context) {
-
     return true;
   }
 
@@ -116,18 +113,17 @@ public class AddSignatureHandler implements LogicalHandler <LogicalMessageContex
     return new DOMSource (aResult.getNode ());
   }
 
-  @Override
-  public boolean handleMessage (final LogicalMessageContext context) {
+  public boolean handleMessage (@Nonnull final LogicalMessageContext aContext) {
     // Returns if the message is an inbound message.
-    final Boolean aIsOutbound = (Boolean) context.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY);
+    final Boolean aIsOutbound = (Boolean) aContext.get (MessageContext.MESSAGE_OUTBOUND_PROPERTY);
     if (Boolean.FALSE.equals (aIsOutbound))
       return true;
 
-    final Boolean aSignResponse = Boolean.valueOf (_getConfigFile ().getString (CONFIG_SML_SIGN_RESPONSE));
-    if (Boolean.FALSE.equals (aSignResponse))
+    final boolean bSignResponse = _getConfigFile ().getBoolean (CONFIG_SML_SIGN_RESPONSE, false);
+    if (!bSignResponse)
       return true;
 
-    final LogicalMessage aMessage = context.getMessage ();
+    final LogicalMessage aMessage = aContext.getMessage ();
     Source aPayload = aMessage.getPayload ();
     if (aPayload == null)
       return false;
@@ -135,7 +131,7 @@ public class AddSignatureHandler implements LogicalHandler <LogicalMessageContex
     boolean bNewPayload = false;
     if (!(aPayload instanceof DOMSource)) {
       // Ensure we have a DOM source present
-      s_aLogger.info ("Converting " + aPayload + " to DOMSource");
+      s_aLogger.info ("Converting source of type " + aPayload.getClass ().getName () + " to DOMSource");
       try {
         aPayload = _convertToDOMSource (aPayload);
         bNewPayload = true;
@@ -146,14 +142,12 @@ public class AddSignatureHandler implements LogicalHandler <LogicalMessageContex
       }
     }
 
-    final Node aRootNode = ((DOMSource) aPayload).getNode ();
-    final Element aRootElement = ((Document) aRootNode).getDocumentElement ();
-
+    final Document aDocument = XMLHelper.getOwnerDocument (((DOMSource) aPayload).getNode ());
     try {
-      _signXML (aRootElement);
+      _signXML (aDocument.getDocumentElement ());
     }
-    catch (final Exception e) {
-      s_aLogger.error ("Error in signing xml", e);
+    catch (final Exception ex) {
+      s_aLogger.error ("Error in signing xml from source " + aPayload, ex);
       return false;
     }
 

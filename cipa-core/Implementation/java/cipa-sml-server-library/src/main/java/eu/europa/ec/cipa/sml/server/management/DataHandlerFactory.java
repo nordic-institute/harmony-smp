@@ -40,6 +40,9 @@ package eu.europa.ec.cipa.sml.server.management;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.phloc.commons.annotations.PresentForCodeCoverage;
 import com.phloc.commons.lang.GenericReflection;
 import com.phloc.commons.string.StringHelper;
@@ -59,7 +62,9 @@ import eu.europa.ec.cipa.sml.server.ISMPDataHandlerCallback;
  */
 @Immutable
 public final class DataHandlerFactory {
+  @Immutable
   private static final class SingletonHolder {
+    private static final Logger s_aLogger = LoggerFactory.getLogger (SingletonHolder.class);
     private static final String CONFIG_SML_DATAHANDLER_SMP_CLASS = "sml.datahandler.smp.class";
     private static final String CONFIG_SML_DATAHANDLER_SMP_CALLBACK = "sml.datahandler.smp.callback";
     private static final String CONFIG_SML_DATAHANDLER_PARTICIPANT_CLASS = "sml.datahandler.participant.class";
@@ -89,6 +94,8 @@ public final class DataHandlerFactory {
                                                                                    ISMPDataHandlerCallback.class);
           if (aCallback != null)
             s_aSMPInstance.setCallback (aCallback);
+          else
+            s_aLogger.warn ("Failed to instantiate SMP data handler callback class '" + sSMPCallbackClass + "'");
         }
       }
 
@@ -110,6 +117,10 @@ public final class DataHandlerFactory {
                                                                                            IParticipantDataHandlerCallback.class);
           if (aCallback != null)
             s_aParticipantInstance.setCallback (aCallback);
+          else
+            s_aLogger.warn ("Failed to instantiate participant data handler callback class '" +
+                            sParticipantCallbackClass +
+                            "'");
         }
       }
 
