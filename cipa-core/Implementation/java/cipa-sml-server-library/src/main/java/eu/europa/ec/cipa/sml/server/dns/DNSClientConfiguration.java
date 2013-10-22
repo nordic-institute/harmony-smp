@@ -37,6 +37,7 @@
  */
 package eu.europa.ec.cipa.sml.server.dns;
 
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
@@ -75,6 +76,7 @@ public final class DNSClientConfiguration {
    * 
    * @return zone
    */
+  @Nullable
   public static String getZone () {
     return s_aConfigFile.getString (CONFIG_ZONE);
   }
@@ -85,6 +87,7 @@ public final class DNSClientConfiguration {
    * 
    * @return zone
    */
+  @Nullable
   public static String getSMLZoneName () {
     return s_aConfigFile.getString (CONFIG_SML_ZONE_NAME);
   }
@@ -94,6 +97,7 @@ public final class DNSClientConfiguration {
    * 
    * @return server
    */
+  @Nullable
   public static String getServer () {
     return s_aConfigFile.getString (CONFIG_SERVER);
   }
