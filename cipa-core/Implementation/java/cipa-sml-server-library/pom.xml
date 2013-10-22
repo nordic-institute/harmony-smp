@@ -8,13 +8,13 @@
     <relativePath>../cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-sml-server-library</artifactId>
-  <version>1.1.3-SNAPSHOT</version>
+  <version>1.1.2a</version>
   <packaging>bundle</packaging>
   <name>cipa-sml-server-library</name>
 
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-sml-server-library</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-sml-server-library</developerConnection>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/tags/1.1.2a/cipa-sml-server-library</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/tags/1.1.2a/cipa-sml-server-library</developerConnection>
   </scm>
 
   <repositories>
