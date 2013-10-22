@@ -39,11 +39,15 @@ package eu.europa.ec.cipa.sml.server.security;
 
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import javax.security.auth.x500.X500Principal;
 import javax.servlet.http.HttpServletRequest;
 
@@ -120,9 +124,32 @@ public final class ClientUniqueIDProvider {
                                        " certificates that are not issuer certificates!");
 
     final X509Certificate aNonIssuerCert = ContainerHelper.getFirstElement (aNonIssuerCertList);
+    return getClientUniqueID (aNonIssuerCert);
+  }
 
-    // principal-name + ":" + serialnumber-hexstring
-    // FIXME subject principal name must be in the order CN=XX,O=YY,C=ZZ
-    return aNonIssuerCert.getSubjectX500Principal ().getName () + ':' + aNonIssuerCert.getSerialNumber ().toString (16);
+  @Nullable
+  static String getClientUniqueID (@Nullable final X509Certificate aCert) {
+    try {
+      // subject principal name must be in the order CN=XX,O=YY,C=ZZ
+      // In some JDK versions it is O=YY,CN=XX,C=ZZ instead (e.g. 1.6.0_45)
+      final LdapName aLdapName = new LdapName (aCert.getSubjectX500Principal ().getName ());
+
+      // Make a map from type to name
+      final Map <String, Rdn> aParts = new HashMap <String, Rdn> ();
+      for (final Rdn aRdn : aLdapName.getRdns ())
+        aParts.put (aRdn.getType (), aRdn);
+
+      // Re-order - least important item comes first (=reverse order)!
+      final String sSubjectName = new LdapName (ContainerHelper.newList (aParts.get ("C"),
+                                                                         aParts.get ("O"),
+                                                                         aParts.get ("CN"))).toString ();
+
+      // subject-name + ":" + serial number hexstring
+      return sSubjectName + ':' + aCert.getSerialNumber ().toString (16);
+    }
+    catch (final Exception ex) {
+      s_aLogger.error ("Failed to parse '" + aCert.getSubjectX500Principal ().getName () + "'", ex);
+      return null;
+    }
   }
 }

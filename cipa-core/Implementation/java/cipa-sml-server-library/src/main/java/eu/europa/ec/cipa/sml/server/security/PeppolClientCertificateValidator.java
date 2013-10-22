@@ -66,8 +66,8 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
  */
 @Immutable
 public final class PeppolClientCertificateValidator {
-  private static final String CONFIG_SML_CLIENT_CERTISSUER = "sml.client.certissuer";
-  private static final String CONFIG_SML_CLIENT_CERTISSUER_NEW = "sml.client.certissuer.new";
+  public static final String CONFIG_SML_CLIENT_CERTISSUER = "sml.client.certissuer";
+  public static final String CONFIG_SML_CLIENT_CERTISSUER_NEW = "sml.client.certissuer.new";
   private static final Logger s_aLogger = LoggerFactory.getLogger (PeppolClientCertificateValidator.class);
 
   private PeppolClientCertificateValidator () {}
@@ -83,7 +83,7 @@ public final class PeppolClientCertificateValidator {
    * @param aDT
    *        The date and time which should be used for checking. May be
    *        <code>null</code> to indicate "now".
-   * @return <code>null</code> in case of success!
+   * @return <code>null</code> in case of success, the error message otherwise!
    */
   @Nullable
   private static String _verifyCertificate (@Nonnull final X509Certificate aCert,
@@ -108,15 +108,15 @@ public final class PeppolClientCertificateValidator {
       else
         aCert.checkValidity ();
     }
-    catch (final Exception e) {
-      return e.getMessage ();
+    catch (final Exception ex) {
+      return ex.getMessage ();
     }
 
     // Check passed revocation lists
     if (aCRLs != null)
       for (final CRL aCRL : aCRLs)
         if (aCRL.isRevoked (aCert))
-          return "Certificate is revoked according to " + aCRL;
+          return "Certificate is revoked according to " + aCRL.toString ();
 
     // null means OK :)
     return null;
@@ -152,6 +152,8 @@ public final class PeppolClientCertificateValidator {
       return false;
     }
 
+    // OK, we have a non-empty, type checked Certificate array
+
     // TODO: determine CRLs
     final Collection <CRL> aCRLs = new ArrayList <CRL> ();
     final Date aNow = new Date ();
@@ -163,8 +165,6 @@ public final class PeppolClientCertificateValidator {
     // final X509CRL crl = (X509CRL) certFactory.generateCRL (crlStream);
     // crl.verify (issuerCertificate.getPublicKey ());
     // final boolean revoked = crl.isRevoked (certificate);
-
-    // OK, we have a non-empty, type checked Certificate array
 
     // Build list of principals to search - this is assumed to be more safe than
     // to simply search by name!
@@ -214,7 +214,7 @@ public final class PeppolClientCertificateValidator {
       s_aLogger.info ("  Passed certificate is a PEPPOL certificate");
       return true;
     }
-    s_aLogger.warn ("Client certificate is not a PEPPOL certificate: " +
+    s_aLogger.warn ("Client certificate is not a PEPPOL certificate (but maybe an OpenPEPPOL certificate): " +
                     sPeppolVerifyMsg +
                     "; root certificate serial=" +
                     aPeppolRootCert.getSerialNumber ().toString (16) +

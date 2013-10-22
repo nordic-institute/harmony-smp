@@ -37,6 +37,7 @@
  */
 package eu.europa.ec.cipa.sml.server.security;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.security.KeyStore;
@@ -55,24 +56,30 @@ import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class PeppolClientCertificateValidatorTest {
+public final class PeppolClientCertificateValidatorTest
+{
   @Test
-  public void testValidation () throws Exception {
+  public void testValidation () throws Exception
+  {
 
     // Main key storage
     KeyStore aKeyStore = null;
-    try {
+    try
+    {
       aKeyStore = KeyStoreUtils.loadKeyStore ("keys/sml2.jks", "peppol");
     }
-    catch (final IllegalArgumentException ex) {
+    catch (final IllegalArgumentException ex)
+    {
       // Keystore does not exist - skip test
+      System.out.println ("Found no keystore - ignoring this test");
       return;
     }
 
     // Extract all certificates from the key store
     final List <X509Certificate> aCerts = new ArrayList <X509Certificate> ();
     final Enumeration <String> aEnum = aKeyStore.aliases ();
-    while (aEnum.hasMoreElements ()) {
+    while (aEnum.hasMoreElements ())
+    {
       final String sAlias = aEnum.nextElement ();
       final Certificate aCert = aKeyStore.getCertificate (sAlias);
       if (aCert instanceof X509Certificate)
@@ -84,6 +91,9 @@ public final class PeppolClientCertificateValidatorTest {
 
     // Convert to array
     final X509Certificate [] aCertArray = aCerts.toArray (new X509Certificate [aCerts.size ()]);
+
+    assertEquals ("CN=SMP_PEPPOL SML 001,O=BRZ (Federal Computing Center Austria),C=AT:12112c930b21d671f8c5e002580fa4",
+                  ClientUniqueIDProvider.getClientUniqueID (aCerts.get (0)));
 
     // And test
     assertTrue (PeppolClientCertificateValidator.isClientCertificateValid (aCertArray));

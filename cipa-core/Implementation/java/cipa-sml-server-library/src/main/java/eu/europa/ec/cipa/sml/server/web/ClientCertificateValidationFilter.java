@@ -61,7 +61,7 @@ import eu.europa.ec.cipa.sml.server.security.PeppolClientCertificateValidator;
 public final class ClientCertificateValidationFilter implements Filter {
   private static final Logger s_aLogger = LoggerFactory.getLogger (ClientCertificateValidationFilter.class);
 
-  public void init (final FilterConfig filterConfig) throws ServletException {}
+  public void init (final FilterConfig aFilterConfig) throws ServletException {}
 
   public void doFilter (final ServletRequest aRequest, final ServletResponse aResponse, final FilterChain aFilterChain) throws IOException,
                                                                                                                        ServletException {

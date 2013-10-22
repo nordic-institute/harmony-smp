@@ -53,10 +53,20 @@ import com.phloc.commons.string.StringHelper;
  */
 @Immutable
 public final class WebRequestClientIdentifier {
+  /** The name of the request attribute where the client unique ID is stored. */
   private static final String REQUEST_PARAMETER_CERTIFICATE = WebRequestClientIdentifier.class.getName ();
 
   private WebRequestClientIdentifier () {}
 
+  /**
+   * Set the client unique ID for the specified request to the specified value.
+   * 
+   * @param aHttpRequest
+   *        The HTTP request to set the value. May not be <code>null</code>.
+   * @param sClientUniqueID
+   *        The client unique ID to be set. May neither be <code>null</code> nor
+   *        empty.
+   */
   public static void setClientUniqueID (@Nonnull final HttpServletRequest aHttpRequest,
                                         @Nonnull @Nonempty final String sClientUniqueID) {
     if (aHttpRequest == null)
@@ -66,10 +76,19 @@ public final class WebRequestClientIdentifier {
     aHttpRequest.setAttribute (REQUEST_PARAMETER_CERTIFICATE, sClientUniqueID);
   }
 
+  /**
+   * Get the client unique ID from the specified request.
+   * 
+   * @param aHttpRequest
+   *        The HTTP request to get the value from. May not be <code>null</code>
+   *        .
+   * @return The client unique ID and never <code>null</code>.
+   */
   @Nonnull
   public static String getClientUniqueID (@Nonnull final HttpServletRequest aHttpRequest) {
     if (aHttpRequest == null)
       throw new NullPointerException ("httpRequest");
+
     final Object aClientUniqueID = aHttpRequest.getAttribute (REQUEST_PARAMETER_CERTIFICATE);
     if (aClientUniqueID == null)
       throw new IllegalStateException ("No client unique ID found in request");
@@ -81,9 +100,20 @@ public final class WebRequestClientIdentifier {
     return (String) aClientUniqueID;
   }
 
+  /**
+   * Get the client unique ID from the specified WebService context.
+   * 
+   * @param aWSContext
+   *        The WebService context to get the value from. May not be
+   *        <code>null</code>.
+   * @return The client unique ID and never <code>null</code>.
+   */
   @Nonnull
-  public static String getClientUniqueID (@Nonnull final WebServiceContext wsContext) {
-    final MessageContext aMessageContext = wsContext.getMessageContext ();
+  public static String getClientUniqueID (@Nonnull final WebServiceContext aWSContext) {
+    if (aWSContext == null)
+      throw new NullPointerException ("WSContext");
+
+    final MessageContext aMessageContext = aWSContext.getMessageContext ();
     final HttpServletRequest aHttpRequest = (HttpServletRequest) aMessageContext.get (MessageContext.SERVLET_REQUEST);
     return getClientUniqueID (aHttpRequest);
   }
