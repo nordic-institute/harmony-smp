@@ -39,7 +39,7 @@
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-commons</artifactId>
-      <version>4.0.11</version>
+      <version>4.0.12</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.metro</groupId>
