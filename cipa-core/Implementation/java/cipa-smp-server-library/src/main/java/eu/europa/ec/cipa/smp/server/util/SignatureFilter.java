@@ -46,7 +46,9 @@ import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.charset.CCharset;
 import com.phloc.commons.exceptions.InitializationException;
+import com.phloc.commons.io.streams.StringInputStream;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
@@ -102,6 +104,26 @@ public final class SignatureFilter implements ContainerResponseFilter {
       }
       m_aKeyEntry = (KeyStore.PrivateKeyEntry) aEntry;
       m_aCert = (X509Certificate) m_aKeyEntry.getCertificate ();
+      s_aLogger.info ("Signature filter initialized with keystore '" +
+                      sKeyStoreClassPath +
+                      "' and alias '" +
+                      sKeyStoreKeyAlias +
+                      "'");
+
+      if (false) {
+        // Enable XMLDsig debugging
+        java.util.logging.LogManager.getLogManager ()
+                                    .readConfiguration (new StringInputStream ("handlers=java.util.logging.ConsoleHandler\r\n"
+                                                                                   + ".level=FINEST\r\n"
+                                                                                   + "java.util.logging.ConsoleHandler.level=FINEST\r\n"
+                                                                                   + "java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter",
+                                                                               CCharset.CHARSET_ISO_8859_1_OBJ));
+        java.util.logging.Logger.getLogger ("org.jcp.xml.dsig.internal.level").setLevel (java.util.logging.Level.FINER);
+        java.util.logging.Logger.getLogger ("org.apache.xml.internal.security.level")
+                                .setLevel (java.util.logging.Level.FINER);
+        java.util.logging.Logger.getLogger ("com.sun.org.apache.xml.internal.security.level")
+                                .setLevel (java.util.logging.Level.FINER);
+      }
     }
     catch (final Throwable t) {
       s_aLogger.error ("Error in constructor of SignatureFilter", t);
