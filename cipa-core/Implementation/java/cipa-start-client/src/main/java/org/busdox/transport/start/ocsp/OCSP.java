@@ -57,7 +57,9 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.CGlobal;
 import com.phloc.commons.GlobalDebug;
+import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.state.EValidity;
 
@@ -70,13 +72,13 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
  */
 @Immutable
 final class OCSP {
-  /**
-   * Logger to follow this class behavior.
-   */
+  public static final boolean DEFAULT_REVOCATION_ENABLED = true;
+
   private static final Logger s_aLogger = LoggerFactory.getLogger (OCSP.class);
 
+  private static final String CONFIG_REVOCATION_ENABLED = "ocsp.checkRevocation";
+
   private static final ConfigFile s_aConf = new ConfigFile ("private-configOCSP.properties", "configOCSP.properties");
-  private static final String REVOCATION_ENABLED = "ocsp.checkRevocation";
 
   private OCSP () {}
 
@@ -94,13 +96,18 @@ final class OCSP {
   @Nonnull
   public static EValidity check (@Nonnull final X509Certificate aCertificate,
                                  @Nonnull final X509Certificate aTrustedCert,
-                                 final String sResponderUrl) {
+                                 @Nonnull @Nonempty final String sResponderUrl) {
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("OCSP check of cert 0x" +
+                       aTrustedCert.getSerialNumber ().toString (CGlobal.HEX_RADIX) +
+                       " at responder URL '" +
+                       sResponderUrl +
+                       "'");
 
     try {
-
       // this configuration property allows to bypass the certificate revocation
       // check (for debug/test only)
-      final boolean bRevocationCheckEnabled = s_aConf.getBoolean (REVOCATION_ENABLED, true);
+      final boolean bRevocationCheckEnabled = s_aConf.getBoolean (CONFIG_REVOCATION_ENABLED, DEFAULT_REVOCATION_ENABLED);
 
       // Instantiate a CertificateFactory for X.509
       final CertificateFactory cf = CertificateFactory.getInstance ("X.509");
@@ -125,23 +132,31 @@ final class OCSP {
         Security.setProperty ("ocsp.enable", "true");
         Security.setProperty ("ocsp.responderURL", sResponderUrl);
       }
+      else {
+        // Reset if it was previously enabled
+        Security.setProperty ("ocsp.enable", "false");
+      }
 
       // Validate and obtain results
       final PKIXCertPathValidatorResult result = (PKIXCertPathValidatorResult) cpv.validate (cp, aParams);
       result.getPolicyTree ();
       result.getPublicKey ();
       if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Certificate " + aCertificate.getSerialNumber () + " is OCSP valid");
+        s_aLogger.debug ("Certificate 0x" +
+                         aCertificate.getSerialNumber ().toString (CGlobal.HEX_RADIX) +
+                         " is OCSP valid at responder URL '" +
+                         sResponderUrl +
+                         "'");
       return EValidity.VALID;
     }
     catch (final NoSuchAlgorithmException e) {
-      s_aLogger.error ("Internal error", e);
+      s_aLogger.error ("Internal error (NoSuchAlgorithmException)", e);
     }
     catch (final InvalidAlgorithmParameterException ex) {
-      s_aLogger.error ("Internal error", ex);
+      s_aLogger.error ("Internal error (InvalidAlgorithmParameterException)", ex);
     }
     catch (final CertificateException ex) {
-      s_aLogger.error ("Certificate error", ex);
+      s_aLogger.error ("Certificate error (CertificateException)", ex);
     }
     catch (final CertPathValidatorException cpve) {
       if (cpve.getCause () instanceof UnknownHostException) {
@@ -151,8 +166,14 @@ final class OCSP {
           return EValidity.VALID;
         }
       }
-      s_aLogger.error ("Validation failure, cert[" + cpve.getIndex () + "]: " + cpve.getMessage (), cpve);
+      s_aLogger.error ("Validation failure" +
+                       (cpve.getIndex () >= 0 ? ", cert[" + cpve.getIndex () + "]" : " not cert specific") +
+                       ", responder URL '" +
+                       sResponderUrl +
+                       "': " +
+                       cpve.getMessage (), cpve);
     }
+    // In case of any exception, we're invalid!
     return EValidity.INVALID;
   }
 }

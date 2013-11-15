@@ -61,9 +61,9 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
  *         PEPPOL.AT, BRZ, Philip Helger JLB
  */
 public final class Validator implements CertificateValidator {
-  /**
-   * Logger to follow this class behavior.
-   */
+  public static final String DEFAULT_RESPONDER_URL = "http://pilot-ocsp.verisign.com:80";
+  public static final String DEFAULT_RESPONDER_URL_NEW = "http://pki-ocsp.symauth.com:80";
+
   private static final Logger s_aLogger = LoggerFactory.getLogger (Validator.class);
 
   private static final String CONFIG_ENABLED = "ocsp.enabled";
@@ -115,40 +115,52 @@ public final class Validator implements CertificateValidator {
       final X509Certificate aRootCert = (X509Certificate) aTrustStore.getCertificate (sTrustStoreAlias);
       // Get certificate from new PKI by alias
       final String sTrustStoreAliasNew = s_aConf.getString (CONFIG_TRUSTORE_ALIAS_NEW);
-      final X509Certificate aRootCertNew = (sTrustStoreAliasNew == null || sTrustStoreAliasNew.equals ("")) ? null
-                                                                                                           : (X509Certificate) aTrustStore.getCertificate (sTrustStoreAliasNew);
+      final X509Certificate aRootCertNew = StringHelper.hasNoText (sTrustStoreAliasNew)
+                                                                                       ? null
+                                                                                       : (X509Certificate) aTrustStore.getCertificate (sTrustStoreAliasNew);
 
       if (aRootCert == null && aRootCertNew == null) {
-        s_aLogger.error ("Failed to resolve trust store alias '" + sTrustStoreAlias + "'");
+        s_aLogger.error ("Failed to resolve trust store alias '" +
+                         sTrustStoreAlias +
+                         "' or '" +
+                         sTrustStoreAliasNew +
+                         "'");
+        // fall through to "invalid" return
       }
       else {
         // Get the responder URL from the configuration
-        // Note: use the old constant as the default value, in case none is defined
-        final String DEFAULT_RESPONDER_URL = "http://pilot-ocsp.verisign.com:80";
+        // Note: use the old constant as the default value, in case none is
+        // defined
         final String sResponderURL = s_aConf.getString (CONFIG_RESPONDER_URL, DEFAULT_RESPONDER_URL);
-        final String DEFAULT_RESPONDER_URL_NEW = "http://pki-ocsp.symauth.com:80";
         final String sNewResponderURL = s_aConf.getString (CONFIG_RESPONDER_URL_NEW, DEFAULT_RESPONDER_URL_NEW);
         if (StringHelper.hasNoText (sResponderURL) && StringHelper.hasNoText (sNewResponderURL)) {
           // Error
           s_aLogger.error ("No OCSP responder URL configured (property '" +
-                           CONFIG_RESPONDER_URL + "' or '" + CONFIG_RESPONDER_URL_NEW +
-                           "'). The old default URL was: " +
-                           DEFAULT_RESPONDER_URL);
+                           CONFIG_RESPONDER_URL +
+                           "' or '" +
+                           CONFIG_RESPONDER_URL_NEW +
+                           "'). The old default URL was '" +
+                           DEFAULT_RESPONDER_URL +
+                           "' and the new default is '" +
+                           DEFAULT_RESPONDER_URL_NEW +
+                           "'");
+          // fall through to "invalid" return
         }
         else {
           // Start the main OCSP check, we try with both old and new root certs
           // if possible.
-          EValidity result = EValidity.INVALID;
-          if (aRootCert != null)
-            result = OCSP.check (aCert, aRootCert, sResponderURL);
-          if (result.isInvalid () && aRootCertNew != null)
-            result = OCSP.check (aCert, aRootCertNew, sNewResponderURL);
-          return result;
+          EValidity eResult = EValidity.INVALID;
+          if (aRootCert != null && StringHelper.hasText (sResponderURL))
+            eResult = OCSP.check (aCert, aRootCert, sResponderURL);
+          if (eResult.isInvalid () && aRootCertNew != null && StringHelper.hasText (sNewResponderURL))
+            eResult = OCSP.check (aCert, aRootCertNew, sNewResponderURL);
+          return eResult;
         }
       }
     }
     catch (final Exception ex) {
       s_aLogger.error ("Error validating certificate in trust store '" + sTrustStorePath + "'", ex);
+      // fall through to "invalid" return
     }
     return EValidity.INVALID;
   }

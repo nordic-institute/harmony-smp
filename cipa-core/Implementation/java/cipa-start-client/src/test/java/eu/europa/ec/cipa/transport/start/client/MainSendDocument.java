@@ -37,6 +37,7 @@
  */
 package eu.europa.ec.cipa.transport.start.client;
 
+import java.util.Locale;
 import java.util.UUID;
 
 import javax.annotation.Nonnull;
@@ -45,6 +46,8 @@ import javax.annotation.Nullable;
 import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.busdox.transport.identifiers._1.ProcessIdentifierType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.phloc.commons.SystemProperties;
@@ -72,9 +75,11 @@ public final class MainSendDocument {
   public static final boolean USE_PROXY = false;
   public static final String PROXY_HOST = "172.30.9.12";
   public static final String PROXY_PORT = "8080";
-  public static final boolean USE_LOCAL_AP = true;
-  public static final boolean METRO_DEBUG = false;
+  public static final boolean USE_LOCAL_AP = false;
+  public static final boolean DEBUG = false;
   public static final String RECEIVER = "9915:B";
+
+  private static final Logger s_aLogger = LoggerFactory.getLogger (MainSendDocument.class);
 
   @Nonnull
   private static IMessageMetadata _createMetadata () {
@@ -89,6 +94,7 @@ public final class MainSendDocument {
   @Nullable
   private static String _getAccessPointUrl (@Nonnull final IMessageMetadata aMetadata) throws Exception {
     // SMP client
+    s_aLogger.info ("Querying endpoint address of " + aMetadata.getRecipientID ().getURIEncoded ());
     final SMPServiceCaller aServiceCaller = new SMPServiceCaller (aMetadata.getRecipientID (), ESML.PRODUCTION);
     // get service info
     return aServiceCaller.getEndpointAddress (aMetadata.getRecipientID (),
@@ -100,11 +106,13 @@ public final class MainSendDocument {
     final IMessageMetadata aMetadata = _createMetadata ();
     final String sAccessPointURL = USE_LOCAL_AP ? "http://localhost:8090/accessPointService"
                                                : _getAccessPointUrl (aMetadata);
+    s_aLogger.info ("Using AP URL " + sAccessPointURL);
     final Document aXMLDoc = XMLReader.readXMLDOM (aXmlRes);
     AccessPointClient.send (sAccessPointURL, aMetadata, aXMLDoc);
   }
 
   public static void main (final String [] args) throws Exception {
+    Locale.setDefault (Locale.US);
     System.setProperty ("java.net.useSystemProxies", "true");
 
     if (USE_PROXY) {
@@ -115,18 +123,20 @@ public final class MainSendDocument {
     }
 
     // enable debugging info?
-    CBusDox.setMetroDebugSystemProperties (METRO_DEBUG);
-    if (false) {
-      // Debug logging
-      SystemProperties.setPropertyValue ("com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump",
-                                         Boolean.toString (false));
-      SystemProperties.setPropertyValue ("com.sun.xml.ws.rx.rm.runtime.ClientTube.dump", "true");
+    CBusDox.setMetroDebugSystemProperties (DEBUG);
+    CBusDox.enableSoapLogging (DEBUG);
+    if (DEBUG) {
       // Metro uses java.util.logging
       java.util.logging.LogManager.getLogManager ()
                                   .readConfiguration (new StringInputStream ("handlers=java.util.logging.ConsoleHandler\r\n"
-                                                                                 + "java.util.logging.ConsoleHandler.level=FINEST",
+                                                                                 + ".level=FINEST\r\n"
+                                                                                 + "java.util.logging.ConsoleHandler.level=FINEST\r\n"
+                                                                                 + "java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter",
                                                                              CCharset.CHARSET_ISO_8859_1_OBJ));
       java.util.logging.Logger.getLogger ("com.sun.metro.rx").setLevel (java.util.logging.Level.FINER);
+      java.util.logging.Logger.getLogger ("org.jcp.xml.dsig.internal.level").setLevel (java.util.logging.Level.FINER);
+      java.util.logging.Logger.getLogger ("com.sun.org.apache.xml.internal.security.level")
+                              .setLevel (java.util.logging.Level.FINER);
     }
     if (false) {
       // Metro debugging
