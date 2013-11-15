@@ -134,8 +134,7 @@ import eu.europa.ec.cipa.transport.start.util.EAPServerMode;
              wsdlLocation = CBusDox.START_WSDL_PATH)
 @BindingType (value = javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING)
 @Addressing
-public class AccessPointService
-{
+public class AccessPointService {
   private static final Logger s_aLogger = LoggerFactory.getLogger (AccessPointService.class);
   private static final IStatisticsHandlerCounter s_aStatsCounterSuccess = StatisticsManager.getCounterHandler (AccessPointService.class +
                                                                                                                "$success");
@@ -150,26 +149,21 @@ public class AccessPointService
   private static final X509Certificate s_aConfiguredCert;
   private static EAPServerMode s_aServerMode = EAPServerMode.PRODUCTION;
 
-  static
-  {
+  static {
     final String sReceiverClassPath = ServerConfigFile.getReceiverClassPath ();
-    if (sReceiverClassPath != null)
-    {
+    if (sReceiverClassPath != null) {
       final String [] aPathEntries = StringHelper.getExplodedArray (',', sReceiverClassPath);
       final URL [] aPathEntriesURLS = new URL [aPathEntries.length];
-      for (int i = 0; i < aPathEntries.length; i++)
-      {
+      for (int i = 0; i < aPathEntries.length; i++) {
         final String sPathEntry = aPathEntries[i];
         if (!sPathEntry.endsWith ("/") && !sPathEntry.endsWith (".jar"))
           throw new InitializationException ("Invalid class path: '" +
                                              sPathEntry +
                                              "'; must end with either '/' or '.jar'");
-        try
-        {
+        try {
           aPathEntriesURLS[i] = new URL (sPathEntry);
         }
-        catch (final MalformedURLException e)
-        {
+        catch (final MalformedURLException e) {
           throw new InitializationException ("Invalid class path: '" +
                                              sPathEntry +
                                              "' must be a valid URL: " +
@@ -182,8 +176,7 @@ public class AccessPointService
                                                                                                        aCustomCL));
 
     }
-    else
-    {
+    else {
       // Load all SPI implementations
       s_aReceivers = ContainerHelper.newUnmodifiableList (ServiceLoaderUtils.getAllSPIImplementations (IAccessPointServiceReceiverSPI.class));
     }
@@ -194,8 +187,7 @@ public class AccessPointService
                        " found! Incoming documents will be discarded!");
 
     final String sServerMode = ServerConfigFile.getServerMode ();
-    if (sServerMode != null)
-    {
+    if (sServerMode != null) {
       s_aServerMode = EAPServerMode.getFromIDOrNull (sServerMode);
       if (s_aServerMode == null)
         throw new InitializationException ("You configured your server to start in an unsupported mode '" +
@@ -203,8 +195,7 @@ public class AccessPointService
                                            "'. Please check you serverConfig file");
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug ("Starting access point in  " + s_aServerMode + " Mode");
-      if (EAPServerMode.DEVELOPMENT_DIRECT_SMP.equals (s_aServerMode))
-      {
+      if (EAPServerMode.DEVELOPMENT_DIRECT_SMP.equals (s_aServerMode)) {
         final String sSMPUrl = ServerConfigFile.getServerSMPUrl ();
         if (StringHelper.hasNoText (sSMPUrl))
           throw new InitializationException ("You configured your server to start in direct smp mode. Please specify the SMP URL in the serverConfig file as well!");
@@ -212,18 +203,17 @@ public class AccessPointService
     }
     // Read certificate from configuration only once, so it is cached for
     // reuse
-    try
-    {
+    try {
       final String sKeyStorePath = ServerConfigFile.getKeyStorePath ();
       final String sKeyStorePassword = ServerConfigFile.getKeyStorePassword ();
       final String sKeyStoreAlias = ServerConfigFile.getKeyStoreAlias ();
 
       final KeyStore aKeyStore = KeyStoreUtils.loadKeyStore (sKeyStorePath, sKeyStorePassword);
       s_aConfiguredCert = (X509Certificate) aKeyStore.getCertificate (sKeyStoreAlias);
-      s_aLogger.info ("Our Certificate - Serial Number: " + s_aConfiguredCert.getSerialNumber ());
+      s_aLogger.info ("Our Certificate - Serial Number (in hex): " +
+                      s_aConfiguredCert.getSerialNumber ().toString (CGlobal.HEX_RADIX));
     }
-    catch (final Exception ex)
-    {
+    catch (final Exception ex) {
       throw new InitializationException ("Failed to read the configured certificate", ex);
     }
   }
@@ -239,22 +229,18 @@ public class AccessPointService
    */
   @Nullable
   private static EndpointType _getRecipientEndpoint (@Nonnull final IMessageMetadata aMetadata,
-                                                     @Nonnull final String sMessageID) throws FaultMessage
-  {
+                                                     @Nonnull final String sMessageID) throws FaultMessage {
     final SimpleParticipantIdentifier aRecipientID = aMetadata.getRecipientID ();
-    try
-    {
+    try {
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug (sMessageID + " Looking up the endpoint of recipient " + aRecipientID.getURIEncoded ());
 
       // Query the SMP
       SMPServiceCaller aSMPClient;
-      if (EAPServerMode.DEVELOPMENT_DIRECT_SMP.equals (s_aServerMode))
-      {
+      if (EAPServerMode.DEVELOPMENT_DIRECT_SMP.equals (s_aServerMode)) {
         aSMPClient = new SMPServiceCaller (new URI (ServerConfigFile.getServerSMPUrl ()));
       }
-      else
-      {
+      else {
         aSMPClient = new SMPServiceCaller (aRecipientID, SML_INFO);
       }
 
@@ -263,8 +249,7 @@ public class AccessPointService
 
       return aSMPClient.getEndpoint (aRecipientID, aMetadata.getDocumentTypeID (), aMetadata.getProcessID ());
     }
-    catch (final Throwable t)
-    {
+    catch (final Throwable t) {
       throw ExceptionUtils.createFaultMessage (sMessageID +
                                                    " Failed to retrieve endpoint of recipient " +
                                                    aRecipientID.getURIEncoded (),
@@ -273,22 +258,21 @@ public class AccessPointService
   }
 
   private static void _checkIfRecipientEndpointURLMatches (@Nonnull final EndpointType aRecipientEndpoint,
-                                                           @Nonnull final String sMessageID) throws FaultMessage
-  {
+                                                           @Nonnull final String sMessageID) throws FaultMessage {
     // Get our public endpoint address from the config file
     final String sOwnAPUrl = ServerConfigFile.getOwnAPURL ();
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug (sMessageID + " Our AP URL is " + sOwnAPUrl);
 
     // In debug mode, use our recipient URL, so that the URL check will work
-    final String sRecipientAPUrl = GlobalDebug.isDebugMode () ? sOwnAPUrl
+    final String sRecipientAPUrl = GlobalDebug.isDebugMode ()
+                                                             ? sOwnAPUrl
                                                              : SMPServiceCallerReadonly.getEndpointAddress (aRecipientEndpoint);
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug (sMessageID + " Recipient AP URL is " + sRecipientAPUrl);
 
     // Is it for us?
-    if (!sRecipientAPUrl.contains (sOwnAPUrl))
-    {
+    if (!sRecipientAPUrl.contains (sOwnAPUrl)) {
       s_aLogger.error (sMessageID + " The received document is not for us!");
       s_aLogger.error (sMessageID + " Request is for: " + sRecipientAPUrl);
       s_aLogger.error (sMessageID + "    Our URL is: " + sOwnAPUrl);
@@ -311,16 +295,13 @@ public class AccessPointService
    *        The certificate of the receiver
    * @return <code>true</code> if equal
    */
-  private static boolean _isTheSameCert (@Nullable final X509Certificate aReceiverCert, @Nonnull final String sMessageID)
-  {
-    if (GlobalDebug.isDebugMode ())
-    {
+  private static boolean _isTheSameCert (@Nullable final X509Certificate aReceiverCert, @Nonnull final String sMessageID) {
+    if (GlobalDebug.isDebugMode ()) {
       s_aLogger.info (sMessageID + " In debug mode the certificate is always approved");
       return true;
     }
 
-    if (aReceiverCert == null)
-    {
+    if (aReceiverCert == null) {
       // Log message was already emitted
       return false;
     }
@@ -328,8 +309,7 @@ public class AccessPointService
     // Compare serial numbers
     final BigInteger aMySerial = s_aConfiguredCert.getSerialNumber ();
     final BigInteger aReceiverSerial = aReceiverCert.getSerialNumber ();
-    if (!aMySerial.equals (aReceiverSerial))
-    {
+    if (!aMySerial.equals (aReceiverSerial)) {
       s_aLogger.error (sMessageID + " Certificate serial number mismatch!");
       s_aLogger.info (sMessageID + " Our certificate serial number: " + aMySerial.toString ());
       s_aLogger.info (sMessageID + "        Receiver serial number: " + aReceiverSerial.toString ());
@@ -341,16 +321,13 @@ public class AccessPointService
   }
 
   private static void _checkIfEndpointCertificateMatches (@Nullable final EndpointType aRecipientEndpoint,
-                                                          @Nonnull final String sMessageID) throws FaultMessage
-  {
+                                                          @Nonnull final String sMessageID) throws FaultMessage {
     final String sCertString = SMPServiceCallerReadonly.getEndpointCertificateString (aRecipientEndpoint);
     X509Certificate aRecipientSMPCert = null;
-    try
-    {
+    try {
       aRecipientSMPCert = CertificateUtils.convertStringToCertficate (sCertString);
     }
-    catch (final CertificateException t)
-    {
+    catch (final CertificateException t) {
       // In development mode it is okay, if this AccessPoint is not
       // registered
       // in an SMP
@@ -363,14 +340,12 @@ public class AccessPointService
 
     if (aRecipientSMPCert == null)
       s_aLogger.error (sMessageID + " No Metadata certificate found! Is this AP maybe not contained in an SMP?");
-    else
-    {
+    else {
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug (sMessageID + " Recipient certificate present: " + aRecipientSMPCert.toString ());
     }
 
-    if (!_isTheSameCert (aRecipientSMPCert, sMessageID))
-    {
+    if (!_isTheSameCert (aRecipientSMPCert, sMessageID)) {
       s_aLogger.error (sMessageID +
                        " Metadata Certificate (" +
                        aRecipientSMPCert +
@@ -389,8 +364,7 @@ public class AccessPointService
    * @param body
    */
   @UnsupportedOperation
-  public GetResponse get (final Get body)
-  {
+  public GetResponse get (final Get body) {
     throw new UnsupportedOperationException ("Not supported by the current implementation according to the specifications");
   }
 
@@ -398,8 +372,7 @@ public class AccessPointService
    * @param body
    */
   @UnsupportedOperation
-  public PutResponse put (final Put body)
-  {
+  public PutResponse put (final Put body) {
     throw new UnsupportedOperationException ("Not supported by the current implementation according to the specifications");
   }
 
@@ -407,8 +380,7 @@ public class AccessPointService
    * @param body
    */
   @UnsupportedOperation
-  public DeleteResponse delete (final Delete body)
-  {
+  public DeleteResponse delete (final Delete body) {
     throw new UnsupportedOperationException ("Not supported by the current implementation according to the specifications");
   }
 
@@ -422,14 +394,12 @@ public class AccessPointService
    * @return The Endpoint reference object and never <code>null</code>.
    */
   @Nonnull
-  private static W3CEndpointReference _createEndpointReference (@Nonnull final MessageMetadata aMetadata)
-  {
+  private static W3CEndpointReference _createEndpointReference (@Nonnull final MessageMetadata aMetadata) {
     final Document aDummyDoc = XMLFactory.newDocument ();
     final List <Element> aReferenceParameters = new ArrayList <Element> ();
 
     // Message ID (optional)
-    if (aMetadata.getMessageID () != null)
-    {
+    if (aMetadata.getMessageID () != null) {
       final Element aElement = aDummyDoc.createElementNS (ObjectFactory._MessageIdentifier_QNAME.getNamespaceURI (),
                                                           ObjectFactory._MessageIdentifier_QNAME.getLocalPart ());
       aElement.appendChild (aDummyDoc.createTextNode (aMetadata.getMessageID ()));
@@ -437,8 +407,7 @@ public class AccessPointService
     }
 
     // Channel ID (optional)
-    if (aMetadata.getChannelID () != null)
-    {
+    if (aMetadata.getChannelID () != null) {
       final Element aElement = aDummyDoc.createElementNS (ObjectFactory._ChannelIdentifier_QNAME.getNamespaceURI (),
                                                           ObjectFactory._ChannelIdentifier_QNAME.getLocalPart ());
       aElement.appendChild (aDummyDoc.createTextNode (aMetadata.getChannelID ()));
@@ -484,12 +453,10 @@ public class AccessPointService
   @Action (input = "http://www.w3.org/2009/02/ws-tra/Create",
            output = "http://www.w3.org/2009/02/ws-tra/CreateResponse",
            fault = { @FaultAction (className = FaultMessage.class, value = "http://busdox.org/2010/02/channel/fault") })
-  public CreateResponse create (final Create aBody) throws FaultMessage
-  {
+  public CreateResponse create (final Create aBody) throws FaultMessage {
     final StopWatch aStopWatch = new StopWatch (true);
     boolean bFailure = false;
-    try
-    {
+    try {
       if (GlobalDebug.isDebugMode ())
         s_aLogger.warn ("Receiving PEPPOL document in debug mode!");
 
@@ -508,19 +475,16 @@ public class AccessPointService
                                 "]";
 
       // TODO do we need a check, whether the message ID was already received
-      if (PingMessageHelper.isPingMessage (aMetadata))
-      {
+      if (PingMessageHelper.isPingMessage (aMetadata)) {
         // It's a PING message - no actions to be taken!
         s_aLogger.info (sMessageID +
                         " got a ping message from " +
                         aMetadata.getSenderID ().getURIEncoded () +
                         " - discarding it!");
       }
-      else
-      {
+      else {
         // Not a ping message
-        if (!EAPServerMode.DEVELOPMENT_STANDALONE.equals (s_aServerMode))
-        {
+        if (!EAPServerMode.DEVELOPMENT_STANDALONE.equals (s_aServerMode)) {
           // Get the endpoint information required from the recipient
           final EndpointType aRecipientEndpoint = _getRecipientEndpoint (aMetadata, sMessageID);
 
@@ -536,15 +500,13 @@ public class AccessPointService
         // Invoke all available SPI implementations
         ESuccess eOverallSuccess = ESuccess.SUCCESS;
         final List <LogMessage> aProcessingMessages = new ArrayList <LogMessage> ();
-        try
-        {
+        try {
           // Invoke all available SPI implementations
           if (s_aLogger.isDebugEnabled ())
             s_aLogger.debug (sMessageID + " Now invoking " + s_aReceivers.size () + " SPI implementations");
 
           // For all receivers
-          for (final IAccessPointServiceReceiverSPI aReceiver : s_aReceivers)
-          {
+          for (final IAccessPointServiceReceiverSPI aReceiver : s_aReceivers) {
             if (s_aLogger.isDebugEnabled ())
               s_aLogger.debug (sMessageID + " Now invoking " + aReceiver.toString ());
 
@@ -560,15 +522,13 @@ public class AccessPointService
 
             // Was there a receiver specific callback message?
             final AccessPointReceiveError aError = aSV.get ();
-            if (aError != null)
-            {
+            if (aError != null) {
               // Remember all messages
               aProcessingMessages.addAll (aError.getAllMessages ());
             }
           }
         }
-        catch (final Exception ex)
-        {
+        catch (final Exception ex) {
           // Exception (in callback)
           aProcessingMessages.add (new LogMessage (EErrorLevel.ERROR,
                                                    sMessageID + " Internal error in processing incoming message",
@@ -578,8 +538,7 @@ public class AccessPointService
           eOverallSuccess = ESuccess.FAILURE;
         }
 
-        if (!aProcessingMessages.isEmpty ())
-        {
+        if (!aProcessingMessages.isEmpty ()) {
           // Log all messages from processing in a structured and aggregated way
           s_aLogger.info (sMessageID +
                           " Messages from " +
@@ -589,8 +548,7 @@ public class AccessPointService
                           " receiver(s) [" +
                           aProcessingMessages.size () +
                           " message(s)]:");
-          for (final LogMessage aLogMsg : aProcessingMessages)
-          {
+          for (final LogMessage aLogMsg : aProcessingMessages) {
             // Log with the correct error level
             LogUtils.log (s_aLogger,
                           aLogMsg.getErrorLevel (),
@@ -599,16 +557,14 @@ public class AccessPointService
           }
         }
 
-        if (eOverallSuccess.isFailure ())
-        {
+        if (eOverallSuccess.isFailure ()) {
           // Processing failed
           bFailure = true;
 
           // Assemble all errors messages to a single message
           final StringBuilder aProcessingDetails = new StringBuilder ();
           for (final LogMessage aLogMsg : aProcessingMessages)
-            if (aLogMsg.isError ())
-            {
+            if (aLogMsg.isError ()) {
               if (aProcessingDetails.length () > 0)
                 aProcessingDetails.append (CGlobal.LINE_SEPARATOR);
 
@@ -639,16 +595,14 @@ public class AccessPointService
       aResponse.setResourceCreated (aResourceCreated);
       return aResponse;
     }
-    catch (final FaultMessage ex)
-    {
+    catch (final FaultMessage ex) {
       // Just recognize the overall failure
       bFailure = true;
 
       // And re-throw as-is
       throw ex;
     }
-    finally
-    {
+    finally {
       // Update invocation counter
       (bFailure ? s_aStatsCounterFailure : s_aStatsCounterSuccess).increment ();
       // Update time counter
@@ -659,8 +613,7 @@ public class AccessPointService
   private static final long MEMORY_THRESHOLD_BYTES = 10 * CGlobal.BYTES_PER_MEGABYTE;
   private static long s_nLastUsageInBytes = 0;
 
-  private static void _checkMemoryUsage ()
-  {
+  private static void _checkMemoryUsage () {
     System.gc ();
     final Runtime aRuntime = Runtime.getRuntime ();
     final long nFreeMemory = aRuntime.freeMemory ();
@@ -674,8 +627,7 @@ public class AccessPointService
                                  aSH.getAsMatching (aRuntime.maxMemory (), 1);
 
     if (nUsedMemory <= (s_nLastUsageInBytes - MEMORY_THRESHOLD_BYTES) ||
-        nUsedMemory >= (s_nLastUsageInBytes + MEMORY_THRESHOLD_BYTES))
-    {
+        nUsedMemory >= (s_nLastUsageInBytes + MEMORY_THRESHOLD_BYTES)) {
       final String sThreadName = Thread.currentThread ().getName ();
       s_aLogger.info ("%%% [" + sThreadName + "] Memory usage: " + sMemoryStatus);
       s_nLastUsageInBytes = nUsedMemory;
