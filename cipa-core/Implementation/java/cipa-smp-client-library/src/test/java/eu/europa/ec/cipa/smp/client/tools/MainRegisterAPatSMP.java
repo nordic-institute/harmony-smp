@@ -37,6 +37,7 @@
  */
 package eu.europa.ec.cipa.smp.client.tools;
 
+import java.net.URI;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -57,13 +58,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.phloc.commons.state.ESuccess;
+import com.phloc.commons.url.URLUtils;
 import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.EPredefinedProcessIdentifier;
-import eu.europa.ec.cipa.peppol.sml.ESML;
-import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 import eu.europa.ec.cipa.smp.client.CSMPIdentifier;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 
@@ -77,6 +77,9 @@ public final class MainRegisterAPatSMP {
   public static final Logger s_aLogger = LoggerFactory.getLogger (MainRegisterAPatSMP.class);
 
   // Modify the following constants to fit your needs:
+
+  // The URL of the SMP to register the AP to
+  private static final URI SMP_HOST = URLUtils.getAsURI ("http://mysmp.example.org");
 
   // SMP user name and password (as found in the smp_user table)
   private static final String SMP_USERID = "mySMPUserID";
@@ -116,8 +119,7 @@ public final class MainRegisterAPatSMP {
   private static final Date END_DATE = new GregorianCalendar (2029, Calendar.DECEMBER, 31).getTime ();
 
   @Nonnull
-  private static ESuccess _registerRecipient (@Nonnull final ISMLInfo aSMLInfo,
-                                              @Nonnull final ParticipantIdentifierType aParticipantID,
+  private static ESuccess _registerRecipient (@Nonnull final ParticipantIdentifierType aParticipantID,
                                               @Nonnull final EPredefinedDocumentTypeIdentifier eDocumentID,
                                               @Nonnull final EPredefinedProcessIdentifier eProcessID,
                                               @Nonnull final Date aStartDate,
@@ -139,7 +141,7 @@ public final class MainRegisterAPatSMP {
       aServiceGroup.setParticipantIdentifier (aParticipantID);
 
       // 1. create the service group
-      final SMPServiceCaller aSMPCaller = new SMPServiceCaller (aParticipantID, aSMLInfo);
+      final SMPServiceCaller aSMPCaller = new SMPServiceCaller (SMP_HOST);
       aSMPCaller.saveServiceGroup (aServiceGroup, aAuth);
 
       // 2. create the service registration
@@ -188,8 +190,7 @@ public final class MainRegisterAPatSMP {
   }
 
   public static void main (final String [] args) {
-    _registerRecipient (ESML.PRODUCTION,
-                        SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_ID),
+    _registerRecipient (SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_ID),
                         DOCTYPE,
                         PROCTYPE,
                         START_DATE,
