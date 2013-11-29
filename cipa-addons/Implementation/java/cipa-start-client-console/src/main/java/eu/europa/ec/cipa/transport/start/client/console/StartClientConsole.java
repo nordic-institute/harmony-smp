@@ -83,9 +83,7 @@ public class StartClientConsole {
   private static final Logger s_aLogger = LoggerFactory.getLogger (StartClientConsole.class);
 
   private static enum EClientMode {
-    DIRECT_AP,
-    DIRECT_SMP,
-    FULL;
+    DIRECT_AP, DIRECT_SMP, FULL;
   }
 
   private static void _enableProxy () {
@@ -280,6 +278,6 @@ public class StartClientConsole {
         aResult = AccessPointClient.send (sAPURL, aMetadata, aDoc);
         break;
     }
-    System.out.println ("Send result: " + (aResult.isSuccess () ? "success" : "failure"));
+    System.out.println ("Send result: " + (aResult == null ? "null" : aResult.isSuccess () ? "success" : "failure"));
   }
 }

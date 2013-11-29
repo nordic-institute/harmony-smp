@@ -58,8 +58,8 @@ public final class StartClientOptions extends Options {
     addOption ("ping", "sendPingMessage", true, "Optional : set this value to true if you want to send a ping message");
     addOption ("debug", "enableDebug", true, "Optional : set this value to true if you want to enable metro debug");
     addOption ("proxy",
-               "useProxt",
+               "useProxy",
                true,
-               "Optional : set this value to true if you want to use proxy edit the configProxy.properties file under the conf folder ");
+               "Optional : set this value to true if you want to use proxy edit the configProxy.properties file under the conf folder");
   }
 }
