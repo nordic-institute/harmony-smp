@@ -249,7 +249,7 @@ public class AccessPointService {
             else
               throw new InitializationException ("The provided SML Mode '" +
                                                  sSMLMode +
-                                                 "' is invalid. Use e.g. 'sml' to the production SML or 'smk' to use the Test SML.");
+                                                 "' is invalid. Use sml' for the production SML, 'smk' for the test SML (=SMK), 'smj-local' for a locally running SML (on port 8080).");
     }
     else {
       // No given - use default
