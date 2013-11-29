@@ -146,7 +146,7 @@ public class AccessPointService {
   private static final IStatisticsHandlerTimer s_aStatsTimerFailure = StatisticsManager.getTimerHandler (AccessPointService.class +
                                                                                                          "$failure");
 
-  private static final ISMLInfo SML_INFO = ESML.PRODUCTION;
+  private static final ISMLInfo SML_INFO;
   private static final List <IAccessPointServiceReceiverSPI> s_aReceivers;
   private static final EAPServerMode s_aServerMode;
   private static URI s_aDirectSMPURI = null;
@@ -231,6 +231,31 @@ public class AccessPointService {
       s_aServerMode = EAPServerMode.PRODUCTION;
     }
     s_aLogger.info ("Starting access point server in  " + s_aServerMode + " Mode");
+
+    // SML mode
+    final String sSMLMode = ServerConfigFile.getServerSMLMode ();
+    if (StringHelper.hasText (sSMLMode)) {
+      if ("sml".equalsIgnoreCase (sSMLMode))
+        SML_INFO = ESML.PRODUCTION;
+      else
+        if ("smk".equalsIgnoreCase (sSMLMode))
+          SML_INFO = ESML.TEST;
+        else
+          if ("smj".equalsIgnoreCase (sSMLMode))
+            SML_INFO = ESML.DEVELOPMENT;
+          else
+            if ("smj-local".equalsIgnoreCase (sSMLMode))
+              SML_INFO = ESML.DEVELOPMENT_LOCAL;
+            else
+              throw new InitializationException ("The provided SML Mode '" +
+                                                 sSMLMode +
+                                                 "' is invalid. Use e.g. 'sml' to the production SML or 'smk' to use the Test SML.");
+    }
+    else {
+      // No given - use default
+      SML_INFO = ESML.PRODUCTION;
+    }
+    s_aLogger.info ("Starting access point server in SML mode " + s_aServerMode);
 
     // Read certificate from configuration only once, so it is cached for
     // reuse

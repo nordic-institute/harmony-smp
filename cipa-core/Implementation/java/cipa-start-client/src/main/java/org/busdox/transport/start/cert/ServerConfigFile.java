@@ -37,6 +37,7 @@
  */
 package org.busdox.transport.start.cert;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
@@ -49,6 +50,10 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
  */
 @Immutable
 public final class ServerConfigFile {
+  private static final String CONFIG_SERVER_RECEIVER_CLASSPATH = "server.receiver.classpath";
+  private static final String CONFIG_SERVER_MODE = "server.mode";
+  private static final String CONFIG_SERVER_SMP_URL = "server.smp.url";
+  private static final String CONFIG_SERVER_SML_MODE = "server.sml.mode";
   private static final String CONFIG_SERVER_KEYSTORE_PATH = "server.keystore.path";
   private static final String CONFIG_SERVER_KEYSTORE_PASSWORD = "server.keystore.password";
   private static final String CONFIG_SERVER_KEYSTORE_ALIAS = "server.keystore.alias";
@@ -58,9 +63,6 @@ public final class ServerConfigFile {
   private static final String CONFIG_SERVER_TRUSTSTORE_ALIAS = "server.truststore.alias";
   private static final String CONFIG_SERVER_TRUSTSTORE_ALIASPASSWORD = "server.truststore.aliaspassword";
   private static final String CONFIG_SERVER_ENDPOINT_URL = "server.endpoint.url";
-  private static final String CONFIG_SERVER_MODE = "server.mode";
-  private static final String CONFIG_SERVER_SMP_URL = "server.smp.url";
-  private static final String CONFIG_SERVER_RECEIVER_CLASSPATH = "server.receiver.classpath";
 
   private static final ConfigFile s_aConfigFile = new ConfigFile ("private-configServer.properties",
                                                                   "configServer.properties");
@@ -75,18 +77,23 @@ public final class ServerConfigFile {
   }
 
   @Nullable
-  public static String getServerMode () {
-    return s_aConfigFile.getString (CONFIG_SERVER_MODE);
-  }
-
-  @Nullable
   public static String getReceiverClassPath () {
     return s_aConfigFile.getString (CONFIG_SERVER_RECEIVER_CLASSPATH);
   }
 
   @Nullable
+  public static String getServerMode () {
+    return s_aConfigFile.getString (CONFIG_SERVER_MODE);
+  }
+
+  @Nullable
   public static String getServerSMPUrl () {
     return s_aConfigFile.getString (CONFIG_SERVER_SMP_URL);
+  }
+
+  @Nonnull
+  public static String getServerSMLMode () {
+    return s_aConfigFile.getString (CONFIG_SERVER_SML_MODE, "sml");
   }
 
   @Nullable
