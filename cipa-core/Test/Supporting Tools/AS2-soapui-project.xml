@@ -200,7 +200,6 @@
 		<recipient>
 			<scheme>busdox-actorid-upis</scheme>
 			<value>replace_this_value_with_a_recipient_configured_in_your_environment</value>
-			<value>mend</value>
 		</recipient>
 		<sender>
 			<scheme>busdox-actorid-upis</scheme>
