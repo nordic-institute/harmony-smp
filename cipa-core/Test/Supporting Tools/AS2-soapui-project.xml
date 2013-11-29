@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project activeEnvironment="Default" name="AS2 AccessPoint" soapui-version="4.5.1" resourceRoot="" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:RestService" wadlVersion="http://wadl.dev.java.net/2009/02" name="AS2" type="rest" basePath="" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart=""/><con:endpoints><con:endpoint>http://localhost:8080</con:endpoint></con:endpoints><con:resource name="send" path="/cipa-as2-access-point-wrapper/rest/send"><con:settings/><con:parameters/><con:method name="Send AS2 Message" method="POST"><con:settings/><con:parameters/><con:representation type="FAULT"><con:mediaType>text/plain</con:mediaType><con:status>500</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="REQUEST"><con:mediaType>application/xml</con:mediaType><con:params/><con:element>requestType</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/html; charset=iso-8859-1</con:mediaType><con:status>415 500</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="REQUEST"><con:mediaType>application/x-www-form-urlencoded</con:mediaType><con:params/><con:element>requestType</con:element></con:representation><con:representation type="REQUEST"><con:mediaType>text/xml</con:mediaType><con:params/><con:element>requestType</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/html;charset=ISO-8859-1</con:mediaType><con:status>404</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="Send AS2 Message" mediaType="text/xml" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://localhost:8080</con:endpoint><con:request><![CDATA[<requestType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="RequestType.xsd">
+	<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:qdt="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2" xmlns:clm5639="urn:un:unece:uncefact:codelist:specification:5639:1988" xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2" xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<cbc:UBLVersionID>2.0</cbc:UBLVersionID>
+		<cbc:ID>SSWW09_11_2009</cbc:ID>
+		<cbc:IssueDate>2009-11-09</cbc:IssueDate>
+		<cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
+		<cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
+		<cac:InvoicePeriod>
+			<cbc:StartDate>2009-10-01</cbc:StartDate>
+			<cbc:EndDate>2009-10-31</cbc:EndDate>
+		</cac:InvoicePeriod>
+		<cac:OrderReference>
+			<cbc:ID>Specific Contract no. 098 / Order 62-5</cbc:ID>
+			<cbc:IssueDate>2009-07-13</cbc:IssueDate>
+		</cac:OrderReference>
+		<cac:ContractDocumentReference>
+			<cbc:ID>Framework Contract no. CC-3230-10</cbc:ID>
+			<cbc:DocumentType>Framework Contract</cbc:DocumentType>
+		</cac:ContractDocumentReference>
+		<cac:AccountingSupplierParty>
+			<cac:Party>
+				<cac:PartyIdentification>
+					<cbc:ID>PRIOR</cbc:ID>
+				</cac:PartyIdentification>
+				<cac:PartyName>
+					<cbc:Name>PRIOR Consortium</cbc:Name>
+				</cac:PartyName>
+				<cac:PostalAddress>
+					<cbc:StreetName>Adriaan Brouwersvliet 10</cbc:StreetName>
+					<cbc:CityName>Antwerp</cbc:CityName>
+					<cbc:PostalZone>2100</cbc:PostalZone>
+					<cac:Country>
+						<cbc:IdentificationCode>BE</cbc:IdentificationCode>
+					</cac:Country>
+				</cac:PostalAddress>
+				<cac:PartyTaxScheme>
+					<cbc:CompanyID>BE0440.000.988</cbc:CompanyID>
+					<cac:TaxScheme>
+						<cbc:ID>VAT</cbc:ID>
+					</cac:TaxScheme>
+				</cac:PartyTaxScheme>
+			</cac:Party>
+		</cac:AccountingSupplierParty>
+		<cac:AccountingCustomerParty>
+			<cac:Party>
+				<cac:PartyName>
+					<cbc:Name>Directorate-General for Informatics (DIGIT)</cbc:Name>
+				</cac:PartyName>
+				<cac:PostalAddress>
+					<cbc:StreetName>Rue Belliard 28</cbc:StreetName>
+					<cbc:Department>DIGIT</cbc:Department>
+					<cbc:CityName>Bruxelles</cbc:CityName>
+					<cbc:PostalZone>1049</cbc:PostalZone>
+					<cac:Country>
+						<cbc:IdentificationCode>BE</cbc:IdentificationCode>
+					</cac:Country>
+				</cac:PostalAddress>
+				<cac:PartyTaxScheme>
+					<cac:TaxScheme>
+						<cbc:ID>VAT</cbc:ID>
+					</cac:TaxScheme>
+				</cac:PartyTaxScheme>
+			</cac:Party>
+		</cac:AccountingCustomerParty>
+		<cac:PaymentMeans>
+			<cbc:PaymentMeansCode>42</cbc:PaymentMeansCode>
+			<cbc:PaymentChannelCode>BBAN</cbc:PaymentChannelCode>
+			<cac:PayeeFinancialAccount>
+				<cbc:ID>0987654321</cbc:ID>
+				<cac:FinancialInstitutionBranch>
+					<cac:FinancialInstitution>
+						<cbc:ID>BBRUBEBB</cbc:ID>
+						<cbc:Name>ING,  Rue Archimede 77, 2100 Antwerp</cbc:Name>
+					</cac:FinancialInstitution>
+				</cac:FinancialInstitutionBranch>
+			</cac:PayeeFinancialAccount>
+		</cac:PaymentMeans>
+		<cac:PaymentTerms>
+			<cbc:Note>payment within 75 days.</cbc:Note>
+		</cac:PaymentTerms>
+		<cac:AllowanceCharge>
+			<cbc:ChargeIndicator>true</cbc:ChargeIndicator>
+			<cbc:AllowanceChargeReasonCode>92</cbc:AllowanceChargeReasonCode>
+			<cbc:AllowanceChargeReason>Expediting fee</cbc:AllowanceChargeReason>
+			<cbc:SequenceNumeric>1</cbc:SequenceNumeric>
+			<cbc:Amount currencyID="EUR">100</cbc:Amount>
+			<cac:TaxCategory>
+				<cbc:ID>E</cbc:ID>
+				<cbc:Percent>0</cbc:Percent>
+				<cbc:TaxExemptionReason>BE exemption from VAT - article 42 paragraph 3 point 3 of the VAT code</cbc:TaxExemptionReason>
+				<cac:TaxScheme>
+					<cbc:ID>VAT</cbc:ID>
+					<cbc:Name>Value Added Tax</cbc:Name>
+				</cac:TaxScheme>
+			</cac:TaxCategory>
+		</cac:AllowanceCharge>
+		<cac:AllowanceCharge>
+			<cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+			<cbc:AllowanceChargeReasonCode>39</cbc:AllowanceChargeReasonCode>
+			<cbc:AllowanceChargeReason>Agreed Discount</cbc:AllowanceChargeReason>
+			<cbc:SequenceNumeric>2</cbc:SequenceNumeric>
+			<cbc:Amount currencyID="EUR">300</cbc:Amount>
+			<cac:TaxCategory>
+				<cbc:ID>E</cbc:ID>
+				<cbc:Percent>0</cbc:Percent>
+				<cbc:TaxExemptionReason>BE exemption from VAT - article 42 paragraph 3 point 3 of the VAT code</cbc:TaxExemptionReason>
+				<cac:TaxScheme>
+					<cbc:ID>VAT</cbc:ID>
+					<cbc:Name>Value Added Tax</cbc:Name>
+				</cac:TaxScheme>
+			</cac:TaxCategory>
+		</cac:AllowanceCharge>
+		<cac:TaxTotal>
+			<cbc:TaxAmount currencyID="EUR">0.00</cbc:TaxAmount>
+			<cac:TaxSubtotal>
+				<cbc:TaxableAmount currencyID="EUR">4528.68</cbc:TaxableAmount>
+				<cbc:TaxAmount currencyID="EUR">0.00</cbc:TaxAmount>
+				<cac:TaxCategory>
+					<cbc:ID>E</cbc:ID>
+					<cbc:Percent>0.0</cbc:Percent>
+					<cbc:TaxExemptionReason>BE exemption from VAT - article 42 paragraph 3 point 3 of the VAT code</cbc:TaxExemptionReason>
+					<cac:TaxScheme>
+						<cbc:ID>VAT</cbc:ID>
+					</cac:TaxScheme>
+				</cac:TaxCategory>
+			</cac:TaxSubtotal>
+		</cac:TaxTotal>
+		<cac:LegalMonetaryTotal>
+			<cbc:LineExtensionAmount currencyID="EUR">4728.68</cbc:LineExtensionAmount>
+			<cbc:TaxExclusiveAmount currencyID="EUR">4528.68</cbc:TaxExclusiveAmount>
+			<cbc:TaxInclusiveAmount currencyID="EUR">4528.68</cbc:TaxInclusiveAmount>
+			<cbc:AllowanceTotalAmount currencyID="EUR">300.00</cbc:AllowanceTotalAmount>
+			<cbc:ChargeTotalAmount currencyID="EUR">100.00</cbc:ChargeTotalAmount>
+			<cbc:PrepaidAmount currencyID="EUR">0.00</cbc:PrepaidAmount>
+			<cbc:PayableRoundingAmount currencyID="EUR">0.00</cbc:PayableRoundingAmount>
+			<cbc:PayableAmount currencyID="EUR">4528.68</cbc:PayableAmount>
+		</cac:LegalMonetaryTotal>
+		<cac:InvoiceLine>
+			<cbc:ID>1</cbc:ID>
+			<cbc:LineExtensionAmount currencyID="EUR">214.68</cbc:LineExtensionAmount>
+			<cac:OrderLineReference>
+				<cbc:LineID>3</cbc:LineID>
+				<cac:OrderReference>
+					<cbc:ID>62-5</cbc:ID>
+					<cbc:IssueDate>2009-07-13</cbc:IssueDate>
+				</cac:OrderReference>
+			</cac:OrderLineReference>
+			<cac:Item>
+				<cbc:Name>Datacommunication</cbc:Name>
+				<cac:ClassifiedTaxCategory>
+					<cbc:ID>E</cbc:ID>
+					<cbc:Percent>0.0</cbc:Percent>
+					<cac:TaxScheme>
+						<cbc:ID>VAT</cbc:ID>
+					</cac:TaxScheme>
+				</cac:ClassifiedTaxCategory>
+			</cac:Item>
+			<cac:Price>
+				<cbc:PriceAmount currencyID="EUR">214.68</cbc:PriceAmount>
+			</cac:Price>
+		</cac:InvoiceLine>
+		<cac:InvoiceLine>
+			<cbc:ID>2</cbc:ID>
+			<cbc:LineExtensionAmount currencyID="EUR">4514.00</cbc:LineExtensionAmount>
+			<cac:OrderLineReference>
+				<cbc:LineID>5</cbc:LineID>
+				<cac:OrderReference>
+					<cbc:ID>62-5</cbc:ID>
+					<cbc:IssueDate>2009-02-13</cbc:IssueDate>
+				</cac:OrderReference>
+			</cac:OrderLineReference>
+			<cac:Item>
+				<cbc:Name>Subscription</cbc:Name>
+				<cac:ClassifiedTaxCategory>
+					<cbc:ID>E</cbc:ID>
+					<cbc:Percent>0.0</cbc:Percent>
+					<cac:TaxScheme>
+						<cbc:ID>VAT</cbc:ID>
+					</cac:TaxScheme>
+				</cac:ClassifiedTaxCategory>
+			</cac:Item>
+			<cac:Price>
+				<cbc:PriceAmount currencyID="EUR">4514.00</cbc:PriceAmount>
+			</cac:Price>
+		</cac:InvoiceLine>
+	</Invoice>
+	<metaData>
+		<documentId>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:#urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</documentId>
+		<documentInfo>
+			<creationDateAndTime>2013-10-19T15:27:28+01:00</creationDateAndTime>
+			<instanceIdentifier>ID131019_01</instanceIdentifier>
+			<standard>222222</standard>
+			<type>Invoice</type>
+			<typeVersion>version2.1</typeVersion>
+		</documentInfo>
+		<documentScheme>busdox-docid-qns</documentScheme>
+		<processId>urn:www.cenbii.eu:profile:bii04:ver1.0</processId>
+		<processScheme>cenbii-procid-ubl</processScheme>
+		<recipient>
+			<scheme>busdox-actorid-upis</scheme>
+			<value>replace_this_value_with_a_recipient_configured_in_your_environment</value>
+			<value>mend</value>
+		</recipient>
+		<sender>
+			<scheme>busdox-actorid-upis</scheme>
+			<value>replace_this_value_with_a_sender_configured_in_your_environment</value>
+		</sender>
+	</metaData>
+</requestType>
+]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:request></con:method></con:resource></con:interface><con:testSuite name="AS2 TestSuite"><con:description>TestSuite generated for REST Service [AS2]
+Ensure that the AS2 Wrapper is running on your local machine before calling the web-service
+To configure the AS2 Wrapper and send a message to a receiver on another machine, consult the AS2 installation guide</con:description><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Send AS2 Message" searchProperties="true"><con:description>TestCase generated for REST Resource [send] located at [/cipa-as2-access-point-wrapper/rest/send]</con:description><con:settings/><con:testStep type="restrequest" name="Send AS2 Message"><con:settings/><con:config service="AS2" resourcePath="/cipa-as2-access-point-wrapper/rest/send" methodName="Send AS2 Message" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="Send AS2 Message" mediaType="text/xml" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://localhost:8080</con:endpoint><con:request><![CDATA[<requestType xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="RequestType.xsd">
+	<Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ext="urn:oasis:names:specification:ubl:schema:xsd:CommonExtensionComponents-2" xmlns:qdt="urn:oasis:names:specification:ubl:schema:xsd:QualifiedDatatypes-2" xmlns:clm5639="urn:un:unece:uncefact:codelist:specification:5639:1988" xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2" xmlns:ccts="urn:un:unece:uncefact:documentation:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+		<cbc:UBLVersionID>2.0</cbc:UBLVersionID>
+		<cbc:ID>SSWW09_11_2009</cbc:ID>
+		<cbc:IssueDate>2009-11-09</cbc:IssueDate>
+		<cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
+		<cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
+		<cac:InvoicePeriod>
+			<cbc:StartDate>2009-10-01</cbc:StartDate>
+			<cbc:EndDate>2009-10-31</cbc:EndDate>
+		</cac:InvoicePeriod>
+		<cac:OrderReference>
+			<cbc:ID>Specific Contract no. 098 / Order 62-5</cbc:ID>
+			<cbc:IssueDate>2009-07-13</cbc:IssueDate>
+		</cac:OrderReference>
+		<cac:ContractDocumentReference>
+			<cbc:ID>Framework Contract no. CC-3230-10</cbc:ID>
+			<cbc:DocumentType>Framework Contract</cbc:DocumentType>
+		</cac:ContractDocumentReference>
+		<cac:AccountingSupplierParty>
+			<cac:Party>
+				<cac:PartyIdentification>
+					<cbc:ID>PRIOR</cbc:ID>
+				</cac:PartyIdentification>
+				<cac:PartyName>
+					<cbc:Name>PRIOR Consortium</cbc:Name>
+				</cac:PartyName>
+				<cac:PostalAddress>
+					<cbc:StreetName>Adriaan Brouwersvliet 10</cbc:StreetName>
+					<cbc:CityName>Antwerp</cbc:CityName>
+					<cbc:PostalZone>2100</cbc:PostalZone>
+					<cac:Country>
+						<cbc:IdentificationCode>BE</cbc:IdentificationCode>
+					</cac:Country>
+				</cac:PostalAddress>
+				<cac:PartyTaxScheme>
+					<cbc:CompanyID>BE0440.000.988</cbc:CompanyID>
+					<cac:TaxScheme>
+						<cbc:ID>VAT</cbc:ID>
+					</cac:TaxScheme>
+				</cac:PartyTaxScheme>
+			</cac:Party>
+		</cac:AccountingSupplierParty>
+		<cac:AccountingCustomerParty>
+			<cac:Party>
+				<cac:PartyName>
+					<cbc:Name>Directorate-General for Informatics (DIGIT)</cbc:Name>
+				</cac:PartyName>
+				<cac:PostalAddress>
+					<cbc:StreetName>Rue Belliard 28</cbc:StreetName>
+					<cbc:Department>DIGIT</cbc:Department>
+					<cbc:CityName>Bruxelles</cbc:CityName>
+					<cbc:PostalZone>1049</cbc:PostalZone>
+					<cac:Country>
+						<cbc:IdentificationCode>BE</cbc:IdentificationCode>
+					</cac:Country>
+				</cac:PostalAddress>
+				<cac:PartyTaxScheme>
+					<cac:TaxScheme>
+						<cbc:ID>VAT</cbc:ID>
+					</cac:TaxScheme>
+				</cac:PartyTaxScheme>
+			</cac:Party>
+		</cac:AccountingCustomerParty>
+		<cac:PaymentMeans>
+			<cbc:PaymentMeansCode>42</cbc:PaymentMeansCode>
+			<cbc:PaymentChannelCode>BBAN</cbc:PaymentChannelCode>
+			<cac:PayeeFinancialAccount>
+				<cbc:ID>0987654321</cbc:ID>
+				<cac:FinancialInstitutionBranch>
+					<cac:FinancialInstitution>
+						<cbc:ID>BBRUBEBB</cbc:ID>
+						<cbc:Name>ING,  Rue Archimede 77, 2100 Antwerp</cbc:Name>
+					</cac:FinancialInstitution>
+				</cac:FinancialInstitutionBranch>
+			</cac:PayeeFinancialAccount>
+		</cac:PaymentMeans>
+		<cac:PaymentTerms>
+			<cbc:Note>payment within 75 days.</cbc:Note>
+		</cac:PaymentTerms>
+		<cac:AllowanceCharge>
+			<cbc:ChargeIndicator>true</cbc:ChargeIndicator>
+			<cbc:AllowanceChargeReasonCode>92</cbc:AllowanceChargeReasonCode>
+			<cbc:AllowanceChargeReason>Expediting fee</cbc:AllowanceChargeReason>
+			<cbc:SequenceNumeric>1</cbc:SequenceNumeric>
+			<cbc:Amount currencyID="EUR">100</cbc:Amount>
+			<cac:TaxCategory>
+				<cbc:ID>E</cbc:ID>
+				<cbc:Percent>0</cbc:Percent>
+				<cbc:TaxExemptionReason>BE exemption from VAT - article 42 paragraph 3 point 3 of the VAT code</cbc:TaxExemptionReason>
+				<cac:TaxScheme>
+					<cbc:ID>VAT</cbc:ID>
+					<cbc:Name>Value Added Tax</cbc:Name>
+				</cac:TaxScheme>
+			</cac:TaxCategory>
+		</cac:AllowanceCharge>
+		<cac:AllowanceCharge>
+			<cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+			<cbc:AllowanceChargeReasonCode>39</cbc:AllowanceChargeReasonCode>
+			<cbc:AllowanceChargeReason>Agreed Discount</cbc:AllowanceChargeReason>
+			<cbc:SequenceNumeric>2</cbc:SequenceNumeric>
+			<cbc:Amount currencyID="EUR">300</cbc:Amount>
+			<cac:TaxCategory>
+				<cbc:ID>E</cbc:ID>
+				<cbc:Percent>0</cbc:Percent>
+				<cbc:TaxExemptionReason>BE exemption from VAT - article 42 paragraph 3 point 3 of the VAT code</cbc:TaxExemptionReason>
+				<cac:TaxScheme>
+					<cbc:ID>VAT</cbc:ID>
+					<cbc:Name>Value Added Tax</cbc:Name>
+				</cac:TaxScheme>
+			</cac:TaxCategory>
+		</cac:AllowanceCharge>
+		<cac:TaxTotal>
+			<cbc:TaxAmount currencyID="EUR">0.00</cbc:TaxAmount>
+			<cac:TaxSubtotal>
+				<cbc:TaxableAmount currencyID="EUR">4528.68</cbc:TaxableAmount>
+				<cbc:TaxAmount currencyID="EUR">0.00</cbc:TaxAmount>
+				<cac:TaxCategory>
+					<cbc:ID>E</cbc:ID>
+					<cbc:Percent>0.0</cbc:Percent>
+					<cbc:TaxExemptionReason>BE exemption from VAT - article 42 paragraph 3 point 3 of the VAT code</cbc:TaxExemptionReason>
+					<cac:TaxScheme>
+						<cbc:ID>VAT</cbc:ID>
+					</cac:TaxScheme>
+				</cac:TaxCategory>
+			</cac:TaxSubtotal>
+		</cac:TaxTotal>
+		<cac:LegalMonetaryTotal>
+			<cbc:LineExtensionAmount currencyID="EUR">4728.68</cbc:LineExtensionAmount>
+			<cbc:TaxExclusiveAmount currencyID="EUR">4528.68</cbc:TaxExclusiveAmount>
+			<cbc:TaxInclusiveAmount currencyID="EUR">4528.68</cbc:TaxInclusiveAmount>
+			<cbc:AllowanceTotalAmount currencyID="EUR">300.00</cbc:AllowanceTotalAmount>
+			<cbc:ChargeTotalAmount currencyID="EUR">100.00</cbc:ChargeTotalAmount>
+			<cbc:PrepaidAmount currencyID="EUR">0.00</cbc:PrepaidAmount>
+			<cbc:PayableRoundingAmount currencyID="EUR">0.00</cbc:PayableRoundingAmount>
+			<cbc:PayableAmount currencyID="EUR">4528.68</cbc:PayableAmount>
+		</cac:LegalMonetaryTotal>
+		<cac:InvoiceLine>
+			<cbc:ID>1</cbc:ID>
+			<cbc:LineExtensionAmount currencyID="EUR">214.68</cbc:LineExtensionAmount>
+			<cac:OrderLineReference>
+				<cbc:LineID>3</cbc:LineID>
+				<cac:OrderReference>
+					<cbc:ID>62-5</cbc:ID>
+					<cbc:IssueDate>2009-07-13</cbc:IssueDate>
+				</cac:OrderReference>
+			</cac:OrderLineReference>
+			<cac:Item>
+				<cbc:Name>Datacommunication</cbc:Name>
+				<cac:ClassifiedTaxCategory>
+					<cbc:ID>E</cbc:ID>
+					<cbc:Percent>0.0</cbc:Percent>
+					<cac:TaxScheme>
+						<cbc:ID>VAT</cbc:ID>
+					</cac:TaxScheme>
+				</cac:ClassifiedTaxCategory>
+			</cac:Item>
+			<cac:Price>
+				<cbc:PriceAmount currencyID="EUR">214.68</cbc:PriceAmount>
+			</cac:Price>
+		</cac:InvoiceLine>
+		<cac:InvoiceLine>
+			<cbc:ID>2</cbc:ID>
+			<cbc:LineExtensionAmount currencyID="EUR">4514.00</cbc:LineExtensionAmount>
+			<cac:OrderLineReference>
+				<cbc:LineID>5</cbc:LineID>
+				<cac:OrderReference>
+					<cbc:ID>62-5</cbc:ID>
+					<cbc:IssueDate>2009-02-13</cbc:IssueDate>
+				</cac:OrderReference>
+			</cac:OrderLineReference>
+			<cac:Item>
+				<cbc:Name>Subscription</cbc:Name>
+				<cac:ClassifiedTaxCategory>
+					<cbc:ID>E</cbc:ID>
+					<cbc:Percent>0.0</cbc:Percent>
+					<cac:TaxScheme>
+						<cbc:ID>VAT</cbc:ID>
+					</cac:TaxScheme>
+				</cac:ClassifiedTaxCategory>
+			</cac:Item>
+			<cac:Price>
+				<cbc:PriceAmount currencyID="EUR">4514.00</cbc:PriceAmount>
+			</cac:Price>
+		</cac:InvoiceLine>
+	</Invoice>
+	<metaData>
+		<documentId>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:#urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</documentId>
+		<documentInfo>
+			<creationDateAndTime>2013-10-19T15:27:28+01:00</creationDateAndTime>
+			<instanceIdentifier>ID131019_01</instanceIdentifier>
+			<standard>222222</standard>
+			<type>Invoice</type>
+			<typeVersion>version2.1</typeVersion>
+		</documentInfo>
+		<documentScheme>busdox-docid-qns</documentScheme>
+		<processId>urn:www.cenbii.eu:profile:bii04:ver1.0</processId>
+		<processScheme>cenbii-procid-ubl</processScheme>
+		<recipient>
+			<scheme>busdox-actorid-upis</scheme>
+			<value>replace_this_value_with_a_recipient_configured_in_your_environment</value>
+			<value>mend</value>
+		</recipient>
+		<sender>
+			<scheme>busdox-actorid-upis</scheme>
+			<value>replace_this_value_with_a_sender_configured_in_your_environment</value>
+		</sender>
+	</metaData>
+</requestType>
+]]></con:request><con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:restRequest></con:config></con:testStep><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:properties/><con:wssContainer/><con:databaseConnectionContainer/><con:reporting><con:xmlTemplates/><con:parameters/></con:reporting></con:soapui-project>
