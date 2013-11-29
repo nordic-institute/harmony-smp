@@ -1,14 +1,19 @@
 package eu.europa.ec.cipa.as2wrapper.types;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAnyElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class RequestType
 {
 
 	private MessageMetaDataType metaData;
 	
-	private DocumentType document;
+    @XmlAnyElement(lax = true)
+    private Object document;
 
 	
 	public MessageMetaDataType getMetaData() {
@@ -19,11 +24,11 @@ public class RequestType
 		this.metaData = metaData;
 	}
 
-	public DocumentType getDocument() {
+	public Object getDocument() {
 		return document;
 	}
 
-	public void setDocument(DocumentType document) {
+	public void setDocument(Object document) {
 		this.document = document;
 	}
 	

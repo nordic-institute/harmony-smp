@@ -14,8 +14,12 @@ public class MessageMetaDataType
 	private DocumentInfoType documentInfo;
 	
 	private String documentId;
+	
+	private String documentScheme;
 
 	private String processId;
+	
+	private String processScheme;
 
 	
 	public ParticipantType getSender() {
@@ -56,6 +60,22 @@ public class MessageMetaDataType
 
 	public void setProcessId(String processId) {
 		this.processId = processId;
+	}
+
+	public String getDocumentScheme() {
+		return documentScheme;
+	}
+
+	public void setDocumentScheme(String documentScheme) {
+		this.documentScheme = documentScheme;
+	}
+
+	public String getProcessScheme() {
+		return processScheme;
+	}
+
+	public void setProcessScheme(String processScheme) {
+		this.processScheme = processScheme;
 	}
 	  
 }

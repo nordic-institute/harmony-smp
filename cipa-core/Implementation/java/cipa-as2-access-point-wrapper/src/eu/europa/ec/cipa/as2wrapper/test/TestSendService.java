@@ -21,7 +21,6 @@ import com.sun.jersey.api.client.config.ClientConfig;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 
 import eu.europa.ec.cipa.as2wrapper.types.DocumentInfoType;
-import eu.europa.ec.cipa.as2wrapper.types.DocumentType;
 import eu.europa.ec.cipa.as2wrapper.types.MessageMetaDataType;
 import eu.europa.ec.cipa.as2wrapper.types.ParticipantType;
 import eu.europa.ec.cipa.as2wrapper.types.RequestType;
@@ -49,7 +48,7 @@ public class TestSendService {
 		}
 		config.getProperties().put(com.sun.jersey.client.urlconnection.HTTPSProperties.PROPERTY_HTTPS_PROPERTIES, new com.sun.jersey.client.urlconnection.HTTPSProperties(getHostnameVerifier(), sslContext));
 	    Client client = Client.create(config);
-	    WebResource service = client.resource("https://localhost:9443/cipa-as2-access-point-wrapper/rest/send");
+	    WebResource service = client.resource("http://localhost:8080/cipa-as2-access-point-wrapper/rest/send");
 	    
 	    MessageMetaDataType metaData = new MessageMetaDataType();
 	    DocumentInfoType documentInfo = new DocumentInfoType();
@@ -59,16 +58,19 @@ public class TestSendService {
 	    documentInfo.setType("Invoice");
 	    documentInfo.setTypeVersion("version2.1");
 	    metaData.setDocumentInfo(documentInfo);
-	    metaData.setDocumentId("333333");
-	    metaData.setProcessId("444444");
+	    metaData.setDocumentId("urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:#urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0");
+	    metaData.setDocumentScheme("busdox-docid-qns");
+	    metaData.setProcessId("urn:www.cenbii.eu:profile:bii04:ver1.0");
+	    metaData.setProcessScheme("cenbii-procid-ubl");
 	    ParticipantType recipient = new ParticipantType();
-	    recipient.setValue("localhost-ap");
+	    recipient.setValue("mend");
+	    recipient.setScheme("busdox-actorid-upis");
 	    metaData.setRecipient(recipient);
 	    ParticipantType sender = new ParticipantType();
-	    sender.setValue("localhost-ap2-ssl");
+	    sender.setValue("APP_1000000002");
 	    metaData.setSender(sender); 
 	    
-	    DocumentType document = new DocumentType();
+	    Object document;
 	    try
 	    {
 		    DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -82,7 +84,7 @@ public class TestSendService {
 			Element tag2 = doc.createElement("tag2");
 			tag2.appendChild(doc.createTextNode("value22222222"));
 			rootElement.appendChild(tag2);
-			document.setDocument(doc.getDocumentElement());
+			document = doc.getDocumentElement();
 	    	
 	    	//another way of building the document, from a String
 //	        String xmlString = "<?xml version=\"1.0\" encoding=\"utf-8\"?><document></document>";  
@@ -101,7 +103,7 @@ public class TestSendService {
 	    }
 	    catch (Exception e)
 	    {
-	    	document.setDocument(new Object());
+	    	document = new Object();
 	    }
 
 	    
@@ -111,6 +113,8 @@ public class TestSendService {
 	    
 	    ClientResponse response = service.post(ClientResponse.class, request);    //.type(MediaType.TEXT_XML)
 		//Response r2 = service.path("rest").path("todos").type(MediaType.APPLICATION_FORM_URLENCODED).post(ClientResponse.class, form);
+	    
+	    response.getStatus();
 		    
 	}
 	

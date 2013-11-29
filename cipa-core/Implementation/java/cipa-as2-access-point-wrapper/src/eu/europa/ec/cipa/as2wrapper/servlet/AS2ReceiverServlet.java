@@ -204,8 +204,7 @@ public class AS2ReceiverServlet extends HttpServlet
 			String className = properties.getProperty(PropertiesUtil.PARTNER_INTERFACE_IMPLEMENTATION_CLASS);
 			IAS2EndpointPartnerInterface partnerInterface = (IAS2EndpointPartnerInterface) Class.forName(className).newInstance();
 			if (!partnerInterface.isPartnerKown(commonName))
-				partnerInterface.createNewPartner(commonName, as2_from, "", mdnURL, (X509Certificate)cert); //we dont know the partner's endpointUrl at this point, so we can't provide it.
-			
+				partnerInterface.createNewPartner(commonName, as2_from, "", mdnURL, (X509Certificate)cert); //we dont know the partner's endpointUrl at this point, so we can't provide it.	
 
 			//now we finally redirect the request to the AS2 endpoint
 			forwardToAS2Endpoint(req, resp, buffer);
@@ -342,12 +341,12 @@ public class AS2ReceiverServlet extends HttpServlet
 			httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, debug? 3000000 : 30000); //3000sec for tests purposes, 30sec in production
 						
 			//setting up SSL connection with the AS2 endpoint if specified in properties
-			if ("TRUE".equalsIgnoreCase(properties.getProperty(PropertiesUtil.SSL_ENABLED)))
+			if (url.startsWith("https"))
 			{
 				KeyStore trustStore  = KeyStore.getInstance("JKS");        
 				FileInputStream instream = new FileInputStream(new File(properties.getProperty(PropertiesUtil.SSL_TRUSTSTORE)));
 				try {
-				    trustStore.load(instream, properties.getProperty(PropertiesUtil.SSL_TRUSTSTORE_ALIAS).toCharArray());
+				    trustStore.load(instream, properties.getProperty(PropertiesUtil.SSL_TRUSTSTORE_PASSWORD).toCharArray());
 				} finally {
 				    instream.close();
 				}
@@ -360,7 +359,11 @@ public class AS2ReceiverServlet extends HttpServlet
 		        	socketFactory.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);
 		        }
 				
-				Scheme sch = new Scheme("https", 9443, socketFactory);
+		        //we retrieve the SSL port from the URL specified by the user in the properties
+		        String port = url.substring(url.indexOf("://")+3);
+		        port = port.substring(0, port.indexOf("/"));
+		        port = port.split(":")[1];
+				Scheme sch = new Scheme("https", Integer.parseInt(port), socketFactory);
 				httpclient.getConnectionManager().getSchemeRegistry().register(sch);
 			}
 						

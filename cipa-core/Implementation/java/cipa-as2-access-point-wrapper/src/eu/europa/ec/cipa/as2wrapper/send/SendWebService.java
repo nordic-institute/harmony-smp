@@ -2,20 +2,15 @@ package eu.europa.ec.cipa.as2wrapper.send;
 
 import java.net.URI;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.xml.datatype.DatatypeFactory;
@@ -27,23 +22,20 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.busdox.transport.identifiers._1.ProcessIdentifierType;
 import org.unece.cefact.namespaces.standardbusinessdocumentheader.BusinessScope;
 import org.unece.cefact.namespaces.standardbusinessdocumentheader.DocumentIdentification;
+import org.unece.cefact.namespaces.standardbusinessdocumentheader.ObjectFactory;
 import org.unece.cefact.namespaces.standardbusinessdocumentheader.Partner;
 import org.unece.cefact.namespaces.standardbusinessdocumentheader.PartnerIdentification;
 import org.unece.cefact.namespaces.standardbusinessdocumentheader.Scope;
 import org.unece.cefact.namespaces.standardbusinessdocumentheader.StandardBusinessDocument;
 import org.unece.cefact.namespaces.standardbusinessdocumentheader.StandardBusinessDocumentHeader;
 
-import eu.europa.ec.cipa.as2wrapper.endpoint_interface.IAS2EndpointPartnerInterface;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+
 import eu.europa.ec.cipa.as2wrapper.endpoint_interface.IAS2EndpointSendInterface;
-import eu.europa.ec.cipa.as2wrapper.endpoint_interface.mendelson.AS2EndpointPartnerInterfaceMendelson;
-import eu.europa.ec.cipa.as2wrapper.types.DocumentType;
-import eu.europa.ec.cipa.as2wrapper.types.MessageMetaDataType;
 import eu.europa.ec.cipa.as2wrapper.types.RequestType;
 import eu.europa.ec.cipa.as2wrapper.util.PropertiesUtil;
-import eu.europa.ec.cipa.peppol.sml.CSMLDefault;
 import eu.europa.ec.cipa.peppol.sml.ESML;
-import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
-import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 
 
@@ -53,6 +45,14 @@ public class SendWebService
 
 	Properties properties = PropertiesUtil.getProperties();
 	
+	private static String defaultDocumentTypeScheme = "busdox-docid-qns";
+	private static final String defaultProcessTypeScheme = "cenbiimeta-procid-ubl";
+	
+	private static Cache<String, EndpointType> cache = CacheBuilder.newBuilder()
+		       .maximumSize(200)
+		       .expireAfterWrite(24, TimeUnit.HOURS)
+		       .build();
+	
 	
 	public SendWebService() {}
 
@@ -60,7 +60,7 @@ public class SendWebService
 	@GET
 	public Response getDocument()
 	{
-		return Response.ok().build();
+		return Response.status (Status.NOT_FOUND).type("text/plain").entity("GET requests are not supported").build();
 	}
 	
 	
@@ -70,13 +70,13 @@ public class SendWebService
 		try
 		{
 			
-			//If the AS2 endpoint doesn't know about the recipient, we download the metadata from the SMP
-			String className = properties.getProperty(PropertiesUtil.PARTNER_INTERFACE_IMPLEMENTATION_CLASS);
-			IAS2EndpointPartnerInterface partnerInterface = (IAS2EndpointPartnerInterface) Class.forName(className).newInstance();
+			//If the receiver's metadata is not in our cache, we download it from the SMP
+			EndpointType endpoint;
 			try
 			{
 				String receiverId = request.getMetaData().getRecipient().getValue();
-				if (!partnerInterface.isPartnerUrlKnown(receiverId))
+				endpoint = cache.getIfPresent(receiverId);
+				if (endpoint == null)
 				{
 					SMPServiceCaller aSMPClient;
 					ParticipantIdentifierType recipient = new ParticipantIdentifierType();
@@ -84,10 +84,12 @@ public class SendWebService
 					recipient.setScheme(request.getMetaData().getRecipient().getScheme());
 				    DocumentIdentifierType documentIdentifier = new DocumentIdentifierType();
 				    documentIdentifier.setValue(request.getMetaData().getDocumentId());
-				    documentIdentifier.setScheme("????");  //TODO: determine this value
+				    String documentTypeScheme = request.getMetaData().getDocumentScheme();
+				    documentIdentifier.setScheme( (documentTypeScheme!=null && !documentTypeScheme.isEmpty()) ? documentTypeScheme : defaultDocumentTypeScheme);  //if client provides documentTypeScheme we use it, if not, we use the default value.
 				    ProcessIdentifierType process = new ProcessIdentifierType();
 				    process.setValue(request.getMetaData().getProcessId());
-				    process.setScheme("????");   //TODO: determine this value
+				    String processTypeScheme = request.getMetaData().getProcessScheme();
+				    process.setScheme( (processTypeScheme!=null && !processTypeScheme.isEmpty()) ? processTypeScheme : defaultProcessTypeScheme);  //if client provides processTypeScheme we use it, if not, we use the default value.
 			    	
 				    if ("DIRECT_SMP".equalsIgnoreCase(properties.getProperty(PropertiesUtil.SMP_MODE)))
 				    {
@@ -97,15 +99,15 @@ public class SendWebService
 				    {
 				    	aSMPClient = new SMPServiceCaller (recipient, ESML.PRODUCTION);
 				    }
-				    else  //in NO_SMP mode --> we can't access the SMP so we can't handle a send to a participant we dont know 
+				    else  //in NO_SMP mode --> we can't access the SMP so we can't handle a send to a participant we don't know 
 				    {
 				    	return Response.status (Status.INTERNAL_SERVER_ERROR).type("text/plain").entity("Impossible to handle send request to an unknown participant in NO_SMP mode").build();
 				    }
 				    
-				    EndpointType endpoint = aSMPClient.getEndpoint(recipient, documentIdentifier, process);
-				    String endpointURL = endpoint==null? null : W3CEndpointReferenceUtils.getAddress(endpoint.getEndpointReference());
-				    
-				    partnerInterface.updatePartner(receiverId, receiverId, endpointURL, null, null);
+				    endpoint = aSMPClient.getEndpoint(recipient, documentIdentifier, process);
+				    if (endpoint==null || endpoint.getEndpointReference()==null)
+				    	throw new Exception("Couldn't successfully retrieve the receiver's metadata from the SMP");
+				    cache.put(receiverId, endpoint);
 				}
 			}
 			catch (Exception e)
@@ -118,10 +120,10 @@ public class SendWebService
 			StandardBusinessDocument sbdhDoc = transformIntoSBDHRequest(request);
 			
 			//perform the actual send, implementation dependent
-			className = properties.getProperty(PropertiesUtil.SEND_INTERFACE_IMPLEMENTATION_CLASS);
+			String className = properties.getProperty(PropertiesUtil.SEND_INTERFACE_IMPLEMENTATION_CLASS);
 			IAS2EndpointSendInterface sendInterface = (IAS2EndpointSendInterface) Class.forName(className).newInstance();
 			
-			String result = sendInterface.send(sbdhDoc);
+			String result = sendInterface.send(sbdhDoc, endpoint);
 			
 			if (result != null && !result.isEmpty())
 				return Response.status (Status.INTERNAL_SERVER_ERROR).type("text/plain").entity(result).build();
@@ -138,9 +140,10 @@ public class SendWebService
 	
 	private StandardBusinessDocument transformIntoSBDHRequest(RequestType request)
 	{
-		StandardBusinessDocument sbdh = new StandardBusinessDocument();
+		ObjectFactory objFactory = new ObjectFactory();
+		StandardBusinessDocument sbdh = objFactory.createStandardBusinessDocument(); 
 		
-		StandardBusinessDocumentHeader sbdhHeader = new StandardBusinessDocumentHeader();
+		StandardBusinessDocumentHeader sbdhHeader = objFactory.createStandardBusinessDocumentHeader();
 		sbdhHeader.setHeaderVersion("1.3");
 		
 		BusinessScope sbdhBusinessScope = new BusinessScope();
@@ -201,7 +204,7 @@ public class SendWebService
 		sbdhHeader.setDocumentIdentification(sbdhDocId);
 		
 		sbdh.setStandardBusinessDocumentHeader(sbdhHeader);
-		sbdh.setAny(request.getDocument().getDocument());
+		sbdh.setAny(request.getDocument());
 		
 		return sbdh;
 	}

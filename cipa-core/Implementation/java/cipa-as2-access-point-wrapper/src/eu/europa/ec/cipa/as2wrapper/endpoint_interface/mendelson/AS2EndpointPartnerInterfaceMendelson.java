@@ -6,24 +6,95 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Properties;
 
 import javax.xml.bind.DatatypeConverter;
 
+import org.apache.commons.dbcp.BasicDataSource;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
 
 import eu.europa.ec.cipa.as2wrapper.endpoint_interface.IAS2EndpointPartnerInterface;
 import eu.europa.ec.cipa.as2wrapper.util.KeystoreUtil;
+import eu.europa.ec.cipa.as2wrapper.util.PropertiesUtil;
 
-public class AS2EndpointPartnerInterfaceMendelson extends IAS2EndpointPartnerInterface
+public class AS2EndpointPartnerInterfaceMendelson implements IAS2EndpointPartnerInterface
 {
+	
+	private BasicDataSource runtimeDataSource;
+	private BasicDataSource configDataSource;
+	protected Properties properties;
+	
+	public AS2EndpointPartnerInterfaceMendelson()
+	{
+		properties = PropertiesUtil.getProperties();
+		String url = properties.getProperty(PropertiesUtil.DB_URL);
+		if (!url.endsWith("/"))
+			url += "/";
+		
+		runtimeDataSource = new BasicDataSource();
+		runtimeDataSource.setDriverClassName(properties.getProperty(PropertiesUtil.DB_DRIVER_NAME));
+		runtimeDataSource.setUrl(url + "runtime");
+		runtimeDataSource.setUsername(properties.getProperty(PropertiesUtil.DB_USER));
+		runtimeDataSource.setPassword(properties.getProperty(PropertiesUtil.DB_PASS));
+		runtimeDataSource.setDefaultAutoCommit(false);
+		runtimeDataSource.setDefaultReadOnly(false);
+		runtimeDataSource.setPoolPreparedStatements(false);
+		runtimeDataSource.setMaxActive(5);
+		runtimeDataSource.setInitialSize(2);
+		
+		configDataSource = new BasicDataSource();
+		configDataSource.setDriverClassName(properties.getProperty(PropertiesUtil.DB_DRIVER_NAME));
+		configDataSource.setUrl(url + "config");
+		configDataSource.setUsername(properties.getProperty(PropertiesUtil.DB_USER));
+		configDataSource.setPassword(properties.getProperty(PropertiesUtil.DB_PASS));
+		configDataSource.setDefaultAutoCommit(false);
+		configDataSource.setDefaultReadOnly(false);
+		configDataSource.setPoolPreparedStatements(false);
+		configDataSource.setMaxActive(5);
+		configDataSource.setInitialSize(2);
+	}
+	
+	
+	public Connection getRuntimeConnection() throws SQLException
+	{
+		Connection connection = null;
+		
+		int maxConnections = runtimeDataSource.getMaxActive();
+        if (maxConnections < runtimeDataSource.getNumActive() + 1)
+        {
+        	runtimeDataSource.setMaxActive(maxConnections + 1);
+        }
+        
+        connection = runtimeDataSource.getConnection();
+		
+		return connection;
+	}
+	
+	
+	public Connection getConfigConnection() throws SQLException
+	{
+		Connection connection = null;
+		
+		int maxConnections = configDataSource.getMaxActive();
+        if (maxConnections < configDataSource.getNumActive() + 1)
+        {
+        	configDataSource.setMaxActive(maxConnections + 1);
+        }
+        
+        connection = configDataSource.getConnection();
+		
+		return connection;
+	}
+	
 
 	public boolean isPartnerKown(String CN) throws SQLException
 	{
 		if (CN == null || CN.isEmpty())
 			return false;
 		
-		Connection con = getConnection();
+		Connection con = getConfigConnection();
 		PreparedStatement statement = con.prepareStatement("select 1 from PARTNER where AS2IDENT = ?");
 		statement.setString(1, CN);
         ResultSet result = statement.executeQuery();
@@ -35,33 +106,33 @@ public class AS2EndpointPartnerInterfaceMendelson extends IAS2EndpointPartnerInt
 	}
 
 	
-	public boolean isPartnerUrlKnown (String CN) throws SQLException
+	public String getPartnerUrl (String CN) throws SQLException
 	{
 		if (CN == null || CN.isEmpty())
-			return false;
+			return null;
 		
-		Connection con = getConnection();
+		Connection con = getConfigConnection();
 		PreparedStatement statement = con.prepareStatement("select url from PARTNER where AS2IDENT = ?");
 		statement.setString(1, CN);
         ResultSet result = statement.executeQuery();
         String url;
         
         if (result==null || result.next()==false)
-        	return false;
+        	return null;
         else
         {
         	url = result.getString(1);
         	if (url==null || url.isEmpty())
-        		return false;
+        		return null;
         }
         
-        return true;
+        return url;
 	}
 	
 	
 	public void createNewPartner(String as2Id, String name, String endpointUrl, String mdnUrl, X509Certificate cert) throws Exception
 	{
-		Connection con  = getConnection();
+		Connection con  = getConfigConnection();
 		try
 		{
 			createPartner(con, as2Id, name, endpointUrl, mdnUrl, cert);
@@ -119,7 +190,7 @@ public class AS2EndpointPartnerInterfaceMendelson extends IAS2EndpointPartnerInt
 
 	public void updatePartner(String as2Id, String name, String endpointUrl, String mdnUrl, X509Certificate cert) throws Exception
 	{
-		Connection con = getConnection();
+		Connection con = getConfigConnection();
 		
 		String fingerprint = cert==null? null : calculateHash(cert);
 		
@@ -180,6 +251,33 @@ public class AS2EndpointPartnerInterfaceMendelson extends IAS2EndpointPartnerInt
 				con.rollback();
 			throw new Exception (e);
 		}
+	}
+	
+	
+	public String getLatestMessageId() throws SQLException
+	{
+		String messageId = null;
+		Connection con = getRuntimeConnection();
+		Statement statement = con.createStatement();
+		ResultSet result = statement.executeQuery("SELECT LIMIT 0 1 messageid FROM messages ORDER BY initdateutc DESC");
+		if (result.next())
+		{
+			messageId = result.getString(1);
+		}
+		
+        return messageId;
+	}
+	
+	
+	public int getMessageState(String messageId) throws SQLException
+	{
+		Connection con = getRuntimeConnection();
+		Statement statement = con.createStatement();
+		ResultSet result = statement.executeQuery("SELECT state FROM messages WHERE messageid = '" + messageId + "'");
+		if (result.next())
+			return result.getInt(1);
+		else
+			return 0; 
 	}
 
 	

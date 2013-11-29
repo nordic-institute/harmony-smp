@@ -37,12 +37,9 @@ import org.w3c.dom.Element;
  * 
  * 
  */
-@XmlRootElement
+@XmlRootElement (name="StandardBusinessDocument")
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "StandardBusinessDocument", propOrder = {
-    "standardBusinessDocumentHeader",
-    "any"
-})
+@XmlType(propOrder = {"standardBusinessDocumentHeader", "any"} )
 public class StandardBusinessDocument {
 
     @XmlElement(name = "StandardBusinessDocumentHeader")

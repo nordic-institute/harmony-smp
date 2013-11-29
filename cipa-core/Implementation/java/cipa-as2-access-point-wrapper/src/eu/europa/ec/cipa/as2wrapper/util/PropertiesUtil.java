@@ -15,9 +15,8 @@ public class PropertiesUtil
 	
 	public static final String AS2_ENDPOINT_URL = "as2_endpoint_url";
 	public static final String SERVER_MODE = "server_mode";
-	public static final String SSL_ENABLED = "ssl_enabled";
 	public static final String SSL_TRUSTSTORE = "ssl_truststore";
-	public static final String SSL_TRUSTSTORE_ALIAS = "ssl_truststore_alias";
+	public static final String SSL_TRUSTSTORE_PASSWORD = "ssl_truststore_password";
 	public static final String PARTNER_INTERFACE_IMPLEMENTATION_CLASS = "partner_interface_implementation_class";
 	public static final String SEND_INTERFACE_IMPLEMENTATION_CLASS = "send_interface_implementation_class";
 	public static final String DB_DRIVER_NAME = "db_driver_name";
