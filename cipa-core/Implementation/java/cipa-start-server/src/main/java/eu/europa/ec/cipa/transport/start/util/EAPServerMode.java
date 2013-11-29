@@ -49,11 +49,13 @@ public enum EAPServerMode implements IHasID <String> {
    * full production mode with SMP and DNS usage
    */
   PRODUCTION,
+
   /**
    * Standalone mode the AP accepts the message with no recipient check (url and
    * certificate)
    */
   DEVELOPMENT_STANDALONE,
+
   /**
    * In this mode the AP will call the SMP directly without DNS lookup
    */
@@ -63,6 +65,14 @@ public enum EAPServerMode implements IHasID <String> {
   @Nonempty
   public String getID () {
     return name ();
+  }
+
+  /**
+   * @return <code>true</code> if a recipient check should be performed,
+   *         <code>false</code> if not.
+   */
+  public boolean performRecipientCheck () {
+    return this != DEVELOPMENT_STANDALONE;
   }
 
   @Nullable

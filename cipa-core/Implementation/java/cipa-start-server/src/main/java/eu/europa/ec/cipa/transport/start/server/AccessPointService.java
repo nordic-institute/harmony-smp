@@ -44,6 +44,7 @@ package eu.europa.ec.cipa.transport.start.server;
 import java.math.BigInteger;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.KeyStore;
@@ -144,16 +145,20 @@ public class AccessPointService {
                                                                                                          "$success");
   private static final IStatisticsHandlerTimer s_aStatsTimerFailure = StatisticsManager.getTimerHandler (AccessPointService.class +
                                                                                                          "$failure");
+
   private static final ISMLInfo SML_INFO = ESML.PRODUCTION;
   private static final List <IAccessPointServiceReceiverSPI> s_aReceivers;
+  private static final EAPServerMode s_aServerMode;
+  private static URI s_aDirectSMPURI = null;
   private static final X509Certificate s_aConfiguredCert;
-  private static EAPServerMode s_aServerMode = EAPServerMode.PRODUCTION;
 
   static {
+    // Receiver classpath
     final String sReceiverClassPath = ServerConfigFile.getReceiverClassPath ();
-    if (sReceiverClassPath != null) {
+    if (StringHelper.hasText (sReceiverClassPath)) {
+      // We do have a custom classpath
       final String [] aPathEntries = StringHelper.getExplodedArray (',', sReceiverClassPath);
-      final URL [] aPathEntriesURLS = new URL [aPathEntries.length];
+      final URL [] aPathEntriesURLs = new URL [aPathEntries.length];
       for (int i = 0; i < aPathEntries.length; i++) {
         final String sPathEntry = aPathEntries[i];
         if (!sPathEntry.endsWith ("/") && !sPathEntry.endsWith (".jar"))
@@ -161,7 +166,8 @@ public class AccessPointService {
                                              sPathEntry +
                                              "'; must end with either '/' or '.jar'");
         try {
-          aPathEntriesURLS[i] = new URL (sPathEntry);
+          aPathEntriesURLs[i] = new URL (sPathEntry);
+          s_aLogger.info ("Using custom classpath entry '" + aPathEntries[i] + " to load receiver modules");
         }
         catch (final MalformedURLException e) {
           throw new InitializationException ("Invalid class path: '" +
@@ -170,8 +176,9 @@ public class AccessPointService {
                                              e.getMessage ());
         }
       }
+
       // Load all SPI implementations with a custom class loader
-      final URLClassLoader aCustomCL = new URLClassLoader (aPathEntriesURLS, ClassHelper.getDefaultClassLoader ());
+      final URLClassLoader aCustomCL = new URLClassLoader (aPathEntriesURLs, ClassHelper.getDefaultClassLoader ());
       s_aReceivers = ContainerHelper.newUnmodifiableList (ServiceLoaderUtils.getAllSPIImplementations (IAccessPointServiceReceiverSPI.class,
                                                                                                        aCustomCL));
 
@@ -180,27 +187,51 @@ public class AccessPointService {
       // Load all SPI implementations
       s_aReceivers = ContainerHelper.newUnmodifiableList (ServiceLoaderUtils.getAllSPIImplementations (IAccessPointServiceReceiverSPI.class));
     }
+    if (s_aReceivers.isEmpty ()) {
+      s_aLogger.warn ("No implementation of the SPI interface " +
+                      IAccessPointServiceReceiverSPI.class.getName () +
+                      " found! Incoming documents will be discarded!");
+    }
+    else {
+      s_aLogger.info ("Successfully loaded " +
+                      s_aReceivers.size () +
+                      " implementations of " +
+                      IAccessPointServiceReceiverSPI.class.getName ());
+    }
 
-    if (s_aReceivers.isEmpty ())
-      s_aLogger.error ("No implementation of the SPI interface " +
-                       IAccessPointServiceReceiverSPI.class +
-                       " found! Incoming documents will be discarded!");
-
+    // Server mode
     final String sServerMode = ServerConfigFile.getServerMode ();
-    if (sServerMode != null) {
+    if (StringHelper.hasText (sServerMode)) {
       s_aServerMode = EAPServerMode.getFromIDOrNull (sServerMode);
-      if (s_aServerMode == null)
+      if (s_aServerMode == null) {
         throw new InitializationException ("You configured your server to start in an unsupported mode '" +
                                            sServerMode +
                                            "'. Please check you serverConfig file");
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Starting access point in  " + s_aServerMode + " Mode");
+      }
+
       if (EAPServerMode.DEVELOPMENT_DIRECT_SMP.equals (s_aServerMode)) {
+        // Direct SMP mode requires an SMP server URL
         final String sSMPUrl = ServerConfigFile.getServerSMPUrl ();
         if (StringHelper.hasNoText (sSMPUrl))
           throw new InitializationException ("You configured your server to start in direct smp mode. Please specify the SMP URL in the serverConfig file as well!");
+
+        try {
+          s_aDirectSMPURI = new URI (sSMPUrl);
+        }
+        catch (final URISyntaxException ex) {
+          throw new InitializationException ("The provided SMP URL '" +
+                                             sSMPUrl +
+                                             "' could not be converted to a URI: " +
+                                             ex.getMessage ());
+        }
       }
     }
+    else {
+      // Nothing specified - use production by default
+      s_aServerMode = EAPServerMode.PRODUCTION;
+    }
+    s_aLogger.info ("Starting access point server in  " + s_aServerMode + " Mode");
+
     // Read certificate from configuration only once, so it is cached for
     // reuse
     try {
@@ -237,12 +268,10 @@ public class AccessPointService {
 
       // Query the SMP
       SMPServiceCaller aSMPClient;
-      if (EAPServerMode.DEVELOPMENT_DIRECT_SMP.equals (s_aServerMode)) {
-        aSMPClient = new SMPServiceCaller (new URI (ServerConfigFile.getServerSMPUrl ()));
-      }
-      else {
+      if (s_aDirectSMPURI != null)
+        aSMPClient = new SMPServiceCaller (s_aDirectSMPURI);
+      else
         aSMPClient = new SMPServiceCaller (aRecipientID, SML_INFO);
-      }
 
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug (sMessageID + " Performing SMP lookup at " + aSMPClient.getSMPHost ());
@@ -484,7 +513,7 @@ public class AccessPointService {
       }
       else {
         // Not a ping message
-        if (!EAPServerMode.DEVELOPMENT_STANDALONE.equals (s_aServerMode)) {
+        if (s_aServerMode.performRecipientCheck ()) {
           // Get the endpoint information required from the recipient
           final EndpointType aRecipientEndpoint = _getRecipientEndpoint (aMetadata, sMessageID);
 
