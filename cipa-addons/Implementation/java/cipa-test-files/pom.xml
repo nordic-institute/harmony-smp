@@ -33,7 +33,7 @@
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-commons</artifactId>
-      <version>4.0.12</version>
+      <version>4.1.0</version>
     </dependency>
   </dependencies>
 
