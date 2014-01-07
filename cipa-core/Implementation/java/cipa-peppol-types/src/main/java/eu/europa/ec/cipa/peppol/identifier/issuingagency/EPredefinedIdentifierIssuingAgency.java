@@ -35,6 +35,7 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
+
 package eu.europa.ec.cipa.peppol.identifier.issuingagency;
 
 import javax.annotation.Nonnull;
@@ -489,11 +490,11 @@ public enum EPredefinedIdentifierIssuingAgency implements IIdentifierIssuingAgen
   VA_VAT ("VA:VAT", "Holy See (Vatican City State) VAT number", "9953", false, new Version ("1.1.0")),
 
   /**
-   * Prefix <code>9954</code>, scheme ID <code>NL:ION</code><br>
+   * Prefix <code>9954</code>, scheme ID <code>NL:OIN</code><br>
    * 
    * @since code list 1.1.3
    */
-  NL_ION ("NL:ION", "Dutch 'ION' number", "9954", false, new Version ("1.1.3"));
+  NL_OIN ("NL:OIN", "Dutch Originator's Identification Number", "9954", false, new Version ("1.1.3"));
   private final String m_sSchemeID;
   private final String m_sSchemeAgency;
   private final String m_sISO6523;
