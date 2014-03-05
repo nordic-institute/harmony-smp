@@ -1,12 +1,8 @@
 package eu.peppol.start.persistence;
 
-import eu.peppol.start.identifier.ChannelId;
-import eu.peppol.start.identifier.IdentifierName;
-import eu.peppol.start.identifier.PeppolMessageHeader;
 import org.w3c.dom.Document;
 
-import java.net.URL;
-import java.util.Map;
+import eu.peppol.start.identifier.PeppolMessageHeader;
 
 /**
  * Repository of messages received.

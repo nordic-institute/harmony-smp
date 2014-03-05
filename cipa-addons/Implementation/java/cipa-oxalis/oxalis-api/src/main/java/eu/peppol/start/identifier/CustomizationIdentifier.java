@@ -1,7 +1,6 @@
 /* Created by steinar on 20.05.12 at 12:07 */
 package eu.peppol.start.identifier;
 
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
