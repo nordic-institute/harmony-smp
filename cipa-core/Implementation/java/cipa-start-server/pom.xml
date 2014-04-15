@@ -33,7 +33,7 @@
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-commons</artifactId>
-      <version>4.2.0</version>
+      <version>4.3.0</version>
     </dependency>
     <dependency>
       <groupId>com.phloc</groupId>
@@ -48,7 +48,7 @@
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-webscopes</artifactId>
-      <version>6.2.7</version>
+      <version>6.3.1</version>
     </dependency>
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
