@@ -1,5 +1,6 @@
 package eu.europa.ec.cipa.as2wrapper.endpoint_interface.mendelson;
 
+import java.io.StringWriter;
 import java.security.MessageDigest;
 import java.security.cert.X509Certificate;
 import java.sql.Connection;
@@ -10,10 +11,13 @@ import java.sql.Statement;
 import java.util.Properties;
 
 import javax.xml.bind.DatatypeConverter;
+import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 
 import org.apache.commons.dbcp.BasicDataSource;
-import org.bouncycastle.jce.provider.X509CertificateObject;
 
+
+import org.bouncycastle.openssl.PEMWriter;
+import org.busdox.servicemetadata.publishing._1.EndpointType;
 
 import eu.europa.ec.cipa.as2wrapper.endpoint_interface.IAS2EndpointPartnerInterface;
 import eu.europa.ec.cipa.as2wrapper.util.KeystoreUtil;
@@ -130,12 +134,56 @@ public class AS2EndpointPartnerInterfaceMendelson implements IAS2EndpointPartner
 	}
 	
 	
+	public EndpointType getPartnerData (String CN) throws SQLException
+	{
+		if (CN == null || CN.isEmpty())
+			return null;
+		
+		EndpointType partner = new EndpointType();
+		Connection con = getConfigConnection();
+		PreparedStatement statement = con.prepareStatement("select url from PARTNER where AS2IDENT = ?");
+		statement.setString(1, CN);
+        ResultSet result = statement.executeQuery();
+        
+        if (result==null || result.next()==false)
+        	return null;
+        else
+        {
+        	try
+        	{
+        	String url = result.getString("url");
+        	KeystoreUtil keystore = new KeystoreUtil();
+        	X509Certificate cert = keystore.getCertificateByAlias(CN);
+        	if (url==null || url.isEmpty() || cert==null)
+        		return null;
+        	W3CEndpointReferenceBuilder builder = new W3CEndpointReferenceBuilder();
+        	builder.address(url);
+        	partner.setEndpointReference(builder.build());
+//        	partner.setRequireBusinessLevelSignature();
+        	StringWriter stringWriter = new StringWriter();
+        	PEMWriter pemWriter = new PEMWriter(stringWriter);
+        	pemWriter.writeObject(keystore.getCertificateByAlias(CN));
+        	pemWriter.flush();
+        	partner.setCertificate(stringWriter.toString());
+        	}
+        	catch (Exception e)
+        	{
+        		System.out.println("Error in AS2EndpointPartnerInterfaceMendelson.getPartnerData(): " + e.getMessage());
+        		return null;
+        	}
+        }
+        
+        return partner;
+	}
+	
+	
 	public void createNewPartner(String as2Id, String name, String endpointUrl, String mdnUrl, X509Certificate cert) throws Exception
 	{
 		Connection con  = getConfigConnection();
 		try
 		{
-			createPartner(con, as2Id, name, endpointUrl, mdnUrl, cert);
+			
+			createPartner(con, as2Id, name, endpointUrl, mdnUrl, false, calculateHash(cert) , cert);
 						
 			con.commit();
 		}
@@ -148,30 +196,31 @@ public class AS2EndpointPartnerInterfaceMendelson implements IAS2EndpointPartner
 	}
 
 	
-	private void createPartner(Connection con, String as2Id, String name, String endpointUrl, String mdnUrl, X509Certificate cert) throws Exception
+	private void createPartner(Connection con, String as2Id, String name, String endpointUrl, String mdnUrl, boolean isLocal, String fingerprint , X509Certificate cert) throws Exception
 	{
-		//before anything, we calculate the certificate's SHA-1 fingerprint
-		String fingerprint = cert==null? null : calculateHash(cert);
-		
-		//first operation: we insert the partner's certificate in the AS2Endpoint keystore
-		KeystoreUtil keyStoreAccess = new KeystoreUtil();
-		String definitiveAlias = keyStoreAccess.installNewPartnerCertificate((X509CertificateObject)cert, as2Id);
+		//if demanded, we insert the partner's certificate in the AS2Endpoint keystore
+		if(cert != null)
+		{
+			KeystoreUtil keyStoreAccess = new KeystoreUtil();
+			keyStoreAccess.installNewPartnerCertificate(cert, as2Id);
+		}
 		
 		//then we create the partner in the DB
-		String insert = "insert into PARTNER (	AS2IDENT,	NAME,	ISLOCAL,	SIGN,	ENCRYPT,	URL,	MDNURL,	SUBJECT,	SYNCMDN,	POLLIGNORELIST,	POLLINTERVAL,	COMPRESSION,	SIGNEDMDN,	USECOMMANDONRECEIPT,USEHTTPAUTH,USEHTTPAUTHASYNCMDN,KEEPORIGINALFILENAMEONRECEIPT,	NOTIFYSEND,	NOTIFYRECEIVE,	NOTIFYSENDRECEIVE,	NOTIFYSENDENABLED,	NOTIFYRECEIVEENABLED,	NOTIFYSENDRECEIVEENABLED,	USECOMMANDONSENDERROR,	USECOMMANDONSENDSUCCESS,CONTENTTRANSFERENCODING,HTTPVERSION,MAXPOLLFILES)" +
-									" values (	?,			?,		0,			2,		1,			?,		?,		'',			1,			null,			10,				1,				1,			0,					0,			0,					0,								0,			0,				0,					0,					0,						0,							0,						0,						1,						'1.1',		100);";
+		String insert = "insert into PARTNER (	AS2IDENT,	NAME,	ISLOCAL,	SIGN,	ENCRYPT,	URL,	MDNURL,	SUBJECT,		CONTENTTYPE,				SYNCMDN,	POLLIGNORELIST,	POLLINTERVAL,	COMPRESSION,	SIGNEDMDN,	USECOMMANDONRECEIPT,USEHTTPAUTH,USEHTTPAUTHASYNCMDN,KEEPORIGINALFILENAMEONRECEIPT,	NOTIFYSEND,	NOTIFYRECEIVE,	NOTIFYSENDRECEIVE,	NOTIFYSENDENABLED,	NOTIFYRECEIVEENABLED,	NOTIFYSENDRECEIVEENABLED,	USECOMMANDONSENDERROR,	USECOMMANDONSENDSUCCESS,CONTENTTRANSFERENCODING,HTTPVERSION,MAXPOLLFILES)" +
+									" values (	?,			?,		?,			2,		1,			?,		?,		'AS2 message',	'application/EDI-Consent',	1,				null,			10,				1,				1,			0,					0,			0,					0,								0,			0,				0,					0,					0,						0,							0,						0,						1,						'1.1',		100);";
 		PreparedStatement statement = con.prepareStatement(insert);
-		statement.setString(1, definitiveAlias);
+		statement.setString(1, as2Id);
 		statement.setString(2, name);
-		statement.setString(3, endpointUrl);
-		statement.setString(4, mdnUrl);
+		statement.setInt(3, isLocal? 1:0);
+		statement.setString(4, endpointUrl);
+		statement.setString(5, mdnUrl);
 		statement.executeUpdate();
 		
 		if (fingerprint!=null)
 		{	
 			//we retrieve the ID of the partner just created
 			statement = con.prepareStatement("select ID from PARTNER where AS2IDENT = ? and NAME = ?");
-			statement.setString(1, definitiveAlias);
+			statement.setString(1, as2Id);
 			statement.setString(2, name);
 			ResultSet result = statement.executeQuery();
 			result.next();
@@ -205,7 +254,7 @@ public class AS2EndpointPartnerInterfaceMendelson implements IAS2EndpointPartner
 			if (!result.next())
 			{
 				//if the partner doesn't exist yet, we create it
-				createPartner(con, as2Id, name, endpointUrl, mdnUrl, cert);
+				createPartner(con, as2Id, name, endpointUrl, mdnUrl, false, fingerprint, cert);
 			}
 			else
 			{
@@ -252,6 +301,60 @@ public class AS2EndpointPartnerInterfaceMendelson implements IAS2EndpointPartner
 			throw new Exception (e);
 		}
 	}
+	
+	
+	
+	public void configureLocalStationIfNeeded() throws Exception
+	{
+		//a local station needs to have NAME and AS2IDENT with the CommonName value of the AP certificate specified in the config file, and it must be linked to a certificate on the CERTIFICATES table.
+		KeystoreUtil keystore = new KeystoreUtil();
+		X509Certificate apCert = keystore.getApCertificate();
+		String CN = KeystoreUtil.extractCN(apCert);
+		String fingerprint = calculateHash(apCert);
+		
+		Connection con = getConfigConnection();
+		PreparedStatement statement = con.prepareStatement("select p.ID from PARTNER p join CERTIFICATES c on p.ID = c.PARTNERID where p.ISLOCAL = 1 and p.AS2IDENT = ? and p.NAME = ? and c.FINGERPRINTSHA1 = ?");
+		statement.setString(1, CN);
+		statement.setString(2, CN);
+		statement.setString(3, fingerprint);
+        ResultSet result = statement.executeQuery();
+        if (!result.next()) // if there's no such local station, we create one
+        	createLocalStation(CN, fingerprint);
+	}
+	
+	
+	private void createLocalStation(String CN, String fingerprint) throws Exception
+	{
+		//delete any partner with the same CN already existing in the DB. Then create default local station.
+		Connection con = getConfigConnection();
+		try
+		{
+			PreparedStatement statement = con.prepareStatement("select ID from PARTNER where NAME = ? and AS2IDENT = ?");
+			statement.setString(1, CN);
+			statement.setString(2, CN);
+			ResultSet result = statement.executeQuery();
+			if (result.next())
+			{
+				int id = result.getInt("ID");
+				statement = con.prepareStatement("delete from CERTIFICATES where PARTNERID = ?");
+				statement.setInt(1, id);
+				statement.executeUpdate();
+				statement = con.prepareStatement("delete from PARTNER where ID = ?");
+				statement.setInt(1, id);
+				statement.executeUpdate();
+			}
+		
+			createPartner(con, CN, CN, "", "", true, fingerprint , null);
+			con.commit();
+		}
+		catch (Exception e)
+		{
+			if (con!=null)
+				con.rollback();
+			throw new Exception (e);
+		}
+	}
+	
 	
 	
 	public String getLatestMessageId() throws SQLException

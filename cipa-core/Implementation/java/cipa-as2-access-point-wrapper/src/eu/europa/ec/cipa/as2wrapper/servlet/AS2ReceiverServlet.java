@@ -43,7 +43,13 @@ import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 
 
+
+
+
+import com.phloc.commons.state.EValidity;
+
 import eu.europa.ec.cipa.as2wrapper.endpoint_interface.IAS2EndpointPartnerInterface;
+import eu.europa.ec.cipa.as2wrapper.ocsp.OCSPValidator;
 import eu.europa.ec.cipa.as2wrapper.util.KeystoreUtil;
 import eu.europa.ec.cipa.as2wrapper.util.PropertiesUtil;
 
@@ -97,7 +103,7 @@ public class AS2ReceiverServlet extends HttpServlet
 	private boolean isMDN(HttpServletRequest req)
 	{
 		if (req.getHeader("as2-from")!=null && req.getHeader("as2-to")!=null && req.getHeader("message-id")!=null &&
-				req.getHeader("disposition-notification-to")==null && req.getHeader("disposition-notification-options")==null && req.getHeader("recipient-address")==null)
+				req.getHeader("disposition-notification-to")==null && req.getHeader("disposition-notification-options")==null /* && req.getHeader("recipient-address")==null */ )
 			return true;
 		return false;
 	}
@@ -105,7 +111,7 @@ public class AS2ReceiverServlet extends HttpServlet
 	
 	private boolean isIncomingAS2Message(HttpServletRequest req)
 	{
-		if (req.getHeader("as2-from")!=null && req.getHeader("as2-to")!=null && req.getHeader("message-id")!=null && req.getHeader("recipient-address")!=null && req.getHeader("disposition-notification-to")!=null)
+		if (req.getHeader("as2-from")!=null && req.getHeader("as2-to")!=null && req.getHeader("message-id")!=null && /* req.getHeader("recipient-address")!=null && */ req.getHeader("disposition-notification-to")!=null)
 			return true;
 		return false;
 	}
@@ -123,9 +129,6 @@ public class AS2ReceiverServlet extends HttpServlet
 			
 	        //extract the certificate from the request
 	        X509CertificateObject cert = retrieveCertificate(input, resp);
-			Principal principal = ((X509CertificateObject)cert).getSubjectDN();
-			if (principal==null)
-				principal = ((X509CertificateObject)cert).getSubjectX500Principal();
 						
 			//check the certificate was signed by our AP CA, if not, it's not a valid MDN
 			String trustError = checkSignatureTrust((X509Certificate) cert);
@@ -135,8 +138,25 @@ public class AS2ReceiverServlet extends HttpServlet
 				return;
 			}
 			
+			//OCSP validation of the certificate used to sign this MDN
+			boolean valid = true;
+			if ("true".equalsIgnoreCase(properties.getProperty(PropertiesUtil.OCSP_VALIDATION_ACTIVATED)))
+			{
+				try
+				{
+					valid = OCSPValidator.certificateValidate(cert);
+				}
+				catch (Exception e)
+				{
+					valid = false;
+				}
+				
+				if (!valid)
+					; //TODO: the OCSP validation didn't pass, what should we do?
+			}
+			
 			//find the certificate's CN
-			String commonName = extractCN(principal);
+			String commonName = extractCN(cert);
 					
 			//TODO: we MUST check the signing certificate's CN is the same as in the SMP metadata (cached in our database), but if we see it's not, what should we do? Responding with an error to DestAP won't have any effect, as it has already processed the original message we sent. 
 			
@@ -179,9 +199,6 @@ public class AS2ReceiverServlet extends HttpServlet
 			
 	        //extract the certificate from the request
 	        X509CertificateObject cert = retrieveCertificate(input, resp);
-			Principal principal = ((X509CertificateObject)cert).getSubjectDN();
-			if (principal==null)
-				principal = ((X509CertificateObject)cert).getSubjectX500Principal();
 						
 			//check the certificate was signed by our AP CA, if not, it's not a valid request
 			String trustError = checkSignatureTrust((X509Certificate) cert);
@@ -191,8 +208,30 @@ public class AS2ReceiverServlet extends HttpServlet
 				return;
 			}
 			
+			
+			//TODO: we have to check time validity of the certificate
+			
+			
+			//OCSP validation of the certificate used to sign this message
+			boolean valid = true;
+			if ("true".equalsIgnoreCase(properties.getProperty(PropertiesUtil.OCSP_VALIDATION_ACTIVATED)))
+			{
+				try
+				{
+					valid = OCSPValidator.certificateValidate(cert);
+				}
+				catch (Exception e)
+				{
+					valid = false;
+				}
+				
+				if (!valid)
+					; //TODO: the OCSP validation didn't pass, what should we do?
+			}
+			
+			
 			//find the certificate's CN
-			String commonName = extractCN(principal);
+			String commonName = extractCN(cert);
 					
 			//TODO: if the CN is not equals to the AS2-from we should reject the message: shall we do it here or let the AS2 endpoint do it?
 			
@@ -256,7 +295,7 @@ public class AS2ReceiverServlet extends HttpServlet
 			for (int i=0 ; i < multipart.getCount() ; i++)
 			{
 				part_aux = multipart.getBodyPart(i);
-				if (part_aux.getContentType()!=null && part_aux.getContentType().contains("mime-type=signed-data")) //Content-Type=application/pkcs7-signature; name=smime.p7s; smime-type=signed-data
+				if (part_aux.getContentType()!=null && part_aux.getContentType().toLowerCase().contains("smime-type") && part_aux.getContentType().toLowerCase().contains("signed-data") && (part_aux.getContentType().toLowerCase().indexOf("signed-data") - part_aux.getContentType().toLowerCase().indexOf("smime-type") < 15)) //Content-Type=application/pkcs7-signature; name=smime.p7s; smime-type=signed-data
 					part = part_aux;
 			}
 			if (part==null)
@@ -317,15 +356,19 @@ public class AS2ReceiverServlet extends HttpServlet
 	}
 	
 	
-	private String extractCN(Principal principal)
+	private String extractCN(X509Certificate cert)
 	{
+		Principal principal = cert.getSubjectDN();
+		if (principal==null)
+			principal = cert.getSubjectX500Principal();
+		
 		String commonName = null;
 		String[] names = principal.getName().split(",");
 		for (String s: names)
-			if (s.startsWith("CN="))
-				commonName = s.substring(3);
+			if (s.trim().startsWith("CN="))
+				commonName = s.trim().substring(3);
 		
-		return commonName;
+		return commonName.trim();
 	}
 	
 	

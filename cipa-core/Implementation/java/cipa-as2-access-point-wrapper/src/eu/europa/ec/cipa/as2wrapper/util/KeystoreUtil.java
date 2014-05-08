@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.KeyStore;
+import java.security.Principal;
 import java.security.cert.X509Certificate;
 import java.util.Properties;
 
@@ -67,7 +68,7 @@ public class KeystoreUtil
 	/** Creates a new certificate in the AS2 endpoint's truststore
 	 * @return
 	 */
-	public String installNewPartnerCertificate (X509Certificate cert, String alias) throws Exception
+	public void installNewPartnerCertificate (X509Certificate cert, String alias) throws Exception
 	{
 		//there shouldn't be two similar PEPPOL cetificate Common Names, so the prefered behaviour is to override if we receive an alias that already exists (we assume there's been a certificate renewal)
 		//String uniqueAlias = ensureUniqueAliasName(keyStore, alias);
@@ -76,18 +77,28 @@ public class KeystoreUtil
 		FileOutputStream output = new FileOutputStream(pathToFile);
 		keyStore.store(output, password.toCharArray());
 		output.close();
-		
-		//return uniqueAlias
-		return alias;
 	}
 	
 	/**	retrieves the PEPPOL AP CA certificate from the keystore
 	 */
 	public X509Certificate getApCaCertificate() throws Exception
 	{
-		return (X509Certificate) keyStore.getCertificate(properties.getProperty(PropertiesUtil.KEYSTORE_AP_AC_ALIAS));
+		return (X509Certificate) keyStore.getCertificate(properties.getProperty(PropertiesUtil.KEYSTORE_AP_CA_ALIAS));
 	}
 	
+	
+	/** retrieves the AP certificate from the keystore
+	 */
+	public X509Certificate getApCertificate() throws Exception
+	{
+		return (X509Certificate) keyStore.getCertificate(properties.getProperty(PropertiesUtil.KEYSTORE_AP_ALIAS));
+	}
+	
+	
+	public X509Certificate getCertificateByAlias(String alias) throws Exception
+	{
+		return (X509Certificate) keyStore.getCertificate(alias);
+	}
 	
 	
     /**Checks that an alias for an import is unique in this keystore*/
@@ -104,4 +115,20 @@ public class KeystoreUtil
         return (alias);
     }
 	
+    
+	public static String extractCN(X509Certificate cert)
+	{
+		Principal principal = cert.getSubjectDN();
+		if (principal==null)
+			principal = cert.getSubjectX500Principal();
+		
+		String commonName = null;
+		String[] names = principal.getName().split(",");
+		for (String s: names)
+			if (s.trim().startsWith("CN="))
+				commonName = s.trim().substring(3);
+		
+		return commonName.trim();
+	}
+    
 }

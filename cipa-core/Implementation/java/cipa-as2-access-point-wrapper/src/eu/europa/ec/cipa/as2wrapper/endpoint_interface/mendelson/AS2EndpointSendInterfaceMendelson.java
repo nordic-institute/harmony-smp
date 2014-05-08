@@ -6,27 +6,22 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
-
 import org.busdox.servicemetadata.publishing._1.EndpointType;
-import org.unece.cefact.namespaces.standardbusinessdocumentheader.Scope;
-import org.unece.cefact.namespaces.standardbusinessdocumentheader.StandardBusinessDocument;
-import org.w3c.dom.Node;
 
 import de.mendelson.comm.as2.AS2ServerVersion;
+import de.mendelson.comm.as2.clientserver.message.PartnerConfigurationChanged;
 import de.mendelson.comm.as2.clientserver.message.RefreshClientMessageOverviewList;
 import de.mendelson.comm.as2.message.AS2Message;
 import de.mendelson.util.clientserver.BaseClient;
 import de.mendelson.util.clientserver.ClientSessionHandlerCallback;
 import de.mendelson.util.clientserver.messages.ClientServerMessage;
-import de.mendelson.util.clientserver.messages.LoginRequest;
+import de.mendelson.util.clientserver.messages.ClientServerResponse;
 import de.mendelson.util.clientserver.messages.LoginRequired;
+import de.mendelson.util.clientserver.messages.LoginState;
 import de.mendelson.util.clientserver.user.User;
 import eu.europa.ec.cipa.as2wrapper.endpoint_interface.IAS2EndpointSendInterface;
 import eu.europa.ec.cipa.as2wrapper.util.PropertiesUtil;
@@ -41,17 +36,16 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 	public static final String MENDELSON_MESSAGE_SERVER_PORT = "mendelson_message_server_port";
 
 	
-	public String send(StandardBusinessDocument sbdh, EndpointType endpoint)
+	public String send(String senderId, String receiverId, String documentInstanceIdentifier, String documentFilePath, EndpointType endpoint)
 	{
 
 		if (endpoint==null)
 			return "Impossible to send: endpoint information was not given";
 		
-		String senderId = sbdh.getStandardBusinessDocumentHeader().getSender().get(0).getIdentifier().getValue();
+		boolean newPartner = false;
+		
 		senderId = senderId.replace('-', '_');
-		String recipientId = sbdh.getStandardBusinessDocumentHeader().getReceiver().get(0).getIdentifier().getValue();
-		recipientId = recipientId.replace('-', '_');
-		String documentId = sbdh.getStandardBusinessDocumentHeader().getDocumentIdentification().getInstanceIdentifier();
+		receiverId = receiverId.replace('-', '_');
 //		List<Scope> scopes = sbdh.getStandardBusinessDocumentHeader().getBusinessScope().getScope();
 //		for (Scope scope : scopes)
 //		{
@@ -64,13 +58,16 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 		try
 		{
 			String endpointURL = W3CEndpointReferenceUtils.getAddress(endpoint.getEndpointReference());
-			if (!endpointURL.equals(partnerInterface.getPartnerUrl(recipientId)))
+			String databaseURL = partnerInterface.getPartnerUrl(receiverId);
+			if (databaseURL==null)
+				newPartner = true;
+			if (!endpointURL.equals(databaseURL))
 			{
 				//we convert the certificate string to a X509Certificate
 				CertificateFactory cf = CertificateFactory.getInstance("X.509");
 				X509Certificate cert = (X509Certificate) cf.generateCertificate(new ByteArrayInputStream(endpoint.getCertificate().getBytes()));
 				//and update the partner's data
-			    partnerInterface.updatePartner(recipientId, recipientId, endpointURL, null, cert);
+			    partnerInterface.updatePartner(receiverId, receiverId, endpointURL, null, cert);
 			}
 		}
 		catch (Exception e)
@@ -86,17 +83,12 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 		if (path.endsWith("/"))
 			path = path.substring(0, path.length()-1);
 		path += "/messages/";
-		path += recipientId;
+		path += receiverId;
 		path += "/outbox/";
-		path += senderId + "/" + documentId;
+		path += senderId + "/" + documentInstanceIdentifier;
 		
 		try
 		{
-			//prepare the document to be marshalled
-			JAXBContext context = JAXBContext.newInstance(StandardBusinessDocument.class);
-			Marshaller m = context.createMarshaller();
-		    m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-		    
 			//connect to Mendelson message server, it'll keep us updated on the transmission state
 			SignalObject signalObject = new SignalObject();
 			MySessionHandlerCallback callback = new MySessionHandlerCallback(signalObject);
@@ -104,8 +96,26 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 			if (!callback.isconnected())
 				return "Couldn't connect to Mendelson message server";
 			
+			if (newPartner)
+			{
+				ClientServerResponse resp = callback.getBaseClient().sendSync(new PartnerConfigurationChanged(), 2*1000); //timeout 2 seconds. It always waits until the timeout limit, so we have to make these milliseconds as low as possible.
+				if (resp!=null && resp.getException()!=null)
+				{
+					callback.getBaseClient().disconnect();
+					return "Error communicating to Mendelson endpoint: couldn't notify the creation of a new partner. Please retry again later";
+				}
+			}
+			
+			
 			//put the file on the right folder for Mendelson to send it
-		    m.marshal(sbdh, new File(path));
+		    File tempFile = new File(documentFilePath);
+		    File mendelsonFile = new File(path);
+		    boolean success = tempFile.renameTo(mendelsonFile);
+		    if (!success)
+		    {
+		    	callback.getBaseClient().disconnect();
+		       	return "Error: Couldn't move the temp file " + documentFilePath + " into Mendelson folder " + path + " to be sent.";
+		    }
 		    
 		    synchronized(signalObject)
 		    {
@@ -120,9 +130,15 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 		        }
 		    }
 		    if (signalObject.getResponseValue()==SignalObject.RETURN_SUCCESS)
+		    {
+		    	callback.getBaseClient().disconnect();
 		    	return null;
+		    }
 		    else
+		    {
+		    	callback.getBaseClient().disconnect();
 		    	return "Mendelson AS2 endpoint wasn't able to send the message";
+		    }
 		    
 		}
 		catch (Exception e)
@@ -150,10 +166,24 @@ class MySessionHandlerCallback implements ClientSessionHandlerCallback
 	}
 	
 	
+	public BaseClient getBaseClient()
+	{
+		return this.client;
+	}
+	
     @Override
     public void loginRequestedFromServer()
     {
-        this.client.login("admin", "admin".toCharArray(), AS2ServerVersion.getFullProductName());
+        LoginState state = this.client.login("admin", "admin".toCharArray(), AS2ServerVersion.getFullProductName());
+        if (state.getState() == LoginState.STATE_AUTHENTICATION_SUCCESS)
+        {
+        	User returnedLoginUser = state.getUser();
+        	client.setUser(returnedLoginUser);
+        }
+        else
+        {
+        	System.out.println("ERROR: Impossible to login to Mendelson server with default credentials.");
+        }
     }
     
     @Override
@@ -206,7 +236,6 @@ class MySessionHandlerCallback implements ClientSessionHandlerCallback
 	    	    				signalObject.setResponseValue(SignalObject.RETURN_SUCCESS);
 	    	    				signalObject.notify();
     	    				}
-    	    				//and stop listening
     	    				client.logout();
     	    			}
     	    			else if (messageState==AS2Message.STATE_STOPPED || messageState==0) //sending the message failed, or the messageId could no longer be found (probably the user deleted the message from the pending queue)
@@ -217,7 +246,6 @@ class MySessionHandlerCallback implements ClientSessionHandlerCallback
 	    	    				signalObject.setResponseValue(SignalObject.RETURN_ERROR);
 	    	    				signalObject.notify();
     	    				}
-    	    				//and stop listening
     	    				client.logout();
     	    			}
     	    			else

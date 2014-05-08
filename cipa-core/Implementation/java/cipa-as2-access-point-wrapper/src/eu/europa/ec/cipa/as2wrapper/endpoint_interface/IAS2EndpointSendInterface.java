@@ -8,5 +8,5 @@ public interface IAS2EndpointSendInterface
 
 	/** Sends the document through the AS2 endpoint. If there were any errors in the transmission it returns a string with the error description. Returns null or empty string if everything went ok.
 	 */
-	public abstract String send(StandardBusinessDocument doc, EndpointType receiverEndpoint);
+	public abstract String send(String senderId, String receiverId, String documentInstanceIdentifier, String documentFilePath, EndpointType receiverEndpoint);
 }

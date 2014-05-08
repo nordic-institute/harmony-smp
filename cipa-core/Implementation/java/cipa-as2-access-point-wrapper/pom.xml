@@ -25,6 +25,10 @@
 	      </snapshots>
 	    </repository>
   	</repositories>
+  	
+  	<properties>
+  		<org.apache.cxf.version>2.2.3</org.apache.cxf.version>
+	</properties>
   
     <dependencies>
 		<dependency>
@@ -98,13 +102,71 @@
 		<dependency>
 	        <groupId>eu.europa.ec.cipa</groupId>
 	        <artifactId>cipa-smp-client-library</artifactId>
-	        <version>1.0.2-SNAPSHOT</version>
+	        <version>1.1.2-SNAPSHOT</version>
     	</dependency>
     	<dependency>
 	        <groupId>com.google.guava</groupId>
 	        <artifactId>guava</artifactId>
 	        <version>15.0</version>
     	</dependency>
+    	<dependency>
+      		<groupId>eu.europa.ec.cipa</groupId>
+      		<artifactId>cipa-start-client</artifactId>
+      		<version>1.1.2-SNAPSHOT</version>
+    	</dependency>
+    	
+    	
+    	<!--
+    	<dependency>
+			<groupId>org.apache.axis2</groupId>
+			<artifactId>axis2-kernel</artifactId>
+			<version>1.6.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.axis2</groupId>
+			<artifactId>axis2-adb</artifactId>
+			<version>1.6.2</version>
+		</dependency>
+		-->
+		
+		
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-core</artifactId>
+			<version>${org.apache.cxf.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxws</artifactId>
+			<version>${org.apache.cxf.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http</artifactId>
+			<version>${org.apache.cxf.version}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-bindings-soap</artifactId>
+			<version>${org.apache.cxf.version}</version>
+			<scope>compile</scope>
+			<type>jar</type>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-api</artifactId>
+			<version>${org.apache.cxf.version}</version>
+			<scope>compile</scope>
+			<type>jar</type>
+		</dependency>
+		
+		 
     </dependencies>
   
   	<build>

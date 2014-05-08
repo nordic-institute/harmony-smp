@@ -25,9 +25,17 @@ public class PropertiesUtil
 	public static final String DB_PASS = "db_password";
 	public static final String KEYSTORE_PATH = "keystore_path";
 	public static final String KEYSTORE_PASS = "keystore_password";
-	public static final String KEYSTORE_AP_AC_ALIAS = "keystore_ap_ca_alias";
+	public static final String KEYSTORE_AP_CA_ALIAS = "keystore_ap_ca_alias";
+	public static final String KEYSTORE_AP_ALIAS = "keystore_ap_alias";
+	public static final String OCSP_RESPONDER_URL = "ocsp_responder_url";
+	public static final String OCSP_VALIDATION_ACTIVATED = "ocsp_validation_activated";
+	public static final String TEMP_FOLDER_PATH = "temp_folder_path";
 	public static final String SMP_MODE = "smp_mode";
 	public static final String SMP_URL = "smp_url";
+	public static final String HOLODECK_ENDPOINT = "holodeck_endpoint";
+	public static final String HOLODECK_ENDPOINT_ACTIVATED = "holodeck_endpoint_activated";
+	public static final String START_ENDPOINT_ACTIVATED = "start_endpoint_activated";
+	public static final String AS2_ENDPOINT_ACTIVATED = "as2_endpoint_activated";
 	
 	
 	/** Loads the properties file using the servlet context passed as parameter
