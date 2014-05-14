@@ -63,7 +63,13 @@
         <configuration>
           <instructions>
             <Export-Package>
-              eu.europa.ec.cipa.busdox.*
+              eu.europa.ec.cipa.busdox.*,
+              org.busdox.*,
+              org.oasis_open.docs.wss.*,
+              org.w3._2000._09.xmldsig,
+              org.w3._2001.xmlschema,
+              org.w3._2005._08.addressing,
+              org.w3._2009._02.ws_tra
             </Export-Package>
           </instructions>
         </configuration>
