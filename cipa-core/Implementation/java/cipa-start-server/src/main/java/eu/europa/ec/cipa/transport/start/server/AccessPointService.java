@@ -326,7 +326,7 @@ public class AccessPointService {
       s_aLogger.debug (sMessageID + " Recipient AP URL is " + sRecipientAPUrl);
 
     // Is it for us?
-    if (!sRecipientAPUrl.contains (sOwnAPUrl)) {
+    if (sRecipientAPUrl == null || !sRecipientAPUrl.contains (sOwnAPUrl)) {
       s_aLogger.error (sMessageID + " The received document is not for us!");
       s_aLogger.error (sMessageID + " Request is for: " + sRecipientAPUrl);
       s_aLogger.error (sMessageID + "    Our URL is: " + sOwnAPUrl);
