@@ -48,11 +48,11 @@
   <!-- Properties for default plugins -->
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <metro.new.version>2.2.1-1</metro.new.version>
+    <metro.version>2.2.1-1</metro.version>
     <slf4j.version>1.7.5</slf4j.version>
     <servlet-api.version>2.5</servlet-api.version>
     <jersey.version>1.17.1</jersey.version>
-    <jetty.version>8.1.14.v20131031</jetty.version>
+    <jetty.version>8.1.15.v20140411</jetty.version>
   </properties>
 
   <!-- Who are we? -->
@@ -216,7 +216,7 @@
       </dependency>
       <dependency>
         <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
+        <artifactId>jaxb-api-osgi</artifactId>
         <version>2.2.7</version>
         <exclusions>
           <!-- Exclude stuff already contained in Runtime of Java 1.6 -->
@@ -228,8 +228,8 @@
       </dependency>
       <dependency>
         <groupId>org.glassfish.metro</groupId>
-        <artifactId>webservices-api</artifactId>
-        <version>${metro.new.version}</version>
+        <artifactId>webservices-api-osgi</artifactId>
+        <version>${metro.version}</version>
         <exclusions>
           <!-- Already included in JDK6 -->
           <exclusion>
@@ -244,8 +244,8 @@
       </dependency>
       <dependency>
         <groupId>org.glassfish.metro</groupId>
-        <artifactId>webservices-rt</artifactId>
-        <version>${metro.new.version}</version>
+        <artifactId>webservices-osgi</artifactId>
+        <version>${metro.version}</version>
         <exclusions>
           <!-- Already included in JDK6 -->
           <exclusion>
@@ -893,8 +893,8 @@
         </configuration>
       </plugin>
       <plugin>
-        <groupId>com.mycila.maven-license-plugin</groupId>
-        <artifactId>maven-license-plugin</artifactId>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
         <configuration>
           <keywords>
             <keyword>EUPL</keyword>
