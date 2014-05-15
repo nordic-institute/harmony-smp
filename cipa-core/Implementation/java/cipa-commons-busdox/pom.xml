@@ -41,6 +41,10 @@
       <artifactId>webservices-osgi</artifactId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>com.sun.xml.bind</groupId>
+      <artifactId>jaxb-osgi</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -64,12 +68,11 @@
           <instructions>
             <Export-Package>
               eu.europa.ec.cipa.busdox.*,
-              org.busdox.*,
-              org.oasis_open.docs.wss.*,
+              org.busdox.servicemetadata.publishing._1,
+              org.busdox.transport.identifiers._1,
               org.w3._2000._09.xmldsig,
-              org.w3._2001.xmlschema,
-              org.w3._2005._08.addressing,
-              org.w3._2009._02.ws_tra
+              org.w3._2009._02.ws_tra,
+              org.busdox._2010._02.channel.fault
             </Export-Package>
           </instructions>
         </configuration>
