@@ -73,14 +73,14 @@
     </dependency>
     <dependency>
       <groupId>org.glassfish.metro</groupId>
-      <artifactId>webservices-osgi</artifactId>
+      <artifactId>webservices-rt</artifactId>
       <scope>provided</scope>
     </dependency>
 
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-      <version>1.4.177</version>
+      <version>1.4.178</version>
       <scope>test</scope>
     </dependency>
     <dependency>

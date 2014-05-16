@@ -38,12 +38,8 @@
     </dependency>
     <dependency>
       <groupId>org.glassfish.metro</groupId>
-      <artifactId>webservices-osgi</artifactId>
+      <artifactId>webservices-rt</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.sun.xml.bind</groupId>
-      <artifactId>jaxb-osgi</artifactId>
     </dependency>
 
     <dependency>
