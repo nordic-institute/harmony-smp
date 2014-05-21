@@ -39,27 +39,27 @@
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-scopes</artifactId>
-      <version>6.2.1</version>
+      <version>6.3.0</version>
     </dependency>
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-db</artifactId>
-      <version>3.1.1</version>
+      <version>3.1.2</version>
     </dependency>
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-datetime</artifactId>
-      <version>3.1.1</version>
+      <version>3.1.4</version>
     </dependency>
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-web</artifactId>
-      <version>5.4.3</version>
+      <version>5.5.0</version>
     </dependency>
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-webscopes</artifactId>
-      <version>6.3.1</version>
+      <version>6.4.0</version>
     </dependency>
     <dependency>
       <groupId>dnsjava</groupId>

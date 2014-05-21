@@ -39,7 +39,7 @@
     <dependency>
       <groupId>com.phloc</groupId>
       <artifactId>phloc-webbasics</artifactId>
-      <version>2.3.1</version>
+      <version>3.0.0</version>
     </dependency>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -82,8 +82,5 @@
         <targetPath>${project.build.directory}/webapp-classes</targetPath>
       </resource>
     </resources>
-
-    <plugins>
-    </plugins>
   </build>
 </project>

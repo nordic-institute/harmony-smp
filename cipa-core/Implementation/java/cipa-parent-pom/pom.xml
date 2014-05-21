@@ -73,16 +73,6 @@
   <!-- Where are we looking for JARs? -->
   <repositories>
     <repository>
-      <id>phloc.com</id>
-      <url>http://repo.phloc.com/maven2/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-    <repository>
       <id>eclipselink</id>
       <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
       <releases>
@@ -103,20 +93,6 @@
       </snapshots>
     </repository>
   </repositories>
-  
-  <!-- Where are we looking for Maven plugins? -->
-  <pluginRepositories>
-    <pluginRepository>
-      <id>phloc.com</id>
-      <url>http://repo.phloc.com/maven2/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
 
   <!-- Specific build configurations (=profiles) -->
   <profiles>
