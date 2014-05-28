@@ -9,9 +9,9 @@
 	    <relativePath>../cipa-parent-pom/pom.xml</relativePath>
   	</parent>
   	
-  	<artifactId>cipa-as2-access-point-wrapper</artifactId>
+  	<artifactId>cipa-dispatcher</artifactId>
   	<packaging>war</packaging>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.1.0</version>
   
     <repositories>
 	    <repository>
@@ -47,6 +47,7 @@
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
 			<version>1.4.4</version>
+			<scope>provided</scope>
 		</dependency>
 	    <dependency>
 	      	<groupId>javax.servlet</groupId>
@@ -102,7 +103,7 @@
 		<dependency>
 	        <groupId>eu.europa.ec.cipa</groupId>
 	        <artifactId>cipa-smp-client-library</artifactId>
-	        <version>1.1.2-SNAPSHOT</version>
+	        <version>1.1.4-SNAPSHOT</version>
     	</dependency>
     	<dependency>
 	        <groupId>com.google.guava</groupId>
@@ -112,7 +113,7 @@
     	<dependency>
       		<groupId>eu.europa.ec.cipa</groupId>
       		<artifactId>cipa-start-client</artifactId>
-      		<version>1.1.2-SNAPSHOT</version>
+      		<version>1.1.4-SNAPSHOT</version>
     	</dependency>
     	
     	
@@ -129,7 +130,7 @@
 		</dependency>
 		-->
 		
-		
+		<!--      DONE JUST FOR THE RELEASE, MARK AS PROVIDED LATER
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-core</artifactId>
@@ -165,6 +166,7 @@
 			<scope>compile</scope>
 			<type>jar</type>
 		</dependency>
+		 -->
 		
 		 
     </dependencies>

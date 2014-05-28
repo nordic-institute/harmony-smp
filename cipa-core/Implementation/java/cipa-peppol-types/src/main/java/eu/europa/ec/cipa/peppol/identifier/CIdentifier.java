@@ -77,7 +77,7 @@ public final class CIdentifier {
   /**
    * Process identifier value maximum length (excluding the scheme)
    */
-  public static final int MAX_PROCESS_IDENTIFIER_VALUE_LENGTH = 50;
+  public static final int MAX_PROCESS_IDENTIFIER_VALUE_LENGTH = 200;
 
   /**
    * The regular expression to be used for validating participant identifier

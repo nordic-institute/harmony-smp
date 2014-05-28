@@ -192,7 +192,9 @@ public final class BusdoxURLUtils {
   @Nonnull
   public static URI getSMPURIOfParticipant (@Nonnull final IReadonlyParticipantIdentifier aParticipantIdentifier,
                                             @Nullable final String sSMLZoneName) {
-    final String sURIString = "http://" + getDNSNameOfParticipant (aParticipantIdentifier, sSMLZoneName);
+    String sURIString = "http://" + getDNSNameOfParticipant (aParticipantIdentifier, sSMLZoneName);
+    if (sURIString.endsWith("."))  //in some cases it gives a problem later when trying to retrieve the participant's metadata ex: http://B-51538b9890f1999ca08302c65f544719.iso6523-actorid-upis.sml.peppolcentral.org./iso6523-actorid-upis%3A%3A9917%3A550403315099/services/busdox-docid-qns......
+    	sURIString = sURIString.substring(0, sURIString.length()-1);
     try {
       return new URI (sURIString);
     }

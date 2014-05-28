@@ -162,7 +162,7 @@ CREATE TABLE `smp_endpoint` (
   `minimumAuthenticationLevel` varchar(256) default NULL,
   `serviceActivationDate` datetime default NULL,
   `serviceExpirationDate` datetime NOT NULL,
-  `certificate` BLOB NOT NULL,
+  `certificate` TEXT NOT NULL,
   `serviceDescription` BLOB NOT NULL,
   `technicalContactUrl` varchar(256) NOT NULL,
   `technicalInformationUrl` varchar(256) default NULL,
