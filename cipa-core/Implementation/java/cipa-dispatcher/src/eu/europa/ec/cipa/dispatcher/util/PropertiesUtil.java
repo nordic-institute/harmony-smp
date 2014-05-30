@@ -19,6 +19,7 @@ public class PropertiesUtil
 	public static final String SSL_TRUSTSTORE_PASSWORD = "ssl_truststore_password";
 	public static final String PARTNER_INTERFACE_IMPLEMENTATION_CLASS = "partner_interface_implementation_class";
 	public static final String SEND_INTERFACE_IMPLEMENTATION_CLASS = "send_interface_implementation_class";
+	public static final String INIT_INTERFACE_IMPLEMENTATION_CLASS = "init_interface_implementation_class";
 	public static final String DB_DRIVER_NAME = "db_driver_name";
 	public static final String DB_URL = "db_url";
 	public static final String DB_USER = "db_username";
