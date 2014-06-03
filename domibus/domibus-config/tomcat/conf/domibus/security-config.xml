@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:security-config xmlns:tns="http://www.e-codex.eu/domibus/securityconfig/0.1"
+                     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                     xsi:noNamespaceSchemaLocation="file:/D:/git-repos/domibus/domibus/modules/domibus-security/src/main/resources/security-config.xsd">
+    <tns:keystores>
+        <tns:privateKeystore>
+            <tns:localAlias>@domibus.module.security.config.privatekey.alias@</tns:localAlias>
+            <tns:storepwd>@domibus.module.security.config.keystore.password@</tns:storepwd>
+            <tns:keypwd>@domibus.module.security.config.privatekey.password@</tns:keypwd>
+            <tns:file>@domibus.module.security.keysFolder@/@domibus.module.security.config.keystore.filename@
+            </tns:file>
+            <tns:storeType>jks</tns:storeType>
+        </tns:privateKeystore>
+        <tns:publicKeystore>
+            <tns:storepwd>@domibus.module.security.config.truststore.password@</tns:storepwd>
+            <tns:file>@domibus.module.security.keysFolder@/@domibus.module.security.config.truststore.filename@
+            </tns:file>
+            <tns:storeType>jks</tns:storeType>
+        </tns:publicKeystore>
+    </tns:keystores>
+    <tns:securities>
+        <tns:security name="sign-body-header_TESTGW1_TESTGW2">
+            <tns:remoteAlias>service_testgw2</tns:remoteAlias>
+            <tns:policyFile>policy-sign-body-header.xml</tns:policyFile>
+        </tns:security>
+        <tns:security name="sign-body-header_TESTGW2_TESTGW1">
+            <tns:remoteAlias>service_testgw1</tns:remoteAlias>
+            <tns:policyFile>policy-sign-body-header.xml</tns:policyFile>
+        </tns:security>
+
+        <tns:security name="sign_body_header-encrypt_body_TESTGW1_TESTGW2">
+            <tns:remoteAlias>service_testgw2</tns:remoteAlias>
+            <tns:policyFile>policy-sign_body_header-encrypt_body.xml</tns:policyFile>
+        </tns:security>
+        <tns:security name="sign_body_header-encrypt_body_TESTGW2_TESTGW1">
+            <tns:remoteAlias>service_testgw1</tns:remoteAlias>
+            <tns:policyFile>policy-sign_body_header-encrypt_body.xml</tns:policyFile>
+        </tns:security>
+
+        <tns:security name="sign-body-header_GW2_GW1">
+            <tns:remoteAlias>service_GW1</tns:remoteAlias>
+            <tns:policyFile>policy-sign-body-header.xml</tns:policyFile>
+        </tns:security>
+        <tns:security name="sign-body-header_GW1_GW2">
+            <tns:remoteAlias>service_GW2</tns:remoteAlias>
+            <tns:policyFile>policy-sign-body-header.xml</tns:policyFile>
+        </tns:security>
+
+    </tns:securities>
+</tns:security-config>

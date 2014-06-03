@@ -1,0 +1,109 @@
+<Context path="/domibus" privileged="false" reloadable="false">
+
+    <!-- DATABASE CONFIGURATION START -->
+    <!-- Database configuration, driverClassName, url, username and password
+        must be changed -->
+    <Resource name="@domibus.persistence.unit@"
+              auth="Container"
+              factory="org.apache.naming.factory.BeanFactory"
+              type="com.mchange.v2.c3p0.ComboPooledDataSource"
+              driverClass="@domibus.persistence.driverClassName@"
+              maxPoolSize="50"
+              minPoolSize="15"
+              acquireIncrement="3"
+              acquireRetryAttempts="0"
+              acquireRetryDelay="3000"
+              breakAfterAcquireFailure="false"
+              maxConnectionAge="60"
+              maxIdleTime="30"
+              maxIdleTimeExcessConnections="10"
+              idleConnectionTestPeriod="15"
+              testConnectionOnCheckout="false"
+              preferredTestQuery="SELECT 1"
+              debugUnreturnedConnectionStackTraces="true"
+              autoCommitOnClose="true"
+              jdbcUrl="@domibus.persistence.url@"
+              user="@domibus.persistence.user@"
+              password="@domibus.persistence.password@"/>
+
+    <!-- Name of the database connection as defined above -->
+    <Environment name="domibus.persistence.unit" value="@domibus.persistence.unit@"
+                 type="java.lang.String"/>
+
+    <!-- File where addidtional persistence properties are defined -->
+    <Environment name="domibus.persistence.properties" value="@domibus.persistence.properties@"
+                 type="java.lang.String"/>
+    <!-- DATABASE CONFIGURATION END -->
+
+
+    <!-- SECURITY CONFIGURATION START -->
+    <!-- File where the security module is configured -->
+    <Environment name="domibus.module.security.configFile"
+                 value="@domibus.module.security.configFile@" type="java.lang.String"/>
+
+    <!-- Folder where security policies are defined -->
+    <Environment name="domibus.module.security.policiesFolder"
+                 value="@domibus.module.security.policiesFolder@" type="java.lang.String"/>
+
+    <!-- Timeout in milliseconds for the expiration of the security configuration
+        cache -->
+    <Environment name="domibus.module.security.config.timeout"
+                 value="@domibus.module.security.config.timeout@" type="java.lang.String"/>
+
+    <!-- Password for the private key used by the gateway -->
+    <Environment name="domibus.module.security.config.privatekey.password"
+                 value="apache" type="java.lang.String"/>
+    <!-- SECURITY CONFIGURATION END -->
+
+
+    <!-- FILE SYSTEM CONFIGURATION START -->
+    <!-- Folder where the backend module stores messages -->
+    <Environment name="domibus.module.backend.messagesFolder"
+                 value="@domibus.module.backend.messagesFolder@" type="java.lang.String"/>
+
+    <!-- Folder where the ebms3 module stores attachments -->
+    <Environment name="domibus.module.ebms3.attachmentFolder"
+                 value="@domibus.module.ebms3.attachmentFolder@" type="java.lang.String"/>
+
+    <!-- Folder where the PMode configuration files are located -->
+    <Environment name="domibus.module.ebms3.PModesDir" value="@domibus.module.ebms3.PModesDir@"
+                 type="java.lang.String"/>
+
+    <!-- File where gateway consumption rules are defined -->
+    <Environment name="domibus.module.ebms3.gatewayConfigFile"
+                 value="@domibus.module.ebms3.gatewayConfigFile@" type="java.lang.String"/>
+
+    <!-- Folder where the ebms3 module stores submitted messages -->
+    <Environment name="domibus.module.ebms3.submittedMessagesFolder"
+                 value="@domibus.module.ebms3.submittedMessagesFolder@" type="java.lang.String"/>
+
+    <!-- Folder where the ebms3 module stores received messages -->
+    <Environment name="domibus.module.ebms3.receivedMessagesFolder"
+                 value="@domibus.module.ebms3.receivedMessagesFolder@" type="java.lang.String"/>
+
+    <!-- File where worker execution rules are defined -->
+    <Environment name="domibus.module.ebms3.workersFile"
+                 value="@domibus.module.ebms3.workersFile@" type="java.lang.String"/>
+
+    <!--  support for domibus 1.3 messages -->
+    <Environment name="domibus.module.ebms3.enforce.1_3.compatibility"
+                 value="@domibus.module.ebms3.enforce.1_3.compatibility@" type="java.lang.Boolean"/>
+    <!-- FILE SYSTEM CONFIGURATION END -->
+
+
+    <!-- MISC CONFIGURATION START -->
+    <!-- Number of days after which not downloaded messages are deleted -->
+    <Environment name="domibus.module.backend.messagesTimeLive"
+                 value="@domibus.module.backend.messagesTimeLive@" type="java.lang.String"/>
+
+    <!-- Cron expression determining how often the check for the time limit
+        defined above is executed -->
+    <Environment name="domibus.module.backend.deleteMessagesCron"
+                 value="@domibus.module.backend.deleteMessagesCron@" type="java.lang.String"/>
+
+    <!-- Hostnames of the server the gateway is running on -->
+    <Environment name="domibus.module.ebms3.hostnames" value="@domibus.module.ebms3.hostnames@"
+                 type="java.lang.String"/>
+    <!-- MISC CONFIGURATION END -->
+</Context>
+

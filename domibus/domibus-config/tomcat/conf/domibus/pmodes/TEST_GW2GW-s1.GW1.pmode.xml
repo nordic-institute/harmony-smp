@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+         ************* 
+         This PModes file is for the consumer (partyId,role): 
+         (GW1, GW)
+         
+         Service: EPO 
+         
+         Creation date/time: 2014-02-13T15:16:16.87+01:00 
+         ************* 
+      -->
+<tns:PModes xmlns:tns="http://www.e-codex.eu/domibus/pmodes/0.1"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.e-codex.eu/domibus/pmodes/0.1 pmodes.xsd"><!--
+         ************* 
+         Producers. A producer represents an entity
+         (person, application, corporation, etc...) that produces User Messages. A User Message is
+         simply a message that contains payload data, and therefore, it is intended to be consumed
+         by some entity that is beyond the MSH (i.e. sitting behind the MSH). A User Message always
+         contains in its SOAP Header the element <eb:UserMessage>. A Producer is
+         OPTIONAL. This means that the PMode could be used by many types of senders. When a sender
+         uses this PMode to send out a message, the sender must therefore tell the MSH about its
+         <eb:From> party. This is a way to share the same PMode with multiple
+         different senders. If the PMode has to be used by a single specific sender, a
+         <Producer> element MUST be declared; each element <Leg> must
+         point to a <Producer> element. 
+         ************* 
+      -->
+    <tns:Producer name="GW2-GW">
+        <tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">GW2</tns:PartyId>
+        <tns:Role>GW</tns:Role>
+    </tns:Producer>
+    <tns:Producer name="GW1-GW">
+        <tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">GW1</tns:PartyId>
+        <tns:Role>GW</tns:Role>
+    </tns:Producer>
+    <!--
+          *************
+          UserServices. A UserService represents the
+          destination where the User Message will go. In the ebXML specification, this is represented
+          by the xml elements <eb:To>, <eb:CollaborationInfo>,
+          <eb:PayloadInfo> and <eb:MessageProperties>.
+          *************
+       -->
+    <tns:UserService name="EPO_Unreliable_GW1_GW">
+        <tns:ToPartyInfo>
+            <tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">GW1</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>EPO</tns:Service>
+            <tns:Action>unreliable</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+    <tns:UserService name="EPO_As4_response_GW1_GW">
+        <tns:ToPartyInfo>
+            <tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">GW1</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>EPO</tns:Service>
+            <tns:Action>as4_response</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+    <tns:UserService name="EPO_As4_callback_GW1_GW">
+        <tns:ToPartyInfo>
+            <tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">GW1</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>EPO</tns:Service>
+            <tns:Action>as4_callback</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+    <tns:UserService name="EPO_Invalid_endpoint_GW1_GW">
+        <tns:ToPartyInfo>
+            <tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">GW1</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>EPO</tns:Service>
+            <tns:Action>invalid_endpoint</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+    <tns:UserService name="EPO_As4_invalid_endpoint_GW1_GW">
+        <tns:ToPartyInfo>
+            <tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">GW1</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>EPO</tns:Service>
+            <tns:Action>as4_invalid_endpoint</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+    <tns:UserService name="EPO_Unreliable_maxPayloadMin_GW1_GW" maxPayloadSize="1">
+        <tns:ToPartyInfo>
+            <tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">GW1</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>EPO</tns:Service>
+            <tns:Action>unreliable_maxPayloadMin</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+    <tns:UserService name="EPO_Unreliable_GW2_GW">
+        <tns:ToPartyInfo>
+            <tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">GW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>EPO</tns:Service>
+            <tns:Action>unreliable</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+    <tns:UserService name="EPO_As4_response_GW2_GW">
+        <tns:ToPartyInfo>
+            <tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">GW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>EPO</tns:Service>
+            <tns:Action>as4_response</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+    <tns:UserService name="EPO_As4_callback_GW2_GW">
+        <tns:ToPartyInfo>
+            <tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">GW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>EPO</tns:Service>
+            <tns:Action>as4_callback</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+    <tns:UserService name="EPO_Invalid_endpoint_GW2_GW">
+        <tns:ToPartyInfo>
+            <tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">GW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>EPO</tns:Service>
+            <tns:Action>invalid_endpoint</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+    <tns:UserService name="EPO_As4_invalid_endpoint_GW2_GW">
+        <tns:ToPartyInfo>
+            <tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">GW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>EPO</tns:Service>
+            <tns:Action>as4_invalid_endpoint</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+    <tns:UserService name="EPO_Unreliable_maxPayloadMin_GW2_GW" maxPayloadSize="1">
+        <tns:ToPartyInfo>
+            <tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">GW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>EPO</tns:Service>
+            <tns:Action>unreliable_maxPayloadMin</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+    <!--
+          *************
+          Bindings. A Binding contains information mostly
+          related to transport, such as the URL address of the destination, the soap version, the
+          soap action, and the MEP (Message Exchange Pattern) to use. The Binding element also
+          contains detailed information of each leg of the MEP being used.
+          *************
+       -->
+    <tns:Binding name="GW2_GW1_EPO_Unreliable">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1" producer="GW2-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="EPO_Unreliable_GW1_GW"
+                     security="sign-body-header_GW2_GW1">
+                <tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+                <tns:As4Receipt nonRepudiation="false" method="response">
+                    <tns:As4Reliability duplicateElimination="true"/>
+                </tns:As4Receipt>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <tns:Binding name="GW1_GW2_EPO_Unreliable">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1" producer="GW1-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="EPO_Unreliable_GW2_GW"
+                     security="sign-body-header_GW1_GW2">
+                <tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+                <tns:As4Receipt nonRepudiation="false" method="response">
+                    <tns:As4Reliability duplicateElimination="true"/>
+                </tns:As4Receipt>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <tns:Binding name="GW2_GW1_EPO_As4_response">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1" producer="GW2-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="EPO_As4_response_GW1_GW"
+                     security="sign-body-header_GW2_GW1">
+                <tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+                <tns:As4Receipt nonRepudiation="false" method="response">
+                    <tns:As4Reliability duplicateElimination="true"/>
+                </tns:As4Receipt>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <tns:Binding name="GW1_GW2_EPO_As4_response">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1" producer="GW1-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="EPO_As4_response_GW2_GW"
+                     security="sign-body-header_GW1_GW2">
+                <tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+                <tns:As4Receipt nonRepudiation="false" method="response">
+                    <tns:As4Reliability duplicateElimination="true"/>
+                </tns:As4Receipt>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <tns:Binding name="GW2_GW1_EPO_As4_callback">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1" producer="GW2-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="EPO_As4_callback_GW1_GW"
+                     security="sign-body-header_GW2_GW1">
+                <tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+                <tns:As4Receipt nonRepudiation="false" method="response">
+                    <tns:As4Reliability duplicateElimination="true"/>
+                </tns:As4Receipt>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <tns:Binding name="GW1_GW2_EPO_As4_callback">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1" producer="GW1-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="EPO_As4_callback_GW2_GW"
+                     security="sign-body-header_GW1_GW2">
+                <tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+                <tns:As4Receipt nonRepudiation="false" method="response">
+                    <tns:As4Reliability duplicateElimination="true"/>
+                </tns:As4Receipt>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <tns:Binding name="GW2_GW1_EPO_Invalid_endpoint">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1" producer="GW2-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="EPO_Invalid_endpoint_GW1_GW"
+                     security="sign-body-header_GW2_GW1">
+                <tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+                <tns:As4Receipt nonRepudiation="false" method="response">
+                    <tns:As4Reliability duplicateElimination="true"/>
+                </tns:As4Receipt>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <tns:Binding name="GW1_GW2_EPO_Invalid_endpoint">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1" producer="GW1-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="EPO_Invalid_endpoint_GW2_GW"
+                     security="sign-body-header_GW1_GW2">
+                <tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+                <tns:As4Receipt nonRepudiation="false" method="response">
+                    <tns:As4Reliability duplicateElimination="true"/>
+                </tns:As4Receipt>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <tns:Binding name="GW2_GW1_EPO_As4_invalid_endpoint">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1" producer="GW2-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="EPO_As4_invalid_endpoint_GW1_GW"
+                     security="sign-body-header_GW2_GW1">
+                <tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+                <tns:As4Receipt nonRepudiation="false" method="response">
+                    <tns:As4Reliability duplicateElimination="true"/>
+                </tns:As4Receipt>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <tns:Binding name="GW1_GW2_EPO_As4_invalid_endpoint">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1" producer="GW1-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="EPO_As4_invalid_endpoint_GW2_GW"
+                     security="sign-body-header_GW1_GW2">
+                <tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+                <tns:As4Receipt nonRepudiation="false" method="response">
+                    <tns:As4Reliability duplicateElimination="true"/>
+                </tns:As4Receipt>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <tns:Binding name="GW2_GW1_EPO_Unreliable_maxPayloadMin">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1" producer="GW2-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="EPO_Unreliable_maxPayloadMin_GW1_GW"
+                     security="sign-body-header_GW2_GW1">
+                <tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+                <tns:As4Receipt nonRepudiation="false" method="response">
+                    <tns:As4Reliability duplicateElimination="true"/>
+                </tns:As4Receipt>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <tns:Binding name="GW1_GW2_EPO_Unreliable_maxPayloadMin">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1" producer="GW1-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="EPO_Unreliable_maxPayloadMin_GW2_GW"
+                     security="sign-body-header_GW1_GW2">
+                <tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+                <tns:As4Receipt nonRepudiation="false" method="response">
+                    <tns:As4Reliability duplicateElimination="true"/>
+                </tns:As4Receipt>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <!--
+          *************
+          PModes. A PMode (short for Processing Mode) is a
+          concept introduced in the ebMS 3 core specifiction to deal with agreements. A Processing
+          Mode always has one single Binding.
+          *************
+       -->
+    <tns:PMode name="GW2_GW1_EPO_Unreliable" binding="GW2_GW1_EPO_Unreliable"/>
+    <tns:PMode name="GW1_GW2_EPO_Unreliable" binding="GW1_GW2_EPO_Unreliable"/>
+    <tns:PMode name="GW2_GW1_EPO_As4_response" binding="GW2_GW1_EPO_As4_response"/>
+    <tns:PMode name="GW1_GW2_EPO_As4_response" binding="GW1_GW2_EPO_As4_response"/>
+    <tns:PMode name="GW2_GW1_EPO_As4_callback" binding="GW2_GW1_EPO_As4_callback"/>
+    <tns:PMode name="GW1_GW2_EPO_As4_callback" binding="GW1_GW2_EPO_As4_callback"/>
+    <tns:PMode name="GW2_GW1_EPO_Invalid_endpoint" binding="GW2_GW1_EPO_Invalid_endpoint"/>
+    <tns:PMode name="GW1_GW2_EPO_Invalid_endpoint" binding="GW1_GW2_EPO_Invalid_endpoint"/>
+    <tns:PMode name="GW2_GW1_EPO_As4_invalid_endpoint"
+               binding="GW2_GW1_EPO_As4_invalid_endpoint"/>
+    <tns:PMode name="GW1_GW2_EPO_As4_invalid_endpoint"
+               binding="GW1_GW2_EPO_As4_invalid_endpoint"/>
+    <tns:PMode name="GW2_GW1_EPO_Unreliable_maxPayloadMin"
+               binding="GW2_GW1_EPO_Unreliable_maxPayloadMin"/>
+    <tns:PMode name="GW1_GW2_EPO_Unreliable_maxPayloadMin"
+               binding="GW1_GW2_EPO_Unreliable_maxPayloadMin"/>
+    <!--
+          *************
+          This pmodes file is created by means of the PModes Toolkit 0.1
+          © 2013 Land Nordrhein-Westfalen, Deutschland
+          *************
+       -->
+</tns:PModes>
