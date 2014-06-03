@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<weblogic-web-app xmlns="http://xmlns.oracle.com/weblogic/weblogic-web-app">
+    <container-descriptor>
+        <prefer-web-inf-classes>true</prefer-web-inf-classes>
+        <!--prefer-application-packages>
+            <package-name>com.ctc.wstx.*</package-name>
+            <package-name>javax.xml.*</package-name>
+            <package-name>org.apache.*</package-name>
+            <package-name>org.apache.log4j.*</package-name>
+            <package-name>org.apache.log4j.xml.*</package-name>
+        </prefer-application-packages>
+        <prefer-application-resources>
+            <resource-name>com.ctc.wstx.*</resource-name>
+            <resource-name>javax.xml.*</resource-name>
+            <resource-name>org.apache.*</resource-name>
+            <resource-name>org.apache.log4j.*</resource-name>
+            <resource-name>org.apache.log4j.xml.*</resource-name>
+        </prefer-application-resources-->
+        <allow-all-roles>true</allow-all-roles>
+    </container-descriptor>
+</weblogic-web-app>
