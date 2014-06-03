@@ -1,0 +1,18 @@
+<module name="domibus-security" class="eu.domibus.security.module.SecurityModule">
+
+    <InFlow>
+        <handler name="InFlowHandler"
+                 class="eu.domibus.security.handlers.InFlowHandler">
+            <order phase="domibusSecurityInPhase" phaseFirst="true"/>
+        </handler>
+    </InFlow>
+
+    <OutFlow>
+        <handler name="OutFlowHandler"
+                 class="eu.domibus.security.handlers.OutFlowHandler">
+            <order phase="domibusSecurityOutPhase" phaseFirst="true"/>
+        </handler>
+    </OutFlow>
+    <INFaultFlow/>
+    <OutFaultFlow/>
+</module>
