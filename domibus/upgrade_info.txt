@@ -1,0 +1,14 @@
+1.4-FINAL - 1.4.1-FINAL
+- The product has been renamed to DOMIBUS, therefore the context path has been changed as well to /domibus. You will have to update your proxy server accordingly
+
+1.3-FINAL - 1.4-FINAL
+- THIS RELEASE IS NO LONGER COMPATIBLE WITH GATEWAY 1.2.1 AND EARLIER
+- backendservice 1.0 has been removed, all connector implementation must now use the 1.1 version of the webservice
+- be aware of changes in domibus.xml and hibernate.properties, you may have to update those configuration files
+- Due to major database changes an update script is not planned. Please use a new database instead.
+
+
+1.2.1 - 1.3-FINAL:
+- Install new Version of the Domibus application with all configuration files
+- Database update scripts can be found in sql-scripts/delta-scripts and need to be applied to the database
+- although you may have a database for the previous versions of the gateway it is neccessary to apply at least the delta-scripts again

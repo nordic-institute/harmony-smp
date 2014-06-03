@@ -1,0 +1,76 @@
+1.4-FINAL
+- minor bugfixes
+
+1.4-RC-3
+
+- updated upgrade-info.txt
+- updated installation manual
+- removed confusing log entries
+
+1.4-RC-2
+
+- fixed an issue regarding linux servers
+
+1.4-RC-1
+
+- WS-Reliability hotfix removed
+- BackendService 1.0 removed
+
+1.4-Beta1
+
+- minor bugfixes
+- switched testing framework to seatiger
+
+1.4-Alpha2
+
+- Major database structure rework
+- SecurityConfig concurrency problem fixed
+- Fixed minor bugs introduced in Alpha1
+- General code maintenance
+
+1.4-Alpha1
+
+- pooling provider switched to c3p0 (to resolve deadlock issues)
+- streamlined database access (introduction of AbstractBaseEntity and AbstractDAO)
+- all database queries are now @NamedQuery
+- hibernate specific implementations replaced by jpa compliant
+- lots of minor improvements
+
+1.3-FINAL
+
+- added uuid to received message folder
+
+1.3-RC2
+
+- payload structure is now conformant with the specification
+
+1.3-RC1
+
+- domibus.module.security.config.timeout in domibus.xml type changed from java.lang.Integer to java.lang.String
+- sql-scripts/delta-scripts now contains update scripts for mySQL and Oracle databases
+
+1.3-Beta2
+
+- fixed an issue where domibus-tomcat-full.zip did not include all necessary configuration files
+- encryption of body and header implemented
+- fixed an issue where messages sent with connector 1.3 were rejected
+- added installation manual
+
+1.3-Beta1
+
+- Axis version updated to 1.6.2
+- Packaging changed to war-archive from embedded server
+- Dependencies are now streamlined
+- Integrated AS4 reliability
+- Removed domibus-reliability
+- Removed domibus-ui
+- Removed domibus-documentaition as it was outdated
+- New domibus-security module, demanding a new secutity-config.xml format
+- externalized configuration to domibus.xml
+- simplified logging configuration
+- keystore passwords are now configurable
+
+
+
+
+
