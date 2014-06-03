@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="1.0" xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
+
+    <persistence-unit name="logging" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+
+        <class>eu.domibus.logging.persistent.LoggerEvent</class>
+        <class>eu.domibus.logging.persistent.LoggerMessage</class>
+        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <!-- this will be replaced at buildtime with the classes defined in domibus.properties -->
+        <!-- ${domibus.mapped.entities} -->
+        <properties>
+
+            <property name="hibernate.ejb.cfgfile" value="META-INF/hibernate.cfg.xml"/>
+            <property name="hibernate.hbm2ddl.auto" value="create"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>
+
+        </properties>
+
+    </persistence-unit>
+</persistence>
