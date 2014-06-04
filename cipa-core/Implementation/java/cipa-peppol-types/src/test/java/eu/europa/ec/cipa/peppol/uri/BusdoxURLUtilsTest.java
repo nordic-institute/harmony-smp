@@ -72,23 +72,23 @@ public final class BusdoxURLUtilsTest {
   @Test
   @SuppressFBWarnings ("NP_NONNULL_PARAM_VIOLATION")
   public void testGetDNSNameOfParticipant () {
-    assertEquals ("B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis.sml.peppolcentral.org.",
+    assertEquals ("B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis.sml.peppolcentral.org",
                   BusdoxURLUtils.getDNSNameOfParticipant (SimpleParticipantIdentifier.createWithDefaultScheme ("0088:123abc"),
                                                           ESML.PRODUCTION));
     // Same value but different casing
-    assertEquals ("B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis.sml.peppolcentral.org.",
+    assertEquals ("B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis.sml.peppolcentral.org",
                   BusdoxURLUtils.getDNSNameOfParticipant (SimpleParticipantIdentifier.createWithDefaultScheme ("0088:123ABC"),
                                                           ESML.PRODUCTION));
     // Wildcard
-    assertEquals ("*.iso6523-actorid-upis.sml.peppolcentral.org.",
+    assertEquals ("*.iso6523-actorid-upis.sml.peppolcentral.org",
                   BusdoxURLUtils.getDNSNameOfParticipant (SimpleParticipantIdentifier.createWithDefaultScheme ("*"),
                                                           ESML.PRODUCTION));
 
     // Empty DNS zone
-    assertEquals ("B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis.",
+    assertEquals ("B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis",
                   BusdoxURLUtils.getDNSNameOfParticipant (SimpleParticipantIdentifier.createWithDefaultScheme ("0088:123ABC"),
                                                           (String) null));
-    assertEquals ("B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis.",
+    assertEquals ("B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis",
                   BusdoxURLUtils.getDNSNameOfParticipant (SimpleParticipantIdentifier.createWithDefaultScheme ("0088:123ABC"),
                                                           ""));
 
@@ -148,11 +148,11 @@ public final class BusdoxURLUtilsTest {
   public void testGetSMPURIOfParticipant () throws URISyntaxException, MalformedURLException {
     final IReadonlyParticipantIdentifier aPI = SimpleParticipantIdentifier.createWithDefaultScheme ("0088:123ABC");
     final URI aURI = BusdoxURLUtils.getSMPURIOfParticipant (aPI, ESML.PRODUCTION);
-    assertEquals (new URI ("http://B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis.sml.peppolcentral.org."),
+    assertEquals (new URI ("http://B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis.sml.peppolcentral.org"),
                   aURI);
 
     final URL aURL = BusdoxURLUtils.getSMPURLOfParticipant (aPI, ESML.PRODUCTION);
-    assertEquals (new URL ("http://B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis.sml.peppolcentral.org."),
+    assertEquals (new URL ("http://B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis.sml.peppolcentral.org"),
                   aURL);
   }
 }

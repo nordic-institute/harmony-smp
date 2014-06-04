@@ -48,6 +48,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.charset.CCharset;
 import com.phloc.commons.codec.URLCodec;
 import com.phloc.commons.messagedigest.EMessageDigestAlgorithm;
@@ -136,21 +137,20 @@ public final class BusdoxURLUtils {
    *        e.g. "sml.peppolcentral.org.". May be empty. If it is not empty, it
    *        must end with a dot!
    * @return DNS record. It does not contain any prefix like http:// or any path
-   *         suffix. It is the plain DNS host name.
+   *         suffix. It is the plain DNS host name. Since version 1.1.4 this
+   *         method returns the DNS name without the trailing dot!
    * @throws IllegalArgumentException
    *         In case one argument is invalid
    */
   @Nonnull
   public static String getDNSNameOfParticipant (@Nonnull final IReadonlyParticipantIdentifier aParticipantIdentifier,
                                                 @Nullable final String sSMLZoneName) {
-    if (aParticipantIdentifier == null)
-      throw new NullPointerException ("participantIdentifier");
-    if (StringHelper.hasNoText (aParticipantIdentifier.getScheme ()))
-      throw new IllegalArgumentException ("ParticipantIdentifier has no scheme: " + aParticipantIdentifier);
-    if (StringHelper.hasNoText (aParticipantIdentifier.getValue ()))
-      throw new IllegalArgumentException ("ParticipantIdentifier has no value: " + aParticipantIdentifier);
+    ValueEnforcer.notNull (aParticipantIdentifier, "ParticipantIdentifier");
+    ValueEnforcer.notEmpty (aParticipantIdentifier.getScheme (), "ParticipantIdentifier scheme");
+    ValueEnforcer.notEmpty (aParticipantIdentifier.getValue (), "ParticipantIdentifier value");
     if (StringHelper.hasText (sSMLZoneName) && !StringHelper.endsWith (sSMLZoneName, '.'))
-      throw new IllegalArgumentException ("if an SML zone name is specified, it must end with a dot (.)");
+      throw new IllegalArgumentException ("if an SML zone name is specified, it must end with a dot (.). Value is: " +
+                                          sSMLZoneName);
 
     // Check identifier scheme (must be lowercase for the URL later on!)
     final String sScheme = aParticipantIdentifier.getScheme ().toLowerCase (URL_LOCALE);
@@ -179,6 +179,11 @@ public final class BusdoxURLUtils {
     if (StringHelper.hasText (sSMLZoneName))
       ret.append (sSMLZoneName);
 
+    // in some cases it gives a problem later when trying to retrieve the
+    // participant's metadata ex:
+    // http://B-51538b9890f1999ca08302c65f544719.iso6523-actorid-upis.sml.peppolcentral.org./iso6523-actorid-upis%3A%3A9917%3A550403315099
+    ret.deleteCharAt (ret.length () - 1);
+
     // We're fine and done
     return ret.toString ();
   }
@@ -186,15 +191,19 @@ public final class BusdoxURLUtils {
   @Nonnull
   public static URI getSMPURIOfParticipant (@Nonnull final IReadonlyParticipantIdentifier aParticipantIdentifier,
                                             @Nonnull final ISMLInfo aSMLInfo) {
+    ValueEnforcer.notNull (aParticipantIdentifier, "ParticipantIdentifier");
+    ValueEnforcer.notNull (aSMLInfo, "SMLInfo");
+
     return getSMPURIOfParticipant (aParticipantIdentifier, aSMLInfo.getDNSZone ());
   }
 
   @Nonnull
   public static URI getSMPURIOfParticipant (@Nonnull final IReadonlyParticipantIdentifier aParticipantIdentifier,
                                             @Nullable final String sSMLZoneName) {
-    String sURIString = "http://" + getDNSNameOfParticipant (aParticipantIdentifier, sSMLZoneName);
-    if (sURIString.endsWith("."))  //in some cases it gives a problem later when trying to retrieve the participant's metadata ex: http://B-51538b9890f1999ca08302c65f544719.iso6523-actorid-upis.sml.peppolcentral.org./iso6523-actorid-upis%3A%3A9917%3A550403315099/services/busdox-docid-qns......
-    	sURIString = sURIString.substring(0, sURIString.length()-1);
+    ValueEnforcer.notNull (aParticipantIdentifier, "ParticipantIdentifier");
+
+    final String sURIString = "http://" + getDNSNameOfParticipant (aParticipantIdentifier, sSMLZoneName);
+
     try {
       return new URI (sURIString);
     }
@@ -206,17 +215,23 @@ public final class BusdoxURLUtils {
   @Nonnull
   public static URL getSMPURLOfParticipant (@Nonnull final IReadonlyParticipantIdentifier aParticipantIdentifier,
                                             @Nonnull final ISMLInfo aSMLInfo) {
+    ValueEnforcer.notNull (aParticipantIdentifier, "ParticipantIdentifier");
+    ValueEnforcer.notNull (aSMLInfo, "SMLInfo");
+
     return getSMPURLOfParticipant (aParticipantIdentifier, aSMLInfo.getDNSZone ());
   }
 
   @Nonnull
   public static URL getSMPURLOfParticipant (@Nonnull final IReadonlyParticipantIdentifier aParticipantIdentifier,
                                             @Nullable final String sSMLZoneName) {
+    ValueEnforcer.notNull (aParticipantIdentifier, "ParticipantIdentifier");
+
+    final URI aURI = getSMPURIOfParticipant (aParticipantIdentifier, sSMLZoneName);
     try {
-      return getSMPURIOfParticipant (aParticipantIdentifier, sSMLZoneName).toURL ();
+      return aURI.toURL ();
     }
     catch (final MalformedURLException ex) {
-      throw new IllegalArgumentException ("Error building SMP URL", ex);
+      throw new IllegalArgumentException ("Error building SMP URL from URI: " + aURI, ex);
     }
   }
 }

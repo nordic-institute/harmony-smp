@@ -61,6 +61,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3._2000._09.xmldsig.X509DataType;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.string.StringHelper;
@@ -114,8 +115,7 @@ public class SMPServiceCallerReadonly {
 
   @Nonnull
   private static WebResource _getResourceWithSignatureCheck (@Nonnull final URI aURI) {
-    if (aURI == null)
-      throw new NullPointerException ("URI");
+    ValueEnforcer.notNull (aURI, "URI");
 
     final Client aClient = Client.create ();
     aClient.addFilter (new CheckSignatureFilter ());
@@ -125,8 +125,7 @@ public class SMPServiceCallerReadonly {
 
   @Nonnull
   private static WebResource _getResource (@Nonnull final URI aURI) {
-    if (aURI == null)
-      throw new NullPointerException ("URI");
+    ValueEnforcer.notNull (aURI, "URI");
 
     final Client aClient = Client.create ();
     aClient.setFollowRedirects (Boolean.FALSE);
