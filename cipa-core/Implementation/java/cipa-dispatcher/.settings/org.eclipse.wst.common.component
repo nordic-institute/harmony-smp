@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="cipa-dispatcher">
+        <wb-resource deploy-path="/WEB-INF/web.xml" source-path="/WebContent/WEB-INF/web.xml"/>
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <dependent-module archiveName="cipa-smp-client-library-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-smp-client-library/cipa-smp-client-library">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="cipa-peppol-types-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-peppol-types/cipa-peppol-types">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="cipa-commons-busdox-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-commons-busdox/cipa-commons-busdox">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="cipa-start-client-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-start-client/cipa-start-client">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="cipa-transport-api-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-transport-api/cipa-transport-api">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="context-root" value="cipa-dispatcher"/>
+        <property name="java-output-path" value="/cipa-dispatcher/target/classes"/>
+    </wb-module>
+</project-modules>

@@ -5,7 +5,7 @@
   	<parent>
 	    <groupId>eu.europa.ec.cipa</groupId>
 	    <artifactId>cipa-parent-pom</artifactId>
-	    <version>1.1</version>
+	    <version>1.2</version>
 	    <relativePath>../cipa-parent-pom/pom.xml</relativePath>
   	</parent>
   	
@@ -44,15 +44,14 @@
 		    <scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>1.4.4</version>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.5.2</version>
 			<scope>provided</scope>
 		</dependency>
 	    <dependency>
 	      	<groupId>javax.servlet</groupId>
 	      	<artifactId>servlet-api</artifactId>
-	      	<version>2.5</version>
 	      	<scope>provided</scope>
 	    </dependency>
 	    <dependency>
@@ -200,7 +199,6 @@
     	<plugins>
       		<plugin>
 		        <artifactId>maven-compiler-plugin</artifactId>
-		        <version>2.3.2</version>
 		        <configuration>
 		          <source>1.6</source>
 		          <target>1.6</target>
@@ -209,7 +207,6 @@
 	      
 	      	<plugin>
 		    	<artifactId>maven-war-plugin</artifactId>
-		        <version>2.3</version>
 		        <configuration>
 		          <webXml>${basedir}/WebContent/WEB-INF/web.xml</webXml>
 		          <webResources>
@@ -221,7 +218,5 @@
 		        </configuration>
 	      	</plugin>
     	</plugins>
-    	
   	</build>
-  
 </project>
