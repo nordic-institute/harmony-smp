@@ -99,16 +99,48 @@ public class SimpleParticipantIdentifier extends ParticipantIdentifierType imple
     return IdentifierUtils.getLocalParticipantIDFromParticipantIDValue (this);
   }
 
+  /**
+   * Create a new participant identifier that uses the default schema
+   * {@link CIdentifier#DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME}
+   * 
+   * @param sValue
+   *        The identifier value like <code>0088:12345678</code>
+   * @return The created {@link SimpleParticipantIdentifier} and never
+   *         <code>null</code>.
+   */
   @Nonnull
   public static SimpleParticipantIdentifier createWithDefaultScheme (@Nonnull final String sValue) {
     return new SimpleParticipantIdentifier (CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME, sValue);
   }
 
+  /**
+   * Create a new participant identifier from the URI representation. This is
+   * the inverse operation of {@link #getURIEncoded()}.
+   * 
+   * @param sURIPart
+   *        The URI part <code>iso6523-actorid-upis::0088:12345678</code>. It
+   *        must NOT be percent encoded!
+   * @return The created {@link SimpleParticipantIdentifier} and never
+   *         <code>null</code>.
+   * @throws IllegalArgumentException
+   *         If the passed identifier is not a valid URI encoded identifier
+   */
   @Nonnull
   public static SimpleParticipantIdentifier createFromURIPart (@Nonnull final String sURIPart) throws IllegalArgumentException {
     return IdentifierUtils.createParticipantIdentifierFromURIPart (sURIPart);
   }
 
+  /**
+   * Create a new participant identifier from the URI representation. This is
+   * the inverse operation of {@link #getURIEncoded()}.
+   * 
+   * @param sURIPart
+   *        The URI part <code>iso6523-actorid-upis::0088:12345678</code>. It
+   *        must NOT be percent encoded!
+   * @return The created {@link SimpleParticipantIdentifier} or
+   *         <code>null</code> if the passed identifier is not a valid URI
+   *         encoded identifier
+   */
   @Nullable
   public static SimpleParticipantIdentifier createFromURIPartOrNull (@Nonnull final String sURIPart) {
     return IdentifierUtils.createParticipantIdentifierFromURIPartOrNull (sURIPart);

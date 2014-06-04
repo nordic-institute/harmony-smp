@@ -46,6 +46,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.charset.CCharset;
 import com.phloc.commons.collections.ArrayHelper;
@@ -321,10 +322,8 @@ public final class IdentifierUtils {
    */
   public static boolean areIdentifiersEqual (@Nonnull final IReadonlyParticipantIdentifier aIdentifier1,
                                              @Nonnull final IReadonlyParticipantIdentifier aIdentifier2) {
-    if (aIdentifier1 == null)
-      throw new NullPointerException ("identifier1");
-    if (aIdentifier2 == null)
-      throw new NullPointerException ("identifier2");
+    ValueEnforcer.notNull (aIdentifier1, "identifier1");
+    ValueEnforcer.notNull (aIdentifier2, "identifier2");
 
     // Identifiers are equal, if both scheme and value match case insensitive!
     return EqualsUtils.nullSafeEqualsIgnoreCase (aIdentifier1.getScheme (), aIdentifier2.getScheme ()) &&
@@ -344,10 +343,8 @@ public final class IdentifierUtils {
    */
   public static boolean areIdentifiersEqual (@Nonnull final IReadonlyDocumentTypeIdentifier aIdentifier1,
                                              @Nonnull final IReadonlyDocumentTypeIdentifier aIdentifier2) {
-    if (aIdentifier1 == null)
-      throw new NullPointerException ("identifier1");
-    if (aIdentifier2 == null)
-      throw new NullPointerException ("identifier2");
+    ValueEnforcer.notNull (aIdentifier1, "identifier1");
+    ValueEnforcer.notNull (aIdentifier2, "identifier2");
 
     // Identifiers are equal, if both scheme and value match case sensitive!
     return EqualsUtils.equals (aIdentifier1.getScheme (), aIdentifier2.getScheme ()) &&
@@ -367,10 +364,8 @@ public final class IdentifierUtils {
    */
   public static boolean areIdentifiersEqual (@Nonnull final IReadonlyProcessIdentifier aIdentifier1,
                                              @Nonnull final IReadonlyProcessIdentifier aIdentifier2) {
-    if (aIdentifier1 == null)
-      throw new NullPointerException ("identifier1");
-    if (aIdentifier2 == null)
-      throw new NullPointerException ("identifier2");
+    ValueEnforcer.notNull (aIdentifier1, "identifier1");
+    ValueEnforcer.notNull (aIdentifier2, "identifier2");
 
     // Identifiers are equal, if both scheme and value match case sensitive!
     return EqualsUtils.equals (aIdentifier1.getScheme (), aIdentifier2.getScheme ()) &&
@@ -402,8 +397,7 @@ public final class IdentifierUtils {
    *         <code>false</code> otherwise
    */
   public static boolean hasDefaultParticipantIdentifierScheme (@Nonnull final IReadonlyParticipantIdentifier aIdentifier) {
-    if (aIdentifier == null)
-      throw new NullPointerException ("participantIdentifier");
+    ValueEnforcer.notNull (aIdentifier, "ParticipantIdentifier");
 
     return CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME.equals (aIdentifier.getScheme ());
   }
@@ -446,8 +440,7 @@ public final class IdentifierUtils {
    *         <code>false</code> otherwise
    */
   public static boolean hasDefaultDocumentTypeIdentifierScheme (@Nonnull final IReadonlyDocumentTypeIdentifier aIdentifier) {
-    if (aIdentifier == null)
-      throw new NullPointerException ("documentTypeIdentifier");
+    ValueEnforcer.notNull (aIdentifier, "DocumentTypeIdentifier");
 
     return CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME.equals (aIdentifier.getScheme ());
   }
@@ -490,8 +483,7 @@ public final class IdentifierUtils {
    *         <code>false</code> otherwise
    */
   public static boolean hasDefaultProcessIdentifierScheme (@Nonnull final IReadonlyProcessIdentifier aIdentifier) {
-    if (aIdentifier == null)
-      throw new NullPointerException ("processIdentifier");
+    ValueEnforcer.notNull (aIdentifier, "ProcessIdentifier");
 
     return CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME.equals (aIdentifier.getScheme ());
   }
@@ -521,8 +513,7 @@ public final class IdentifierUtils {
   @Nonnull
   @Nonempty
   public static String getIdentifierURIEncoded (@Nonnull final IReadonlyIdentifier aIdentifier) {
-    if (aIdentifier == null)
-      throw new NullPointerException ("identifier");
+    ValueEnforcer.notNull (aIdentifier, "Identifier");
 
     final String sScheme = aIdentifier.getScheme ();
     if (StringHelper.hasNoText (sScheme))
@@ -561,8 +552,7 @@ public final class IdentifierUtils {
    */
   @Nullable
   public static SimpleDocumentTypeIdentifier createDocumentTypeIdentifierFromURIPartOrNull (@Nonnull final String sURIPart) {
-    if (sURIPart == null)
-      throw new NullPointerException ("URIPart");
+    ValueEnforcer.notNull (sURIPart, "URIPart");
 
     // This is quicker than splitting with RegEx!
     final List <String> aSplitted = StringHelper.getExploded (CIdentifier.URL_SCHEME_VALUE_SEPARATOR, sURIPart, 2);
@@ -609,8 +599,7 @@ public final class IdentifierUtils {
    */
   @Nullable
   public static SimpleParticipantIdentifier createParticipantIdentifierFromURIPartOrNull (@Nonnull final String sURIPart) {
-    if (sURIPart == null)
-      throw new NullPointerException ("URIPart");
+    ValueEnforcer.notNull (sURIPart, "URIPart");
 
     // This is quicker than splitting with RegEx!
     final List <String> aSplitted = StringHelper.getExploded (CIdentifier.URL_SCHEME_VALUE_SEPARATOR, sURIPart, 2);
@@ -656,8 +645,7 @@ public final class IdentifierUtils {
    */
   @Nullable
   public static SimpleProcessIdentifier createProcessIdentifierFromURIPartOrNull (@Nonnull final String sURIPart) {
-    if (sURIPart == null)
-      throw new NullPointerException ("URIPart");
+    ValueEnforcer.notNull (sURIPart, "URIPart");
 
     // This is quicker than splitting with RegEx!
     final List <String> aSplitted = StringHelper.getExploded (CIdentifier.URL_SCHEME_VALUE_SEPARATOR, sURIPart, 2);
@@ -721,8 +709,7 @@ public final class IdentifierUtils {
    */
   @Nullable
   public static String getIssuingAgencyIDFromParticipantIDValue (@Nonnull final IPeppolReadonlyParticipantIdentifier aIdentifier) {
-    if (aIdentifier == null)
-      throw new NullPointerException ("identifier");
+    ValueEnforcer.notNull (aIdentifier, "Identifier");
 
     if (!hasDefaultParticipantIdentifierScheme (aIdentifier))
       return null;
@@ -747,8 +734,7 @@ public final class IdentifierUtils {
    */
   @Nullable
   public static String getLocalParticipantIDFromParticipantIDValue (@Nonnull final IPeppolReadonlyParticipantIdentifier aIdentifier) {
-    if (aIdentifier == null)
-      throw new NullPointerException ("identifier");
+    ValueEnforcer.notNull (aIdentifier, "Identifier");
 
     if (!hasDefaultParticipantIdentifierScheme (aIdentifier))
       return null;

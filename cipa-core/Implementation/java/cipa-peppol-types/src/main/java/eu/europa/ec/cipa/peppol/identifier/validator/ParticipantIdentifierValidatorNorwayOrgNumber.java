@@ -37,9 +37,11 @@
  */
 package eu.europa.ec.cipa.peppol.identifier.validator;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.phloc.commons.annotations.IsSPIImplementation;
+import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.issuingagency.EPredefinedIdentifierIssuingAgency;
@@ -54,12 +56,12 @@ import eu.europa.ec.cipa.peppol.identifier.issuingagency.EPredefinedIdentifierIs
 public final class ParticipantIdentifierValidatorNorwayOrgNumber implements IParticipantIdentifierValidatorSPI {
   private static final int [] WEIGHTS = new int [] { 3, 2, 7, 6, 5, 4, 3, 2 };
 
-  public boolean isSupportedIssuingAgency (final String sIssuingAgencyID) {
+  public boolean isSupportedIssuingAgency (@Nonnull @Nonempty final String sIssuingAgencyID) {
     return EPredefinedIdentifierIssuingAgency.NO_ORGNR.getISO6523Code ().equals (sIssuingAgencyID) ||
            EPredefinedIdentifierIssuingAgency.NO_VAT.getISO6523Code ().equals (sIssuingAgencyID);
   }
 
-  public boolean isValueValid (final String sValue) {
+  public boolean isValueValid (@Nonnull @Nonempty final String sValue) {
     return isValidOrganisationNumber (sValue);
   }
 

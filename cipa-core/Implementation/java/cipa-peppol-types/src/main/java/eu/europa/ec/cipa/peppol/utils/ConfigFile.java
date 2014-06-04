@@ -51,9 +51,9 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.collections.ArrayHelper;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.io.resource.ClassPathResource;
 import com.phloc.commons.io.resource.FileSystemResource;
@@ -106,8 +106,7 @@ public class ConfigFile {
    *        classpath-relative. The first file that could be read will be taken
    */
   public ConfigFile (@Nonnull @Nonempty final String... aConfigPaths) {
-    if (ArrayHelper.isEmpty (aConfigPaths))
-      throw new IllegalArgumentException ("No config file paths have been specified!");
+    ValueEnforcer.notEmptyNoNullValue (aConfigPaths, "ConfigPaths");
 
     boolean bRead = false;
     for (final String sConfigPath : aConfigPaths)

@@ -43,6 +43,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.hash.HashCodeGenerator;
@@ -74,10 +75,8 @@ public final class BusdoxDocumentTypeIdentifierParts implements IBusdoxDocumentT
   public BusdoxDocumentTypeIdentifierParts (@Nonnull @Nonempty final String sRootNS,
                                             @Nonnull @Nonempty final String sLocalName,
                                             @Nullable final String sSubTypeIdentifier) {
-    if (StringHelper.hasNoText (sRootNS))
-      throw new IllegalArgumentException ("rootNS is empty");
-    if (StringHelper.hasNoText (sLocalName))
-      throw new IllegalArgumentException ("local name is empty");
+    ValueEnforcer.notEmpty (sRootNS, "RootNS");
+    ValueEnforcer.notEmpty (sLocalName, "LocalName");
     m_sRootNS = sRootNS;
     m_sLocalName = sLocalName;
     m_sSubTypeIdentifier = sSubTypeIdentifier;
@@ -146,13 +145,12 @@ public final class BusdoxDocumentTypeIdentifierParts implements IBusdoxDocumentT
   @Nonnull
   @Nonempty
   public static String getAsDocumentTypeIdentifierValue (@Nonnull final IBusdoxDocumentTypeIdentifierParts aParts) {
-    if (aParts == null)
-      throw new NullPointerException ("parts");
+    ValueEnforcer.notNull (aParts, "Parts");
 
     // See Busdox Common Specs version 3.5
     String ret = aParts.getRootNS () + NAMESPACE_SEPARATOR + aParts.getLocalName ();
     final String sSubTypeIdentifier = aParts.getSubTypeIdentifier ();
-    if (sSubTypeIdentifier != null && sSubTypeIdentifier.length () > 0)
+    if (StringHelper.hasText (sSubTypeIdentifier))
       ret += SUBTYPE_SEPARATOR + sSubTypeIdentifier;
     return ret;
   }
@@ -172,8 +170,7 @@ public final class BusdoxDocumentTypeIdentifierParts implements IBusdoxDocumentT
    */
   @Nonnull
   public static IBusdoxDocumentTypeIdentifierParts extractFromString (@Nonnull @Nonempty final String sDocTypeID) {
-    if (StringHelper.hasNoText (sDocTypeID))
-      throw new IllegalArgumentException ("The passed document identifier value may not be empty!");
+    ValueEnforcer.notEmpty (sDocTypeID, "DocumentTypeIdentifier");
 
     final List <String> aMain = StringHelper.getExploded (SUBTYPE_SEPARATOR, sDocTypeID, 2);
     // List cannot be empty, because we're checking that docType is not empty a

@@ -42,6 +42,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.regex.RegExHelper;
@@ -90,15 +91,12 @@ public final class PeppolDocumentTypeIdentifierParts implements IPeppolDocumentT
                                              @Nonnull @Nonempty final String sTransactionID,
                                              @Nonnull @Nonempty final List <String> aExtensionIDs,
                                              @Nonnull @Nonempty final String sVersion) {
-    if (StringHelper.hasNoText (sTransactionID))
-      throw new IllegalArgumentException ("transactionID");
-    if (ContainerHelper.isEmpty (aExtensionIDs))
-      throw new IllegalArgumentException ("extensionIDs");
+    ValueEnforcer.notEmpty (sTransactionID, "TransactionID");
+    ValueEnforcer.notEmpty (aExtensionIDs, "ExtensionIDs");
     for (final String sExtensionID : aExtensionIDs)
       if (StringHelper.hasNoText (sExtensionID))
         throw new IllegalArgumentException ("the extension IDs contain at least one empty element!");
-    if (StringHelper.hasNoText (sVersion))
-      throw new IllegalArgumentException ("version");
+    ValueEnforcer.notEmpty (sVersion, "Version");
 
     m_aBusdoxParts = aBusdoxParts;
     m_sTransactionID = sTransactionID;

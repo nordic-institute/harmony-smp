@@ -51,6 +51,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.PresentForCodeCoverage;
 import com.phloc.commons.io.resource.ClassPathResource;
 import com.phloc.commons.io.resource.FileSystemResource;
@@ -183,6 +184,9 @@ public final class KeyStoreUtils {
                                                                                                UnrecoverableEntryException,
                                                                                                CertificateException,
                                                                                                IOException {
+    ValueEnforcer.notNull (aBaseKeyStore, "BaseKeyStore");
+    ValueEnforcer.notNull (sAliasToCopy, "AliasToCopy");
+
     final KeyStore aKeyStore = KeyStore.getInstance (aBaseKeyStore.getType (), aBaseKeyStore.getProvider ());
     // null stream means: create new key store
     aKeyStore.load (null, null);

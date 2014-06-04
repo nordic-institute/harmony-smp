@@ -117,7 +117,7 @@ public final class ExtensionConverter {
   }
 
   /**
-   * Convert the passed XML string to an extension.
+   * Convert the passed XML string to an SMP extension type.
    * 
    * @param sXML
    *        the XML representation to be converted.

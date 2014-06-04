@@ -46,6 +46,7 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.regex.RegExHelper;
 import com.phloc.commons.string.StringHelper;
 
@@ -76,8 +77,7 @@ public class ConfiguredDNSMapper {
   }
 
   public ConfiguredDNSMapper (@Nonnull final ConfigFile aConfigFile) {
-    if (aConfigFile == null)
-      throw new NullPointerException ("configFile");
+    ValueEnforcer.notNull (aConfigFile, "ConfigFile");
 
     // Init mapping
     final String sMappings = StringHelper.trim (aConfigFile.getString (CONFIG_HOSTNAME_MAPPING));
@@ -119,8 +119,7 @@ public class ConfiguredDNSMapper {
 
   @Nonnull
   public MappedDNSHost getMappedDNSHost (@Nonnull final InetAddress aInetAddress) {
-    if (aInetAddress == null)
-      throw new NullPointerException ("inetAddress");
+    ValueEnforcer.notNull (aInetAddress, "InetAddress");
 
     final String sHostAddr = aInetAddress.getHostAddress ();
 

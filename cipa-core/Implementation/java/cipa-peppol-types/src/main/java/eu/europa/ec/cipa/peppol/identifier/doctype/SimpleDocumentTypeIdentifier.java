@@ -45,6 +45,7 @@ import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
+import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 
 /**
  * This is a sanity class around the {@link DocumentIdentifierType} class with
@@ -89,16 +90,51 @@ public class SimpleDocumentTypeIdentifier extends DocumentIdentifierType impleme
     return PeppolDocumentTypeIdentifierParts.extractFromString (getValue ());
   }
 
+  /**
+   * Create a new document type identifier that uses the default schema
+   * {@link CIdentifier#DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME}
+   * 
+   * @param sValue
+   *        The identifier value like
+   *        <code>urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:www.cenbii.eu:transaction:biicoretrdm001:ver1.0:#urn:www.peppol.eu:bis:peppol3a:ver1.0::2.0</code>
+   * @return The created {@link SimpleParticipantIdentifier} and never
+   *         <code>null</code>.
+   */
   @Nonnull
   public static SimpleDocumentTypeIdentifier createWithDefaultScheme (@Nonnull final String sValue) {
     return new SimpleDocumentTypeIdentifier (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME, sValue);
   }
 
+  /**
+   * Create a new document type identifier from the URI representation. This is
+   * the inverse operation of {@link #getURIEncoded()}.
+   * 
+   * @param sURIPart
+   *        The URI part
+   *        <code>busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:www.cenbii.eu:transaction:biicoretrdm001:ver1.0:#urn:www.peppol.eu:bis:peppol3a:ver1.0::2.0</code>
+   *        . It must NOT be percent encoded!
+   * @return The created {@link SimpleDocumentTypeIdentifier} and never
+   *         <code>null</code>.
+   * @throws IllegalArgumentException
+   *         If the passed identifier is not a valid URI encoded identifier
+   */
   @Nonnull
   public static SimpleDocumentTypeIdentifier createFromURIPart (@Nonnull final String sURIPart) throws IllegalArgumentException {
     return IdentifierUtils.createDocumentTypeIdentifierFromURIPart (sURIPart);
   }
 
+  /**
+   * Create a new document type identifier from the URI representation. This is
+   * the inverse operation of {@link #getURIEncoded()}.
+   * 
+   * @param sURIPart
+   *        The URI part
+   *        <code>busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:www.cenbii.eu:transaction:biicoretrdm001:ver1.0:#urn:www.peppol.eu:bis:peppol3a:ver1.0::2.0</code>
+   *        . It must NOT be percent encoded!
+   * @return The created {@link SimpleDocumentTypeIdentifier} or
+   *         <code>null</code> if the passed identifier is not a valid URI
+   *         encoded identifier
+   */
   @Nullable
   public static SimpleDocumentTypeIdentifier createFromURIPartOrNull (@Nonnull final String sURIPart) {
     return IdentifierUtils.createDocumentTypeIdentifierFromURIPartOrNull (sURIPart);

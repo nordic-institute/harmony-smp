@@ -42,10 +42,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.hash.HashCodeGenerator;
-import com.phloc.commons.regex.RegExHelper;
 import com.phloc.commons.string.StringHelper;
 import com.phloc.commons.string.StringParser;
 import com.phloc.commons.string.ToStringGenerator;
@@ -80,9 +80,8 @@ public final class MappedDNSHost {
     this (sHost, Integer.valueOf (nPort));
   }
 
-  public MappedDNSHost (@Nonnull @Nonempty final String sHost, @Nonnegative @Nullable final Integer aPort) {
-    if (StringHelper.hasNoText (sHost))
-      throw new NullPointerException ("host must not be null...");
+  public MappedDNSHost (@Nonnull @Nonempty final String sHost, @Nullable final Integer aPort) {
+    ValueEnforcer.notEmpty (sHost, "Host");
     if (aPort != null && aPort.intValue () <= 0)
       throw new IllegalArgumentException ("The passed port " + aPort + " is invalid!");
     m_sHost = sHost;
@@ -156,18 +155,19 @@ public final class MappedDNSHost {
    * Create a socket part from a string having the layout "host:port" or "host"
    * only. Port must be numeric and must be a valid port number.
    * 
-   * @param sStr
+   * @param sSocketString
    *        The socket string to be parsed.
    * @return The {@link MappedDNSHost} to be used.
    */
   @Nonnull
-  public static MappedDNSHost create (@Nonnull @Nonempty final String sStr) {
-    if (StringHelper.hasNoText (sStr))
-      throw new IllegalArgumentException ("string may not be empty");
+  public static MappedDNSHost create (@Nonnull @Nonempty final String sSocketString) {
+    ValueEnforcer.notEmpty (sSocketString, "SocketString");
 
-    final String [] aParts = RegExHelper.getSplitToArray (sStr, ":", 2);
+    final String [] aParts = StringHelper.getExplodedArray (':', sSocketString, 2);
     if (aParts.length == 0)
-      throw new IllegalArgumentException ("invalid socketString - at least the host must be defined");
+      throw new IllegalArgumentException ("invalid socketString '" +
+                                          sSocketString +
+                                          "' - at least the host must be defined");
     if (aParts.length == 1) {
       // No port found
       return new MappedDNSHost (aParts[0], null);

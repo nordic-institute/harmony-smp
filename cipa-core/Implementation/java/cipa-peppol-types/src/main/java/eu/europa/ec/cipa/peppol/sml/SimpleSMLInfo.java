@@ -43,9 +43,9 @@ import java.net.URL;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.hash.HashCodeGenerator;
-import com.phloc.commons.string.StringHelper;
 import com.phloc.commons.string.ToStringGenerator;
 
 /**
@@ -72,16 +72,16 @@ public class SimpleSMLInfo implements ISMLInfo {
                         @Nonnull @Nonempty final String sManagementHostName,
                         @Nonnull @Nonempty final String sManagementService,
                         final boolean bRequiresClientCertficate) {
-    if (StringHelper.hasNoText (sDNSZone))
-      throw new IllegalArgumentException ("dns zone");
-    if (StringHelper.hasNoText (sManagementHostName))
-      throw new IllegalArgumentException ("managementHostName");
-    if (StringHelper.hasNoText (sManagementService))
-      throw new IllegalArgumentException ("managementService");
+    ValueEnforcer.notEmpty (sDNSZone, "DNSZone");
+    ValueEnforcer.notEmpty (sManagementHostName, "ManagementHostName");
+    ValueEnforcer.notEmpty (sManagementService, "ManagementService");
+
     m_sDNSZone = sDNSZone;
     m_sManagementHostName = sManagementHostName;
-    m_sManagementServiceURL = sManagementService.endsWith ("/") ? sManagementService.substring (0,
-                                                                                                sManagementService.length () - 1)
+    // Management service without the trailing slash
+    m_sManagementServiceURL = sManagementService.endsWith ("/")
+                                                               ? sManagementService.substring (0,
+                                                                                               sManagementService.length () - 1)
                                                                : sManagementService;
     m_bRequiresClientCertficate = bRequiresClientCertficate;
   }
@@ -112,21 +112,23 @@ public class SimpleSMLInfo implements ISMLInfo {
 
   @Nonnull
   public URL getManageServiceMetaDataEndpointAddress () {
+    final String sURL = m_sManagementServiceURL + '/' + CSMLDefault.MANAGEMENT_SERVICE_METADATA;
     try {
-      return new URL (m_sManagementServiceURL + '/' + CSMLDefault.MANAGEMENT_SERVICE_METADATA);
+      return new URL (sURL);
     }
     catch (final MalformedURLException ex) {
-      throw new IllegalStateException ("Failed to convert to URL", ex);
+      throw new IllegalStateException ("Failed to convert '" + sURL + "' to URL", ex);
     }
   }
 
   @Nonnull
   public URL getManageParticipantIdentifierEndpointAddress () {
+    final String sURL = m_sManagementServiceURL + '/' + CSMLDefault.MANAGEMENT_SERVICE_PARTICIPANTIDENTIFIER;
     try {
-      return new URL (m_sManagementServiceURL + '/' + CSMLDefault.MANAGEMENT_SERVICE_PARTICIPANTIDENTIFIER);
+      return new URL (sURL);
     }
     catch (final MalformedURLException ex) {
-      throw new IllegalStateException ("Failed to convert to URL", ex);
+      throw new IllegalStateException ("Failed to convert '" + sURL + "' to URL", ex);
     }
   }
 

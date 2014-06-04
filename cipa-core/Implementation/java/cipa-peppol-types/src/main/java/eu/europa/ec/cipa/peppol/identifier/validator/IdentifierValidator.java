@@ -45,6 +45,7 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.lang.ServiceLoaderUtils;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
@@ -86,8 +87,7 @@ public final class IdentifierValidator {
    *         matching validator was found, but the ID did not match.
    */
   public static boolean isValidParticipantIdentifier (@Nonnull final IPeppolParticipantIdentifier aParticipantID) {
-    if (aParticipantID == null)
-      throw new NullPointerException ("participantID");
+    ValueEnforcer.notNull (aParticipantID, "ParticipantID");
 
     // Only validate our default scheme
     if (!aParticipantID.isDefaultScheme ())

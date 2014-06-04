@@ -59,6 +59,7 @@ public final class PredefinedProcessIdentifierManagerTest {
     assertNotNull (aPPI);
     assertFalse (aPPI.getDocumentTypeIdentifiers ().isEmpty ());
 
+    assertNotNull (PredefinedProcessIdentifierManager.getProcessIdentifierOfID ("urn:www.cenbii.eu:profile:bii01:ver1.0"));
     assertNull (PredefinedProcessIdentifierManager.getProcessIdentifierOfID ("urn:www.cenbii.eu:profile:bii01:ver1.0a"));
     assertTrue (PredefinedProcessIdentifierManager.containsProcessIdentifierWithID ("urn:www.cenbii.eu:profile:bii01:ver1.0"));
     assertFalse (PredefinedProcessIdentifierManager.containsProcessIdentifierWithID ("urn:www.cenbii.eu:profile:bii01:ver1.0a"));

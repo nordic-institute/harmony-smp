@@ -104,21 +104,23 @@ public enum ESML implements ISMLInfo {
 
   @Nonnull
   public URL getManageServiceMetaDataEndpointAddress () {
+    final String sURL = m_sManagementServiceURL + '/' + CSMLDefault.MANAGEMENT_SERVICE_METADATA;
     try {
-      return new URL (m_sManagementServiceURL + '/' + CSMLDefault.MANAGEMENT_SERVICE_METADATA);
+      return new URL (sURL);
     }
     catch (final MalformedURLException ex) {
-      throw new IllegalStateException ("Failed to convert to URL", ex);
+      throw new IllegalStateException ("Failed to convert '" + sURL + "' to URL", ex);
     }
   }
 
   @Nonnull
   public URL getManageParticipantIdentifierEndpointAddress () {
+    final String sURL = m_sManagementServiceURL + '/' + CSMLDefault.MANAGEMENT_SERVICE_PARTICIPANTIDENTIFIER;
     try {
-      return new URL (m_sManagementServiceURL + '/' + CSMLDefault.MANAGEMENT_SERVICE_PARTICIPANTIDENTIFIER);
+      return new URL (sURL);
     }
     catch (final MalformedURLException ex) {
-      throw new IllegalStateException ("Failed to convert to URL", ex);
+      throw new IllegalStateException ("Failed to convert '" + sURL + "' to URL", ex);
     }
   }
 

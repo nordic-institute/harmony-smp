@@ -50,6 +50,7 @@ import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.xml.ChildElementIterator;
 import com.phloc.commons.xml.XMLFactory;
@@ -114,7 +115,7 @@ public final class W3CEndpointReferenceUtils {
    * access methods.
    * 
    * @param aEndpointReference
-   *        The endpoint to be marshaled
+   *        The endpoint to be marshaled. May not be <code>null</code>.
    * @return The document element called "EndpointReference"
    */
   @Nonnull
@@ -135,6 +136,8 @@ public final class W3CEndpointReferenceUtils {
    */
   @Nullable
   public static String getAddress (@Nonnull final W3CEndpointReference aEndpointReference) {
+    ValueEnforcer.notNull (aEndpointReference, "EndpointReference");
+
     final Element eAddress = XMLHelper.getFirstChildElementOfName (_convertReferenceToXML (aEndpointReference),
                                                                    "Address");
     return eAddress == null ? null : eAddress.getTextContent ();
@@ -151,6 +154,8 @@ public final class W3CEndpointReferenceUtils {
    */
   @Nullable
   public static List <Element> getReferenceParameters (@Nonnull final W3CEndpointReference aEndpointReference) {
+    ValueEnforcer.notNull (aEndpointReference, "EndpointReference");
+
     final Element eRefParams = XMLHelper.getFirstChildElementOfName (_convertReferenceToXML (aEndpointReference),
                                                                      "ReferenceParameters");
     if (eRefParams == null)
@@ -166,12 +171,15 @@ public final class W3CEndpointReferenceUtils {
    *        The object to retrieve the reference parameter from. May not be
    *        <code>null</code>.
    * @param nIndex
-   *        The index to retrieve. Should not be negative.
+   *        The index to retrieve. Must be &ge; 0.
    * @return <code>null</code> if the index is invalid
    */
   @Nullable
   public static Element getReferenceParameter (@Nonnull final W3CEndpointReference aEndpointReference,
                                                @Nonnegative final int nIndex) {
+    ValueEnforcer.notNull (aEndpointReference, "EndpointReference");
+    ValueEnforcer.isGE0 (nIndex, "Index");
+
     // Get all reference parameters
     final List <Element> aReferenceParameters = getReferenceParameters (aEndpointReference);
 

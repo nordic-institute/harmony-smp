@@ -84,16 +84,50 @@ public class SimpleProcessIdentifier extends ProcessIdentifierType implements IP
     return IdentifierUtils.getIdentifierURIPercentEncoded (this);
   }
 
+  /**
+   * Create a new process identifier that uses the default schema
+   * {@link CIdentifier#DEFAULT_PROCESS_IDENTIFIER_SCHEME}
+   * 
+   * @param sValue
+   *        The identifier value like
+   *        <code>urn:www.cenbii.eu:profile:bii01:ver1.0</code>
+   * @return The created {@link SimpleProcessIdentifier} and never
+   *         <code>null</code>.
+   */
   @Nonnull
   public static SimpleProcessIdentifier createWithDefaultScheme (@Nonnull final String sValue) {
     return new SimpleProcessIdentifier (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME, sValue);
   }
 
+  /**
+   * Create a new process identifier from the URI representation. This is the
+   * inverse operation of {@link #getURIEncoded()}.
+   * 
+   * @param sURIPart
+   *        The URI part
+   *        <code>cenbii-procid-ubl::urn:www.cenbii.eu:profile:bii01:ver1.0</code>
+   *        . It must NOT be percent encoded!
+   * @return The created {@link SimpleProcessIdentifier} and never
+   *         <code>null</code>.
+   * @throws IllegalArgumentException
+   *         If the passed identifier is not a valid URI encoded identifier
+   */
   @Nonnull
   public static SimpleProcessIdentifier createFromURIPart (@Nonnull final String sURIPart) throws IllegalArgumentException {
     return IdentifierUtils.createProcessIdentifierFromURIPart (sURIPart);
   }
 
+  /**
+   * Create a new process identifier from the URI representation. This is the
+   * inverse operation of {@link #getURIEncoded()}.
+   * 
+   * @param sURIPart
+   *        The URI part
+   *        <code>cenbii-procid-ubl::urn:www.cenbii.eu:profile:bii01:ver1.0</code>
+   *        . It must NOT be percent encoded!
+   * @return The created {@link SimpleProcessIdentifier} or <code>null</code> if
+   *         the passed identifier is not a valid URI encoded identifier
+   */
   @Nullable
   public static SimpleProcessIdentifier createFromURIPartOrNull (@Nonnull final String sURIPart) {
     return IdentifierUtils.createProcessIdentifierFromURIPartOrNull (sURIPart);
