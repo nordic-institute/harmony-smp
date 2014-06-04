@@ -37,10 +37,13 @@
  */
 package eu.europa.ec.cipa.test.error;
 
+import javax.annotation.Nonnull;
+
+import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.error.EErrorLevel;
 
-public final class FatalError extends AbstractErrorDefinition {
-  public FatalError (final String sErrorCode) {
+public class FatalError extends AbstractErrorDefinition {
+  public FatalError (@Nonnull @Nonempty final String sErrorCode) {
     super (EErrorLevel.FATAL_ERROR, sErrorCode);
   }
 }

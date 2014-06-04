@@ -41,15 +41,22 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
+import com.phloc.commons.ValueEnforcer;
+import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.io.IReadableResource;
+import com.phloc.commons.string.ToStringGenerator;
 
-public final class TestResource {
+public class TestResource {
   private final IReadableResource m_aRes;
   private final Set <AbstractErrorDefinition> m_aExpectedErrors = new HashSet <AbstractErrorDefinition> ();
 
-  public TestResource (@Nonnull final IReadableResource aRes, final Set <AbstractErrorDefinition> aExpectedErrors) {
+  public TestResource (@Nonnull final IReadableResource aRes,
+                       @Nullable final Set <AbstractErrorDefinition> aExpectedErrors) {
+    ValueEnforcer.notNull (aRes, "Resource");
+
     m_aRes = aRes;
     if (aExpectedErrors != null)
       m_aExpectedErrors.addAll (aExpectedErrors);
@@ -75,7 +82,15 @@ public final class TestResource {
    * @return The expected validation errors
    */
   @Nonnull
+  @ReturnsMutableCopy
   public Set <AbstractErrorDefinition> getAllExpectedErrors () {
-    return ContainerHelper.makeUnmodifiable (m_aExpectedErrors);
+    return ContainerHelper.newSet (m_aExpectedErrors);
+  }
+
+  @Override
+  public String toString () {
+    return new ToStringGenerator (null).append ("resource", m_aRes)
+                                       .append ("expectedErrors", m_aExpectedErrors)
+                                       .toString ();
   }
 }

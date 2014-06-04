@@ -37,10 +37,13 @@
  */
 package eu.europa.ec.cipa.test.error;
 
+import javax.annotation.Nonnull;
+
+import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.error.EErrorLevel;
 
-public final class Warning extends AbstractErrorDefinition {
-  public Warning (final String sErrorCode) {
+public class Warning extends AbstractErrorDefinition {
+  public Warning (@Nonnull @Nonempty final String sErrorCode) {
     super (EErrorLevel.WARN, sErrorCode);
   }
 }

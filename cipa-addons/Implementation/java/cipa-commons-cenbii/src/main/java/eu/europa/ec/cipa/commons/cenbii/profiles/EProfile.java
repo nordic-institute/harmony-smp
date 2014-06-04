@@ -46,6 +46,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.phloc.commons.GlobalDebug;
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.ReturnsImmutableObject;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
@@ -215,8 +216,7 @@ public enum EProfile implements IHasDisplayText {
   @Nonnull
   @ReturnsMutableCopy
   public static List <EProfile> getAllProfilesWithCollaboration (@Nonnull final ECollaboration eCollaboration) {
-    if (eCollaboration == null)
-      throw new NullPointerException ("collaboration");
+    ValueEnforcer.notNull (eCollaboration, "Collaboration");
 
     final List <EProfile> ret = new ArrayList <EProfile> ();
     for (final EProfile eProfile : values ())

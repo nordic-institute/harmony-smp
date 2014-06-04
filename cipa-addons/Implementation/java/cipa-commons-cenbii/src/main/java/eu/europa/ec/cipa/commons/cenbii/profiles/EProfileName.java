@@ -44,7 +44,6 @@ import javax.annotation.Nullable;
 
 import com.phloc.commons.annotations.Translatable;
 import com.phloc.commons.name.IHasDisplayText;
-import com.phloc.commons.text.ITextProvider;
 import com.phloc.commons.text.impl.TextProvider;
 import com.phloc.commons.text.resolve.DefaultTextResolver;
 
@@ -82,7 +81,7 @@ public enum EProfileName implements IHasDisplayText {
   BII25 ("Status Request"),
   BII26 ("Retrieve Business Document");
 
-  private final ITextProvider m_aTP;
+  private final TextProvider m_aTP;
 
   private EProfileName (@Nonnull final String sEN) {
     m_aTP = TextProvider.create_EN (sEN);

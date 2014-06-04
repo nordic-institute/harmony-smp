@@ -39,6 +39,7 @@ package eu.europa.ec.cipa.test.error;
 
 import javax.annotation.Nonnull;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.error.EErrorLevel;
 import com.phloc.commons.hash.HashCodeGenerator;
@@ -46,9 +47,11 @@ import com.phloc.commons.string.ToStringGenerator;
 
 public abstract class AbstractErrorDefinition implements Comparable <AbstractErrorDefinition> {
   private final EErrorLevel m_eLevel;
-  final String m_sErrorCode;
+  private final String m_sErrorCode;
 
   public AbstractErrorDefinition (@Nonnull final EErrorLevel eLevel, @Nonnull @Nonempty final String sErrorCode) {
+    ValueEnforcer.notNull (eLevel, "Level");
+    ValueEnforcer.notEmpty (sErrorCode, "ErrorCode");
     m_eLevel = eLevel;
     m_sErrorCode = sErrorCode;
   }
@@ -88,6 +91,6 @@ public abstract class AbstractErrorDefinition implements Comparable <AbstractErr
 
   @Override
   public String toString () {
-    return new ToStringGenerator (null).append ("level", m_eLevel).append ("errCode", m_sErrorCode).toString ();
+    return new ToStringGenerator (null).append ("level", m_eLevel).append ("errorCode", m_sErrorCode).toString ();
   }
 }

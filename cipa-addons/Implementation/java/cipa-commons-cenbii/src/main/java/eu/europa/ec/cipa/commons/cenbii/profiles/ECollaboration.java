@@ -44,6 +44,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.phloc.commons.GlobalDebug;
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.ReturnsImmutableObject;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
@@ -168,8 +169,7 @@ public enum ECollaboration implements IHasID <String>, IHasName {
   @Nonnull
   @ReturnsMutableCopy
   public static List <ECollaboration> getAllCollaborationsWithTransaction (@Nonnull final ETransaction eTransaction) {
-    if (eTransaction == null)
-      throw new NullPointerException ("transaction");
+    ValueEnforcer.notNull (eTransaction, "Transaction");
 
     final List <ECollaboration> ret = new ArrayList <ECollaboration> ();
     for (final ECollaboration eCollaboration : values ())

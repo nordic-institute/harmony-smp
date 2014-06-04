@@ -41,14 +41,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
+import com.phloc.commons.ValueEnforcer;
+import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ContainerHelper;
+import com.phloc.commons.string.ToStringGenerator;
 
-public final class TestDocument {
+public class TestDocument {
   private final String m_sFilename;
   private final Set <AbstractErrorDefinition> m_aExpectedErrors = new HashSet <AbstractErrorDefinition> ();
 
-  public TestDocument (@Nonnull final String sFilename, final AbstractErrorDefinition... aExpectedErrors) {
+  public TestDocument (@Nonnull final String sFilename, @Nullable final AbstractErrorDefinition... aExpectedErrors) {
+    ValueEnforcer.notNull (sFilename, "Filename");
+
     m_sFilename = sFilename;
     if (aExpectedErrors != null)
       for (final AbstractErrorDefinition aExpectedError : aExpectedErrors)
@@ -62,7 +68,15 @@ public final class TestDocument {
   }
 
   @Nonnull
+  @ReturnsMutableCopy
   public Set <AbstractErrorDefinition> getAllExpectedErrors () {
-    return ContainerHelper.makeUnmodifiable (m_aExpectedErrors);
+    return ContainerHelper.newSet (m_aExpectedErrors);
+  }
+
+  @Override
+  public String toString () {
+    return new ToStringGenerator (null).append ("filename", m_sFilename)
+                                       .append ("expectedErrors", m_aExpectedErrors)
+                                       .toString ();
   }
 }

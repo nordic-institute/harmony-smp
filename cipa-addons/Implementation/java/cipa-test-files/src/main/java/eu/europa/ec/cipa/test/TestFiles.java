@@ -48,6 +48,7 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ArrayHelper;
 import com.phloc.commons.io.IReadableResource;
@@ -64,7 +65,8 @@ import eu.europa.ec.cipa.test.error.Warning;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
-public final class TestFiles {
+public final class TestFiles
+{
   private static final Logger s_aLogger = LoggerFactory.getLogger (TestFiles.class);
   private static final String [] CALLFORTENDERS_SUCCESS = new String [] { "Catalogue pre award_Call for Tender_RDO MEPA_BIS 12a.xml" };
   private static final String [] CATALOGUES_SUCCESS = new String [] { "Consip_Catalogo_UBL.xml" };
@@ -331,24 +333,27 @@ public final class TestFiles {
                                                                                             new Warning ("BIIRULE-T01-R020"),
                                                                                             new Warning ("BIIRULE-T01-R021")) };
 
-  private TestFiles () {}
+  private TestFiles ()
+  {}
 
   @Nonnull
   @ReturnsMutableCopy
-  public static List <IReadableResource> getSuccessFiles (@Nonnull final ETestFileType eFileType) {
+  public static List <IReadableResource> getSuccessFiles (@Nonnull final ETestFileType eFileType)
+  {
     return getSuccessFiles (eFileType, null);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public static List <IReadableResource> getSuccessFiles (@Nonnull final ETestFileType eFileType,
-                                                          @Nullable final Locale aCountry) {
-    if (eFileType == null)
-      throw new NullPointerException ("fileType");
+                                                          @Nullable final Locale aCountry)
+  {
+    ValueEnforcer.notNull (eFileType, "FileType");
 
     String [] aFilenames;
     final String sCountry = aCountry == null ? null : aCountry.getCountry ();
-    switch (eFileType) {
+    switch (eFileType)
+    {
       case CALLFORTENDERS:
         aFilenames = CALLFORTENDERS_SUCCESS;
         break;
@@ -391,12 +396,13 @@ public final class TestFiles {
 
   @Nonnull
   @ReturnsMutableCopy
-  public static List <TestResource> getErrorFiles (@Nonnull final ETestFileType eFileType) {
-    if (eFileType == null)
-      throw new NullPointerException ("fileType");
+  public static List <TestResource> getErrorFiles (@Nonnull final ETestFileType eFileType)
+  {
+    ValueEnforcer.notNull (eFileType, "FileType");
 
     TestDocument [] aFilenames;
-    switch (eFileType) {
+    switch (eFileType)
+    {
       case INVOICE:
         aFilenames = INVOICES_ERROR;
         break;
