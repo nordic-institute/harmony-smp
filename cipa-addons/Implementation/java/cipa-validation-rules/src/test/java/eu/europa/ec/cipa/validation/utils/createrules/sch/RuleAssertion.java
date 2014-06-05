@@ -40,8 +40,8 @@ package eu.europa.ec.cipa.validation.utils.createrules.sch;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.validation.utils.createrules.utils.Utils;
 
@@ -54,12 +54,9 @@ final class RuleAssertion {
   public RuleAssertion (@Nonnull @Nonempty final String sRuleID,
                         @Nonnull @Nonempty final String sMessage,
                         @Nonnull @Nonempty final String sSeverity) {
-    if (StringHelper.hasNoText (sRuleID))
-      throw new IllegalArgumentException ("ruleID");
-    if (StringHelper.hasNoText (sMessage))
-      throw new IllegalArgumentException ("message");
-    if (StringHelper.hasNoText (sSeverity))
-      throw new IllegalArgumentException ("severity");
+    ValueEnforcer.notEmpty (sRuleID, "RuleID");
+    ValueEnforcer.notEmpty (sMessage, "Message");
+    ValueEnforcer.notEmpty (sSeverity, "Severity");
 
     m_sRuleID = Utils.makeID (sRuleID);
     m_sMessage = sMessage;

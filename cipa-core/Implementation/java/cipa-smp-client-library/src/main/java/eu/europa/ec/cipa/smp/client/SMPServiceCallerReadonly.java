@@ -64,7 +64,6 @@ import org.w3._2000._09.xmldsig.X509DataType;
 import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.string.StringHelper;
 import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse.Status;
@@ -176,8 +175,8 @@ public class SMPServiceCallerReadonly {
    *        (no https!). Example: http://smpcompany.company.org
    */
   public SMPServiceCallerReadonly (@Nonnull final URI aSMPHost) {
-    if (aSMPHost == null)
-      throw new NullPointerException ("smpHost");
+    ValueEnforcer.notNull (aSMPHost, "SMPHost");
+
     if (!"http".equals (aSMPHost.getScheme ()))
       s_aLogger.warn ("SMP URI " + aSMPHost + " does not use the expected http scheme!");
     // getPort () returns -1 if none was explicitly specified
@@ -248,10 +247,8 @@ public class SMPServiceCallerReadonly {
   @Nonnull
   private static ServiceGroupReferenceListType _getServiceGroupReferenceList (@Nonnull final WebResource aFullResource,
                                                                               @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
-    if (aFullResource == null)
-      throw new NullPointerException ("fullResource");
-    if (aCredentials == null)
-      throw new NullPointerException ("credentials");
+    ValueEnforcer.notNull (aFullResource, "FullResource");
+    ValueEnforcer.notNull (aCredentials, "Credentials");
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("_getServiceGroupReferenceList from " + aFullResource.getURI ());
@@ -286,10 +283,8 @@ public class SMPServiceCallerReadonly {
   @Nonnull
   public ServiceGroupReferenceListType getServiceGroupReferenceList (@Nonnull final String sUserID,
                                                                      @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
-    if (StringHelper.hasNoText (sUserID))
-      throw new IllegalArgumentException ("The user ID for which the listing should be created, must be supplied!");
-    if (aCredentials == null)
-      throw new NullPointerException ("credentials");
+    ValueEnforcer.notEmpty (sUserID, "UserID");
+    ValueEnforcer.notNull (aCredentials, "Credentials");
 
     final WebResource aFullResource = m_aWebResource.path ("/list/" + BusdoxURLUtils.createPercentEncodedURL (sUserID));
     return _getServiceGroupReferenceList (aFullResource, aCredentials);
@@ -308,8 +303,7 @@ public class SMPServiceCallerReadonly {
 
   @Nonnull
   private static CompleteServiceGroupType _getCompleteServiceGroup (@Nonnull final WebResource aFullResource) throws Exception {
-    if (aFullResource == null)
-      throw new NullPointerException ("fullResource");
+    ValueEnforcer.notNull (aFullResource, "FullResource");
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("_getCompleteServiceGroup from " + aFullResource.getURI ());
@@ -342,8 +336,7 @@ public class SMPServiceCallerReadonly {
    */
   @Nonnull
   public CompleteServiceGroupType getCompleteServiceGroup (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) throws Exception {
-    if (aServiceGroupID == null)
-      throw new NullPointerException ("serviceGroupID");
+    ValueEnforcer.notNull (aServiceGroupID, "ServiceGroupID");
 
     final WebResource aFullResource = m_aWebResource.path ("/complete/" +
                                                            IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID));
@@ -455,8 +448,7 @@ public class SMPServiceCallerReadonly {
 
   @Nonnull
   private static ServiceGroupType _getServiceGroup (@Nonnull final WebResource aFullResource) throws Exception {
-    if (aFullResource == null)
-      throw new NullPointerException ("fullResource");
+    ValueEnforcer.notNull (aFullResource, "FullResource");
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("_getServiceGroup from " + aFullResource.getURI ());
@@ -488,8 +480,7 @@ public class SMPServiceCallerReadonly {
    */
   @Nonnull
   public ServiceGroupType getServiceGroup (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) throws Exception {
-    if (aServiceGroupID == null)
-      throw new NullPointerException ("serviceGroupID");
+    ValueEnforcer.notNull (aServiceGroupID, "ServiceGroupID");
 
     final WebResource aFullResource = m_aWebResource.path (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID));
     return _getServiceGroup (aFullResource);
@@ -532,8 +523,7 @@ public class SMPServiceCallerReadonly {
 
   @Nonnull
   public static SignedServiceMetadataType getServiceRegistration (@Nonnull final WebResource aFullResource) throws Exception {
-    if (aFullResource == null)
-      throw new NullPointerException ("fullResource");
+    ValueEnforcer.notNull (aFullResource, "FullResource");
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("getServiceRegistration from " + aFullResource.getURI ());
@@ -610,10 +600,8 @@ public class SMPServiceCallerReadonly {
   @Nonnull
   public SignedServiceMetadataType getServiceRegistration (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                                            @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID) throws Exception {
-    if (aServiceGroupID == null)
-      throw new NullPointerException ("serviceGroupID");
-    if (aDocumentTypeID == null)
-      throw new NullPointerException ("documentType");
+    ValueEnforcer.notNull (aServiceGroupID, "ServiceGroupID");
+    ValueEnforcer.notNull (aDocumentTypeID, "DocumentTypeID");
 
     final String sPath = IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID) +
                          "/services/" +
@@ -665,12 +653,9 @@ public class SMPServiceCallerReadonly {
   public EndpointType getEndpoint (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                    @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
                                    @Nonnull final IReadonlyProcessIdentifier aProcessID) throws Exception {
-    if (aServiceGroupID == null)
-      throw new NullPointerException ("serviceGroupID");
-    if (aDocumentTypeID == null)
-      throw new NullPointerException ("documentType");
-    if (aProcessID == null)
-      throw new NullPointerException ("processID");
+    ValueEnforcer.notNull (aServiceGroupID, "serviceGroupID");
+    ValueEnforcer.notNull (aDocumentTypeID, "DocumentTypeID");
+    ValueEnforcer.notNull (aProcessID, "ProcessID");
 
     // Get meta data for participant/documentType
     final SignedServiceMetadataType aSignedServiceMetadata = getServiceRegistrationOrNull (aServiceGroupID,
@@ -681,10 +666,8 @@ public class SMPServiceCallerReadonly {
   @Nullable
   public EndpointType getEndpoint (@Nonnull final SignedServiceMetadataType aSignedServiceMetadata,
                                    @Nonnull final IReadonlyProcessIdentifier aProcessID) throws Exception {
-    if (aSignedServiceMetadata == null)
-      throw new NullPointerException ("signedServiceMetadata");
-    if (aProcessID == null)
-      throw new NullPointerException ("processID");
+    ValueEnforcer.notNull (aSignedServiceMetadata, "SignedServiceMetadata");
+    ValueEnforcer.notNull (aProcessID, "ProcessID");
 
     // Iterate all processes
     final List <ProcessType> aAllProcesses = aSignedServiceMetadata.getServiceMetadata ()

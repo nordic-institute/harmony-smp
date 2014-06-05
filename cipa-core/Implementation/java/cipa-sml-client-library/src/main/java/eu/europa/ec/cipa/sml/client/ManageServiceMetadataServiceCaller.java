@@ -53,6 +53,8 @@ import org.busdox.servicemetadata.manageservicemetadataservice._1.UnauthorizedFa
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.ValueEnforcer;
+
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 
 /**
@@ -83,8 +85,7 @@ public final class ManageServiceMetadataServiceCaller {
    *        The address of the SML management interface.
    */
   public ManageServiceMetadataServiceCaller (@Nonnull final URL aEndpointAddress) {
-    if (aEndpointAddress == null)
-      throw new NullPointerException ("endpointAddress");
+    ValueEnforcer.notNull (aEndpointAddress, "EndpointAddress");
     m_aEndpointAddress = aEndpointAddress;
 
     if (s_aLogger.isDebugEnabled ())

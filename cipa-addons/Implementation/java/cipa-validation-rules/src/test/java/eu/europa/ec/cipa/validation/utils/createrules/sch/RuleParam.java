@@ -40,8 +40,8 @@ package eu.europa.ec.cipa.validation.utils.createrules.sch;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.validation.utils.createrules.utils.Utils;
 
@@ -51,10 +51,8 @@ final class RuleParam {
   private final String m_sTest;
 
   public RuleParam (@Nonnull @Nonempty final String sRuleID, @Nonnull @Nonempty final String sTest) {
-    if (StringHelper.hasNoText (sRuleID))
-      throw new IllegalArgumentException ("ruleID");
-    if (StringHelper.hasNoText (sTest))
-      throw new IllegalArgumentException ("test");
+    ValueEnforcer.notEmpty (sRuleID, "RuleID");
+    ValueEnforcer.notEmpty (sTest, "Test");
 
     m_sRuleID = Utils.makeID (sRuleID);
     m_sTest = sTest;

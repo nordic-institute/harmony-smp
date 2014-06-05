@@ -58,8 +58,8 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.collections.ContainerHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
@@ -98,8 +98,7 @@ public final class ManageParticipantIdentifierServiceCaller {
    *        The URL of the manage business identifier interface.
    */
   public ManageParticipantIdentifierServiceCaller (@Nonnull final URL aEndpointAddress) {
-    if (aEndpointAddress == null)
-      throw new NullPointerException ("endpointAddress");
+    ValueEnforcer.notNull (aEndpointAddress, "EndpointAddress");
     m_aEndpointAddress = aEndpointAddress;
 
     if (s_aLogger.isDebugEnabled ())
@@ -286,10 +285,7 @@ public final class ManageParticipantIdentifierServiceCaller {
                                                                                                                   InternalErrorFault,
                                                                                                                   NotFoundFault,
                                                                                                                   UnauthorizedFault {
-    if (aParticipantIdentifiers == null)
-      throw new NullPointerException ("participantIdentifiers");
-    if (ContainerHelper.isEmpty (aParticipantIdentifiers))
-      throw new IllegalArgumentException ("participantIdentifiers may not be empty!");
+    ValueEnforcer.notEmpty (aParticipantIdentifiers, "ParticipantIdentifiers");
 
     s_aLogger.info ("Trying to delete multiple participants " + _toString (aParticipantIdentifiers));
     final ParticipantIdentifierPageType deleteListIn = new ParticipantIdentifierPageType ();
