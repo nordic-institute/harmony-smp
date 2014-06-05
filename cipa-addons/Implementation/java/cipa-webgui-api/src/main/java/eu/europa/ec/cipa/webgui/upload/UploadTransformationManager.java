@@ -42,7 +42,7 @@ import javax.annotation.Nonnull;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.error.EErrorLevel;
 import com.phloc.commons.error.ResourceError;
 import com.phloc.commons.error.ResourceErrorGroup;
@@ -78,10 +78,8 @@ public final class UploadTransformationManager {
   @Nonnull
   public static TransformationResult tryToTransformUploadedResource (@Nonnull final EDocumentType eDocType,
                                                                      @Nonnull final IUploadedResource aUploadedResource) {
-    if (eDocType == null)
-      throw new NullPointerException ("docType");
-    if (aUploadedResource == null)
-      throw new NullPointerException ("uploadedResource");
+    ValueEnforcer.notNull (eDocType, "DocType");
+    ValueEnforcer.notNull (aUploadedResource, "UploadedResource");
     if (!aUploadedResource.isSuccess ())
       throw new IllegalArgumentException ("Cannot handle failed uploads!");
 

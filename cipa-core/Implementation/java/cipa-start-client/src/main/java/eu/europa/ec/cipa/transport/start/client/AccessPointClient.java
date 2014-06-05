@@ -63,6 +63,7 @@ import org.w3._2009._02.ws_tra.FaultMessage;
 import org.w3._2009._02.ws_tra.Resource;
 import org.w3c.dom.Document;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.exceptions.InitializationException;
 import com.phloc.commons.lang.GenericReflection;
@@ -191,12 +192,10 @@ public class AccessPointClient {
   public static AccessPointClientSendResult send (@Nonnull final Resource aPort,
                                                   @Nonnull final IMessageMetadata aMetadata,
                                                   @Nonnull final Create aBody) {
-    if (aPort == null)
-      throw new NullPointerException ("port");
-    if (aMetadata == null)
-      throw new NullPointerException ("metadata");
-    if (aBody == null)
-      throw new NullPointerException ("body");
+    ValueEnforcer.notNull (aPort, "Port");
+    ValueEnforcer.notNull (aMetadata, "Metadata");
+    ValueEnforcer.notNull (aBody, "Body");
+
     if (!SAMLConfiguration.getInstance ().isConfigurationOK ())
       throw new IllegalStateException ("SAML configuration is invalid - see log file for details!");
 
@@ -293,10 +292,8 @@ public class AccessPointClient {
   public static AccessPointClientSendResult send (@Nonnull @Nonempty final String sEndpointAddressURL,
                                                   @Nonnull final IMessageMetadata aMetadata,
                                                   @Nonnull final Document aXMLDoc) {
-    if (aXMLDoc == null)
-      throw new NullPointerException ("Passed XML document is null!");
-    if (aXMLDoc.getDocumentElement () == null)
-      throw new IllegalArgumentException ("Passed XML document has no DocumentElement!");
+    ValueEnforcer.notNull (aXMLDoc, "Passed XML document");
+    ValueEnforcer.notNull (aXMLDoc.getDocumentElement (), "Document element of passed XML document");
 
     // Create the WS-Transfer body object
     final Create aCreateBody = new Create ();

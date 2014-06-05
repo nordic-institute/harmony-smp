@@ -67,6 +67,7 @@ import org.xbill.DNS.Update;
 import org.xbill.DNS.ZoneTransferException;
 import org.xbill.DNS.ZoneTransferIn;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.OverrideOnDemand;
 import com.phloc.commons.exceptions.InitializationException;
@@ -219,10 +220,9 @@ public class DNSClientImpl implements IDNSClient {
                                 @Nonnull final String sSMPID) throws IOException,
                                                              IllegalIdentifierSchemeException,
                                                              IllegalHostnameException {
-    if (aParticipantIdentifier == null)
-      throw new NullPointerException ("ParticipantIdentifier");
+    ValueEnforcer.notNull (aParticipantIdentifier, "ParticipantIdentifier");
 
-    s_aLogger.info ("Create Identifier " + String.valueOf (aParticipantIdentifier) + " -> " + sSMPID);
+    s_aLogger.info ("Create Identifier " + aParticipantIdentifier.toString () + " -> " + sSMPID);
 
     // Start update
     final Update aDNSUpdate = new Update (m_aDNSZoneName);
@@ -241,10 +241,9 @@ public class DNSClientImpl implements IDNSClient {
                                  @Nonnull final String sSMPID) throws IOException,
                                                               IllegalIdentifierSchemeException,
                                                               IllegalHostnameException {
-    if (aParticipantIdentifiers == null)
-      throw new NullPointerException ("ParticipantIdentifiers");
+    ValueEnforcer.notNull (aParticipantIdentifiers, "ParticipantIdentifiers");
 
-    s_aLogger.info ("Create Identifiers " + aParticipantIdentifiers + " -> " + sSMPID);
+    s_aLogger.info ("Create Identifiers " + aParticipantIdentifiers.toString () + " -> " + sSMPID);
 
     // What to update
     final Update aDNSUpdate = new Update (m_aDNSZoneName);
@@ -263,10 +262,9 @@ public class DNSClientImpl implements IDNSClient {
 
   public void deleteIdentifier (@Nonnull final ParticipantIdentifierType aParticipantIdentifier) throws IllegalIdentifierSchemeException,
                                                                                                 IOException {
-    if (aParticipantIdentifier == null)
-      throw new NullPointerException ("ParticipantIdentifier");
+    ValueEnforcer.notNull (aParticipantIdentifier, "ParticipantIdentifier");
 
-    s_aLogger.info ("Delete Identifier " + aParticipantIdentifier);
+    s_aLogger.info ("Delete Identifier " + aParticipantIdentifier.toString ());
 
     final String sPIDNSName = getDNSNameOfParticipant (aParticipantIdentifier);
     _deleteZoneRecord (sPIDNSName);
@@ -274,8 +272,9 @@ public class DNSClientImpl implements IDNSClient {
 
   public void deleteIdentifiers (@Nonnull final List <ParticipantIdentifierType> aParticipantIdentifiers) throws IOException,
                                                                                                          IllegalIdentifierSchemeException {
-    if (aParticipantIdentifiers == null)
-      throw new NullPointerException ("ParticipantIdentifiers");
+    ValueEnforcer.notNull (aParticipantIdentifiers, "ParticipantIdentifiers");
+
+    s_aLogger.info ("Deleting Identifiers " + aParticipantIdentifiers.toString ());
 
     final Update aDNSUpdate = new Update (m_aDNSZoneName);
 

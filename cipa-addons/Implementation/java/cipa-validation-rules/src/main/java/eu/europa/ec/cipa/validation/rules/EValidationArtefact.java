@@ -50,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.phloc.commons.CGlobal;
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ArrayHelper;
@@ -249,8 +250,7 @@ public enum EValidationArtefact implements IValidationArtefact {
 
   @Nullable
   public IReadableResource getValidationSchematronResource (@Nonnull final IValidationTransaction aTransaction) {
-    if (aTransaction == null)
-      throw new NullPointerException ("transaction");
+    ValueEnforcer.notNull (aTransaction, "Transaction");
 
     if (!m_aTransactions.contains (aTransaction)) {
       s_aLogger.warn ("Validation artifact does not contain transaction: " + aTransaction.getAsString ());
@@ -290,8 +290,7 @@ public enum EValidationArtefact implements IValidationArtefact {
 
   @Nullable
   public IReadableResource getValidationXSLTResource (@Nonnull final IValidationTransaction aTransaction) {
-    if (aTransaction == null)
-      throw new NullPointerException ("transaction");
+    ValueEnforcer.notNull (aTransaction, "Transaction");
 
     if (!m_aTransactions.contains (aTransaction)) {
       s_aLogger.warn ("Validation artifact does not contain transaction: " + aTransaction.getAsString ());

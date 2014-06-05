@@ -43,7 +43,7 @@ import javax.annotation.concurrent.Immutable;
 
 import org.w3c.dom.Document;
 
-
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.io.IReadableResource;
 
 import eu.europa.ec.cipa.webgui.document.EDocumentMetaType;
@@ -73,10 +73,8 @@ public final class TransformationSource {
   public TransformationSource (@Nonnull final EDocumentMetaType eDocMetaType,
                                @Nonnull final IReadableResource aRes,
                                @Nullable final Document aXMLDoc) {
-    if (eDocMetaType == null)
-      throw new NullPointerException ("docMetaType");
-    if (aRes == null)
-      throw new NullPointerException ("resource");
+    ValueEnforcer.notNull (eDocMetaType, "DocMetaType");
+    ValueEnforcer.notNull (aRes, "Resource");
     if (eDocMetaType.equals (EDocumentMetaType.XML) && aXMLDoc == null)
       throw new IllegalArgumentException ("XML document may not be null for meta type XML");
     m_eDocMetaType = eDocMetaType;

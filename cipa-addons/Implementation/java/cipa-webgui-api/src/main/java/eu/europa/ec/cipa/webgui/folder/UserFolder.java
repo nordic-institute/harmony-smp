@@ -45,6 +45,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ContainerHelper;
@@ -141,8 +142,7 @@ public final class UserFolder implements IUserFolder {
 
   @Nonnull
   public EChange addDocument (@Nonnull final String sDocID) {
-    if (StringHelper.hasNoText (sDocID))
-      throw new NullPointerException ("docID");
+    ValueEnforcer.notEmpty (sDocID, "DocID");
     return EChange.valueOf (m_aDocs.add (sDocID));
   }
 

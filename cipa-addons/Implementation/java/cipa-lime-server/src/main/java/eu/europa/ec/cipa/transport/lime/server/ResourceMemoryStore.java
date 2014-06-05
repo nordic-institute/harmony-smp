@@ -46,9 +46,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.ThreadSafe;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.state.EChange;
-import com.phloc.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.transport.IMessageMetadata;
 
@@ -82,10 +82,8 @@ public final class ResourceMemoryStore {
 
   @Nonnull
   private static String _getKey (@Nonnull @Nonempty final String sMessageID, @Nonnull @Nonempty final String sURLStr) {
-    if (StringHelper.hasNoText (sMessageID))
-      throw new IllegalArgumentException ("messageID");
-    if (StringHelper.hasNoText (sURLStr))
-      throw new IllegalArgumentException ("urlStr");
+    ValueEnforcer.notEmpty (sMessageID, "MessageID");
+    ValueEnforcer.notEmpty (sURLStr, "UrlStr");
     return sMessageID + sURLStr;
   }
 
@@ -104,8 +102,7 @@ public final class ResourceMemoryStore {
   public EChange createResource (@Nonnull @Nonempty final String sMessageID,
                                  @Nonnull @Nonempty final String sURLStr,
                                  @Nonnull final IMessageMetadata aMetadata) {
-    if (aMetadata == null)
-      throw new NullPointerException ("metadata");
+    ValueEnforcer.notNull (aMetadata, "Metadata");
 
     m_aRWLock.writeLock ().lock ();
     try {

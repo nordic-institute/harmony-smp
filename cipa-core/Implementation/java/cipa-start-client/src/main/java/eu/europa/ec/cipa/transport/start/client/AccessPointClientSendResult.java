@@ -44,12 +44,12 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.state.ESuccess;
 import com.phloc.commons.state.ISuccessIndicator;
-import com.phloc.commons.string.StringHelper;
 import com.phloc.commons.string.ToStringGenerator;
 
 /**
@@ -70,9 +70,7 @@ public class AccessPointClientSendResult implements ISuccessIndicator {
    *        <code>null</code>.
    */
   public AccessPointClientSendResult (@Nonnull final ESuccess eSuccess) {
-    if (eSuccess == null)
-      throw new NullPointerException ("Success");
-    m_eSuccess = eSuccess;
+    m_eSuccess = ValueEnforcer.notNull (eSuccess, "Success");
   }
 
   public boolean isSuccess () {
@@ -109,8 +107,7 @@ public class AccessPointClientSendResult implements ISuccessIndicator {
    */
   @Nonnull
   public AccessPointClientSendResult addErrorMessage (@Nonnull @Nonempty final String sErrorMsg) {
-    if (StringHelper.hasNoText (sErrorMsg))
-      throw new NullPointerException ("ErrorMsg");
+    ValueEnforcer.notEmpty (sErrorMsg, "ErrorMsg");
     m_aErrorMessages.add (sErrorMsg);
     return this;
   }

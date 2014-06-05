@@ -40,11 +40,11 @@ package eu.europa.ec.cipa.visualization.index;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.hash.HashCodeGenerator;
 import com.phloc.commons.io.IReadableResource;
 import com.phloc.commons.io.resource.ClassPathResource;
-import com.phloc.commons.string.StringHelper;
 import com.phloc.commons.string.ToStringGenerator;
 
 /**
@@ -58,10 +58,8 @@ public final class ArtefactResource {
   private final String m_sFilename;
 
   public ArtefactResource (@Nonnull final EArtefactResourceType eType, @Nonnull @Nonempty final String sFilename) {
-    if (eType == null)
-      throw new NullPointerException ("type");
-    if (StringHelper.hasNoText (sFilename))
-      throw new IllegalArgumentException ("filename");
+    ValueEnforcer.notNull (eType, "type");
+    ValueEnforcer.notEmpty (sFilename, "Filename");
     m_eType = eType;
     m_sFilename = sFilename;
   }

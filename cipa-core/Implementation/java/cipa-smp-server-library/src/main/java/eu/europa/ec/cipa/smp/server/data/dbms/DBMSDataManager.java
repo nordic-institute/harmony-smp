@@ -65,6 +65,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.phloc.commons.GlobalDebug;
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.annotations.VisibleForTesting;
 import com.phloc.commons.callback.LoggingExceptionHandler;
@@ -123,14 +124,14 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
       }
     });
 
+    ValueEnforcer.notNull (aHook, "Hook");
+
     // Exceptions are handled by logging them
     setCustomExceptionHandler (new LoggingExceptionHandler ());
 
     // To avoid some EclipseLink logging issues
     setUseTransactionsForSelect (true);
 
-    if (aHook == null)
-      throw new NullPointerException ("hook");
     m_aHook = aHook;
   }
 

@@ -42,6 +42,7 @@ import javax.annotation.Nullable;
 import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.error.EErrorLevel;
 import com.phloc.commons.error.IResourceErrorGroup;
@@ -93,9 +94,7 @@ public class XMLSchemaValidator extends AbstractXMLValidator {
    *        The schema to be used for validation. May not be <code>null</code>.
    */
   public XMLSchemaValidator (@Nonnull final Schema aSchema) {
-    if (aSchema == null)
-      throw new NullPointerException ("schema");
-    m_aSchema = aSchema;
+    m_aSchema = ValueEnforcer.notNull (aSchema, "Schema");
   }
 
   /**

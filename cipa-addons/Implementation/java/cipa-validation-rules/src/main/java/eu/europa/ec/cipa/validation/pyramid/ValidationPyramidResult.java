@@ -45,6 +45,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.error.IResourceErrorGroup;
@@ -81,10 +82,8 @@ public class ValidationPyramidResult {
   public ValidationPyramidResult (@Nonnull final IValidationDocumentType aValidationDocumentType,
                                   @Nonnull final IValidationTransaction aValidationTransaction,
                                   @Nullable final Locale aValidationCountry) {
-    if (aValidationDocumentType == null)
-      throw new NullPointerException ("validationDocumentType");
-    if (aValidationTransaction == null)
-      throw new NullPointerException ("validationTransaction");
+    ValueEnforcer.notNull (aValidationDocumentType, "ValidationDocumentType");
+    ValueEnforcer.notNull (aValidationTransaction, "ValidationTransaction");
 
     m_aValidationDocumentType = aValidationDocumentType;
     m_aValidationTransaction = aValidationTransaction;
@@ -133,8 +132,7 @@ public class ValidationPyramidResult {
    *        The new validation result layer. May not be <code>null</code>.
    */
   public void addValidationResultLayer (@Nonnull final ValidationPyramidResultLayer aResultLayer) {
-    if (aResultLayer == null)
-      throw new NullPointerException ("resultLayer");
+    ValueEnforcer.notNull (aResultLayer, "ResultLayer");
     m_aValidationResultLayers.add (aResultLayer);
   }
 
@@ -177,8 +175,7 @@ public class ValidationPyramidResult {
    *         <code>false</code> otherwise.
    */
   public boolean containsValidationResultLayerForLevel (@Nonnull final IValidationLevel aValidationLevel) {
-    if (aValidationLevel == null)
-      throw new NullPointerException ("validationLevel");
+    ValueEnforcer.notNull (aValidationLevel, "ValidationLevel");
 
     for (final ValidationPyramidResultLayer aValidationResultLayer : m_aValidationResultLayers)
       if (aValidationResultLayer.getValidationLevel ().equals (aValidationLevel))
@@ -197,8 +194,7 @@ public class ValidationPyramidResult {
   @Nonnull
   @ReturnsMutableCopy
   public List <ValidationPyramidResultLayer> getValidationResultLayersForLevel (@Nonnull final IValidationLevel aValidationLevel) {
-    if (aValidationLevel == null)
-      throw new NullPointerException ("validationLevel");
+    ValueEnforcer.notNull (aValidationLevel, "ValidationLevel");
 
     final List <ValidationPyramidResultLayer> ret = new ArrayList <ValidationPyramidResultLayer> ();
     for (final ValidationPyramidResultLayer aValidationResultLayer : m_aValidationResultLayers)

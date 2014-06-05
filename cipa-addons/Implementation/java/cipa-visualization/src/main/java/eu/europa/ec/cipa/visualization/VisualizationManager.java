@@ -59,6 +59,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.io.IReadableResource;
 import com.phloc.commons.io.file.FileOperationManager;
 import com.phloc.commons.io.file.FileUtils;
@@ -92,8 +93,7 @@ public final class VisualizationManager {
   public static ESuccess visualize (@Nonnull final EVisualizationArtefact eArtefact,
                                     @Nonnull final Source aSource,
                                     @Nonnull final Result aResult) {
-    if (eArtefact == null)
-      throw new NullPointerException ("artefact");
+    ValueEnforcer.notNull (eArtefact, "Artefact");
 
     // Get cached XSL templates
     Templates aTemplates;
@@ -147,10 +147,8 @@ public final class VisualizationManager {
                                           @Nonnull final Source aSource,
                                           @Nonnull final File aDestinationFile,
                                           final boolean bCopyResources) {
-    if (eArtefact == null)
-      throw new NullPointerException ("artefact");
-    if (aDestinationFile == null)
-      throw new NullPointerException ("file");
+    ValueEnforcer.notNull (eArtefact, "Artefact");
+    ValueEnforcer.notNull (aDestinationFile, "DestinationFile");
     if (aDestinationFile.isDirectory ())
       throw new IllegalArgumentException ("Passed destination is a directory!");
 

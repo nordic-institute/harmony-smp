@@ -43,6 +43,7 @@ import javax.xml.bind.annotation.XmlSchema;
 
 import org.w3c.dom.Node;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.error.IResourceErrorGroup;
 import com.phloc.commons.io.IReadableResource;
 import com.phloc.commons.microdom.IMicroNode;
@@ -60,10 +61,8 @@ public final class TransformationResult implements ISuccessIndicator {
   private final Object m_aResultObj;
 
   private TransformationResult (@Nonnull final ETransformationResultType eResultType, @Nonnull final Object aResultObj) {
-    if (eResultType == null)
-      throw new NullPointerException ("resultType");
-    if (aResultObj == null)
-      throw new NullPointerException ("resultObj");
+    ValueEnforcer.notNull (eResultType, "ResultType");
+    ValueEnforcer.notNull (aResultObj, "ResultObj");
 
     m_eResultType = eResultType;
     m_aResultObj = aResultObj;
@@ -206,8 +205,7 @@ public final class TransformationResult implements ISuccessIndicator {
    */
   @Nonnull
   public static TransformationResult createUBLResult (@Nonnull final Object aUBLObject) {
-    if (aUBLObject == null)
-      throw new NullPointerException ("UBLObject");
+    ValueEnforcer.notNull (aUBLObject, "UBLObject");
 
     // Check if the class's owning package has the @XmlSchema annotation
     final XmlSchema aSchema = aUBLObject.getClass ().getPackage ().getAnnotation (XmlSchema.class);

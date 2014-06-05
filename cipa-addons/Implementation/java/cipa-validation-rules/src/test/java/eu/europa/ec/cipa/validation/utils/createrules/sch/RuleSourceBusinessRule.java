@@ -44,6 +44,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ContainerHelper;
@@ -61,14 +62,11 @@ public final class RuleSourceBusinessRule {
                                  @Nonnull final File aOutputDirectory,
                                  @Nonnull @Nonempty final String sID,
                                  @Nullable final String sCodeListTransaction) {
-    if (aSourceFilename == null)
-      throw new NullPointerException ("sourceFilename");
+    ValueEnforcer.notNull (aSourceFilename, "SourceFilename");
     if (!aSourceFilename.isFile ())
       throw new IllegalArgumentException ("Source file does not exist: " + aSourceFilename);
-    if (aOutputDirectory == null)
-      throw new NullPointerException ("outputDirectory");
-    if (StringHelper.hasNoText (sID))
-      throw new IllegalArgumentException ("ID");
+    ValueEnforcer.notNull (aOutputDirectory, "OutputDirectory");
+    ValueEnforcer.notEmpty (sID, "ID");
 
     FileOperations.createDirIfNotExisting (aOutputDirectory);
     FileOperations.createDirIfNotExisting (new File (aOutputDirectory, "include"));

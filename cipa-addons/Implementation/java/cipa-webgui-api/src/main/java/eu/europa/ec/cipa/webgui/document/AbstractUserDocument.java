@@ -39,8 +39,8 @@ package eu.europa.ec.cipa.webgui.document;
 
 import javax.annotation.Nonnull;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.string.StringHelper;
 
 /**
  * Abstract base class for user documents
@@ -52,10 +52,8 @@ public abstract class AbstractUserDocument implements IUserDocument {
   private final EDocumentType m_eDocType;
 
   public AbstractUserDocument (@Nonnull @Nonempty final String sID, @Nonnull final EDocumentType eDocType) {
-    if (StringHelper.hasNoText (sID))
-      throw new IllegalArgumentException ("ID");
-    if (eDocType == null)
-      throw new NullPointerException ("docType");
+    ValueEnforcer.notEmpty (sID, "ID");
+    ValueEnforcer.notNull (eDocType, "DocType");
     m_sID = sID;
     m_eDocType = eDocType;
   }

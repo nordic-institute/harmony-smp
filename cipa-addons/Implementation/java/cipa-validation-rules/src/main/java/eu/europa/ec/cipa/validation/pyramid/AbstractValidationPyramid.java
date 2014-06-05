@@ -51,6 +51,7 @@ import javax.xml.transform.dom.DOMSource;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.error.IResourceErrorGroup;
@@ -71,8 +72,7 @@ import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @NotThreadSafe
-public abstract class AbstractValidationPyramid implements IValidationPyramid
-{
+public abstract class AbstractValidationPyramid implements IValidationPyramid {
   protected final IValidationDocumentType m_aValidationDocType;
   protected final IValidationTransaction m_aValidationTransaction;
   protected final Locale m_aValidationCountry;
@@ -95,12 +95,9 @@ public abstract class AbstractValidationPyramid implements IValidationPyramid
    */
   public AbstractValidationPyramid (@Nonnull final IValidationDocumentType aValidationDocumentType,
                                     @Nonnull final IValidationTransaction aValidationTransaction,
-                                    @Nullable final Locale aValidationCountry)
-  {
-    if (aValidationDocumentType == null)
-      throw new NullPointerException ("documentType");
-    if (aValidationTransaction == null)
-      throw new NullPointerException ("transaction");
+                                    @Nullable final Locale aValidationCountry) {
+    ValueEnforcer.notNull (aValidationDocumentType, "DocumentType");
+    ValueEnforcer.notNull (aValidationTransaction, "Transaction");
 
     m_aValidationDocType = aValidationDocumentType;
     m_aValidationTransaction = aValidationTransaction;
@@ -108,69 +105,56 @@ public abstract class AbstractValidationPyramid implements IValidationPyramid
   }
 
   @Nonnull
-  public IValidationDocumentType getValidationDocumentType ()
-  {
+  public IValidationDocumentType getValidationDocumentType () {
     return m_aValidationDocType;
   }
 
   @Nonnull
-  public IValidationTransaction getValidationTransaction ()
-  {
+  public IValidationTransaction getValidationTransaction () {
     return m_aValidationTransaction;
   }
 
-  public boolean isValidationCountryIndependent ()
-  {
+  public boolean isValidationCountryIndependent () {
     return m_aValidationCountry == null;
   }
 
   @Nullable
-  public Locale getValidationCountry ()
-  {
+  public Locale getValidationCountry () {
     return m_aValidationCountry;
   }
 
   @Nonnegative
-  public int getValidationLayerCount ()
-  {
+  public int getValidationLayerCount () {
     return m_aValidationLayers.size ();
   }
 
   @Nonnull
   @ReturnsMutableCopy
-  public List <ValidationPyramidLayer> getAllValidationLayers ()
-  {
+  public List <ValidationPyramidLayer> getAllValidationLayers () {
     return ContainerHelper.newList (m_aValidationLayers);
   }
 
   @Nonnull
-  public ValidationPyramidResult applyValidation (@Nonnull final IReadableResource aRes)
-  {
-    if (aRes == null)
-      throw new NullPointerException ("resource");
+  public ValidationPyramidResult applyValidation (@Nonnull final IReadableResource aRes) {
+    ValueEnforcer.notNull (aRes, "Resource");
 
-    try
-    {
+    try {
       final Document aDoc = XMLReader.readXMLDOM (aRes);
       return applyValidation (aRes.getPath (), new DOMSource (aDoc));
     }
-    catch (final SAXException ex)
-    {
+    catch (final SAXException ex) {
       throw new IllegalArgumentException ("Failed to parse XML", ex);
     }
   }
 
   @Nonnull
-  public ValidationPyramidResult applyValidation (@Nonnull final Source aXML)
-  {
+  public ValidationPyramidResult applyValidation (@Nonnull final Source aXML) {
     return applyValidation (null, aXML);
   }
 
   @Nonnull
-  public ValidationPyramidResult applyValidation (@Nullable final String sResourceName, @Nonnull final Source aXML)
-  {
-    if (aXML == null)
-      throw new NullPointerException ("XML");
+  public ValidationPyramidResult applyValidation (@Nullable final String sResourceName, @Nonnull final Source aXML) {
+    ValueEnforcer.notNull (aXML, "XML");
 
     final ValidationPyramidResult ret = new ValidationPyramidResult (m_aValidationDocType,
                                                                      m_aValidationTransaction,
@@ -180,8 +164,7 @@ public abstract class AbstractValidationPyramid implements IValidationPyramid
     int nLayerIndex = 0;
 
     // For all validation layers
-    for (final ValidationPyramidLayer aValidationLayer : m_aValidationLayers)
-    {
+    for (final ValidationPyramidLayer aValidationLayer : m_aValidationLayers) {
       // The validator to use
       final IXMLValidator aValidator = aValidationLayer.getValidator ();
 
@@ -193,8 +176,7 @@ public abstract class AbstractValidationPyramid implements IValidationPyramid
                                                                       aValidator.getValidationType (),
                                                                       aValidationLayer.isStopValidatingOnError (),
                                                                       aErrors));
-      if (aValidationLayer.isStopValidatingOnError () && aErrors.containsAtLeastOneError ())
-      {
+      if (aValidationLayer.isStopValidatingOnError () && aErrors.containsAtLeastOneError ()) {
         // Stop validating the whole pyramid!
         ret.setValidationInterrupted (nLayerIndex < (nMaxLayers - 1));
         break;
@@ -205,8 +187,7 @@ public abstract class AbstractValidationPyramid implements IValidationPyramid
   }
 
   @Override
-  public String toString ()
-  {
+  public String toString () {
     return new ToStringGenerator (this).append ("docType", m_aValidationDocType)
                                        .append ("transaction", m_aValidationTransaction)
                                        .append ("country", m_aValidationCountry)

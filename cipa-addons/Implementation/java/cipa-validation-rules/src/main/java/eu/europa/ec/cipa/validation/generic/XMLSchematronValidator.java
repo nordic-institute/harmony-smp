@@ -45,6 +45,7 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.error.EErrorLevel;
 import com.phloc.commons.error.IResourceErrorGroup;
 import com.phloc.commons.error.ResourceError;
@@ -67,8 +68,7 @@ public class XMLSchematronValidator extends AbstractXMLValidator {
   private final ISchematronResource m_aSchematronRes;
 
   public XMLSchematronValidator (@Nonnull final ISchematronResource aSchematronRes) {
-    if (aSchematronRes == null)
-      throw new NullPointerException ("schematronResource");
+    ValueEnforcer.notNull (aSchematronRes, "SchematronResource");
     if (!aSchematronRes.isValidSchematron ())
       throw new IllegalArgumentException ("Passed schematronResource is invalid Schematron: " + aSchematronRes);
     m_aSchematronRes = aSchematronRes;

@@ -50,6 +50,7 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
 import com.phloc.commons.CGlobal;
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.exceptions.LoggedException;
 import com.phloc.commons.io.file.FileOperations;
@@ -104,9 +105,7 @@ final class TransportChannel {
    *        Path of the store.
    */
   public TransportChannel (@Nonnull final String sStorePath) {
-    if (sStorePath == null)
-      throw new NullPointerException ("StorePath");
-    m_sStorePath = sStorePath;
+    m_sStorePath = ValueEnforcer.notNull (sStorePath, "StorePath");
   }
 
   /**
@@ -318,7 +317,6 @@ final class TransportChannel {
 
   @Nonnull
   private File _getChannelInboxDir (final String sChannelID) throws LoggedException {
-
     final File inboxDir = new File (m_sStorePath, INBOX_DIR);
     if (FileOperations.createDirIfNotExisting (inboxDir).isFailure ())
       s_aLogger.debug ("Cannot create the inbox directory: " + m_sStorePath + "/" + inboxDir);

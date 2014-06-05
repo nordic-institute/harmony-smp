@@ -40,6 +40,7 @@ package eu.europa.ec.cipa.validation.pyramid;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.string.ToStringGenerator;
 
 import eu.europa.ec.cipa.validation.generic.EXMLValidationType;
@@ -71,10 +72,8 @@ public class ValidationPyramidLayer {
   public ValidationPyramidLayer (@Nonnull final IValidationLevel aValidationLevel,
                                  @Nonnull final IXMLValidator aValidator,
                                  final boolean bStopValidatingOnError) {
-    if (aValidationLevel == null)
-      throw new NullPointerException ("level");
-    if (aValidator == null)
-      throw new NullPointerException ("validator");
+    ValueEnforcer.notNull (aValidationLevel, "Level");
+    ValueEnforcer.notNull (aValidator, "Validator");
 
     m_aValidationLevel = aValidationLevel;
     m_aValidator = aValidator;

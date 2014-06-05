@@ -46,7 +46,7 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.lang.CGStringHelper;
 import com.phloc.commons.lang.ServiceLoaderUtils;
 import com.phloc.commons.typeconvert.TypeConverterException;
@@ -95,8 +95,7 @@ public final class TransformationManager {
   @Nullable
   public static TransformationResult transformDocumentToUBL (@Nonnull final EDocumentType eDocType,
                                                              @Nonnull final TransformationSource aSource) {
-    if (eDocType == null)
-      throw new NullPointerException ("docType");
+    ValueEnforcer.notNull (eDocType, "DocType");
 
     switch (eDocType) {
       case CATALOGUE:

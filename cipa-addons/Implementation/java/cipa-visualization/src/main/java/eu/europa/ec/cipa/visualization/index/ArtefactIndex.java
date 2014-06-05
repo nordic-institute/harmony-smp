@@ -46,8 +46,8 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import com.phloc.commons.CGlobal;
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.ReturnsImmutableObject;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.io.IReadableResource;
@@ -57,7 +57,6 @@ import com.phloc.commons.microdom.IMicroDocument;
 import com.phloc.commons.microdom.IMicroElement;
 import com.phloc.commons.microdom.serialize.MicroReader;
 import com.phloc.commons.regex.RegExHelper;
-import com.phloc.commons.string.StringHelper;
 
 /**
  * Represents the content of the index.xml file for a single visualization
@@ -73,20 +72,17 @@ public final class ArtefactIndex {
 
   private ArtefactIndex (@Nonnull @Nonempty final Set <Locale> aLanguages,
                          @Nonnull @Nonempty final String sStylesheetFilename) {
-    if (ContainerHelper.isEmpty (aLanguages))
-      throw new NullPointerException ("languages");
+    ValueEnforcer.notEmpty (aLanguages, "Languages");
     if (aLanguages.contains (CGlobal.LOCALE_INDEPENDENT) && aLanguages.size () > 1)
       throw new IllegalArgumentException ("If indepdenent is contained, no other language may be contained!");
-    if (StringHelper.hasNoText (sStylesheetFilename))
-      throw new IllegalArgumentException ("stylesheetFilename");
-    m_aLanguages = ContainerHelper.makeUnmodifiable (aLanguages);
+    ValueEnforcer.notEmpty (sStylesheetFilename, "StylesheetFilename");
+    m_aLanguages = ContainerHelper.newSet (aLanguages);
     m_sStylesheetFilename = sStylesheetFilename;
   }
 
   @Nonnull
   private void _addResource (@Nonnull final ArtefactResource aResource) {
-    if (aResource == null)
-      throw new NullPointerException ("resource");
+    ValueEnforcer.notNull (aResource, "Resource");
     m_aResources.add (aResource);
   }
 
@@ -94,9 +90,9 @@ public final class ArtefactIndex {
    * @return The languages this stylesheet supports.
    */
   @Nonnull
-  @ReturnsImmutableObject
+  @ReturnsMutableCopy
   public Set <Locale> getLanguages () {
-    return m_aLanguages;
+    return ContainerHelper.newSet (m_aLanguages);
   }
 
   /**
@@ -108,8 +104,7 @@ public final class ArtefactIndex {
    *         special locale "independent" is contained
    */
   public boolean containsLanguage (@Nonnull final Locale aLocale) {
-    if (aLocale == null)
-      throw new NullPointerException ("locale");
+    ValueEnforcer.notNull (aLocale, "Locale");
     return m_aLanguages.contains (aLocale) || m_aLanguages.contains (CGlobal.LOCALE_INDEPENDENT);
   }
 
@@ -148,8 +143,7 @@ public final class ArtefactIndex {
    */
   @Nullable
   public static ArtefactIndex createFromXML (@Nonnull final IReadableResource aRes) {
-    if (aRes == null)
-      throw new NullPointerException ("resource");
+    ValueEnforcer.notNull (aRes, "Resource");
 
     final IMicroDocument aDoc = MicroReader.readMicroXML (aRes);
     if (aDoc == null)

@@ -40,6 +40,7 @@ package eu.europa.ec.cipa.validation.rules;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.hash.HashCodeGenerator;
 import com.phloc.commons.string.ToStringGenerator;
 
@@ -68,10 +69,8 @@ public class ValidationTransaction implements IValidationTransaction {
    */
   public ValidationTransaction (@Nonnull final IValidationSyntaxBinding aSyntaxBinding,
                                 @Nonnull final ETransaction eTransaction) {
-    if (aSyntaxBinding == null)
-      throw new NullPointerException ("syntaxBinding");
-    if (eTransaction == null)
-      throw new NullPointerException ("transactionID");
+    ValueEnforcer.notNull (aSyntaxBinding, "SyntaxBinding");
+    ValueEnforcer.notNull (eTransaction, "TransactionID");
 
     m_aSyntaxBinding = aSyntaxBinding;
     m_eTransaction = eTransaction;

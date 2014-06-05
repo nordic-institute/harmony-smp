@@ -43,8 +43,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.string.StringHelper;
 
 /**
  * Manages the client unique ID for SML requests.
@@ -69,10 +69,8 @@ public final class WebRequestClientIdentifier {
    */
   public static void setClientUniqueID (@Nonnull final HttpServletRequest aHttpRequest,
                                         @Nonnull @Nonempty final String sClientUniqueID) {
-    if (aHttpRequest == null)
-      throw new NullPointerException ("httpRequest");
-    if (StringHelper.hasNoText (sClientUniqueID))
-      throw new IllegalArgumentException ("clientUniqueID is empty");
+    ValueEnforcer.notNull (aHttpRequest, "HttpRequest");
+    ValueEnforcer.notEmpty (sClientUniqueID, "ClientUniqueID");
     aHttpRequest.setAttribute (REQUEST_PARAMETER_CERTIFICATE, sClientUniqueID);
   }
 
@@ -86,8 +84,7 @@ public final class WebRequestClientIdentifier {
    */
   @Nonnull
   public static String getClientUniqueID (@Nonnull final HttpServletRequest aHttpRequest) {
-    if (aHttpRequest == null)
-      throw new NullPointerException ("httpRequest");
+    ValueEnforcer.notNull (aHttpRequest, "HttpRequest");
 
     final Object aClientUniqueID = aHttpRequest.getAttribute (REQUEST_PARAMETER_CERTIFICATE);
     if (aClientUniqueID == null)
@@ -110,8 +107,7 @@ public final class WebRequestClientIdentifier {
    */
   @Nonnull
   public static String getClientUniqueID (@Nonnull final WebServiceContext aWSContext) {
-    if (aWSContext == null)
-      throw new NullPointerException ("WSContext");
+    ValueEnforcer.notNull (aWSContext, "WSContext");
 
     final MessageContext aMessageContext = aWSContext.getMessageContext ();
     final HttpServletRequest aHttpRequest = (HttpServletRequest) aMessageContext.get (MessageContext.SERVLET_REQUEST);

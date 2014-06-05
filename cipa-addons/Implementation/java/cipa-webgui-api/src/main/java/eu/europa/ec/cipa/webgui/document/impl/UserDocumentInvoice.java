@@ -45,6 +45,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import oasis.names.specification.ubl.schema.xsd.invoice_2.InvoiceType;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.idfactory.GlobalIDFactory;
 import com.phloc.commons.io.streams.StreamUtils;
@@ -68,9 +69,7 @@ public final class UserDocumentInvoice extends AbstractUserDocument {
 
   public UserDocumentInvoice (@Nonnull @Nonempty final String sID, @Nonnull final InvoiceType aInvoice) {
     super (sID, EDocumentType.INVOICE);
-    if (aInvoice == null)
-      throw new NullPointerException ("invoice");
-    m_aInvoice = aInvoice;
+    m_aInvoice = ValueEnforcer.notNull (aInvoice, "Invoice");
   }
 
   @Nonnull

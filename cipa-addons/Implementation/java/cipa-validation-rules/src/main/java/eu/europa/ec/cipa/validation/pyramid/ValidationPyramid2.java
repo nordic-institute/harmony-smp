@@ -46,6 +46,7 @@ import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.validation.Schema;
 
 import com.phloc.commons.CGlobal;
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.io.IReadableResource;
 
@@ -144,8 +145,7 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
    */
   @Nonnull
   public ValidationPyramid2 addValidationLayer (@Nonnull final ValidationPyramidLayer aLayer) {
-    if (aLayer == null)
-      throw new NullPointerException ("layer");
+    ValueEnforcer.notNull (aLayer, "Layer");
 
     m_aValidationLayers.add (aLayer);
     // Sort validation layers, so that the basic layers always come first
@@ -162,8 +162,7 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
    */
   @Nonnull
   public ValidationPyramid2 addValidationLayer (@Nonnull final IValidationArtefact aValidationArtefact) {
-    if (aValidationArtefact == null)
-      throw new NullPointerException ("ValidationArtefact");
+    ValueEnforcer.notNull (aValidationArtefact, "ValidationArtefact");
 
     if (!aValidationArtefact.getValidationDocumentType ().equals (m_aValidationDocType))
       throw new IllegalArgumentException ("The passed validation artefact belongs to a different document type than this pyramid (" +
@@ -216,8 +215,7 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
    */
   @Nonnull
   public ValidationPyramid2 addIndustrySpecificXSDLayer (@Nonnull final IReadableResource aXSD) {
-    if (aXSD == null)
-      throw new NullPointerException ("Schematron Resource");
+    ValueEnforcer.notNull (aXSD, "XSD Resource");
 
     return addIndustrySpecificLayer (new XMLSchemaValidator (aXSD));
   }
@@ -231,8 +229,7 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
    */
   @Nonnull
   public ValidationPyramid2 addIndustrySpecificSchematronLayer (@Nonnull final IReadableResource aSCH) {
-    if (aSCH == null)
-      throw new NullPointerException ("Schematron Resource");
+    ValueEnforcer.notNull (aSCH, "Schematron Resource");
 
     return addIndustrySpecificLayer (XMLSchematronValidator.createFromSCHPure (aSCH));
   }
@@ -247,8 +244,7 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
    */
   @Nonnull
   public ValidationPyramid2 addIndustrySpecificLayer (@Nonnull final IXMLValidator aValidator) {
-    if (aValidator == null)
-      throw new NullPointerException ("Validator");
+    ValueEnforcer.notNull (aValidator, "Validator");
 
     final ValidationPyramidLayer aLayer = new ValidationPyramidLayer (EValidationLevel.INDUSTRY_SPECIFIC,
                                                                       aValidator,
@@ -265,8 +261,7 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
    */
   @Nonnull
   public ValidationPyramid2 addEntitySpecificXSDLayer (@Nonnull final IReadableResource aXSD) {
-    if (aXSD == null)
-      throw new NullPointerException ("XSD Resource");
+    ValueEnforcer.notNull (aXSD, "XSD Resource");
 
     return addEntitySpecificLayer (new XMLSchemaValidator (aXSD));
   }
@@ -280,8 +275,7 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
    */
   @Nonnull
   public ValidationPyramid2 addEntitySpecificSchematronLayer (@Nonnull final IReadableResource aSCH) {
-    if (aSCH == null)
-      throw new NullPointerException ("Schematron Resource");
+    ValueEnforcer.notNull (aSCH, "Schematron Resource");
 
     return addEntitySpecificLayer (XMLSchematronValidator.createFromSCHPure (aSCH));
   }
@@ -296,8 +290,7 @@ public class ValidationPyramid2 extends AbstractValidationPyramid {
    */
   @Nonnull
   public ValidationPyramid2 addEntitySpecificLayer (@Nonnull final IXMLValidator aValidator) {
-    if (aValidator == null)
-      throw new NullPointerException ("Validator");
+    ValueEnforcer.notNull (aValidator, "Validator");
 
     final ValidationPyramidLayer aLayer = new ValidationPyramidLayer (EValidationLevel.ENTITY_SPECIFC,
                                                                       aValidator,

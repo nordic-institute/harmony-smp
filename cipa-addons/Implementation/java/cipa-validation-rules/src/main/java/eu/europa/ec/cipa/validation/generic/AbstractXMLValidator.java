@@ -39,6 +39,7 @@ package eu.europa.ec.cipa.validation.generic;
 
 import javax.annotation.Nonnull;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.error.IResourceErrorGroup;
 import com.phloc.commons.io.IReadableResource;
 import com.phloc.commons.xml.transform.TransformSourceFactory;
@@ -51,8 +52,7 @@ import com.phloc.commons.xml.transform.TransformSourceFactory;
 public abstract class AbstractXMLValidator implements IXMLValidator {
   @Nonnull
   public final IResourceErrorGroup validateXMLInstance (@Nonnull final IReadableResource aXML) {
-    if (aXML == null)
-      throw new NullPointerException ("XML");
+    ValueEnforcer.notNull (aXML, "XML");
 
     return validateXMLInstance (aXML.getPath (), TransformSourceFactory.create (aXML));
   }

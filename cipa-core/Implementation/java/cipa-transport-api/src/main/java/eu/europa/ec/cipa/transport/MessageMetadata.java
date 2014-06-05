@@ -41,6 +41,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.equals.EqualsUtils;
 import com.phloc.commons.hash.HashCodeGenerator;
 import com.phloc.commons.string.ToStringGenerator;
@@ -101,14 +102,10 @@ public final class MessageMetadata implements IMessageMetadata {
                           @Nonnull final IReadonlyParticipantIdentifier aRecipientID,
                           @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
                           @Nonnull final IReadonlyProcessIdentifier aProcessID) {
-    if (aSenderID == null)
-      throw new NullPointerException ("senderID");
-    if (aRecipientID == null)
-      throw new NullPointerException ("recipientID");
-    if (aDocumentTypeID == null)
-      throw new NullPointerException ("documentTypeID");
-    if (aProcessID == null)
-      throw new NullPointerException ("processID");
+    ValueEnforcer.notNull (aSenderID, "SenderID");
+    ValueEnforcer.notNull (aRecipientID, "RecipientID");
+    ValueEnforcer.notNull (aDocumentTypeID, "DocumentTypeID");
+    ValueEnforcer.notNull (aProcessID, "ProcessID");
     m_sMessageID = sMessageID;
     m_sChannelID = sChannelID;
     m_aSenderID = new SimpleParticipantIdentifier (aSenderID);

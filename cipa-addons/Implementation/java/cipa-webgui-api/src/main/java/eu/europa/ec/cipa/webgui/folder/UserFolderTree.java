@@ -46,7 +46,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
+import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
 import com.phloc.commons.annotations.OverrideOnDemand;
 import com.phloc.commons.callback.INonThrowingRunnableWithParameter;
@@ -89,8 +89,7 @@ public final class UserFolderTree implements IUserFolderTree {
   }
 
   UserFolderTree (@Nonnull final IMicroElement aElement) {
-    if (aElement == null)
-      throw new NullPointerException ("element");
+    ValueEnforcer.notNull (aElement, "Element");
 
     // Parse XML to user folder tree
     m_aTree = TreeXMLConverter.getXMLAsTreeWithUniqueStringID (aElement,
@@ -102,16 +101,14 @@ public final class UserFolderTree implements IUserFolderTree {
 
   @Nonnull
   public UserFolder createRootFolder (@Nonnull final UserFolder aUserFolder) {
-    if (aUserFolder == null)
-      throw new NullPointerException ("userFolder");
+    ValueEnforcer.notNull (aUserFolder, "UserFolder");
 
     return m_aTree.getRootItem ().createChildItem (aUserFolder.getID (), aUserFolder).getData ();
   }
 
   @Nonnull
   public UserFolder createFolder (@Nonnull @Nonempty final String sParentFolderID, @Nonnull final UserFolder aUserFolder) {
-    if (aUserFolder == null)
-      throw new NullPointerException ("userFolder");
+    ValueEnforcer.notNull (aUserFolder, "UserFolder");
 
     // Resolve parent item
     final DefaultTreeItemWithID <String, UserFolder> aParentItem = m_aTree.getItemWithID (sParentFolderID);
@@ -176,8 +173,7 @@ public final class UserFolderTree implements IUserFolderTree {
 
   @Nonnull
   public EChange assignDocumentToFolder (@Nullable final String sFolderID, @Nonnull final IUserDocument aDoc) {
-    if (aDoc == null)
-      throw new NullPointerException ("doc");
+    ValueEnforcer.notNull (aDoc, "Doc");
 
     // Resolve folder ID
     final DefaultTreeItemWithID <String, UserFolder> aItem = m_aTree.getItemWithID (sFolderID);
@@ -191,8 +187,7 @@ public final class UserFolderTree implements IUserFolderTree {
 
   @Nonnull
   public EChange unassignDocumentFromFolder (@Nullable final String sFolderID, @Nonnull final IUserDocument aDoc) {
-    if (aDoc == null)
-      throw new NullPointerException ("doc");
+    ValueEnforcer.notNull (aDoc, "Doc");
 
     // Resolve folder ID
     final DefaultTreeItemWithID <String, UserFolder> aItem = m_aTree.getItemWithID (sFolderID);

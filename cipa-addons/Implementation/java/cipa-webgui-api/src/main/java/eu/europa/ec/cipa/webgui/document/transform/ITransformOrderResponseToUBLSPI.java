@@ -70,8 +70,7 @@ public interface ITransformOrderResponseToUBLSPI {
    * returned <code>true</code> for this object.
    * 
    * @param aSource
-   *        The source object to be converted. May not be
-   *        {@link NullPointerException}.
+   *        The source object to be converted. May not be <code>null</code>.
    * @return The converted order in a supported type. May not be
    *         <code>null</code>.
    * @throws TypeConverterException
