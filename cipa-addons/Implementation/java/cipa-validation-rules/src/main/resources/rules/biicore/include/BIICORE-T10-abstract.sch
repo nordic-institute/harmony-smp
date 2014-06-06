@@ -42,34 +42,34 @@
 <!--Abstract Schematron rules for T10-->
 <pattern abstract="true" id="T10" xmlns="http://purl.oclc.org/dsdl/schematron">
   <rule context="$Customer">
-    <assert flag="warning" test="$BIICORE-T10-R387">[BIICORE-T10-R387]-Element &#39;PartyIdentification&#39; may occur at maximum 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T10-R388">[BIICORE-T10-R388]-Element &#39;PartyName&#39; must occur exactly 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T10-R389">[BIICORE-T10-R389]-Element &#39;PartyTaxScheme&#39; may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T10-R387">[BIICORE-T10-R387]-Element 'PartyIdentification' may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T10-R388">[BIICORE-T10-R388]-Element 'PartyName' must occur exactly 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T10-R389">[BIICORE-T10-R389]-Element 'PartyTaxScheme' may occur at maximum 1 times.</assert>
   </rule>
   <rule context="$Payee">
-    <assert flag="warning" test="$BIICORE-T10-R402">[BIICORE-T10-R402]-Element &#39;PartyIdentification&#39; may occur at maximum 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T10-R403">[BIICORE-T10-R403]-Element &#39;PartyName&#39; may occur at maximum 1 times</assert>
+    <assert flag="warning" test="$BIICORE-T10-R402">[BIICORE-T10-R402]-Element 'PartyIdentification' may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T10-R403">[BIICORE-T10-R403]-Element 'PartyName' may occur at maximum 1 times</assert>
   </rule>
   <rule context="$Financial_Account">
-    <assert flag="warning" test="$BIICORE-T10-R404">[BIICORE-T10-R404]-Element &#39;ID&#39; must occur exactly 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T10-R404">[BIICORE-T10-R404]-Element 'ID' must occur exactly 1 times.</assert>
   </rule>
   <rule context="$InvoiceLine">
-    <assert flag="warning" test="$BIICORE-T10-R394">[BIICORE-T10-R394]-Element &#39;TaxTotal&#39; may occur at maximum 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T10-R395">[BIICORE-T10-R395]-Element &#39;Price&#39; must occur exactly 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T10-R394">[BIICORE-T10-R394]-Element 'TaxTotal' may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T10-R395">[BIICORE-T10-R395]-Element 'Price' must occur exactly 1 times.</assert>
   </rule>
   <rule context="$Supplier">
-    <assert flag="warning" test="$BIICORE-T10-R390">[BIICORE-T10-R390]-Element &#39;PartyIdentification&#39; may occur at maximum 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T10-R391">[BIICORE-T10-R391]-Element &#39;PartyName&#39; must occur exactly 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T10-R392">[BIICORE-T10-R392]-Element &#39;PostalAddress&#39; must occur exactly 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T10-R393">[BIICORE-T10-R393]-Element &#39;PartyTaxScheme&#39; may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T10-R390">[BIICORE-T10-R390]-Element 'PartyIdentification' may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T10-R391">[BIICORE-T10-R391]-Element 'PartyName' must occur exactly 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T10-R392">[BIICORE-T10-R392]-Element 'PostalAddress' must occur exactly 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T10-R393">[BIICORE-T10-R393]-Element 'PartyTaxScheme' may occur at maximum 1 times.</assert>
   </rule>
   <rule context="$Item">
-    <assert flag="warning" test="$BIICORE-T10-R396">[BIICORE-T10-R396]-Element &#39;Description&#39; may occur at maximum 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T10-R397">[BIICORE-T10-R397]-Element &#39;Name&#39; must occur exactly 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T10-R398">[BIICORE-T10-R398]-Element &#39;ClassifiedTaxCategory&#39; may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T10-R396">[BIICORE-T10-R396]-Element 'Description' may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T10-R397">[BIICORE-T10-R397]-Element 'Name' must occur exactly 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T10-R398">[BIICORE-T10-R398]-Element 'ClassifiedTaxCategory' may occur at maximum 1 times.</assert>
   </rule>
   <rule context="$Price">
-    <assert flag="warning" test="$BIICORE-T10-R399">[BIICORE-T10-R399]-Element &#39;AllowanceCharge&#39; may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T10-R399">[BIICORE-T10-R399]-Element 'AllowanceCharge' may occur at maximum 1 times.</assert>
   </rule>
   <rule context="$Invoice">
     <assert flag="warning" test="$BIICORE-T10-R000">[BIICORE-T10-R000]-This XML instance is NOT a core BiiTrdm010 transaction</assert>
@@ -461,7 +461,7 @@
     <assert flag="warning" test="$BIICORE-T10-R386">[BIICORE-T10-R386]-A conformant CEN BII invoice core data model SHOULD not have data elements not in the core.</assert>
   </rule>
   <rule context="$Monetary_Total">
-    <assert flag="warning" test="$BIICORE-T10-R400">[BIICORE-T10-R400]-Element &#39;TaxExclusiveAmount&#39; must occur exactly 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T10-R401">[BIICORE-T10-R401]-Element &#39;TaxInclusiveAmount&#39; must occur exactly 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T10-R400">[BIICORE-T10-R400]-Element 'TaxExclusiveAmount' must occur exactly 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T10-R401">[BIICORE-T10-R401]-Element 'TaxInclusiveAmount' must occur exactly 1 times.</assert>
   </rule>
 </pattern>

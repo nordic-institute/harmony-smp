@@ -53,21 +53,21 @@
   <param name="NONAT-T17-R010" value="(cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)" />
   <param name="NONAT-T17-R012" value="(number(cac:TaxCategory/cbc:Percent) = 0 and (cac:TaxCategory/cbc:TaxExemptionReason or cac:TaxCategory/cbc:TaxExemptionReasonCode)) or  (number(cac:TaxCategory/cbc:Percent) !=0)" />
   <param name="NONAT-T17-R013" value="not(cac:PayeeParty) or (cac:PayeeParty/cac:PartyName/cbc:Name)" />
-  <param name="NONAT-T17-R014" value="(((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;)  and not((//cac:TaxCategory/cbc:ID) != &#39;AE&#39; )) or not((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;) or not(//cac:TaxCategory)" />
-  <param name="NONAT-T17-R015" value="//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = &#39;AE&#39; or not ((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;)" />
-  <param name="NONAT-T17-R016" value=". = &#39;urn:www.cenbii.eu:profile:bii08:ver1.0&#39;" />
+  <param name="NONAT-T17-R014" value="(((//cac:TaxCategory/cbc:ID) = 'AE')  and not((//cac:TaxCategory/cbc:ID) != 'AE' )) or not((//cac:TaxCategory/cbc:ID) = 'AE') or not(//cac:TaxCategory)" />
+  <param name="NONAT-T17-R015" value="//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = 'AE' or not ((//cac:TaxCategory/cbc:ID) = 'AE')" />
+  <param name="NONAT-T17-R016" value=". = 'urn:www.cenbii.eu:profile:bii08:ver1.0'" />
   <param name="NONAT-T17-R017" value="(cbc:UBLVersionID)" />
   <param name="NONAT-T17-R018" value="(cbc:CustomizationID)" />
   <param name="NONAT-T17-R019" value="(cbc:ProfileID)" />
   <param name="NONAT-T17-R020" value="(cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name)" />
   <param name="NONAT-T17-R021" value="(cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone) or (cac:PostalAddress/cbc:ID)" />
-  <param name="NONAT-T17-R022" value="(cac:PostalAddress/cac:Country/cbc:IdentificationCode != &#39;&#39;)" />
-  <param name="NONAT-T17-R023" value="(cac:PartyLegalEntity/cbc:CompanyID != &#39;&#39;)" />
-  <param name="NONAT-T17-R024" value="(cac:PartyIdentification/cbc:ID != &#39;&#39;)" />
+  <param name="NONAT-T17-R022" value="(cac:PostalAddress/cac:Country/cbc:IdentificationCode != '')" />
+  <param name="NONAT-T17-R023" value="(cac:PartyLegalEntity/cbc:CompanyID != '')" />
+  <param name="NONAT-T17-R024" value="(cac:PartyIdentification/cbc:ID != '')" />
   <param name="NONAT-T17-R025" value="(cac:AccountingCustomerParty/cac:Party/cac:PartyName/cbc:Name)" />
   <param name="NONAT-T17-R026" value="(cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone) or (cac:PostalAddress/cbc:ID)" />
-  <param name="NONAT-T17-R027" value="(cac:PartyLegalEntity/cbc:CompanyID != &#39;&#39;)" />
-  <param name="NONAT-T17-R028" value="(cac:Contact/cbc:ID != &#39;&#39;)" />
+  <param name="NONAT-T17-R027" value="(cac:PartyLegalEntity/cbc:CompanyID != '')" />
+  <param name="NONAT-T17-R028" value="(cac:Contact/cbc:ID != '')" />
   <param name="NONAT-T17-R029" value="(cbc:TaxAmount)" />
   <param name="Tax_Total" value="/ubl:Reminder/cac:TaxTotal" />
   <param name="Supplier_Party" value="//cac:AccountingSupplierParty/cac:Party" />

@@ -76,15 +76,15 @@
     <xsl:apply-templates mode="schematron-get-full-path" select="parent::*" />
     <xsl:text>/</xsl:text>
     <xsl:choose>
-      <xsl:when test="namespace-uri()=&#39;&#39;">
+      <xsl:when test="namespace-uri()=''">
         <xsl:value-of select="name()" />
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>*:</xsl:text>
         <xsl:value-of select="local-name()" />
-        <xsl:text>[namespace-uri()=&#39;</xsl:text>
+        <xsl:text>[namespace-uri()='</xsl:text>
         <xsl:value-of select="namespace-uri()" />
-        <xsl:text>&#39;]</xsl:text>
+        <xsl:text>']</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
     <xsl:variable name="preceding" select="count(preceding-sibling::*[local-name()=local-name(current())                                   and namespace-uri() = namespace-uri(current())])" />
@@ -96,14 +96,14 @@
     <xsl:apply-templates mode="schematron-get-full-path" select="parent::*" />
     <xsl:text>/</xsl:text>
     <xsl:choose>
-      <xsl:when test="namespace-uri()=&#39;&#39;">@<xsl:value-of select="name()" />
+      <xsl:when test="namespace-uri()=''">@<xsl:value-of select="name()" />
 </xsl:when>
       <xsl:otherwise>
-        <xsl:text>@*[local-name()=&#39;</xsl:text>
+        <xsl:text>@*[local-name()='</xsl:text>
         <xsl:value-of select="local-name()" />
-        <xsl:text>&#39; and namespace-uri()=&#39;</xsl:text>
+        <xsl:text>' and namespace-uri()='</xsl:text>
         <xsl:value-of select="namespace-uri()" />
-        <xsl:text>&#39;]</xsl:text>
+        <xsl:text>']</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -146,24 +146,24 @@
 <xsl:template match="/" mode="generate-id-from-path" />
   <xsl:template match="text()" mode="generate-id-from-path">
     <xsl:apply-templates mode="generate-id-from-path" select="parent::*" />
-    <xsl:value-of select="concat(&#39;.text-&#39;, 1+count(preceding-sibling::text()), &#39;-&#39;)" />
+    <xsl:value-of select="concat('.text-', 1+count(preceding-sibling::text()), '-')" />
   </xsl:template>
   <xsl:template match="comment()" mode="generate-id-from-path">
     <xsl:apply-templates mode="generate-id-from-path" select="parent::*" />
-    <xsl:value-of select="concat(&#39;.comment-&#39;, 1+count(preceding-sibling::comment()), &#39;-&#39;)" />
+    <xsl:value-of select="concat('.comment-', 1+count(preceding-sibling::comment()), '-')" />
   </xsl:template>
   <xsl:template match="processing-instruction()" mode="generate-id-from-path">
     <xsl:apply-templates mode="generate-id-from-path" select="parent::*" />
-    <xsl:value-of select="concat(&#39;.processing-instruction-&#39;, 1+count(preceding-sibling::processing-instruction()), &#39;-&#39;)" />
+    <xsl:value-of select="concat('.processing-instruction-', 1+count(preceding-sibling::processing-instruction()), '-')" />
   </xsl:template>
   <xsl:template match="@*" mode="generate-id-from-path">
     <xsl:apply-templates mode="generate-id-from-path" select="parent::*" />
-    <xsl:value-of select="concat(&#39;.@&#39;, name())" />
+    <xsl:value-of select="concat('.@', name())" />
   </xsl:template>
   <xsl:template match="*" mode="generate-id-from-path" priority="-0.5">
     <xsl:apply-templates mode="generate-id-from-path" select="parent::*" />
     <xsl:text>.</xsl:text>
-    <xsl:value-of select="concat(&#39;.&#39;,name(),&#39;-&#39;,1+count(preceding-sibling::*[name()=name(current())]),&#39;-&#39;)" />
+    <xsl:value-of select="concat('.',name(),'-',1+count(preceding-sibling::*[name()=name(current())]),'-')" />
   </xsl:template>
 
 <!--MODE: GENERATE-ID-2 -->
@@ -184,7 +184,7 @@
     <xsl:text>_</xsl:text>
     <xsl:value-of select="string-length(local-name(.))" />
     <xsl:text>_</xsl:text>
-    <xsl:value-of select="translate(name(),&#39;:&#39;,&#39;.&#39;)" />
+    <xsl:value-of select="translate(name(),':','.')" />
   </xsl:template>
 <!--Strip characters-->  <xsl:template match="text()" priority="-1" />
 
@@ -224,9 +224,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(cac:PartyIdentification/cbc:ID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" />
+      <xsl:when test="(cac:PartyIdentification/cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:PartyIdentification/cbc:ID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:PartyIdentification/cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -238,9 +238,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(cac:Contact/cbc:ID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" />
+      <xsl:when test="(cac:Contact/cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:Contact/cbc:ID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:Contact/cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -252,9 +252,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(cac:PartyLegalEntity/cbc:CompanyID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" />
+      <xsl:when test="(cac:PartyLegalEntity/cbc:CompanyID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:PartyLegalEntity/cbc:CompanyID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:PartyLegalEntity/cbc:CompanyID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -272,9 +272,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(cac:SellersItemIdentification/cbc:ID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" />
+      <xsl:when test="(cac:SellersItemIdentification/cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:SellersItemIdentification/cbc:ID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:SellersItemIdentification/cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -286,14 +286,14 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(number(cac:ClassifiedTaxCategory/cbc:Percent) &gt;=0) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" />
+      <xsl:when test="(number(cac:ClassifiedTaxCategory/cbc:Percent) >=0) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(number(cac:ClassifiedTaxCategory/cbc:Percent) &gt;=0) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(number(cac:ClassifiedTaxCategory/cbc:Percent) >=0) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[NOGOV-T15-R008]-The item&#39;s tax rate, expressed as a percentage MUST be provided according to EHF.</svrl:text>
+          <svrl:text>[NOGOV-T15-R008]-The item's tax rate, expressed as a percentage MUST be provided according to EHF.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
@@ -306,9 +306,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(cac:Contact/cbc:ID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" />
+      <xsl:when test="(cac:Contact/cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:Contact/cbc:ID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:Contact/cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -320,9 +320,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(cac:PostalAddress/cac:Country/cbc:IdentificationCode != &#39;&#39;)" />
+      <xsl:when test="(cac:PostalAddress/cac:Country/cbc:IdentificationCode != '')" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:PostalAddress/cac:Country/cbc:IdentificationCode != &#39;&#39;)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:PostalAddress/cac:Country/cbc:IdentificationCode != '')" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -340,9 +340,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(cac:ContractDocumentReference/cbc:ID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" />
+      <xsl:when test="(cac:ContractDocumentReference/cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:ContractDocumentReference/cbc:ID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:ContractDocumentReference/cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -360,9 +360,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(cac:PayeeFinancialAccount/cbc:ID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" />
+      <xsl:when test="(cac:PayeeFinancialAccount/cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:PayeeFinancialAccount/cbc:ID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:PayeeFinancialAccount/cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -374,9 +374,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(cbc:PaymentID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" />
+      <xsl:when test="(cbc:PaymentID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:PaymentID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cbc:PaymentID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -394,23 +394,23 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(cbc:AccountingCost) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" />
+      <xsl:when test="(cbc:AccountingCost) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:AccountingCost) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cbc:AccountingCost) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[NOGOV-T15-R003]-The buyer&#39;s accounting code applied to the Invoice Line SHOULD be provided according to EHF.</svrl:text>
+          <svrl:text>[NOGOV-T15-R003]-The buyer's accounting code applied to the Invoice Line SHOULD be provided according to EHF.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(cac:OrderLineReference/cbc:LineID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" />
+      <xsl:when test="(cac:OrderLineReference/cbc:LineID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:OrderLineReference/cbc:LineID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:OrderLineReference/cbc:LineID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -422,9 +422,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(child::cbc:InvoicedQuantity/@unitCode != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" />
+      <xsl:when test="(child::cbc:InvoicedQuantity/@unitCode != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(child::cbc:InvoicedQuantity/@unitCode != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(child::cbc:InvoicedQuantity/@unitCode != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -442,9 +442,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(child::cbc:ID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" />
+      <xsl:when test="(child::cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(child::cbc:ID != &#39;&#39;) and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = &#39;NO&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(child::cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />

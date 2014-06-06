@@ -44,24 +44,24 @@
   <param name="EUGEN-T10-R001" value="(cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)" />
   <param name="EUGEN-T10-R002" value="(cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)" />
   <param name="EUGEN-T10-R003" value="(cbc:InvoicedQuantity and cbc:InvoicedQuantity/@unitCode)" />
-  <param name="EUGEN-T10-R004" value="((cbc:PaymentMeansCode = &#39;31&#39;) and (cac:PayeeFinancialAccount/cbc:ID/@schemeID and cac:PayeeFinancialAccount/cbc:ID/@schemeID = &#39;IBAN&#39;) and (cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:ID/@schemeID and cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:ID/@schemeID = &#39;BIC&#39;)) or (cbc:PaymentMeansCode != &#39;31&#39;) or ((cbc:PaymentMeansCode = &#39;31&#39;) and  (not(cac:PayeeFinancialAccount/cbc:ID/@schemeID) or (cac:PayeeFinancialAccount/cbc:ID/@schemeID != &#39;IBAN&#39;)))" />
+  <param name="EUGEN-T10-R004" value="((cbc:PaymentMeansCode = '31') and (cac:PayeeFinancialAccount/cbc:ID/@schemeID and cac:PayeeFinancialAccount/cbc:ID/@schemeID = 'IBAN') and (cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:ID/@schemeID and cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:ID/@schemeID = 'BIC')) or (cbc:PaymentMeansCode != '31') or ((cbc:PaymentMeansCode = '31') and  (not(cac:PayeeFinancialAccount/cbc:ID/@schemeID) or (cac:PayeeFinancialAccount/cbc:ID/@schemeID != 'IBAN')))" />
   <param name="EUGEN-T10-R005" value="(cbc:CityName and cbc:PostalZone and cac:Country/cbc:IdentificationCode)" />
-  <param name="EUGEN-T10-R006" value="(((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;]/cbc:TaxAmount) and (cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;)) or not((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;])) and (local-name(parent:: node())=&quot;Invoice&quot;)) or not(local-name(parent:: node())=&quot;Invoice&quot;)" />
-  <param name="EUGEN-T10-R007" value="((cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;]/cbc:TaxAmount) and (cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not((cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;])))" />
-  <param name="EUGEN-T10-R008" value="(parent::cac:AllowanceCharge) or (cbc:ID and cbc:Percent) or (cbc:ID = &#39;AE&#39;)" />
-  <param name="EUGEN-T10-R009" value="((cac:TaxCategory/cbc:ID = &#39;E&#39;) and (cac:TaxCategory/cbc:TaxExemptionReason or cac:TaxCategory/cbc:TaxExemptionReasonCode)) or  (cac:TaxCategory/cbc:ID != &#39;E&#39;)" />
+  <param name="EUGEN-T10-R006" value="(((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT']/cbc:TaxAmount) and (cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT')) or not((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT'])) and (local-name(parent:: node())=&quot;Invoice&quot;)) or not(local-name(parent:: node())=&quot;Invoice&quot;)" />
+  <param name="EUGEN-T10-R007" value="((cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT']/cbc:TaxAmount) and (cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not((cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT'])))" />
+  <param name="EUGEN-T10-R008" value="(parent::cac:AllowanceCharge) or (cbc:ID and cbc:Percent) or (cbc:ID = 'AE')" />
+  <param name="EUGEN-T10-R009" value="((cac:TaxCategory/cbc:ID = 'E') and (cac:TaxCategory/cbc:TaxExemptionReason or cac:TaxCategory/cbc:TaxExemptionReasonCode)) or  (cac:TaxCategory/cbc:ID != 'E')" />
   <param name="EUGEN-T10-R010" value="not(cac:PayeeParty) or (cac:PayeeParty/cac:PartyName/cbc:Name)" />
-  <param name="EUGEN-T10-R011" value="(//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;]/cbc:TaxAmount and cbc:ID) or not((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;]))" />
-  <param name="EUGEN-T10-R012" value="not(cbc:MultiplierFactorNumeric) or number(cbc:MultiplierFactorNumeric) &gt;=0" />
+  <param name="EUGEN-T10-R011" value="(//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT']/cbc:TaxAmount and cbc:ID) or not((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT']))" />
+  <param name="EUGEN-T10-R012" value="not(cbc:MultiplierFactorNumeric) or number(cbc:MultiplierFactorNumeric) >=0" />
   <param name="EUGEN-T10-R013" value="(cbc:MultiplierFactorNumeric and cbc:BaseAmount) or (not(cbc:MultiplierFactorNumeric) and not(cbc:BaseAmount)) " />
-  <param name="EUGEN-T10-R015" value="starts-with(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID,//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) and (//cac:TaxCategory/cbc:ID) = &#39;AE&#39; or not ((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;)" />
-  <param name="EUGEN-T10-R016" value="(((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;)  and not((//cac:TaxCategory/cbc:ID) != &#39;AE&#39; )) or not((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;) or not(//cac:TaxCategory)" />
-  <param name="EUGEN-T10-R017" value="(//cbc:TaxExclusiveAmount = //cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cbc:ID=&#39;AE&#39;]/cbc:TaxableAmount) and (//cac:TaxCategory/cbc:ID) = &#39;AE&#39; or not ((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;)" />
-  <param name="EUGEN-T10-R018" value="//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = &#39;AE&#39; or not ((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;)" />
-  <param name="EUGEN-T10-R019" value="number(cbc:PayableAmount) &gt;= 0" />
+  <param name="EUGEN-T10-R015" value="starts-with(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID,//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) and (//cac:TaxCategory/cbc:ID) = 'AE' or not ((//cac:TaxCategory/cbc:ID) = 'AE')" />
+  <param name="EUGEN-T10-R016" value="(((//cac:TaxCategory/cbc:ID) = 'AE')  and not((//cac:TaxCategory/cbc:ID) != 'AE' )) or not((//cac:TaxCategory/cbc:ID) = 'AE') or not(//cac:TaxCategory)" />
+  <param name="EUGEN-T10-R017" value="(//cbc:TaxExclusiveAmount = //cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cbc:ID='AE']/cbc:TaxableAmount) and (//cac:TaxCategory/cbc:ID) = 'AE' or not ((//cac:TaxCategory/cbc:ID) = 'AE')" />
+  <param name="EUGEN-T10-R018" value="//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = 'AE' or not ((//cac:TaxCategory/cbc:ID) = 'AE')" />
+  <param name="EUGEN-T10-R019" value="number(cbc:PayableAmount) >= 0" />
   <param name="EUGEN-T10-R020" value="(cbc:StartDate)" />
   <param name="EUGEN-T10-R021" value="(cbc:EndDate)" />
-  <param name="EUGEN-T10-R022" value="number(cbc:Amount)&gt;=0" />
+  <param name="EUGEN-T10-R022" value="number(cbc:Amount)>=0" />
   <param name="EUGEN-T10-R023" value="(cbc:AllowanceChargeReason)" />
   <param name="EUGEN-T10-R024" value="not(//@currencyID != //cbc:DocumentCurrencyCode)" />
   <param name="Invoice_Line" value="//cac:InvoiceLine" />

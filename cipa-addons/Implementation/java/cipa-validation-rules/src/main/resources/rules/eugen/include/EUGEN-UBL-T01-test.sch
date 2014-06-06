@@ -46,11 +46,11 @@
   <param name="EUGEN-T01-R003" value="(cbc:CityName and cbc:PostalZone and cac:Country/cbc:IdentificationCode)" />
   <param name="EUGEN-T01-R004" value="(cbc:AllowanceChargeReason)" />
   <param name="EUGEN-T01-R005" value="(cbc:Quantity) and (cbc:Quantity/@unitCode)" />
-  <param name="EUGEN-T01-R006" value="number(cbc:Amount) &gt;= 0" />
-  <param name="EUGEN-T01-R007" value="(cbc:StartDate) or (cbc:EndDate) or (cbc:StartDate and cbc:EndDate) and (number(translate(cbc:StartDate,&#39;-&#39;,&#39;&#39;)) &lt;= number(translate(cbc:EndDate,&#39;-&#39;,&#39;&#39;)))" />
-  <param name="EUGEN-T01-R008" value="number(cbc:PayableAmount) &gt;= 0" />
-  <param name="EUGEN-T01-R009" value="number(cbc:LineExtensionAmount) &gt;= 0" />
-  <param name="EUGEN-T01-R010" value="number(cbc:Quantity) &gt;= 0" />
+  <param name="EUGEN-T01-R006" value="number(cbc:Amount) >= 0" />
+  <param name="EUGEN-T01-R007" value="(cbc:StartDate) or (cbc:EndDate) or (cbc:StartDate and cbc:EndDate) and (number(translate(cbc:StartDate,'-','')) &lt;= number(translate(cbc:EndDate,'-','')))" />
+  <param name="EUGEN-T01-R008" value="number(cbc:PayableAmount) >= 0" />
+  <param name="EUGEN-T01-R009" value="number(cbc:LineExtensionAmount) >= 0" />
+  <param name="EUGEN-T01-R010" value="number(cbc:Quantity) >= 0" />
   <param name="Supplier_Party" value="//cac:SellerSupplierParty/cac:Party" />
   <param name="Customer_Party" value="//cac:BuyerCustomerParty/cac:Party" />
   <param name="Delivery_Address" value="//cac:Delivery/cac:DeliveryLocation/cac:Address" />

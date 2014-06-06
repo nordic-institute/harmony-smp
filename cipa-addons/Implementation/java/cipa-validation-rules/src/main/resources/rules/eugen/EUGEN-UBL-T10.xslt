@@ -76,15 +76,15 @@
     <xsl:apply-templates mode="schematron-get-full-path" select="parent::*" />
     <xsl:text>/</xsl:text>
     <xsl:choose>
-      <xsl:when test="namespace-uri()=&#39;&#39;">
+      <xsl:when test="namespace-uri()=''">
         <xsl:value-of select="name()" />
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>*:</xsl:text>
         <xsl:value-of select="local-name()" />
-        <xsl:text>[namespace-uri()=&#39;</xsl:text>
+        <xsl:text>[namespace-uri()='</xsl:text>
         <xsl:value-of select="namespace-uri()" />
-        <xsl:text>&#39;]</xsl:text>
+        <xsl:text>']</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
     <xsl:variable name="preceding" select="count(preceding-sibling::*[local-name()=local-name(current())                                   and namespace-uri() = namespace-uri(current())])" />
@@ -96,14 +96,14 @@
     <xsl:apply-templates mode="schematron-get-full-path" select="parent::*" />
     <xsl:text>/</xsl:text>
     <xsl:choose>
-      <xsl:when test="namespace-uri()=&#39;&#39;">@<xsl:value-of select="name()" />
+      <xsl:when test="namespace-uri()=''">@<xsl:value-of select="name()" />
 </xsl:when>
       <xsl:otherwise>
-        <xsl:text>@*[local-name()=&#39;</xsl:text>
+        <xsl:text>@*[local-name()='</xsl:text>
         <xsl:value-of select="local-name()" />
-        <xsl:text>&#39; and namespace-uri()=&#39;</xsl:text>
+        <xsl:text>' and namespace-uri()='</xsl:text>
         <xsl:value-of select="namespace-uri()" />
-        <xsl:text>&#39;]</xsl:text>
+        <xsl:text>']</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -146,24 +146,24 @@
 <xsl:template match="/" mode="generate-id-from-path" />
   <xsl:template match="text()" mode="generate-id-from-path">
     <xsl:apply-templates mode="generate-id-from-path" select="parent::*" />
-    <xsl:value-of select="concat(&#39;.text-&#39;, 1+count(preceding-sibling::text()), &#39;-&#39;)" />
+    <xsl:value-of select="concat('.text-', 1+count(preceding-sibling::text()), '-')" />
   </xsl:template>
   <xsl:template match="comment()" mode="generate-id-from-path">
     <xsl:apply-templates mode="generate-id-from-path" select="parent::*" />
-    <xsl:value-of select="concat(&#39;.comment-&#39;, 1+count(preceding-sibling::comment()), &#39;-&#39;)" />
+    <xsl:value-of select="concat('.comment-', 1+count(preceding-sibling::comment()), '-')" />
   </xsl:template>
   <xsl:template match="processing-instruction()" mode="generate-id-from-path">
     <xsl:apply-templates mode="generate-id-from-path" select="parent::*" />
-    <xsl:value-of select="concat(&#39;.processing-instruction-&#39;, 1+count(preceding-sibling::processing-instruction()), &#39;-&#39;)" />
+    <xsl:value-of select="concat('.processing-instruction-', 1+count(preceding-sibling::processing-instruction()), '-')" />
   </xsl:template>
   <xsl:template match="@*" mode="generate-id-from-path">
     <xsl:apply-templates mode="generate-id-from-path" select="parent::*" />
-    <xsl:value-of select="concat(&#39;.@&#39;, name())" />
+    <xsl:value-of select="concat('.@', name())" />
   </xsl:template>
   <xsl:template match="*" mode="generate-id-from-path" priority="-0.5">
     <xsl:apply-templates mode="generate-id-from-path" select="parent::*" />
     <xsl:text>.</xsl:text>
-    <xsl:value-of select="concat(&#39;.&#39;,name(),&#39;-&#39;,1+count(preceding-sibling::*[name()=name(current())]),&#39;-&#39;)" />
+    <xsl:value-of select="concat('.',name(),'-',1+count(preceding-sibling::*[name()=name(current())]),'-')" />
   </xsl:template>
 
 <!--MODE: GENERATE-ID-2 -->
@@ -184,7 +184,7 @@
     <xsl:text>_</xsl:text>
     <xsl:value-of select="string-length(local-name(.))" />
     <xsl:text>_</xsl:text>
-    <xsl:value-of select="translate(name(),&#39;:&#39;,&#39;.&#39;)" />
+    <xsl:value-of select="translate(name(),':','.')" />
   </xsl:template>
 <!--Strip characters-->  <xsl:template match="text()" priority="-1" />
 
@@ -233,9 +233,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="contains(&#39;�BIC�&#39;,concat(&#39;�&#39;,.,&#39;�&#39;))" />
+      <xsl:when test="contains('�BIC�',concat('�',.,'�'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="contains(&#39;�BIC�&#39;,concat(&#39;�&#39;,.,&#39;�&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="contains('�BIC�',concat('�',.,'�'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -253,9 +253,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="contains(&#39;�GLN�&#39;,concat(&#39;�&#39;,.,&#39;�&#39;))" />
+      <xsl:when test="contains('�GLN�',concat('�',.,'�'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="contains(&#39;�GLN�&#39;,concat(&#39;�&#39;,.,&#39;�&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="contains('�GLN�',concat('�',.,'�'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -273,9 +273,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="contains(&#39;�GLN�&#39;,concat(&#39;�&#39;,.,&#39;�&#39;))" />
+      <xsl:when test="contains('�GLN�',concat('�',.,'�'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="contains(&#39;�GLN�&#39;,concat(&#39;�&#39;,.,&#39;�&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="contains('�GLN�',concat('�',.,'�'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -293,9 +293,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="contains(&#39;�GTIN�&#39;,concat(&#39;�&#39;,.,&#39;�&#39;))" />
+      <xsl:when test="contains('�GTIN�',concat('�',.,'�'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="contains(&#39;�GTIN�&#39;,concat(&#39;�&#39;,.,&#39;�&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="contains('�GTIN�',concat('�',.,'�'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -313,9 +313,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="contains(&#39;�CPV�UNSPSC�eCLASS�&#39;,concat(&#39;�&#39;,.,&#39;�&#39;))" />
+      <xsl:when test="contains('�CPV�UNSPSC�eCLASS�',concat('�',.,'�'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="contains(&#39;�CPV�UNSPSC�eCLASS�&#39;,concat(&#39;�&#39;,.,&#39;�&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="contains('�CPV�UNSPSC�eCLASS�',concat('�',.,'�'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -333,9 +333,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="contains(&#39;�AAA Exempt�AAB Exempt�AAC Exempt�AAE Reverse Charge�AAF Exempt�AAG Exempt�AAH Margin Scheme�AAI Margin Scheme�AAJ Reverse Charge�AAK Reverse Charge�AAL Reverse Charge Exempt�AAM Exempt New Means of Transport�AAN Exempt Triangulation�AAO Reverse Charge�&#39;,concat(&#39;�&#39;,.,&#39;�&#39;))" />
+      <xsl:when test="contains('�AAA Exempt�AAB Exempt�AAC Exempt�AAE Reverse Charge�AAF Exempt�AAG Exempt�AAH Margin Scheme�AAI Margin Scheme�AAJ Reverse Charge�AAK Reverse Charge�AAL Reverse Charge Exempt�AAM Exempt New Means of Transport�AAN Exempt Triangulation�AAO Reverse Charge�',concat('�',.,'�'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="contains(&#39;�AAA Exempt�AAB Exempt�AAC Exempt�AAE Reverse Charge�AAF Exempt�AAG Exempt�AAH Margin Scheme�AAI Margin Scheme�AAJ Reverse Charge�AAK Reverse Charge�AAL Reverse Charge Exempt�AAM Exempt New Means of Transport�AAN Exempt Triangulation�AAO Reverse Charge�&#39;,concat(&#39;�&#39;,.,&#39;�&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="contains('�AAA Exempt�AAB Exempt�AAC Exempt�AAE Reverse Charge�AAF Exempt�AAG Exempt�AAH Margin Scheme�AAI Margin Scheme�AAJ Reverse Charge�AAK Reverse Charge�AAL Reverse Charge Exempt�AAM Exempt New Means of Transport�AAN Exempt Triangulation�AAO Reverse Charge�',concat('�',.,'�'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -353,9 +353,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="contains(&#39;�AD:VAT�AL:VAT�AT:CID�AT:GOV�AT:KUR�AT:VAT�BA:VAT�BE:VAT�BG:VAT�CH:VAT�CY:VAT�CZ:VAT�DE:VAT�DK:CPR�DK:CVR�DK:P�DK:SE�DK:VANS�DUNS�EE:VAT�ES:VAT�EU:REID�EU:VAT�FI:OVT�FR:SIRENE�FR:SIRET�GB:VAT�GLN�GR:VAT�HR:VAT�HU:VAT�IBAN�IE:VAT�IS:KT�IT:CF�IT:FTI�IT:IPA�IT:SECETI�IT:SIA�IT:VAT�LI:VAT�LT:VAT�LU:VAT�LV:VAT�MC:VAT�ME:VAT�MK:VAT�MT:VAT�NL:VAT�NO:ORGNR�NO:VAT�PL:VAT�PT:VAT�RO:VAT�RS:VAT�SE:ORGNR�SI:VAT�SK:VAT�SM:VAT�TR:VAT�VA:VAT�&#39;,concat(&#39;�&#39;,.,&#39;�&#39;))" />
+      <xsl:when test="contains('�AD:VAT�AL:VAT�AT:CID�AT:GOV�AT:KUR�AT:VAT�BA:VAT�BE:VAT�BG:VAT�CH:VAT�CY:VAT�CZ:VAT�DE:VAT�DK:CPR�DK:CVR�DK:P�DK:SE�DK:VANS�DUNS�EE:VAT�ES:VAT�EU:REID�EU:VAT�FI:OVT�FR:SIRENE�FR:SIRET�GB:VAT�GLN�GR:VAT�HR:VAT�HU:VAT�IBAN�IE:VAT�IS:KT�IT:CF�IT:FTI�IT:IPA�IT:SECETI�IT:SIA�IT:VAT�LI:VAT�LT:VAT�LU:VAT�LV:VAT�MC:VAT�ME:VAT�MK:VAT�MT:VAT�NL:VAT�NO:ORGNR�NO:VAT�PL:VAT�PT:VAT�RO:VAT�RS:VAT�SE:ORGNR�SI:VAT�SK:VAT�SM:VAT�TR:VAT�VA:VAT�',concat('�',.,'�'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="contains(&#39;�AD:VAT�AL:VAT�AT:CID�AT:GOV�AT:KUR�AT:VAT�BA:VAT�BE:VAT�BG:VAT�CH:VAT�CY:VAT�CZ:VAT�DE:VAT�DK:CPR�DK:CVR�DK:P�DK:SE�DK:VANS�DUNS�EE:VAT�ES:VAT�EU:REID�EU:VAT�FI:OVT�FR:SIRENE�FR:SIRET�GB:VAT�GLN�GR:VAT�HR:VAT�HU:VAT�IBAN�IE:VAT�IS:KT�IT:CF�IT:FTI�IT:IPA�IT:SECETI�IT:SIA�IT:VAT�LI:VAT�LT:VAT�LU:VAT�LV:VAT�MC:VAT�ME:VAT�MK:VAT�MT:VAT�NL:VAT�NO:ORGNR�NO:VAT�PL:VAT�PT:VAT�RO:VAT�RS:VAT�SE:ORGNR�SI:VAT�SK:VAT�SM:VAT�TR:VAT�VA:VAT�&#39;,concat(&#39;�&#39;,.,&#39;�&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="contains('�AD:VAT�AL:VAT�AT:CID�AT:GOV�AT:KUR�AT:VAT�BA:VAT�BE:VAT�BG:VAT�CH:VAT�CY:VAT�CZ:VAT�DE:VAT�DK:CPR�DK:CVR�DK:P�DK:SE�DK:VANS�DUNS�EE:VAT�ES:VAT�EU:REID�EU:VAT�FI:OVT�FR:SIRENE�FR:SIRET�GB:VAT�GLN�GR:VAT�HR:VAT�HU:VAT�IBAN�IE:VAT�IS:KT�IT:CF�IT:FTI�IT:IPA�IT:SECETI�IT:SIA�IT:VAT�LI:VAT�LT:VAT�LU:VAT�LV:VAT�MC:VAT�ME:VAT�MK:VAT�MT:VAT�NL:VAT�NO:ORGNR�NO:VAT�PL:VAT�PT:VAT�RO:VAT�RS:VAT�SE:ORGNR�SI:VAT�SK:VAT�SM:VAT�TR:VAT�VA:VAT�',concat('�',.,'�'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -373,9 +373,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="contains(&#39;�AD:VAT�AL:VAT�AT:CID�AT:GOV�AT:KUR�AT:VAT�BA:VAT�BE:VAT�BG:VAT�CH:VAT�CY:VAT�CZ:VAT�DE:VAT�DK:CPR�DK:CVR�DK:P�DK:SE�DK:VANS�DUNS�EE:VAT�ES:VAT�EU:REID�EU:VAT�FI:OVT�FR:SIRENE�FR:SIRET�GB:VAT�GLN�GR:VAT�HR:VAT�HU:VAT�IBAN�IE:VAT�IS:KT�IT:CF�IT:FTI�IT:IPA�IT:SECETI�IT:SIA�IT:VAT�LI:VAT�LT:VAT�LU:VAT�LV:VAT�MC:VAT�ME:VAT�MK:VAT�MT:VAT�NL:VAT�NO:ORGNR�NO:VAT�PL:VAT�PT:VAT�RO:VAT�RS:VAT�SE:ORGNR�SI:VAT�SK:VAT�SM:VAT�TR:VAT�VA:VAT�&#39;,concat(&#39;�&#39;,.,&#39;�&#39;))" />
+      <xsl:when test="contains('�AD:VAT�AL:VAT�AT:CID�AT:GOV�AT:KUR�AT:VAT�BA:VAT�BE:VAT�BG:VAT�CH:VAT�CY:VAT�CZ:VAT�DE:VAT�DK:CPR�DK:CVR�DK:P�DK:SE�DK:VANS�DUNS�EE:VAT�ES:VAT�EU:REID�EU:VAT�FI:OVT�FR:SIRENE�FR:SIRET�GB:VAT�GLN�GR:VAT�HR:VAT�HU:VAT�IBAN�IE:VAT�IS:KT�IT:CF�IT:FTI�IT:IPA�IT:SECETI�IT:SIA�IT:VAT�LI:VAT�LT:VAT�LU:VAT�LV:VAT�MC:VAT�ME:VAT�MK:VAT�MT:VAT�NL:VAT�NO:ORGNR�NO:VAT�PL:VAT�PT:VAT�RO:VAT�RS:VAT�SE:ORGNR�SI:VAT�SK:VAT�SM:VAT�TR:VAT�VA:VAT�',concat('�',.,'�'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="contains(&#39;�AD:VAT�AL:VAT�AT:CID�AT:GOV�AT:KUR�AT:VAT�BA:VAT�BE:VAT�BG:VAT�CH:VAT�CY:VAT�CZ:VAT�DE:VAT�DK:CPR�DK:CVR�DK:P�DK:SE�DK:VANS�DUNS�EE:VAT�ES:VAT�EU:REID�EU:VAT�FI:OVT�FR:SIRENE�FR:SIRET�GB:VAT�GLN�GR:VAT�HR:VAT�HU:VAT�IBAN�IE:VAT�IS:KT�IT:CF�IT:FTI�IT:IPA�IT:SECETI�IT:SIA�IT:VAT�LI:VAT�LT:VAT�LU:VAT�LV:VAT�MC:VAT�ME:VAT�MK:VAT�MT:VAT�NL:VAT�NO:ORGNR�NO:VAT�PL:VAT�PT:VAT�RO:VAT�RS:VAT�SE:ORGNR�SI:VAT�SK:VAT�SM:VAT�TR:VAT�VA:VAT�&#39;,concat(&#39;�&#39;,.,&#39;�&#39;))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="contains('�AD:VAT�AL:VAT�AT:CID�AT:GOV�AT:KUR�AT:VAT�BA:VAT�BE:VAT�BG:VAT�CH:VAT�CY:VAT�CZ:VAT�DE:VAT�DK:CPR�DK:CVR�DK:P�DK:SE�DK:VANS�DUNS�EE:VAT�ES:VAT�EU:REID�EU:VAT�FI:OVT�FR:SIRENE�FR:SIRET�GB:VAT�GLN�GR:VAT�HR:VAT�HU:VAT�IBAN�IE:VAT�IS:KT�IT:CF�IT:FTI�IT:IPA�IT:SECETI�IT:SIA�IT:VAT�LI:VAT�LT:VAT�LU:VAT�LV:VAT�MC:VAT�ME:VAT�MK:VAT�MT:VAT�NL:VAT�NO:ORGNR�NO:VAT�PL:VAT�PT:VAT�RO:VAT�RS:VAT�SE:ORGNR�SI:VAT�SK:VAT�SM:VAT�TR:VAT�VA:VAT�',concat('�',.,'�'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -400,9 +400,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(parent::cac:AllowanceCharge) or (cbc:ID and cbc:Percent) or (cbc:ID = &#39;AE&#39;)" />
+      <xsl:when test="(parent::cac:AllowanceCharge) or (cbc:ID and cbc:Percent) or (cbc:ID = 'AE')" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(parent::cac:AllowanceCharge) or (cbc:ID and cbc:Percent) or (cbc:ID = &#39;AE&#39;)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(parent::cac:AllowanceCharge) or (cbc:ID and cbc:Percent) or (cbc:ID = 'AE')" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -420,9 +420,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;]/cbc:TaxAmount) and (cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;)) or not((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;])) and (local-name(parent:: node())=&quot;Invoice&quot;)) or not(local-name(parent:: node())=&quot;Invoice&quot;)" />
+      <xsl:when test="(((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT']/cbc:TaxAmount) and (cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT')) or not((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT'])) and (local-name(parent:: node())=&quot;Invoice&quot;)) or not(local-name(parent:: node())=&quot;Invoice&quot;)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;]/cbc:TaxAmount) and (cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;)) or not((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;])) and (local-name(parent:: node())=&quot;Invoice&quot;)) or not(local-name(parent:: node())=&quot;Invoice&quot;)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT']/cbc:TaxAmount) and (cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT')) or not((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT'])) and (local-name(parent:: node())=&quot;Invoice&quot;)) or not(local-name(parent:: node())=&quot;Invoice&quot;)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -434,9 +434,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="number(cbc:Amount)&gt;=0" />
+      <xsl:when test="number(cbc:Amount)>=0" />
       <xsl:otherwise>
-        <svrl:failed-assert test="number(cbc:Amount)&gt;=0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="number(cbc:Amount)>=0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -462,9 +462,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="not(cbc:MultiplierFactorNumeric) or number(cbc:MultiplierFactorNumeric) &gt;=0" />
+      <xsl:when test="not(cbc:MultiplierFactorNumeric) or number(cbc:MultiplierFactorNumeric) >=0" />
       <xsl:otherwise>
-        <svrl:failed-assert test="not(cbc:MultiplierFactorNumeric) or number(cbc:MultiplierFactorNumeric) &gt;=0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="not(cbc:MultiplierFactorNumeric) or number(cbc:MultiplierFactorNumeric) >=0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -516,9 +516,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="number(cbc:PayableAmount) &gt;= 0" />
+      <xsl:when test="number(cbc:PayableAmount) >= 0" />
       <xsl:otherwise>
-        <svrl:failed-assert test="number(cbc:PayableAmount) &gt;= 0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="number(cbc:PayableAmount) >= 0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -576,9 +576,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;]/cbc:TaxAmount) and (cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not((cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;])))" />
+      <xsl:when test="((cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT']/cbc:TaxAmount) and (cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not((cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT'])))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;]/cbc:TaxAmount) and (cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not((cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;])))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="((cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT']/cbc:TaxAmount) and (cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not((cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT'])))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -604,56 +604,56 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="starts-with(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID,//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) and (//cac:TaxCategory/cbc:ID) = &#39;AE&#39; or not ((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;)" />
+      <xsl:when test="starts-with(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID,//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) and (//cac:TaxCategory/cbc:ID) = 'AE' or not ((//cac:TaxCategory/cbc:ID) = 'AE')" />
       <xsl:otherwise>
-        <svrl:failed-assert test="starts-with(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID,//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) and (//cac:TaxCategory/cbc:ID) = &#39;AE&#39; or not ((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="starts-with(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID,//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) and (//cac:TaxCategory/cbc:ID) = 'AE' or not ((//cac:TaxCategory/cbc:ID) = 'AE')" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[EUGEN-T10-R015]-IF VAT = &quot;AE&quot; (reverse charge) THEN it MUST contain Supplier VAT id and Customer VAT</svrl:text>
+          <svrl:text>[EUGEN-T10-R015]-IF VAT = "AE" (reverse charge) THEN it MUST contain Supplier VAT id and Customer VAT</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;)  and not((//cac:TaxCategory/cbc:ID) != &#39;AE&#39; )) or not((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;) or not(//cac:TaxCategory)" />
+      <xsl:when test="(((//cac:TaxCategory/cbc:ID) = 'AE')  and not((//cac:TaxCategory/cbc:ID) != 'AE' )) or not((//cac:TaxCategory/cbc:ID) = 'AE') or not(//cac:TaxCategory)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;) and not((//cac:TaxCategory/cbc:ID) != &#39;AE&#39; )) or not((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;) or not(//cac:TaxCategory)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(((//cac:TaxCategory/cbc:ID) = 'AE') and not((//cac:TaxCategory/cbc:ID) != 'AE' )) or not((//cac:TaxCategory/cbc:ID) = 'AE') or not(//cac:TaxCategory)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[EUGEN-T10-R016]-IF VAT = &quot;AE&quot; (reverse charge) THEN VAT MAY NOT contain other VAT categories.</svrl:text>
+          <svrl:text>[EUGEN-T10-R016]-IF VAT = "AE" (reverse charge) THEN VAT MAY NOT contain other VAT categories.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(//cbc:TaxExclusiveAmount = //cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cbc:ID=&#39;AE&#39;]/cbc:TaxableAmount) and (//cac:TaxCategory/cbc:ID) = &#39;AE&#39; or not ((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;)" />
+      <xsl:when test="(//cbc:TaxExclusiveAmount = //cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cbc:ID='AE']/cbc:TaxableAmount) and (//cac:TaxCategory/cbc:ID) = 'AE' or not ((//cac:TaxCategory/cbc:ID) = 'AE')" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(//cbc:TaxExclusiveAmount = //cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cbc:ID=&#39;AE&#39;]/cbc:TaxableAmount) and (//cac:TaxCategory/cbc:ID) = &#39;AE&#39; or not ((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(//cbc:TaxExclusiveAmount = //cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cbc:ID='AE']/cbc:TaxableAmount) and (//cac:TaxCategory/cbc:ID) = 'AE' or not ((//cac:TaxCategory/cbc:ID) = 'AE')" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[EUGEN-T10-R017]-IF VAT = &quot;AE&quot; (reverse charge) THEN The taxable amount MUST equal the invoice total without VAT amount.</svrl:text>
+          <svrl:text>[EUGEN-T10-R017]-IF VAT = "AE" (reverse charge) THEN The taxable amount MUST equal the invoice total without VAT amount.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = &#39;AE&#39; or not ((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;)" />
+      <xsl:when test="//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = 'AE' or not ((//cac:TaxCategory/cbc:ID) = 'AE')" />
       <xsl:otherwise>
-        <svrl:failed-assert test="//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = &#39;AE&#39; or not ((//cac:TaxCategory/cbc:ID) = &#39;AE&#39;)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = 'AE' or not ((//cac:TaxCategory/cbc:ID) = 'AE')" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[EUGEN-T10-R018]-IF VAT = &quot;AE&quot; (reverse charge) THEN VAT tax amount MUST be zero.</svrl:text>
+          <svrl:text>[EUGEN-T10-R018]-IF VAT = "AE" (reverse charge) THEN VAT tax amount MUST be zero.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
@@ -714,9 +714,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((cbc:PaymentMeansCode = &#39;31&#39;) and (cac:PayeeFinancialAccount/cbc:ID/@schemeID and cac:PayeeFinancialAccount/cbc:ID/@schemeID = &#39;IBAN&#39;) and (cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:ID/@schemeID and cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:ID/@schemeID = &#39;BIC&#39;)) or (cbc:PaymentMeansCode != &#39;31&#39;) or ((cbc:PaymentMeansCode = &#39;31&#39;) and  (not(cac:PayeeFinancialAccount/cbc:ID/@schemeID) or (cac:PayeeFinancialAccount/cbc:ID/@schemeID != &#39;IBAN&#39;)))" />
+      <xsl:when test="((cbc:PaymentMeansCode = '31') and (cac:PayeeFinancialAccount/cbc:ID/@schemeID and cac:PayeeFinancialAccount/cbc:ID/@schemeID = 'IBAN') and (cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:ID/@schemeID and cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:ID/@schemeID = 'BIC')) or (cbc:PaymentMeansCode != '31') or ((cbc:PaymentMeansCode = '31') and  (not(cac:PayeeFinancialAccount/cbc:ID/@schemeID) or (cac:PayeeFinancialAccount/cbc:ID/@schemeID != 'IBAN')))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((cbc:PaymentMeansCode = &#39;31&#39;) and (cac:PayeeFinancialAccount/cbc:ID/@schemeID and cac:PayeeFinancialAccount/cbc:ID/@schemeID = &#39;IBAN&#39;) and (cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:ID/@schemeID and cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:ID/@schemeID = &#39;BIC&#39;)) or (cbc:PaymentMeansCode != &#39;31&#39;) or ((cbc:PaymentMeansCode = &#39;31&#39;) and (not(cac:PayeeFinancialAccount/cbc:ID/@schemeID) or (cac:PayeeFinancialAccount/cbc:ID/@schemeID != &#39;IBAN&#39;)))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="((cbc:PaymentMeansCode = '31') and (cac:PayeeFinancialAccount/cbc:ID/@schemeID and cac:PayeeFinancialAccount/cbc:ID/@schemeID = 'IBAN') and (cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:ID/@schemeID and cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:ID/@schemeID = 'BIC')) or (cbc:PaymentMeansCode != '31') or ((cbc:PaymentMeansCode = '31') and (not(cac:PayeeFinancialAccount/cbc:ID/@schemeID) or (cac:PayeeFinancialAccount/cbc:ID/@schemeID != 'IBAN')))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -734,9 +734,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;]/cbc:TaxAmount and cbc:ID) or not((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;]))" />
+      <xsl:when test="(//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT']/cbc:TaxAmount and cbc:ID) or not((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT']))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;]/cbc:TaxAmount and cbc:ID) or not((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = &#39;VAT&#39;]))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT']/cbc:TaxAmount and cbc:ID) or not((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT']))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -774,9 +774,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((cac:TaxCategory/cbc:ID = &#39;E&#39;) and (cac:TaxCategory/cbc:TaxExemptionReason or cac:TaxCategory/cbc:TaxExemptionReasonCode)) or  (cac:TaxCategory/cbc:ID != &#39;E&#39;)" />
+      <xsl:when test="((cac:TaxCategory/cbc:ID = 'E') and (cac:TaxCategory/cbc:TaxExemptionReason or cac:TaxCategory/cbc:TaxExemptionReasonCode)) or  (cac:TaxCategory/cbc:ID != 'E')" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((cac:TaxCategory/cbc:ID = &#39;E&#39;) and (cac:TaxCategory/cbc:TaxExemptionReason or cac:TaxCategory/cbc:TaxExemptionReasonCode)) or (cac:TaxCategory/cbc:ID != &#39;E&#39;)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="((cac:TaxCategory/cbc:ID = 'E') and (cac:TaxCategory/cbc:TaxExemptionReason or cac:TaxCategory/cbc:TaxExemptionReasonCode)) or (cac:TaxCategory/cbc:ID != 'E')" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />

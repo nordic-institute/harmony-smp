@@ -48,7 +48,7 @@
   </rule>
   <rule context="$Item">
     <assert flag="warning" test="$NOGOV-T15-R002">[NOGOV-T15-R002]-The sellers ID for the item SHOULD be provided according to EHF.</assert>
-    <assert flag="fatal" test="$NOGOV-T15-R008">[NOGOV-T15-R008]-The item&#39;s tax rate, expressed as a percentage MUST be provided according to EHF.</assert>
+    <assert flag="fatal" test="$NOGOV-T15-R008">[NOGOV-T15-R008]-The item's tax rate, expressed as a percentage MUST be provided according to EHF.</assert>
   </rule>
   <rule context="$Supplier_Party">
     <assert flag="warning" test="$NOGOV-T15-R001">[NOGOV-T15-R001]-A contact reference identifier SHOULD be provided for AccountingSupplierParty according to EHF.</assert>
@@ -62,7 +62,7 @@
     <assert flag="warning" test="$NOGOV-T15-R012">[NOGOV-T15-R012]-Payment Identifier (KID number) SHOULD be used according to EHF.</assert>
   </rule>
   <rule context="$Invoice_Line">
-    <assert flag="warning" test="$NOGOV-T15-R003">[NOGOV-T15-R003]-The buyer&#39;s accounting code applied to the Invoice Line SHOULD be provided according to EHF.</assert>
+    <assert flag="warning" test="$NOGOV-T15-R003">[NOGOV-T15-R003]-The buyer's accounting code applied to the Invoice Line SHOULD be provided according to EHF.</assert>
     <assert flag="warning" test="$NOGOV-T15-R004">[NOGOV-T15-R004]-An association to Order Line Reference SHOULD be provided according to EHF.</assert>
     <assert flag="warning" test="$NOGOV-T15-R010">[NOGOV-T15-R010]-The unit qualifier of the invoiced quantity SHOULD be provided according to EHF.</assert>
   </rule>

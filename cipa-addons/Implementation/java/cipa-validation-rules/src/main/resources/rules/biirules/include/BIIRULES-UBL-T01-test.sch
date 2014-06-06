@@ -48,14 +48,14 @@
   <param name="BIIRULE-T01-R005" value="(cbc:ID)" />
   <param name="BIIRULE-T01-R006" value="(cbc:ID)" />
   <param name="BIIRULE-T01-R007" value="(cbc:ID)" />
-  <param name="BIIRULE-T01-R008" value="(cbc:ID) and (cbc:ID != &#39;&#39; )" />
+  <param name="BIIRULE-T01-R008" value="(cbc:ID) and (cbc:ID != '' )" />
   <param name="BIIRULE-T01-R009" value="(cac:Party/cac:PartyName/cbc:Name)" />
   <param name="BIIRULE-T01-R010" value="(cac:Party/cac:PartyName/cbc:Name)" />
-  <param name="BIIRULE-T01-R011" value="(cbc:StartDate and cbc:EndDate) and (number(translate(cbc:StartDate,&#39;-&#39;,&#39;&#39;)) &lt;= number(translate(cbc:EndDate,&#39;-&#39;,&#39;&#39;)))" />
+  <param name="BIIRULE-T01-R011" value="(cbc:StartDate and cbc:EndDate) and (number(translate(cbc:StartDate,'-','')) &lt;= number(translate(cbc:EndDate,'-','')))" />
   <param name="BIIRULE-T01-R012" value="(cac:Party/cac:PostalAddress/cbc:CityName and cac:Party/cac:PostalAddress/cbc:PostalZone) or (cac:Party/cac:PostalAddress/cbc:ID)" />
   <param name="BIIRULE-T01-R013" value="(cac:Item/cbc:Name) or (cac:Item/cac:StandardItemIdentification/cbc:ID) or (cac:Item/cac:SellersItemIdentification/cbc:ID)" />
   <param name="BIIRULE-T01-R014" value="(cac:Party/cac:PostalAddress/cbc:CityName and cac:Party/cac:PostalAddress/cbc:PostalZone) or (cac:Party/cac:PostalAddress/cbc:ID)" />
-  <param name="BIIRULE-T01-R015" value="((cac:Party/cac:PartyTaxScheme[cac:TaxScheme/cbc:ID=&#39;VAT&#39;]/cbc:CompanyID) and (cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) and (following::cac:SellerSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) and  ((cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) = (following::cac:SellerSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) or ((cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) != (following::cac:SellerSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) and cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:ID=&#39;VAT&#39; and starts-with(cac:Party/cac:PartyTaxScheme/cbc:CompanyID,cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode)))) or not((cac:Party/cac:PartyTaxScheme[cac:TaxScheme/cbc:ID=&#39;VAT&#39;]/cbc:CompanyID)) or not((cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not((following::cac:SellerSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode))" />
+  <param name="BIIRULE-T01-R015" value="((cac:Party/cac:PartyTaxScheme[cac:TaxScheme/cbc:ID='VAT']/cbc:CompanyID) and (cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) and (following::cac:SellerSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) and  ((cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) = (following::cac:SellerSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) or ((cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) != (following::cac:SellerSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) and cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:ID='VAT' and starts-with(cac:Party/cac:PartyTaxScheme/cbc:CompanyID,cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode)))) or not((cac:Party/cac:PartyTaxScheme[cac:TaxScheme/cbc:ID='VAT']/cbc:CompanyID)) or not((cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not((following::cac:SellerSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode))" />
   <param name="BIIRULE-T01-R016" value="(cac:OrderLine/cac:LineItem)" />
   <param name="BIIRULE-T01-R017" value="(cbc:ID)" />
   <param name="BIIRULE-T01-R018" value="number(cbc:LineExtensionAmount) = number(round(sum(//cac:LineItem/cbc:LineExtensionAmount) * 10 *10) div 100)" />
@@ -65,12 +65,12 @@
   <param name="BIIRULE-T01-R023" value="string-length(string(cbc:Name)) &lt;= 50" />
   <param name="BIIRULE-T01-R024" value="not((cac:StandardItemIdentification)) or (cac:StandardItemIdentification/cbc:ID/@schemeID)" />
   <param name="BIIRULE-T01-R025" value="not((cac:CommodityClassification)) or (cac:CommodityClassification/cbc:ItemClassificationCode/@listID)" />
-  <param name="BIIRULE-T01-R026" value="number(.) &gt;= 0" />
+  <param name="BIIRULE-T01-R026" value="number(.) >= 0" />
   <param name="BIIRULE-T01-R027" value="not(//@currencyID != //cbc:DocumentCurrencyCode)" />
   <param name="BIIRULE-T01-R028" value="(cbc:IdentificationCode)" />
   <param name="BIIRULE-T01-R029" value="number(cbc:TaxAmount) = number(round(sum(//cac:OrderLine/cac:LineItem/cbc:TotalTaxAmount) * 10 * 10) div 100)" />
   <param name="BIIRULE-T01-R030" value="(cbc:DocumentCurrencyCode)" />
-  <param name="BIIRULE-T01-R031" value="count(//*[substring(name(),string-length(name())-7) = &#39;Quantity&#39;][@unitCode]) = count(//*[substring(name(),string-length(name())-7) = &#39;Quantity&#39;])" />
+  <param name="BIIRULE-T01-R031" value="count(//*[substring(name(),string-length(name())-7) = 'Quantity'][@unitCode]) = count(//*[substring(name(),string-length(name())-7) = 'Quantity'])" />
   <param name="Customer" value="//cac:BuyerCustomerParty" />
   <param name="Order_Line" value="//cac:LineItem" />
   <param name="Requested_delivery_period" value="//cac:RequestedDeliveryPeriod" />

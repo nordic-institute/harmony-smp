@@ -130,7 +130,7 @@
         <SimpleValue>IT:SIA</SimpleValue>
       </Value>
       <Value ColumnRef="name">
-        <SimpleValue>SIA-Società Interbancaria per l&#39;Automazione S.p.A.</SimpleValue>
+        <SimpleValue>SIA-Società Interbancaria per l'Automazione S.p.A.</SimpleValue>
       </Value>
     </Row>
     <Row>

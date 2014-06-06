@@ -66,10 +66,10 @@
   <rule context="$Invoice">
     <assert flag="fatal" test="$EUGEN-T10-R007">[EUGEN-T10-R007]-If the VAT total amount in an invoice exists it MUST contain the suppliers VAT number.</assert>
     <assert flag="fatal" test="$EUGEN-T10-R010">[EUGEN-T10-R010]-If payee information is provided then the payee name MUST be specified.</assert>
-    <assert flag="fatal" test="$EUGEN-T10-R015">[EUGEN-T10-R015]-IF VAT = &quot;AE&quot; (reverse charge) THEN it MUST contain Supplier VAT id and Customer VAT</assert>
-    <assert flag="fatal" test="$EUGEN-T10-R016">[EUGEN-T10-R016]-IF VAT = &quot;AE&quot; (reverse charge) THEN VAT MAY NOT contain other VAT categories.</assert>
-    <assert flag="fatal" test="$EUGEN-T10-R017">[EUGEN-T10-R017]-IF VAT = &quot;AE&quot; (reverse charge) THEN The taxable amount MUST equal the invoice total without VAT amount.</assert>
-    <assert flag="fatal" test="$EUGEN-T10-R018">[EUGEN-T10-R018]-IF VAT = &quot;AE&quot; (reverse charge) THEN VAT tax amount MUST be zero.</assert>
+    <assert flag="fatal" test="$EUGEN-T10-R015">[EUGEN-T10-R015]-IF VAT = "AE" (reverse charge) THEN it MUST contain Supplier VAT id and Customer VAT</assert>
+    <assert flag="fatal" test="$EUGEN-T10-R016">[EUGEN-T10-R016]-IF VAT = "AE" (reverse charge) THEN VAT MAY NOT contain other VAT categories.</assert>
+    <assert flag="fatal" test="$EUGEN-T10-R017">[EUGEN-T10-R017]-IF VAT = "AE" (reverse charge) THEN The taxable amount MUST equal the invoice total without VAT amount.</assert>
+    <assert flag="fatal" test="$EUGEN-T10-R018">[EUGEN-T10-R018]-IF VAT = "AE" (reverse charge) THEN VAT tax amount MUST be zero.</assert>
     <assert flag="fatal" test="$EUGEN-T10-R024">[EUGEN-T10-R024]-Currency Identifier MUST be in stated in the currency stated on header level.</assert>
   </rule>
   <rule context="$Invoice_Period">

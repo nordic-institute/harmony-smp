@@ -294,7 +294,7 @@ public final class SchematronCreator {
     }
   }
 
-  public static void createSchematrons (final List <RuleSourceItem> aRuleSourceItems) throws Exception {
+  public static void createSchematrons (@Nonnull final List <RuleSourceItem> aRuleSourceItems) throws Exception {
     for (final RuleSourceItem aRuleSourceItem : aRuleSourceItems) {
       Utils.log ("Creating Schematron files for " + aRuleSourceItem.getID ());
 

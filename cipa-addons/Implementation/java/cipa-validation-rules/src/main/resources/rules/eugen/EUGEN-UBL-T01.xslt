@@ -76,15 +76,15 @@
     <xsl:apply-templates mode="schematron-get-full-path" select="parent::*" />
     <xsl:text>/</xsl:text>
     <xsl:choose>
-      <xsl:when test="namespace-uri()=&#39;&#39;">
+      <xsl:when test="namespace-uri()=''">
         <xsl:value-of select="name()" />
       </xsl:when>
       <xsl:otherwise>
         <xsl:text>*:</xsl:text>
         <xsl:value-of select="local-name()" />
-        <xsl:text>[namespace-uri()=&#39;</xsl:text>
+        <xsl:text>[namespace-uri()='</xsl:text>
         <xsl:value-of select="namespace-uri()" />
-        <xsl:text>&#39;]</xsl:text>
+        <xsl:text>']</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
     <xsl:variable name="preceding" select="count(preceding-sibling::*[local-name()=local-name(current())                                   and namespace-uri() = namespace-uri(current())])" />
@@ -96,14 +96,14 @@
     <xsl:apply-templates mode="schematron-get-full-path" select="parent::*" />
     <xsl:text>/</xsl:text>
     <xsl:choose>
-      <xsl:when test="namespace-uri()=&#39;&#39;">@<xsl:value-of select="name()" />
+      <xsl:when test="namespace-uri()=''">@<xsl:value-of select="name()" />
 </xsl:when>
       <xsl:otherwise>
-        <xsl:text>@*[local-name()=&#39;</xsl:text>
+        <xsl:text>@*[local-name()='</xsl:text>
         <xsl:value-of select="local-name()" />
-        <xsl:text>&#39; and namespace-uri()=&#39;</xsl:text>
+        <xsl:text>' and namespace-uri()='</xsl:text>
         <xsl:value-of select="namespace-uri()" />
-        <xsl:text>&#39;]</xsl:text>
+        <xsl:text>']</xsl:text>
       </xsl:otherwise>
     </xsl:choose>
   </xsl:template>
@@ -146,24 +146,24 @@
 <xsl:template match="/" mode="generate-id-from-path" />
   <xsl:template match="text()" mode="generate-id-from-path">
     <xsl:apply-templates mode="generate-id-from-path" select="parent::*" />
-    <xsl:value-of select="concat(&#39;.text-&#39;, 1+count(preceding-sibling::text()), &#39;-&#39;)" />
+    <xsl:value-of select="concat('.text-', 1+count(preceding-sibling::text()), '-')" />
   </xsl:template>
   <xsl:template match="comment()" mode="generate-id-from-path">
     <xsl:apply-templates mode="generate-id-from-path" select="parent::*" />
-    <xsl:value-of select="concat(&#39;.comment-&#39;, 1+count(preceding-sibling::comment()), &#39;-&#39;)" />
+    <xsl:value-of select="concat('.comment-', 1+count(preceding-sibling::comment()), '-')" />
   </xsl:template>
   <xsl:template match="processing-instruction()" mode="generate-id-from-path">
     <xsl:apply-templates mode="generate-id-from-path" select="parent::*" />
-    <xsl:value-of select="concat(&#39;.processing-instruction-&#39;, 1+count(preceding-sibling::processing-instruction()), &#39;-&#39;)" />
+    <xsl:value-of select="concat('.processing-instruction-', 1+count(preceding-sibling::processing-instruction()), '-')" />
   </xsl:template>
   <xsl:template match="@*" mode="generate-id-from-path">
     <xsl:apply-templates mode="generate-id-from-path" select="parent::*" />
-    <xsl:value-of select="concat(&#39;.@&#39;, name())" />
+    <xsl:value-of select="concat('.@', name())" />
   </xsl:template>
   <xsl:template match="*" mode="generate-id-from-path" priority="-0.5">
     <xsl:apply-templates mode="generate-id-from-path" select="parent::*" />
     <xsl:text>.</xsl:text>
-    <xsl:value-of select="concat(&#39;.&#39;,name(),&#39;-&#39;,1+count(preceding-sibling::*[name()=name(current())]),&#39;-&#39;)" />
+    <xsl:value-of select="concat('.',name(),'-',1+count(preceding-sibling::*[name()=name(current())]),'-')" />
   </xsl:template>
 
 <!--MODE: GENERATE-ID-2 -->
@@ -184,7 +184,7 @@
     <xsl:text>_</xsl:text>
     <xsl:value-of select="string-length(local-name(.))" />
     <xsl:text>_</xsl:text>
-    <xsl:value-of select="translate(name(),&#39;:&#39;,&#39;.&#39;)" />
+    <xsl:value-of select="translate(name(),':','.')" />
   </xsl:template>
 <!--Strip characters-->  <xsl:template match="text()" priority="-1" />
 
@@ -238,9 +238,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="number(cbc:LineExtensionAmount) &gt;= 0" />
+      <xsl:when test="number(cbc:LineExtensionAmount) >= 0" />
       <xsl:otherwise>
-        <svrl:failed-assert test="number(cbc:LineExtensionAmount) &gt;= 0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="number(cbc:LineExtensionAmount) >= 0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -252,9 +252,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="number(cbc:Quantity) &gt;= 0" />
+      <xsl:when test="number(cbc:Quantity) >= 0" />
       <xsl:otherwise>
-        <svrl:failed-assert test="number(cbc:Quantity) &gt;= 0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="number(cbc:Quantity) >= 0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -286,9 +286,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="number(cbc:Amount) &gt;= 0" />
+      <xsl:when test="number(cbc:Amount) >= 0" />
       <xsl:otherwise>
-        <svrl:failed-assert test="number(cbc:Amount) &gt;= 0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="number(cbc:Amount) >= 0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -326,9 +326,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(cbc:StartDate) or (cbc:EndDate) or (cbc:StartDate and cbc:EndDate) and (number(translate(cbc:StartDate,&#39;-&#39;,&#39;&#39;)) &lt;= number(translate(cbc:EndDate,&#39;-&#39;,&#39;&#39;)))" />
+      <xsl:when test="(cbc:StartDate) or (cbc:EndDate) or (cbc:StartDate and cbc:EndDate) and (number(translate(cbc:StartDate,'-','')) &lt;= number(translate(cbc:EndDate,'-','')))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:StartDate) or (cbc:EndDate) or (cbc:StartDate and cbc:EndDate) and (number(translate(cbc:StartDate,&#39;-&#39;,&#39;&#39;)) &lt;= number(translate(cbc:EndDate,&#39;-&#39;,&#39;&#39;)))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cbc:StartDate) or (cbc:EndDate) or (cbc:StartDate and cbc:EndDate) and (number(translate(cbc:StartDate,'-','')) &lt;= number(translate(cbc:EndDate,'-','')))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -386,9 +386,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="number(cbc:PayableAmount) &gt;= 0" />
+      <xsl:when test="number(cbc:PayableAmount) >= 0" />
       <xsl:otherwise>
-        <svrl:failed-assert test="number(cbc:PayableAmount) &gt;= 0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="number(cbc:PayableAmount) >= 0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />

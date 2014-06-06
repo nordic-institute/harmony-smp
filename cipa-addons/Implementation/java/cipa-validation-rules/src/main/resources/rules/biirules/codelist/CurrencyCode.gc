@@ -1218,7 +1218,7 @@
         <SimpleValue>TOP</SimpleValue>
       </Value>
       <Value ColumnRef="name">
-        <SimpleValue>Pa&#39;anga</SimpleValue>
+        <SimpleValue>Pa'anga</SimpleValue>
       </Value>
     </Row>
     <Row>

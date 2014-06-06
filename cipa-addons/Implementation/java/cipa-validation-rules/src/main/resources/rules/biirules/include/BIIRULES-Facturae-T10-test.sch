@@ -41,26 +41,20 @@
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron tests for binding Facturae and transaction T10-->
 <pattern is-a="T10" id="FACTURAE-T10" xmlns="http://purl.oclc.org/dsdl/schematron">
-  <param name="BIIRULE-T10-R001" value="(EndDate and  StartDate) and not(number(translate(StartDate,&#39;-&#39;,&#39;&#39;)) &gt; number(translate(EndDate,&#39;-&#39;,&#39;&#39;))) or number(translate(StartDate,&#39;-&#39;,&#39;&#39;)) = number(translate(EndDate,&#39;-&#39;,&#39;&#39;))" />
-  <param name="BIIRULE-T10-R002" value="((LegalEntity/AddressInSpain/Town and LegalEntity/AddressInSpain/PostCode) or
-(LegalEntity/OverseasAddress/PostCodeandTown) or
-(Individual/AddressInSpain/Town and Individual/AddressInSpain/PostCode) or
-(Individual/OverseasAddress/PostCodeandTown))" />
+  <param name="BIIRULE-T10-R001" value="(EndDate and  StartDate) and not(number(translate(StartDate,'-','')) > number(translate(EndDate,'-',''))) or number(translate(StartDate,'-','')) = number(translate(EndDate,'-',''))" />
+  <param name="BIIRULE-T10-R002" value="((LegalEntity/AddressInSpain/Town and LegalEntity/AddressInSpain/PostCode) or&#10;(LegalEntity/OverseasAddress/PostCodeandTown) or&#10;(Individual/AddressInSpain/Town and Individual/AddressInSpain/PostCode) or&#10;(Individual/OverseasAddress/PostCodeandTown))" />
   <param name="BIIRULE-T10-R003" value="((//CountryCode) and (following::BuyerParty//CountryCode) and ((//CountryCode) = (following::BuyerParty//CountryCode) or ((//CountryCode) != (following::BuyerParty//CountryCode) and starts-with(TaxIdentification/TaxIdentificationNumber, //CountryCode)))) or not(//CountryCode) or not(following::BuyerParty//CountryCode)" />
-  <param name="BIIRULE-T10-R004" value="((LegalEntity/AddressInSpain/Town and LegalEntity/AddressInSpain/PostCode) or
-(LegalEntity/OverseasAddress/PostCodeandTown) or
-(Individual/AddressInSpain/Town and Individual/AddressInSpain/PostCode) or
-(Individual/OverseasAddress/PostCodeandTown))" />
+  <param name="BIIRULE-T10-R004" value="((LegalEntity/AddressInSpain/Town and LegalEntity/AddressInSpain/PostCode) or&#10;(LegalEntity/OverseasAddress/PostCodeandTown) or&#10;(Individual/AddressInSpain/Town and Individual/AddressInSpain/PostCode) or&#10;(Individual/OverseasAddress/PostCodeandTown))" />
   <param name="BIIRULE-T10-R005" value="((//CountryCode) and (preceding::SellerParty//CountryCode) and  ((//CountryCode) = (preceding::SellerParty//CountryCode) or ((//CountryCode) != (preceding::SellerParty//CountryCode) and starts-with(TaxIdentification/TaxIdentificationNumber, //CountryCode)))) or not((//CountryCode)) or not((preceding::SellerParty//CountryCode))" />
-  <param name="BIIRULE-T10-R006" value="(InstallmentDueDate and preceding::InvoiceIssueData/IssueDate) and not(number(translate(InstallmentDueDate,&#39;-&#39;,&#39;&#39;)) &lt; number(translate(preceding::InvoiceIssueData/IssueDate,&#39;-&#39;,&#39;&#39;))) or number(translate(InstallmentDueDate,&#39;-&#39;,&#39;&#39;)) = number(translate(preceding::InvoiceIssueData/IssueDate,&#39;-&#39;,&#39;&#39;))" />
-  <param name="BIIRULE-T10-R007" value="((PaymentMeans = &#39;31&#39;) and (//AccountToBeCredited/IBAN or //AccountToBeCredited/AccountNumber)) or (PaymentMeans != &#39;31&#39;)" />
+  <param name="BIIRULE-T10-R006" value="(InstallmentDueDate and preceding::InvoiceIssueData/IssueDate) and not(number(translate(InstallmentDueDate,'-','')) &lt; number(translate(preceding::InvoiceIssueData/IssueDate,'-',''))) or number(translate(InstallmentDueDate,'-','')) = number(translate(preceding::InvoiceIssueData/IssueDate,'-',''))" />
+  <param name="BIIRULE-T10-R007" value="((PaymentMeans = '31') and (//AccountToBeCredited/IBAN or //AccountToBeCredited/AccountNumber)) or (PaymentMeans != '31')" />
   <param name="BIIRULE-T10-R008" value="(//AccountToBeCredited/IBAN and //AccountToBeCredited/BIC) or not(//AccountToBeCredited/IBAN)" />
-  <param name="BIIRULE-T10-R009" value="count(Tax)&gt;1 or count(Tax) = 1" />
+  <param name="BIIRULE-T10-R009" value="count(Tax)>1 or count(Tax) = 1" />
   <param name="BIIRULE-T10-R010" value="number(following::InvoiceTotals/TotalTaxOutputs) = number(round(sum(child::Tax/TaxAmount/TotalAmount) * 100) div 100)" />
   <param name="BIIRULE-T10-R011" value="number(TotalGrossAmount) = number(round(sum(following::Items/InvoiceLine/GrossAmount) * 100) div 100)" />
   <param name="BIIRULE-T10-R012" value="((TotalGeneralSurcharges) and (TotalGeneralDiscounts) and (number(TotalGrossAmountBeforeTaxes) = (number(TotalGrossAmount) + number(TotalGeneralSurcharges) - number(TotalGeneralDiscounts)))) or (not(TotalGeneralSurcharges) and (TotalGeneralDiscounts) and (number(TotalGrossAmountBeforeTaxes) = number(TotalGrossAmount) - number(TotalGeneralDiscounts))) or ((TotalGeneralSurcharges) and not(TotalGeneralDiscounts) and (number(TotalGrossAmountBeforeTaxes) = number(TotalGrossAmount) + number(TotalGeneralSurcharges))) or (not(TotalGeneralSurcharges) and not(TotalGeneralDiscounts) and (number(TotalGrossAmountBeforeTaxes) = number(TotalGrossAmount)))" />
   <param name="BIIRULE-T10-R013" value="number(InvoiceTotal) = number(TotalGrossAmountBeforeTaxes) - number(TotalTaxesWithheld) + number(TotalTaxOutputs)" />
-  <param name="BIIRULE-T10-R014" value="number(InvoiceTotal) &gt;= 0" />
+  <param name="BIIRULE-T10-R014" value="number(InvoiceTotal) >= 0" />
   <param name="BIIRULE-T10-R015" value="(TotalGeneralDiscounts) and TotalGeneralDiscounts = (round(sum(//Discount/DiscountAmount) * 100) div 100) or not(TotalGeneralDiscounts)" />
   <param name="BIIRULE-T10-R016" value="(TotalGeneralSurcharges) and TotalGeneralSurcharges = (round(sum(//Charge/ChargeAmount) * 100) div 100) or not(TotalGeneralSurcharges)" />
   <param name="BIIRULE-T10-R017" value="(TotalPaymentsOnAccount) and (number(TotalExecutableAmount) = number(InvoiceTotal - TotalPaymentsOnAccount)) or TotalExecutableAmount = InvoiceTotal" />
@@ -68,7 +62,7 @@
   <param name="BIIRULE-T10-R019" value="string-length(string(//ItemDescription)) &lt;= 50" />
   <param name="BIIRULE-T10-R020" value="./true" />
   <param name="BIIRULE-T10-R021" value="not(//ArticleCode)" />
-  <param name="BIIRULE-T10-R022" value="number(.) &gt;=0" />
+  <param name="BIIRULE-T10-R022" value="number(.) >=0" />
   <param name="BIIRULE-T10-R023" value="(//InvoiceIssueData/IssueDate)" />
   <param name="BIIRULE-T10-R024" value="(//InvoiceHeader/InvoiceNumber)" />
   <param name="BIIRULE-T10-R025" value="(//ItemDescription)" />

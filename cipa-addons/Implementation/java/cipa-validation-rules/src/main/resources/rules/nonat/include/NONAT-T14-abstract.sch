@@ -45,10 +45,10 @@
     <assert flag="fatal" test="$NONAT-T14-R004">[NONAT-T14-R004]-A customer postal address in an invoice MUST contain at least, Street name, city name, zip code and country code.</assert>
   </rule>
   <rule context="$Supplier_Party">
-    <assert flag="fatal" test="$NONAT-T14-R001">[NONAT-T14-R001]-PartyLegalEntity for AccountingSupplierParty MUST be provided according to &quot;FOR 2004-12-01 nr 1558 - § 5-1-1. Point 2&quot;</assert>
+    <assert flag="fatal" test="$NONAT-T14-R001">[NONAT-T14-R001]-PartyLegalEntity for AccountingSupplierParty MUST be provided according to "FOR 2004-12-01 nr 1558 - § 5-1-1. Point 2"</assert>
     <assert flag="fatal" test="$NONAT-T14-R003">[NONAT-T14-R003]-A supplier postal address in an invoice MUST contain at least, Street name, city name, zip code and country code.</assert>
   </rule>
   <rule context="$Credit_Note_Line">
-    <assert flag="fatal" test="$NONAT-T14-R002">[NONAT-T14-R002]-Each credit note line MUST contain a quantity according to &quot;FOR 2004-12-01 nr 1558 - § 5-1-1. Point 3&quot; </assert>
+    <assert flag="fatal" test="$NONAT-T14-R002">[NONAT-T14-R002]-Each credit note line MUST contain a quantity according to "FOR 2004-12-01 nr 1558 - § 5-1-1. Point 3" </assert>
   </rule>
 </pattern>

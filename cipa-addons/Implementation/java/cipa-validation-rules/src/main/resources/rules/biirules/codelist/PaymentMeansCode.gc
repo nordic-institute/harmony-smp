@@ -226,7 +226,7 @@
         <SimpleValue>21</SimpleValue>
       </Value>
       <Value ColumnRef="name">
-        <SimpleValue>Banker&#39;s draft</SimpleValue>
+        <SimpleValue>Banker's draft</SimpleValue>
       </Value>
     </Row>
     <Row>
@@ -234,7 +234,7 @@
         <SimpleValue>22</SimpleValue>
       </Value>
       <Value ColumnRef="name">
-        <SimpleValue>Certified banker&#39;s draft</SimpleValue>
+        <SimpleValue>Certified banker's draft</SimpleValue>
       </Value>
     </Row>
     <Row>
@@ -602,7 +602,7 @@
         <SimpleValue>91</SimpleValue>
       </Value>
       <Value ColumnRef="name">
-        <SimpleValue>Not transferable banker&#39;s draft</SimpleValue>
+        <SimpleValue>Not transferable banker's draft</SimpleValue>
       </Value>
     </Row>
     <Row>

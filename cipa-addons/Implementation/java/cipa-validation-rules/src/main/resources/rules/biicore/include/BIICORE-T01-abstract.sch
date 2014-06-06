@@ -42,21 +42,21 @@
 <!--Abstract Schematron rules for T01-->
 <pattern abstract="true" id="T01" xmlns="http://purl.oclc.org/dsdl/schematron">
   <rule context="$Customer">
-    <assert flag="warning" test="$BIICORE-T01-R435">[BIICORE-T01-R435]-Element &#39;PartyIdentification&#39; may occur at maximum 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T01-R436">[BIICORE-T01-R436]-Element &#39;PartyName&#39; must occur exactly 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T01-R437">[BIICORE-T01-R437]-Element &#39;PartyLegalEntity&#39; may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T01-R435">[BIICORE-T01-R435]-Element 'PartyIdentification' may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T01-R436">[BIICORE-T01-R436]-Element 'PartyName' must occur exactly 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T01-R437">[BIICORE-T01-R437]-Element 'PartyLegalEntity' may occur at maximum 1 times.</assert>
   </rule>
   <rule context="$Supplier">
-    <assert flag="warning" test="$BIICORE-T01-R438">[BIICORE-T01-R438]-Element &#39;PartyIdentification&#39; may occur at maximum 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T01-R439">[BIICORE-T01-R439]-Element &#39;PartyName&#39; must occur exactly 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T01-R440">[BIICORE-T01-R440]-Element &#39;PartyLegalEntity&#39; may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T01-R438">[BIICORE-T01-R438]-Element 'PartyIdentification' may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T01-R439">[BIICORE-T01-R439]-Element 'PartyName' must occur exactly 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T01-R440">[BIICORE-T01-R440]-Element 'PartyLegalEntity' may occur at maximum 1 times.</assert>
   </rule>
   <rule context="$Item">
-    <assert flag="warning" test="$BIICORE-T01-R441">[BIICORE-T01-R441]-Element &#39;Description&#39; may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T01-R441">[BIICORE-T01-R441]-Element 'Description' may occur at maximum 1 times.</assert>
   </rule>
   <rule context="$Originator">
-    <assert flag="warning" test="$BIICORE-T01-R442">[BIICORE-T01-R442]-Element &#39;PartyIdentification&#39; may occur at maximum 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T01-R443">[BIICORE-T01-R443]-Element &#39;PartyName&#39; may occur at maximum 1 times</assert>
+    <assert flag="warning" test="$BIICORE-T01-R442">[BIICORE-T01-R442]-Element 'PartyIdentification' may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T01-R443">[BIICORE-T01-R443]-Element 'PartyName' may occur at maximum 1 times</assert>
   </rule>
   <rule context="$Order">
     <assert flag="warning" test="$BIICORE-T01-R000">[BIICORE-T01-R000]-This XML instance is NOT a core BiiTrdm001 transaction</assert>
@@ -493,13 +493,13 @@
     <assert flag="warning" test="$BIICORE-T01-R432">[BIICORE-T01-R432]-A conformant CEN BII Order core data model SHOULD not have data elements not in the core.</assert>
     <assert flag="warning" test="$BIICORE-T01-R433">[BIICORE-T01-R433]-A conformant CEN BII Order core data model SHOULD not have data elements not in the core.</assert>
     <assert flag="warning" test="$BIICORE-T01-R434">[BIICORE-T01-R434]-A conformant CEN BII Order core data model SHOULD not have data elements not in the core.</assert>
-    <assert flag="warning" test="$BIICORE-T01-R444">[BIICORE-T01-R444]-Element &#39;Note&#39; may occur at maximum 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T01-R445">[BIICORE-T01-R445]-Element &#39;Validity Period&#39; may occur at maximum 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T01-R446">[BIICORE-T01-R446]-Element &#39;Order Document Reference&#39; may occur at maximum 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T01-R447">[BIICORE-T01-R447]-Element &#39;Contract&#39; may occur at maximum 1 times.</assert>
-    <assert flag="warning" test="$BIICORE-T01-R448">[BIICORE-T01-R448]-Element &#39;Delivery&#39; may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T01-R444">[BIICORE-T01-R444]-Element 'Note' may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T01-R445">[BIICORE-T01-R445]-Element 'Validity Period' may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T01-R446">[BIICORE-T01-R446]-Element 'Order Document Reference' may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T01-R447">[BIICORE-T01-R447]-Element 'Contract' may occur at maximum 1 times.</assert>
+    <assert flag="warning" test="$BIICORE-T01-R448">[BIICORE-T01-R448]-Element 'Delivery' may occur at maximum 1 times.</assert>
   </rule>
   <rule context="$Delivery_Party">
-    <assert flag="warning" test="$BIICORE-T01-R449">[BIICORE-T01-R449]-Element &#39;PartyName&#39; may occur at maximum 1 times</assert>
+    <assert flag="warning" test="$BIICORE-T01-R449">[BIICORE-T01-R449]-Element 'PartyName' may occur at maximum 1 times</assert>
   </rule>
 </pattern>

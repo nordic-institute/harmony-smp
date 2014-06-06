@@ -41,6 +41,6 @@
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron tests for binding UBL and transaction T15-->
 <pattern is-a="T15" id="UBL-T15" xmlns="http://purl.oclc.org/dsdl/schematron">
-  <param name="BIIPROFILE-T15-R001" value=". = &#39;urn:www.cenbii.eu:profile:bii05:ver1.0&#39; or . = &#39;urn:www.cenbii.eu:profile:bii06:ver1.0&#39; or . = &#39;urn:www.cenbii.eu:profile:bii07:ver1.0&#39; or . = &#39;urn:www.cenbii.eu:profile:bii08:ver1.0&#39; or . = &#39;urn:www.cenbii.eu:profile:bii13:ver1.0&#39; or . = &#39;urn:www.cenbii.eu:profile:bii19:ver1.0&#39;" />
+  <param name="BIIPROFILE-T15-R001" value=". = 'urn:www.cenbii.eu:profile:bii05:ver1.0' or . = 'urn:www.cenbii.eu:profile:bii06:ver1.0' or . = 'urn:www.cenbii.eu:profile:bii07:ver1.0' or . = 'urn:www.cenbii.eu:profile:bii08:ver1.0' or . = 'urn:www.cenbii.eu:profile:bii13:ver1.0' or . = 'urn:www.cenbii.eu:profile:bii19:ver1.0'" />
   <param name="Invoice_Profile" value="//cbc:ProfileID" />
 </pattern>

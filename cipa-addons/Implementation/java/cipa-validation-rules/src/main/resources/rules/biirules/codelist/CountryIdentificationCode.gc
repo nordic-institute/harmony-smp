@@ -410,7 +410,7 @@
         <SimpleValue>CI</SimpleValue>
       </Value>
       <Value ColumnRef="name">
-        <SimpleValue>COTE D&#39;IVOIRE</SimpleValue>
+        <SimpleValue>COTE D'IVOIRE</SimpleValue>
       </Value>
     </Row>
     <Row>
@@ -1018,7 +1018,7 @@
         <SimpleValue>KP</SimpleValue>
       </Value>
       <Value ColumnRef="name">
-        <SimpleValue>KOREA, DEMOCRATIC PEOPLE&#39;S REPUBLIC OF</SimpleValue>
+        <SimpleValue>KOREA, DEMOCRATIC PEOPLE'S REPUBLIC OF</SimpleValue>
       </Value>
     </Row>
     <Row>
@@ -1058,7 +1058,7 @@
         <SimpleValue>LA</SimpleValue>
       </Value>
       <Value ColumnRef="name">
-        <SimpleValue>LAO PEOPLE&#39;S DEMOCRATIC REPUBLIC</SimpleValue>
+        <SimpleValue>LAO PEOPLE'S DEMOCRATIC REPUBLIC</SimpleValue>
       </Value>
     </Row>
     <Row>
