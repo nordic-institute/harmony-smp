@@ -177,7 +177,10 @@ public class AS2ReceiverServlet extends HttpServlet
 			//find the certificate's CN
 			String commonName = extractCN(cert);
 					
-			//TODO: if the CN is not equals to the AS2-from we should reject the message: shall we do it here or let the AS2 endpoint do it?
+			if (!commonName.equals(as2_from))
+			{
+				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "The as2-from header value in your message doesn't match your certificate's Common Name");
+			}
 			
 			//make the request's inputstream available to be read again
 			input.reset();
@@ -187,7 +190,7 @@ public class AS2ReceiverServlet extends HttpServlet
 			String className = properties.getProperty(PropertiesUtil.PARTNER_INTERFACE_IMPLEMENTATION_CLASS);
 			IAS2EndpointDBInterface partnerInterface = (IAS2EndpointDBInterface) Class.forName(className).newInstance();
 			if (!partnerInterface.isPartnerKown(commonName))
-				partnerInterface.createNewPartner(commonName, as2_from, "", mdnURL, (X509Certificate)cert); //we dont know the partner's endpointUrl at this point, so we can't provide it.	
+				partnerInterface.createNewPartner(commonName, commonName, "", mdnURL, (X509Certificate)cert); //we dont know the partner's endpointUrl at this point, so we can't provide it.	
 
 			//now we finally redirect the request to the AS2 endpoint
 			forwardToAS2Endpoint(req, resp, buffer);
