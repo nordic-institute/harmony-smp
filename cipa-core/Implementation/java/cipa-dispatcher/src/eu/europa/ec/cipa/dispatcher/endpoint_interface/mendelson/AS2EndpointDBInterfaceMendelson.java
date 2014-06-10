@@ -346,6 +346,7 @@ public class AS2EndpointDBInterfaceMendelson implements IAS2EndpointDBInterface
 				statement = con.prepareStatement("delete from PARTNER where ID = ?");
 				statement.setInt(1, id);
 				statement.executeUpdate();
+				statement = con.prepareStatement("update PARTNER set islocal = 0");   //we set all the rest of partners to not local, so we'll only have ours as local.
 			}
 		
 			createPartner(con, CN, CN, "", "foo@example.com", true, fingerprint , null);

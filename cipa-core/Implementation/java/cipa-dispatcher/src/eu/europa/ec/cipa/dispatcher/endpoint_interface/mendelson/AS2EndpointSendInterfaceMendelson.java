@@ -82,8 +82,9 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 		}
 		catch (Exception e)
 		{
-			//updating Mendelson wasn't possible, we'll just log the exception and try to send anyway.
+			//updating Mendelson wasn't possible, so it doesn't make sense to send
 			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, (e.getMessage()!=null && !e.getMessage().isEmpty())? e.getMessage() : e.getCause().getLocalizedMessage());
+			return "Impossible to update Mendelson's metadata about your partner. Sending the message will be cancelled. Reason: " + ((e.getMessage()!=null && !e.getMessage().isEmpty())? e.getMessage() : e.getCause().getLocalizedMessage());
 		}
 		
 		String path = properties.getProperty(MENDELSON_INSTALLATION_PATH);
@@ -105,7 +106,7 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 						break;
 				}
 				
-				ClientServerResponse resp = callback.getBaseClient().sendSync(new PartnerConfigurationChanged(), 2*1000); //timeout 2 seconds. It always waits until the timeout limit, so we have to make these milliseconds as low as possible.
+				ClientServerResponse resp = callback.getBaseClient().sendSync(new PartnerConfigurationChanged(), 2000); //timeout 2 seconds. It always waits until the timeout limit, so we have to make these milliseconds as low as possible.
 				if (resp!=null && resp.getException()!=null)
 					return "Error communicating to Mendelson endpoint: couldn't notify the creation of a new partner. Please retry again later";
 				
@@ -125,7 +126,7 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 		    File mendelsonFile = new File(path);
 		    SignalObject signalObject = new SignalObject();
 		    
-		    synchronized(synchronizedObject) //to avoid the possible case of giving the file for Mendelson to send, but another thread start running before we populate waitingMessages
+		    synchronized(synchronizedObject) //giving the file for Mendelson to send and populating waitingMessages form an atomic operation
 		    {
 			    boolean success = tempFile.renameTo(mendelsonFile);
 			    if (!success)
