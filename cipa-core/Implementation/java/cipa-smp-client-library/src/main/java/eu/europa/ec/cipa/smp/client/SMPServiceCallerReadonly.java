@@ -183,25 +183,33 @@ public class SMPServiceCallerReadonly {
     if (aSMPHost.getPort () != 80 && aSMPHost.getPort () != -1)
       s_aLogger.warn ("SMP URI " + aSMPHost + " is not running on port 80!");
 
-    try {
-      final String sOriginalHost = aSMPHost.getHost ();
-      final InetAddress aInetAddr = InetAddress.getByName (sOriginalHost);
-      final MappedDNSHost aRealHostToUse = s_aDNSMapper.getMappedDNSHost (aInetAddr);
-      if (!sOriginalHost.equals (aRealHostToUse.getHost ())) {
-        final int nPortToUse = aRealHostToUse.getPort () != null ? aRealHostToUse.getPort ().intValue ()
-                                                                : aSMPHost.getPort ();
-        m_aSMPHost = URI.create (aSMPHost.getScheme () +
-                                 "://" +
-                                 aRealHostToUse.getHost () +
-                                 (nPortToUse <= 0 ? "" : ":" + nPortToUse));
-        s_aLogger.info ("Changed the SMP host from " + aSMPHost + " to " + m_aSMPHost);
+    if (s_aDNSMapper.containsAnyMapping ()) {
+      // The DNS mapper contains at least one mapping, so try to resolve it
+      try {
+        final String sOriginalHost = aSMPHost.getHost ();
+        final InetAddress aInetAddr = InetAddress.getByName (sOriginalHost);
+        final MappedDNSHost aRealHostToUse = s_aDNSMapper.getMappedDNSHost (aInetAddr);
+        if (!sOriginalHost.equals (aRealHostToUse.getHost ())) {
+          final int nPortToUse = aRealHostToUse.getPort () != null ? aRealHostToUse.getPort ().intValue ()
+                                                                  : aSMPHost.getPort ();
+          m_aSMPHost = URI.create (aSMPHost.getScheme () +
+                                   "://" +
+                                   aRealHostToUse.getHost () +
+                                   (nPortToUse <= 0 ? "" : ":" + nPortToUse));
+          s_aLogger.info ("Changed the SMP host from " + aSMPHost + " to " + m_aSMPHost);
+        }
+        else
+          m_aSMPHost = aSMPHost;
       }
-      else
-        m_aSMPHost = aSMPHost;
+      catch (final UnknownHostException ex) {
+        // Should never occur, as the SML hosts
+        throw new IllegalStateException ("Failed to resolve host from " + aSMPHost, ex);
+      }
     }
-    catch (final UnknownHostException ex) {
-      // Should never occur, as the SML hosts
-      throw new IllegalStateException ("Failed to resolve host from " + aSMPHost, ex);
+    else {
+      // Avoid the above code as it may lead to problems in DMZs where no DNS
+      // server is available (happened with IBM Denmark)
+      m_aSMPHost = aSMPHost;
     }
 
     m_aWebResource = _getResource (m_aSMPHost);

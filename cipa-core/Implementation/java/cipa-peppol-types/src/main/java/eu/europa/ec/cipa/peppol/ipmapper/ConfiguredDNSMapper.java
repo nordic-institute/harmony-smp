@@ -87,7 +87,7 @@ public class ConfiguredDNSMapper {
       for (final String sMapping : aMappings) {
         // Mapping is e.g. 1.1.1.1,2.2.2.2=4.4.4.4:8080
         // Separate external from internal
-        final String [] aParts = RegExHelper.getSplitToArray (sMapping, "=", 2);
+        final String [] aParts = StringHelper.getExplodedArray ('=', sMapping, 2);
         if (aParts.length != 2) {
           s_aLogger.warn ("Mapping '" + sMapping + "' is missing the '=' separator");
           continue;
@@ -104,7 +104,7 @@ public class ConfiguredDNSMapper {
         }
 
         // Check if multiple externals are defined
-        final String [] aExternals = RegExHelper.getSplitToArray (sExternals, ",");
+        final String [] aExternals = StringHelper.getExplodedArray (',', sExternals);
         for (final String sExternal : aExternals) {
           final String sRealExternal = sExternal.trim ();
           if (StringHelper.hasNoText (sRealExternal)) {
@@ -129,5 +129,13 @@ public class ConfiguredDNSMapper {
 
     s_aLogger.info ("Found mapping of external IP '" + sHostAddr + "' to internal IP '" + sInternalMapping + "'");
     return MappedDNSHost.create (sInternalMapping);
+  }
+
+  /**
+   * @return <code>true</code> if at least one mapping is contained,
+   *         <code>false</code> otherwise.
+   */
+  public boolean containsAnyMapping () {
+    return !m_aNameMapping.isEmpty ();
   }
 }
