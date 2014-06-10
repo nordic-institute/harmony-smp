@@ -1,36 +1,37 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  	
-  	<modelVersion>4.0.0</modelVersion>
-  	
-  	<parent>
-	    <groupId>eu.europa.ec.cipa</groupId>
-	    <artifactId>cipa-parent-pom</artifactId>
-	    <version>1.2</version>
-	    <relativePath>../cipa-parent-pom/pom.xml</relativePath>
-  	</parent>
-  	
-  	<artifactId>cipa-dispatcher</artifactId>
-  	<packaging>war</packaging>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>eu.europa.ec.cipa</groupId>
+		<artifactId>cipa-parent-pom</artifactId>
+		<version>1.2</version>
+		<relativePath>../cipa-parent-pom/pom.xml</relativePath>
+	</parent>
+
+	<artifactId>cipa-dispatcher</artifactId>
+	<packaging>war</packaging>
 	<version>1.1.0</version>
-  
-    <repositories>
-	    <repository>
-	      <id>joinup.nexus</id>
-	      <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
-	      <releases>
-	        <enabled>true</enabled>
-	      </releases>
-	      <snapshots>
-	        <enabled>false</enabled>
-	      </snapshots>
-	    </repository>
-  	</repositories>
-  	
-  	<properties>
-  		<org.apache.cxf.version>2.2.3</org.apache.cxf.version>
+
+	<repositories>
+		<repository>
+			<id>joinup.nexus</id>
+			<url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+
+	<properties>
+		<org.apache.cxf.version>2.2.3</org.apache.cxf.version>
 	</properties>
-  
-    <dependencies>
+
+	<dependencies>
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcmail-jdk16</artifactId>
@@ -38,10 +39,10 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-		    <groupId>org.bouncycastle</groupId>
-		    <artifactId>bcprov-jdk16</artifactId>
-		    <version>1.46</version>
-		    <scope>provided</scope>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk16</artifactId>
+			<version>1.46</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.mail</groupId>
@@ -49,30 +50,30 @@
 			<version>1.5.2</version>
 			<scope>provided</scope>
 		</dependency>
-	    <dependency>
-	      	<groupId>javax.servlet</groupId>
-	      	<artifactId>servlet-api</artifactId>
-	      	<scope>provided</scope>
-	    </dependency>
-	    <dependency>
-      		<groupId>com.sun.jersey</groupId>
-		    <artifactId>jersey-client</artifactId>
-		    <version>1.17.1</version>
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-      		<groupId>com.sun.jersey</groupId>
-		    <artifactId>jersey-core</artifactId>
-		    <version>1.17.1</version>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>1.17.1</version>
 		</dependency>
 		<dependency>
-      		<groupId>com.sun.jersey</groupId>
-		    <artifactId>jersey-server</artifactId>
-		    <version>1.17.1</version>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-core</artifactId>
+			<version>1.17.1</version>
 		</dependency>
 		<dependency>
-      		<groupId>com.sun.jersey</groupId>
-		    <artifactId>jersey-servlet</artifactId>
-		    <version>1.17.1</version>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>1.17.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-servlet</artifactId>
+			<version>1.17.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -100,123 +101,75 @@
 			<version>2.2.0-b14</version>
 		</dependency>
 		<dependency>
-	        <groupId>eu.europa.ec.cipa</groupId>
-	        <artifactId>cipa-smp-client-library</artifactId>
-	        <version>1.1.4-SNAPSHOT</version>
-    	</dependency>
-    	<dependency>
-	        <groupId>com.google.guava</groupId>
-	        <artifactId>guava</artifactId>
-	        <version>15.0</version>
-    	</dependency>
-    	<dependency>
-      		<groupId>eu.europa.ec.cipa</groupId>
-      		<artifactId>cipa-start-client</artifactId>
-      		<version>1.1.4-SNAPSHOT</version>
-    	</dependency>
-    	
-    	
-    	<!--
-    	<dependency>
-			<groupId>org.apache.axis2</groupId>
-			<artifactId>axis2-kernel</artifactId>
-			<version>1.6.2</version>
+			<groupId>eu.europa.ec.cipa</groupId>
+			<artifactId>cipa-smp-client-library</artifactId>
+			<version>1.1.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.axis2</groupId>
-			<artifactId>axis2-adb</artifactId>
-			<version>1.6.2</version>
-		</dependency>
-		-->
-		
-		<!--      DONE JUST FOR THE RELEASE, MARK AS PROVIDED LATER
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-core</artifactId>
-			<version>${org.apache.cxf.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>15.0</version>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-frontend-jaxws</artifactId>
-			<version>${org.apache.cxf.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
+			<groupId>eu.europa.ec.cipa</groupId>
+			<artifactId>cipa-start-client</artifactId>
+			<version>1.1.4-SNAPSHOT</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-transports-http</artifactId>
-			<version>${org.apache.cxf.version}</version>
-			<type>jar</type>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-rt-bindings-soap</artifactId>
-			<version>${org.apache.cxf.version}</version>
-			<scope>compile</scope>
-			<type>jar</type>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.cxf</groupId>
-			<artifactId>cxf-api</artifactId>
-			<version>${org.apache.cxf.version}</version>
-			<scope>compile</scope>
-			<type>jar</type>
-		</dependency>
-		 -->
-		
-		 
-    </dependencies>
-  
-  	<build>
-  	 
-    	<sourceDirectory>src</sourceDirectory>
-    
-    
-    <!-- 	
-    	<scriptSourceDirectory>WebContent/WEB-INF/conf</scriptSourceDirectory>
-     -->
-     
-     <!-- 	    	 
-    	<resources>
-		    <resource>
-		      <directory>${basedir}/src</directory>
-		      <targetPath>${project.build.directory}/classes</targetPath>
-		    </resource>
-	      	<resource>
-	        	<directory>${basedir}/WebContent/WEB-INF/conf</directory>
-	        	<targetPath>${project.build.directory}/WEB-INF/conf</targetPath>
-	    	</resource>
-	    	<resource>
-	        	<directory>${basedir}/WebContent/WEB-INF/xsd</directory>
-	        	<targetPath>${project.build.directory}/WEB-INF/xsd</targetPath>
-	    	</resource>
-	    </resources>
-	   --> 
-	        	
-    	<plugins>
-      		<plugin>
-		        <artifactId>maven-compiler-plugin</artifactId>
-		        <configuration>
-		          <source>1.6</source>
-		          <target>1.6</target>
-		        </configuration>
-	      	</plugin>
-	      
-	      	<plugin>
-		    	<artifactId>maven-war-plugin</artifactId>
-		        <configuration>
-		          <webXml>${basedir}/WebContent/WEB-INF/web.xml</webXml>
-		          <webResources>
-		          	<resource>
-              	  		<directory>${basedir}/WebContent/WEB-INF</directory>
-              	  		<targetPath>WEB-INF</targetPath>
-            		</resource>
-            	  </webResources>
-		        </configuration>
-	      	</plugin>
-    	</plugins>
-  	</build>
+
+
+		<!-- <dependency> <groupId>org.apache.axis2</groupId> <artifactId>axis2-kernel</artifactId> 
+			<version>1.6.2</version> </dependency> <dependency> <groupId>org.apache.axis2</groupId> 
+			<artifactId>axis2-adb</artifactId> <version>1.6.2</version> </dependency> -->
+
+		<!-- DONE JUST FOR THE RELEASE, MARK AS PROVIDED LATER <dependency> <groupId>org.apache.cxf</groupId> 
+			<artifactId>cxf-rt-core</artifactId> <version>${org.apache.cxf.version}</version> 
+			<type>jar</type> <scope>compile</scope> </dependency> <dependency> <groupId>org.apache.cxf</groupId> 
+			<artifactId>cxf-rt-frontend-jaxws</artifactId> <version>${org.apache.cxf.version}</version> 
+			<type>jar</type> <scope>compile</scope> </dependency> <dependency> <groupId>org.apache.cxf</groupId> 
+			<artifactId>cxf-rt-transports-http</artifactId> <version>${org.apache.cxf.version}</version> 
+			<type>jar</type> <scope>compile</scope> </dependency> <dependency> <groupId>org.apache.cxf</groupId> 
+			<artifactId>cxf-rt-bindings-soap</artifactId> <version>${org.apache.cxf.version}</version> 
+			<scope>compile</scope> <type>jar</type> </dependency> <dependency> <groupId>org.apache.cxf</groupId> 
+			<artifactId>cxf-api</artifactId> <version>${org.apache.cxf.version}</version> 
+			<scope>compile</scope> <type>jar</type> </dependency> -->
+
+	</dependencies>
+
+	<build>
+
+		<sourceDirectory>src</sourceDirectory>
+
+
+		<!-- <scriptSourceDirectory>WebContent/WEB-INF/conf</scriptSourceDirectory> -->
+
+		<!-- <resources> <resource> <directory>${basedir}/src</directory> <targetPath>${project.build.directory}/classes</targetPath> 
+			</resource> <resource> <directory>${basedir}/WebContent/WEB-INF/conf</directory> 
+			<targetPath>${project.build.directory}/WEB-INF/conf</targetPath> </resource> 
+			<resource> <directory>${basedir}/WebContent/WEB-INF/xsd</directory> <targetPath>${project.build.directory}/WEB-INF/xsd</targetPath> 
+			</resource> </resources> -->
+
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					 <packagingExcludes>WEB-INF/lib/slf4j-api-*.jar</packagingExcludes>
+					<webXml>${basedir}/WebContent/WEB-INF/web.xml</webXml>
+					<webResources>
+						<resource>
+							<directory>${basedir}/WebContent/WEB-INF</directory>
+							<targetPath>WEB-INF</targetPath>
+						</resource>
+					</webResources>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
