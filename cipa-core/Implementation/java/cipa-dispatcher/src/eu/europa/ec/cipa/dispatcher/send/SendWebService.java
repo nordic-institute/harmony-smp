@@ -166,6 +166,21 @@ public class SendWebService extends HttpServlet
 		String documentId = (String) resultMap.get("documentIdentifier");
 		String processId = (String) resultMap.get("processIdentifier");
 		
+		String missingField = null;
+		if (receiverIdentifier==null || receiverIdentifier.isEmpty())
+			missingField = "receiverIdentifier";
+		else if (senderIdentifier==null || senderIdentifier.isEmpty())
+			missingField = "senderIdentifier";
+		else if (documentId==null || documentId.isEmpty())
+			missingField = "documentIdentifier";
+		else if (processId==null || processId.isEmpty())
+			missingField = "processIdentifier";
+		if (missingField != null)
+		{
+			prepareResponse(resp, HttpServletResponse.SC_BAD_REQUEST, "text/plain", "The necessary field '" + missingField + "' could not be found in the SBDH header");
+			return;
+		}
+		
 		
 		//If the receiver's metadata is not in our cache, we download it from the SMP
 		EndpointType endpoint;
@@ -278,6 +293,9 @@ public class SendWebService extends HttpServlet
 //					catch (Exception e)
 //					{
 //						System.out.println("ERROR - Unable to integrate with Holodeck endpoint: " + e.getMessage());
+//						prepareResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "text/plain", "Unable to integrate with Holodeck endpoint: " + e.getMessage());
+//						holodeck_service = null;
+//						return;
 //					}
 //				
 //				BackendInterface holodeck_interface = holodeck_service.getBackendPort();
