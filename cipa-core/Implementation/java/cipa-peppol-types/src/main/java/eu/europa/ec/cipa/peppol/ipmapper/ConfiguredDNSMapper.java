@@ -70,12 +70,6 @@ public class ConfiguredDNSMapper {
 
   private final Map <String, String> m_aNameMapping = new HashMap <String, String> ();
 
-  @Deprecated
-  public ConfiguredDNSMapper () {
-    // Use the default config file
-    this (ConfigFile.getInstance ());
-  }
-
   public ConfiguredDNSMapper (@Nonnull final ConfigFile aConfigFile) {
     ValueEnforcer.notNull (aConfigFile, "ConfigFile");
 

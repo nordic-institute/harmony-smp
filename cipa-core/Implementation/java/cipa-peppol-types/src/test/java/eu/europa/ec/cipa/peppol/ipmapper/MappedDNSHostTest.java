@@ -48,6 +48,8 @@ import java.net.UnknownHostException;
 
 import org.junit.Test;
 
+import com.phloc.commons.mock.PhlocTestUtils;
+
 /**
  * Test class for class {@link MappedDNSHost}.
  * 
@@ -59,21 +61,32 @@ public final class MappedDNSHostTest {
     MappedDNSHost aST = new MappedDNSHost ("myhost");
     assertEquals ("myhost", aST.getHost ());
     assertNull (aST.getPort ());
+    assertEquals (22, aST.getPortToUse (22));
     assertEquals ("myhost", aST.getHostString ());
+    assertEquals ("myhost:22", aST.getHostString (22));
 
     aST = new MappedDNSHost ("myhost", 15);
     assertEquals ("myhost", aST.getHost ());
     assertEquals (15, aST.getPort ().intValue ());
+    assertEquals (15, aST.getPortToUse (22));
     assertEquals ("myhost:15", aST.getHostString ());
+    assertEquals ("myhost:15", aST.getHostString (22));
 
     aST = new MappedDNSHost ("myhost", Integer.valueOf (27));
     assertEquals ("myhost", aST.getHost ());
     assertEquals (27, aST.getPort ().intValue ());
+    assertEquals (27, aST.getPortToUse (22));
     assertEquals ("myhost:27", aST.getHostString ());
+    assertEquals ("myhost:27", aST.getHostString (22));
+
+    PhlocTestUtils.testDefaultImplementationWithEqualContentObject (aST, new MappedDNSHost ("myhost", 27));
+    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aST, new MappedDNSHost ("myhost", 28));
+    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aST, new MappedDNSHost ("myhost2", 27));
+    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aST, new MappedDNSHost ("myhost"));
   }
 
   @Test
-  public void testCreateSocketType () {
+  public void testCreate () {
     // Create with port
     MappedDNSHost aST = MappedDNSHost.create ("myhost:67");
     assertNotNull (aST);
