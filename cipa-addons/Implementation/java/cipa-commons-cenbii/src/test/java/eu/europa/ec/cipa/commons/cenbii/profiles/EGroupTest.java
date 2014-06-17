@@ -38,11 +38,11 @@
 package eu.europa.ec.cipa.commons.cenbii.profiles;
 
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import eu.europa.ec.cipa.commons.cenbii.profiles.EGroup;
-
+import com.phloc.commons.string.StringHelper;
 
 /**
  * Test class for class {@link EGroup}.
@@ -53,7 +53,9 @@ public final class EGroupTest {
   @Test
   public void testBasic () {
     for (final EGroup eGroup : EGroup.values ()) {
+      assertTrue (StringHelper.hasText (eGroup.getID ()));
       assertSame (eGroup, EGroup.valueOf (eGroup.name ()));
+      assertSame (eGroup, EGroup.getFromIDOrNull (eGroup.getID ()));
     }
   }
 }

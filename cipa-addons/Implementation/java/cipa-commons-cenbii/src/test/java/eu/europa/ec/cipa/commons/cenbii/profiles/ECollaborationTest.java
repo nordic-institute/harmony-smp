@@ -48,12 +48,8 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-
 import com.phloc.commons.GlobalDebug;
 import com.phloc.commons.string.StringHelper;
-
-import eu.europa.ec.cipa.commons.cenbii.profiles.ECollaboration;
-import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 
 /**
  * Test class for class {@link ECollaboration}.
@@ -69,10 +65,12 @@ public final class ECollaborationTest {
   @Test
   public void testBasic () {
     for (final ECollaboration eCollaboration : ECollaboration.values ()) {
+      assertTrue (StringHelper.hasText (eCollaboration.getID ()));
       assertTrue (StringHelper.hasText (eCollaboration.getName ()));
       assertNotNull (eCollaboration.getAllTransactions ());
       assertFalse (eCollaboration.getAllTransactions ().isEmpty ());
 
+      assertSame (eCollaboration, ECollaboration.getFromIDOrNull (eCollaboration.getID ()));
       assertSame (eCollaboration, ECollaboration.valueOf (eCollaboration.name ()));
     }
   }
