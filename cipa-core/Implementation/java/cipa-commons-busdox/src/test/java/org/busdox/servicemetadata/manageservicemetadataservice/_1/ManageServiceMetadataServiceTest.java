@@ -47,6 +47,7 @@ import org.junit.Test;
 public class ManageServiceMetadataServiceTest {
   @Test
   public void testCtor () {
+    // Ensure that the code for the service was created
     new ManageServiceMetadataService ();
   }
 }

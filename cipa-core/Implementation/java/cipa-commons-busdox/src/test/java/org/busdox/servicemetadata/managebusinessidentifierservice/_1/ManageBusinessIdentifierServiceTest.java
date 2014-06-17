@@ -47,6 +47,7 @@ import org.junit.Test;
 public final class ManageBusinessIdentifierServiceTest {
   @Test
   public void testCtor () {
+    // Ensure that the code for the service was created
     new ManageBusinessIdentifierService ();
   }
 }

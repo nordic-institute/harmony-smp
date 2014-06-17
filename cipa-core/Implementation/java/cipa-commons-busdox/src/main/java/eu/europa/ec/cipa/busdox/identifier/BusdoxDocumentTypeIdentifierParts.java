@@ -149,6 +149,8 @@ public final class BusdoxDocumentTypeIdentifierParts implements IBusdoxDocumentT
 
     // See Busdox Common Specs version 3.5
     String ret = aParts.getRootNS () + NAMESPACE_SEPARATOR + aParts.getLocalName ();
+
+    // Add optional subtype identifier
     final String sSubTypeIdentifier = aParts.getSubTypeIdentifier ();
     if (StringHelper.hasText (sSubTypeIdentifier))
       ret += SUBTYPE_SEPARATOR + sSubTypeIdentifier;
@@ -181,7 +183,9 @@ public final class BusdoxDocumentTypeIdentifierParts implements IBusdoxDocumentT
                                           sDocTypeID +
                                           "' is missing the separation between root namespace and local name!");
 
-    return new BusdoxDocumentTypeIdentifierParts (aFirst.get (0), aFirst.get (1), aMain.size () == 1 ? null
-                                                                                                    : aMain.get (1));
+    final String sRootNS = aFirst.get (0);
+    final String sLocalName = aFirst.get (1);
+    final String sSubTypeIdentifier = aMain.size () == 1 ? null : aMain.get (1);
+    return new BusdoxDocumentTypeIdentifierParts (sRootNS, sLocalName, sSubTypeIdentifier);
   }
 }

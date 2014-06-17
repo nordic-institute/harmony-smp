@@ -44,6 +44,9 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
+import com.phloc.commons.annotations.PresentForCodeCoverage;
+import com.phloc.commons.io.resource.ClassPathResource;
+
 /**
  * Test class for class {@link CBusDox}.
  * 
@@ -53,8 +56,15 @@ public final class CBusDoxTest {
   @Test
   public void testConstants () throws IOException {
     // Ensure that the WSDL path is correct
-    final InputStream aIS = CBusDoxTest.class.getResourceAsStream (CBusDox.START_WSDL_RESOURCE);
+    final InputStream aIS = ClassPathResource.getInputStream (CBusDox.START_WSDL_RESOURCE);
     assertNotNull ("WSDL file " + CBusDox.START_WSDL_RESOURCE + " does not exist!", aIS);
     aIS.close ();
+  }
+
+  @Test
+  @PresentForCodeCoverage
+  public void testDebuggingOnOff () {
+    CBusDox.setMetroDebugSystemProperties (true);
+    CBusDox.setMetroDebugSystemProperties (false);
   }
 }

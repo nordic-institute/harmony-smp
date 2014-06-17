@@ -43,6 +43,8 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
+import com.phloc.commons.mock.PhlocTestUtils;
+
 /**
  * Test class for class {@link BusdoxDocumentTypeIdentifierParts}.
  * 
@@ -66,6 +68,24 @@ public final class BusdoxDocumentTypeIdentifierPartsTest {
     assertEquals ("local", aParts.getLocalName ());
     assertNull (aParts.getSubTypeIdentifier ());
     assertEquals ("root::local", aParts.getAsDocumentTypeIdentifierValue ());
+
+    // Test equals/hashCode/toString
+    PhlocTestUtils.testDefaultImplementationWithEqualContentObject (aParts,
+                                                                    new BusdoxDocumentTypeIdentifierParts ("root",
+                                                                                                           "local",
+                                                                                                           null));
+    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aParts,
+                                                                        new BusdoxDocumentTypeIdentifierParts ("root2",
+                                                                                                               "local",
+                                                                                                               null));
+    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aParts,
+                                                                        new BusdoxDocumentTypeIdentifierParts ("root",
+                                                                                                               "local2",
+                                                                                                               null));
+    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aParts,
+                                                                        new BusdoxDocumentTypeIdentifierParts ("root",
+                                                                                                               "local",
+                                                                                                               "subtype"));
   }
 
   @Test
@@ -89,7 +109,7 @@ public final class BusdoxDocumentTypeIdentifierPartsTest {
       BusdoxDocumentTypeIdentifierParts.extractFromString (null);
       fail ();
     }
-    catch (final IllegalArgumentException ex) {}
+    catch (final NullPointerException ex) {}
 
     try {
       // Empty String is not allowed

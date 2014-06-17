@@ -44,6 +44,7 @@ import javax.xml.ws.WebServiceClient;
 import org.w3._2009._02.ws_tra.AccessPointService;
 
 import com.phloc.commons.annotations.Nonempty;
+import com.phloc.commons.annotations.PresentForCodeCoverage;
 import com.phloc.commons.exceptions.InitializationException;
 
 /**
@@ -80,8 +81,35 @@ public final class CBusDox {
                                          sFoundPath);
   }
 
+  @SuppressWarnings ("unused")
+  @PresentForCodeCoverage
+  private static final CBusDox s_aInstance = new CBusDox ();
+
   private CBusDox () {}
 
+  /**
+   * Enable the Metro SOAP debugging. This shows the exchanged SOAP messages in
+   * the logfile. By default this logging is disabled.
+   * 
+   * @param bDebug
+   *        <code>true</code> to enable debugging, <code>false</code> to disable
+   *        it.
+   */
+  public static void enableSoapLogging (final boolean bDebug) {
+    System.setProperty ("com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump", Boolean.toString (bDebug));
+    System.setProperty ("com.sun.xml.internal.ws.transport.http.client.HttpTransportPipe.dump",
+                        Boolean.toString (bDebug));
+  }
+
+  /**
+   * Enable advanced Metro debugging on more or less all relevant layers. This
+   * method internally calls {@link #enableSoapLogging(boolean)} so it does not
+   * need to be called explicitly. By default all this logging is disabled.
+   * 
+   * @param bDebug
+   *        <code>true</code> to enabled debugging, <code>false</code> to
+   *        disable it.
+   */
   public static void setMetroDebugSystemProperties (final boolean bDebug) {
     // Depending on the used JAX-WS version, the property names are
     // different....
@@ -100,11 +128,5 @@ public final class CBusDox {
     System.setProperty ("com.sun.xml.wss.jaxws.impl.SecurityServerTube.dump", Boolean.toString (bDebug));
     System.setProperty ("com.sun.xml.wss.jaxws.impl.SecurityClientTube.dump", Boolean.toString (bDebug));
     System.setProperty ("com.sun.xml.ws.rx.rm.runtime.ClientTube.dump", Boolean.toString (bDebug));
-  }
-
-  public static void enableSoapLogging (final boolean bDebug) {
-    System.setProperty ("com.sun.xml.ws.transport.http.client.HttpTransportPipe.dump", Boolean.toString (bDebug));
-    System.setProperty ("com.sun.xml.internal.ws.transport.http.client.HttpTransportPipe.dump",
-                        Boolean.toString (bDebug));
   }
 }
