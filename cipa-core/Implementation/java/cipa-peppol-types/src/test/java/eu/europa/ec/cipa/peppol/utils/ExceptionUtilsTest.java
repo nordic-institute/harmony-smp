@@ -37,50 +37,26 @@
  */
 package eu.europa.ec.cipa.peppol.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
 /**
- * Test class for class {@link ConfigFile}.
+ * Test class for class {@link ExceptionUtils}.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class ConfigFileTest {
+public final class ExceptionUtilsTest {
   @Test
-  public void testAll () {
-    final ConfigFile aCF = ConfigFile.getInstance ();
-    assertTrue (aCF.isRead ());
-    // Existing elements
-    assertEquals ("string", aCF.getString ("element1"));
-    assertEquals (6, aCF.getCharArray ("element1").length);
-    assertEquals (2, aCF.getInt ("element2", 5));
-    assertFalse (aCF.getBoolean ("element3", true));
-    assertEquals ("abc", aCF.getString ("element4"));
-
-    // Non-existing elements
-    assertNull (aCF.getString ("element1a"));
-    assertNull (aCF.getCharArray ("element1a"));
-    assertEquals (5, aCF.getInt ("element2a", 5));
-    assertTrue (aCF.getBoolean ("element3a", true));
-
-    // All keys
-    assertEquals (5, aCF.getAllKeys ().size ());
-
-    assertNotNull (aCF.toString ());
+  public void testCreateStartException () {
+    assertNotNull (ExceptionUtils.createStartException ("action", "details", null));
+    assertNotNull (ExceptionUtils.createStartException ("action", "details", new Exception ()));
   }
 
   @Test
-  public void testNonExisting () {
-    final ConfigFile aCF = new ConfigFile ("non-existent-file.xml");
-    assertFalse (aCF.isRead ());
-    assertNull (aCF.getString ("any"));
-    assertEquals (0, aCF.getAllKeys ().size ());
-
-    assertNotNull (aCF.toString ());
+  public void testCreateFault () {
+    assertNotNull (ExceptionUtils.createFaultMessage ("action"));
+    assertNotNull (ExceptionUtils.createFaultMessage ("action", "details"));
+    assertNotNull (ExceptionUtils.createFaultMessage ("action", new Exception ()));
   }
 }

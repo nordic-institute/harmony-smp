@@ -43,14 +43,26 @@ import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
 
+import com.phloc.commons.annotations.PresentForCodeCoverage;
 import com.phloc.commons.charset.CCharset;
 import com.phloc.commons.io.streams.StringInputStream;
 import com.phloc.commons.string.StringHelper;
 
+/**
+ * Some utility methods handling certificates.
+ * 
+ * @author Philip Helger
+ */
+@Immutable
 public final class CertificateUtils {
   public static final String BEGIN_CERTIFICATE = "-----BEGIN CERTIFICATE-----";
   public static final String END_CERTIFICATE = "-----END CERTIFICATE-----";
+
+  @SuppressWarnings ("unused")
+  @PresentForCodeCoverage
+  private static final CertificateUtils s_aInstance = new CertificateUtils ();
 
   private CertificateUtils () {}
 
@@ -66,10 +78,25 @@ public final class CertificateUtils {
     return sRealCertString;
   }
 
+  /**
+   * Convert the passed String to an X.509 certificate.
+   * 
+   * @param sCertString
+   *        The original text string. May be <code>null</code> or empty. The
+   *        String must be ISO-8859-1 encoded for the binary certificate to be
+   *        read!
+   * @return <code>null</code> if the passed string is <code>null</code> or
+   *         empty
+   * @throws CertificateException
+   *         In case the passed string cannot be converted to an X.509
+   *         certificate.
+   */
   @Nullable
   public static X509Certificate convertStringToCertficate (@Nullable final String sCertString) throws CertificateException {
-    if (sCertString == null)
+    if (StringHelper.hasNoText (sCertString)) {
+      // No string -> no certificate
       return null;
+    }
 
     final CertificateFactory aCertificateFactory = CertificateFactory.getInstance ("X.509");
 
@@ -83,8 +110,16 @@ public final class CertificateUtils {
       // In some weird configurations, the result string is a hex encoded
       // certificate instead of the string
       // -> Try to work around it
-      final String sRealCertString = _ensureBeginAndEndArePresent (new String (StringHelper.getHexDecoded (sCertString),
-                                                                               CCharset.CHARSET_ISO_8859_1_OBJ));
+      String sHexDecodedString;
+      try {
+        sHexDecodedString = new String (StringHelper.getHexDecoded (sCertString), CCharset.CHARSET_ISO_8859_1_OBJ);
+      }
+      catch (final IllegalArgumentException ex2) {
+        // Can happen, when the source string has an odd length (like 3 or 117).
+        // In this case the original exception is rethrown
+        throw ex;
+      }
+      final String sRealCertString = _ensureBeginAndEndArePresent (sHexDecodedString);
       return (X509Certificate) aCertificateFactory.generateCertificate (new StringInputStream (sRealCertString,
                                                                                                CCharset.CHARSET_ISO_8859_1_OBJ));
     }

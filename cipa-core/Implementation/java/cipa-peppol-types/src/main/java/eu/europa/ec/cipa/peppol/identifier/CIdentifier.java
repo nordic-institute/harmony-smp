@@ -40,7 +40,7 @@ package eu.europa.ec.cipa.peppol.identifier;
 import javax.annotation.Nonnegative;
 import javax.annotation.concurrent.Immutable;
 
-import com.phloc.commons.exceptions.InitializationException;
+import com.phloc.commons.annotations.PresentForCodeCoverage;
 
 /**
  * Constants on BUSDOX identifiers used in PEPPOL.
@@ -60,9 +60,6 @@ public final class CIdentifier {
    */
   @Nonnegative
   public static final int MAX_IDENTIFIER_SCHEME_LENGTH = 25;
-
-  @Deprecated
-  public static final int MAX_PARTICIPANT_IDENTIFIER_SCHEME_LENGTH = MAX_IDENTIFIER_SCHEME_LENGTH;
 
   /**
    * Participant identifier value maximum length (excluding the scheme)
@@ -120,25 +117,9 @@ public final class CIdentifier {
    */
   public static final String URL_SCHEME_VALUE_SEPARATOR = "::";
 
-  static {
-    // Check that the default participant scheme is valid
-    if (!IdentifierUtils.isValidParticipantIdentifierScheme (DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME))
-      throw new InitializationException ("The default participant scheme '" +
-                                         DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME +
-                                         "' is not valid!");
-
-    // Check that the default document type scheme is valid
-    if (!IdentifierUtils.isValidIdentifierScheme (DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME))
-      throw new InitializationException ("The default document type scheme '" +
-                                         DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME +
-                                         "' is not valid!");
-
-    // Check that the default process scheme is valid
-    if (!IdentifierUtils.isValidIdentifierScheme (DEFAULT_PROCESS_IDENTIFIER_SCHEME))
-      throw new InitializationException ("The default process scheme '" +
-                                         DEFAULT_PROCESS_IDENTIFIER_SCHEME +
-                                         "' is not valid!");
-  }
+  @SuppressWarnings ("unused")
+  @PresentForCodeCoverage
+  private static final CIdentifier s_aInstance = new CIdentifier ();
 
   private CIdentifier () {}
 }

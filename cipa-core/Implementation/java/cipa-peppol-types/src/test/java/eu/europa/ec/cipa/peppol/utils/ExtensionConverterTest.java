@@ -55,13 +55,16 @@ import org.w3c.dom.Element;
  */
 public final class ExtensionConverterTest {
   @Test
-  public void testConvertFromXML () {
+  public void testConvertFromString () {
     // Use elements
     final String sXML = "<any xmlns=\"urn:foo\"><child>text1</child><child2 /></any>";
     final ExtensionType aExtension = ExtensionConverter.convert (sXML);
     assertNotNull (aExtension);
     assertNotNull (aExtension.getAny ());
     assertTrue (aExtension.getAny () instanceof Element);
+
+    assertNull (ExtensionConverter.convert ((String) null));
+    assertNull (ExtensionConverter.convert (""));
 
     // Convert back to String
     final String sXML2 = ExtensionConverter.convert (aExtension);
@@ -75,7 +78,10 @@ public final class ExtensionConverterTest {
     catch (final IllegalArgumentException ex) {
       // expected
     }
+  }
 
+  @Test
+  public void testConvertFromExtensionType () {
     // Try converting an empty extension
     assertNull (ExtensionConverter.convert ((ExtensionType) null));
     assertNull (ExtensionConverter.convert (new ObjectFactory ().createExtensionType ()));

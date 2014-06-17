@@ -52,6 +52,7 @@ import com.phloc.commons.annotations.PresentForCodeCoverage;
 import com.phloc.commons.charset.CCharset;
 import com.phloc.commons.collections.ArrayHelper;
 import com.phloc.commons.equals.EqualsUtils;
+import com.phloc.commons.exceptions.InitializationException;
 import com.phloc.commons.regex.RegExHelper;
 import com.phloc.commons.string.StringHelper;
 
@@ -89,6 +90,26 @@ public final class IdentifierUtils {
                                                                  CIdentifier.URL_SCHEME_VALUE_SEPARATOR;
 
   private static final AtomicBoolean s_aCharsetChecksDisabled = new AtomicBoolean (DEFAULT_CHARSET_CHECKS_DISABLED);
+
+  static {
+    // Check that the default participant scheme is valid
+    if (!isValidParticipantIdentifierScheme (CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME))
+      throw new InitializationException ("The default participant scheme '" +
+                                         CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME +
+                                         "' is not valid!");
+
+    // Check that the default document type scheme is valid
+    if (!isValidIdentifierScheme (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME))
+      throw new InitializationException ("The default document type scheme '" +
+                                         CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME +
+                                         "' is not valid!");
+
+    // Check that the default process scheme is valid
+    if (!isValidIdentifierScheme (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME))
+      throw new InitializationException ("The default process scheme '" +
+                                         CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME +
+                                         "' is not valid!");
+  }
 
   @SuppressWarnings ("unused")
   @PresentForCodeCoverage
@@ -235,6 +256,8 @@ public final class IdentifierUtils {
    *         <code>false</code> otherwise
    */
   public static boolean isValidDocumentTypeIdentifier (@Nullable final String sValue) {
+    if (sValue == null)
+      return false;
     final SimpleDocumentTypeIdentifier aID = createDocumentTypeIdentifierFromURIPartOrNull (sValue);
     return aID != null &&
            isValidIdentifierScheme (aID.getScheme ()) &&
@@ -252,6 +275,8 @@ public final class IdentifierUtils {
    *         <code>false</code> otherwise
    */
   public static boolean isValidParticipantIdentifier (@Nullable final String sValue) {
+    if (sValue == null)
+      return false;
     final SimpleParticipantIdentifier aID = createParticipantIdentifierFromURIPartOrNull (sValue);
     return aID != null &&
            isValidParticipantIdentifierScheme (aID.getScheme ()) &&
@@ -269,6 +294,8 @@ public final class IdentifierUtils {
    *         <code>false</code> otherwise
    */
   public static boolean isValidProcessIdentifier (@Nullable final String sValue) {
+    if (sValue == null)
+      return false;
     final SimpleProcessIdentifier aID = createProcessIdentifierFromURIPartOrNull (sValue);
     return aID != null && isValidIdentifierScheme (aID.getScheme ()) && isValidProcessIdentifierValue (aID.getValue ());
   }
@@ -397,22 +424,6 @@ public final class IdentifierUtils {
    *        The identifier to be checked. May not be <code>null</code>.
    * @return <code>true</code> if the passed identifier uses the default scheme,
    *         <code>false</code> otherwise
-   * @deprecated Use
-   *             {@link #hasDefaultParticipantIdentifierScheme(IReadonlyParticipantIdentifier)}
-   *             instead
-   */
-  @Deprecated
-  public static boolean hasDefaultScheme (@Nonnull final IReadonlyParticipantIdentifier aIdentifier) {
-    return hasDefaultParticipantIdentifierScheme (aIdentifier);
-  }
-
-  /**
-   * Check if the passed participant identifier is using the default scheme.
-   * 
-   * @param aIdentifier
-   *        The identifier to be checked. May not be <code>null</code>.
-   * @return <code>true</code> if the passed identifier uses the default scheme,
-   *         <code>false</code> otherwise
    */
   public static boolean hasDefaultParticipantIdentifierScheme (@Nonnull final IReadonlyParticipantIdentifier aIdentifier) {
     ValueEnforcer.notNull (aIdentifier, "ParticipantIdentifier");
@@ -439,22 +450,6 @@ public final class IdentifierUtils {
    *        The identifier to be checked. May not be <code>null</code>.
    * @return <code>true</code> if the passed identifier uses the default scheme,
    *         <code>false</code> otherwise
-   * @deprecated Use
-   *             {@link #hasDefaultDocumentTypeIdentifierScheme(IReadonlyDocumentTypeIdentifier)}
-   *             instead
-   */
-  @Deprecated
-  public static boolean hasDefaultScheme (@Nonnull final IReadonlyDocumentTypeIdentifier aIdentifier) {
-    return hasDefaultDocumentTypeIdentifierScheme (aIdentifier);
-  }
-
-  /**
-   * Check if the passed document type identifier is using the default scheme.
-   * 
-   * @param aIdentifier
-   *        The identifier to be checked. May not be <code>null</code>.
-   * @return <code>true</code> if the passed identifier uses the default scheme,
-   *         <code>false</code> otherwise
    */
   public static boolean hasDefaultDocumentTypeIdentifierScheme (@Nonnull final IReadonlyDocumentTypeIdentifier aIdentifier) {
     ValueEnforcer.notNull (aIdentifier, "DocumentTypeIdentifier");
@@ -472,22 +467,6 @@ public final class IdentifierUtils {
    */
   public static boolean hasDefaultDocumentTypeIdentifierScheme (@Nullable final String sIdentifier) {
     return StringHelper.startsWith (sIdentifier, PREFIX_DOCUMENT_TYPE_IDENTIFIER_SCHEME);
-  }
-
-  /**
-   * Check if the passed process identifier is using the default scheme.
-   * 
-   * @param aIdentifier
-   *        The identifier to be checked. May not be <code>null</code>.
-   * @return <code>true</code> if the passed identifier uses the default scheme,
-   *         <code>false</code> otherwise
-   * @deprecated Use
-   *             {@link #hasDefaultProcessIdentifierScheme(IReadonlyProcessIdentifier)}
-   *             instead
-   */
-  @Deprecated
-  public static boolean hasDefaultScheme (@Nonnull final IReadonlyProcessIdentifier aIdentifier) {
-    return hasDefaultProcessIdentifierScheme (aIdentifier);
   }
 
   /**
@@ -571,11 +550,17 @@ public final class IdentifierUtils {
 
     // This is quicker than splitting with RegEx!
     final List <String> aSplitted = StringHelper.getExploded (CIdentifier.URL_SCHEME_VALUE_SEPARATOR, sURIPart, 2);
-    if (aSplitted.size () != 2) {
-      // Illegal format
-      return null;
+    if (aSplitted.size () == 2) {
+      // Get and check scheme
+      final String sScheme = aSplitted.get (0);
+      if (isValidIdentifierScheme (sScheme)) {
+        // Get and check value
+        final String sValue = aSplitted.get (1);
+        if (isValidDocumentTypeIdentifierValue (sValue))
+          return new SimpleDocumentTypeIdentifier (aSplitted.get (0), aSplitted.get (1));
+      }
     }
-    return new SimpleDocumentTypeIdentifier (aSplitted.get (0), aSplitted.get (1));
+    return null;
   }
 
   /**
@@ -618,10 +603,17 @@ public final class IdentifierUtils {
 
     // This is quicker than splitting with RegEx!
     final List <String> aSplitted = StringHelper.getExploded (CIdentifier.URL_SCHEME_VALUE_SEPARATOR, sURIPart, 2);
-    if (aSplitted.size () != 2)
-      return null;
-
-    return new SimpleParticipantIdentifier (aSplitted.get (0), aSplitted.get (1));
+    if (aSplitted.size () == 2) {
+      // Get and check scheme
+      final String sScheme = aSplitted.get (0);
+      if (isValidParticipantIdentifierScheme (sScheme)) {
+        // Get and check value
+        final String sValue = aSplitted.get (1);
+        if (isValidParticipantIdentifierValue (sValue))
+          return new SimpleParticipantIdentifier (aSplitted.get (0), aSplitted.get (1));
+      }
+    }
+    return null;
   }
 
   /**
@@ -664,10 +656,17 @@ public final class IdentifierUtils {
 
     // This is quicker than splitting with RegEx!
     final List <String> aSplitted = StringHelper.getExploded (CIdentifier.URL_SCHEME_VALUE_SEPARATOR, sURIPart, 2);
-    if (aSplitted.size () != 2)
-      return null;
-
-    return new SimpleProcessIdentifier (aSplitted.get (0), aSplitted.get (1));
+    if (aSplitted.size () == 2) {
+      // Get and check scheme
+      final String sScheme = aSplitted.get (0);
+      if (isValidIdentifierScheme (sScheme)) {
+        // Get and check value
+        final String sValue = aSplitted.get (1);
+        if (isValidProcessIdentifierValue (sValue))
+          return new SimpleProcessIdentifier (sScheme, sValue);
+      }
+    }
+    return null;
   }
 
   /**

@@ -45,6 +45,8 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
+import com.phloc.commons.string.StringHelper;
+
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.issuingagency.EPredefinedIdentifierIssuingAgency;
@@ -229,7 +231,37 @@ public final class IdentifierUtilsTest {
   }
 
   @Test
-  public void test01 () {
+  public void testIsValidDocumentTypeIdentifierValue () {
+    assertFalse (IdentifierUtils.isValidDocumentTypeIdentifierValue (null));
+    assertFalse (IdentifierUtils.isValidDocumentTypeIdentifierValue (""));
+
+    assertTrue (IdentifierUtils.isValidDocumentTypeIdentifierValue ("invoice"));
+    assertTrue (IdentifierUtils.isValidDocumentTypeIdentifierValue ("order "));
+
+    assertTrue (IdentifierUtils.isValidDocumentTypeIdentifierValue (StringHelper.getRepeated ('a',
+                                                                                              CIdentifier.MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH)));
+    assertFalse (IdentifierUtils.isValidDocumentTypeIdentifierValue (StringHelper.getRepeated ('a',
+                                                                                               CIdentifier.MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH + 1)));
+  }
+
+  @Test
+  public void testIsValidDocumentTypeIdentifier () {
+    assertFalse (IdentifierUtils.isValidDocumentTypeIdentifier (null));
+    assertFalse (IdentifierUtils.isValidDocumentTypeIdentifier (""));
+
+    assertTrue (IdentifierUtils.isValidDocumentTypeIdentifier ("doctype::invoice"));
+    assertTrue (IdentifierUtils.isValidDocumentTypeIdentifier ("doctype::order "));
+
+    assertFalse (IdentifierUtils.isValidDocumentTypeIdentifier ("doctypethatiswaytoolongforwhatisexpected::order"));
+    assertFalse (IdentifierUtils.isValidDocumentTypeIdentifier ("doctype::" +
+                                                                StringHelper.getRepeated ('a',
+                                                                                          CIdentifier.MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH + 1)));
+    assertFalse (IdentifierUtils.isValidDocumentTypeIdentifier ("doctype:order"));
+    assertFalse (IdentifierUtils.isValidDocumentTypeIdentifier ("doctypeorder"));
+  }
+
+  @Test
+  public void testIsValidParticipantIdentifierValue () {
     assertFalse (IdentifierUtils.isValidParticipantIdentifierValue (null));
     assertFalse (IdentifierUtils.isValidParticipantIdentifierValue (""));
 
@@ -239,6 +271,61 @@ public final class IdentifierUtilsTest {
     assertTrue (IdentifierUtils.isValidParticipantIdentifierValue ("990976098897"));
     assertTrue (IdentifierUtils.isValidParticipantIdentifierValue ("9909:976098896"));
     assertTrue (IdentifierUtils.isValidParticipantIdentifierValue ("9908:976098896"));
+
+    assertTrue (IdentifierUtils.isValidParticipantIdentifierValue (StringHelper.getRepeated ('a',
+                                                                                             CIdentifier.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)));
+    assertFalse (IdentifierUtils.isValidParticipantIdentifierValue (StringHelper.getRepeated ('a',
+                                                                                              CIdentifier.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH + 1)));
+  }
+
+  @Test
+  public void testIsValidParticipantIdentifier () {
+    assertFalse (IdentifierUtils.isValidParticipantIdentifier (null));
+    assertFalse (IdentifierUtils.isValidParticipantIdentifier (""));
+
+    assertTrue (IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::9908:976098897"));
+    assertTrue (IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::9908:976098897 "));
+    assertTrue (IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::990:976098897"));
+    assertTrue (IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::990976098897"));
+    assertTrue (IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::9909:976098896"));
+    assertTrue (IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::9908:976098896"));
+
+    assertFalse (IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummythatiswaytoolongforwhatisexpected::9908:976098896"));
+    assertFalse (IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::" +
+                                                               StringHelper.getRepeated ('a',
+                                                                                         CIdentifier.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH + 1)));
+    assertFalse (IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy:9908:976098896"));
+    assertFalse (IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy9908:976098896"));
+  }
+
+  @Test
+  public void testIsValidProcessIdentifierValue () {
+    assertFalse (IdentifierUtils.isValidProcessIdentifierValue (null));
+    assertFalse (IdentifierUtils.isValidProcessIdentifierValue (""));
+
+    assertTrue (IdentifierUtils.isValidProcessIdentifierValue ("proc1"));
+    assertTrue (IdentifierUtils.isValidProcessIdentifierValue ("proc2 "));
+
+    assertTrue (IdentifierUtils.isValidProcessIdentifierValue (StringHelper.getRepeated ('a',
+                                                                                         CIdentifier.MAX_PROCESS_IDENTIFIER_VALUE_LENGTH)));
+    assertFalse (IdentifierUtils.isValidProcessIdentifierValue (StringHelper.getRepeated ('a',
+                                                                                          CIdentifier.MAX_PROCESS_IDENTIFIER_VALUE_LENGTH + 1)));
+  }
+
+  @Test
+  public void testIsValidProcessIdentifier () {
+    assertFalse (IdentifierUtils.isValidProcessIdentifier (null));
+    assertFalse (IdentifierUtils.isValidProcessIdentifier (""));
+
+    assertTrue (IdentifierUtils.isValidProcessIdentifier ("process::proc1"));
+    assertTrue (IdentifierUtils.isValidProcessIdentifier ("process::proc2 "));
+
+    assertFalse (IdentifierUtils.isValidProcessIdentifier ("processany-actorid-dummythatiswaytoolongforwhatisexpected::proc2"));
+    assertFalse (IdentifierUtils.isValidProcessIdentifier ("process::" +
+                                                           StringHelper.getRepeated ('a',
+                                                                                     CIdentifier.MAX_PROCESS_IDENTIFIER_VALUE_LENGTH + 1)));
+    assertFalse (IdentifierUtils.isValidProcessIdentifier ("process:proc2"));
+    assertFalse (IdentifierUtils.isValidProcessIdentifier ("processproc2"));
   }
 
   @Test
@@ -248,5 +335,46 @@ public final class IdentifierUtilsTest {
     assertEquals ("abc", IdentifierUtils.getUnifiedParticipantDBValue ("abc"));
     assertEquals ("abc", IdentifierUtils.getUnifiedParticipantDBValue ("ABC"));
     assertEquals ("abc", IdentifierUtils.getUnifiedParticipantDBValue ("AbC"));
+  }
+
+  @Test
+  public void testHasDefaultParticipantIdentifierScheme () {
+    assertTrue (IdentifierUtils.hasDefaultParticipantIdentifierScheme (SimpleParticipantIdentifier.createWithDefaultScheme ("abc")));
+    assertFalse (IdentifierUtils.hasDefaultParticipantIdentifierScheme (new SimpleParticipantIdentifier ("dummy-actorid-upis",
+                                                                                                         "abc")));
+    assertTrue (IdentifierUtils.hasDefaultParticipantIdentifierScheme (CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME +
+                                                                       "::abc"));
+    assertFalse (IdentifierUtils.hasDefaultParticipantIdentifierScheme (CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME +
+                                                                        ":abc"));
+    assertFalse (IdentifierUtils.hasDefaultParticipantIdentifierScheme (CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME +
+                                                                        "abc"));
+    assertFalse (IdentifierUtils.hasDefaultParticipantIdentifierScheme ("dummy-actorid-upis::abc"));
+  }
+
+  @Test
+  public void testHasDefaultDocumentTypeIdentifierScheme () {
+    assertTrue (IdentifierUtils.hasDefaultDocumentTypeIdentifierScheme (SimpleDocumentTypeIdentifier.createWithDefaultScheme ("abc")));
+    assertFalse (IdentifierUtils.hasDefaultDocumentTypeIdentifierScheme (new SimpleDocumentTypeIdentifier ("doctype",
+                                                                                                           "abc")));
+    assertTrue (IdentifierUtils.hasDefaultDocumentTypeIdentifierScheme (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME +
+                                                                        "::abc"));
+    assertFalse (IdentifierUtils.hasDefaultDocumentTypeIdentifierScheme (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME +
+                                                                         ":abc"));
+    assertFalse (IdentifierUtils.hasDefaultDocumentTypeIdentifierScheme (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME +
+                                                                         "abc"));
+    assertFalse (IdentifierUtils.hasDefaultDocumentTypeIdentifierScheme ("doctype::abc"));
+  }
+
+  @Test
+  public void testHasDefaultProcessIdentifierScheme () {
+    assertTrue (IdentifierUtils.hasDefaultProcessIdentifierScheme (SimpleProcessIdentifier.createWithDefaultScheme ("abc")));
+    assertFalse (IdentifierUtils.hasDefaultProcessIdentifierScheme (new SimpleProcessIdentifier ("proctype", "abc")));
+    assertTrue (IdentifierUtils.hasDefaultProcessIdentifierScheme (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME +
+                                                                   "::abc"));
+    assertFalse (IdentifierUtils.hasDefaultProcessIdentifierScheme (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME +
+                                                                    ":abc"));
+    assertFalse (IdentifierUtils.hasDefaultProcessIdentifierScheme (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME +
+                                                                    "abc"));
+    assertFalse (IdentifierUtils.hasDefaultProcessIdentifierScheme ("proctype::abc"));
   }
 }
