@@ -61,18 +61,24 @@ public final class IdentifierIssuingAgencyManagerTest {
     // test valid
     assertNotNull (IdentifierIssuingAgencyManager.getAgencyOfISO6523Code ("0088"));
     assertTrue (IdentifierIssuingAgencyManager.containsAgencyWithISO6523Code ("0088"));
+    assertEquals ("GLN", IdentifierIssuingAgencyManager.getSchemeIDOfISO6523Code ("0088"));
     assertNotNull (IdentifierIssuingAgencyManager.getAgencyOfSchemeID ("GLN"));
     assertTrue (IdentifierIssuingAgencyManager.containsAgencyWithSchemeID ("GLN"));
+    assertEquals ("0088", IdentifierIssuingAgencyManager.getISO6523CodeOfSchemeID ("GLN"));
 
     // test invalid
     assertNull (IdentifierIssuingAgencyManager.getAgencyOfISO6523Code ("1024"));
     assertFalse (IdentifierIssuingAgencyManager.containsAgencyWithISO6523Code ("1024"));
+    assertNull (IdentifierIssuingAgencyManager.getSchemeIDOfISO6523Code ("1024"));
     assertNull (IdentifierIssuingAgencyManager.getAgencyOfISO6523Code (null));
     assertFalse (IdentifierIssuingAgencyManager.containsAgencyWithISO6523Code (null));
+    assertNull (IdentifierIssuingAgencyManager.getSchemeIDOfISO6523Code (null));
     assertNull (IdentifierIssuingAgencyManager.getAgencyOfSchemeID ("XYZ"));
     assertFalse (IdentifierIssuingAgencyManager.containsAgencyWithSchemeID ("XYZ"));
+    assertNull (IdentifierIssuingAgencyManager.getISO6523CodeOfSchemeID ("XYZ"));
     assertNull (IdentifierIssuingAgencyManager.getAgencyOfSchemeID (null));
     assertFalse (IdentifierIssuingAgencyManager.containsAgencyWithSchemeID (null));
+    assertNull (IdentifierIssuingAgencyManager.getISO6523CodeOfSchemeID (null));
 
     // Test deprecated
     assertEquals (ETriState.TRUE, IdentifierIssuingAgencyManager.isAgencyWithISO6523CodeDeprecated ("9916"));

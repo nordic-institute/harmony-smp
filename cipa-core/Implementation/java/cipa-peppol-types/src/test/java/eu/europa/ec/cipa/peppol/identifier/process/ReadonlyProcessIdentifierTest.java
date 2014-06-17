@@ -92,7 +92,7 @@ public final class ReadonlyProcessIdentifierTest {
 
     try {
       // null value not allowed
-      new ReadonlyProcessIdentifier ("scheme", null);
+      new ReadonlyProcessIdentifier (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME, null);
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
@@ -106,21 +106,22 @@ public final class ReadonlyProcessIdentifierTest {
 
     try {
       // Empty is not allowed
-      new ReadonlyProcessIdentifier ("scheme", "");
+      new ReadonlyProcessIdentifier (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME, "");
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
 
     try {
       // Cannot be mapped to ISO-8859-1:
-      new ReadonlyProcessIdentifier ("scheme", "Љ");
+      new ReadonlyProcessIdentifier (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME, "Љ");
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
 
     try {
       // Scheme too long
-      new ReadonlyProcessIdentifier (StringHelper.getRepeated ('a', CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH + 1),
+      new ReadonlyProcessIdentifier (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME +
+                                         StringHelper.getRepeated ('a', CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH + 1),
                                      "abc");
       fail ();
     }
@@ -128,7 +129,7 @@ public final class ReadonlyProcessIdentifierTest {
 
     try {
       // Value too long
-      new ReadonlyProcessIdentifier ("scheme",
+      new ReadonlyProcessIdentifier (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME,
                                      StringHelper.getRepeated ('a', CIdentifier.MAX_PROCESS_IDENTIFIER_VALUE_LENGTH + 1));
       fail ();
     }

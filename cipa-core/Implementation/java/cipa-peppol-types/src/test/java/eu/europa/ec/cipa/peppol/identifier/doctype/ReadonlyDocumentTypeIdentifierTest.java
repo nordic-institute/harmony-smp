@@ -92,7 +92,7 @@ public final class ReadonlyDocumentTypeIdentifierTest {
 
     try {
       // null value not allowed
-      new ReadonlyDocumentTypeIdentifier ("scheme", null);
+      new ReadonlyDocumentTypeIdentifier (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME, null);
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
@@ -106,21 +106,23 @@ public final class ReadonlyDocumentTypeIdentifierTest {
 
     try {
       // Empty is not allowed
-      new ReadonlyDocumentTypeIdentifier ("scheme", "");
+      new ReadonlyDocumentTypeIdentifier (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME, "");
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
 
     try {
       // Cannot be mapped to ISO-8859-1:
-      new ReadonlyDocumentTypeIdentifier ("scheme", "Љ");
+      new ReadonlyDocumentTypeIdentifier (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME, "Љ");
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
 
     try {
       // Scheme too long
-      new ReadonlyDocumentTypeIdentifier (StringHelper.getRepeated ('a', CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH + 1),
+      new ReadonlyDocumentTypeIdentifier (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME +
+                                              StringHelper.getRepeated ('a',
+                                                                        CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH + 1),
                                           "abc");
       fail ();
     }
@@ -128,7 +130,7 @@ public final class ReadonlyDocumentTypeIdentifierTest {
 
     try {
       // Value too long
-      new ReadonlyDocumentTypeIdentifier ("scheme",
+      new ReadonlyDocumentTypeIdentifier (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME,
                                           StringHelper.getRepeated ('a',
                                                                     CIdentifier.MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH + 1));
       fail ();

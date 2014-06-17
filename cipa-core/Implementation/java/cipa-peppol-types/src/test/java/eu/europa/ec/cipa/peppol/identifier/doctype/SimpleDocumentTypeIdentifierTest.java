@@ -106,7 +106,7 @@ public final class SimpleDocumentTypeIdentifierTest {
 
     try {
       // null value not allowed
-      new SimpleDocumentTypeIdentifier ("scheme", null);
+      new SimpleDocumentTypeIdentifier (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME, null);
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
@@ -120,21 +120,22 @@ public final class SimpleDocumentTypeIdentifierTest {
 
     try {
       // Empty is not allowed
-      new SimpleDocumentTypeIdentifier ("scheme", "");
+      new SimpleDocumentTypeIdentifier (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME, "");
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
 
     try {
       // Cannot be mapped to ISO-8859-1:
-      new SimpleDocumentTypeIdentifier ("scheme", "Љ");
+      new SimpleDocumentTypeIdentifier (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME, "Љ");
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
 
     try {
       // Scheme too long
-      new SimpleDocumentTypeIdentifier (StringHelper.getRepeated ('a', CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH + 1),
+      new SimpleDocumentTypeIdentifier (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME +
+                                            StringHelper.getRepeated ('a', CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH + 1),
                                         "abc");
       fail ();
     }
@@ -142,7 +143,7 @@ public final class SimpleDocumentTypeIdentifierTest {
 
     try {
       // Value too long
-      new SimpleDocumentTypeIdentifier ("scheme",
+      new SimpleDocumentTypeIdentifier (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME,
                                         StringHelper.getRepeated ('a',
                                                                   CIdentifier.MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH + 1));
       fail ();

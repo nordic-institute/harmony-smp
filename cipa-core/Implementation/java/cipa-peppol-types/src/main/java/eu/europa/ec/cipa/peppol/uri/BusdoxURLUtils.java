@@ -49,6 +49,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import com.phloc.commons.ValueEnforcer;
+import com.phloc.commons.annotations.PresentForCodeCoverage;
 import com.phloc.commons.charset.CCharset;
 import com.phloc.commons.codec.URLCodec;
 import com.phloc.commons.messagedigest.EMessageDigestAlgorithm;
@@ -69,6 +70,10 @@ import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 public final class BusdoxURLUtils {
   public static final Charset URL_CHARSET = CCharset.CHARSET_UTF_8_OBJ;
   public static final Locale URL_LOCALE = Locale.US;
+
+  @SuppressWarnings ("unused")
+  @PresentForCodeCoverage
+  private static final BusdoxURLUtils s_aInstance = new BusdoxURLUtils ();
 
   private BusdoxURLUtils () {}
 

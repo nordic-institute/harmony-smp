@@ -51,6 +51,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.phloc.commons.ValueEnforcer;
+import com.phloc.commons.annotations.PresentForCodeCoverage;
 import com.phloc.commons.collections.ContainerHelper;
 import com.phloc.commons.xml.ChildElementIterator;
 import com.phloc.commons.xml.XMLFactory;
@@ -73,6 +74,10 @@ import com.phloc.commons.xml.XMLHelper;
  */
 @Immutable
 public final class W3CEndpointReferenceUtils {
+  @SuppressWarnings ("unused")
+  @PresentForCodeCoverage
+  private static final W3CEndpointReferenceUtils s_aInstance = new W3CEndpointReferenceUtils ();
+
   private W3CEndpointReferenceUtils () {}
 
   /**

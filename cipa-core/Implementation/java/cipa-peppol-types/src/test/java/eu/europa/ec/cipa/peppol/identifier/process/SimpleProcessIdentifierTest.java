@@ -104,7 +104,7 @@ public final class SimpleProcessIdentifierTest {
 
     try {
       // null value not allowed
-      new SimpleProcessIdentifier ("scheme", null);
+      new SimpleProcessIdentifier (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME, null);
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
@@ -118,28 +118,29 @@ public final class SimpleProcessIdentifierTest {
 
     try {
       // Empty is not allowed
-      new SimpleProcessIdentifier ("scheme", "");
+      new SimpleProcessIdentifier (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME, "");
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
 
     try {
       // Cannot be mapped to ISO-8859-1:
-      new SimpleProcessIdentifier ("scheme", "Љ");
+      new SimpleProcessIdentifier (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME, "Љ");
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
 
     try {
       // Scheme too long
-      new SimpleProcessIdentifier (StringHelper.getRepeated ('a', CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH + 1), "abc");
+      new SimpleProcessIdentifier (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME +
+                                   StringHelper.getRepeated ('a', CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH + 1), "abc");
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
 
     try {
       // Value too long
-      new SimpleProcessIdentifier ("scheme",
+      new SimpleProcessIdentifier (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME,
                                    StringHelper.getRepeated ('a', CIdentifier.MAX_PROCESS_IDENTIFIER_VALUE_LENGTH + 1));
       fail ();
     }

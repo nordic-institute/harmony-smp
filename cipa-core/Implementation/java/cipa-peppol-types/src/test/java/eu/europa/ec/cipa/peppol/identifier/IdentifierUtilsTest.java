@@ -39,6 +39,7 @@ package eu.europa.ec.cipa.peppol.identifier;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
@@ -238,5 +239,14 @@ public final class IdentifierUtilsTest {
     assertTrue (IdentifierUtils.isValidParticipantIdentifierValue ("990976098897"));
     assertTrue (IdentifierUtils.isValidParticipantIdentifierValue ("9909:976098896"));
     assertTrue (IdentifierUtils.isValidParticipantIdentifierValue ("9908:976098896"));
+  }
+
+  @Test
+  public void testGetUnifiedParticipantDBValue () {
+    assertNull (IdentifierUtils.getUnifiedParticipantDBValue (null));
+    assertEquals ("", IdentifierUtils.getUnifiedParticipantDBValue (""));
+    assertEquals ("abc", IdentifierUtils.getUnifiedParticipantDBValue ("abc"));
+    assertEquals ("abc", IdentifierUtils.getUnifiedParticipantDBValue ("ABC"));
+    assertEquals ("abc", IdentifierUtils.getUnifiedParticipantDBValue ("AbC"));
   }
 }

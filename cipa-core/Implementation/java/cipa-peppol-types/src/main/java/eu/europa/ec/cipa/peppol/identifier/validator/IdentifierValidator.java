@@ -46,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.phloc.commons.ValueEnforcer;
+import com.phloc.commons.annotations.PresentForCodeCoverage;
 import com.phloc.commons.lang.ServiceLoaderUtils;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
@@ -68,6 +69,10 @@ public final class IdentifierValidator {
                       s_aParticipantIDValidators.size () +
                       " SPI implementations of IParticipantIdentifierValidatorSPI");
   }
+
+  @SuppressWarnings ("unused")
+  @PresentForCodeCoverage
+  private static final IdentifierValidator s_aInstance = new IdentifierValidator ();
 
   private IdentifierValidator () {}
 

@@ -92,7 +92,7 @@ public final class ReadonlyParticipantIdentifierTest {
 
     try {
       // null value not allowed
-      new ReadonlyParticipantIdentifier ("scheme", null);
+      new ReadonlyParticipantIdentifier (CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME, null);
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
@@ -106,21 +106,23 @@ public final class ReadonlyParticipantIdentifierTest {
 
     try {
       // Empty is not allowed
-      new ReadonlyParticipantIdentifier ("scheme", "");
+      new ReadonlyParticipantIdentifier (CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME, "");
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
 
     try {
       // Cannot be mapped to ISO-8859-1:
-      new ReadonlyParticipantIdentifier ("scheme", "Љ");
+      new ReadonlyParticipantIdentifier (CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME, "Љ");
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
 
     try {
       // Scheme too long
-      new ReadonlyParticipantIdentifier (StringHelper.getRepeated ('a', CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH + 1),
+      new ReadonlyParticipantIdentifier (CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME +
+                                             StringHelper.getRepeated ('a',
+                                                                       CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH + 1),
                                          "abc");
       fail ();
     }
@@ -128,7 +130,7 @@ public final class ReadonlyParticipantIdentifierTest {
 
     try {
       // Value too long
-      new ReadonlyParticipantIdentifier ("scheme",
+      new ReadonlyParticipantIdentifier (CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME,
                                          StringHelper.getRepeated ('a',
                                                                    CIdentifier.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH + 1));
       fail ();

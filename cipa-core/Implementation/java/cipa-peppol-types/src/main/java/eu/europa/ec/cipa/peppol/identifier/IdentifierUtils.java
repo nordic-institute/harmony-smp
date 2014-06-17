@@ -48,6 +48,7 @@ import javax.annotation.concurrent.Immutable;
 
 import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.Nonempty;
+import com.phloc.commons.annotations.PresentForCodeCoverage;
 import com.phloc.commons.charset.CCharset;
 import com.phloc.commons.collections.ArrayHelper;
 import com.phloc.commons.equals.EqualsUtils;
@@ -80,7 +81,18 @@ public final class IdentifierUtils {
 
   private static final String PATTERN_PARTICIPANT_ID = "^([^:]*):(.*)$";
 
+  private static final String PREFIX_PARTICIPANT_IDENTIFIER_SCHEME = CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME +
+                                                                     CIdentifier.URL_SCHEME_VALUE_SEPARATOR;
+  private static final String PREFIX_DOCUMENT_TYPE_IDENTIFIER_SCHEME = CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME +
+                                                                       CIdentifier.URL_SCHEME_VALUE_SEPARATOR;
+  private static final String PREFIX_PROCESS_IDENTIFIER_SCHEME = CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME +
+                                                                 CIdentifier.URL_SCHEME_VALUE_SEPARATOR;
+
   private static final AtomicBoolean s_aCharsetChecksDisabled = new AtomicBoolean (DEFAULT_CHARSET_CHECKS_DISABLED);
+
+  @SuppressWarnings ("unused")
+  @PresentForCodeCoverage
+  private static final IdentifierUtils s_aInstance = new IdentifierUtils ();
 
   private IdentifierUtils () {}
 
@@ -94,7 +106,10 @@ public final class IdentifierUtils {
 
   /**
    * Enable or disable the charset checks. You may disable charset checks, if
-   * you previously checked them for consistency.
+   * you previously checked them for consistency. Charset checks are by default
+   * enabled and check if a participant, document type and process identifier
+   * value can be encoded in US-ASCII (participant) or ISO-8859-1 (document type
+   * and process).
    * 
    * @param bDisable
    *        if <code>true</code> all charset checks are disabled. If
@@ -267,7 +282,8 @@ public final class IdentifierUtils {
    * @param sIdentifierValue2
    *        Second identifier value to compare. May be <code>null</code>.
    * @return <code>true</code> if the identifier values are equal,
-   *         <code>false</code> otherwise.
+   *         <code>false</code> otherwise. If both are <code>null</code> they
+   *         are considered equal.
    */
   public static boolean areParticipantIdentifierValuesEqual (@Nullable final String sIdentifierValue1,
                                                              @Nullable final String sIdentifierValue2) {
@@ -284,7 +300,8 @@ public final class IdentifierUtils {
    * @param sIdentifierValue2
    *        Second identifier value to compare. May be <code>null</code>.
    * @return <code>true</code> if the identifier values are equal,
-   *         <code>false</code> otherwise.
+   *         <code>false</code> otherwise. If both are <code>null</code> they
+   *         are considered equal.
    */
   public static boolean areDocumentIdentifierValuesEqual (@Nullable final String sIdentifierValue1,
                                                           @Nullable final String sIdentifierValue2) {
@@ -301,7 +318,8 @@ public final class IdentifierUtils {
    * @param sIdentifierValue2
    *        Second identifier value to compare. May be <code>null</code>.
    * @return <code>true</code> if the identifier values are equal,
-   *         <code>false</code> otherwise.
+   *         <code>false</code> otherwise. If both are <code>null</code> they
+   *         are considered equal.
    */
   public static boolean areProcessIdentifierValuesEqual (@Nullable final String sIdentifierValue1,
                                                          @Nullable final String sIdentifierValue2) {
@@ -322,8 +340,8 @@ public final class IdentifierUtils {
    */
   public static boolean areIdentifiersEqual (@Nonnull final IReadonlyParticipantIdentifier aIdentifier1,
                                              @Nonnull final IReadonlyParticipantIdentifier aIdentifier2) {
-    ValueEnforcer.notNull (aIdentifier1, "identifier1");
-    ValueEnforcer.notNull (aIdentifier2, "identifier2");
+    ValueEnforcer.notNull (aIdentifier1, "ParticipantIdentifier1");
+    ValueEnforcer.notNull (aIdentifier2, "ParticipantIdentifier2");
 
     // Identifiers are equal, if both scheme and value match case insensitive!
     return EqualsUtils.nullSafeEqualsIgnoreCase (aIdentifier1.getScheme (), aIdentifier2.getScheme ()) &&
@@ -343,8 +361,8 @@ public final class IdentifierUtils {
    */
   public static boolean areIdentifiersEqual (@Nonnull final IReadonlyDocumentTypeIdentifier aIdentifier1,
                                              @Nonnull final IReadonlyDocumentTypeIdentifier aIdentifier2) {
-    ValueEnforcer.notNull (aIdentifier1, "identifier1");
-    ValueEnforcer.notNull (aIdentifier2, "identifier2");
+    ValueEnforcer.notNull (aIdentifier1, "DocumentTypeIdentifier1");
+    ValueEnforcer.notNull (aIdentifier2, "DocumentTypeIdentifier2");
 
     // Identifiers are equal, if both scheme and value match case sensitive!
     return EqualsUtils.equals (aIdentifier1.getScheme (), aIdentifier2.getScheme ()) &&
@@ -364,8 +382,8 @@ public final class IdentifierUtils {
    */
   public static boolean areIdentifiersEqual (@Nonnull final IReadonlyProcessIdentifier aIdentifier1,
                                              @Nonnull final IReadonlyProcessIdentifier aIdentifier2) {
-    ValueEnforcer.notNull (aIdentifier1, "identifier1");
-    ValueEnforcer.notNull (aIdentifier2, "identifier2");
+    ValueEnforcer.notNull (aIdentifier1, "ProcessIdentifier1");
+    ValueEnforcer.notNull (aIdentifier2, "ProcessIdentifier2");
 
     // Identifiers are equal, if both scheme and value match case sensitive!
     return EqualsUtils.equals (aIdentifier1.getScheme (), aIdentifier2.getScheme ()) &&
@@ -411,8 +429,7 @@ public final class IdentifierUtils {
    *         <code>false</code> otherwise
    */
   public static boolean hasDefaultParticipantIdentifierScheme (@Nullable final String sIdentifier) {
-    return StringHelper.startsWith (sIdentifier, CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME +
-                                                 CIdentifier.URL_SCHEME_VALUE_SEPARATOR);
+    return StringHelper.startsWith (sIdentifier, PREFIX_PARTICIPANT_IDENTIFIER_SCHEME);
   }
 
   /**
@@ -454,8 +471,7 @@ public final class IdentifierUtils {
    *         <code>false</code> otherwise
    */
   public static boolean hasDefaultDocumentTypeIdentifierScheme (@Nullable final String sIdentifier) {
-    return StringHelper.startsWith (sIdentifier, CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME +
-                                                 CIdentifier.URL_SCHEME_VALUE_SEPARATOR);
+    return StringHelper.startsWith (sIdentifier, PREFIX_DOCUMENT_TYPE_IDENTIFIER_SCHEME);
   }
 
   /**
@@ -497,8 +513,7 @@ public final class IdentifierUtils {
    *         <code>false</code> otherwise
    */
   public static boolean hasDefaultProcessIdentifierScheme (@Nullable final String sIdentifier) {
-    return StringHelper.startsWith (sIdentifier, CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME +
-                                                 CIdentifier.URL_SCHEME_VALUE_SEPARATOR);
+    return StringHelper.startsWith (sIdentifier, PREFIX_PROCESS_IDENTIFIER_SCHEME);
   }
 
   /**

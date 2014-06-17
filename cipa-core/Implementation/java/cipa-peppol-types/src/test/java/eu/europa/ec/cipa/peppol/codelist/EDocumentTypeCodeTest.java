@@ -35,9 +35,10 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.peppol.identifier.issuingagency;
+package eu.europa.ec.cipa.peppol.codelist;
 
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -46,24 +47,21 @@ import org.junit.Test;
 import com.phloc.commons.string.StringHelper;
 
 /**
- * Test class for class {@link EPredefinedIdentifierIssuingAgency}.
+ * Test class for class {@link EDocumentTypeCode}.
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class EPredefinedIdentifierIssuingAgencyTest {
+public final class EDocumentTypeCodeTest {
   @Test
-  public void testAll () {
-    for (final EPredefinedIdentifierIssuingAgency e : EPredefinedIdentifierIssuingAgency.values ()) {
-      assertTrue (StringHelper.hasText (e.getSchemeID ()));
-      // May be null but not empty
-      final String sAgency = e.getSchemeAgency ();
-      if (sAgency != null)
-        assertTrue (StringHelper.hasText (sAgency));
-      assertTrue (StringHelper.hasText (e.getISO6523Code ()));
-      assertSame (e, EPredefinedIdentifierIssuingAgency.valueOf (e.name ()));
-      assertTrue (e.createIdentifierValue ("abc").endsWith (":abc"));
-      assertTrue (e.createParticipantIdentifier ("def").getURIEncoded ().endsWith (":def"));
-      assertNotNull (e.getSince ());
+  public void testBasic () {
+    for (final EDocumentTypeCode e : EDocumentTypeCode.values ()) {
+      assertTrue (StringHelper.hasText (e.getID ()));
+      assertTrue (StringHelper.hasText (e.getDisplayName ()));
+      assertSame (e, EDocumentTypeCode.getFromIDOrNull (e.getID ()));
+      assertNotNull (EDocumentTypeCode.getDisplayNameFromIDOrNull (e.getID ()));
+      assertSame (e, EDocumentTypeCode.valueOf (e.name ()));
     }
+    assertNull (EDocumentTypeCode.getFromIDOrNull ("Yoda"));
+    assertNull (EDocumentTypeCode.getDisplayNameFromIDOrNull ("Yoda"));
   }
 }
