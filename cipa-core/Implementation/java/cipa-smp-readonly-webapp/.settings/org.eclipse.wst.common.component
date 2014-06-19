@@ -5,18 +5,6 @@
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/webapp"/>
-        <dependent-module archiveName="cipa-smp-server-library-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-smp-server-library/cipa-smp-server-library">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="cipa-sml-client-library-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-sml-client-library/cipa-sml-client-library">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="cipa-peppol-types-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-peppol-types/cipa-peppol-types">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="cipa-commons-busdox-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-commons-busdox/cipa-commons-busdox">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <property name="context-root" value="cipa-smp-readonly-webapp"/>
         <property name="java-output-path" value="/cipa-smp-readonly-webapp/target/classes"/>
     </wb-module>
