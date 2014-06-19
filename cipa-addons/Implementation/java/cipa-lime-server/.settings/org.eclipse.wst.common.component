@@ -4,24 +4,6 @@
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/resources"/>
-        <dependent-module archiveName="cipa-lime-client-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-lime-client/cipa-lime-client">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="cipa-transport-api-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-transport-api/cipa-transport-api">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="cipa-smp-client-library-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-smp-client-library/cipa-smp-client-library">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="cipa-peppol-types-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-peppol-types/cipa-peppol-types">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="cipa-commons-busdox-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-commons-busdox/cipa-commons-busdox">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="cipa-start-client-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-start-client/cipa-start-client">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <property name="context-root" value="cipa-lime-server"/>
         <property name="java-output-path" value="/cipa-lime-server/target/classes"/>
     </wb-module>
