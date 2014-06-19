@@ -7,14 +7,14 @@
     <relativePath>../cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-smp-full-webapp</artifactId>
-  <version>2.1.1-SNAPSHOT</version>
+  <version>2.1.1</version>
   <packaging>war</packaging>
   <name>cipa-smp-full-webapp</name>
   <description>SMP webapp with all available features (read &amp; write)</description>
 
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-smp-full-webapp</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-smp-full-webapp</developerConnection>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/tags/2.1.1/cipa-smp-full-webapp</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/tags/2.1.1/cipa-smp-full-webapp</developerConnection>
   </scm>
   
   <repositories>
