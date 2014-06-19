@@ -129,16 +129,16 @@ public final class DNSTest {
     // Insert OK
     final ParticipantIdentifierType pi = SimpleParticipantIdentifier.createWithDefaultScheme ("0010:5798000000001");
 
-    final IDNSClient dnsClient = _createDNSClient ();
-    dnsClient.createIdentifier (pi, validPublisherId);
+    final IDNSClient aDNSClient = _createDNSClient ();
+    aDNSClient.createIdentifier (pi, validPublisherId);
     assertTrue ("Create Identifier ok as expected ", true);
 
-    final String dnsName = dnsClient.getDNSNameOfParticipant (pi);
+    final String dnsName = aDNSClient.getDNSNameOfParticipant (pi);
 
     assertEquals ("Created DNS Name must match hash from SML Spec : e49b223851f6e97cbfce4f72c3402aac : ",
                   "B-e49b223851f6e97cbfce4f72c3402aac." +
                       CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME +
-                      ".sml.smloc.xx.",
+                      ".sml.smloc.xx",
                   dnsName);
   }
 
