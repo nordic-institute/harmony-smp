@@ -4,7 +4,7 @@
     <groupId>eu.domibus</groupId>
     <artifactId>domibus</artifactId>
     <packaging>pom</packaging>
-    <version>1.4.1-FINAL</version>
+    <version>1.4.1.1-FINAL</version>
     <name>Domibus</name>
     <description>
         A Standard Open source implementation of ebMS 3 Core specification.
@@ -420,11 +420,11 @@
     </reporting>
 	<distributionManagement>
    	 <repository>
-      	<id>joinup.nexus</id>
+      	<id>joinup-releases</id>
       	<url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
     </repository>
     <snapshotRepository>
-      <id>joinup.nexus</id>
+      <id>joinup-snapshots</id>
       <url>https://joinup.ec.europa.eu/nexus/content/repositories/snapshots/</url>
     </snapshotRepository>
 
