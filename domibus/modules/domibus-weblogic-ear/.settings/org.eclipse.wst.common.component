@@ -3,22 +3,22 @@
         <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
         <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
         <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
-        <dependent-module archiveName="domibus-common-1.4.1-FINAL.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/domibus-common/domibus-common">
+        <dependent-module archiveName="domibus-common-1.4.1.1-FINAL.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/domibus-common/domibus-common">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="domibus-logging-1.4.1-FINAL.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/domibus-logging/domibus-logging">
+        <dependent-module archiveName="domibus-logging-1.4.1.1-FINAL.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/domibus-logging/domibus-logging">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="domibus-ebms3-1.4.1-FINAL.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/domibus-ebms3/domibus-ebms3">
+        <dependent-module archiveName="domibus-ebms3-1.4.1.1-FINAL.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/domibus-ebms3/domibus-ebms3">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="domibus-security-1.4.1-FINAL.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/domibus-security/domibus-security">
+        <dependent-module archiveName="domibus-security-1.4.1.1-FINAL.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/domibus-security/domibus-security">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="domibus-backend-1.4.1-FINAL.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/domibus-backend/domibus-backend">
+        <dependent-module archiveName="domibus-backend-1.4.1.1-FINAL.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/domibus-backend/domibus-backend">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <property name="java-output-path" value="/domibus-distribution-weblogic/target/classes"/>
-        <property name="context-root" value="domibus-distribution-weblogic"/>
+        <property name="context-root" value="domibus"/>
     </wb-module>
 </project-modules>
