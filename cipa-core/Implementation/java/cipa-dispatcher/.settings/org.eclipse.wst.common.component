@@ -10,12 +10,6 @@
         <dependent-module archiveName="cipa-smp-client-library-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-smp-client-library/cipa-smp-client-library">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="cipa-peppol-types-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-peppol-types/cipa-peppol-types">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
-        <dependent-module archiveName="cipa-commons-busdox-1.1.4-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/cipa-commons-busdox/cipa-commons-busdox">
-            <dependency-type>uses</dependency-type>
-        </dependent-module>
         <property name="context-root" value="cipa-dispatcher"/>
         <property name="java-output-path" value="/cipa-dispatcher/target/classes"/>
         <property name="component.exclusion.patterns" value="WEB-INF/lib/slf4j-api-*.jar"/>
