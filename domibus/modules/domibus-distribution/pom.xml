@@ -64,7 +64,7 @@ weblogic: like a normal build without profile but instead of tomcats servers two
     <parent>
         <groupId>eu.domibus</groupId>
         <artifactId>domibus</artifactId>
-        <version>1.4.1-FINAL</version>
+        <version>1.4.1.1-FINAL</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
@@ -129,12 +129,13 @@ weblogic: like a normal build without profile but instead of tomcats servers two
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-c3p0</artifactId>
             <scope>compile</scope>
-        </dependency>
+        </dependency>  
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <scope>compile</scope>
         </dependency>
+  
         <dependency>
             <groupId>org.opensymphony.quartz</groupId>
             <artifactId>quartz</artifactId>
@@ -155,6 +156,7 @@ weblogic: like a normal build without profile but instead of tomcats servers two
             <artifactId>spring</artifactId>
             <scope>compile</scope>
         </dependency>
+        
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-all</artifactId>
@@ -237,8 +239,39 @@ weblogic: like a normal build without profile but instead of tomcats servers two
             <scope>compile</scope>
         </dependency>
         <!-- Development -->
+ 
+<!--   <dependency> -->
+<!--             <groupId>org.apache.ibatis</groupId> -->
+<!--             <artifactId>ibatis-sqlmap</artifactId> -->
+<!--             <version>2.3.4.726</version> -->
+<!--               <scope>test</scope> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>org.apache.derby</groupId> -->
+<!--             <artifactId>derby</artifactId> -->
+<!--             <version>10.10.1.1</version> -->
+<!--               <scope>test</scope> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>org.apache.derby</groupId> -->
+<!--             <artifactId>derbynet</artifactId> -->
+<!--             <version>10.10.1.1</version> -->
+<!--               <scope>test</scope> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>org.apache.derby</groupId> -->
+<!--             <artifactId>derbyclient</artifactId> -->
+<!--             <version>10.10.1.1</version> -->
+<!--               <scope>test</scope> -->
+<!--         </dependency> -->
+<!--         <dependency> -->
+<!--             <groupId>org.codehaus.cargo</groupId> -->
+<!--             <artifactId>cargo-core-container-tomcat</artifactId> -->
+<!--             <version>1.4.5</version> -->
+<!--               <scope>test</scope> -->
+<!--         </dependency> -->
         <dependency>
-            <groupId>eu.europa.ec.cipa</groupId>
+            <groupId>eu.domibus</groupId>
             <artifactId>domibus-seatiger</artifactId>
             <version>1.4-FINAL</version>
             <scope>test</scope>
