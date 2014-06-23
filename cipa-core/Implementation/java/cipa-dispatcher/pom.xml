@@ -1,19 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
 	<modelVersion>4.0.0</modelVersion>
-
 	<parent>
 		<groupId>eu.europa.ec.cipa</groupId>
 		<artifactId>cipa-parent-pom</artifactId>
-		<version>1.2</version>
+		<version>1.3</version>
 		<relativePath>../cipa-parent-pom/pom.xml</relativePath>
 	</parent>
 
 	<artifactId>cipa-dispatcher</artifactId>
+    <version>1.1.0</version>
 	<packaging>war</packaging>
-
-	<version>1.1.0</version>
+    <name>cipa-dispatcher</name>
 
 	<repositories>
 		<repository>
@@ -28,7 +26,10 @@
 		</repository>
 	</repositories>
 
-	<properties>
+    <properties>
+        <m2e.jaxrs.activation>false</m2e.jaxrs.activation>
+        <m2e.jpa.activation>false</m2e.jpa.activation>
+        <m2e.jsf.activation>false</m2e.jsf.activation>
 		<org.apache.cxf.version>2.2.3</org.apache.cxf.version>
 	</properties>
 
@@ -55,26 +56,6 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-client</artifactId>
-			<version>1.17.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-core</artifactId>
-			<version>1.17.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-server</artifactId>
-			<version>1.17.1</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-servlet</artifactId>
-			<version>1.17.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
@@ -104,7 +85,7 @@
 		<dependency>
 			<groupId>eu.europa.ec.cipa</groupId>
 			<artifactId>cipa-smp-client-library</artifactId>
-			<version>1.1.4-SNAPSHOT</version>
+			<version>2.1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
@@ -114,13 +95,13 @@
 		<dependency>
 			<groupId>eu.europa.ec.cipa</groupId>
 			<artifactId>cipa-start-client</artifactId>
-			<version>1.1.4-SNAPSHOT</version>
+			<version>2.1.1</version>
 		</dependency>
-		<dependency>
-			<groupId>de.mendelson</groupId>
-			<artifactId>mendelson</artifactId>
-			<version>1.1.b41</version>
-		</dependency>
+        <dependency>
+          <groupId>eu.europa.ec.cipa</groupId>
+          <artifactId>mendelson</artifactId>
+          <version>1.1.b41</version>
+        </dependency>
 
 		<!-- <dependency> <groupId>org.apache.axis2</groupId> <artifactId>axis2-kernel</artifactId> 
 			<version>1.6.2</version> </dependency> <dependency> <groupId>org.apache.axis2</groupId> 
@@ -142,10 +123,6 @@
 	</dependencies>
 
 	<build>
-
-		<sourceDirectory>src</sourceDirectory>
-
-
 		<!-- <scriptSourceDirectory>WebContent/WEB-INF/conf</scriptSourceDirectory> -->
 
 		<!-- <resources> <resource> <directory>${basedir}/src</directory> <targetPath>${project.build.directory}/classes</targetPath> 
@@ -153,28 +130,29 @@
 			<targetPath>${project.build.directory}/WEB-INF/conf</targetPath> </resource> 
 			<resource> <directory>${basedir}/WebContent/WEB-INF/xsd</directory> <targetPath>${project.build.directory}/WEB-INF/xsd</targetPath> 
 			</resource> </resources> -->
+        <resources>
+          <resource>
+            <directory>${basedir}/src/main/resources</directory>
+            <targetPath>${project.build.directory}/classes</targetPath>
+          </resource>
+          <resource>
+            <directory>${basedir}/src/test/resources</directory>
+            <targetPath>${project.build.directory}/test-classes</targetPath>
+          </resource>
+          <resource>
+            <directory>${basedir}/src/main/webapp</directory>
+            <targetPath>${project.build.directory}/webapp-classes</targetPath>
+          </resource>
+        </resources>
 
 		<plugins>
 			<plugin>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-
-			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.3</version>
 				<configuration>
 					<packagingExcludes>WEB-INF/lib/slf4j-api-*.jar</packagingExcludes>
-					
 				</configuration>
 			</plugin>
-
 		</plugins>
-
 	</build>
 
 </project>
