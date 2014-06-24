@@ -1,6 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
+
 	<parent>
 		<groupId>eu.europa.ec.cipa</groupId>
 		<artifactId>cipa-parent-pom</artifactId>
@@ -97,55 +99,105 @@
 			<artifactId>cipa-start-client</artifactId>
 			<version>2.1.1</version>
 		</dependency>
-        <dependency>
-          <groupId>eu.europa.ec.cipa</groupId>
-          <artifactId>mendelson</artifactId>
-          <version>1.1.b41</version>
-        </dependency>
+		
 
-		<!-- <dependency> <groupId>org.apache.axis2</groupId> <artifactId>axis2-kernel</artifactId> 
-			<version>1.6.2</version> </dependency> <dependency> <groupId>org.apache.axis2</groupId> 
-			<artifactId>axis2-adb</artifactId> <version>1.6.2</version> </dependency> -->
 
-		<!-- DONE JUST FOR THE RELEASE, MARK AS PROVIDED LATER <dependency> <groupId>org.apache.cxf</groupId> 
-			<artifactId>cxf-rt-core</artifactId> <version>${org.apache.cxf.version}</version> 
-			<type>jar</type> <scope>compile</scope> </dependency> <dependency> <groupId>org.apache.cxf</groupId> 
-			<artifactId>cxf-rt-frontend-jaxws</artifactId> <version>${org.apache.cxf.version}</version> 
-			<type>jar</type> <scope>compile</scope> </dependency> <dependency> <groupId>org.apache.cxf</groupId> 
-			<artifactId>cxf-rt-transports-http</artifactId> <version>${org.apache.cxf.version}</version> 
-			<type>jar</type> <scope>compile</scope> </dependency> <dependency> <groupId>org.apache.cxf</groupId> 
-			<artifactId>cxf-rt-bindings-soap</artifactId> <version>${org.apache.cxf.version}</version> 
-			<scope>compile</scope> <type>jar</type> </dependency> <dependency> <groupId>org.apache.cxf</groupId> 
-			<artifactId>cxf-api</artifactId> <version>${org.apache.cxf.version}</version> 
-			<scope>compile</scope> <type>jar</type> </dependency> -->
+
+		<dependency>
+			<groupId>eu.europa.ec.cipa</groupId>
+			<artifactId>mendelson</artifactId>
+			<version>1.1.b41</version>
+		</dependency>
 
 
 	</dependencies>
+	
+	
 
 	<build>
-		<!-- <scriptSourceDirectory>WebContent/WEB-INF/conf</scriptSourceDirectory> -->
 
-		<!-- <resources> <resource> <directory>${basedir}/src</directory> <targetPath>${project.build.directory}/classes</targetPath> 
-			</resource> <resource> <directory>${basedir}/WebContent/WEB-INF/conf</directory> 
-			<targetPath>${project.build.directory}/WEB-INF/conf</targetPath> </resource> 
-			<resource> <directory>${basedir}/WebContent/WEB-INF/xsd</directory> <targetPath>${project.build.directory}/WEB-INF/xsd</targetPath> 
-			</resource> </resources> -->
-        <resources>
-          <resource>
-            <directory>${basedir}/src/main/resources</directory>
-            <targetPath>${project.build.directory}/classes</targetPath>
-          </resource>
-          <resource>
-            <directory>${basedir}/src/test/resources</directory>
-            <targetPath>${project.build.directory}/test-classes</targetPath>
-          </resource>
-          <resource>
-            <directory>${basedir}/src/main/webapp</directory>
-            <targetPath>${project.build.directory}/webapp-classes</targetPath>
-          </resource>
-        </resources>
 
 		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-codegen-plugin</artifactId>
+				<version>2.6.1</version>
+				
+				<executions>
+					<execution>
+						<id>generate-sources</id>
+						<phase>generate-sources</phase>
+						<configuration>
+							<sourceRoot>target/generated-sources/xjc</sourceRoot>
+							
+							<wsdlOptions>
+								<wsdlOption>
+									<wsdl>${basedir}/src/main/resources/wsdl/BackendService-1_1.wsdl</wsdl>
+								</wsdlOption>
+							</wsdlOptions>
+						</configuration>
+						<goals>
+							<goal>wsdl2java</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		
+				<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<version>0.8.0</version>
+				<executions> 
+					<execution> 
+						<goals>
+							<goal>generate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<specVersion>2.2</specVersion>
+					<schemaDirectory>src/main/resources/xsd</schemaDirectory>
+					<generateDirectory>target/generated-sources/xjc</generateDirectory>
+					<bindingDirectory>src/main/resources</bindingDirectory>
+					<schemaIncludes>
+						<schemaInclude>StandardBusinessDocumentHeader.xsd</schemaInclude>
+					</schemaIncludes>
+					<extension>true</extension>
+					<forceRegenerate>true</forceRegenerate>
+					<args>
+						<arg>-Xinheritance</arg>
+					</args>
+					<plugins>
+						<plugin>
+							<groupId>org.jvnet.jaxb2_commons</groupId>
+							<artifactId>jaxb2-basics</artifactId>
+							<version>0.6.3</version>
+						</plugin> 
+					</plugins>
+				</configuration>
+				<dependencies>
+					<!-- For maven-jaxb22-plugin 0.8.0 use JAXB 2.2.4-1 0.8.1 uses 2.2.5-b10 
+						which has some weird WS Adressing special handling! -->
+					<dependency>
+						<groupId>com.sun.xml.bind</groupId>
+						<artifactId>jaxb-xjc</artifactId>
+						<version>2.2.4-1</version>
+					</dependency>
+					<!-- Required for correct entity resolving in paths with blanks! -->
+					<dependency>
+						<groupId>xerces</groupId>
+						<artifactId>xercesImpl</artifactId>
+						<version>2.10.0</version>
+					</dependency>
+				</dependencies>
+			</plugin>
 			<plugin>
 				<artifactId>maven-war-plugin</artifactId>
 				<configuration>
@@ -153,6 +205,40 @@
 				</configuration>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.cxf
+										</groupId>
+										<artifactId>
+											cxf-codegen-plugin
+										</artifactId>
+										<versionRange>
+											[2.2.3,)
+										</versionRange>
+										<goals>
+											<goal>wsdl2java</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
-
 </project>
