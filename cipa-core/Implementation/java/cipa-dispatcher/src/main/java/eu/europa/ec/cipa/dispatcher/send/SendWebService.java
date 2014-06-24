@@ -49,7 +49,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import backend.ecodex.org._1_1.BackendInterface;
+
+
 import backend.ecodex.org._1_1.BackendService11;
 import backend.ecodex.org._1_1.PayloadType;
 import backend.ecodex.org._1_1.SendRequest;
