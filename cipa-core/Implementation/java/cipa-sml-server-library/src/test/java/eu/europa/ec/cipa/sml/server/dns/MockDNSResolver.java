@@ -67,7 +67,7 @@ import com.phloc.commons.annotations.ReturnsMutableObject;
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-final class MockDNSResolver implements Resolver {
+public final class MockDNSResolver implements Resolver {
   private static final Logger s_aLogger = LoggerFactory.getLogger (MockDNSResolver.class);
 
   private final Name m_aZone;

@@ -55,6 +55,7 @@ public final class DNSClientConfiguration {
   private static final String CONFIG_SML_ZONE_NAME = "dnsClient.smlzonename";
   private static final String CONFIG_SERVER = "dnsClient.server";
   private static final String CONFIG_TTL = "dnsClient.ttl";
+  private static final String CONFIG_TSIG_SECRET = "dnsClient.secret";
 
   // The config file instance to be used for reading
   private static final ConfigFile s_aConfigFile = ConfigFile.getInstance ();
@@ -109,5 +110,15 @@ public final class DNSClientConfiguration {
    */
   public static int getTTL () {
     return s_aConfigFile.getInt (CONFIG_TTL, 60);
+  }
+  
+  /**
+   * Property "dnsClient.secret" from "config.properties".
+   * 
+   * @return server
+   */
+  @Nullable
+  public static String getSecret () {
+    return s_aConfigFile.getString (CONFIG_TSIG_SECRET);
   }
 }
