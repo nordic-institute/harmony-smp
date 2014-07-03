@@ -41,6 +41,28 @@ public class PropertiesUtil
 	public static final String CACHE_EXPIRE_AFTER_HOURS = "cache_expire_entry_after_hours";
 	
 	
+	
+	/** Loads the properties file using the class path
+	 * @return null if there was any problem loading the properties file.
+	 */
+	public static Properties initializeProperties()
+	{
+		try
+		{
+			properties = new Properties();
+			InputStream stream =PropertiesUtil.class.getClassLoader().getResourceAsStream("config/conf.properties");
+			properties.load(stream);
+			stream.close();
+		}
+		catch (Exception e)
+		{
+			properties = null;
+		}
+		
+		return properties;
+		
+	}
+	
 	/** Loads the properties file using the servlet context passed as parameter
 	 * @return null if there was any problem loading the properties file.
 	 */
