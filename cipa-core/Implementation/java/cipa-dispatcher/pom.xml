@@ -20,7 +20,7 @@
 			<id>joinup.nexus</id>
 			<url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
 			<releases>
-				<enabled>true</enabled>
+				<enabled>true</enabled> 
 			</releases>
 			<snapshots>
 				<enabled>false</enabled>
@@ -99,7 +99,27 @@
 			<artifactId>cipa-start-client</artifactId>
 			<version>2.1.1</version>
 		</dependency>
+		<dependency>
+			<groupId>eu.domibus</groupId>
+        	<artifactId>domibus-ebms3</artifactId>
+        	<version>1.4.1.1-FINAL</version>
+		</dependency>
 		
+		<dependency>
+			<groupId>eu.domibus</groupId>
+        	<artifactId>domibus-common</artifactId>
+        	<version>1.4.1.1-FINAL</version>
+		</dependency>
+		
+		  <dependency>
+            <groupId>org.simpleframework</groupId>
+            <artifactId>simple-xml</artifactId>
+            <version>2.7</version>
+        </dependency>
+		<dependency>
+			  <groupId>log4j</groupId>
+			  <artifactId>log4j</artifactId>
+		</dependency>
 
 
 
