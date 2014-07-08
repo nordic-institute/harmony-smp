@@ -54,7 +54,7 @@ import com.phloc.commons.annotations.DevelopersNote;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Entity
-@Table (name = "sml_allowed_wildcard_schemes")
+@Table (name = "allowed_wildcard_schemes")
 public class DBAllowedWildcardSchemes implements Serializable {
   private DBAllowedWildcardSchemesID m_aID;
   private DBUser m_aUser;

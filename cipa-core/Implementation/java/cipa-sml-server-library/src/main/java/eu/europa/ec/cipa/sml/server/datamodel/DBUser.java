@@ -75,7 +75,7 @@ public class DBUser implements Serializable {
   }
 
   @Id
-  @Column (name = "username", unique = true, nullable = false, length = CDB.MAX_USERNAME_LENGTH)
+  @Column (name = "sml_username", unique = true, nullable = false, length = CDB.MAX_USERNAME_LENGTH)
   public String getUsername () {
     return m_sUsername;
   }
@@ -85,7 +85,7 @@ public class DBUser implements Serializable {
   }
 
   @Lob
-  @Column (name = "password", nullable = true, length = CDB.MAX_PASSWORD_LENGTH)
+  @Column (name = "sml_password", nullable = true, length = CDB.MAX_PASSWORD_LENGTH)
   public String getPassword () {
     return m_sPassword;
   }

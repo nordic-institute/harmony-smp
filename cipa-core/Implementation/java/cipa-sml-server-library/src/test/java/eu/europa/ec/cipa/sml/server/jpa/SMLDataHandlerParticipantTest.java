@@ -99,6 +99,13 @@ public final class SMLDataHandlerParticipantTest {
       s_aParticipantHandler = new SMLDataHandlerParticipant ();
       s_aSMPHandler = new SMLDataHandlerSMP ();
     }
+    
+    @Override
+    public void after()
+    {
+    	super.after();
+    	
+    }
   }
 
   @ClassRule

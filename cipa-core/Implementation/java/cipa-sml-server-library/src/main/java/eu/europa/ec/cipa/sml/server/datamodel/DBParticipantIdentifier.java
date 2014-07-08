@@ -54,7 +54,7 @@ import com.phloc.commons.annotations.DevelopersNote;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Entity
-@Table (name = "sml_recipient_participant_identifier")
+@Table (name = "recipient_part_identifier")
 public class DBParticipantIdentifier implements Serializable {
   private DBParticipantIdentifierID m_aID;
   private DBServiceMetadataPublisher m_aServiceMetadataPublisher;

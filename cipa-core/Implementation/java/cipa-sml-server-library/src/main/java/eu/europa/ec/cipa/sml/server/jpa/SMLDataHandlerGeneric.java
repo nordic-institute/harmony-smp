@@ -175,6 +175,8 @@ public final class SMLDataHandlerGeneric extends JPAEnabledManager implements IG
     return ret.getOrThrow ();
   }
 
+  
+  //TODO: relook at this code the exception in the thread is not coming up...
   public void verifyExistingUser (final String sClientUniqueID) throws UnknownUserException {
     final DBUser aDBUser = doSelect (new Callable <DBUser> () {
       @Nullable

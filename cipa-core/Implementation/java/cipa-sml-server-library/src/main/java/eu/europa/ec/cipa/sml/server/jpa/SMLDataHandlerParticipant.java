@@ -242,7 +242,7 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager implement
         //getEntityManager ().merge (aMigrate);
         
         //alternative solution: first we delete the row with similar Participant (in case that exists)
-        Query query = getEntityManager ().createNativeQuery("DELETE FROM sml_migrate WHERE recipient_participant_identifier_scheme = ?1 AND recipient_participant_identifier_value = ?2");
+        Query query = getEntityManager ().createNativeQuery("DELETE FROM migrate WHERE scheme = ?1 AND rec_value = ?2");
         query.setParameter(1, aMigrationRecord.getParticipantIdentifier().getScheme());
         query.setParameter(2, aMigrationRecord.getParticipantIdentifier().getValue());
         query.executeUpdate();

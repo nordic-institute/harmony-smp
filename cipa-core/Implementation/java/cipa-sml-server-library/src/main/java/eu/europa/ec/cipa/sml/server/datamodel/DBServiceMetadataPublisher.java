@@ -60,7 +60,7 @@ import com.phloc.commons.annotations.DevelopersNote;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Entity
-@Table (name = "sml_service_metadata_publisher")
+@Table (name = "service_metadata_publisher")
 public class DBServiceMetadataPublisher implements Serializable {
   private String m_sSMPID;
   private DBUser m_aUser;

@@ -51,7 +51,7 @@ import com.phloc.commons.annotations.DevelopersNote;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Entity
-@Table (name = "sml_migrate")
+@Table (name = "migrate")
 public class DBMigrate implements Serializable {
   private DBMigrateID m_aID;
 

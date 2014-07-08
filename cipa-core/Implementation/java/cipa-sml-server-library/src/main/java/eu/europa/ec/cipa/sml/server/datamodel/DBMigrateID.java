@@ -75,7 +75,7 @@ public class DBMigrateID implements Serializable {
     setMigrationCode (aMigrationRecord.getMigrationKey ());
   }
 
-  @Column (name = "recipient_participant_identifier_scheme",
+  @Column (name = "scheme",
            nullable = false,
            length = CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH)
   public String getRecipientParticipantIdentifierScheme () {
@@ -86,7 +86,7 @@ public class DBMigrateID implements Serializable {
     m_sParticipantIDScheme = IdentifierUtils.getUnifiedParticipantDBValue (sScheme);
   }
 
-  @Column (name = "recipient_participant_identifier_value",
+  @Column (name = "rec_value",
            nullable = false,
            length = CIdentifier.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)
   public String getRecipientParticipantIdentifierValue () {

@@ -44,52 +44,52 @@ USE `sml`;
 -- ------------------------------------------------------
 -- Server version	5.1.43-community
 
-DROP TABLE IF EXISTS `sml_migrate`;
-CREATE TABLE `sml_migrate` (
-  `recipient_participant_identifier_scheme` varchar(200) NOT NULL,
-  `recipient_participant_identifier_value` varchar(200) NOT NULL,
+DROP TABLE IF EXISTS `migrate`;
+CREATE TABLE `migrate` (
+  `scheme` varchar(200) NOT NULL,
+  `rec_value` varchar(200) NOT NULL,
   `migration_code` varchar(200) NOT NULL,
-  PRIMARY KEY (`recipient_participant_identifier_scheme`,`recipient_participant_identifier_value`,`migration_code`)
+  PRIMARY KEY (`scheme`,`rec_value`,`migration_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 DROP TABLE IF EXISTS `sml_user`;
 CREATE TABLE `sml_user` (
-  `username` varchar(200) NOT NULL,
-  `password` text,
-  PRIMARY KEY (`username`)
+  `sml_username` varchar(200) NOT NULL,
+  `sml_password` text,
+  PRIMARY KEY (`sml_username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-DROP TABLE IF EXISTS `sml_allowed_wildcard_schemes`;
-CREATE TABLE `sml_allowed_wildcard_schemes` (
+DROP TABLE IF EXISTS `allowed_wildcard_schemes`;
+CREATE TABLE `allowed_wildcard_schemes` (
   `scheme` varchar(25) CHARACTER SET latin1 NOT NULL,
   `username` varchar(200) NOT NULL,
   PRIMARY KEY (`scheme`,`username`),
   KEY `new_fk_constraint` (`username`),
-  CONSTRAINT `new_fk_constraint` FOREIGN KEY (`username`) REFERENCES `sml_user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `FK_allowed_wildcard_schemes` FOREIGN KEY (`username`) REFERENCES `sml_user` (`sml_username`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-DROP TABLE IF EXISTS `sml_service_metadata_publisher`;
-CREATE TABLE `sml_service_metadata_publisher` (
+DROP TABLE IF EXISTS `service_metadata_publisher`;
+CREATE TABLE `service_metadata_publisher` (
   `smp_id` varchar(200) NOT NULL,
   `physical_address` text NOT NULL,
   `logical_address` text NOT NULL,
   `username` varchar(200) NOT NULL,
   PRIMARY KEY (`smp_id`),
   KEY `FK_service_metadata_publisher_1` (`username`),
-  CONSTRAINT `FK_service_metadata_publisher_1` FOREIGN KEY (`username`) REFERENCES `sml_user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `FK_service_metadata_publisher_1` FOREIGN KEY (`username`) REFERENCES `sml_user` (`sml_username`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
-DROP TABLE IF EXISTS `sml_recipient_participant_identifier`;
-CREATE TABLE `sml_recipient_participant_identifier` (
-  `recipient_participant_identifier_scheme` varchar(200) NOT NULL,
-  `recipient_participant_identifier_value` varchar(200) NOT NULL,
+DROP TABLE IF EXISTS `recipient_part_identifier`;
+CREATE TABLE `recipient_part_identifier` (
+  `scheme` varchar(200) NOT NULL,
+  `rec_value` varchar(200) NOT NULL,
   `smp_id` varchar(200) NOT NULL,
-  PRIMARY KEY (`recipient_participant_identifier_scheme`,`recipient_participant_identifier_value`),
-  KEY `FK_recipient_participant_identifier_1` (`smp_id`),
-  CONSTRAINT `FK_recipient_participant_identifier_1` FOREIGN KEY (`smp_id`) REFERENCES `sml_service_metadata_publisher` (`smp_id`) ON DELETE CASCADE ON UPDATE CASCADE
+  PRIMARY KEY (`scheme`,`rec_value`),
+  KEY `FK_recipient_participant_identifier` (`smp_id`),
+  CONSTRAINT `FK_recipient_participant_identifier` FOREIGN KEY (`smp_id`) REFERENCES `service_metadata_publisher` (`smp_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
