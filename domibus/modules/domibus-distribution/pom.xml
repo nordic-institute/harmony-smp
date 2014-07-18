@@ -275,6 +275,12 @@ weblogic: like a normal build without profile but instead of tomcats servers two
             <artifactId>domibus-seatiger</artifactId>
             <version>1.4-FINAL</version>
             <scope>test</scope>
+            <exclusions>
+            	<exclusion>
+            		<artifactId>ffmq3-server</artifactId>
+            		<groupId>net.timewalker.ffmq</groupId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.smartbear.soapui</groupId>
