@@ -72,7 +72,7 @@ public class OCSPValidator {
    */
   private static final Logger s_aLogger = LoggerFactory.getLogger (OCSPValidator.class);
 
-  private static Properties properties = PropertiesUtil.getProperties();
+  private static Properties properties = PropertiesUtil.getProperties(null);
 
   
   /**

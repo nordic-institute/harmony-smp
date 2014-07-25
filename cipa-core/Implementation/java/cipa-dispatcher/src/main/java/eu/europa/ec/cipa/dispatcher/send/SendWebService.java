@@ -81,7 +81,7 @@ import eu.europa.ec.cipa.transport.start.client.AccessPointClientSendResult;
 public class SendWebService extends HttpServlet
 {
 
-	Properties properties = PropertiesUtil.getProperties();
+	Properties properties = PropertiesUtil.getProperties(null);
 	BackendService11 holodeck_service = null;  //created as object variable to avoid loading the holodeck service WSDL everytime we call it.
 	
 	private static String defaultDocumentTypeScheme = "busdox-docid-qns";

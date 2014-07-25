@@ -12,7 +12,7 @@ import java.util.Properties;
 public class KeystoreUtil
 {
 
-	private Properties properties = PropertiesUtil.getProperties();
+	private Properties properties = PropertiesUtil.getProperties(null);
 	private KeyStore keyStore = null;
 	private String pathToFile;
 	private String password;

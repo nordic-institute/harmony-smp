@@ -4,18 +4,23 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintStream;
 import java.security.KeyStore;
 import java.security.Principal;
 import java.security.cert.CertStore;
 import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.mail.Part;
@@ -26,6 +31,8 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -39,21 +46,25 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.jce.provider.X509CertificateObject;
+import org.bouncycastle.util.encoders.Base64;
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
 
-import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointDBInterface;
+import eu.domibus.ebms3.config.PModePool;
+import eu.domibus.ebms3.config.Producer;
+import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.AS4GatewayInterface;
 import eu.europa.ec.cipa.dispatcher.ocsp.OCSPValidator;
 import eu.europa.ec.cipa.dispatcher.util.KeystoreUtil;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 
-
-public class AS2ReceiverServlet extends HttpServlet
+public class AS4ReceiverServlet extends HttpServlet
 {
 
 	Properties properties;
-
+	
 	boolean debug=false;
-	
-	
+
 	public void init() throws UnavailableException
 	{
 
@@ -61,10 +72,9 @@ public class AS2ReceiverServlet extends HttpServlet
 
 		if (properties == null)
 		{
-			System.err.println("Error initializing AS2 receiver servlet: Couldn't load necessary configuration file");
+			System.err.println("Error initializing AS4 receiver servlet: Couldn't load necessary configuration file");
 			throw new UnavailableException("Couldn't load necessary configuration file");
 		}
-
 		
 		if ("DEBUG".equalsIgnoreCase(properties.getProperty(PropertiesUtil.SERVER_MODE, "DEBUG")))
 			debug = true;
@@ -74,13 +84,13 @@ public class AS2ReceiverServlet extends HttpServlet
 	
 	public void doPost(HttpServletRequest req, HttpServletResponse resp)
 	{
-		if (isIncomingAS2Message(req))
-			handleIncomingAS2Message(req, resp);
+		if (isIncomingAS4Message(req))
+			handleIncomingAS4Message(req, resp);
 		else
 		{
 			try
 			{
-				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing necessary AS2 headers");
+				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing necessary AS4 headers");
 			}
 			catch (Exception e)
 			{}
@@ -90,30 +100,18 @@ public class AS2ReceiverServlet extends HttpServlet
 	}
 	
 	
-//	private boolean isMDN(HttpServletRequest req)
-//	{
-//		if (req.getHeader("as2-from")!=null && req.getHeader("as2-to")!=null && req.getHeader("message-id")!=null &&
-//				req.getHeader("disposition-notification-to")==null && req.getHeader("disposition-notification-options")==null /* && req.getHeader("recipient-address")==null */ )
-//			return true;
-//		return false;
-//	}
-	
-	
-	private boolean isIncomingAS2Message(HttpServletRequest req)
+	private boolean isIncomingAS4Message(HttpServletRequest req)
 	{
-		if (req.getHeader("as2-from")!=null && req.getHeader("as2-to")!=null && req.getHeader("message-id")!=null && /* req.getHeader("recipient-address")!=null && */ req.getHeader("disposition-notification-to")!=null)
+		//TODO: what are the necessary fields in AS4?
+		//if (req.getHeader("as2-from")!=null && req.getHeader("as2-to")!=null && req.getHeader("message-id")!=null && /* req.getHeader("recipient-address")!=null && */ req.getHeader("disposition-notification-to")!=null)
 			return true;
-		return false;
+		//else
+		//	return false;
 	}	
 	
-	private void handleIncomingAS2Message(HttpServletRequest req, HttpServletResponse resp)
+	
+	private void handleIncomingAS4Message(HttpServletRequest req, HttpServletResponse resp)
 	{
-		String as2_from = req.getHeader("as2-from");
-		String mdnURL = req.getHeader("disposition-notification-to");
-//		String mdnOption = req.getHeader("disposition-notification-options"); //if requesting signed MDN, this will exist and have a value like: signed-receipt-protocol=optional, pkcs7-signature; signed-receipt-micalg=optional, sha1, md5
-//		boolean signedMDN = (mdnOption!=null && !mdnOption.isEmpty());
-//		String receiptOption = req.getHeader("receipt-delivery-option");      //if requesting async MDN, this will exist and will have the URL to respond to.
-//		boolean syncMDN = (receiptOption==null || receiptOption.isEmpty());
 				
 		try
 		{
@@ -121,8 +119,12 @@ public class AS2ReceiverServlet extends HttpServlet
 			ByteArrayOutputStream buffer = copyToMarkableBuffer(req.getInputStream());
 			ByteArrayInputStream input = new ByteArrayInputStream(buffer.toByteArray());
 			
-	        //extract the certificate from the request
-	        X509CertificateObject cert = retrieveCertificate(input, resp);
+	        //parse and extract input info
+	        Map inputMap = parseInput(input, resp);
+	        
+	        //check certificate trust
+	        byte [] binaryCert = Base64.decode((String)inputMap.get("certificate"));
+	        X509Certificate cert = (X509Certificate)CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(binaryCert));
 			if (cert == null)
 			{
 				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unable to retrieve certificate from incoming message");
@@ -130,7 +132,7 @@ public class AS2ReceiverServlet extends HttpServlet
 			}
 						
 			//check the certificate was signed by our AP CA, if not, it's not a valid request
-			String trustError = checkSignatureTrust((X509Certificate) cert);
+			String trustError = checkSignatureTrust(cert);			
 			if (trustError != null)
 			{
 				resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Untrusted/invalid signing certificate");
@@ -153,47 +155,35 @@ public class AS2ReceiverServlet extends HttpServlet
 				return;				
 			}
 			
-			//OCSP validation of the certificate used to sign this message
-			boolean valid = true;
-			if ("true".equalsIgnoreCase(properties.getProperty(PropertiesUtil.OCSP_VALIDATION_ACTIVATED)))
-			{
-				try
-				{
-					valid = OCSPValidator.certificateValidate(cert);
-				}
-				catch (Exception e)
-				{
-					valid = false;
-				}
-				
-				if (!valid)
-				{
-					resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "The certificate used to sign has been revoked");
-					return;
-				}
-			}
-			
 			
 			//find the certificate's CN
 			String commonName = extractCN(cert);
 					
-			if (!commonName.equals(as2_from))
+			if (!commonName.equals((String) inputMap.get("senderIdentifier")))
 			{
-				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "The as2-from header value in your message doesn't match your certificate's Common Name");
+				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "The Sender Identifier value in your message doesn't match your certificate's Common Name");
 			}
 			
 			//make the request's inputstream available to be read again
 			input.reset();
-
 			
-			//check that the AS2 endpoint knows the sender, if not, create a new Partner
-			String className = properties.getProperty(PropertiesUtil.PARTNER_INTERFACE_IMPLEMENTATION_CLASS);
-			IAS2EndpointDBInterface partnerInterface = (IAS2EndpointDBInterface) Class.forName(className).newInstance();
-			if (!partnerInterface.isPartnerKown(commonName))
-				partnerInterface.createNewPartner(commonName, commonName, "", mdnURL, (X509Certificate)cert); //we dont know the partner's endpointUrl at this point, so we can't provide it.	
+			//check that the AS4 endpoint knows the sender, if not, create a new Partner
+			AS4GatewayInterface as4Interface = new AS4GatewayInterface();
+			PModePool pModePool = as4Interface.getPmodePool();
+			boolean producerKnown = false;
+			for (Producer prod : pModePool.getProducers())
+			{
+				if (prod.getName().equalsIgnoreCase(commonName))
+				{
+					producerKnown = true;
+					break;
+				}
+			}
+			if (!producerKnown)
+				as4Interface.createPartner(commonName, (String)inputMap.get("processIdentifier"), (String)inputMap.get("documentIdentifier"), null, cert); //TODO: is it possible to get the sender's endpointURL at this point?	
 
-			//now we finally redirect the request to the AS2 endpoint
-			forwardToAS2Endpoint(req, resp, buffer);
+			//now we finally redirect the request to the AS4 endpoint
+			forwardToAS4Endpoint(req, resp, buffer);
 
 		}
 		catch (Exception e)
@@ -226,11 +216,8 @@ public class AS2ReceiverServlet extends HttpServlet
 	}
 	
 	
-	private X509CertificateObject retrieveCertificate(ByteArrayInputStream input, HttpServletResponse resp)
+	private Map parseInput(ByteArrayInputStream input, HttpServletResponse resp)
 	{
-		Object cert = null;
-		
-		//we try to find the signature located as a MIME part inside the message
 		try
 		{
 			input.markSupported();
@@ -240,7 +227,7 @@ public class AS2ReceiverServlet extends HttpServlet
 			for (int i=0 ; i < multipart.getCount() ; i++)
 			{
 				part_aux = multipart.getBodyPart(i);
-				if (part_aux.getContentType()!=null && ((part_aux.getContentType().toLowerCase().contains("application/pkcs7-signature")) || (part_aux.getContentType().toLowerCase().contains("smime-type") && part_aux.getContentType().toLowerCase().contains("signed-data") && (part_aux.getContentType().toLowerCase().indexOf("signed-data") - part_aux.getContentType().toLowerCase().indexOf("smime-type") < 15)))) //Content-Type=application/pkcs7-signature; name=smime.p7s; smime-type=signed-data
+				if (part_aux.getContentType()!=null && ((part_aux.getContentType().toLowerCase().contains("application/soap+xml"))))  //this is the only part we are interested in
 					part = part_aux;
 			}
 			if (part==null)
@@ -248,13 +235,13 @@ public class AS2ReceiverServlet extends HttpServlet
 		        return null;
 			}
 			
-			//we extract the certificate chain used to sign the message from the signature
-			CMSSignedData signedData = new CMSSignedData(part.getInputStream());
-			CertStore certStore = signedData.getCertificatesAndCRLs("Collection", "BC");
-			Collection col = certStore.getCertificates(null);
-			Iterator it = col.iterator();
-			if (it.hasNext())
-				cert = it.next(); //we assume the main certificate is always the first one
+			SAXParserFactory factory = SAXParserFactory.newInstance();
+			SAXParser saxParser = factory.newSAXParser();
+			AS4Handler handler = new AS4Handler();
+			
+			saxParser.parse(part.getInputStream(), handler);
+			
+			return handler.getResultMap();
 		}
 		catch (Exception e)
 		{
@@ -263,8 +250,6 @@ public class AS2ReceiverServlet extends HttpServlet
 			catch (Exception f) {}
 			return null;
 		}
-		
-		return (X509CertificateObject) cert;
 	}
 	
 	
@@ -316,12 +301,12 @@ public class AS2ReceiverServlet extends HttpServlet
 	}
 	
 	
-	private void forwardToAS2Endpoint(HttpServletRequest req, HttpServletResponse resp, ByteArrayOutputStream buffer)
+	private void forwardToAS4Endpoint(HttpServletRequest req, HttpServletResponse resp, ByteArrayOutputStream buffer)
 	{
 		
 		try
 		{
-			String url = properties.getProperty(PropertiesUtil.AS2_ENDPOINT_URL); 
+			String url = properties.getProperty(PropertiesUtil.AS4_ENDPOINT_URL); 
 			DefaultHttpClient httpclient = new DefaultHttpClient();
 	        HttpPost post = new HttpPost(url);
 	        httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, debug? 3000000 : 30000); //3000sec for tests purposes, 30sec in production
@@ -383,5 +368,79 @@ public class AS2ReceiverServlet extends HttpServlet
 			catch (Exception f) {}
 		}
 	}
-    
+	
+	
+	
+	
+	private class AS4Handler extends DefaultHandler
+	{
+
+		private String position = "";
+		private Map<String,String> resultMap;
+		
+		private static final String certificatePosition = ">soapenv:Envelope>soapenv:Header>wsse:Security>wsse:BinarySecurityToken";
+		private static final String senderIdentifierPosition = ">soapenv:Envelope>soapenv:Header>eb:Messaging>eb:UserMessage>eb:PartyInfo>eb:From>eb:PartyId";
+		private static final String receiverIdentifierPosition= ">soapenv:Envelope>soapenv:Header>eb:Messaging>eb:UserMessage>eb:PartyInfo>eb:To>eb:PartyId";
+		private static final String instanceIdentifierPosition= ">soapenv:Envelope>soapenv:Header>eb:Messaging>eb:UserMessage>eb:CollaborationInfo>eb:ConversationId";
+		private static final String processTypePosition= ">soapenv:Envelope>soapenv:Header>eb:Messaging>eb:UserMessage>eb:CollaborationInfo>eb:Service";
+		private static final String documentTypePosition= ">soapenv:Envelope>soapenv:Header>eb:Messaging>eb:UserMessage>eb:CollaborationInfo>eb:Action";
+		
+		
+		public Map<String,String> getResultMap()
+		{
+			return this.resultMap;
+		}
+		
+	    public void startDocument() throws SAXException
+	    {
+    		resultMap = new HashMap<String,String>();
+	    }
+
+	    public void endDocument() throws SAXException
+	    {
+	    }
+		
+		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
+		{
+			String tag = localName!=null && !localName.isEmpty()? localName : qName;
+			
+			position += ">" + tag;
+		}
+	 
+		public void endElement(String uri, String localName,String qName) throws SAXException
+		{
+			position = position.substring(0, position.lastIndexOf('>')); 
+		}
+	 
+		public void characters(char ch[], int start, int length) throws SAXException
+		{
+			if (position.equalsIgnoreCase(senderIdentifierPosition))
+			{
+				resultMap.put("senderIdentifier", new String(ch, start, length));
+			}
+			else if (position.equalsIgnoreCase(receiverIdentifierPosition))
+			{
+				resultMap.put("receiverIdentifier", new String(ch, start, length));
+			}
+			else if (position.equalsIgnoreCase(instanceIdentifierPosition))
+			{
+				resultMap.put("instanceIdentifier", new String(ch, start, length));
+			}			
+			else if (position.equalsIgnoreCase(certificatePosition))
+			{
+				resultMap.put("certificate", new String(ch, start, length));
+			}
+			else if (position.equalsIgnoreCase(processTypePosition))
+			{
+				resultMap.put("processIdentifier", new String(ch, start, length));
+			}
+			else if (position.equalsIgnoreCase(documentTypePosition))
+			{
+				resultMap.put("documentIdentifier", new String(ch, start, length));
+			}
+		}
+	}	
+	
+	
+	
 }

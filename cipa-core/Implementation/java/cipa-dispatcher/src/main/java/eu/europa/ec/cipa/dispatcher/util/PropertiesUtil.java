@@ -39,55 +39,49 @@ public class PropertiesUtil
 	public static final String AS2_ENDPOINT_PREFERENCE_ORDER = "as2_endpoint";
 	public static final String CACHE_MAX_NUMBER_ENTRIES = "cache_max_number_entries";
 	public static final String CACHE_EXPIRE_AFTER_HOURS = "cache_expire_entry_after_hours";
-	
-	
-	
-	/** Loads the properties file using the class path
-	 * @return null if there was any problem loading the properties file.
-	 */
-	public static Properties initializeProperties()
-	{
-		try
-		{
-			properties = new Properties();
-			InputStream stream =PropertiesUtil.class.getClassLoader().getResourceAsStream("config/conf.properties");
-			properties.load(stream);
-			stream.close();
-		}
-		catch (Exception e)
-		{
-			properties = null;
-		}
-		
-		return properties;
-		
-	}
-	
-	/** Loads the properties file using the servlet context passed as parameter
-	 * @return null if there was any problem loading the properties file.
-	 */
-	public static Properties initializeProperties(ServletContext context)
-	{
-		try
-		{
-			properties = new Properties();
-			InputStream stream = context.getResourceAsStream("/WEB-INF/conf/conf.properties");
-			properties.load(stream);
-			stream.close();
-		}
-		catch (Exception e)
-		{
-			properties = null;
-		}
-		
-		return properties;
-		
-	}
+	public static final String AS4_PMODE_FILEPATH = "as4_pmodeFilePath";
+	public static final String AS4_ENDPOINT_URL = "as4_endpoint_url";
 	
 
-	public static Properties getProperties()
+	/** If properties haven't been loaded yet, loads it from context passed as parameter or default file location in case context==null.
+	 * @return the loaded properties or null if there was any problem loading the properties file.  
+	 */
+	public static Properties getProperties(ServletContext context)
 	{
+		if (properties == null)
+		{
+			if (context == null)
+			{
+				try
+				{
+					properties = new Properties();
+					InputStream stream =PropertiesUtil.class.getClassLoader().getResourceAsStream("config/conf.properties");
+					properties.load(stream);
+					stream.close();
+				}
+				catch (Exception e)
+				{
+					properties = null;
+				}
+			}
+			else
+			{
+				try
+				{
+					properties = new Properties();
+					InputStream stream = context.getResourceAsStream("/WEB-INF/conf/conf.properties");
+					properties.load(stream);
+					stream.close();
+				}
+				catch (Exception e)
+				{
+					properties = null;
+				}
+			}
+		}
+			
 		return properties;
+		
 	}
 	
 }

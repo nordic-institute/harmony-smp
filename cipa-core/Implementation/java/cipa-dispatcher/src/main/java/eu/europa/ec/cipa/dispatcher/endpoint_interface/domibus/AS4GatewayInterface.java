@@ -9,11 +9,7 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.Properties;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.namespace.QName;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
@@ -34,10 +30,9 @@ public class AS4GatewayInterface implements IAS4GatewayInterface {
 	
 	
 	private void initPModePool() throws DispatcherConfigurationException{
-		PropertiesUtil.initializeProperties();
-		Properties properties = PropertiesUtil.getProperties();
+		Properties properties = PropertiesUtil.getProperties(null);
 		if (pmodePool == null){
-			String pmodeFilePath = properties.getProperty("as4_pmodeFilePath");
+			String pmodeFilePath = properties.getProperty(PropertiesUtil.AS4_PMODE_FILEPATH);
 			pmodeFile = new File(pmodeFilePath);
 			if (!pmodeFile.exists()){
 				try {
