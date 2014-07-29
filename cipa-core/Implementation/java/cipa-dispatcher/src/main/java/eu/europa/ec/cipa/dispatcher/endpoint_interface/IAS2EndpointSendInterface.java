@@ -1,7 +1,6 @@
 package eu.europa.ec.cipa.dispatcher.endpoint_interface;
 
 import org.busdox.servicemetadata.publishing._1.EndpointType;
-import org.unece.cefact.namespaces.standardbusinessdocumentheader.StandardBusinessDocument;
 
 public interface IAS2EndpointSendInterface
 {
