@@ -388,15 +388,15 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
   @Nullable
   public ServiceMetadataType getService (@Nonnull final ParticipantIdentifierType aServiceGroupID,
-                                         @Nonnull final DocumentIdentifierType aDocType) throws Throwable {
+                                         @Nonnull final DocumentIdentifierType aDocTypeID) throws Throwable {
     JPAExecutionResult <ServiceMetadataType> ret;
     ret = doSelect (new Callable <ServiceMetadataType> () {
       public ServiceMetadataType call () throws Exception {
-        final DBServiceMetadataID id = new DBServiceMetadataID (aServiceGroupID, aDocType);
-        final DBServiceMetadata aDBServiceMetadata = getEntityManager ().find (DBServiceMetadata.class, id);
+        final DBServiceMetadataID aDBServiceMetadataID = new DBServiceMetadataID (aServiceGroupID, aDocTypeID);
+        final DBServiceMetadata aDBServiceMetadata = getEntityManager ().find (DBServiceMetadata.class, aDBServiceMetadataID);
 
         if (aDBServiceMetadata == null) {
-          s_aLogger.info ("Service group ID " + id.toString () + " not found");
+          s_aLogger.info ("Service group ID " + aDBServiceMetadataID.toString () + " not found");
           return null;
         }
 
@@ -414,16 +414,17 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                                                                       .getParticipantIdentifier ();
     final DocumentIdentifierType aDocTypeID = aServiceMetadata.getServiceInformation ().getDocumentIdentifier ();
 
+    _verifyUser (aCredentials);
+    _verifyOwnership (aServiceGroupID, aCredentials);
+
     // Delete an eventually contained previous service in a separate transaction
-    _deleteService (aServiceGroupID, aDocTypeID, aCredentials);
+    _deleteService (aServiceGroupID, aDocTypeID);
 
     // Create a new entry
     JPAExecutionResult <?> ret;
     ret = doInTransaction (new Runnable () {
       public void run () {
         final EntityManager aEM = getEntityManager ();
-        _verifyUser (aCredentials);
-        _verifyOwnership (aServiceGroupID, aCredentials);
 
         // Check if an existing service is already contained
         // This should have been deleted previously!
@@ -456,25 +457,22 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
   @Nonnull
   private EChange _deleteService (@Nonnull final ParticipantIdentifierType aServiceGroupID,
-                                  @Nonnull final DocumentIdentifierType aDocTypeID,
-                                  @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
+                                  @Nonnull final DocumentIdentifierType aDocTypeID) throws Throwable {
     JPAExecutionResult <EChange> ret;
     ret = doInTransaction (new Callable <EChange> () {
       public EChange call () {
         final EntityManager aEM = getEntityManager ();
-        _verifyUser (aCredentials);
 
         final DBServiceMetadataID aDBServiceMetadataID = new DBServiceMetadataID (aServiceGroupID, aDocTypeID);
         final DBServiceMetadata aDBServiceMetadata = aEM.find (DBServiceMetadata.class, aDBServiceMetadataID);
         if (aDBServiceMetadata == null) {
           // There were no service to delete.
-          s_aLogger.warn ("No such service to delete: " + aServiceGroupID.toString ());
+          s_aLogger.warn ("No such service to delete: " +
+                          IdentifierUtils.getIdentifierURIEncoded (aServiceGroupID) +
+                          " / " +
+                          IdentifierUtils.getIdentifierURIEncoded (aDocTypeID));
           return EChange.UNCHANGED;
         }
-
-        // Verify after existence check, because otherwise an
-        // UnauthorizedException is thrown
-        _verifyOwnership (aServiceGroupID, aCredentials);
 
         // Remove all attached processes incl. their endpoints
         for (final DBProcess aDBProcess : aDBServiceMetadata.getProcesses ()) {
@@ -497,9 +495,14 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
   public void deleteService (@Nonnull final ParticipantIdentifierType aServiceGroupID,
                              @Nonnull final DocumentIdentifierType aDocTypeID,
                              @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
-    final EChange eChange = _deleteService (aServiceGroupID, aDocTypeID, aCredentials);
+    _verifyUser (aCredentials);
+    _verifyOwnership (aServiceGroupID, aCredentials);
+
+    final EChange eChange = _deleteService (aServiceGroupID, aDocTypeID);
     if (eChange.isUnchanged ())
-      throw new NotFoundException (aServiceGroupID.toString ());
+      throw new NotFoundException (IdentifierUtils.getIdentifierURIEncoded (aServiceGroupID) +
+                                   " / " +
+                                   IdentifierUtils.getIdentifierURIEncoded (aDocTypeID));
   }
 
   @Nullable
