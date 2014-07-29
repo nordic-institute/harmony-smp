@@ -43,7 +43,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.Arrays;
 import java.util.Date;
 
 import org.busdox.servicemetadata.publishing._1.EndpointType;
@@ -365,27 +364,5 @@ public class DBMSDataManagerTest {
       fail ();
     }
     catch (final UnauthorizedException ex) {}
-  }
-
-  @Test
-  public void testGetRFC1421CompliantString () {
-    assertNull (DBMSDataManager._getRFC1421CompliantString (null));
-    assertEquals ("", DBMSDataManager._getRFC1421CompliantString (""));
-
-    // for up to 64 chars it makes no difference
-    for (int i = 0; i <= 64; ++i) {
-      final char [] aChars = new char [i];
-      Arrays.fill (aChars, 'a');
-      final String sText = new String (aChars);
-      assertEquals (sText, DBMSDataManager._getRFC1421CompliantString (sText));
-    }
-
-    final String sLong = "123456789012345678901234567890123456789012345678901234567890abcd"
-                         + "123456789012345678901234567890123456789012345678901234567890abcd"
-                         + "xyz";
-    final String sFormatted = DBMSDataManager._getRFC1421CompliantString (sLong);
-    assertEquals ("123456789012345678901234567890123456789012345678901234567890abcd\r\n"
-                  + "123456789012345678901234567890123456789012345678901234567890abcd\r\n"
-                  + "xyz", sFormatted);
   }
 }

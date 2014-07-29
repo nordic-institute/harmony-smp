@@ -67,10 +67,8 @@ import org.slf4j.LoggerFactory;
 import com.phloc.commons.GlobalDebug;
 import com.phloc.commons.ValueEnforcer;
 import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.annotations.VisibleForTesting;
 import com.phloc.commons.callback.LoggingExceptionHandler;
 import com.phloc.commons.state.EChange;
-import com.phloc.commons.string.StringHelper;
 import com.phloc.db.jpa.IEntityManagerProvider;
 import com.phloc.db.jpa.JPAEnabledManager;
 import com.phloc.db.jpa.JPAExecutionResult;
@@ -78,7 +76,6 @@ import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.NotFoundException;
 
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.DBEndpoint;
@@ -98,10 +95,11 @@ import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
 import eu.europa.ec.cipa.smp.server.exception.UnknownUserException;
 import eu.europa.ec.cipa.smp.server.hook.IRegistrationHook;
 import eu.europa.ec.cipa.smp.server.hook.RegistrationHookFactory;
+import eu.europa.ec.cipa.smp.server.util.SMPDBUtils;
 
 /**
  * A Hibernate implementation of the DataManager interface.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class DBMSDataManager extends JPAEnabledManager implements IDataManager {
@@ -135,22 +133,11 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     m_aHook = aHook;
   }
 
-  @Nullable
-  private static ExtensionType _getAsExtension (@Nullable final String sXML) {
-    try {
-      return ExtensionConverter.convert (sXML);
-    }
-    catch (final IllegalArgumentException ex) {
-      // Invalid XML passed
-      return null;
-    }
-  }
-
   /**
    * Check if an SMP user matching the user name of the BasicAuth credentials
    * exists, and that the passwords match. So this method verifies that the
    * BasicAuth credentials are valid.
-   * 
+   *
    * @param aCredentials
    *        The credentials to be validated. May not be <code>null</code>.
    * @return The matching non-<code>null</code> {@link DBUser}.
@@ -182,7 +169,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
   /**
    * Verify that the passed service group is owned by the user specified in the
    * credentials.
-   * 
+   *
    * @param aServiceGroupID
    *        The service group to be verified
    * @param aCredentials
@@ -255,7 +242,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         // Convert service group DB to service group service
         final ServiceGroupType aServiceGroup = m_aObjFactory.createServiceGroupType ();
         aServiceGroup.setParticipantIdentifier (aServiceGroupID);
-        aServiceGroup.setExtension (_getAsExtension (aDBServiceGroup.getExtension ()));
+        aServiceGroup.setExtension (SMPDBUtils.getAsExtensionSafe (aDBServiceGroup.getExtension ()));
         // This is set by the REST interface:
         // ret.setServiceMetadataReferenceCollection(value)
         return aServiceGroup;
@@ -540,7 +527,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         final RedirectType aRedirect = m_aObjFactory.createRedirectType ();
         aRedirect.setCertificateUID (aDBServiceMetadataRedirection.getCertificateUid ());
         aRedirect.setHref (aDBServiceMetadataRedirection.getRedirectionUrl ());
-        aRedirect.setExtension (_getAsExtension (aDBServiceMetadataRedirection.getExtension ()));
+        aRedirect.setExtension (SMPDBUtils.getAsExtensionSafe (aDBServiceMetadataRedirection.getExtension ()));
         aServiceMetadata.setRedirect (aRedirect);
 
         return aServiceMetadata;
@@ -549,48 +536,10 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     return ret.getOrThrow ();
   }
 
-  /**
-   * he certificate string needs to be emitted in portions of 64 characters. If
-   * characters are left, than &lt;CR>&lt;LF> ("\r\n") must be added to the
-   * string so that the next characters start on a new line. After the last
-   * part, no &lt;CR>&lt;LF> is needed. Respective RFC parts are 1421 4.3.2.2
-   * and 4.3.2.4
-   * 
-   * @param sCertificate
-   *        Original certificate string as stored in the DB
-   * @return The RFC 1421 compliant string
-   */
-  @Nullable
-  @VisibleForTesting
-  static String _getRFC1421CompliantString (@Nullable final String sCertificate) {
-    if (StringHelper.hasNoText (sCertificate))
-      return sCertificate;
-
-    // Remove all existing whitespace characters
-    String sPlainString = StringHelper.getWithoutAnySpaces (sCertificate);
-
-    // Start building the result
-    final int nMaxLineLength = 64;
-    final String sCRLF = "\r\n";
-    final StringBuilder aSB = new StringBuilder ();
-    while (sPlainString.length () > nMaxLineLength) {
-      // Append line + CRLF
-      aSB.append (sPlainString, 0, nMaxLineLength).append (sCRLF);
-
-      // Remove the start of the string
-      sPlainString = sPlainString.substring (nMaxLineLength);
-    }
-
-    // Append the rest
-    aSB.append (sPlainString);
-
-    return aSB.toString ();
-  }
-
   private void _convertFromDBToService (@Nonnull final DBServiceMetadata aDBServiceMetadata,
                                         @Nonnull final ServiceMetadataType aServiceMetadata) {
     final ParticipantIdentifierType aBusinessID = aDBServiceMetadata.getId ().asBusinessIdentifier ();
-    final ExtensionType aExtension = _getAsExtension (aDBServiceMetadata.getExtension ());
+    final ExtensionType aExtension = SMPDBUtils.getAsExtensionSafe (aDBServiceMetadata.getExtension ());
 
     final DocumentIdentifierType aDocTypeID = aDBServiceMetadata.getId ().asDocumentTypeIdentifier ();
 
@@ -611,7 +560,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         final EndpointType aEndpointType = m_aObjFactory.createEndpointType ();
 
         aEndpointType.setTransportProfile (aDBEndpoint.getId ().getTransportProfile ());
-        aEndpointType.setExtension (_getAsExtension (aDBEndpoint.getExtension ()));
+        aEndpointType.setExtension (SMPDBUtils.getAsExtensionSafe (aDBEndpoint.getExtension ()));
 
         final W3CEndpointReference endpointRef = W3CEndpointReferenceUtils.createEndpointReference (aDBEndpoint.getId ()
                                                                                                                .getEndpointReference ());
@@ -622,7 +571,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         aEndpointType.setServiceExpirationDate (aDBEndpoint.getServiceExpirationDate ());
         aEndpointType.setTechnicalContactUrl (aDBEndpoint.getTechnicalContactUrl ());
         aEndpointType.setTechnicalInformationUrl (aDBEndpoint.getTechnicalInformationUrl ());
-        aEndpointType.setCertificate (_getRFC1421CompliantString (aDBEndpoint.getCertificate ()));
+        aEndpointType.setCertificate (SMPDBUtils.getRFC1421CompliantString (aDBEndpoint.getCertificate ()));
         aEndpointType.setMinimumAuthenticationLevel (aDBEndpoint.getMinimumAuthenticationLevel ());
         aEndpointType.setRequireBusinessLevelSignature (aDBEndpoint.isRequireBusinessLevelSignature ());
 
@@ -630,7 +579,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
       }
 
       aProcessType.setServiceEndpointList (endpoints);
-      aProcessType.setExtension (_getAsExtension (aDBProcess.getExtension ()));
+      aProcessType.setExtension (SMPDBUtils.getAsExtensionSafe (aDBProcess.getExtension ()));
       aProcessType.setProcessIdentifier (aDBProcess.getId ().asProcessIdentifier ());
 
       aProcessList.getProcess ().add (aProcessType);
