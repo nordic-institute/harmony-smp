@@ -7,7 +7,7 @@ import eu.europa.ec.cipa.dispatcher.exception.DispatcherConfigurationException;
 public interface IAS4GatewayInterface {
 
 	/**
-	 * This method creats the Pmode to register a partner in the underlying as4 gateway
+	 * This method creates the Pmode to register a partner in the underlying as4 gateway
 	 * 
 	 * @param partnerGatewayId id of the partner gateway
 	 * @param processId busdox process id, to be mapped to ebms3/AS4 pmode service
