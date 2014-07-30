@@ -235,7 +235,8 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID (aServiceGroupID);
         final DBServiceGroup aDBServiceGroup = getEntityManager ().find (DBServiceGroup.class, aDBServiceGroupID);
         if (aDBServiceGroup == null) {
-          s_aLogger.warn ("No such service group to retrieve: " + aDBServiceGroupID.toString ());
+          s_aLogger.warn ("No such service group to retrieve: " +
+                          IdentifierUtils.getIdentifierURIEncoded (aServiceGroupID));
           return null;
         }
 
@@ -314,7 +315,8 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID (aServiceGroupID);
         final DBServiceGroup aDBServiceGroup = aEM.find (DBServiceGroup.class, aDBServiceGroupID);
         if (aDBServiceGroup == null) {
-          s_aLogger.warn ("No such service group to delete: " + aServiceGroupID.toString ());
+          s_aLogger.warn ("No such service group to delete: " +
+                          IdentifierUtils.getIdentifierURIEncoded (aServiceGroupID));
           return EChange.UNCHANGED;
         }
 
@@ -330,7 +332,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     if (ret.hasThrowable ())
       throw ret.getThrowable ();
     if (ret.get ().isUnchanged ())
-      throw new NotFoundException (aServiceGroupID.toString ());
+      throw new NotFoundException (IdentifierUtils.getIdentifierURIEncoded (aServiceGroupID));
   }
 
   @Nonnull
@@ -393,10 +395,15 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     ret = doSelect (new Callable <ServiceMetadataType> () {
       public ServiceMetadataType call () throws Exception {
         final DBServiceMetadataID aDBServiceMetadataID = new DBServiceMetadataID (aServiceGroupID, aDocTypeID);
-        final DBServiceMetadata aDBServiceMetadata = getEntityManager ().find (DBServiceMetadata.class, aDBServiceMetadataID);
+        final DBServiceMetadata aDBServiceMetadata = getEntityManager ().find (DBServiceMetadata.class,
+                                                                               aDBServiceMetadataID);
 
         if (aDBServiceMetadata == null) {
-          s_aLogger.info ("Service group ID " + aDBServiceMetadataID.toString () + " not found");
+          s_aLogger.info ("Service metadata with ID " +
+                          IdentifierUtils.getIdentifierURIEncoded (aServiceGroupID) +
+                          " / " +
+                          IdentifierUtils.getIdentifierURIEncoded (aDocTypeID) +
+                          " not found");
           return null;
         }
 
@@ -432,7 +439,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         DBServiceMetadata aDBServiceMetadata = aEM.find (DBServiceMetadata.class, aDBServiceMetadataID);
         if (aDBServiceMetadata != null)
           throw new IllegalStateException ("No DB ServiceMeta data with ID " +
-                                           aDBServiceMetadataID.toString () +
+                                           IdentifierUtils.getIdentifierURIEncoded (aServiceGroupID) +
                                            " should be present!");
 
         // Create a new entry
@@ -519,7 +526,8 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
         if (aDBServiceMetadataRedirection == null) {
           if (GlobalDebug.isDebugMode ())
-            s_aLogger.info ("No redirection service group id: " + aServiceGroupID.toString ());
+            s_aLogger.info ("No redirection service group id: " +
+                            IdentifierUtils.getIdentifierURIEncoded (aServiceGroupID));
           return null;
         }
 
