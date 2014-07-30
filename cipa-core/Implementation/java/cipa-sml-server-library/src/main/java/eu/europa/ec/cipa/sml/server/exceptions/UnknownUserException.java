@@ -37,13 +37,33 @@
  */
 package eu.europa.ec.cipa.sml.server.exceptions;
 
+import javax.annotation.Nullable;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Is thrown if the user requesting an operation is unknown.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public class UnknownUserException extends AbstractSMLException {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (UnknownUserException.class);
+
+  private final String m_sUserName;
+
   public UnknownUserException (final String sUserName) {
-    super ("Unknown user: " + sUserName);
+    super ("Unknown user '" + sUserName + "'");
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug (getMessage ());
+    m_sUserName = sUserName;
+  }
+
+  /**
+   * @return The user name which was not found. May be <code>null</code>.
+   */
+  @Nullable
+  public String getUserName () {
+    return m_sUserName;
   }
 }

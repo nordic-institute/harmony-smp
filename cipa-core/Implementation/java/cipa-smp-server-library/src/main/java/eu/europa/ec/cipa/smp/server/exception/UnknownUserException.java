@@ -46,7 +46,7 @@ import com.phloc.commons.exceptions.LoggedRuntimeException;
 
 /**
  * This exception is thrown if the provided user name does not exist.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public class UnknownUserException extends LoggedRuntimeException {
@@ -56,7 +56,8 @@ public class UnknownUserException extends LoggedRuntimeException {
 
   public UnknownUserException (@Nullable final String sUserName) {
     super ("Unknown user '" + sUserName + "'");
-    s_aLogger.warn (getMessage ());
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug (getMessage ());
     m_sUserName = sUserName;
   }
 
