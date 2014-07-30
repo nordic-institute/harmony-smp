@@ -199,6 +199,7 @@ public class DBMSDataManagerTest {
 
     final ParticipantIdentifierType aParticipantIdentifier2 = SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_IDENTIFIER2);
     final ServiceGroupType result = s_aDataMgr.getServiceGroup (aParticipantIdentifier2);
+    assertNotNull (result);
 
     assertNull (result.getServiceMetadataReferenceCollection ());
     assertEquals (PARTICIPANT_IDENTIFIER_SCHEME, result.getParticipantIdentifier ().getScheme ());
