@@ -275,6 +275,7 @@ public class DBMSDataManagerTest {
 
     // Retrieve from DB
     final ServiceMetadataType aDBServiceMetadata = s_aDataMgr.getService (SERVICEGROUP_ID, DOCTYPE_ID);
+    assertNotNull (aDBServiceMetadata);
 
     final ProcessListType aOrigProcessList = m_aServiceMetadata.getServiceInformation ().getProcessList ();
     assertEquals (1, aOrigProcessList.getProcess ().size ());
