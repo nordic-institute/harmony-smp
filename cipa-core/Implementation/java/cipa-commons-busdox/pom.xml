@@ -139,6 +139,10 @@
             <xjcArg>-Xphloc-tostring</xjcArg>
             <xjcArg>-Xphloc-list-extension</xjcArg>
           </xjcArgs>
+          <!-- Required to work with a JDK 1.8 JVM! -->
+          <vmArgs>
+            <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+          </vmArgs>
         </configuration>
         <dependencies>
           <dependency>
