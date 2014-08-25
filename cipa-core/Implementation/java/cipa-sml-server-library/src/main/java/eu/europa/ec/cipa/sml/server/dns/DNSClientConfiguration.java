@@ -56,6 +56,8 @@ public final class DNSClientConfiguration {
   private static final String CONFIG_SERVER = "dnsClient.server";
   private static final String CONFIG_TTL = "dnsClient.ttl";
   private static final String CONFIG_TSIG_SECRET = "dnsClient.secret";
+  private static final String CONFIG_SIG0 = "dnsClient.SIG0Enabled";
+  private static final String CONFIG_SIG0PublicKeyName = "dnsClient.SIG0PublicKeyName";
 
   // The config file instance to be used for reading
   private static final ConfigFile s_aConfigFile = ConfigFile.getInstance ();
@@ -120,5 +122,25 @@ public final class DNSClientConfiguration {
   @Nullable
   public static String getSecret () {
     return s_aConfigFile.getString (CONFIG_TSIG_SECRET);
+  }
+  
+  /**
+   * Property "dnsClient.SIG0Enabled" from "config.properties".
+   * 
+   * @return server
+   */
+  @Nullable
+  public static boolean getSIG0 () {
+    return Boolean.parseBoolean(s_aConfigFile.getString (CONFIG_SIG0));
+  }
+  
+  /**
+   * Property "dnsClient.SIG0PublicKeyName" from "config.properties".
+   * 
+   * @return server
+   */
+  @Nullable
+  public static String getSIG0PublicKeyName () {
+    return s_aConfigFile.getString (CONFIG_SIG0PublicKeyName);
   }
 }

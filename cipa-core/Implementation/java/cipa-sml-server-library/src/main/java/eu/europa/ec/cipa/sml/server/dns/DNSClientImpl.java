@@ -39,6 +39,7 @@ package eu.europa.ec.cipa.sml.server.dns;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.security.PrivateKey;
 import java.util.Arrays;
 import java.util.List;
 
@@ -49,17 +50,21 @@ import javax.annotation.Nullable;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3._2009._02.ws_tra.GetResponse;
 import org.xbill.DNS.A6Record;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.Address;
 import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.DClass;
+import org.xbill.DNS.DNSSEC.DNSSECException;
+import org.xbill.DNS.KEYRecord;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Rcode;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Resolver;
+import org.xbill.DNS.SIG0;
 import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.TSIG;
 import org.xbill.DNS.TextParseException;
@@ -80,6 +85,7 @@ import eu.europa.ec.cipa.peppol.uri.BusdoxURLUtils;
 import eu.europa.ec.cipa.sml.server.exceptions.DNSErrorException;
 import eu.europa.ec.cipa.sml.server.exceptions.IllegalHostnameException;
 import eu.europa.ec.cipa.sml.server.exceptions.IllegalIdentifierSchemeException;
+import eu.europa.ec.cipa.sml.server.security.SIG0KeyProvider;
 
 /**
  * DNSClient for dynamic updating DNS Server from ServiceMetadataLocator.
@@ -89,8 +95,7 @@ import eu.europa.ec.cipa.sml.server.exceptions.IllegalIdentifierSchemeException;
 public class DNSClientImpl implements IDNSClient {
 	// Time to live
 	public static final int DEFAULT_TTL_SECS = 60;
-	private static final Logger s_aLogger = LoggerFactory
-			.getLogger(DNSClientImpl.class);
+	private static final Logger s_aLogger = LoggerFactory.getLogger(DNSClientImpl.class);
 
 	private final String m_sServerName;
 	private final String m_sDNSZoneName;
@@ -113,10 +118,8 @@ public class DNSClientImpl implements IDNSClient {
 	 * @param nTTLSecs
 	 *            The time to live in seconds. Must be &gt; 0.
 	 */
-	public DNSClientImpl(@Nonnull @Nonempty final String sServerName,
-			@Nonnull @Nonempty final String sDNSZoneName,
-			@Nonnull @Nonempty final String sSMLZoneName,
-			@Nonnegative final int nTTLSecs) {
+	public DNSClientImpl(@Nonnull @Nonempty final String sServerName, @Nonnull @Nonempty final String sDNSZoneName,
+			@Nonnull @Nonempty final String sSMLZoneName, @Nonnegative final int nTTLSecs) {
 		if (StringHelper.hasNoText(sServerName))
 			throw new IllegalArgumentException("serverName may not be empty");
 		if (StringHelper.hasNoText(sDNSZoneName))
@@ -126,26 +129,21 @@ public class DNSClientImpl implements IDNSClient {
 		if (nTTLSecs < 0)
 			throw new IllegalArgumentException("TTL is invalid: " + nTTLSecs);
 
-		s_aLogger.info("DnsClientImpl init: " + sServerName + " : "
-				+ sDNSZoneName + " : " + sSMLZoneName + " : " + nTTLSecs);
+		s_aLogger.info("DnsClientImpl init: " + sServerName + " : " + sDNSZoneName + " : " + sSMLZoneName + " : " + nTTLSecs);
 		m_sServerName = sServerName;
 
-		String sRealDNSZoneName = sDNSZoneName
-				.toLowerCase(BusdoxURLUtils.URL_LOCALE);
+		String sRealDNSZoneName = sDNSZoneName.toLowerCase(BusdoxURLUtils.URL_LOCALE);
 		if (!sRealDNSZoneName.endsWith("."))
 			sRealDNSZoneName += '.';
 		m_sDNSZoneName = sRealDNSZoneName;
 		try {
 			m_aDNSZoneName = Name.fromString(m_sDNSZoneName);
 		} catch (final TextParseException ex) {
-			throw new InitializationException("Failed to build DNS Name from '"
-					+ m_sDNSZoneName + "'", ex);
+			throw new InitializationException("Failed to build DNS Name from '" + m_sDNSZoneName + "'", ex);
 		}
 
-		final String sSMLZoneNameLC = sSMLZoneName
-				.toLowerCase(BusdoxURLUtils.URL_LOCALE);
-		if (sSMLZoneNameLC.equals(m_sDNSZoneName)
-				|| sSMLZoneNameLC.endsWith("." + m_sDNSZoneName)) {
+		final String sSMLZoneNameLC = sSMLZoneName.toLowerCase(BusdoxURLUtils.URL_LOCALE);
+		if (sSMLZoneNameLC.equals(m_sDNSZoneName) || sSMLZoneNameLC.endsWith("." + m_sDNSZoneName)) {
 			// Fully qualified DNS zone provided
 			m_sSMLZoneName = sSMLZoneNameLC;
 		} else {
@@ -158,8 +156,7 @@ public class DNSClientImpl implements IDNSClient {
 
 		m_nTTLSecs = nTTLSecs;
 
-		s_aLogger.info("DnsClientImpl init done. DNS Zone=" + m_sDNSZoneName
-				+ "; SML Zone=" + m_sSMLZoneName);
+		s_aLogger.info("DnsClientImpl init done. DNS Zone=" + m_sDNSZoneName + "; SML Zone=" + m_sSMLZoneName);
 	}
 
 	@Nonnull
@@ -175,13 +172,56 @@ public class DNSClientImpl implements IDNSClient {
 	private TSIG getTSIG() {
 		if (DNSClientConfiguration.isEnabled()) {
 			String secret = DNSClientConfiguration.getSecret();
-			if (secret != null)
-			{
+			if (secret != null && !secret.isEmpty()) {
 				s_aLogger.info("DNS Pre-shared secret returned");
-				return new TSIG("hmac-sha256", "key-ddns.peppol.tech.ec.europa.eu." , secret);
+				return new TSIG("hmac-sha256", "key-ddns.peppol.tech.ec.europa.eu.", secret);
 			}
 		}
 		return null;
+	}
+
+	private KEYRecord getSIG0Record() throws IOException {
+		if (DNSClientConfiguration.isEnabled()) {
+			String KeyName = DNSClientConfiguration.getSIG0PublicKeyName();
+			if (KeyName != null) {
+				Lookup aLookup = new Lookup(KeyName, Type.KEY);
+				aLookup.setResolver(createResolver());
+				aLookup.setCache(null);
+				Record[] aRecords = aLookup.run();
+				for (Record rec : aRecords) {
+					if (rec.getType() == Type.KEY) {
+						return (KEYRecord) rec;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	private Message sendMessgeToDnsServer(Message m) {
+		boolean SIG0Enabled = false;
+		try {
+			if (DNSClientConfiguration.isEnabled()) {
+				SIG0Enabled = DNSClientConfiguration.getSIG0();
+			}
+			if (SIG0Enabled) {
+				SIG0KeyProvider prov = new SIG0KeyProvider();
+				SIG0.signMessage(m, getSIG0Record(), prov.getPrivateSIG0Key(), null);
+			}
+			return createResolver().send(m);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		} catch (DNSSECException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Nonnull
@@ -213,37 +253,29 @@ public class DNSClientImpl implements IDNSClient {
 	 */
 	@Nonnull
 	@Nonempty
-	public String createPublisherDNSName(@Nonnull @Nonempty final String sSMPID)
-			throws IllegalHostnameException {
+	public String createPublisherDNSName(@Nonnull @Nonempty final String sSMPID) throws IllegalHostnameException {
 		// check that host name is ok
 		DNSUtils.verifyHostname(sSMPID);
 
 		// Build name
-		return sSMPID + "." + CSMLDefault.DNS_PUBLISHER_SUBZONE
-				+ m_sSMLZoneName;
+		return sSMPID + "." + CSMLDefault.DNS_PUBLISHER_SUBZONE + m_sSMLZoneName;
 	}
 
 	@Nonnull
-	private Name _createPublisherDNSNameObject(
-			@Nonnull @Nonempty final String sSMPID)
-			throws IllegalHostnameException {
+	private Name _createPublisherDNSNameObject(@Nonnull @Nonempty final String sSMPID) throws IllegalHostnameException {
 		final String sName = createPublisherDNSName(sSMPID);
 		try {
 			return Name.fromString(sName);
 		} catch (final TextParseException ex) {
-			throw new IllegalHostnameException("Failed to convert '" + sName
-					+ "' to a DNS name", ex);
+			throw new IllegalHostnameException("Failed to convert '" + sName + "' to a DNS name", ex);
 		}
 	}
 
-	public void createIdentifier(
-			@Nonnull final ParticipantIdentifierType aParticipantIdentifier,
-			@Nonnull final String sSMPID) throws IOException,
+	public void createIdentifier(@Nonnull final ParticipantIdentifierType aParticipantIdentifier, @Nonnull final String sSMPID) throws IOException,
 			IllegalIdentifierSchemeException, IllegalHostnameException {
 		ValueEnforcer.notNull(aParticipantIdentifier, "ParticipantIdentifier");
 
-		s_aLogger.info("Create Identifier " + aParticipantIdentifier.toString()
-				+ " -> " + sSMPID);
+		s_aLogger.info("Create Identifier " + aParticipantIdentifier.toString() + " -> " + sSMPID);
 
 		// Start update
 		final Update aDNSUpdate = new Update(m_aDNSZoneName);
@@ -251,25 +283,19 @@ public class DNSClientImpl implements IDNSClient {
 		// add record
 		final Name aParticipantHost = _getDNSNameObjectOfParticipant(aParticipantIdentifier);
 		final Name aPublisherHost = _createPublisherDNSNameObject(sSMPID);
-		aDNSUpdate.add(new CNAMERecord(aParticipantHost, DClass.IN, m_nTTLSecs,
-				aPublisherHost));
-		
-		s_aLogger.debug ("sending Dns UPDATE :"+aDNSUpdate);
+		aDNSUpdate.add(new CNAMERecord(aParticipantHost, DClass.IN, m_nTTLSecs, aPublisherHost));
+		s_aLogger.debug("sending Dns UPDATE :" + aDNSUpdate);
 
 		// Execute
-		final Message aResponse = createResolver().send(aDNSUpdate);
+		final Message aResponse = sendMessgeToDnsServer(aDNSUpdate);
 		_validateDNSResponse(aResponse);
 	}
 
-	public void createIdentifiers(
-			@Nonnull final List<ParticipantIdentifierType> aParticipantIdentifiers,
-			@Nonnull final String sSMPID) throws IOException,
+	public void createIdentifiers(@Nonnull final List<ParticipantIdentifierType> aParticipantIdentifiers, @Nonnull final String sSMPID) throws IOException,
 			IllegalIdentifierSchemeException, IllegalHostnameException {
-		ValueEnforcer
-				.notNull(aParticipantIdentifiers, "ParticipantIdentifiers");
+		ValueEnforcer.notNull(aParticipantIdentifiers, "ParticipantIdentifiers");
 
-		s_aLogger.info("Create Identifiers "
-				+ aParticipantIdentifiers.toString() + " -> " + sSMPID);
+		s_aLogger.info("Create Identifiers " + aParticipantIdentifiers.toString() + " -> " + sSMPID);
 
 		// What to update
 		final Update aDNSUpdate = new Update(m_aDNSZoneName);
@@ -278,36 +304,28 @@ public class DNSClientImpl implements IDNSClient {
 
 		for (final ParticipantIdentifierType aParticipantIdentifier : aParticipantIdentifiers) {
 			final Name aParticipantHost = _getDNSNameObjectOfParticipant(aParticipantIdentifier);
-			aDNSUpdate.add(new CNAMERecord(aParticipantHost, DClass.IN,
-					m_nTTLSecs, aPublisherHost));
+			aDNSUpdate.add(new CNAMERecord(aParticipantHost, DClass.IN, m_nTTLSecs, aPublisherHost));
 		}
-		s_aLogger.debug ("sending Dns UPDATE :"+aDNSUpdate);
+		s_aLogger.debug("sending Dns UPDATE :" + aDNSUpdate);
 
 		// Execute
-		final Message response = createResolver().send(aDNSUpdate);
+		final Message response = sendMessgeToDnsServer(aDNSUpdate);
 		_validateDNSResponse(response);
 	}
 
-	public void deleteIdentifier(
-			@Nonnull final ParticipantIdentifierType aParticipantIdentifier)
-			throws IllegalIdentifierSchemeException, IOException {
+	public void deleteIdentifier(@Nonnull final ParticipantIdentifierType aParticipantIdentifier) throws IllegalIdentifierSchemeException, IOException {
 		ValueEnforcer.notNull(aParticipantIdentifier, "ParticipantIdentifier");
 
-		s_aLogger
-				.info("Delete Identifier " + aParticipantIdentifier.toString());
+		s_aLogger.info("Delete Identifier " + aParticipantIdentifier.toString());
 
 		final String sPIDNSName = getDNSNameOfParticipant(aParticipantIdentifier);
 		_deleteZoneRecord(sPIDNSName);
 	}
 
-	public void deleteIdentifiers(
-			@Nonnull final List<ParticipantIdentifierType> aParticipantIdentifiers)
-			throws IOException, IllegalIdentifierSchemeException {
-		ValueEnforcer
-				.notNull(aParticipantIdentifiers, "ParticipantIdentifiers");
+	public void deleteIdentifiers(@Nonnull final List<ParticipantIdentifierType> aParticipantIdentifiers) throws IOException, IllegalIdentifierSchemeException {
+		ValueEnforcer.notNull(aParticipantIdentifiers, "ParticipantIdentifiers");
 
-		s_aLogger.info("Deleting Identifiers "
-				+ aParticipantIdentifiers.toString());
+		s_aLogger.info("Deleting Identifiers " + aParticipantIdentifiers.toString());
 
 		final Update aDNSUpdate = new Update(m_aDNSZoneName);
 
@@ -317,15 +335,12 @@ public class DNSClientImpl implements IDNSClient {
 		}
 
 		// Execute
-		final Message response = createResolver().send(aDNSUpdate);
+		final Message response = sendMessgeToDnsServer(aDNSUpdate);
 		_validateDNSResponse(response);
 	}
 
-	public void createPublisherAnchor(@Nonnull final String sSMPID,
-			@Nonnull final String sEndpoint) throws IOException,
-			IllegalHostnameException {
-		s_aLogger
-				.info("Create Publisher Anchor " + sSMPID + " -> " + sEndpoint);
+	public void createPublisherAnchor(@Nonnull final String sSMPID, @Nonnull final String sEndpoint) throws IOException, IllegalHostnameException {
+		s_aLogger.info("Create Publisher Anchor " + sSMPID + " -> " + sEndpoint);
 
 		final Update aDNSUpdate = new Update(m_aDNSZoneName);
 
@@ -339,32 +354,30 @@ public class DNSClientImpl implements IDNSClient {
 			if (s_aLogger.isDebugEnabled())
 				s_aLogger.debug(" - IPV4");
 
-			final InetAddress aInetAddress = InetAddress
-					.getByAddress(aIPAddressBytes);
-			aRecord = new ARecord(aPublisherHost, DClass.IN, m_nTTLSecs,
-					aInetAddress);
+			final InetAddress aInetAddress = InetAddress.getByAddress(aIPAddressBytes);
+			aRecord = new ARecord(aPublisherHost, DClass.IN, m_nTTLSecs, aInetAddress);
 		} else {
 			aIPAddressBytes = Address.toByteArray(sEndpoint, Address.IPv6);
 			// FIXME NO IPv6 yet
-			if (false && aIPAddressBytes != null) {
-				if (s_aLogger.isDebugEnabled())
-					s_aLogger.debug(" - IPV6");
-
-				final InetAddress ipAddress = InetAddress
-						.getByAddress(aIPAddressBytes);
-				// FIXME
-				final int nPrefixBits = 0;
-				final Name aPrefix = null;
-				aRecord = new A6Record(aPublisherHost, DClass.IN, m_nTTLSecs,
-						nPrefixBits, ipAddress, aPrefix);
-			} else if ((sEndpoint + ".").endsWith(m_sDNSZoneName)) {
+			// if (false && aIPAddressBytes != null) {
+			// if (s_aLogger.isDebugEnabled())
+			// s_aLogger.debug(" - IPV6");
+			//
+			// final InetAddress ipAddress =
+			// InetAddress.getByAddress(aIPAddressBytes);
+			// // FIXME
+			// final int nPrefixBits = 0;
+			// final Name aPrefix = null;
+			// aRecord = new A6Record(aPublisherHost, DClass.IN, m_nTTLSecs,
+			// nPrefixBits, ipAddress, aPrefix);
+			// } else
+			if ((sEndpoint + ".").endsWith(m_sDNSZoneName)) {
 				if (s_aLogger.isDebugEnabled())
 					s_aLogger.debug(" - in Local Zone");
 
 				// FOR NOW WE CAN ONLY RESOLVE LOCAL ADDRESSES...
 				// - CNAME TO LOCAL
-				aRecord = new CNAMERecord(aPublisherHost, DClass.IN,
-						m_nTTLSecs, new Name(sEndpoint + "."));
+				aRecord = new CNAMERecord(aPublisherHost, DClass.IN, m_nTTLSecs, new Name(sEndpoint + "."));
 			} else {
 				if (s_aLogger.isDebugEnabled())
 					s_aLogger.debug(" - Other Zone");
@@ -379,8 +392,7 @@ public class DNSClientImpl implements IDNSClient {
 				// r = new ARecord(host, DClass.IN, ttl, resolvedAddress);
 
 				// THIS IS
-				aRecord = new CNAMERecord(aPublisherHost, DClass.IN,
-						m_nTTLSecs, new Name(sEndpoint + "."));
+				aRecord = new CNAMERecord(aPublisherHost, DClass.IN, m_nTTLSecs, new Name(sEndpoint + "."));
 			}
 		}
 		aDNSUpdate.add(aRecord);
@@ -388,12 +400,11 @@ public class DNSClientImpl implements IDNSClient {
 		s_aLogger.info("  Creating record: " + aRecord.toString());
 
 		// Execute
-		final Message response = createResolver().send(aDNSUpdate);
+		final Message response = sendMessgeToDnsServer(aDNSUpdate);
 		_validateDNSResponse(response);
 	}
 
-	public void deletePublisherAnchor(final String sSMPID) throws IOException,
-			IllegalHostnameException {
+	public void deletePublisherAnchor(final String sSMPID) throws IOException, IllegalHostnameException {
 		s_aLogger.info("Delete Publisher Anchor " + sSMPID);
 
 		final String aSMPAnchor = createPublisherDNSName(sSMPID);
@@ -401,19 +412,16 @@ public class DNSClientImpl implements IDNSClient {
 	}
 
 	@Nonnull
-	public List<Record> getAllRecords() throws IOException,
-			ZoneTransferException {
+	public List<Record> getAllRecords() throws IOException, ZoneTransferException {
 		// do zone transfer to get complete list..
-		final ZoneTransferIn xfr = ZoneTransferIn.newAXFR(m_aDNSZoneName,
-				m_sServerName, null);
+		final ZoneTransferIn xfr = ZoneTransferIn.newAXFR(m_aDNSZoneName, m_sServerName, null);
 		@SuppressWarnings("unchecked")
 		final List<Record> records = xfr.run();
 		return records;
 	}
 
 	@Nullable
-	public String lookupPeppolPublisherById(@Nonnull final String sSMPID)
-			throws IOException, IllegalHostnameException {
+	public String lookupPeppolPublisherById(@Nonnull final String sSMPID) throws IOException, IllegalHostnameException {
 		if (s_aLogger.isDebugEnabled())
 			s_aLogger.debug("Lookup Publisher By ID : " + sSMPID);
 
@@ -422,8 +430,7 @@ public class DNSClientImpl implements IDNSClient {
 	}
 
 	@Nullable
-	public String lookupDNSRecord(@Nonnull final String sName)
-			throws IOException {
+	public String lookupDNSRecord(@Nonnull final String sName) throws IOException {
 		if (s_aLogger.isDebugEnabled())
 			s_aLogger.debug("Lookup Publisher: " + sName);
 
@@ -441,8 +448,7 @@ public class DNSClientImpl implements IDNSClient {
 			s_aLogger.debug("Run Lookup for Host : " + aHost);
 		final Record[] aRecords = aLookup.run();
 		if (s_aLogger.isDebugEnabled())
-			s_aLogger.debug("Run Lookup for Host - DONE : "
-					+ Arrays.toString(aRecords));
+			s_aLogger.debug("Run Lookup for Host - DONE : " + Arrays.toString(aRecords));
 
 		if (aRecords == null)
 			return null;
@@ -452,8 +458,7 @@ public class DNSClientImpl implements IDNSClient {
 		}
 		if (aRecords[0] instanceof ARecord) {
 			// ?? is this to validate ???
-			final InetAddress aInetAddress = ((ARecord) aRecords[0])
-					.getAddress();
+			final InetAddress aInetAddress = ((ARecord) aRecords[0]).getAddress();
 			return aInetAddress.getHostAddress();
 		}
 
@@ -480,7 +485,7 @@ public class DNSClientImpl implements IDNSClient {
 		aDNSUpdate.delete(aHost);
 
 		// Execute
-		final Message response = createResolver().send(aDNSUpdate);
+		final Message response = sendMessgeToDnsServer(aDNSUpdate);
 		_validateDNSResponse(response);
 	}
 
@@ -498,36 +503,27 @@ public class DNSClientImpl implements IDNSClient {
 
 		if (nRetCode != Rcode.NOERROR) {
 			// Error - not handling special cases yet
-			s_aLogger.error("Error performing DNS request : " + sRetCode + "\n"
-					+ aResponse);
-			throw new DNSErrorException("Error performing DNS request : "
-					+ sRetCode);
+			s_aLogger.error("Error performing DNS request : " + sRetCode + "\n" + aResponse);
+			throw new DNSErrorException("Error performing DNS request : " + sRetCode);
 		}
 	}
 
 	@Nullable
-	public ParticipantIdentifierType getIdentifierFromDnsName(
-			final String sDnsName) {
+	public ParticipantIdentifierType getIdentifierFromDnsName(final String sDnsName) {
 		return DNSUtils.getIdentiferFromDnsName(sDnsName, m_sSMLZoneName);
 	}
 
 	@Nonnull
-	public String getDNSNameOfParticipant(
-			@Nonnull final ParticipantIdentifierType aParticipantIdentifier)
-			throws IllegalIdentifierSchemeException {
+	public String getDNSNameOfParticipant(@Nonnull final ParticipantIdentifierType aParticipantIdentifier) throws IllegalIdentifierSchemeException {
 		try {
-			return BusdoxURLUtils.getDNSNameOfParticipant(
-					aParticipantIdentifier, m_sSMLZoneName);
+			return BusdoxURLUtils.getDNSNameOfParticipant(aParticipantIdentifier, m_sSMLZoneName);
 		} catch (final IllegalArgumentException ex) {
-			throw new IllegalIdentifierSchemeException(
-					String.valueOf(aParticipantIdentifier), ex);
+			throw new IllegalIdentifierSchemeException(String.valueOf(aParticipantIdentifier), ex);
 		}
 	}
 
 	@Nonnull
-	private Name _getDNSNameObjectOfParticipant(
-			@Nonnull final ParticipantIdentifierType aParticipantIdentifier)
-			throws IllegalIdentifierSchemeException {
+	private Name _getDNSNameObjectOfParticipant(@Nonnull final ParticipantIdentifierType aParticipantIdentifier) throws IllegalIdentifierSchemeException {
 		final String sDNSName = getDNSNameOfParticipant(aParticipantIdentifier);
 		try {
 			return Name.fromString(sDNSName, m_aDNSZoneName);
@@ -547,9 +543,7 @@ public class DNSClientImpl implements IDNSClient {
 
 	@Override
 	public String toString() {
-		return new ToStringGenerator(this).append("serverName", m_sServerName)
-				.append("dnsZoneName", m_sDNSZoneName)
-				.append("smlDnsZoneName", m_sSMLZoneName)
+		return new ToStringGenerator(this).append("serverName", m_sServerName).append("dnsZoneName", m_sDNSZoneName).append("smlDnsZoneName", m_sSMLZoneName)
 				.append("ttlSecs", m_nTTLSecs).toString();
 	}
 }

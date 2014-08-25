@@ -60,71 +60,60 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
  */
 @Immutable
 public final class PeppolRootCertificateProvider {
-  public static final String CONFIG_SML_TRUSTSTORE_PATH = "sml.truststore.path";
-  public static final String CONFIG_SML_TRUSTSTORE_PASSWORD = "sml.truststore.password";
-  public static final String CONFIG_SML_TRUSTSTORE_ALIAS = "sml.truststore.alias";
-  public static final String CONFIG_SML_TRUSTSTORE_ALIAS_NEW = "sml.truststore.alias.new";
-  private static final Logger s_aLogger = LoggerFactory.getLogger (PeppolRootCertificateProvider.class);
+	private static final Logger s_aLogger = LoggerFactory.getLogger (PeppolRootCertificateProvider.class);
+	
+	public static final String CONFIG_SML_TRUSTSTORE_PATH = "sml.truststore.path";
+	public static final String CONFIG_SML_TRUSTSTORE_PASSWORD = "sml.truststore.password";
+	public static final String CONFIG_SML_TRUSTSTORE_ALIAS = "sml.truststore.alias";
+	public static final String CONFIG_SML_TRUSTSTORE_ALIAS_NEW = "sml.truststore.alias.new";
 
-  private static X509Certificate s_aPeppolSMPRootCert;
-  private static X509Certificate s_aOpenPeppolSMPRootCert;
+	private static X509Certificate s_aPeppolSMPRootCert;
+	private static X509Certificate s_aOpenPeppolSMPRootCert;
 
-  static {
-    // Get data from config file
-    final ConfigFile aConfigFile = ConfigFile.getInstance ();
-    final String sTrustStorePath = aConfigFile.getString (CONFIG_SML_TRUSTSTORE_PATH,
-                                                          KeyStoreUtils.TRUSTSTORE_CLASSPATH);
-    final String sTrustStorePassword = aConfigFile.getString (CONFIG_SML_TRUSTSTORE_PASSWORD,
-                                                              KeyStoreUtils.TRUSTSTORE_PASSWORD);
+	static {
+		// Get data from config file
+		final ConfigFile aConfigFile = ConfigFile.getInstance();
+		final String sTrustStorePath = aConfigFile.getString(CONFIG_SML_TRUSTSTORE_PATH, KeyStoreUtils.TRUSTSTORE_CLASSPATH);
+		final String sTrustStorePassword = aConfigFile.getString(CONFIG_SML_TRUSTSTORE_PASSWORD, KeyStoreUtils.TRUSTSTORE_PASSWORD);
 
-    final String sTrustStoreAlias = aConfigFile.getString (CONFIG_SML_TRUSTSTORE_ALIAS,
-                                                           KeyStoreUtils.TRUSTSTORE_ALIAS_SMP_PEPPOL);
-    final String sTrustStoreAliasNew = aConfigFile.getString (CONFIG_SML_TRUSTSTORE_ALIAS_NEW,
-                                                              KeyStoreUtils.TRUSTSTORE_ALIAS_SMP_OPENPEPPOL);
+		final String sTrustStoreAlias = aConfigFile.getString(CONFIG_SML_TRUSTSTORE_ALIAS, KeyStoreUtils.TRUSTSTORE_ALIAS_SMP_PEPPOL);
+		final String sTrustStoreAliasNew = aConfigFile.getString(CONFIG_SML_TRUSTSTORE_ALIAS_NEW, KeyStoreUtils.TRUSTSTORE_ALIAS_SMP_OPENPEPPOL);
 
-    // Load keystores
-    try {
-      final KeyStore aKS = KeyStoreUtils.loadKeyStore (sTrustStorePath, sTrustStorePassword);
-      s_aPeppolSMPRootCert = (X509Certificate) aKS.getCertificate (sTrustStoreAlias);
-      s_aOpenPeppolSMPRootCert = (X509Certificate) aKS.getCertificate (sTrustStoreAliasNew);
-    }
-    catch (final Throwable t) {
-      final String sErrorMsg = "Failed to read SML trust store from '" + sTrustStorePath + "'";
-      s_aLogger.error (sErrorMsg);
-      throw new InitializationException (sErrorMsg, t);
-    }
+		// Load keystores
+		try {
+			final KeyStore aKS = KeyStoreUtils.loadKeyStore(sTrustStorePath, sTrustStorePassword);
+			s_aPeppolSMPRootCert = (X509Certificate) aKS.getCertificate(sTrustStoreAlias);
+			s_aOpenPeppolSMPRootCert = (X509Certificate) aKS.getCertificate(sTrustStoreAliasNew);
+		} catch (final Throwable t) {
+			final String sErrorMsg = "Failed to read SML trust store from '" + sTrustStorePath + "'";
+			s_aLogger.error(sErrorMsg);
+			throw new InitializationException(sErrorMsg, t);
+		}
 
-    // Check if both root certificates could be loaded
-    if (s_aPeppolSMPRootCert == null)
-      throw new InitializationException ("Failed to resolve alias1 '" + sTrustStoreAlias + "' in trust store!");
-    s_aLogger.info ("PEPPOL root certificate loaded successfully from trust store '" +
-                    sTrustStorePath +
-                    "' with alias '" +
-                    sTrustStoreAlias +
-                    "'");
+		// Check if both root certificates could be loaded
+		if (s_aPeppolSMPRootCert == null)
+			throw new InitializationException("Failed to resolve alias1 '" + sTrustStoreAlias + "' in trust store!");
+		s_aLogger.info("PEPPOL root certificate loaded successfully from trust store '" + sTrustStorePath + "' with alias '" + sTrustStoreAlias + "'");
 
-    if (s_aOpenPeppolSMPRootCert == null)
-      throw new InitializationException ("Failed to resolve alias2 '" + sTrustStoreAliasNew + "' in trust store!");
-    s_aLogger.info ("OpenPEPPOL root certificate loaded successfully from trust store '" +
-                    sTrustStorePath +
-                    "' with alias '" +
-                    sTrustStoreAliasNew +
-                    "'");
-  }
+		if (s_aOpenPeppolSMPRootCert == null)
+			throw new InitializationException("Failed to resolve alias2 '" + sTrustStoreAliasNew + "' in trust store!");
+		s_aLogger.info("OpenPEPPOL root certificate loaded successfully from trust store '" + sTrustStorePath + "' with alias '" + sTrustStoreAliasNew + "'");
+	}
 
-  @PresentForCodeCoverage
-  @SuppressWarnings ("unused")
-  private static final PeppolRootCertificateProvider s_aInstance = new PeppolRootCertificateProvider ();
+	@PresentForCodeCoverage
+	@SuppressWarnings("unused")
+	private static final PeppolRootCertificateProvider s_aInstance = new PeppolRootCertificateProvider();
 
-  private PeppolRootCertificateProvider () {}
+	private PeppolRootCertificateProvider() {
+	}
 
-  @Nonnull
-  public static X509Certificate getPeppolSMPRootCertificate () {
-    return s_aPeppolSMPRootCert;
-  }
+	@Nonnull
+	public static X509Certificate getPeppolSMPRootCertificate() {
+		return s_aPeppolSMPRootCert;
+	}
 
-  @Nonnull
-  public static X509Certificate getOpenPeppolSMPRootCertificate () {
-    return s_aOpenPeppolSMPRootCert;
-  }
+	@Nonnull
+	public static X509Certificate getOpenPeppolSMPRootCertificate() {
+		return s_aOpenPeppolSMPRootCert;
+	}
 }

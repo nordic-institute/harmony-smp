@@ -74,173 +74,143 @@ import eu.europa.ec.cipa.sml.server.web.WebRequestClientIdentifier;
 // We can't use this on outbound messages, since the XMLDSIG isn't set until in
 // the handlers.
 // @SchemaValidation (outbound = false)
-@WebService (serviceName = "ManageServiceMetadataService",
-             portName = "ManageServiceMetadataServicePort",
-             endpointInterface = "org.busdox.servicemetadata.manageservicemetadataservice._1.ManageServiceMetadataServiceSoap",
-             targetNamespace = "http://busdox.org/serviceMetadata/ManageServiceMetadataService/1.0/",
-             wsdlLocation = "WEB-INF/wsdl/ManageServiceMetadataService-1.0.wsdl")
-@BindingType (value = javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING)
-@HandlerChain (file = "handlers.xml")
+@WebService(serviceName = "ManageServiceMetadataService", portName = "ManageServiceMetadataServicePort", endpointInterface = "org.busdox.servicemetadata.manageservicemetadataservice._1.ManageServiceMetadataServiceSoap", targetNamespace = "http://busdox.org/serviceMetadata/ManageServiceMetadataService/1.0/", wsdlLocation = "WEB-INF/wsdl/ManageServiceMetadataService-1.0.wsdl")
+@BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING)
+@HandlerChain(file = "handlers.xml")
 public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSoap {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (ManageServiceMetadataImpl.class);
+	private static final Logger s_aLogger = LoggerFactory.getLogger(ManageServiceMetadataImpl.class);
 
-  private final ObjectFactory m_aObjFactory = new ObjectFactory ();
-  private final ISMPDataHandler m_aDataHandler;
-  private final IRequestAuthenticationHandler m_aReqAuthHdl;
+	private final ObjectFactory m_aObjFactory = new ObjectFactory();
+	private final ISMPDataHandler m_aDataHandler;
+	private final IRequestAuthenticationHandler m_aReqAuthHdl;
 
-  @Resource
-  public WebServiceContext wsContext;
+	@Resource
+	public WebServiceContext wsContext;
 
-  public ManageServiceMetadataImpl () {
-    m_aDataHandler = DataHandlerFactory.getSMPDataHandler ();
-    m_aReqAuthHdl = DataHandlerFactory.getGenericDataHandler ();
-  }
+	public ManageServiceMetadataImpl() {
+		m_aDataHandler = DataHandlerFactory.getSMPDataHandler();
+		m_aReqAuthHdl = DataHandlerFactory.getGenericDataHandler();
+	}
 
-  private void _handleException (@Nonnull final Throwable e) throws NotFoundFault,
-                                                            UnauthorizedFault,
-                                                            BadRequestFault,
-                                                            InternalErrorFault {
-    if (e instanceof NotFoundException) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new NotFoundFault (e.getMessage (), faultInfo, e);
-    }
-    if (e instanceof UnauthorizedException) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    if (e instanceof UnknownUserException) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new UnauthorizedFault (e.getMessage (), faultInfo, e);
-    }
-    if (e instanceof BadRequestException) {
-      final FaultType faultInfo = m_aObjFactory.createFaultType ();
-      faultInfo.setFaultMessage (e.getMessage ());
-      throw new BadRequestFault (e.getMessage (), faultInfo, e);
-    }
-    // All others as internal errors
-    final FaultType faultInfo = m_aObjFactory.createFaultType ();
-    faultInfo.setFaultMessage (e.getMessage ());
-    throw new InternalErrorFault (e.getMessage (), faultInfo, e);
-  }
+	private void _handleException(@Nonnull final Throwable e) throws NotFoundFault, UnauthorizedFault, BadRequestFault, InternalErrorFault {
+		if (e instanceof NotFoundException) {
+			final FaultType faultInfo = m_aObjFactory.createFaultType();
+			faultInfo.setFaultMessage(e.getMessage());
+			throw new NotFoundFault(e.getMessage(), faultInfo, e);
+		}
+		if (e instanceof UnauthorizedException) {
+			final FaultType faultInfo = m_aObjFactory.createFaultType();
+			faultInfo.setFaultMessage(e.getMessage());
+			throw new UnauthorizedFault(e.getMessage(), faultInfo, e);
+		}
+		if (e instanceof UnknownUserException) {
+			final FaultType faultInfo = m_aObjFactory.createFaultType();
+			faultInfo.setFaultMessage(e.getMessage());
+			throw new UnauthorizedFault(e.getMessage(), faultInfo, e);
+		}
+		if (e instanceof BadRequestException) {
+			final FaultType faultInfo = m_aObjFactory.createFaultType();
+			faultInfo.setFaultMessage(e.getMessage());
+			throw new BadRequestFault(e.getMessage(), faultInfo, e);
+		}
+		// All others as internal errors
+		final FaultType faultInfo = m_aObjFactory.createFaultType();
+		faultInfo.setFaultMessage(e.getMessage());
+		throw new InternalErrorFault(e.getMessage(), faultInfo, e);
+	}
 
-  public void create (final ServiceMetadataPublisherServiceType aSMPData) throws BadRequestFault,
-                                                                         InternalErrorFault,
-                                                                         UnauthorizedFault {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("create(ServiceMetadataPublisherServiceType arg0)");
+	public void create(final ServiceMetadataPublisherServiceType aSMPData) throws BadRequestFault, InternalErrorFault, UnauthorizedFault {
+		if (s_aLogger.isDebugEnabled())
+			s_aLogger.debug("create(ServiceMetadataPublisherServiceType arg0)");
 
-    try {
-      // Validate input data
-      DataValidator.validate (aSMPData);
+		try {
+			// Validate input data
+			DataValidator.validate(aSMPData);
 
-      // no client unique ID validation here - the only place where the ID would
-      // be created
-      final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID (wsContext);
+			// no client unique ID validation here - the only place where the ID
+			// would
+			// be created
+			final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID(wsContext);
 
-      // Perform action
-      m_aDataHandler.createSMPData (aSMPData, sClientUniqueID);
+			// Perform action
+			m_aDataHandler.createSMPData(aSMPData, sClientUniqueID);
 
-      s_aLogger.info ("Created SMP " +
-                      aSMPData.getServiceMetadataPublisherID () +
-                      " with URLs " +
-                      aSMPData.getPublisherEndpoint ().getPhysicalAddress () +
-                      "/" +
-                      aSMPData.getPublisherEndpoint ().getLogicalAddress ());
-    }
-    catch (final Throwable t) {
-      try {
-        _handleException (t);
-      }
-      catch (final NotFoundFault ex) {
-        // never happens
-      }
-    }
-  }
+			s_aLogger.info("Created SMP " + aSMPData.getServiceMetadataPublisherID() + " with URLs " + aSMPData.getPublisherEndpoint().getPhysicalAddress()
+					+ "/" + aSMPData.getPublisherEndpoint().getLogicalAddress());
+		} catch (final Throwable t) {
+			try {
+				_handleException(t);
+			} catch (final NotFoundFault ex) {
+				// never happens
+			}
+		}
+	}
 
-  public ServiceMetadataPublisherServiceType read (final ServiceMetadataPublisherServiceType messagePart) throws BadRequestFault,
-                                                                                                         InternalErrorFault,
-                                                                                                         NotFoundFault,
-                                                                                                         UnauthorizedFault {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("read()");
+	public ServiceMetadataPublisherServiceType read(final ServiceMetadataPublisherServiceType messagePart) throws BadRequestFault, InternalErrorFault,
+			NotFoundFault, UnauthorizedFault {
+		if (s_aLogger.isDebugEnabled())
+			s_aLogger.debug("read()");
 
-    try {
-      // Validate input data
-      DataValidator.validateSMPID (messagePart.getServiceMetadataPublisherID ());
+		try {
+			// Validate input data
+			DataValidator.validateSMPID(messagePart.getServiceMetadataPublisherID());
 
-      // Validate client unique ID
-      final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID (wsContext);
-      m_aReqAuthHdl.verifyExistingUser (sClientUniqueID);
+			// Validate client unique ID
+			final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID(wsContext);
+			m_aReqAuthHdl.verifyExistingUser(sClientUniqueID);
 
-      // Perform action
-      final ServiceMetadataPublisherServiceType ret = m_aDataHandler.getSMPData (messagePart.getServiceMetadataPublisherID (),
-                                                                                 sClientUniqueID);
-      s_aLogger.info ("Read SMP data of " + messagePart.getServiceMetadataPublisherID ());
-      return ret;
-    }
-    catch (final Throwable t) {
-      _handleException (t);
-      // Never reached
-      assert false;
-      return null;
-    }
-  }
+			// Perform action
+			final ServiceMetadataPublisherServiceType ret = m_aDataHandler.getSMPData(messagePart.getServiceMetadataPublisherID(), sClientUniqueID);
+			s_aLogger.info("Read SMP data of " + messagePart.getServiceMetadataPublisherID());
+			return ret;
+		} catch (final Throwable t) {
+			_handleException(t);
+			// Never reached
+			assert false;
+			return null;
+		}
+	}
 
-  public void update (final ServiceMetadataPublisherServiceType aSMPData) throws InternalErrorFault,
-                                                                         NotFoundFault,
-                                                                         UnauthorizedFault,
-                                                                         BadRequestFault {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("update(ServiceMetadataPublisherServiceType arg0)");
+	public void update(final ServiceMetadataPublisherServiceType aSMPData) throws InternalErrorFault, NotFoundFault, UnauthorizedFault, BadRequestFault {
+		if (s_aLogger.isDebugEnabled())
+			s_aLogger.debug("update(ServiceMetadataPublisherServiceType arg0)");
 
-    try {
-      // Validate input data
-      DataValidator.validate (aSMPData);
+		try {
+			// Validate input data
+			DataValidator.validate(aSMPData);
 
-      // Validate client unique ID
-      final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID (wsContext);
-      m_aReqAuthHdl.verifyExistingUser (sClientUniqueID);
+			// Validate client unique ID
+			final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID(wsContext);
+			m_aReqAuthHdl.verifyExistingUser(sClientUniqueID);
 
-      // Perform action
-      m_aDataHandler.updateSMPData (aSMPData, sClientUniqueID);
+			// Perform action
+			m_aDataHandler.updateSMPData(aSMPData, sClientUniqueID);
 
-      s_aLogger.info ("Updated SMP " +
-                      aSMPData.getServiceMetadataPublisherID () +
-                      " with URLs " +
-                      aSMPData.getPublisherEndpoint ().getPhysicalAddress () +
-                      "/" +
-                      aSMPData.getPublisherEndpoint ().getLogicalAddress ());
-    }
-    catch (final Throwable t) {
-      _handleException (t);
-    }
-  }
+			s_aLogger.info("Updated SMP " + aSMPData.getServiceMetadataPublisherID() + " with URLs " + aSMPData.getPublisherEndpoint().getPhysicalAddress()
+					+ "/" + aSMPData.getPublisherEndpoint().getLogicalAddress());
+		} catch (final Throwable t) {
+			_handleException(t);
+		}
+	}
 
-  public void delete (@Nonnull final String sSMPID) throws BadRequestFault,
-                                                   InternalErrorFault,
-                                                   NotFoundFault,
-                                                   UnauthorizedFault {
-    if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("delete('" + sSMPID + "')");
+	public void delete(@Nonnull final String sSMPID) throws BadRequestFault, InternalErrorFault, NotFoundFault, UnauthorizedFault {
+		if (s_aLogger.isDebugEnabled())
+			s_aLogger.debug("delete('" + sSMPID + "')");
 
-    try {
-      // Validate input data
-      DataValidator.validateSMPID (sSMPID);
+		try {
+			// Validate input data
+			DataValidator.validateSMPID(sSMPID);
 
-      // Validate client unique ID
-      final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID (wsContext);
-      m_aReqAuthHdl.verifyExistingUser (sClientUniqueID);
+			// Validate client unique ID
+			final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID(wsContext);
+			m_aReqAuthHdl.verifyExistingUser(sClientUniqueID);
 
-      // Perform action
-      m_aDataHandler.deleteSMPData (sSMPID, sClientUniqueID);
+			// Perform action
+			m_aDataHandler.deleteSMPData(sSMPID, sClientUniqueID);
 
-      s_aLogger.info ("Deleted SMP '" + sSMPID + "'");
-    }
-    catch (final Throwable t) {
-      _handleException (t);
-    }
-  }
+			s_aLogger.info("Deleted SMP '" + sSMPID + "'");
+		} catch (final Throwable t) {
+			_handleException(t);
+		}
+	}
 }
