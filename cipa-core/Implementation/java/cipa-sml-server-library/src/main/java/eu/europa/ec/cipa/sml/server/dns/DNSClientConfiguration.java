@@ -45,7 +45,7 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 /**
  * Get configuration for DNSClient.<br>
  * This class only uses the {@link ConfigFile} with fixed keys and fixed types.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -66,7 +66,7 @@ public final class DNSClientConfiguration {
 
   /**
    * Property "dnsClient.enabled" from "config.properties".
-   * 
+   *
    * @return enabled or not : default false
    */
   public static boolean isEnabled () {
@@ -76,7 +76,7 @@ public final class DNSClientConfiguration {
   /**
    * Property "dnsClient.zone" from "config.properties". This is the Domain
    * name.
-   * 
+   *
    * @return zone
    */
   @Nullable
@@ -87,7 +87,7 @@ public final class DNSClientConfiguration {
   /**
    * Property "dnsClient.smlzonename" from "config.properties". This zone is
    * prefixed on Zone (Domain).
-   * 
+   *
    * @return zone
    */
   @Nullable
@@ -97,7 +97,7 @@ public final class DNSClientConfiguration {
 
   /**
    * Property "dnsClient.server" from "config.properties".
-   * 
+   *
    * @return server
    */
   @Nullable
@@ -107,36 +107,35 @@ public final class DNSClientConfiguration {
 
   /**
    * Property "dnsClient.ttl" from "config.properties".
-   * 
+   *
    * @return ttl : default 60 seconds
    */
   public static int getTTL () {
     return s_aConfigFile.getInt (CONFIG_TTL, 60);
   }
-  
+
   /**
    * Property "dnsClient.secret" from "config.properties".
-   * 
+   *
    * @return server
    */
   @Nullable
   public static String getSecret () {
     return s_aConfigFile.getString (CONFIG_TSIG_SECRET);
   }
-  
+
   /**
    * Property "dnsClient.SIG0Enabled" from "config.properties".
-   * 
+   *
    * @return server
    */
-  @Nullable
   public static boolean getSIG0 () {
-    return Boolean.parseBoolean(s_aConfigFile.getString (CONFIG_SIG0));
+    return Boolean.parseBoolean (s_aConfigFile.getString (CONFIG_SIG0));
   }
-  
+
   /**
    * Property "dnsClient.SIG0PublicKeyName" from "config.properties".
-   * 
+   *
    * @return server
    */
   @Nullable
