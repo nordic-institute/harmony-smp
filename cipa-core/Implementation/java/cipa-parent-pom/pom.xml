@@ -11,7 +11,7 @@
   <!-- Minimum Maven version -->
   <prerequisites>
     <maven>3.0.4</maven>
-  </prerequisites>
+  </prerequisites> 
   
   <!-- SVN location -->
   <scm>
@@ -194,6 +194,7 @@
         <groupId>org.glassfish.metro</groupId>
         <artifactId>webservices-rt</artifactId>
         <version>${metro.version}</version>
+        <scope>provided</scope>
         <exclusions>
           <!-- Already included in JDK6 -->
           <exclusion>
@@ -210,6 +211,7 @@
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
         <version>${servlet-api.version}</version>
+       <scope>provided</scope>
       </dependency>
       <dependency>
         <groupId>org.slf4j</groupId>
