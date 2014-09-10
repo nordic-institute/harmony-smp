@@ -66,20 +66,20 @@ public final class DNSTest {
   private static final String wrongSchemeIdentifier = "busdox_actorid_upis";
 
   @Nonnull
-  private static IDNSClient _createDNSClient () {
+  private static ISMLDNSClient _createDNSClient () {
     return new MockDNSClient ("198.18.0.0", DNS_ZONE, SML_ZONE, 60);
   }
 
   @Test
   public void testDNSClient () throws Exception {
-    final IDNSClient dnsClient = _createDNSClient ();
+    final ISMLDNSClient dnsClient = _createDNSClient ();
     assertEquals ("DNS Zone must be 'smloc.xx.'", "smloc.xx.", dnsClient.getDNSZoneName ());
     assertEquals ("SML Zone must be 'sml.smloc.xx.'", "sml.smloc.xx.", dnsClient.getSMLZoneName ());
   }
 
   @Test
   public void testIsHandledZone () {
-    final IDNSClient dnsClient = _createDNSClient ();
+    final ISMLDNSClient dnsClient = _createDNSClient ();
 
     assertTrue (dnsClient.isHandledZone ("b-1234.iso6523-actorid-upis.sml.smloc.xx."));
 
@@ -129,7 +129,7 @@ public final class DNSTest {
     // Insert OK
     final ParticipantIdentifierType pi = SimpleParticipantIdentifier.createWithDefaultScheme ("0010:5798000000001");
 
-    final IDNSClient aDNSClient = _createDNSClient ();
+    final ISMLDNSClient aDNSClient = _createDNSClient ();
     aDNSClient.createIdentifier (pi, validPublisherId);
     assertTrue ("Create Identifier ok as expected ", true);
 
@@ -144,7 +144,7 @@ public final class DNSTest {
 
   @Test
   public void testPublisherAnchor () {
-    final IDNSClient dnsClient = _createDNSClient ();
+    final ISMLDNSClient dnsClient = _createDNSClient ();
     assertNotNull ("Legal Publisher ", dnsClient.getPublisherAnchorFromDnsName ("SMP-ID1.publisher.sml.smloc.xx."));
 
     assertNull ("Illegal Publisher ", dnsClient.getPublisherAnchorFromDnsName ("SMP-ID1.notpublisher.sml.smloc.xx."));

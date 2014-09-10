@@ -53,7 +53,7 @@ import com.phloc.commons.string.ToStringGenerator;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class DoNothingDNSClient implements IDNSClient {
+public final class DoNothingDNSClient implements ISMLDNSClient {
   public void createIdentifier (final ParticipantIdentifierType pi, final String sSMPID) {
     // Do nothing...
   }

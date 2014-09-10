@@ -45,7 +45,7 @@ import org.xbill.DNS.Resolver;
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-final class MockDNSClient extends DNSClientImpl {
+final class MockDNSClient extends SMLDNSClientImpl {
   private final MockDNSResolver m_aMockResolver;
 
   public MockDNSClient (final String sServerName, final String sDNSZoneName, final String sSMLZoneName, final int nTTL) {

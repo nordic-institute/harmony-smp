@@ -53,7 +53,8 @@ import org.slf4j.LoggerFactory;
 public final class DNSClientFactory {
   private static final class SingletonHolder {
     private static final Logger s_aLogger = LoggerFactory.getLogger (SingletonHolder.class);
-    static final IDNSClient s_aInstance;
+    static final ISMLDNSClient s_aInstance;
+    static final IDNSClient s_simpleaInstance;
     static {
       if (DNSClientConfiguration.isEnabled ()) {
         // DNS enabled
@@ -61,12 +62,14 @@ public final class DNSClientFactory {
         final String sZoneName = DNSClientConfiguration.getZone ();
         final String sSMLZoneName = DNSClientConfiguration.getSMLZoneName ();
         final int nTTL = DNSClientConfiguration.getTTL ();
-        s_aInstance = new DNSClientImpl (sServer, sZoneName, sSMLZoneName, nTTL);
+        s_aInstance = new SMLDNSClientImpl (sServer, sZoneName, sSMLZoneName, nTTL);
+        s_simpleaInstance = new DNSClientImpl (sServer, sZoneName, sSMLZoneName, nTTL);
       }
       else {
         // DNS disabled
         s_aLogger.warn ("DNS is disabled - no DNS operations are available!");
         s_aInstance = new DoNothingDNSClient ();
+        s_simpleaInstance = null;
       }
     }
   }
@@ -79,7 +82,13 @@ public final class DNSClientFactory {
    * @return non null
    */
   @Nonnull
-  public static IDNSClient getInstance () {
+  public static ISMLDNSClient getInstance () {
     return SingletonHolder.s_aInstance;
   }
+  
+	public static IDNSClient getSimpleInstace()
+  { return SingletonHolder.s_simpleaInstance;
+  }
+  
+  
 }

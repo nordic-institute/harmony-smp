@@ -120,7 +120,7 @@ public final class ServletListDNS extends HttpServlet {
     }
 
     try {
-      final IDNSClient aDNSClient = DNSClientFactory.getInstance ();
+      final ISMLDNSClient aDNSClient = DNSClientFactory.getInstance ();
 
       _writeToStreamAndLog (aOS, "DNSClient is : " + aDNSClient.toString ());
       _writeToStreamAndLog (aOS,
@@ -129,7 +129,7 @@ public final class ServletListDNS extends HttpServlet {
                                 " - handling DNS Zone : " +
                                 aDNSClient.getDNSZoneName () +
                                 " - SML Zone : " +
-                                aDNSClient.getSMLZoneName ());
+                                aDNSClient.getDNSZoneName ());
       _writeToStream (aOS, "");
       _writeToStream (aOS, "=== List Records in DNS ===");
 
@@ -139,7 +139,7 @@ public final class ServletListDNS extends HttpServlet {
       // Filter the ones for the current SML domain only
       final List <Record> aFilteredRecords = new ArrayList <Record> ();
       {
-        final String sSMLZoneName = aDNSClient.getSMLZoneName ();
+        final String sSMLZoneName = aDNSClient.getDNSZoneName ();
         for (final Record aRecord : aAllRecords) {
           if (aRecord instanceof ARecord || aRecord instanceof CNAMERecord) {
             // For "address records" and "CNAME records" only the ones for the

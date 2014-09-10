@@ -48,7 +48,7 @@ import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.Type;
 
 /**
- * Test class for class {@link DNSClientImpl} - for BRZ internal usage only!
+ * Test class for class {@link SMLDNSClientImpl} - for BRZ internal usage only!
  * 
  * @author Philip Helger
  */
@@ -56,8 +56,8 @@ public class DNSClientImplTest {
   private static final String SMP_TEST_NAME = "BRZ-DNS-TEST";
 
   @Nonnull
-  private DNSClientImpl _createDNS () {
-    return new DNSClientImpl ("blixdns0", "peppolcentral.org.", "smk.peppolcentral.org.", 60);
+  private SMLDNSClientImpl _createDNS () {
+    return new SMLDNSClientImpl ("blixdns0", "peppolcentral.org.", "smk.peppolcentral.org.", 60);
   }
 
   @Nonnull
@@ -78,14 +78,14 @@ public class DNSClientImplTest {
   @Test
   @Ignore
   public void testCreate () throws Exception {
-    final DNSClientImpl aClient = _createDNS ();
+    final SMLDNSClientImpl aClient = _createDNS ();
     aClient.createPublisherAnchor (SMP_TEST_NAME, "127.0.0.1");
   }
 
   @Test
   @Ignore
   public void testFetch () throws Exception {
-    final DNSClientImpl aClient = _createDNS ();
+    final SMLDNSClientImpl aClient = _createDNS ();
     {
       final Lookup aLookup = new Lookup (aClient.createPublisherDNSName (SMP_TEST_NAME), Type.ANY);
       aLookup.setResolver (new SimpleResolver ("cna-gdwi-0.cna.at"));
@@ -112,7 +112,7 @@ public class DNSClientImplTest {
   @Test
   @Ignore
   public void testDelete () throws Exception {
-    final DNSClientImpl aClient = _createDNS ();
+    final SMLDNSClientImpl aClient = _createDNS ();
     aClient.deletePublisherAnchor (SMP_TEST_NAME);
   }
 }
