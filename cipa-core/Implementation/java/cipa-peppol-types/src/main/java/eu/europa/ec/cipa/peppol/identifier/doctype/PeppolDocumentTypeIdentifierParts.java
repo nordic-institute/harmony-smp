@@ -42,12 +42,12 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.regex.RegExHelper;
-import com.phloc.commons.string.StringHelper;
-import com.phloc.commons.string.ToStringGenerator;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.regex.RegExHelper;
+import com.helger.commons.string.StringHelper;
+import com.helger.commons.string.ToStringGenerator;
 
 import eu.europa.ec.cipa.busdox.identifier.BusdoxDocumentTypeIdentifierParts;
 import eu.europa.ec.cipa.busdox.identifier.IBusdoxDocumentTypeIdentifierParts;

@@ -46,17 +46,17 @@ import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.xml.sax.SAXException;
 
-import com.phloc.commons.CGlobal;
-import com.phloc.commons.error.EErrorLevel;
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.xml.serialize.XMLReader;
-import com.phloc.commons.xml.serialize.XMLWriter;
-import com.phloc.schematron.SchematronHelper;
-import com.phloc.schematron.svrl.SVRLFailedAssert;
-import com.phloc.schematron.svrl.SVRLUtils;
-import com.phloc.schematron.svrl.SVRLWriter;
-import com.phloc.schematron.xslt.SchematronResourceXSLT;
-import com.phloc.ubl.UBL21Reader;
+import com.helger.commons.CGlobal;
+import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.xml.serialize.DOMReader;
+import com.helger.commons.xml.serialize.XMLWriter;
+import com.helger.schematron.SchematronHelper;
+import com.helger.schematron.svrl.SVRLFailedAssert;
+import com.helger.schematron.svrl.SVRLUtils;
+import com.helger.schematron.svrl.SVRLWriter;
+import com.helger.schematron.xslt.SchematronResourceXSLT;
+import com.helger.ubl.UBL21Reader;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 import eu.europa.ec.cipa.test.ETestFileType;
@@ -71,7 +71,7 @@ public class FuncTestTenderValidation {
     // For all available tenders
     for (final IReadableResource aTestFile : TestFiles.getSuccessFiles (ETestFileType.TENDER)) {
       // Ensure the UBL file validates against the scheme
-      final TenderType aUBLTender = UBL21Reader.readTender (XMLReader.readXMLDOM (aTestFile));
+      final TenderType aUBLTender = UBL21Reader.readTender (DOMReader.readXMLDOM (aTestFile));
       assertNotNull (aUBLTender);
 
       // Test the country-independent catalogue layers
@@ -103,7 +103,7 @@ public class FuncTestTenderValidation {
     // For all available call for tenders
     for (final IReadableResource aTestFile : TestFiles.getSuccessFiles (ETestFileType.CALLFORTENDERS)) {
       // Ensure the UBL file validates against the scheme
-      final CallForTendersType aUBLCallForTenders = UBL21Reader.readCallForTenders (XMLReader.readXMLDOM (aTestFile));
+      final CallForTendersType aUBLCallForTenders = UBL21Reader.readCallForTenders (DOMReader.readXMLDOM (aTestFile));
       assertNotNull (aUBLCallForTenders);
 
       // Test the country-independent catalogue layers

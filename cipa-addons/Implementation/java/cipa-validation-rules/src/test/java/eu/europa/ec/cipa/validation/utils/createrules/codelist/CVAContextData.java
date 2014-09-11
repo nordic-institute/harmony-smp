@@ -40,8 +40,8 @@ package eu.europa.ec.cipa.validation.utils.createrules.codelist;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.string.StringHelper;
 
 @Immutable
 final class CVAContextData {

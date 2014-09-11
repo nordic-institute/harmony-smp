@@ -42,7 +42,7 @@ import java.net.URL;
 
 import javax.annotation.Nonnull;
 
-import com.phloc.commons.annotations.Nonempty;
+import com.helger.commons.annotations.Nonempty;
 
 /**
  * Simple enumeration for differentiating the different available SMLs.

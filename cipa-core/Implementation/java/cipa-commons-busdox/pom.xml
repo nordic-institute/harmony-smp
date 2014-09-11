@@ -8,7 +8,7 @@
     <relativePath>../cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-commons-busdox</artifactId>
-  <version>2.1.2-SNAPSHOT</version>
+  <version>2.2.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>cipa-commons-busdox</name>
 
@@ -32,9 +32,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>com.phloc</groupId>
-      <artifactId>phloc-commons</artifactId>
-      <version>4.3.3</version>
+      <groupId>com.helger</groupId>
+      <artifactId>ph-commons</artifactId>
+      <version>5.0.2</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.metro</groupId>
@@ -128,16 +128,16 @@
           <xjcArgs>
             <xjcArg>-no-header</xjcArg>
             <!-- <xjcArg>-extension</xjcArg> <xjcArg>-episode</xjcArg> -->
-            <xjcArg>-Xphloc-default-locale</xjcArg>
+            <xjcArg>-Xph-default-locale</xjcArg>
             <xjcArg>en_US</xjcArg>
-            <xjcArg>-Xphloc-annotate</xjcArg>
-            <xjcArg>-Xphloc-fields-private</xjcArg>
-            <xjcArg>-Xphloc-code-quality</xjcArg>
-            <xjcArg>-Xphloc-implements</xjcArg>
+            <xjcArg>-Xph-annotate</xjcArg>
+            <xjcArg>-Xph-fields-private</xjcArg>
+            <xjcArg>-Xph-code-quality</xjcArg>
+            <xjcArg>-Xph-implements</xjcArg>
             <xjcArg>java.io.Serializable</xjcArg>
-            <xjcArg>-Xphloc-equalshashcode</xjcArg>
-            <xjcArg>-Xphloc-tostring</xjcArg>
-            <xjcArg>-Xphloc-list-extension</xjcArg>
+            <xjcArg>-Xph-equalshashcode</xjcArg>
+            <xjcArg>-Xph-tostring</xjcArg>
+            <xjcArg>-Xph-list-extension</xjcArg>
           </xjcArgs>
           <!-- Required to work with a JDK 1.8 JVM! -->
           <vmArgs>
@@ -151,9 +151,9 @@
             <version>2.2.7</version>
           </dependency>
           <dependency>
-            <groupId>com.phloc</groupId>
-            <artifactId>phloc-jaxb22-plugin</artifactId>
-            <version>2.2.7.5</version>
+            <groupId>com.helger</groupId>
+            <artifactId>ph-jaxb22-plugin</artifactId>
+            <version>2.2.7</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -185,16 +185,16 @@
           <args>
             <arg>-no-header</arg>
             <arg>-Xinheritance</arg>
-            <arg>-Xphloc-default-locale</arg>
+            <arg>-Xph-default-locale</arg>
             <arg>en_US</arg>
-            <arg>-Xphloc-annotate</arg>
-            <arg>-Xphloc-fields-private</arg>
-            <arg>-Xphloc-code-quality</arg>
-            <arg>-Xphloc-implements</arg>
+            <arg>-Xph-annotate</arg>
+            <arg>-Xph-fields-private</arg>
+            <arg>-Xph-code-quality</arg>
+            <arg>-Xph-implements</arg>
             <arg>java.io.Serializable</arg>
-            <arg>-Xphloc-equalshashcode</arg>
-            <arg>-Xphloc-tostring</arg>
-            <arg>-Xphloc-list-extension</arg>
+            <arg>-Xph-equalshashcode</arg>
+            <arg>-Xph-tostring</arg>
+            <arg>-Xph-list-extension</arg>
           </args>
           <plugins>
             <plugin>
@@ -217,9 +217,9 @@
             <version>2.2.7</version>
           </dependency>
           <dependency>
-            <groupId>com.phloc</groupId>
-            <artifactId>phloc-jaxb22-plugin</artifactId>
-            <version>2.2.7.5</version>
+            <groupId>com.helger</groupId>
+            <artifactId>ph-jaxb22-plugin</artifactId>
+            <version>2.2.7</version>
           </dependency>
           <!-- Required for correct entity resolving in paths with blanks! -->
           <dependency>

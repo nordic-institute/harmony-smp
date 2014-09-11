@@ -43,8 +43,8 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import com.phloc.commons.mock.PhlocTestUtils;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.mock.PHTestUtils;
+import com.helger.commons.string.StringHelper;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import eu.europa.ec.cipa.busdox.identifier.IDocumentTypeIdentifier;
@@ -52,7 +52,7 @@ import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 
 /**
  * Test class for class {@link SimpleDocumentTypeIdentifier}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class SimpleDocumentTypeIdentifierTest {
@@ -72,9 +72,9 @@ public final class SimpleDocumentTypeIdentifierTest {
     final SimpleDocumentTypeIdentifier aID1 = new SimpleDocumentTypeIdentifier ("scheme", "value");
     final SimpleDocumentTypeIdentifier aID2 = new SimpleDocumentTypeIdentifier ("scheme", "value");
     final SimpleDocumentTypeIdentifier aID3 = new SimpleDocumentTypeIdentifier ("scheme2", "value");
-    PhlocTestUtils.testDefaultImplementationWithEqualContentObject (aID1, aID2);
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aID1, aID3);
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aID2, aID3);
+    PHTestUtils.testDefaultImplementationWithEqualContentObject (aID1, aID2);
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (aID1, aID3);
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (aID2, aID3);
   }
 
   @Test
@@ -165,9 +165,9 @@ public final class SimpleDocumentTypeIdentifierTest {
 
     final IDocumentTypeIdentifier d1 = SimpleDocumentTypeIdentifier.createWithDefaultScheme (s);
     final IDocumentTypeIdentifier d2 = SimpleDocumentTypeIdentifier.createWithDefaultScheme (s);
-    PhlocTestUtils.testDefaultImplementationWithEqualContentObject (d1, d2);
+    PHTestUtils.testDefaultImplementationWithEqualContentObject (d1, d2);
 
     final IDocumentTypeIdentifier d3 = SimpleDocumentTypeIdentifier.createWithDefaultScheme (s2);
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (d1, d3);
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (d1, d3);
   }
 }

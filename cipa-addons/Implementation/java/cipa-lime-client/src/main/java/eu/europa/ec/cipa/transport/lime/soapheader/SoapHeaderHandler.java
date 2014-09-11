@@ -58,8 +58,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 
-import com.phloc.commons.jaxb.JAXBContextCache;
-import com.phloc.commons.jaxb.JAXBMarshallerUtils;
+import com.helger.commons.jaxb.JAXBContextCache;
+import com.helger.commons.jaxb.JAXBMarshallerUtils;
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
 /**

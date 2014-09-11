@@ -44,13 +44,13 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.state.ESuccess;
-import com.phloc.commons.state.ISuccessIndicator;
-import com.phloc.commons.string.ToStringGenerator;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.state.ESuccess;
+import com.helger.commons.state.ISuccessIndicator;
+import com.helger.commons.string.ToStringGenerator;
 
 /**
  * The result of the START client sending a document

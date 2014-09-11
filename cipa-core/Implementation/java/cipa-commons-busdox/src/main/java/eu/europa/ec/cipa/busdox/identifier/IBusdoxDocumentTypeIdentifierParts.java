@@ -40,7 +40,7 @@ package eu.europa.ec.cipa.busdox.identifier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.annotations.Nonempty;
+import com.helger.commons.annotations.Nonempty;
 
 /**
  * Contains all the different fields of a document type identifier for BusDox.

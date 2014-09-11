@@ -53,17 +53,17 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.CGlobal;
-import com.phloc.commons.error.EErrorLevel;
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.locale.country.CountryCache;
-import com.phloc.commons.xml.serialize.XMLWriter;
-import com.phloc.schematron.SchematronHelper;
-import com.phloc.schematron.svrl.SVRLFailedAssert;
-import com.phloc.schematron.svrl.SVRLUtils;
-import com.phloc.schematron.svrl.SVRLWriter;
-import com.phloc.schematron.xslt.SchematronResourceXSLT;
-import com.phloc.ubl.UBL20Reader;
+import com.helger.commons.CGlobal;
+import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.locale.country.CountryCache;
+import com.helger.commons.xml.serialize.XMLWriter;
+import com.helger.schematron.SchematronHelper;
+import com.helger.schematron.svrl.SVRLFailedAssert;
+import com.helger.schematron.svrl.SVRLUtils;
+import com.helger.schematron.svrl.SVRLWriter;
+import com.helger.schematron.xslt.SchematronResourceXSLT;
+import com.helger.ubl.UBL20Reader;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 import eu.europa.ec.cipa.test.ETestFileType;

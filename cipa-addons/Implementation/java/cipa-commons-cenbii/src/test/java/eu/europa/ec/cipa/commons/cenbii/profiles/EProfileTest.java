@@ -48,9 +48,6 @@ import java.util.Locale;
 
 import org.junit.Test;
 
-import eu.europa.ec.cipa.commons.cenbii.profiles.ECollaboration;
-import eu.europa.ec.cipa.commons.cenbii.profiles.EProfile;
-
 
 /**
  * Test class for class {@link EProfile}.

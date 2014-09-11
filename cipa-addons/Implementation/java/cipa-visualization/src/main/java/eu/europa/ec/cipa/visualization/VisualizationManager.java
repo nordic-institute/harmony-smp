@@ -59,20 +59,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.io.file.FileOperationManager;
-import com.phloc.commons.io.file.FileUtils;
-import com.phloc.commons.io.file.FilenameHelper;
-import com.phloc.commons.io.file.LoggingFileOperationCallback;
-import com.phloc.commons.io.streams.StreamUtils;
-import com.phloc.commons.state.ESuccess;
-import com.phloc.commons.xml.XMLFactory;
-import com.phloc.commons.xml.serialize.EXMLSerializeFormat;
-import com.phloc.commons.xml.serialize.XMLWriter;
-import com.phloc.commons.xml.serialize.XMLWriterSettings;
-import com.phloc.commons.xml.transform.ResourceStreamSource;
-import com.phloc.commons.xml.transform.XMLTransformerFactory;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.io.file.FileOperationManager;
+import com.helger.commons.io.file.FileUtils;
+import com.helger.commons.io.file.FilenameHelper;
+import com.helger.commons.io.file.LoggingFileOperationCallback;
+import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.state.ESuccess;
+import com.helger.commons.xml.XMLFactory;
+import com.helger.commons.xml.serialize.EXMLSerializeFormat;
+import com.helger.commons.xml.serialize.XMLWriter;
+import com.helger.commons.xml.serialize.XMLWriterSettings;
+import com.helger.commons.xml.transform.ResourceStreamSource;
+import com.helger.commons.xml.transform.XMLTransformerFactory;
 
 /**
  * The main visualization manager. This is the main class for performing

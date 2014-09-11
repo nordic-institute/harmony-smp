@@ -40,21 +40,21 @@ package eu.europa.ec.cipa.peppol.identifier.issuingagency;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.version.Version;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.version.Version;
 
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 
 /**
  * Base interface for a single identifier issuing agency.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public interface IIdentifierIssuingAgency {
   /**
    * Get the scheme ID of this issuing agency.<br>
    * Example for GLN <code>"GLN"</code> is returned.
-   * 
+   *
    * @return The scheme ID of this issuing agency. May neither be
    *         <code>null</code> nor empty.
    */
@@ -65,7 +65,7 @@ public interface IIdentifierIssuingAgency {
   /**
    * Get the optional name of the agency. This is pure descriptive text without
    * any predefined semantics.
-   * 
+   *
    * @return The optional name of this agency. May be <code>null</code>.
    */
   @Nullable
@@ -74,7 +74,7 @@ public interface IIdentifierIssuingAgency {
   /**
    * Get the ISO-6523 based identifier value.<br>
    * Example: this method returns "0088" for GLN.
-   * 
+   *
    * @return The ISO6523 based identifier of this agency. May neither be
    *         <code>null</code> nor empty. Is currently always numeric, but may
    *         contain characters in the future.
@@ -87,7 +87,7 @@ public interface IIdentifierIssuingAgency {
    * Get the real participant identifier value for the given local identifier.<br>
    * Example: <code>GLN.createIdentifierValue ("123456")</code> results in
    * <code>0088:123456</code>
-   * 
+   *
    * @param sIdentifier
    *        The local participant identifier to be used.
    * @return The participant identifier value part. Never <code>null</code>.
@@ -100,7 +100,7 @@ public interface IIdentifierIssuingAgency {
    * Get the real participant identifier for the given local identifier.<br>
    * Example: <code>GLN.createParticipantIdentifier ("123456")</code> results in
    * the wrapped object for <code>iso6523-actorid-upis::0088:123456</code>
-   * 
+   *
    * @param sIdentifier
    *        The local participant identifier to be used.
    * @return The participant identifier. Never <code>null</code>.

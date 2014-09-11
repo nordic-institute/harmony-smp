@@ -43,7 +43,7 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.lang.GenericReflection;
+import com.helger.commons.lang.GenericReflection;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 

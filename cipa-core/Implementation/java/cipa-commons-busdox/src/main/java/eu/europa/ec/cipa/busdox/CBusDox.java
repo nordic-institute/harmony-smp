@@ -43,9 +43,9 @@ import javax.xml.ws.WebServiceClient;
 
 import org.w3._2009._02.ws_tra.AccessPointService;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.exceptions.InitializationException;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.exceptions.InitializationException;
 
 /**
  * Constants for this BusDox implementation.

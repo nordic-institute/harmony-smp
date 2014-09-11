@@ -40,8 +40,8 @@ package eu.europa.ec.cipa.validation.rules;
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.id.IHasID;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.id.IHasID;
 
 /**
  * Base interface for a single validation level.

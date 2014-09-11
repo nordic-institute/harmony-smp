@@ -51,9 +51,9 @@ import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForP
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 
-import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.regex.RegExHelper;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.regex.RegExHelper;
+import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;

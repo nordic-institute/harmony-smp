@@ -56,6 +56,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.charset.CCharset;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.io.file.FileUtils;
+import com.helger.commons.io.file.SimpleFileIO;
+import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.commons.microdom.IMicroDocument;
+import com.helger.commons.microdom.IMicroElement;
+import com.helger.commons.microdom.impl.MicroDocument;
+import com.helger.commons.microdom.serialize.MicroWriter;
+import com.helger.commons.regex.RegExHelper;
+import com.helger.commons.string.StringHelper;
+import com.helger.commons.string.StringParser;
+import com.helger.commons.version.Version;
+import com.helger.commons.xml.serialize.XMLWriter;
+import com.helger.commons.xml.serialize.XMLWriterSettings;
+import com.helger.genericode.Genericode10CodeListMarshaller;
+import com.helger.genericode.Genericode10Utils;
+import com.helger.genericode.excel.ExcelReadOptions;
+import com.helger.genericode.excel.ExcelSheetToCodeList10;
+import com.helger.genericode.v10.CodeListDocument;
+import com.helger.genericode.v10.Row;
+import com.helger.genericode.v10.UseType;
 import com.helger.jcodemodel.JArray;
 import com.helger.jcodemodel.JCodeModel;
 import com.helger.jcodemodel.JDefinedClass;
@@ -67,31 +92,6 @@ import com.helger.jcodemodel.JMethod;
 import com.helger.jcodemodel.JMod;
 import com.helger.jcodemodel.JVar;
 import com.helger.jcodemodel.writer.FileCodeWriter;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.charset.CCharset;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.io.file.FileUtils;
-import com.phloc.commons.io.file.SimpleFileIO;
-import com.phloc.commons.io.resource.FileSystemResource;
-import com.phloc.commons.microdom.IMicroDocument;
-import com.phloc.commons.microdom.IMicroElement;
-import com.phloc.commons.microdom.impl.MicroDocument;
-import com.phloc.commons.microdom.serialize.MicroWriter;
-import com.phloc.commons.regex.RegExHelper;
-import com.phloc.commons.string.StringHelper;
-import com.phloc.commons.string.StringParser;
-import com.phloc.commons.version.Version;
-import com.phloc.commons.xml.serialize.XMLWriter;
-import com.phloc.commons.xml.serialize.XMLWriterSettings;
-import com.phloc.genericode.Genericode10CodeListMarshaller;
-import com.phloc.genericode.Genericode10Utils;
-import com.phloc.genericode.excel.ExcelReadOptions;
-import com.phloc.genericode.excel.ExcelSheetToCodeList10;
-import com.phloc.genericode.v10.CodeListDocument;
-import com.phloc.genericode.v10.Row;
-import com.phloc.genericode.v10.UseType;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
@@ -107,7 +107,7 @@ import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
 /**
  * Utility class to create the Genericode files from the Excel code list. Also
  * creates Java source files with the predefined identifiers.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class MainCreateCodelistsFilesFromExcel {
@@ -610,7 +610,8 @@ public final class MainCreateCodelistsFilesFromExcel {
         final JArray jArray = JExpr.newArray (s_jEnumPredefinedDoc);
         for (final String sDocTypeID : RegExHelper.getSplitToList (sDocTypeIDs, "\n")) {
           // Use the short name for better readability
-          final String sIdentifier = true ? CodeGenerationUtils.createShortcutDocumentTypeIDName (PeppolDocumentTypeIdentifierParts.extractFromString (sDocTypeID))
+          final String sIdentifier = true
+                                         ? CodeGenerationUtils.createShortcutDocumentTypeIDName (PeppolDocumentTypeIdentifierParts.extractFromString (sDocTypeID))
                                          : RegExHelper.getAsIdentifier (sDocTypeID);
           jArray.add (s_jEnumPredefinedDoc.staticRef (sIdentifier));
         }

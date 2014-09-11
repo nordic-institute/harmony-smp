@@ -40,8 +40,8 @@ package eu.europa.ec.cipa.validation.pyramid;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.string.ToStringGenerator;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.string.ToStringGenerator;
 
 import eu.europa.ec.cipa.validation.generic.EXMLValidationType;
 import eu.europa.ec.cipa.validation.generic.IXMLValidator;

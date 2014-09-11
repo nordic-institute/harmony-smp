@@ -48,9 +48,9 @@ import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.SystemProperties;
-import com.phloc.commons.annotations.DevelopersNote;
-import com.phloc.commons.random.VerySecureRandom;
+import com.helger.commons.SystemProperties;
+import com.helger.commons.annotations.DevelopersNote;
+import com.helger.commons.random.VerySecureRandom;
 
 import eu.europa.ec.cipa.peppol.security.DoNothingTrustManager;
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;

@@ -42,8 +42,8 @@ import java.io.File;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.state.ESuccess;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.state.ESuccess;
+import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.peppol.sml.ESML;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;

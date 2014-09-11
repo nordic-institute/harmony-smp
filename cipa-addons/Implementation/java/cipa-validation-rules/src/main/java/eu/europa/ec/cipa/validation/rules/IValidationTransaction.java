@@ -39,8 +39,8 @@ package eu.europa.ec.cipa.validation.rules;
 
 import javax.annotation.Nonnull;
 
-import com.phloc.commons.IHasStringRepresentation;
-import com.phloc.commons.annotations.MustImplementEqualsAndHashcode;
+import com.helger.commons.IHasStringRepresentation;
+import com.helger.commons.annotations.MustImplementEqualsAndHashcode;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 

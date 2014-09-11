@@ -44,12 +44,12 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.compare.AbstractIntegerComparator;
-import com.phloc.commons.compare.ESortOrder;
-import com.phloc.commons.lang.EnumHelper;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.compare.AbstractIntegerComparator;
+import com.helger.commons.compare.ESortOrder;
+import com.helger.commons.lang.EnumHelper;
 
 /**
  * This enum represents the validation hierarchy. The hierarchy must be iterated

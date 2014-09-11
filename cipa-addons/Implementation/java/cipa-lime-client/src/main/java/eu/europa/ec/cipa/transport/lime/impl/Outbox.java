@@ -51,8 +51,7 @@ import org.w3._2009._02.ws_tra.Resource;
 import org.w3._2009._02.ws_tra.ResourceCreated;
 import org.w3c.dom.Element;
 
-
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.string.StringHelper;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.developer.WSBindingProvider;
 

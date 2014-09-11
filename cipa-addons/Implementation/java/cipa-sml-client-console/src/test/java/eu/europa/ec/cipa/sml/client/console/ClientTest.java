@@ -48,7 +48,7 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.phloc.commons.annotations.DevelopersNote;
+import com.helger.commons.annotations.DevelopersNote;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;

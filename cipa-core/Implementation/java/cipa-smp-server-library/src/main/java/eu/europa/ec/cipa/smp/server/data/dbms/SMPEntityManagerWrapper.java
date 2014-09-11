@@ -40,8 +40,8 @@ package eu.europa.ec.cipa.smp.server.data.dbms;
 import javax.annotation.Nonnull;
 import javax.persistence.EntityManager;
 
-import com.phloc.commons.annotations.UsedViaReflection;
-import com.phloc.db.jpa.AbstractPerRequestEntityManager;
+import com.helger.commons.annotations.UsedViaReflection;
+import com.helger.db.jpa.AbstractPerRequestEntityManager;
 
 /**
  * The per-request singleton, that creates {@link EntityManager} objects from

@@ -55,9 +55,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import com.phloc.commons.CGlobal;
-import com.phloc.commons.io.resource.ClassPathResource;
-import com.phloc.commons.xml.serialize.XMLReader;
+import com.helger.commons.CGlobal;
+import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.xml.serialize.DOMReader;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
@@ -85,7 +85,7 @@ public final class StressTest {
 
     final long start = System.currentTimeMillis ();
 
-    final Document document = XMLReader.readXMLDOM (new ClassPathResource ("xml/ehf-test-invoice.xml"));
+    final Document document = DOMReader.readXMLDOM (new ClassPathResource ("xml/ehf-test-invoice.xml"));
 
     for (int i = 1; i <= MESSAGES; i++) {
       partitions.add (new Callable <Integer> () {
@@ -139,7 +139,7 @@ public final class StressTest {
   /**
    * returns a String describing current memory utilization. In addition
    * unusually large changes in memory usage will be logged.
-   * 
+   *
    * @return string holding a formatted representation of the current memory
    *         consumption
    */

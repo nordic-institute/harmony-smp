@@ -49,38 +49,38 @@ import javax.xml.transform.dom.DOMSource;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import com.phloc.commons.error.IResourceError;
-import com.phloc.commons.error.IResourceErrorGroup;
-import com.phloc.commons.locale.LocaleCache;
-import com.phloc.commons.mime.CMimeType;
-import com.phloc.commons.string.StringHelper;
-import com.phloc.commons.url.ISimpleURL;
-import com.phloc.commons.url.SimpleURL;
-import com.phloc.commons.xml.serialize.XMLReader;
-import com.phloc.html.css.DefaultCSSClassProvider;
-import com.phloc.html.css.ICSSClassProvider;
-import com.phloc.html.hc.CHCParam;
-import com.phloc.html.hc.IHCCell;
-import com.phloc.html.hc.conversion.HCSettings;
-import com.phloc.html.hc.html.HCBody;
-import com.phloc.html.hc.html.HCButton_Submit;
-import com.phloc.html.hc.html.HCCheckBox;
-import com.phloc.html.hc.html.HCCol;
-import com.phloc.html.hc.html.HCDiv;
-import com.phloc.html.hc.html.HCForm;
-import com.phloc.html.hc.html.HCH1;
-import com.phloc.html.hc.html.HCH2;
-import com.phloc.html.hc.html.HCHead;
-import com.phloc.html.hc.html.HCHiddenField;
-import com.phloc.html.hc.html.HCHtml;
-import com.phloc.html.hc.html.HCLink;
-import com.phloc.html.hc.html.HCSpan;
-import com.phloc.html.hc.html.HCTable;
-import com.phloc.html.hc.html.HCTextArea;
-import com.phloc.html.hc.html.HCUL;
-import com.phloc.web.servlet.response.UnifiedResponse;
-import com.phloc.webscopes.domain.IRequestWebScopeWithoutResponse;
-import com.phloc.webscopes.servlets.AbstractUnifiedResponseServlet;
+import com.helger.commons.error.IResourceError;
+import com.helger.commons.error.IResourceErrorGroup;
+import com.helger.commons.locale.LocaleCache;
+import com.helger.commons.mime.CMimeType;
+import com.helger.commons.string.StringHelper;
+import com.helger.commons.url.ISimpleURL;
+import com.helger.commons.url.SimpleURL;
+import com.helger.commons.xml.serialize.DOMReader;
+import com.helger.html.css.DefaultCSSClassProvider;
+import com.helger.html.css.ICSSClassProvider;
+import com.helger.html.hc.CHCParam;
+import com.helger.html.hc.IHCCell;
+import com.helger.html.hc.conversion.HCSettings;
+import com.helger.html.hc.html.HCBody;
+import com.helger.html.hc.html.HCButton_Submit;
+import com.helger.html.hc.html.HCCheckBox;
+import com.helger.html.hc.html.HCCol;
+import com.helger.html.hc.html.HCDiv;
+import com.helger.html.hc.html.HCForm;
+import com.helger.html.hc.html.HCH1;
+import com.helger.html.hc.html.HCH2;
+import com.helger.html.hc.html.HCHead;
+import com.helger.html.hc.html.HCHiddenField;
+import com.helger.html.hc.html.HCHtml;
+import com.helger.html.hc.html.HCLink;
+import com.helger.html.hc.html.HCSpan;
+import com.helger.html.hc.html.HCTable;
+import com.helger.html.hc.html.HCTextArea;
+import com.helger.html.hc.html.HCUL;
+import com.helger.web.servlet.response.UnifiedResponse;
+import com.helger.webscopes.domain.IRequestWebScopeWithoutResponse;
+import com.helger.webscopes.servlets.AbstractUnifiedResponseServlet;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 import eu.europa.ec.cipa.validation.pyramid.ValidationPyramid2;
@@ -130,7 +130,7 @@ public final class ValidationServlet extends AbstractUnifiedResponseServlet {
 
   /**
    * GET and POST handler
-   * 
+   *
    * @param aRequestScope
    *        request scope
    * @param aUnifiedResponse
@@ -152,8 +152,10 @@ public final class ValidationServlet extends AbstractUnifiedResponseServlet {
     final String sSelectedCountry = aRequestScope.getAttributeAsString (FIELD_COUNTRY);
     final Locale aSelectedCountry = LocaleCache.getLocale (sSelectedCountry);
     final String sSelectedIndustryLevel = aRequestScope.getAttributeAsString (FIELD_INDUSTRY_SPECIFIC);
-    final boolean bSelectedIndustryLevel = sSelectedIndustryLevel != null ? Boolean.parseBoolean (sSelectedIndustryLevel)
-                                                                         : aRequestScope.getAttributeAsString (HCCheckBox.getHiddenFieldName (FIELD_INDUSTRY_SPECIFIC)) != null ? false
+    final boolean bSelectedIndustryLevel = sSelectedIndustryLevel != null
+                                                                         ? Boolean.parseBoolean (sSelectedIndustryLevel)
+                                                                         : aRequestScope.getAttributeAsString (HCCheckBox.getHiddenFieldName (FIELD_INDUSTRY_SPECIFIC)) != null
+                                                                                                                                                                               ? false
                                                                                                                                                                                : DEFAULT_INDUSTRY_SPECIFIC;
     final String sSelectedXML = aRequestScope.getAttributeAsString (FIELD_XML);
 
@@ -185,7 +187,7 @@ public final class ValidationServlet extends AbstractUnifiedResponseServlet {
         aErrors.add ("No XML content supplied");
       else {
         try {
-          final Document aDoc = XMLReader.readXMLDOM (sSelectedXML);
+          final Document aDoc = DOMReader.readXMLDOM (sSelectedXML);
           if (aDoc == null)
             aErrors.add ("Failed to parse passed XML");
           else
@@ -253,8 +255,9 @@ public final class ValidationServlet extends AbstractUnifiedResponseServlet {
       // Syntax binding
       aTable.addBodyRow ()
             .addCells (HCSpan.create ("Syntax:").addClass (CSS_CLASS_FIELDNAME),
-                       new SyntaxBindingSelect (FIELD_SYNTAX_BINDING,
-                                                eSelectedSyntax != null ? eSelectedSyntax.getID () : null).addClass (CSS_CLASS_FIELDCTRL));
+                       new SyntaxBindingSelect (FIELD_SYNTAX_BINDING, eSelectedSyntax != null
+                                                                                             ? eSelectedSyntax.getID ()
+                                                                                             : null).addClass (CSS_CLASS_FIELDCTRL));
 
       // Document type
       aTable.addBodyRow ()

@@ -45,7 +45,7 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.string.StringHelper;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;

@@ -40,14 +40,16 @@ package eu.europa.ec.cipa.peppol.identifier.doctype;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.version.Version;
+import com.helger.commons.version.Version;
 
 /**
  * Base interface for predefined document identifiers.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public interface IPeppolPredefinedDocumentTypeIdentifier extends IPeppolReadonlyDocumentTypeIdentifier, IPeppolDocumentTypeIdentifierParts {
+public interface IPeppolPredefinedDocumentTypeIdentifier extends
+                                                        IPeppolReadonlyDocumentTypeIdentifier,
+                                                        IPeppolDocumentTypeIdentifierParts {
   /**
    * @return The common name under which a document is known. This is e.g.
    *         "Order" or "Invoice".

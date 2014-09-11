@@ -50,16 +50,16 @@ import javax.annotation.concurrent.Immutable;
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;
 
-import com.phloc.commons.collections.multimap.IMultiMapListBased;
-import com.phloc.commons.collections.multimap.MultiHashMapArrayListBased;
-import com.phloc.commons.io.file.SimpleFileIO;
-import com.phloc.commons.microdom.IMicroDocument;
-import com.phloc.commons.microdom.IMicroElement;
-import com.phloc.commons.microdom.impl.MicroDocument;
-import com.phloc.commons.microdom.serialize.MicroWriter;
-import com.phloc.commons.string.StringHelper;
-import com.phloc.commons.xml.serialize.XMLWriterSettings;
-import com.phloc.schematron.CSchematron;
+import com.helger.commons.collections.multimap.IMultiMapListBased;
+import com.helger.commons.collections.multimap.MultiHashMapArrayListBased;
+import com.helger.commons.io.file.SimpleFileIO;
+import com.helger.commons.microdom.IMicroDocument;
+import com.helger.commons.microdom.IMicroElement;
+import com.helger.commons.microdom.impl.MicroDocument;
+import com.helger.commons.microdom.serialize.MicroWriter;
+import com.helger.commons.string.StringHelper;
+import com.helger.commons.xml.serialize.XMLWriterSettings;
+import com.helger.schematron.CSchematron;
 
 import eu.europa.ec.cipa.validation.utils.createrules.RuleSourceItem;
 import eu.europa.ec.cipa.validation.utils.createrules.utils.ODFUtils;

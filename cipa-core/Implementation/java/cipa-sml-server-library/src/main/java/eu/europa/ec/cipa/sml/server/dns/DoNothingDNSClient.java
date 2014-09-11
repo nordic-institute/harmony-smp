@@ -46,7 +46,7 @@ import javax.annotation.Nullable;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.xbill.DNS.Record;
 
-import com.phloc.commons.string.ToStringGenerator;
+import com.helger.commons.string.ToStringGenerator;
 
 /**
  * Dummy implementation..

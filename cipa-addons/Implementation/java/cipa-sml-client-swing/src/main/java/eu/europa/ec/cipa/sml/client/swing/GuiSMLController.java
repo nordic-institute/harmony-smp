@@ -49,9 +49,9 @@ import org.busdox.servicemetadata.locator._1.ParticipantIdentifierPageType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.regex.RegExHelper;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.regex.RegExHelper;
+import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;

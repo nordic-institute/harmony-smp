@@ -42,7 +42,7 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.exceptions.LoggedRuntimeException;
+import com.helger.commons.exceptions.LoggedRuntimeException;
 
 /**
  * This exception is thrown if the provided user name does not exist.

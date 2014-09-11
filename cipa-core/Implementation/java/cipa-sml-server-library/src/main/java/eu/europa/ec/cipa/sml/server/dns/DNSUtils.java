@@ -45,10 +45,10 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.regex.RegExHelper;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.regex.RegExHelper;
+import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;

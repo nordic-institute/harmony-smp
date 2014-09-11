@@ -50,12 +50,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import com.phloc.commons.SystemProperties;
-import com.phloc.commons.charset.CCharset;
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.io.resource.ClassPathResource;
-import com.phloc.commons.io.streams.StringInputStream;
-import com.phloc.commons.xml.serialize.XMLReader;
+import com.helger.commons.SystemProperties;
+import com.helger.commons.charset.CCharset;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.io.streams.StringInputStream;
+import com.helger.commons.xml.serialize.DOMReader;
 
 import eu.europa.ec.cipa.busdox.CBusDox;
 import eu.europa.ec.cipa.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
@@ -68,7 +68,7 @@ import eu.europa.ec.cipa.transport.MessageMetadata;
 
 /**
  * Test sending a document to a receiver
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class MainSendDocument {
@@ -107,7 +107,7 @@ public final class MainSendDocument {
     final String sAccessPointURL = USE_LOCAL_AP ? "http://localhost:8090/accessPointService"
                                                : _getAccessPointUrl (aMetadata);
     s_aLogger.info ("Using AP URL " + sAccessPointURL);
-    final Document aXMLDoc = XMLReader.readXMLDOM (aXmlRes);
+    final Document aXMLDoc = DOMReader.readXMLDOM (aXmlRes);
     AccessPointClient.send (sAccessPointURL, aMetadata, aXMLDoc);
   }
 

@@ -46,8 +46,8 @@ import javax.net.ssl.TrustManager;
 
 import org.junit.BeforeClass;
 
-import com.phloc.commons.annotations.DevelopersNote;
-import com.phloc.commons.random.VerySecureRandom;
+import com.helger.commons.annotations.DevelopersNote;
+import com.helger.commons.random.VerySecureRandom;
 
 import eu.europa.ec.cipa.peppol.security.DoNothingTrustManager;
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;

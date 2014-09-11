@@ -46,9 +46,9 @@ import javax.ws.rs.core.Response.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.charset.CCharset;
-import com.phloc.commons.exceptions.InitializationException;
-import com.phloc.commons.io.streams.StringInputStream;
+import com.helger.commons.charset.CCharset;
+import com.helger.commons.exceptions.InitializationException;
+import com.helger.commons.io.streams.StringInputStream;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.ContainerResponseFilter;

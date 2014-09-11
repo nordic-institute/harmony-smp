@@ -49,9 +49,8 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
-import eu.europa.ec.cipa.sml.client.swing.utils.FileFilterJKS;
-
 import net.miginfocom.swing.MigLayout;
+import eu.europa.ec.cipa.sml.client.swing.utils.FileFilterJKS;
 
 /**
  * @author PEPPOL.AT, BRZ, Jakob Frohnwieser

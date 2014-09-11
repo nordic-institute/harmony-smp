@@ -39,11 +39,11 @@ package eu.europa.ec.cipa.test.error;
 
 import javax.annotation.Nonnull;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.error.EErrorLevel;
-import com.phloc.commons.hash.HashCodeGenerator;
-import com.phloc.commons.string.ToStringGenerator;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.hash.HashCodeGenerator;
+import com.helger.commons.string.ToStringGenerator;
 
 public abstract class AbstractErrorDefinition implements Comparable <AbstractErrorDefinition> {
   private final EErrorLevel m_eLevel;

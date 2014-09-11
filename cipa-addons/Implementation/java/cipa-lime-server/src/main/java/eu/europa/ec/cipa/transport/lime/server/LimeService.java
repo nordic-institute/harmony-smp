@@ -82,14 +82,13 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-
-import com.phloc.commons.CGlobal;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.jaxb.JAXBContextCache;
-import com.phloc.commons.string.StringHelper;
-import com.phloc.commons.string.StringParser;
-import com.phloc.commons.xml.XMLFactory;
+import com.helger.commons.CGlobal;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.jaxb.JAXBContextCache;
+import com.helger.commons.string.StringHelper;
+import com.helger.commons.string.StringParser;
+import com.helger.commons.xml.XMLFactory;
 import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.developer.JAXWSProperties;
 

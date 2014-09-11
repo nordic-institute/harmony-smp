@@ -39,7 +39,7 @@ package eu.europa.ec.cipa.peppol.sml;
 
 import javax.annotation.concurrent.Immutable;
 
-import com.phloc.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.annotations.PresentForCodeCoverage;
 
 /**
  * This file contains default constants for the usage of the SML. It is strongly

@@ -45,17 +45,17 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.error.EErrorLevel;
-import com.phloc.commons.error.IResourceErrorGroup;
-import com.phloc.commons.error.ResourceError;
-import com.phloc.commons.error.ResourceErrorGroup;
-import com.phloc.commons.error.ResourceLocation;
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.string.ToStringGenerator;
-import com.phloc.schematron.ISchematronResource;
-import com.phloc.schematron.SchematronHelper;
-import com.phloc.schematron.pure.SchematronResourcePure;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.error.IResourceErrorGroup;
+import com.helger.commons.error.ResourceError;
+import com.helger.commons.error.ResourceErrorGroup;
+import com.helger.commons.error.ResourceLocation;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.string.ToStringGenerator;
+import com.helger.schematron.ISchematronResource;
+import com.helger.schematron.SchematronHelper;
+import com.helger.schematron.pure.SchematronResourcePure;
 
 /**
  * Implementation of the {@link IXMLValidator} for XML Schema.

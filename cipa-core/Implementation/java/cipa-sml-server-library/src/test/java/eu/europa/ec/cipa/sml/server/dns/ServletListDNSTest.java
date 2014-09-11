@@ -41,8 +41,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 
-import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
-import com.phloc.scopes.mock.ScopeTestRule;
+import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
+import com.helger.scopes.mock.ScopeTestRule;
 
 /**
  * Test class for class {@link ServletListDNS}.

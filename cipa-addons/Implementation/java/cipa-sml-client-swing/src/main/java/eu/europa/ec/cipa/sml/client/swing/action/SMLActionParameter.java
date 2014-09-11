@@ -40,7 +40,7 @@ package eu.europa.ec.cipa.sml.client.swing.action;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
-import com.phloc.commons.annotations.Nonempty;
+import com.helger.commons.annotations.Nonempty;
 
 /**
  * Explanation for a single SML action parameter

@@ -41,8 +41,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import com.phloc.commons.lang.StackTraceHelper;
-import com.phloc.commons.mime.CMimeType;
+import com.helger.commons.lang.StackTraceHelper;
+import com.helger.commons.mime.CMimeType;
 
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger

@@ -43,11 +43,11 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import com.phloc.commons.mock.PhlocTestUtils;
+import com.helger.commons.mock.PHTestUtils;
 
 /**
  * Test class for class {@link SimpleSMLInfo}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class SimpleSMLInfoTest {
@@ -82,34 +82,34 @@ public final class SimpleSMLInfoTest {
                   si.getManageParticipantIdentifierEndpointAddress ().toExternalForm ());
     assertTrue (si.requiresClientCertificate ());
 
-    PhlocTestUtils.testDefaultImplementationWithEqualContentObject (si,
-                                                                    new SimpleSMLInfo (ESML.PRODUCTION.getDNSZone (),
-                                                                                       ESML.PRODUCTION.getManagementHostName (),
-                                                                                       ESML.PRODUCTION.getManagementServiceURL (),
-                                                                                       ESML.PRODUCTION.requiresClientCertificate ()));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (si,
-                                                                        new SimpleSMLInfo (ESML.PRODUCTION.getDNSZone () +
-                                                                                               ".x",
-                                                                                           ESML.PRODUCTION.getManagementHostName (),
-                                                                                           ESML.PRODUCTION.getManagementServiceURL (),
-                                                                                           ESML.PRODUCTION.requiresClientCertificate ()));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (si,
-                                                                        new SimpleSMLInfo (ESML.PRODUCTION.getDNSZone (),
-                                                                                           ESML.PRODUCTION.getManagementHostName () +
-                                                                                               ".x",
-                                                                                           ESML.PRODUCTION.getManagementServiceURL (),
-                                                                                           ESML.PRODUCTION.requiresClientCertificate ()));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (si,
-                                                                        new SimpleSMLInfo (ESML.PRODUCTION.getDNSZone (),
-                                                                                           ESML.PRODUCTION.getManagementHostName (),
-                                                                                           ESML.PRODUCTION.getManagementServiceURL () +
-                                                                                               ".x",
-                                                                                           ESML.PRODUCTION.requiresClientCertificate ()));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (si,
-                                                                        new SimpleSMLInfo (ESML.PRODUCTION.getDNSZone (),
-                                                                                           ESML.PRODUCTION.getManagementHostName (),
-                                                                                           ESML.PRODUCTION.getManagementServiceURL (),
-                                                                                           !ESML.PRODUCTION.requiresClientCertificate ()));
+    PHTestUtils.testDefaultImplementationWithEqualContentObject (si,
+                                                                 new SimpleSMLInfo (ESML.PRODUCTION.getDNSZone (),
+                                                                                    ESML.PRODUCTION.getManagementHostName (),
+                                                                                    ESML.PRODUCTION.getManagementServiceURL (),
+                                                                                    ESML.PRODUCTION.requiresClientCertificate ()));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (si,
+                                                                     new SimpleSMLInfo (ESML.PRODUCTION.getDNSZone () +
+                                                                                            ".x",
+                                                                                        ESML.PRODUCTION.getManagementHostName (),
+                                                                                        ESML.PRODUCTION.getManagementServiceURL (),
+                                                                                        ESML.PRODUCTION.requiresClientCertificate ()));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (si,
+                                                                     new SimpleSMLInfo (ESML.PRODUCTION.getDNSZone (),
+                                                                                        ESML.PRODUCTION.getManagementHostName () +
+                                                                                            ".x",
+                                                                                        ESML.PRODUCTION.getManagementServiceURL (),
+                                                                                        ESML.PRODUCTION.requiresClientCertificate ()));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (si,
+                                                                     new SimpleSMLInfo (ESML.PRODUCTION.getDNSZone (),
+                                                                                        ESML.PRODUCTION.getManagementHostName (),
+                                                                                        ESML.PRODUCTION.getManagementServiceURL () +
+                                                                                            ".x",
+                                                                                        ESML.PRODUCTION.requiresClientCertificate ()));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (si,
+                                                                     new SimpleSMLInfo (ESML.PRODUCTION.getDNSZone (),
+                                                                                        ESML.PRODUCTION.getManagementHostName (),
+                                                                                        ESML.PRODUCTION.getManagementServiceURL (),
+                                                                                        !ESML.PRODUCTION.requiresClientCertificate ()));
   }
 
   @Test

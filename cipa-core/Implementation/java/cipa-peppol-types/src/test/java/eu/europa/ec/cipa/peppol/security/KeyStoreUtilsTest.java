@@ -59,7 +59,7 @@ import org.bouncycastle.x509.X509V1CertificateGenerator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.phloc.commons.collections.ContainerHelper;
+import com.helger.commons.collections.ContainerHelper;
 
 /**
  * Test class for class {@link KeyStoreUtils}.

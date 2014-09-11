@@ -57,12 +57,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
-
-import com.phloc.commons.jaxb.JAXBContextCache;
-import com.phloc.commons.jaxb.JAXBMarshallerUtils;
-import com.phloc.commons.xml.XMLFactory;
-import com.phloc.commons.xml.serialize.XMLWriter;
-import com.phloc.commons.xml.serialize.XMLWriterSettings;
+import com.helger.commons.jaxb.JAXBContextCache;
+import com.helger.commons.jaxb.JAXBMarshallerUtils;
+import com.helger.commons.xml.XMLFactory;
+import com.helger.commons.xml.serialize.XMLWriter;
+import com.helger.commons.xml.serialize.XMLWriterSettings;
 import com.sun.xml.bind.marshaller.NamespacePrefixMapper;
 
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;

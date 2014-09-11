@@ -72,8 +72,8 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.phloc.commons.xml.XMLHelper;
-import com.phloc.commons.xml.transform.XMLTransformerFactory;
+import com.helger.commons.xml.XMLHelper;
+import com.helger.commons.xml.transform.XMLTransformerFactory;
 
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;

@@ -45,10 +45,10 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.validation.Schema;
 
-import com.phloc.commons.CGlobal;
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.equals.EqualsUtils;
-import com.phloc.commons.io.IReadableResource;
+import com.helger.commons.CGlobal;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.equals.EqualsUtils;
+import com.helger.commons.io.IReadableResource;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 import eu.europa.ec.cipa.validation.generic.IXMLValidator;

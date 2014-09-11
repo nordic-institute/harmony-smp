@@ -41,13 +41,13 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import com.phloc.commons.version.Version;
+import com.helger.commons.version.Version;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.IPeppolPredefinedDocumentTypeIdentifier;
 
 /**
  * Base interface for predefined process identifiers.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public interface IPeppolPredefinedProcessIdentifier extends IPeppolReadonlyProcessIdentifier {

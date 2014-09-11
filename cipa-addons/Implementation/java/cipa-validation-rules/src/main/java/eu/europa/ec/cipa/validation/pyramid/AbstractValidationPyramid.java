@@ -51,13 +51,13 @@ import javax.xml.transform.dom.DOMSource;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.error.IResourceErrorGroup;
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.string.ToStringGenerator;
-import com.phloc.commons.xml.serialize.XMLReader;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.error.IResourceErrorGroup;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.string.ToStringGenerator;
+import com.helger.commons.xml.serialize.DOMReader;
 
 import eu.europa.ec.cipa.validation.generic.IXMLValidator;
 import eu.europa.ec.cipa.validation.rules.EValidationDocumentType;
@@ -68,7 +68,7 @@ import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
 
 /**
  * Abstract base class for {@link IValidationPyramid}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @NotThreadSafe
@@ -80,7 +80,7 @@ public abstract class AbstractValidationPyramid implements IValidationPyramid {
 
   /**
    * Create a new validation pyramid that handles the first four levels.
-   * 
+   *
    * @param aValidationDocumentType
    *        Document type. Determines the
    *        {@link EValidationLevel#TECHNICAL_STRUCTURE} layer. May not be
@@ -139,7 +139,7 @@ public abstract class AbstractValidationPyramid implements IValidationPyramid {
     ValueEnforcer.notNull (aRes, "Resource");
 
     try {
-      final Document aDoc = XMLReader.readXMLDOM (aRes);
+      final Document aDoc = DOMReader.readXMLDOM (aRes);
       return applyValidation (aRes.getPath (), new DOMSource (aDoc));
     }
     catch (final SAXException ex) {

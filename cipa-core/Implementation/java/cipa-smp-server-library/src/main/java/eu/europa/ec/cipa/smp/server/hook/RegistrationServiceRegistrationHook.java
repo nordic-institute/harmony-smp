@@ -52,8 +52,8 @@ import org.busdox.servicemetadata.managebusinessidentifierservice._1.Unauthorize
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.random.VerySecureRandom;
-import com.phloc.commons.state.ESuccess;
+import com.helger.commons.random.VerySecureRandom;
+import com.helger.commons.state.ESuccess;
 
 import eu.europa.ec.cipa.busdox.identifier.IParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;

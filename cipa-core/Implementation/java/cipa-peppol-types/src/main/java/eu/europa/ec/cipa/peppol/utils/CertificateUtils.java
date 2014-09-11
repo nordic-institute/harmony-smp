@@ -45,10 +45,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.charset.CCharset;
-import com.phloc.commons.io.streams.StringInputStream;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.charset.CCharset;
+import com.helger.commons.io.streams.StringInputStream;
+import com.helger.commons.string.StringHelper;
 
 /**
  * Some utility methods handling certificates.

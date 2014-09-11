@@ -42,10 +42,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-
-import com.phloc.commons.string.StringHelper;
-
-import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
+import com.helger.commons.string.StringHelper;
 
 /**
  * Test class for class {@link ETransaction}.

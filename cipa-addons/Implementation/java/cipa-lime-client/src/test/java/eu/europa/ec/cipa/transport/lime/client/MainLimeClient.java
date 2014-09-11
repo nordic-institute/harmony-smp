@@ -41,6 +41,8 @@ import java.io.PrintStream;
 import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -52,10 +54,9 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.io.resource.ClassPathResource;
-import com.phloc.commons.xml.serialize.XMLReader;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.xml.serialize.DOMReader;
 
 import eu.europa.ec.cipa.busdox.CBusDox;
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyDocumentTypeIdentifier;
@@ -256,8 +257,9 @@ public final class MainLimeClient {
     }
   }
 
-  private static Document _loadXML (final IReadableResource xml) throws SAXException {
-    return XMLReader.readXMLDOM (xml);
+  @Nullable
+  private static Document _loadXML (@Nonnull final IReadableResource xml) throws SAXException {
+    return DOMReader.readXMLDOM (xml);
   }
 
   private static IMessage _createSampleMessage (final IReadableResource xml,

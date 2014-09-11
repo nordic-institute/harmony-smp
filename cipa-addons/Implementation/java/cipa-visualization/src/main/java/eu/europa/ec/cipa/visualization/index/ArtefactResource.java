@@ -40,12 +40,12 @@ package eu.europa.ec.cipa.visualization.index;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.hash.HashCodeGenerator;
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.io.resource.ClassPathResource;
-import com.phloc.commons.string.ToStringGenerator;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.hash.HashCodeGenerator;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.string.ToStringGenerator;
 
 /**
  * Represents a single resource that is attached to a visualization artefact.

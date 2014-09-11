@@ -35,23 +35,6 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-/**
- * Copyright (C) 2006-2012 phloc systems
- * http://www.phloc.com
- * office[at]phloc[dot]com
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *         http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package eu.europa.ec.cipa.peppol.supplementary.tools;
 
 import java.io.File;
@@ -61,6 +44,20 @@ import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.id.IHasID;
+import com.helger.commons.io.file.filter.FilenameFilterEndsWith;
+import com.helger.commons.io.file.iterate.FileSystemRecursiveIterator;
+import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.commons.lang.EnumHelper;
+import com.helger.commons.name.IHasDisplayName;
+import com.helger.commons.regex.RegExHelper;
+import com.helger.genericode.Genericode10CodeListMarshaller;
+import com.helger.genericode.Genericode10Utils;
+import com.helger.genericode.v10.CodeListDocument;
+import com.helger.genericode.v10.Column;
+import com.helger.genericode.v10.Row;
+import com.helger.genericode.v10.SimpleCodeList;
 import com.helger.jcodemodel.JClassAlreadyExistsException;
 import com.helger.jcodemodel.JCodeModel;
 import com.helger.jcodemodel.JDefinedClass;
@@ -71,20 +68,6 @@ import com.helger.jcodemodel.JMethod;
 import com.helger.jcodemodel.JMod;
 import com.helger.jcodemodel.JOp;
 import com.helger.jcodemodel.JVar;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.id.IHasID;
-import com.phloc.commons.io.file.filter.FilenameFilterEndsWith;
-import com.phloc.commons.io.file.iterate.FileSystemRecursiveIterator;
-import com.phloc.commons.io.resource.FileSystemResource;
-import com.phloc.commons.lang.EnumHelper;
-import com.phloc.commons.name.IHasDisplayName;
-import com.phloc.commons.regex.RegExHelper;
-import com.phloc.genericode.Genericode10CodeListMarshaller;
-import com.phloc.genericode.Genericode10Utils;
-import com.phloc.genericode.v10.CodeListDocument;
-import com.phloc.genericode.v10.Column;
-import com.phloc.genericode.v10.Row;
-import com.phloc.genericode.v10.SimpleCodeList;
 
 public class MainCreateEnumsGenericode {
   private static final String COLID_NAME = "name";

@@ -43,14 +43,14 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import com.phloc.commons.mock.PhlocTestUtils;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.mock.PHTestUtils;
+import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 
 /**
  * Test class for class {@link SimpleParticipantIdentifier}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class SimpleParticipantIdentifierTest {
@@ -70,9 +70,9 @@ public final class SimpleParticipantIdentifierTest {
     final SimpleParticipantIdentifier aID1 = new SimpleParticipantIdentifier ("scheme-actorid-test", "value");
     final SimpleParticipantIdentifier aID2 = new SimpleParticipantIdentifier ("scheme-actorid-test", "value");
     final SimpleParticipantIdentifier aID3 = new SimpleParticipantIdentifier ("scheme2-actorid-test", "value");
-    PhlocTestUtils.testDefaultImplementationWithEqualContentObject (aID1, aID2);
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aID1, aID3);
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aID2, aID3);
+    PHTestUtils.testDefaultImplementationWithEqualContentObject (aID1, aID2);
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (aID1, aID3);
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (aID2, aID3);
   }
 
   @Test

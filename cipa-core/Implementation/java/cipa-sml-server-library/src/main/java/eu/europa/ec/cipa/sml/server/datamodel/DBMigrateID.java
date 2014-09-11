@@ -45,10 +45,10 @@ import javax.persistence.Embeddable;
 
 import org.busdox.servicemetadata.locator._1.MigrationRecordType;
 
-import com.phloc.commons.equals.EqualsUtils;
-import com.phloc.commons.hash.HashCodeGenerator;
-import com.phloc.commons.string.ToStringGenerator;
-import com.phloc.db.jpa.annotations.UsedOnlyByJPA;
+import com.helger.commons.equals.EqualsUtils;
+import com.helger.commons.hash.HashCodeGenerator;
+import com.helger.commons.string.ToStringGenerator;
+import com.helger.db.jpa.annotations.UsedOnlyByJPA;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;

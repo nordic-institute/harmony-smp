@@ -39,7 +39,7 @@ package eu.europa.ec.cipa.smp.client;
 
 import javax.annotation.concurrent.Immutable;
 
-import com.phloc.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.annotations.PresentForCodeCoverage;
 
 /**
  * This class contains some important SMP constants

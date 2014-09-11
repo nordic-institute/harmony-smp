@@ -41,9 +41,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.phloc.commons.equals.EqualsUtils;
-import com.phloc.commons.hash.HashCodeGenerator;
-import com.phloc.commons.string.ToStringGenerator;
+import com.helger.commons.equals.EqualsUtils;
+import com.helger.commons.hash.HashCodeGenerator;
+import com.helger.commons.string.ToStringGenerator;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyDocumentTypeIdentifier;
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;

@@ -40,9 +40,9 @@ package eu.europa.ec.cipa.validation.rules;
 import javax.annotation.Nullable;
 import javax.xml.validation.Schema;
 
-import com.phloc.commons.annotations.MustImplementEqualsAndHashcode;
-import com.phloc.commons.id.IHasID;
-import com.phloc.commons.xml.schema.IHasSchema;
+import com.helger.commons.annotations.MustImplementEqualsAndHashcode;
+import com.helger.commons.id.IHasID;
+import com.helger.commons.xml.schema.IHasSchema;
 
 /**
  * Represents a single validation document type. It needs an ID and must provide

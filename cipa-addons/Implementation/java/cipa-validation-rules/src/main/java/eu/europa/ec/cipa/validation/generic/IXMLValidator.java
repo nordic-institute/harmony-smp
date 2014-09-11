@@ -41,8 +41,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.transform.Source;
 
-import com.phloc.commons.error.IResourceErrorGroup;
-import com.phloc.commons.io.IReadableResource;
+import com.helger.commons.error.IResourceErrorGroup;
+import com.helger.commons.io.IReadableResource;
 
 /**
  * Base interface for an XML validator.

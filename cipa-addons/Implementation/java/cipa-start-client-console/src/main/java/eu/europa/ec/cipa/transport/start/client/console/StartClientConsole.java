@@ -58,13 +58,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import com.phloc.commons.SystemProperties;
-import com.phloc.commons.charset.CCharset;
-import com.phloc.commons.io.streams.NonBlockingStringWriter;
-import com.phloc.commons.io.streams.StringInputStream;
-import com.phloc.commons.lang.CGStringHelper;
-import com.phloc.commons.xml.XMLFactory;
-import com.phloc.commons.xml.serialize.XMLReader;
+import com.helger.commons.SystemProperties;
+import com.helger.commons.charset.CCharset;
+import com.helger.commons.io.streams.NonBlockingStringWriter;
+import com.helger.commons.io.streams.StringInputStream;
+import com.helger.commons.lang.CGStringHelper;
+import com.helger.commons.xml.XMLFactory;
+import com.helger.commons.xml.serialize.DOMReader;
 
 import eu.europa.ec.cipa.busdox.CBusDox;
 import eu.europa.ec.cipa.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
@@ -83,7 +83,9 @@ public class StartClientConsole {
   private static final Logger s_aLogger = LoggerFactory.getLogger (StartClientConsole.class);
 
   private static enum EClientMode {
-    DIRECT_AP, DIRECT_SMP, FULL;
+    DIRECT_AP,
+    DIRECT_SMP,
+    FULL;
   }
 
   private static void _enableProxy () {
@@ -257,7 +259,7 @@ public class StartClientConsole {
                                        aDocumentType,
                                        aProcessIdentifier);
       final File aFile = new File (cmd.getOptionValue ("dpath"));
-      aDoc = XMLReader.readXMLDOM (aFile);
+      aDoc = DOMReader.readXMLDOM (aFile);
       if (aDoc == null)
         throw new IllegalArgumentException ("Failed to read XML document from " + aFile);
     }

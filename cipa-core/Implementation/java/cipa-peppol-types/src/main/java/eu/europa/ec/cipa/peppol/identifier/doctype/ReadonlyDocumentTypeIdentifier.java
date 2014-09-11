@@ -43,7 +43,7 @@ import javax.annotation.concurrent.Immutable;
 
 import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 
-import com.phloc.commons.annotations.UnsupportedOperation;
+import com.helger.commons.annotations.UnsupportedOperation;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;

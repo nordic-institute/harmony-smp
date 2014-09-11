@@ -44,8 +44,8 @@ import java.io.InputStream;
 
 import org.junit.Test;
 
-import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.io.resource.ClassPathResource;
+import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.io.resource.ClassPathResource;
 
 /**
  * Test class for class {@link CBusDox}.

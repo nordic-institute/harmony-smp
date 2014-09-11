@@ -3,11 +3,11 @@
   <parent>
     <groupId>eu.europa.ec.cipa</groupId>
     <artifactId>cipa-parent-pom</artifactId>
-    <version>1.3</version>
+    <version>1.4-SNAPSHOT</version>
     <relativePath>../cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-start-server</artifactId>
-  <version>2.1.2-SNAPSHOT</version>
+  <version>2.2.0-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>cipa-start-server</name>
 
@@ -31,40 +31,40 @@
   
   <dependencies>
     <dependency>
-      <groupId>com.phloc</groupId>
-      <artifactId>phloc-commons</artifactId>
-      <version>4.3.3</version>
+      <groupId>com.helger</groupId>
+      <artifactId>ph-commons</artifactId>
+      <version>5.0.2</version>
     </dependency>
     <dependency>
-      <groupId>com.phloc</groupId>
-      <artifactId>phloc-datetime</artifactId>
-      <version>3.1.4</version>
+      <groupId>com.helger</groupId>
+      <artifactId>ph-datetime</artifactId>
+      <version>3.2.0</version>
     </dependency>
     <dependency>
-      <groupId>com.phloc</groupId>
-      <artifactId>phloc-web</artifactId>
-      <version>5.5.0</version>
+      <groupId>com.helger</groupId>
+      <artifactId>ph-web</artifactId>
+      <version>6.0.0</version>
     </dependency>
     <dependency>
-      <groupId>com.phloc</groupId>
-      <artifactId>phloc-webscopes</artifactId>
-      <version>6.4.1</version>
+      <groupId>com.helger</groupId>
+      <artifactId>ph-webscopes</artifactId>
+      <version>6.5.0</version>
     </dependency>
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-start-client</artifactId>
-      <version>2.1.1</version>
+      <version>2.2.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-smp-client-library</artifactId>
-      <version>2.1.1</version>
+      <version>2.2.0-SNAPSHOT</version>
     </dependency>
     <!-- Dummy, so that any receiver is present :)  Comment out if you use the receiver externalisation mechanism see config server.properties-->
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-start-filereceiver</artifactId>
-      <version>2.1.1</version>
+      <version>2.2.0-SNAPSHOT</version>
     </dependency>
     <!-- Alternatively you may use the JMS base receiver.
          Locations: https://github.com/phax/cipa-start-jmsreceiver-api

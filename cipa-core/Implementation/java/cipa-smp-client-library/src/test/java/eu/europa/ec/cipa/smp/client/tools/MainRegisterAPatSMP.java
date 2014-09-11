@@ -57,9 +57,9 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.state.ESuccess;
-import com.phloc.commons.url.URLUtils;
-import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
+import com.helger.commons.state.ESuccess;
+import com.helger.commons.url.URLUtils;
+import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;

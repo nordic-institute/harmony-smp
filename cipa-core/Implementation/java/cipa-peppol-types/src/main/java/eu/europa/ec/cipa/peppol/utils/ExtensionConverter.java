@@ -46,22 +46,22 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.microdom.IMicroNode;
-import com.phloc.commons.microdom.serialize.MicroWriter;
-import com.phloc.commons.string.StringHelper;
-import com.phloc.commons.typeconvert.TypeConverter;
-import com.phloc.commons.typeconvert.TypeConverterException;
-import com.phloc.commons.xml.serialize.EXMLSerializeDocType;
-import com.phloc.commons.xml.serialize.EXMLSerializeIndent;
-import com.phloc.commons.xml.serialize.XMLReader;
-import com.phloc.commons.xml.serialize.XMLWriter;
-import com.phloc.commons.xml.serialize.XMLWriterSettings;
+import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.microdom.IMicroNode;
+import com.helger.commons.microdom.serialize.MicroWriter;
+import com.helger.commons.string.StringHelper;
+import com.helger.commons.typeconvert.TypeConverter;
+import com.helger.commons.typeconvert.TypeConverterException;
+import com.helger.commons.xml.serialize.DOMReader;
+import com.helger.commons.xml.serialize.EXMLSerializeDocType;
+import com.helger.commons.xml.serialize.EXMLSerializeIndent;
+import com.helger.commons.xml.serialize.XMLWriter;
+import com.helger.commons.xml.serialize.XMLWriterSettings;
 
 /**
  * This class is used for converting between a String representation of the
  * extension element and the "ExtensionType" complex type.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -78,7 +78,7 @@ public final class ExtensionConverter {
 
   /**
    * Convert the passed extension type to a string representation.
-   * 
+   *
    * @param aExtension
    *        The extension to be converted. May be <code>null</code>.
    * @return <code>null</code> if no extension was passed - the XML
@@ -118,7 +118,7 @@ public final class ExtensionConverter {
 
   /**
    * Convert the passed XML string to an SMP extension type.
-   * 
+   *
    * @param sXML
    *        the XML representation to be converted.
    * @return <code>null</code> if the passed string is empty.
@@ -130,7 +130,7 @@ public final class ExtensionConverter {
     if (StringHelper.hasText (sXML)) {
       try {
         // Try to interpret as XML
-        final Document aDoc = XMLReader.readXMLDOM (sXML);
+        final Document aDoc = DOMReader.readXMLDOM (sXML);
         if (aDoc != null) {
           final ExtensionType aExtension = s_aOF.createExtensionType ();
           aExtension.setAny (aDoc.getDocumentElement ());

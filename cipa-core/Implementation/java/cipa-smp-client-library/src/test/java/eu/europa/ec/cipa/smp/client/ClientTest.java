@@ -69,9 +69,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.w3c.dom.Element;
 
-import com.phloc.commons.annotations.DevelopersNote;
-import com.phloc.commons.url.URLUtils;
-import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
+import com.helger.commons.annotations.DevelopersNote;
+import com.helger.commons.url.URLUtils;
+import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;

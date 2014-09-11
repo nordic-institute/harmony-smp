@@ -40,7 +40,7 @@ package eu.europa.ec.cipa.transport.lime.username;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.annotations.Nonempty;
+import com.helger.commons.annotations.Nonempty;
 
 /**
  * A writable version of the username/password credentials.

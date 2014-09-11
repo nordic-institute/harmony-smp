@@ -64,9 +64,9 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.Type;
 import org.xbill.DNS.ZoneTransferException;
 
-import com.phloc.commons.lang.StackTraceHelper;
-import com.phloc.commons.string.StringHelper;
-import com.phloc.commons.url.URLUtils;
+import com.helger.commons.lang.StackTraceHelper;
+import com.helger.commons.string.StringHelper;
+import com.helger.commons.url.URLUtils;
 
 import eu.europa.ec.cipa.sml.server.IGenericDataHandler;
 import eu.europa.ec.cipa.sml.server.exceptions.IllegalHostnameException;

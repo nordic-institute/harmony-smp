@@ -41,7 +41,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.phloc.commons.GlobalDebug;
+import com.helger.commons.GlobalDebug;
 
 import eu.europa.ec.cipa.validation.utils.createrules.codelist.CodeListCreator;
 import eu.europa.ec.cipa.validation.utils.createrules.codelist.RuleSourceCodeList;

@@ -49,11 +49,11 @@ import org.busdox.servicemetadata.locator._1.ParticipantIdentifierPageType;
 import org.busdox.servicemetadata.locator._1.PublisherEndpointType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
 
-import com.phloc.commons.annotations.UsedViaReflection;
-import com.phloc.commons.callback.DoNothingExceptionHandler;
-import com.phloc.db.jpa.IEntityManagerProvider;
-import com.phloc.db.jpa.JPAEnabledManager;
-import com.phloc.db.jpa.JPAExecutionResult;
+import com.helger.commons.annotations.UsedViaReflection;
+import com.helger.commons.callback.DoNothingExceptionHandler;
+import com.helger.db.jpa.IEntityManagerProvider;
+import com.helger.db.jpa.JPAEnabledManager;
+import com.helger.db.jpa.JPAExecutionResult;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;

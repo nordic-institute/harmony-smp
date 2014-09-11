@@ -48,13 +48,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.charset.CCharset;
-import com.phloc.commons.codec.URLCodec;
-import com.phloc.commons.messagedigest.EMessageDigestAlgorithm;
-import com.phloc.commons.messagedigest.MessageDigestGeneratorHelper;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.charset.CCharset;
+import com.helger.commons.codec.URLCodec;
+import com.helger.commons.messagedigest.EMessageDigestAlgorithm;
+import com.helger.commons.messagedigest.MessageDigestGeneratorHelper;
+import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
@@ -63,7 +63,7 @@ import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 
 /**
  * Utility methods for assembling URLs and URL elements required for BusDox.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -79,7 +79,7 @@ public final class BusdoxURLUtils {
 
   /**
    * Escape the passed URL to use the percentage maskings.
-   * 
+   *
    * @param sURL
    *        The input URL or URL part. May be <code>null</code>.
    * @return <code>null</code> if the input string was <code>null</code>.
@@ -97,7 +97,7 @@ public final class BusdoxURLUtils {
    * characters in the range [0-9a-f]. Note: the hash value creation is done
    * case sensitive! The caller needs to ensure that the value to hash is lower
    * case!
-   * 
+   *
    * @param sValueToHash
    *        The value to be hashed. May not be <code>null</code>.
    * @return The non-<code>null</code> String containing the hash value.
@@ -115,7 +115,7 @@ public final class BusdoxURLUtils {
   /**
    * Get DNS record from ParticipantIdentifier. "0010:1234 | scheme" ->
    * "B-&lt;hash over pi>.&lt;scheme>.&lt;sml-zone-name>".
-   * 
+   *
    * @param aParticipantIdentifier
    *        Participant identifier. May not be <code>null</code>.
    * @param aSML
@@ -135,7 +135,7 @@ public final class BusdoxURLUtils {
    * "B-&lt;hash over pi>.&lt;scheme>.&lt;sml-zone-name>". This method ensures
    * that the hash value is created from the lower case value of the identifier.
    * Lower casing is done with the {@link #URL_LOCALE} locale.
-   * 
+   *
    * @param aParticipantIdentifier
    *        Participant identifier. May not be <code>null</code>.
    * @param sSMLZoneName

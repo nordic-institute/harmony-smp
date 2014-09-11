@@ -64,15 +64,15 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.GlobalDebug;
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.callback.LoggingExceptionHandler;
-import com.phloc.commons.state.EChange;
-import com.phloc.db.jpa.IEntityManagerProvider;
-import com.phloc.db.jpa.JPAEnabledManager;
-import com.phloc.db.jpa.JPAExecutionResult;
-import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
+import com.helger.commons.GlobalDebug;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.callback.LoggingExceptionHandler;
+import com.helger.commons.state.EChange;
+import com.helger.db.jpa.IEntityManagerProvider;
+import com.helger.db.jpa.JPAEnabledManager;
+import com.helger.db.jpa.JPAExecutionResult;
+import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.NotFoundException;
 
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;

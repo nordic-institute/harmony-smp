@@ -43,12 +43,12 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.state.ETriState;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.state.ETriState;
+import com.helger.commons.string.StringHelper;
 
 /**
  * This class manages the PEPPOL identifier issuing agencies using the

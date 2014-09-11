@@ -45,7 +45,7 @@ import java.util.Properties;
 
 import javax.annotation.Nonnull;
 
-import com.phloc.commons.state.ESuccess;
+import com.helger.commons.state.ESuccess;
 
 /**
  * @author PEPPOL.AT, BRZ, Jakob Frohnwieser

@@ -41,7 +41,7 @@ import java.net.URL;
 
 import javax.annotation.Nonnull;
 
-import com.phloc.commons.annotations.Nonempty;
+import com.helger.commons.annotations.Nonempty;
 
 /**
  * Specifies the different properties an SML implementation uses.

@@ -40,7 +40,7 @@ package eu.europa.ec.cipa.peppol.identifier;
 import javax.annotation.Nonnegative;
 import javax.annotation.concurrent.Immutable;
 
-import com.phloc.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.annotations.PresentForCodeCoverage;
 
 /**
  * Constants on BUSDOX identifiers used in PEPPOL.

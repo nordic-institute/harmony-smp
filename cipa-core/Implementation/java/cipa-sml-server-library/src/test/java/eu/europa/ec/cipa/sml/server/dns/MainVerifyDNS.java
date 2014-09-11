@@ -37,7 +37,7 @@
  */
 package eu.europa.ec.cipa.sml.server.dns;
 
-import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
 
 public class MainVerifyDNS {
   public static void main (final String [] args) throws Exception {

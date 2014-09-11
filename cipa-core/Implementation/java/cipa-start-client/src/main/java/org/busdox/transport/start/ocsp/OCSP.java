@@ -57,11 +57,11 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.CGlobal;
-import com.phloc.commons.GlobalDebug;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.state.EValidity;
+import com.helger.commons.CGlobal;
+import com.helger.commons.GlobalDebug;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.state.EValidity;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 

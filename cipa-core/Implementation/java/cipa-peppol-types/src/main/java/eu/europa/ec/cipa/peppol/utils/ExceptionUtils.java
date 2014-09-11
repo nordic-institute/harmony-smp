@@ -46,8 +46,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3._2009._02.ws_tra.FaultMessage;
 
-import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.lang.StackTraceHelper;
+import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.lang.StackTraceHelper;
 
 /**
  * Misc. exception utility methods.

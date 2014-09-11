@@ -43,9 +43,8 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-import eu.europa.ec.cipa.sml.client.swing.action.ESMLAction;
-
 import net.miginfocom.swing.MigLayout;
+import eu.europa.ec.cipa.sml.client.swing.action.ESMLAction;
 
 /**
  * Content action panel

@@ -43,9 +43,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.core.HttpHeaders;
 
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
-import com.phloc.web.http.basicauth.HTTPBasicAuth;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.web.http.basicauth.BasicAuthClientCredentials;
+import com.helger.web.http.basicauth.HTTPBasicAuth;
 
 import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
 

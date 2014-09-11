@@ -41,7 +41,7 @@ import org.xbill.DNS.NSRecord;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.SOARecord;
 
-import com.phloc.commons.compare.AbstractComparator;
+import com.helger.commons.compare.AbstractComparator;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 

@@ -44,12 +44,12 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.io.file.FileOperations;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.io.file.FileOperations;
+import com.helger.commons.string.StringHelper;
 
 public final class RuleSourceBusinessRule {
   private final File m_aSourceFile;

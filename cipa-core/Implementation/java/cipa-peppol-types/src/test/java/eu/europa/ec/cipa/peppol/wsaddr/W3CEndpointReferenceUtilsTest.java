@@ -49,7 +49,7 @@ import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.phloc.commons.xml.XMLFactory;
+import com.helger.commons.xml.XMLFactory;
 
 /**
  * Test class for class {@link W3CEndpointReferenceUtils}.

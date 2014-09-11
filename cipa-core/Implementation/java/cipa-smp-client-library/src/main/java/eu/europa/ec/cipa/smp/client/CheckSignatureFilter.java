@@ -53,10 +53,10 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-import com.phloc.commons.collections.ArrayHelper;
-import com.phloc.commons.io.streams.NonBlockingByteArrayInputStream;
-import com.phloc.commons.io.streams.StreamUtils;
-import com.phloc.commons.xml.serialize.XMLReader;
+import com.helger.commons.collections.ArrayHelper;
+import com.helger.commons.io.streams.NonBlockingByteArrayInputStream;
+import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.xml.serialize.DOMReader;
 import com.sun.jersey.api.client.ClientHandler;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.jersey.api.client.ClientRequest;
@@ -69,7 +69,7 @@ import eu.europa.ec.cipa.smp.client.exception.NoSignatureFoundException;
  * This Jersey filter checks if a signature is applied to each response object.
  * TODO: We currently do not check that the certificate is trusted by someone we
  * trust.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -79,7 +79,7 @@ public final class CheckSignatureFilter extends ClientFilter {
   private static boolean _checkSignature (@Nonnull @WillClose final InputStream aEntityInputStream) throws Exception {
     try {
       // Get response from servlet
-      final Document aDocument = XMLReader.readXMLDOM (aEntityInputStream);
+      final Document aDocument = DOMReader.readXMLDOM (aEntityInputStream);
 
       // We make sure that the XML is a Signed. If not, we don't have to check
       // any certificates.

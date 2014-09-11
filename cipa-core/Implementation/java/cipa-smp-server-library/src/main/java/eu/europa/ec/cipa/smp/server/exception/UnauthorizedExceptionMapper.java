@@ -42,7 +42,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import com.phloc.commons.mime.CMimeType;
+import com.helger.commons.mime.CMimeType;
 
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger

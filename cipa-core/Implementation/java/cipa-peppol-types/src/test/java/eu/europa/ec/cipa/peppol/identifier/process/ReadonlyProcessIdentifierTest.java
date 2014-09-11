@@ -42,14 +42,14 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import com.phloc.commons.mock.PhlocTestUtils;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.mock.PHTestUtils;
+import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 
 /**
  * Test class for class {@link ReadonlyProcessIdentifier}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class ReadonlyProcessIdentifierTest {
@@ -69,9 +69,9 @@ public final class ReadonlyProcessIdentifierTest {
     final ReadonlyProcessIdentifier aID1 = new ReadonlyProcessIdentifier ("scheme", "value");
     final ReadonlyProcessIdentifier aID2 = new ReadonlyProcessIdentifier ("scheme", "value");
     final ReadonlyProcessIdentifier aID3 = new ReadonlyProcessIdentifier ("scheme2", "value");
-    PhlocTestUtils.testDefaultImplementationWithEqualContentObject (aID1, aID2);
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aID1, aID3);
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aID2, aID3);
+    PHTestUtils.testDefaultImplementationWithEqualContentObject (aID1, aID2);
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (aID1, aID3);
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (aID2, aID3);
   }
 
   @Test

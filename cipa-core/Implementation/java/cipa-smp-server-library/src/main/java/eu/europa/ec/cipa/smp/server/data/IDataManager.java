@@ -48,8 +48,8 @@ import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 
 /**
  * This interface is used by the REST interface for accessing the underlying SMP

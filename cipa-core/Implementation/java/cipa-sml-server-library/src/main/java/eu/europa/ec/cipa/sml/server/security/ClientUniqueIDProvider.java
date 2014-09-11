@@ -54,9 +54,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.collections.ArrayHelper;
-import com.phloc.commons.collections.ContainerHelper;
+import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.collections.ArrayHelper;
+import com.helger.commons.collections.ContainerHelper;
 
 /**
  * Extract certificate principal from HTTP request.

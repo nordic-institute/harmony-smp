@@ -40,9 +40,9 @@ package eu.europa.ec.cipa.peppol.identifier.validator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.annotations.IsSPIImplementation;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.annotations.IsSPIImplementation;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.issuingagency.EPredefinedIdentifierIssuingAgency;
 

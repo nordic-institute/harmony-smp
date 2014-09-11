@@ -51,17 +51,17 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.io.resource.ClassPathResource;
-import com.phloc.commons.io.resource.FileSystemResource;
-import com.phloc.commons.io.streams.StreamUtils;
-import com.phloc.commons.state.ESuccess;
-import com.phloc.commons.string.StringHelper;
-import com.phloc.commons.string.StringParser;
-import com.phloc.commons.string.ToStringGenerator;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.state.ESuccess;
+import com.helger.commons.string.StringHelper;
+import com.helger.commons.string.StringParser;
+import com.helger.commons.string.ToStringGenerator;
 
 /**
  * Used for accessing configuration files based on properties. By default first

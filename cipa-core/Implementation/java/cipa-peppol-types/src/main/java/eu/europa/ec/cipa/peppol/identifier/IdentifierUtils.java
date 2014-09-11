@@ -46,15 +46,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.charset.CCharset;
-import com.phloc.commons.collections.ArrayHelper;
-import com.phloc.commons.equals.EqualsUtils;
-import com.phloc.commons.exceptions.InitializationException;
-import com.phloc.commons.regex.RegExHelper;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.charset.CCharset;
+import com.helger.commons.collections.ArrayHelper;
+import com.helger.commons.equals.EqualsUtils;
+import com.helger.commons.exceptions.InitializationException;
+import com.helger.commons.regex.RegExHelper;
+import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyDocumentTypeIdentifier;
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyIdentifier;

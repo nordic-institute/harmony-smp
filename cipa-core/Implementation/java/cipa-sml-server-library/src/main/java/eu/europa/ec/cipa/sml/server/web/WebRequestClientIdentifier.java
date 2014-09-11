@@ -43,8 +43,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.WebServiceContext;
 import javax.xml.ws.handler.MessageContext;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.Nonempty;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
 
 /**
  * Manages the client unique ID for SML requests.

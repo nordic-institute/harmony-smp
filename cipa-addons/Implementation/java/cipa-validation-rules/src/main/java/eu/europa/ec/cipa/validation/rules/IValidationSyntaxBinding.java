@@ -39,9 +39,9 @@ package eu.europa.ec.cipa.validation.rules;
 
 import javax.annotation.Nonnull;
 
-import com.phloc.commons.annotations.MustImplementEqualsAndHashcode;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.id.IHasID;
+import com.helger.commons.annotations.MustImplementEqualsAndHashcode;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.id.IHasID;
 
 /**
  * Represents the basic requirements for syntax bindings supported by the PEPPOL

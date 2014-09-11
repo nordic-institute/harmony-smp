@@ -55,19 +55,19 @@ import org.oclc.purl.dsdl.svrl.SchematronOutputType;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import com.phloc.commons.CGlobal;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.error.EErrorLevel;
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.regex.RegExHelper;
-import com.phloc.commons.xml.serialize.XMLReader;
-import com.phloc.commons.xml.serialize.XMLWriter;
-import com.phloc.schematron.SchematronHelper;
-import com.phloc.schematron.pure.SchematronResourcePure;
-import com.phloc.schematron.svrl.SVRLFailedAssert;
-import com.phloc.schematron.svrl.SVRLUtils;
-import com.phloc.schematron.svrl.SVRLWriter;
-import com.phloc.ubl.UBL20Reader;
+import com.helger.commons.CGlobal;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.regex.RegExHelper;
+import com.helger.commons.xml.serialize.DOMReader;
+import com.helger.commons.xml.serialize.XMLWriter;
+import com.helger.schematron.SchematronHelper;
+import com.helger.schematron.pure.SchematronResourcePure;
+import com.helger.schematron.svrl.SVRLFailedAssert;
+import com.helger.schematron.svrl.SVRLUtils;
+import com.helger.schematron.svrl.SVRLWriter;
+import com.helger.ubl.UBL20Reader;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 import eu.europa.ec.cipa.test.ETestFileType;
@@ -80,7 +80,7 @@ import eu.europa.ec.cipa.test.error.Warning;
 /**
  * Validate documents using the supplied functionality of
  * {@link EValidationArtefact}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class FuncTestDocumentValidationError {
@@ -110,7 +110,7 @@ public final class FuncTestDocumentValidationError {
     for (final TestResource aTestDoc : TestFiles.getErrorFiles (ETestFileType.ORDER)) {
       // Get the UBL XML file
       final IReadableResource aTestFile = aTestDoc.getResource ();
-      final Document aTestFileDoc = XMLReader.readXMLDOM (aTestFile);
+      final Document aTestFileDoc = DOMReader.readXMLDOM (aTestFile);
 
       // Ensure the UBL file validates against the scheme
       final OrderType aUBLOrder = UBL20Reader.readOrder (aTestFileDoc);
@@ -157,7 +157,7 @@ public final class FuncTestDocumentValidationError {
     for (final TestResource aTestDoc : TestFiles.getErrorFiles (ETestFileType.INVOICE)) {
       // Get the UBL XML file
       final IReadableResource aTestFile = aTestDoc.getResource ();
-      final Document aTestFileDoc = XMLReader.readXMLDOM (aTestFile);
+      final Document aTestFileDoc = DOMReader.readXMLDOM (aTestFile);
 
       // Ensure the UBL file validates against the scheme
       final InvoiceType aUBLInvoice = UBL20Reader.readInvoice (aTestFileDoc);

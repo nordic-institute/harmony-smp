@@ -40,9 +40,9 @@ package eu.europa.ec.cipa.commons.cenbii.profiles;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.id.IHasID;
-import com.phloc.commons.lang.EnumHelper;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.id.IHasID;
+import com.helger.commons.lang.EnumHelper;
 
 /**
  * Defines the groups (= categories) available for profiles ({@link EProfile}).

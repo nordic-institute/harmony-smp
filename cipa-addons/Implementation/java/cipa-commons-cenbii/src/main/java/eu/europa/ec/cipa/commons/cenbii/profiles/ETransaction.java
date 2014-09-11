@@ -41,10 +41,10 @@ import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.id.IHasID;
-import com.phloc.commons.lang.EnumHelper;
-import com.phloc.commons.name.IHasName;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.id.IHasID;
+import com.helger.commons.lang.EnumHelper;
+import com.helger.commons.name.IHasName;
 
 /**
  * Represents a single CEN BII transaction used in several collaborations.

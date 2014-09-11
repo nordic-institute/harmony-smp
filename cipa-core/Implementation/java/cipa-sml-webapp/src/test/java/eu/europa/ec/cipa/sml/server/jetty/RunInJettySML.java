@@ -47,7 +47,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.SystemProperties;
+import com.helger.commons.SystemProperties;
 
 /**
  * Run this as an application and your SML will be up and running on port 8080
@@ -55,7 +55,7 @@ import com.phloc.commons.SystemProperties;
  * configuration file.<br>
  * To stop the running Jetty simply invoke the {@link JettyStopSML} application
  * in this package. It performs a graceful shutdown of the App Server.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class RunInJettySML {

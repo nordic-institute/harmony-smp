@@ -60,8 +60,8 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.collections.ContainerHelper;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.collections.ContainerHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.sml.server.IGenericDataHandler;

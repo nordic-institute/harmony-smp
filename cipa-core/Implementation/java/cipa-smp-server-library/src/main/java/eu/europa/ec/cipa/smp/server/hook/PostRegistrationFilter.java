@@ -52,7 +52,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.state.ESuccess;
+import com.helger.commons.state.ESuccess;
 
 /**
  * Filter which handles post-registration hooks. If a registration was started

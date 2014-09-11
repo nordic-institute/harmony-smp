@@ -47,12 +47,12 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.busdox.transport.identifiers._1.ProcessIdentifierType;
 import org.w3c.dom.Document;
 
-import com.phloc.commons.SystemProperties;
-import com.phloc.commons.charset.CCharset;
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.io.resource.ClassPathResource;
-import com.phloc.commons.io.streams.StringInputStream;
-import com.phloc.commons.xml.serialize.XMLReader;
+import com.helger.commons.SystemProperties;
+import com.helger.commons.charset.CCharset;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.io.streams.StringInputStream;
+import com.helger.commons.xml.serialize.DOMReader;
 
 import eu.europa.ec.cipa.busdox.CBusDox;
 import eu.europa.ec.cipa.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
@@ -101,7 +101,7 @@ public class MainPingAccessPoint {
   private static void _sendDocument (final IReadableResource aXmlRes) throws Exception {
     final String sAccessPointURL = USE_LOCAL_AP ? "http://localhost:8090/accessPointService" : _getAccessPointUrl ();
     final IMessageMetadata aMetadata = _createPingMetadata ();
-    final Document aXMLDoc = XMLReader.readXMLDOM (aXmlRes);
+    final Document aXMLDoc = DOMReader.readXMLDOM (aXmlRes);
     AccessPointClient.send (sAccessPointURL, aMetadata, aXMLDoc);
   }
 

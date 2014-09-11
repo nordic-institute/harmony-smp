@@ -50,11 +50,11 @@ import org.busdox.servicemetadata.locator._1.PublisherEndpointType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 
-import com.phloc.commons.callback.DoNothingExceptionHandler;
-import com.phloc.commons.callback.IThrowingRunnable;
-import com.phloc.db.jpa.IEntityManagerProvider;
-import com.phloc.db.jpa.JPAEnabledManager;
-import com.phloc.db.jpa.JPAExecutionResult;
+import com.helger.commons.callback.DoNothingExceptionHandler;
+import com.helger.commons.callback.IThrowingRunnable;
+import com.helger.db.jpa.IEntityManagerProvider;
+import com.helger.db.jpa.JPAEnabledManager;
+import com.helger.db.jpa.JPAExecutionResult;
 
 import eu.europa.ec.cipa.sml.server.ISMPDataHandler;
 import eu.europa.ec.cipa.sml.server.ISMPDataHandlerCallback;

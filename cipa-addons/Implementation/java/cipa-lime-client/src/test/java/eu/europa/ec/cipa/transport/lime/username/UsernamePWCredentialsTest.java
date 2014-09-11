@@ -43,13 +43,13 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import com.phloc.commons.mock.PhlocTestUtils;
+import com.helger.commons.mock.PHTestUtils;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Test class for class {@link UsernamePWCredentials}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class UsernamePWCredentialsTest {
@@ -90,13 +90,13 @@ public final class UsernamePWCredentialsTest {
     assertNull (uc.getPassword ());
 
     // Test equals/hashcode etc.
-    PhlocTestUtils.testDefaultImplementationWithEqualContentObject (new UsernamePWCredentials ("name", "pw"),
-                                                                    new UsernamePWCredentials ("name", "pw"));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (new UsernamePWCredentials ("name", "pw"),
-                                                                        new UsernamePWCredentials ("name2", "pw"));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (new UsernamePWCredentials ("name", "pw"),
-                                                                        new UsernamePWCredentials ("name", "pww"));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (new UsernamePWCredentials ("name", "pw"),
-                                                                        new UsernamePWCredentials ("name", null));
+    PHTestUtils.testDefaultImplementationWithEqualContentObject (new UsernamePWCredentials ("name", "pw"),
+                                                                 new UsernamePWCredentials ("name", "pw"));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (new UsernamePWCredentials ("name", "pw"),
+                                                                     new UsernamePWCredentials ("name2", "pw"));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (new UsernamePWCredentials ("name", "pw"),
+                                                                     new UsernamePWCredentials ("name", "pww"));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (new UsernamePWCredentials ("name", "pw"),
+                                                                     new UsernamePWCredentials ("name", null));
   }
 }

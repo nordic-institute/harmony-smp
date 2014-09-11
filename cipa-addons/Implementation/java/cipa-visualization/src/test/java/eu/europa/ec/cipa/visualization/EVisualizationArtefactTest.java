@@ -48,9 +48,9 @@ import java.util.Set;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.phloc.commons.GlobalDebug;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.io.IReadableResource;
+import com.helger.commons.GlobalDebug;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.io.IReadableResource;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 

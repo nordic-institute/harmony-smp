@@ -41,11 +41,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.validation.Schema;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.lang.EnumHelper;
-import com.phloc.ubl.EUBL20DocumentType;
-import com.phloc.ubl.EUBL21DocumentType;
-import com.phloc.ubl.IUBLDocumentType;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.lang.EnumHelper;
+import com.helger.ubl.EUBL20DocumentType;
+import com.helger.ubl.EUBL21DocumentType;
+import com.helger.ubl.IUBLDocumentType;
 
 /**
  * All predefined document types for which rules are contained.

@@ -46,8 +46,8 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 
-import com.phloc.commons.annotations.DevelopersNote;
-import com.phloc.scopes.mock.ScopeTestRule;
+import com.helger.commons.annotations.DevelopersNote;
+import com.helger.scopes.mock.ScopeTestRule;
 
 import eu.europa.ec.cipa.sml.server.IGenericDataHandler;
 import eu.europa.ec.cipa.sml.server.exceptions.NotFoundException;

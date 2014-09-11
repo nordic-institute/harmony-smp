@@ -39,7 +39,7 @@ package eu.europa.ec.cipa.transport.start.server;
 
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.phloc.commons.log.InMemoryLogger;
+import com.helger.commons.log.InMemoryLogger;
 
 /**
  * This class encapsulates the processing errors of an AccessPoint.

@@ -39,10 +39,10 @@ package eu.europa.ec.cipa.validation.generic;
 
 import javax.annotation.Nonnull;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.error.IResourceErrorGroup;
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.xml.transform.TransformSourceFactory;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.error.IResourceErrorGroup;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.xml.transform.TransformSourceFactory;
 
 /**
  * Abstract implementation of the {@link IXMLValidator}.

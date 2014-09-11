@@ -53,9 +53,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.charset.CCharset;
-import com.phloc.commons.io.streams.StreamUtils;
-import com.phloc.commons.random.VerySecureRandom;
+import com.helger.commons.charset.CCharset;
+import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.random.VerySecureRandom;
 
 import eu.europa.ec.cipa.peppol.security.DoNothingTrustManager;
 import eu.europa.ec.cipa.peppol.security.HostnameVerifierAlwaysTrue;

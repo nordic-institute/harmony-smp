@@ -45,11 +45,11 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.xml.validation.Schema;
 
-import com.phloc.commons.CGlobal;
-import com.phloc.commons.annotations.DevelopersNote;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.io.IReadableResource;
+import com.helger.commons.CGlobal;
+import com.helger.commons.annotations.DevelopersNote;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.io.IReadableResource;
 
 import eu.europa.ec.cipa.validation.generic.XMLSchemaValidator;
 import eu.europa.ec.cipa.validation.generic.XMLSchematronValidator;

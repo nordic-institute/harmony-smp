@@ -57,8 +57,8 @@ import org.xbill.DNS.ARecord;
 import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.Record;
 
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.io.streams.StreamUtils;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.io.streams.StreamUtils;
 
 /**
  * Utility servlet to list all DNS Records.

@@ -48,11 +48,11 @@ import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.collections.ArrayHelper;
-import com.phloc.commons.regex.RegExHelper;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.collections.ArrayHelper;
+import com.helger.commons.regex.RegExHelper;
+import com.helger.commons.string.StringHelper;
 
 /**
  * The AccessPointX509TrustManager is pointed to authenticate the remote side

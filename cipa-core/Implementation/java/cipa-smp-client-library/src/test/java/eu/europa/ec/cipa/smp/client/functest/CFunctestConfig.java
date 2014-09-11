@@ -47,10 +47,10 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 
-import com.phloc.commons.base64.Base64;
-import com.phloc.commons.exceptions.InitializationException;
-import com.phloc.commons.io.file.SimpleFileIO;
-import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
+import com.helger.commons.base64.Base64;
+import com.helger.commons.exceptions.InitializationException;
+import com.helger.commons.io.file.SimpleFileIO;
+import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;

@@ -48,11 +48,11 @@ import java.net.UnknownHostException;
 
 import org.junit.Test;
 
-import com.phloc.commons.mock.PhlocTestUtils;
+import com.helger.commons.mock.PHTestUtils;
 
 /**
  * Test class for class {@link MappedDNSHost}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class MappedDNSHostTest {
@@ -79,10 +79,10 @@ public final class MappedDNSHostTest {
     assertEquals ("myhost:27", aST.getHostString ());
     assertEquals ("myhost:27", aST.getHostString (22));
 
-    PhlocTestUtils.testDefaultImplementationWithEqualContentObject (aST, new MappedDNSHost ("myhost", 27));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aST, new MappedDNSHost ("myhost", 28));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aST, new MappedDNSHost ("myhost2", 27));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aST, new MappedDNSHost ("myhost"));
+    PHTestUtils.testDefaultImplementationWithEqualContentObject (aST, new MappedDNSHost ("myhost", 27));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (aST, new MappedDNSHost ("myhost", 28));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (aST, new MappedDNSHost ("myhost2", 27));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (aST, new MappedDNSHost ("myhost"));
   }
 
   @Test

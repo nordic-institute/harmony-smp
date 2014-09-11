@@ -49,19 +49,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import com.phloc.commons.CGlobal;
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.exceptions.LoggedException;
-import com.phloc.commons.io.file.FileOperations;
-import com.phloc.commons.io.file.FileUtils;
-import com.phloc.commons.io.file.FilenameHelper;
-import com.phloc.commons.io.file.filter.FilenameFilterEndsWith;
-import com.phloc.commons.state.ESuccess;
-import com.phloc.commons.string.StringHelper;
-import com.phloc.commons.xml.serialize.XMLReader;
-import com.phloc.commons.xml.serialize.XMLWriter;
-import com.phloc.commons.xml.serialize.XMLWriterSettings;
+import com.helger.commons.CGlobal;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.exceptions.LoggedException;
+import com.helger.commons.io.file.FileOperations;
+import com.helger.commons.io.file.FileUtils;
+import com.helger.commons.io.file.FilenameHelper;
+import com.helger.commons.io.file.filter.FilenameFilterEndsWith;
+import com.helger.commons.state.ESuccess;
+import com.helger.commons.string.StringHelper;
+import com.helger.commons.xml.serialize.DOMReader;
+import com.helger.commons.xml.serialize.XMLWriter;
+import com.helger.commons.xml.serialize.XMLWriterSettings;
 
 /**
  * @author Jose Gorvenia Narvaez(jose@alfa1lab.com)<br>
@@ -100,7 +100,7 @@ final class TransportChannel {
 
   /**
    * Set the path of the Store.
-   * 
+   *
    * @param sStorePath
    *        Path of the store.
    */
@@ -110,7 +110,7 @@ final class TransportChannel {
 
   /**
    * Save a Document.
-   * 
+   *
    * @param sChannelID
    *        ID for channel.
    * @param sMessageID
@@ -187,7 +187,7 @@ final class TransportChannel {
 
   /**
    * Delete a Document.
-   * 
+   *
    * @param sChannelID
    *        ChannelID directory.
    * @param sMessageID
@@ -222,7 +222,7 @@ final class TransportChannel {
 
   /**
    * Get MessagesID from a Channel.
-   * 
+   *
    * @param sChannelID
    *        ID of the Channel.
    * @return Array of MessagesID.
@@ -253,7 +253,7 @@ final class TransportChannel {
 
   /**
    * Get Metadata of a Document.
-   * 
+   *
    * @param sChannelID
    *        ID of the Channel.
    * @param sMessageID
@@ -266,14 +266,14 @@ final class TransportChannel {
   public final Document getDocumentMetadata (final String sChannelID, final String sMessageID) throws Exception {
     final File aChannelInboxDir = _getChannelInboxDir (sChannelID);
     final File aMetadataFile = _getMetadataFile (aChannelInboxDir, sMessageID);
-    return XMLReader.readXMLDOM (aMetadataFile);
+    return DOMReader.readXMLDOM (aMetadataFile);
   }
 
   @Nullable
   public final Document getDocument (final String sChannelID, final String sMessageID) throws Exception {
     final File aChannelInboxDir = _getChannelInboxDir (sChannelID);
     final File aPayloadFile = _getPayloadFile (aChannelInboxDir, sMessageID);
-    return XMLReader.readXMLDOM (aPayloadFile);
+    return DOMReader.readXMLDOM (aPayloadFile);
   }
 
   @Nonnegative

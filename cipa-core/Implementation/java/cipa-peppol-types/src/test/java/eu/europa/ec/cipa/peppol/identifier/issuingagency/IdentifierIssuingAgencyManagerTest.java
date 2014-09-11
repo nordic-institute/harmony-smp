@@ -45,7 +45,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.phloc.commons.state.ETriState;
+import com.helger.commons.state.ETriState;
 
 /**
  * Test class for class {@link IdentifierIssuingAgencyManager}.

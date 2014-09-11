@@ -52,7 +52,7 @@ import net.miginfocom.layout.AC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 
-import com.phloc.commons.random.VerySecureRandom;
+import com.helger.commons.random.VerySecureRandom;
 
 import eu.europa.ec.cipa.peppol.security.DoNothingTrustManager;
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;

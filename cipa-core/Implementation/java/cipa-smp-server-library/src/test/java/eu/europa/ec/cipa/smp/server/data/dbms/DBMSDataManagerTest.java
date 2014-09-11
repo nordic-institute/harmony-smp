@@ -61,9 +61,9 @@ import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 
-import com.phloc.commons.annotations.DevelopersNote;
-import com.phloc.scopes.mock.ScopeTestRule;
-import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
+import com.helger.commons.annotations.DevelopersNote;
+import com.helger.scopes.mock.ScopeTestRule;
+import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.NotFoundException;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;

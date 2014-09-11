@@ -46,7 +46,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.DatatypeConverter;
 
-import com.phloc.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.annotations.PresentForCodeCoverage;
 
 /**
  * This class is used for converting between XML time elements and Java Date

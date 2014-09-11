@@ -48,9 +48,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.error.IResourceError;
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.locale.country.CountryCache;
+import com.helger.commons.error.IResourceError;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.locale.country.CountryCache;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 import eu.europa.ec.cipa.test.ETestFileType;

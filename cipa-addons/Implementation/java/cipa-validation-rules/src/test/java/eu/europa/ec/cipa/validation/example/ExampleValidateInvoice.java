@@ -40,8 +40,8 @@ package eu.europa.ec.cipa.validation.example;
 import java.util.List;
 import java.util.Locale;
 
-import com.phloc.commons.error.IResourceError;
-import com.phloc.commons.io.resource.ClassPathResource;
+import com.helger.commons.error.IResourceError;
+import com.helger.commons.io.resource.ClassPathResource;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 import eu.europa.ec.cipa.validation.pyramid.ValidationPyramid2;

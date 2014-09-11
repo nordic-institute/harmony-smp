@@ -49,17 +49,17 @@ import javax.annotation.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.CGlobal;
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.collections.ArrayHelper;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.io.resource.ClassPathResource;
-import com.phloc.commons.lang.EnumHelper;
-import com.phloc.commons.locale.country.CountryCache;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.CGlobal;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.collections.ArrayHelper;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.lang.EnumHelper;
+import com.helger.commons.locale.country.CountryCache;
+import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 import eu.europa.ec.cipa.validation.generic.EXMLValidationType;

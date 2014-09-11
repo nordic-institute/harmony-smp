@@ -47,15 +47,16 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.SystemProperties;
+import com.helger.commons.SystemProperties;
 
 /**
  * Run this as an application and your SML will be up and running on port 8080
  * of your local machine. Please ensure that you have adopted the Hibernate
  * configuration file.<br>
- * To stop the running Jetty simply invoke the {@link JettyStopSMLStandlone} application
- * in this package. It performs a graceful shutdown of the App Server.
- * 
+ * To stop the running Jetty simply invoke the {@link JettyStopSMLStandlone}
+ * application in this package. It performs a graceful shutdown of the App
+ * Server.
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class RunInJettySMLStandalone {
@@ -79,7 +80,9 @@ public final class RunInJettySMLStandalone {
     aWebAppCtx.setDescriptor (RESOURCE_PREFIX + "/WEB-INF/web.xml");
     aWebAppCtx.setResourceBase (RESOURCE_PREFIX);
     aWebAppCtx.setContextPath ("/");
-    aWebAppCtx.setTempDirectory (new File (SystemProperties.getTmpDir () + '/' + RunInJettySMLStandalone.class.getName ()));
+    aWebAppCtx.setTempDirectory (new File (SystemProperties.getTmpDir () +
+                                           '/' +
+                                           RunInJettySMLStandalone.class.getName ()));
     aWebAppCtx.setParentLoaderPriority (true);
     aServer.setHandler (aWebAppCtx);
     final ServletContextHandler aCtx = aWebAppCtx;

@@ -40,7 +40,6 @@ package eu.europa.ec.cipa.sml.server.dns;
 import java.io.IOException;
 import java.util.List;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
@@ -54,141 +53,144 @@ import eu.europa.ec.cipa.sml.server.exceptions.IllegalIdentifierSchemeException;
  * Interface for DNSClient used by ServiceMetadataLocator to maintain Publisher
  * hosts in DNS. The interface contains both a Factory and a Dummy
  * implementation.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public interface ISMLDNSClient {
 
-	/**
-	 * Create an 'anchor'/CNAME for a Publisher which points to the host/server
-	 * running the MetadataPublisher. ParticipantIdentifier Registrations for
-	 * the Publisher will point to this 'anchor'
-	 * 
-	 * @param sSMPID
-	 *            unique id for Publisher
-	 * @param host
-	 *            hostname/server for publisher
-	 * @throws IOException
-	 * @throws IllegalHostnameException
-	 */
-	void createPublisherAnchor(String sSMPID, String host) throws IOException, IllegalHostnameException;
+  /**
+   * Create an 'anchor'/CNAME for a Publisher which points to the host/server
+   * running the MetadataPublisher. ParticipantIdentifier Registrations for the
+   * Publisher will point to this 'anchor'
+   * 
+   * @param sSMPID
+   *        unique id for Publisher
+   * @param host
+   *        hostname/server for publisher
+   * @throws IOException
+   * @throws IllegalHostnameException
+   */
+  void createPublisherAnchor (String sSMPID, String host) throws IOException, IllegalHostnameException;
 
-	/**
-	 * Delete the 'anchor'/CNAME for a Publisher which points to the host/server
-	 * running the MetadataPublisher.
-	 * 
-	 * @param sSMPID
-	 *            unique id for Publisher
-	 * @throws IOException
-	 * @throws IllegalHostnameException
-	 */
-	void deletePublisherAnchor(String sSMPID) throws IOException, IllegalHostnameException;
+  /**
+   * Delete the 'anchor'/CNAME for a Publisher which points to the host/server
+   * running the MetadataPublisher.
+   * 
+   * @param sSMPID
+   *        unique id for Publisher
+   * @throws IOException
+   * @throws IllegalHostnameException
+   */
+  void deletePublisherAnchor (String sSMPID) throws IOException, IllegalHostnameException;
 
-	/**
-	 * Creates a DNS entry/CNAME for a ParticipantIdentifier pointing to the
-	 * 'anchor'/CNAME for the Publisher.
-	 * 
-	 * @param pi
-	 *            ParticipantIdentifier
-	 * @param sSMPID
-	 *            unique id for Publisher
-	 * @throws IOException
-	 * @throws IllegalIdentifierSchemeException
-	 * @throws IllegalHostnameException
-	 */
-	void createIdentifier(ParticipantIdentifierType pi, String sSMPID) throws IOException, IllegalIdentifierSchemeException, IllegalHostnameException;
+  /**
+   * Creates a DNS entry/CNAME for a ParticipantIdentifier pointing to the
+   * 'anchor'/CNAME for the Publisher.
+   * 
+   * @param pi
+   *        ParticipantIdentifier
+   * @param sSMPID
+   *        unique id for Publisher
+   * @throws IOException
+   * @throws IllegalIdentifierSchemeException
+   * @throws IllegalHostnameException
+   */
+  void createIdentifier (ParticipantIdentifierType pi, String sSMPID) throws IOException,
+                                                                     IllegalIdentifierSchemeException,
+                                                                     IllegalHostnameException;
 
-	/**
-	 * Creates a list of : DNS entry/CNAME for a ParticipantIdentifier.
-	 * 
-	 * @param list
-	 *            List of {@link ParticipantIdentifierType}
-	 * @throws IOException
-	 * @throws IllegalIdentifierSchemeException
-	 * @throws IllegalHostnameException
-	 */
-	void createIdentifiers(List<ParticipantIdentifierType> list, String sSMPID) throws IOException, IllegalIdentifierSchemeException, IllegalHostnameException;
+  /**
+   * Creates a list of : DNS entry/CNAME for a ParticipantIdentifier.
+   * 
+   * @param list
+   *        List of {@link ParticipantIdentifierType}
+   * @throws IOException
+   * @throws IllegalIdentifierSchemeException
+   * @throws IllegalHostnameException
+   */
+  void createIdentifiers (List <ParticipantIdentifierType> list, String sSMPID) throws IOException,
+                                                                               IllegalIdentifierSchemeException,
+                                                                               IllegalHostnameException;
 
-	/**
-	 * Deletes a DNS entry/CNAME for a ParticipantIdentifier.
-	 * 
-	 * @param pi
-	 *            {@link ParticipantIdentifierType}
-	 * @throws IOException
-	 * @throws IllegalIdentifierSchemeException
-	 */
-	void deleteIdentifier(ParticipantIdentifierType pi) throws IOException, IllegalIdentifierSchemeException;
+  /**
+   * Deletes a DNS entry/CNAME for a ParticipantIdentifier.
+   * 
+   * @param pi
+   *        {@link ParticipantIdentifierType}
+   * @throws IOException
+   * @throws IllegalIdentifierSchemeException
+   */
+  void deleteIdentifier (ParticipantIdentifierType pi) throws IOException, IllegalIdentifierSchemeException;
 
-	/**
-	 * Deletes a list of : DNS entry/CNAME for a ParticipantIdentifier.
-	 * 
-	 * @param list
-	 *            list of {@link ParticipantIdentifierType}
-	 * @throws IOException
-	 * @throws IllegalIdentifierSchemeException
-	 */
-	void deleteIdentifiers(List<ParticipantIdentifierType> list) throws IOException, IllegalIdentifierSchemeException;
+  /**
+   * Deletes a list of : DNS entry/CNAME for a ParticipantIdentifier.
+   * 
+   * @param list
+   *        list of {@link ParticipantIdentifierType}
+   * @throws IOException
+   * @throws IllegalIdentifierSchemeException
+   */
+  void deleteIdentifiers (List <ParticipantIdentifierType> list) throws IOException, IllegalIdentifierSchemeException;
 
-	/**
-	 * Resolves a DNS Hostname.
-	 * 
-	 * @param dnsName
-	 *            name to resolve
-	 * @return host
-	 * @throws IOException
-	 */
+  /**
+   * Resolves a DNS Hostname.
+   * 
+   * @param dnsName
+   *        name to resolve
+   * @return host
+   * @throws IOException
+   */
 
-	/**
-	 * Find host/server registration for Publisher.
-	 * 
-	 * @param sSMPID
-	 * @return host
-	 * @throws IOException
-	 * @throws IllegalHostnameException
-	 */
-	@Nullable
-	String lookupPeppolPublisherById(String sSMPID) throws IOException, IllegalHostnameException;
+  /**
+   * Find host/server registration for Publisher.
+   * 
+   * @param sSMPID
+   * @return host
+   * @throws IOException
+   * @throws IllegalHostnameException
+   */
+  @Nullable
+  String lookupPeppolPublisherById (String sSMPID) throws IOException, IllegalHostnameException;
 
-	/**
-	 * Create ParticipantIdentifier from DNS Name.
-	 * 
-	 * @param name
-	 *            DNS Name
-	 * @return ParticipantIdentifier
-	 */
-	@Nullable
-	ParticipantIdentifierType getIdentifierFromDnsName(String name);
+  /**
+   * Create ParticipantIdentifier from DNS Name.
+   * 
+   * @param name
+   *        DNS Name
+   * @return ParticipantIdentifier
+   */
+  @Nullable
+  ParticipantIdentifierType getIdentifierFromDnsName (String name);
 
-	/**
-	 * Create DNS Name from ParticipantIdentifier
-	 * 
-	 * @param pi
-	 *            ParticipantIdentifier
-	 * @return DNS Name
-	 * @throws IllegalIdentifierSchemeException
-	 */
-	@Nullable
-	String getDNSNameOfParticipant(ParticipantIdentifierType pi) throws IllegalIdentifierSchemeException;
+  /**
+   * Create DNS Name from ParticipantIdentifier
+   * 
+   * @param pi
+   *        ParticipantIdentifier
+   * @return DNS Name
+   * @throws IllegalIdentifierSchemeException
+   */
+  @Nullable
+  String getDNSNameOfParticipant (ParticipantIdentifierType pi) throws IllegalIdentifierSchemeException;
 
-	/**
-	 * Extract Publisher Anchor from DNS Name.
-	 * 
-	 * @param name
-	 * @return Publisher Anchor
-	 */
-	@Nullable
-	String getPublisherAnchorFromDnsName(String name);
+  /**
+   * Extract Publisher Anchor from DNS Name.
+   * 
+   * @param name
+   * @return Publisher Anchor
+   */
+  @Nullable
+  String getPublisherAnchorFromDnsName (String name);
 
-	String getServer();
+  String getServer ();
 
-	String getDNSZoneName();
+  String getDNSZoneName ();
 
-	List<Record> getAllRecords() throws IOException, ZoneTransferException;
+  List <Record> getAllRecords () throws IOException, ZoneTransferException;
 
-	boolean isHandledZone(String sRecordName);
+  boolean isHandledZone (String sRecordName);
 
-	String lookupDNSRecord(String sParticipantDNSName) throws IOException;
+  String lookupDNSRecord (String sParticipantDNSName) throws IOException;
 
-	String getSMLZoneName();
-
+  String getSMLZoneName ();
 }

@@ -41,7 +41,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 
-import com.phloc.commons.annotations.Nonempty;
+import com.helger.commons.annotations.Nonempty;
 
 import eu.europa.ec.cipa.busdox.identifier.IBusdoxDocumentTypeIdentifierParts;
 

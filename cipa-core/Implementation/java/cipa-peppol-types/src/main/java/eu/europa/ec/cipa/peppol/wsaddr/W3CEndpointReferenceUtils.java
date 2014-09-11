@@ -50,12 +50,12 @@ import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.xml.ChildElementIterator;
-import com.phloc.commons.xml.XMLFactory;
-import com.phloc.commons.xml.XMLHelper;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.xml.ChildElementIterator;
+import com.helger.commons.xml.XMLFactory;
+import com.helger.commons.xml.XMLHelper;
 
 /**
  * As the default WS-Addressing binding since JAXB 2.1 uses the

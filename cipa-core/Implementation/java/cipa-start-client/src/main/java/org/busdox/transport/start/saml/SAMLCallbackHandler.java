@@ -75,12 +75,12 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.phloc.commons.CGlobal;
-import com.phloc.commons.annotations.DevelopersNote;
-import com.phloc.commons.annotations.UsedViaReflection;
-import com.phloc.commons.base64.Base64;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.random.VerySecureRandom;
+import com.helger.commons.CGlobal;
+import com.helger.commons.annotations.DevelopersNote;
+import com.helger.commons.annotations.UsedViaReflection;
+import com.helger.commons.base64.Base64;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.random.VerySecureRandom;
 import com.sun.xml.wss.impl.callback.SAMLCallback;
 import com.sun.xml.wss.impl.dsig.WSSPolicyConsumerImpl;
 import com.sun.xml.wss.saml.Assertion;

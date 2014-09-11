@@ -41,13 +41,11 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.phloc.commons.mock.PhlocTestUtils;
-
-import eu.europa.ec.cipa.transport.lime.username.ReadonlyUsernamePWCredentials;
+import com.helger.commons.mock.PHTestUtils;
 
 /**
  * Test class for class {@link ReadonlyUsernamePWCredentials}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class ReadonlyUsernamePWCredentialsTest {
@@ -57,15 +55,13 @@ public final class ReadonlyUsernamePWCredentialsTest {
     assertEquals ("name", uc.getUsername ());
     assertEquals ("pw", uc.getPassword ());
 
-    PhlocTestUtils.testDefaultImplementationWithEqualContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
-                                                                    new ReadonlyUsernamePWCredentials ("name", "pw"));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
-                                                                        new ReadonlyUsernamePWCredentials ("name2",
-                                                                                                           "pw"));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
-                                                                        new ReadonlyUsernamePWCredentials ("name",
-                                                                                                           "pww"));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
-                                                                        new ReadonlyUsernamePWCredentials ("name", null));
+    PHTestUtils.testDefaultImplementationWithEqualContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
+                                                                 new ReadonlyUsernamePWCredentials ("name", "pw"));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
+                                                                     new ReadonlyUsernamePWCredentials ("name2", "pw"));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
+                                                                     new ReadonlyUsernamePWCredentials ("name", "pww"));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (new ReadonlyUsernamePWCredentials ("name", "pw"),
+                                                                     new ReadonlyUsernamePWCredentials ("name", null));
   }
 }

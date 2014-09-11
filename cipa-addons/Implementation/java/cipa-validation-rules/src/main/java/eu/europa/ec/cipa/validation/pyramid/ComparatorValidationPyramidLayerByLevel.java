@@ -42,9 +42,9 @@ import java.util.Comparator;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.compare.AbstractComparator;
-import com.phloc.commons.compare.CompareUtils;
-import com.phloc.commons.compare.ESortOrder;
+import com.helger.commons.compare.AbstractComparator;
+import com.helger.commons.compare.CompareUtils;
+import com.helger.commons.compare.ESortOrder;
 
 /**
  * Sort {@link ValidationPyramidLayer} objects by their respective validation

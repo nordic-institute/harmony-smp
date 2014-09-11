@@ -41,7 +41,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.phloc.commons.mock.PhlocTestUtils;
+import com.helger.commons.mock.PHTestUtils;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
@@ -49,7 +49,7 @@ import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
 
 /**
  * Test class for class {@link MessageMetadata}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class MessageMetadataTest {
@@ -68,54 +68,54 @@ public final class MessageMetadataTest {
     assertEquals ("doc", m.getDocumentTypeID ().getValue ());
     assertEquals ("proc", m.getProcessID ().getValue ());
 
-    PhlocTestUtils.testDefaultImplementationWithEqualContentObject (m,
-                                                                    new MessageMetadata ("msgid",
-                                                                                         "chid",
-                                                                                         SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
-                                                                                         SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
-                                                                                         SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
-                                                                                         SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (m,
-                                                                        new MessageMetadata ("msgid2",
-                                                                                             "chid",
-                                                                                             SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
-                                                                                             SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
-                                                                                             SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
-                                                                                             SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (m,
-                                                                        new MessageMetadata ("msgid",
-                                                                                             "chid2",
-                                                                                             SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
-                                                                                             SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
-                                                                                             SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
-                                                                                             SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (m,
-                                                                        new MessageMetadata ("msgid",
-                                                                                             "chid",
-                                                                                             SimpleParticipantIdentifier.createWithDefaultScheme ("sender2"),
-                                                                                             SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
-                                                                                             SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
-                                                                                             SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (m,
-                                                                        new MessageMetadata ("msgid",
-                                                                                             "chid",
-                                                                                             SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
-                                                                                             SimpleParticipantIdentifier.createWithDefaultScheme ("receiver2"),
-                                                                                             SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
-                                                                                             SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (m,
-                                                                        new MessageMetadata ("msgid",
-                                                                                             "chid",
-                                                                                             SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
-                                                                                             SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
-                                                                                             SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc2"),
-                                                                                             SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (m,
-                                                                        new MessageMetadata ("msgid",
-                                                                                             "chid",
-                                                                                             SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
-                                                                                             SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
-                                                                                             SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
-                                                                                             SimpleProcessIdentifier.createWithDefaultScheme ("proc2")));
+    PHTestUtils.testDefaultImplementationWithEqualContentObject (m,
+                                                                 new MessageMetadata ("msgid",
+                                                                                      "chid",
+                                                                                      SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
+                                                                                      SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
+                                                                                      SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
+                                                                                      SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (m,
+                                                                     new MessageMetadata ("msgid2",
+                                                                                          "chid",
+                                                                                          SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
+                                                                                          SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
+                                                                                          SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
+                                                                                          SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (m,
+                                                                     new MessageMetadata ("msgid",
+                                                                                          "chid2",
+                                                                                          SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
+                                                                                          SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
+                                                                                          SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
+                                                                                          SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (m,
+                                                                     new MessageMetadata ("msgid",
+                                                                                          "chid",
+                                                                                          SimpleParticipantIdentifier.createWithDefaultScheme ("sender2"),
+                                                                                          SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
+                                                                                          SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
+                                                                                          SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (m,
+                                                                     new MessageMetadata ("msgid",
+                                                                                          "chid",
+                                                                                          SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
+                                                                                          SimpleParticipantIdentifier.createWithDefaultScheme ("receiver2"),
+                                                                                          SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
+                                                                                          SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (m,
+                                                                     new MessageMetadata ("msgid",
+                                                                                          "chid",
+                                                                                          SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
+                                                                                          SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
+                                                                                          SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc2"),
+                                                                                          SimpleProcessIdentifier.createWithDefaultScheme ("proc")));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (m,
+                                                                     new MessageMetadata ("msgid",
+                                                                                          "chid",
+                                                                                          SimpleParticipantIdentifier.createWithDefaultScheme ("sender"),
+                                                                                          SimpleParticipantIdentifier.createWithDefaultScheme ("receiver"),
+                                                                                          SimpleDocumentTypeIdentifier.createWithDefaultScheme ("doc"),
+                                                                                          SimpleProcessIdentifier.createWithDefaultScheme ("proc2")));
   }
 }

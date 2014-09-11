@@ -44,9 +44,9 @@ import javax.annotation.Nonnull;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
 
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.annotations.UsedViaReflection;
-import com.phloc.db.jpa.AbstractGlobalEntityManagerFactory;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.annotations.UsedViaReflection;
+import com.helger.db.jpa.AbstractGlobalEntityManagerFactory;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 

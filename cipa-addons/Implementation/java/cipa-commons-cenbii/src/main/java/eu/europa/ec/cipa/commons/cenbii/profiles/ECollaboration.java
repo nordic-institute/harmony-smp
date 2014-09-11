@@ -43,15 +43,15 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.GlobalDebug;
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.ReturnsImmutableObject;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.id.IHasID;
-import com.phloc.commons.lang.EnumHelper;
-import com.phloc.commons.name.IHasName;
+import com.helger.commons.GlobalDebug;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.ReturnsImmutableObject;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.id.IHasID;
+import com.helger.commons.lang.EnumHelper;
+import com.helger.commons.name.IHasName;
 
 /**
  * Defines a single CEN BII collaboration, that is used in 1-n profiles (

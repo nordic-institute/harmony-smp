@@ -45,9 +45,9 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.lang.ServiceLoaderUtils;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.lang.ServiceLoaderUtils;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.IPeppolParticipantIdentifier;

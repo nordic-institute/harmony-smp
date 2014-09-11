@@ -57,7 +57,7 @@ import javax.persistence.Transient;
 
 import org.busdox.servicemetadata.publishing._1.ExtensionType;
 
-import com.phloc.commons.annotations.UsedViaReflection;
+import com.helger.commons.annotations.UsedViaReflection;
 
 import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
 

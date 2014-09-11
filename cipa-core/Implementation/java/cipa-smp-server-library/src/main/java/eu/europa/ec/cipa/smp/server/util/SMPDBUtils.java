@@ -42,8 +42,8 @@ import javax.annotation.concurrent.Immutable;
 
 import org.busdox.servicemetadata.publishing._1.ExtensionType;
 
-import com.phloc.commons.annotations.VisibleForTesting;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.annotations.VisibleForTesting;
+import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
 

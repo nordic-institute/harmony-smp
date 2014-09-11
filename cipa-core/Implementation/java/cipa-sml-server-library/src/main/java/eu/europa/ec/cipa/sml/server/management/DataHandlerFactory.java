@@ -43,9 +43,9 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.lang.GenericReflection;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.lang.GenericReflection;
+import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 import eu.europa.ec.cipa.sml.server.IGenericDataHandler;

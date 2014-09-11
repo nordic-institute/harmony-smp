@@ -39,9 +39,9 @@ package eu.europa.ec.cipa.test;
 
 import javax.annotation.Nonnull;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.io.resource.ClassPathResource;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.io.resource.ClassPathResource;
 
 public enum ETestFileType {
   CALLFORTENDERS ("test-callfortenders"),

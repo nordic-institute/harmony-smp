@@ -40,9 +40,9 @@ package eu.europa.ec.cipa.sml.client.support;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.name.IHasName;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.name.IHasName;
+import com.helger.commons.string.StringHelper;
 
 /**
  * Enum with all object types.

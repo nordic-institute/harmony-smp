@@ -71,16 +71,15 @@ import javax.xml.transform.stream.StreamResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.phloc.commons.io.streams.NonBlockingByteArrayInputStream;
-import com.phloc.commons.io.streams.NonBlockingByteArrayOutputStream;
-import com.phloc.commons.io.streams.StreamUtils;
-import com.phloc.commons.xml.EXMLIncorrectCharacterHandling;
-import com.phloc.commons.xml.serialize.EXMLSerializeIndent;
-import com.phloc.commons.xml.serialize.IXMLWriterSettings;
-import com.phloc.commons.xml.serialize.XMLReader;
-import com.phloc.commons.xml.serialize.XMLWriter;
-import com.phloc.commons.xml.serialize.XMLWriterSettings;
-import com.phloc.commons.xml.transform.XMLTransformerFactory;
+import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
+import com.helger.commons.io.streams.StreamUtils;
+import com.helger.commons.xml.EXMLIncorrectCharacterHandling;
+import com.helger.commons.xml.serialize.DOMReader;
+import com.helger.commons.xml.serialize.EXMLSerializeIndent;
+import com.helger.commons.xml.serialize.IXMLWriterSettings;
+import com.helger.commons.xml.serialize.XMLWriter;
+import com.helger.commons.xml.serialize.XMLWriterSettings;
+import com.helger.commons.xml.transform.XMLTransformerFactory;
 import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.ContainerResponseWriter;
 
@@ -160,7 +159,7 @@ final class SigningContainerResponseWriter implements ContainerResponseWriter {
     // Parse current response to XML
     Document aDoc;
     try {
-      aDoc = XMLReader.readXMLDOM (new NonBlockingByteArrayInputStream (aContent));
+      aDoc = DOMReader.readXMLDOM (aContent);
     }
     catch (final Exception e) {
       throw new RuntimeException ("Error in parsing xml", e);

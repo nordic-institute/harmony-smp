@@ -43,7 +43,7 @@ import javax.net.ssl.SSLSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.GlobalDebug;
+import com.helger.commons.GlobalDebug;
 
 /**
  * Implementation of HostnameVerifier always returning <code>true</code>.

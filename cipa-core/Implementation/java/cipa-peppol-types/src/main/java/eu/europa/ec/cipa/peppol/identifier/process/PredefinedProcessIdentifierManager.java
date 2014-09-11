@@ -46,10 +46,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.collections.ContainerHelper;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.collections.ContainerHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 

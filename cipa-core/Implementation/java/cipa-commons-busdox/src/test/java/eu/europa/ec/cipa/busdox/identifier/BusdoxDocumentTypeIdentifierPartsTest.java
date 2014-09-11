@@ -43,11 +43,11 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import com.phloc.commons.mock.PhlocTestUtils;
+import com.helger.commons.mock.PHTestUtils;
 
 /**
  * Test class for class {@link BusdoxDocumentTypeIdentifierParts}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class BusdoxDocumentTypeIdentifierPartsTest {
@@ -70,22 +70,22 @@ public final class BusdoxDocumentTypeIdentifierPartsTest {
     assertEquals ("root::local", aParts.getAsDocumentTypeIdentifierValue ());
 
     // Test equals/hashCode/toString
-    PhlocTestUtils.testDefaultImplementationWithEqualContentObject (aParts,
-                                                                    new BusdoxDocumentTypeIdentifierParts ("root",
-                                                                                                           "local",
-                                                                                                           null));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aParts,
-                                                                        new BusdoxDocumentTypeIdentifierParts ("root2",
-                                                                                                               "local",
-                                                                                                               null));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aParts,
-                                                                        new BusdoxDocumentTypeIdentifierParts ("root",
-                                                                                                               "local2",
-                                                                                                               null));
-    PhlocTestUtils.testDefaultImplementationWithDifferentContentObject (aParts,
-                                                                        new BusdoxDocumentTypeIdentifierParts ("root",
-                                                                                                               "local",
-                                                                                                               "subtype"));
+    PHTestUtils.testDefaultImplementationWithEqualContentObject (aParts,
+                                                                 new BusdoxDocumentTypeIdentifierParts ("root",
+                                                                                                        "local",
+                                                                                                        null));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (aParts,
+                                                                     new BusdoxDocumentTypeIdentifierParts ("root2",
+                                                                                                            "local",
+                                                                                                            null));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (aParts,
+                                                                     new BusdoxDocumentTypeIdentifierParts ("root",
+                                                                                                            "local2",
+                                                                                                            null));
+    PHTestUtils.testDefaultImplementationWithDifferentContentObject (aParts,
+                                                                     new BusdoxDocumentTypeIdentifierParts ("root",
+                                                                                                            "local",
+                                                                                                            "subtype"));
   }
 
   @Test

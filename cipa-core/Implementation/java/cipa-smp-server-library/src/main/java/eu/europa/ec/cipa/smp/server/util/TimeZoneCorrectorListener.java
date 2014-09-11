@@ -47,8 +47,8 @@ import javax.servlet.ServletContextListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.collections.ArrayHelper;
-import com.phloc.commons.exceptions.InitializationException;
+import com.helger.commons.collections.ArrayHelper;
+import com.helger.commons.exceptions.InitializationException;
 
 /**
  * This class is used for setting the timezone so that dates saved to the

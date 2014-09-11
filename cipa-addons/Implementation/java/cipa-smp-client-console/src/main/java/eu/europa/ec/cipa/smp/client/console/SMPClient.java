@@ -66,14 +66,14 @@ import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.charset.CCharset;
-import com.phloc.commons.io.file.SimpleFileIO;
-import com.phloc.commons.io.streams.NonBlockingStringWriter;
-import com.phloc.commons.lang.CGStringHelper;
-import com.phloc.commons.random.VerySecureRandom;
-import com.phloc.commons.string.StringHelper;
-import com.phloc.web.http.basicauth.BasicAuthClientCredentials;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.charset.CCharset;
+import com.helger.commons.io.file.SimpleFileIO;
+import com.helger.commons.io.streams.NonBlockingStringWriter;
+import com.helger.commons.lang.CGStringHelper;
+import com.helger.commons.random.VerySecureRandom;
+import com.helger.commons.string.StringHelper;
+import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;

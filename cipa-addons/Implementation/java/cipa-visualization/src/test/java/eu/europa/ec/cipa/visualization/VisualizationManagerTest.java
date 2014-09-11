@@ -44,8 +44,8 @@ import java.io.File;
 import org.junit.Test;
 import org.w3c.dom.Document;
 
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.io.file.FilenameHelper;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.io.file.FilenameHelper;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 import eu.europa.ec.cipa.test.ETestFileType;

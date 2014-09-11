@@ -42,7 +42,7 @@ import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.html.hc.html.HCSelect;
+import com.helger.html.hc.html.HCSelect;
 
 import eu.europa.ec.cipa.validation.rules.EValidationArtefact;
 

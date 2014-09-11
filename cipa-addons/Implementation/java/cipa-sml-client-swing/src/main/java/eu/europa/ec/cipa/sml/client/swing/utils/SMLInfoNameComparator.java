@@ -37,7 +37,7 @@
  */
 package eu.europa.ec.cipa.sml.client.swing.utils;
 
-import com.phloc.commons.compare.AbstractComparator;
+import com.helger.commons.compare.AbstractComparator;
 
 import eu.europa.ec.cipa.peppol.sml.ESML;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;

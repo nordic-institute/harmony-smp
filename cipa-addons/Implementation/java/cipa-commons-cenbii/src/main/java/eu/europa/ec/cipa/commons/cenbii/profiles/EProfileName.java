@@ -42,10 +42,10 @@ import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.annotations.Translatable;
-import com.phloc.commons.name.IHasDisplayText;
-import com.phloc.commons.text.impl.TextProvider;
-import com.phloc.commons.text.resolve.DefaultTextResolver;
+import com.helger.commons.annotations.Translatable;
+import com.helger.commons.name.IHasDisplayText;
+import com.helger.commons.text.impl.TextProvider;
+import com.helger.commons.text.resolve.DefaultTextResolver;
 
 /**
  * Contains the names of the BII profiles for later translation.

@@ -45,12 +45,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.NotThreadSafe;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.error.IResourceErrorGroup;
-import com.phloc.commons.error.ResourceErrorGroup;
-import com.phloc.commons.string.ToStringGenerator;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.error.IResourceErrorGroup;
+import com.helger.commons.error.ResourceErrorGroup;
+import com.helger.commons.string.ToStringGenerator;
 
 import eu.europa.ec.cipa.validation.rules.IValidationDocumentType;
 import eu.europa.ec.cipa.validation.rules.IValidationLevel;

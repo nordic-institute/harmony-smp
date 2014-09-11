@@ -42,17 +42,17 @@ import javax.annotation.Nullable;
 import javax.xml.transform.Source;
 import javax.xml.validation.Schema;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.error.EErrorLevel;
-import com.phloc.commons.error.IResourceErrorGroup;
-import com.phloc.commons.error.ResourceError;
-import com.phloc.commons.error.ResourceErrorGroup;
-import com.phloc.commons.error.ResourceLocation;
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.string.ToStringGenerator;
-import com.phloc.commons.xml.schema.XMLSchemaCache;
-import com.phloc.commons.xml.schema.XMLSchemaValidationHelper;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.error.EErrorLevel;
+import com.helger.commons.error.IResourceErrorGroup;
+import com.helger.commons.error.ResourceError;
+import com.helger.commons.error.ResourceErrorGroup;
+import com.helger.commons.error.ResourceLocation;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.string.ToStringGenerator;
+import com.helger.commons.xml.schema.XMLSchemaCache;
+import com.helger.commons.xml.schema.XMLSchemaValidationHelper;
 
 /**
  * Implementation of the {@link IXMLValidator} for XML Schema.

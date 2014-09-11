@@ -47,7 +47,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import com.phloc.commons.exceptions.InitializationException;
+import com.helger.commons.exceptions.InitializationException;
 
 /**
  * REST Web Service for redirection

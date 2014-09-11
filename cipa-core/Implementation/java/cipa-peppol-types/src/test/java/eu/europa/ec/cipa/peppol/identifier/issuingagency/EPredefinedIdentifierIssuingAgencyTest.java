@@ -43,7 +43,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.string.StringHelper;
 
 /**
  * Test class for class {@link EPredefinedIdentifierIssuingAgency}.

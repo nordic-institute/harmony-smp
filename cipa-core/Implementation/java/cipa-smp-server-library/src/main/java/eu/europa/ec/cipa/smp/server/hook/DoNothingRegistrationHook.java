@@ -39,7 +39,7 @@ package eu.europa.ec.cipa.smp.server.hook;
 
 import javax.annotation.concurrent.Immutable;
 
-import com.phloc.commons.state.ESuccess;
+import com.helger.commons.state.ESuccess;
 
 import eu.europa.ec.cipa.busdox.identifier.IParticipantIdentifier;
 

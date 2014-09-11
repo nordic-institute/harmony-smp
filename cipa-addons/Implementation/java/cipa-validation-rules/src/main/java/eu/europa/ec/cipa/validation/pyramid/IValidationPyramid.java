@@ -45,8 +45,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.transform.Source;
 
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.io.IReadableResource;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.io.IReadableResource;
 
 import eu.europa.ec.cipa.validation.rules.IValidationDocumentType;
 import eu.europa.ec.cipa.validation.rules.IValidationTransaction;

@@ -45,8 +45,8 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.state.EValidity;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.state.EValidity;
+import com.helger.commons.string.StringHelper;
 import com.sun.xml.wss.impl.callback.CertificateValidationCallback.CertificateValidator;
 
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;

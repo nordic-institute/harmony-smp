@@ -43,7 +43,7 @@ import javax.xml.bind.JAXBException;
 
 import org.junit.Test;
 
-import com.phloc.commons.mock.PhlocTestUtils;
+import com.helger.commons.mock.PHTestUtils;
 import com.sun.xml.ws.api.SOAPVersion;
 import com.sun.xml.ws.api.message.Header;
 import com.sun.xml.ws.api.message.HeaderList;
@@ -54,7 +54,7 @@ import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
 
 /**
  * Test class for class {@link MessageMetadataHelper}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class MessageMetadataHelperTest {
@@ -64,7 +64,7 @@ public final class MessageMetadataHelperTest {
     aHL.addAll (aHeaders);
 
     final IMessageMetadata m2 = MessageMetadataHelper.createMetadataFromHeaders (aHL);
-    PhlocTestUtils.testDefaultImplementationWithEqualContentObject (m, m2);
+    PHTestUtils.testDefaultImplementationWithEqualContentObject (m, m2);
   }
 
   @Test

@@ -45,18 +45,18 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import com.phloc.commons.CGlobal;
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.io.resource.ClassPathResource;
-import com.phloc.commons.locale.LocaleCache;
-import com.phloc.commons.microdom.IMicroDocument;
-import com.phloc.commons.microdom.IMicroElement;
-import com.phloc.commons.microdom.serialize.MicroReader;
-import com.phloc.commons.regex.RegExHelper;
+import com.helger.commons.CGlobal;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.locale.LocaleCache;
+import com.helger.commons.microdom.IMicroDocument;
+import com.helger.commons.microdom.IMicroElement;
+import com.helger.commons.microdom.serialize.MicroReader;
+import com.helger.commons.regex.RegExHelper;
 
 /**
  * Represents the content of the index.xml file for a single visualization

@@ -50,14 +50,14 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import com.phloc.commons.CGlobal;
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.io.file.FileOperations;
-import com.phloc.commons.io.file.FileUtils;
-import com.phloc.commons.io.file.filter.FilenameFilterEndsWith;
-import com.phloc.commons.string.StringHelper;
-import com.phloc.commons.xml.serialize.XMLReader;
-import com.phloc.commons.xml.serialize.XMLWriter;
+import com.helger.commons.CGlobal;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.io.file.FileOperations;
+import com.helger.commons.io.file.FileUtils;
+import com.helger.commons.io.file.filter.FilenameFilterEndsWith;
+import com.helger.commons.string.StringHelper;
+import com.helger.commons.xml.serialize.DOMReader;
+import com.helger.commons.xml.serialize.XMLWriter;
 
 /**
  * @author Ravnholt<br>
@@ -163,14 +163,14 @@ public final class LimeStorage {
   public Document getDocumentMetadata (@Nonnull final String sChannelID, @Nonnull final String sMessageID) throws SAXException {
     final File aChannelInboxDir = _getChannelInboxDir (sChannelID);
     final File aMetadataFile = _getMetadataFile (aChannelInboxDir, sMessageID);
-    return XMLReader.readXMLDOM (FileUtils.getInputStream (aMetadataFile));
+    return DOMReader.readXMLDOM (FileUtils.getInputStream (aMetadataFile));
   }
 
   @Nullable
   public Document getDocument (@Nonnull final String sChannelID, final String sMessageID) throws SAXException {
     final File aChannelInboxDir = _getChannelInboxDir (sChannelID);
     final File aPayloadFile = _getPayloadFile (aChannelInboxDir, sMessageID);
-    return XMLReader.readXMLDOM (FileUtils.getInputStream (aPayloadFile));
+    return DOMReader.readXMLDOM (FileUtils.getInputStream (aPayloadFile));
   }
 
   public long getSize (@Nonnull final String sChannelID, final String sMessageID) {

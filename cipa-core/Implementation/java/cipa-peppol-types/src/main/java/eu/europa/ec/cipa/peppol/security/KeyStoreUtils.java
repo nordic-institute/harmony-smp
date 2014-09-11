@@ -51,11 +51,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.PresentForCodeCoverage;
-import com.phloc.commons.io.resource.ClassPathResource;
-import com.phloc.commons.io.resource.FileSystemResource;
-import com.phloc.commons.io.streams.StreamUtils;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.PresentForCodeCoverage;
+import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.commons.io.streams.StreamUtils;
 
 /**
  * Helper methods to access Java key stores of type JKS (Java KeyStore).

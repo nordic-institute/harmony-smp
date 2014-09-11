@@ -47,8 +47,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.string.StringHelper;
 
 /**
  * Test class for class {@link EValidationLevel}.

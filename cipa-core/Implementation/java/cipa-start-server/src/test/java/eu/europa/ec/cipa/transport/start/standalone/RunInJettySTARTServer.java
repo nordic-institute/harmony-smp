@@ -36,7 +36,7 @@
  * under either the MPL or the EUPL License.
  */
 /**
-o * Version: MPL 1.1/EUPL 1.1
+ o * Version: MPL 1.1/EUPL 1.1
  *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
@@ -84,8 +84,8 @@ import org.eclipse.jetty.webapp.WebAppContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.GlobalDebug;
-import com.phloc.commons.SystemProperties;
+import com.helger.commons.GlobalDebug;
+import com.helger.commons.SystemProperties;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 
@@ -96,7 +96,7 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
  * To stop the running Jetty simply invoke the {@link JettyStopSTARTServer}
  * application in this package. It performs a graceful shutdown of the App
  * Server.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class RunInJettySTARTServer {

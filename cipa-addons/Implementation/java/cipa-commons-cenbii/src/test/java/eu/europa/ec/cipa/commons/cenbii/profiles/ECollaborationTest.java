@@ -48,8 +48,8 @@ import java.util.List;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.phloc.commons.GlobalDebug;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.GlobalDebug;
+import com.helger.commons.string.StringHelper;
 
 /**
  * Test class for class {@link ECollaboration}.

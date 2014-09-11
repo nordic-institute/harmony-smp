@@ -39,8 +39,8 @@ package eu.europa.ec.cipa.peppol.identifier.validator;
 
 import javax.annotation.Nonnull;
 
-import com.phloc.commons.annotations.IsSPIInterface;
-import com.phloc.commons.annotations.Nonempty;
+import com.helger.commons.annotations.IsSPIInterface;
+import com.helger.commons.annotations.Nonempty;
 
 /**
  * An SPI interface to validate arbitrary identifier values (independent of the

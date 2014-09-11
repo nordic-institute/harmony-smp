@@ -49,7 +49,7 @@ import net.miginfocom.layout.AC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 
-import com.phloc.commons.collections.ContainerHelper;
+import com.helger.commons.collections.ContainerHelper;
 
 import eu.europa.ec.cipa.peppol.sml.ESML;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;

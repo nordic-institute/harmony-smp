@@ -40,8 +40,8 @@ package eu.europa.ec.cipa.validation.utils.createrules.sch;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 
-import com.phloc.commons.ValueEnforcer;
-import com.phloc.commons.annotations.Nonempty;
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
 
 import eu.europa.ec.cipa.validation.utils.createrules.utils.Utils;
 

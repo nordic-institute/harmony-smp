@@ -50,10 +50,9 @@ import javax.xml.ws.BindingProvider;
 
 import org.w3._2009._02.ws_tra.Resource;
 
-
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.random.VerySecureRandom;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.random.VerySecureRandom;
+import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.transport.cert.AccessPointX509TrustManager;
 import eu.europa.ec.cipa.transport.lime.username.IReadonlyUsernamePWCredentials;

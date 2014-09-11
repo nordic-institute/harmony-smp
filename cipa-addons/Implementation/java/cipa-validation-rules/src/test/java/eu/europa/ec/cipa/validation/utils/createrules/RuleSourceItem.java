@@ -45,10 +45,10 @@ import java.util.Locale;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-import com.phloc.commons.annotations.Nonempty;
-import com.phloc.commons.annotations.ReturnsMutableCopy;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.id.IHasID;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.ReturnsMutableCopy;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.id.IHasID;
 
 import eu.europa.ec.cipa.validation.utils.createrules.codelist.RuleSourceCodeList;
 import eu.europa.ec.cipa.validation.utils.createrules.sch.RuleSourceBusinessRule;

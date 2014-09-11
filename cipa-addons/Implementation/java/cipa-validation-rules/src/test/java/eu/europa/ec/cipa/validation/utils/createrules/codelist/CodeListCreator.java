@@ -56,39 +56,39 @@ import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;
 import org.w3c.dom.Document;
 
-import com.phloc.commons.collections.multimap.IMultiMapSetBased;
-import com.phloc.commons.collections.multimap.MultiTreeMapTreeSetBased;
-import com.phloc.commons.io.file.FilenameHelper;
-import com.phloc.commons.io.file.SimpleFileIO;
-import com.phloc.commons.microdom.IMicroDocument;
-import com.phloc.commons.microdom.IMicroElement;
-import com.phloc.commons.microdom.impl.MicroDocument;
-import com.phloc.commons.microdom.serialize.MicroWriter;
-import com.phloc.commons.string.StringHelper;
-import com.phloc.commons.xml.XMLFactory;
-import com.phloc.commons.xml.serialize.XMLWriter;
-import com.phloc.commons.xml.serialize.XMLWriterSettings;
-import com.phloc.commons.xml.transform.DefaultTransformURIResolver;
-import com.phloc.commons.xml.transform.TransformSourceFactory;
-import com.phloc.commons.xml.transform.XMLTransformerFactory;
-import com.phloc.cva.CVA10Marshaller;
-import com.phloc.cva.v10.Context;
-import com.phloc.cva.v10.ContextValueAssociation;
-import com.phloc.cva.v10.Contexts;
-import com.phloc.cva.v10.Message;
-import com.phloc.cva.v10.ValueList;
-import com.phloc.cva.v10.ValueLists;
-import com.phloc.genericode.Genericode10CodeListMarshaller;
-import com.phloc.genericode.Genericode10Utils;
-import com.phloc.genericode.v10.CodeListDocument;
-import com.phloc.genericode.v10.Column;
-import com.phloc.genericode.v10.ColumnSet;
-import com.phloc.genericode.v10.Identification;
-import com.phloc.genericode.v10.Row;
-import com.phloc.genericode.v10.SimpleCodeList;
-import com.phloc.genericode.v10.UseType;
-import com.phloc.genericode.v10.Value;
-import com.phloc.schematron.CSchematron;
+import com.helger.commons.collections.multimap.IMultiMapSetBased;
+import com.helger.commons.collections.multimap.MultiTreeMapTreeSetBased;
+import com.helger.commons.io.file.FilenameHelper;
+import com.helger.commons.io.file.SimpleFileIO;
+import com.helger.commons.microdom.IMicroDocument;
+import com.helger.commons.microdom.IMicroElement;
+import com.helger.commons.microdom.impl.MicroDocument;
+import com.helger.commons.microdom.serialize.MicroWriter;
+import com.helger.commons.string.StringHelper;
+import com.helger.commons.xml.XMLFactory;
+import com.helger.commons.xml.serialize.XMLWriter;
+import com.helger.commons.xml.serialize.XMLWriterSettings;
+import com.helger.commons.xml.transform.DefaultTransformURIResolver;
+import com.helger.commons.xml.transform.TransformSourceFactory;
+import com.helger.commons.xml.transform.XMLTransformerFactory;
+import com.helger.cva.CVA10Marshaller;
+import com.helger.cva.v10.Context;
+import com.helger.cva.v10.ContextValueAssociation;
+import com.helger.cva.v10.Contexts;
+import com.helger.cva.v10.Message;
+import com.helger.cva.v10.ValueList;
+import com.helger.cva.v10.ValueLists;
+import com.helger.genericode.Genericode10CodeListMarshaller;
+import com.helger.genericode.Genericode10Utils;
+import com.helger.genericode.v10.CodeListDocument;
+import com.helger.genericode.v10.Column;
+import com.helger.genericode.v10.ColumnSet;
+import com.helger.genericode.v10.Identification;
+import com.helger.genericode.v10.Row;
+import com.helger.genericode.v10.SimpleCodeList;
+import com.helger.genericode.v10.UseType;
+import com.helger.genericode.v10.Value;
+import com.helger.schematron.CSchematron;
 
 import eu.europa.ec.cipa.validation.utils.createrules.utils.ODFUtils;
 import eu.europa.ec.cipa.validation.utils.createrules.utils.Utils;
@@ -161,7 +161,7 @@ public final class CodeListCreator {
       final File aCVAFile = aCodeList.getCVAFile (aCVAData.getTransaction ());
       Utils.log ("    Creating " + aCVAFile.getName ());
 
-      final com.phloc.cva.v10.ObjectFactory aFactory = new com.phloc.cva.v10.ObjectFactory ();
+      final com.helger.cva.v10.ObjectFactory aFactory = new com.helger.cva.v10.ObjectFactory ();
       final ContextValueAssociation aCVA = aFactory.createContextValueAssociation ();
       aCVA.setName (FilenameHelper.getBaseName (aCVAFile));
 
@@ -232,7 +232,7 @@ public final class CodeListCreator {
       final String sLocationURI = ODFUtils.getText (aSheet, 3, 1);
 
       // Start creating Genericode
-      final com.phloc.genericode.v10.ObjectFactory aFactory = new com.phloc.genericode.v10.ObjectFactory ();
+      final com.helger.genericode.v10.ObjectFactory aFactory = new com.helger.genericode.v10.ObjectFactory ();
       final CodeListDocument aGC = aFactory.createCodeListDocument ();
 
       // create identification

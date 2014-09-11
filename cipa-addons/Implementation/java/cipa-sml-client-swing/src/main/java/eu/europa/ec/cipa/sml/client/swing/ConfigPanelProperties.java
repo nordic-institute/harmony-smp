@@ -54,7 +54,7 @@ import net.miginfocom.layout.AC;
 import net.miginfocom.layout.LC;
 import net.miginfocom.swing.MigLayout;
 
-import com.phloc.commons.io.file.FilenameHelper;
+import com.helger.commons.io.file.FilenameHelper;
 
 import eu.europa.ec.cipa.sml.client.swing.utils.FileFilterProperties;
 

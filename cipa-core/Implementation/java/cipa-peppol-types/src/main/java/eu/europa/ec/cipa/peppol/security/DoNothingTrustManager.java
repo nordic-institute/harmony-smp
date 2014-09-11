@@ -46,7 +46,7 @@ import javax.net.ssl.X509TrustManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.GlobalDebug;
+import com.helger.commons.GlobalDebug;
 
 /**
  * A trust manager that accepts all certificates.

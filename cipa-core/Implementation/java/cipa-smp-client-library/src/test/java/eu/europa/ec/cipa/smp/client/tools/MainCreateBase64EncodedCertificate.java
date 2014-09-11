@@ -39,8 +39,8 @@ package eu.europa.ec.cipa.smp.client.tools;
 
 import java.io.File;
 
-import com.phloc.commons.base64.Base64;
-import com.phloc.commons.io.file.SimpleFileIO;
+import com.helger.commons.base64.Base64;
+import com.helger.commons.io.file.SimpleFileIO;
 
 public class MainCreateBase64EncodedCertificate {
   public static void main (final String [] args) {

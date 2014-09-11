@@ -44,12 +44,12 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.charset.CCharset;
-import com.phloc.commons.io.IReadableResource;
-import com.phloc.commons.io.file.SimpleFileIO;
-import com.phloc.commons.io.resource.ClassPathResource;
-import com.phloc.commons.messagedigest.EMessageDigestAlgorithm;
-import com.phloc.commons.messagedigest.MessageDigestGeneratorHelper;
+import com.helger.commons.charset.CCharset;
+import com.helger.commons.io.IReadableResource;
+import com.helger.commons.io.file.SimpleFileIO;
+import com.helger.commons.io.resource.ClassPathResource;
+import com.helger.commons.messagedigest.EMessageDigestAlgorithm;
+import com.helger.commons.messagedigest.MessageDigestGeneratorHelper;
 
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
 

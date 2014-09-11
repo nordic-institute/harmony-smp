@@ -54,9 +54,9 @@ import org.w3._2009._02.ws_tra.Create;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.phloc.commons.annotations.IsSPIImplementation;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.state.impl.SuccessWithValue;
+import com.helger.commons.annotations.IsSPIImplementation;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.state.impl.SuccessWithValue;
 
 import eu.europa.ec.cipa.transport.IMessageMetadata;
 import eu.europa.ec.cipa.transport.MessageMetadataHelper;

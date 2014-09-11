@@ -39,8 +39,6 @@ package eu.europa.ec.cipa.transport.lime.server;
 
 import org.junit.Test;
 
-import eu.europa.ec.cipa.transport.lime.server.LimeService;
-
 /**
  * Test class for class {@link LimeService}.
  * 

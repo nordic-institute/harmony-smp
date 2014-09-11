@@ -60,8 +60,8 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.Type;
 
-import com.phloc.commons.collections.ArrayHelper;
-import com.phloc.commons.lang.CGStringHelper;
+import com.helger.commons.collections.ArrayHelper;
+import com.helger.commons.lang.CGStringHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.uri.BusdoxURLUtils;

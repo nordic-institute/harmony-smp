@@ -62,7 +62,7 @@ import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
 import org.xbill.DNS.Update;
 
-import com.phloc.commons.annotations.ReturnsMutableObject;
+import com.helger.commons.annotations.ReturnsMutableObject;
 
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
