@@ -62,7 +62,7 @@ import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 /**
  * Expects a local SMP up and running with DNS enabled at port 80 at the ROOT
  * context. See {@link #SMP_URI} constant
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Ignore

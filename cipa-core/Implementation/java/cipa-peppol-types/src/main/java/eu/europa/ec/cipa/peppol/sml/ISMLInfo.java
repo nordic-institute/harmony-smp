@@ -45,7 +45,7 @@ import com.helger.commons.annotations.Nonempty;
 
 /**
  * Specifies the different properties an SML implementation uses.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public interface ISMLInfo {
@@ -53,7 +53,7 @@ public interface ISMLInfo {
    * @return The DNS zone on which this SML is operating. Never
    *         <code>null</code>. It must be ensured that the value consists only
    *         from lower case characters!<br>
-   *         Example: {@link CSMLDefault#PRODUCTION_DNS_ZONE}
+   *         Example: <code>sml.peppolcentral.org</code>
    */
   @Nonnull
   @Nonempty

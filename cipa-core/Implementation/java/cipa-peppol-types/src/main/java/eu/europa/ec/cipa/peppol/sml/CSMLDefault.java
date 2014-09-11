@@ -46,7 +46,7 @@ import com.helger.commons.annotations.PresentForCodeCoverage;
  * recommended that the real values are out-sourced into a configuration file.
  * You can of course use the values in this file as the default values in case
  * no configuration item is specified.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -54,16 +54,19 @@ public final class CSMLDefault {
   /**
    * The root DNS zone for PEPPOL SML usage.
    */
+  @Deprecated
   public static final String DNS_ZONE = "peppolcentral.org.";
 
   /**
    * The production SML DNS zone.
    */
+  @Deprecated
   public static final String PRODUCTION_DNS_ZONE = "sml." + DNS_ZONE;
 
   /**
    * The testing SML DNS zone.
    */
+  @Deprecated
   public static final String TEST_DNS_ZONE = "smk." + DNS_ZONE;
 
   /**
@@ -74,21 +77,25 @@ public final class CSMLDefault {
   /**
    * The host name where the production WebServices for managing the SML reside.
    */
+  @Deprecated
   public static final String PRODUCTION_MANAGEMENT_HOSTNAME = "https://sml.peppolcentral.org";
 
   /**
    * The URL of the SML production management service.
    */
+  @Deprecated
   public static final String PRODUCTION_MANAGEMENT_SERVICE = PRODUCTION_MANAGEMENT_HOSTNAME;
 
   /**
    * The host name where the production WebServices for managing the SML reside.
    */
+  @Deprecated
   public static final String TEST_MANAGEMENT_HOSTNAME = "https://smk.peppolcentral.org";
 
   /**
    * The URL of the SML production management service.
    */
+  @Deprecated
   public static final String TEST_MANAGEMENT_SERVICE = TEST_MANAGEMENT_HOSTNAME;
 
   /**

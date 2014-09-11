@@ -53,9 +53,10 @@ import com.helger.commons.annotations.Nonempty;
  * <li>DEVELOPMENT_LOCAL - used for development environment assuming the
  * management application is running on localhost in the ROOT context!</li>
  * </ul>
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
+@SuppressWarnings ("deprecation")
 public enum ESML implements ISMLInfo {
   /** https://sml.peppolcentral.org */
   PRODUCTION (CSMLDefault.PRODUCTION_DNS_ZONE, CSMLDefault.PRODUCTION_MANAGEMENT_HOSTNAME, CSMLDefault.PRODUCTION_MANAGEMENT_SERVICE),

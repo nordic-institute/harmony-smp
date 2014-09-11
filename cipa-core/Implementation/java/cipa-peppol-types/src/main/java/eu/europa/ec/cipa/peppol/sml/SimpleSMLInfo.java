@@ -49,9 +49,9 @@ import com.helger.commons.hash.HashCodeGenerator;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
- * Use instances of this class if you're not happy with the {@link ESML}
+ * Use instances of this class if you're not happy with the <code>ESML</code>
  * enumeration value but need an instance of {@link ISMLInfo}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable

@@ -86,7 +86,7 @@ import eu.europa.ec.cipa.smp.client.exception.UnauthorizedException;
 /**
  * Expects a local SMP up and running at port 80 at the ROOT context. DNS is not
  * needed. See {@link #SMP_URI} constant.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Ignore

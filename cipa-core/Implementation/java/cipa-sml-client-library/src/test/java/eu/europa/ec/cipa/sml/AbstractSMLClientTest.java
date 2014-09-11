@@ -62,11 +62,12 @@ import eu.europa.ec.cipa.peppol.sml.SimpleSMLInfo;
 /**
  * This class tests the URL connection to the SML that is secured with client
  * certificates.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @DevelopersNote ("You need to create a keystore file !")
 public abstract class AbstractSMLClientTest {
+  @SuppressWarnings ("deprecation")
   public static final ISMLInfo SML_INFO = true ? ESML.TEST : new SimpleSMLInfo (CSMLDefault.TEST_DNS_ZONE,
                                                                                 "http://plixvdp2:8080",
                                                                                 "http://plixvdp2:8080/smk/",

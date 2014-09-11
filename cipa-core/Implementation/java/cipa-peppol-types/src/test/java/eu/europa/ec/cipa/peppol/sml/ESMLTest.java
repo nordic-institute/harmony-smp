@@ -45,9 +45,10 @@ import org.junit.Test;
 
 /**
  * Test class for class {@link ESML}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
+@Deprecated
 public final class ESMLTest {
   @Test
   public void testProduction () {
