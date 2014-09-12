@@ -42,6 +42,8 @@ import java.util.List;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Resolver;
 
+import eu.europa.ec.cipa.sml.server.dns.impl.SMLDNSClientImpl;
+
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
  */

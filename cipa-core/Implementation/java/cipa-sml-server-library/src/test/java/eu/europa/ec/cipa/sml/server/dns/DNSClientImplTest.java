@@ -47,6 +47,8 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.SimpleResolver;
 import org.xbill.DNS.Type;
 
+import eu.europa.ec.cipa.sml.server.dns.impl.SMLDNSClientImpl;
+
 /**
  * Test class for class {@link SMLDNSClientImpl} - for BRZ internal usage only!
  * 
