@@ -110,7 +110,7 @@ public class DNSClientImpl implements IDNSClient {
 		Record[] t = new Record[records.size()];
 		records.toArray(t);
 		aDNSUpdate.add(t);
-		final Message response = sendMessgeToDnsServer(aDNSUpdate);
+		final Message response = sendMessgeToDnsServerBulk(aDNSUpdate);
 		_validateDNSResponse(response);
 	}
 
@@ -124,7 +124,7 @@ public class DNSClientImpl implements IDNSClient {
 		Record[] t = new Record[records.size()];
 		records.toArray(t);
 		aDNSUpdate.delete(t);
-		final Message response = sendMessgeToDnsServer(aDNSUpdate);
+		final Message response = sendMessgeToDnsServerBulk(aDNSUpdate);
 		_validateDNSResponse(response);
 	}
 
@@ -186,11 +186,23 @@ public class DNSClientImpl implements IDNSClient {
 		}
 		return SIG0Rec;
 	}
+	
+	protected Message sendMessgeToDnsServerBulk(Message m)
+	{
+		try {
+			Thread.sleep(600);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		return sendMessgeToDnsServer(m);
+	}
 
 	protected Message sendMessgeToDnsServer(Message m) {
 		boolean SIG0Enabled = false;
 		try {
-			Thread.sleep(500);
+			
 			if (DNSClientConfiguration.isEnabled()) {
 				SIG0Enabled = DNSClientConfiguration.getSIG0();
 			}
