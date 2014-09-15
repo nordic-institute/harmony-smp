@@ -12,6 +12,9 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.xbill.DNS.CNAMERecord;
+import org.xbill.DNS.DClass;
+import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.Type;
@@ -23,7 +26,15 @@ public class RunIt {
 	private List<DNSEntery> lIdentifierHosts = new ArrayList<DNSEntery>();
 	private String smlZoneSuffix = "";
 	private String identieferZoneSuffix = "";
+	private IDNSClient client = null;
 
+	private IDNSClient getDnsClient() {
+		if (client == null) {
+			client = DNSClientFactory.getSimpleInstace();
+		}
+		return client;
+	}
+	
 	public RunIt() {
 		// TODO Auto-generated constructor stub
 	}
@@ -36,58 +47,13 @@ public class RunIt {
 			File f = new File(args[0]);
 			List<String> l = run.getLinesOfTheFile(f);
 			run.parseLines(l);
-			run.PutInDNS();
+			run.PutRecordsInDNS();
 		}
 	}
 
-	private void PutInDNS() {
-		IDNSClient client = DNSClientFactory.getSimpleInstace();
-
+	private void printDNS() {
 		try {
-			List<Record> recs = client.getAllRecords();
-			System.out.println("Number of records on the list: " + recs.size());
-			for (Record rec : recs) {
-				if (rec.getType() == Type.CNAME) {
-					client.deleteRecord(rec);
-					Thread.sleep(200);
-				}
-			}
-		} catch (IOException | ZoneTransferException | InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		try {
-			List<Record> recs = client.getAllRecords();
-			System.out.println("Number of records on the list: " + recs.size());
-		} catch (IOException | ZoneTransferException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		for (DNSEntery ent : lSMPHosts) {
-			try {
-				client.addpublisherRecord(ent.getName() + "." + DNSClientConfiguration.getSMLZoneName(), ent.getHost());
-				Thread.sleep(200);
-			} catch (TextParseException | InterruptedException e) {
-				// TODO // Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		for (DNSEntery ent : lIdentifierHosts) {
-			try {
-
-				client.addIdentifierRecord(ent.getName() + "." + identieferZoneSuffix + "." + DNSClientConfiguration.getZone(), ent.getHost());
-				Thread.sleep(200);
-			} catch (TextParseException | InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-		try {
-			List<Record> recs = client.getAllRecords();
+			List<Record> recs = getDnsClient().getAllRecords();
 			for (Record rec : recs) {
 				System.out.println(rec);
 			}
@@ -95,6 +61,94 @@ public class RunIt {
 															// catch block
 			e.printStackTrace();
 		}
+	}
+
+	private void deleteAllCNames() {
+		try {
+			List<Record> recs = getDnsClient().getAllRecords();
+			System.out.println("Number of records on the list: " + recs.size());
+			List<Record> out = new ArrayList<Record>();
+			int i = 0;
+			for (Record rec : recs) {
+				if (rec.getType() == Type.CNAME) {
+					out.add(rec);
+					i++;
+					if (i == 200) {
+						getDnsClient().deleteList(out);
+						out.clear();
+						i = 0;
+					}
+				}
+			}
+			if (!out.isEmpty())
+			{
+				getDnsClient().deleteList(out);
+			}
+		} catch (IOException | ZoneTransferException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void printNumberOfRecords() {
+		try {
+			List<Record> recs = getDnsClient().getAllRecords();
+			System.out.println("Number of records on the list: " + recs.size());
+		} catch (IOException | ZoneTransferException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private void addSMLHosts() {
+		List<Record> delete = new ArrayList<Record>();
+		List<Record> add = new ArrayList<Record>();
+		for (DNSEntery ent : lSMPHosts) {
+			try {
+				Record[] rec = getDnsClient().getRecordFromName(ent.getName());
+				if (rec != null && rec.length > 0) {
+					for (Record r : rec) {
+						delete.add(r);
+					}
+				}
+				add.add(new CNAMERecord(Name.fromString(ent.getName() + "." + DNSClientConfiguration.getSMLZoneName()), DClass.IN, client.getTTLSecs(),
+						new Name(ent.getHost())));
+			} catch (TextParseException e) {
+				e.printStackTrace();
+			}
+		}
+
+		getDnsClient().deleteList(delete);
+		getDnsClient().addRecords(add);
+	}
+
+	private void addEndpoints() {
+		List<Record> updateList = new ArrayList<>();
+		int i = 0;
+		for (DNSEntery ent : lIdentifierHosts) {
+			try {
+				Name n = Name.fromString(ent.getName(), Name.fromString(identieferZoneSuffix + "." + DNSClientConfiguration.getZone() + "."));
+				updateList.add(new CNAMERecord(n, DClass.IN, client.getTTLSecs(), Name.fromString(ent.getHost())));
+				i++;
+				if (i == 200) {
+					i = 0;
+					getDnsClient().addRecords(updateList);
+					updateList.clear();
+				}
+			} catch (TextParseException e) {
+				e.printStackTrace();
+			}
+		}
+		if (!updateList.isEmpty()) {
+			getDnsClient().addRecords(updateList);
+		}
+	}
+
+	private void PutRecordsInDNS() {
+		deleteAllCNames();
+		addSMLHosts();
+		addEndpoints();
+		printDNS();
 
 	}
 
