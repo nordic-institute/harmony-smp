@@ -43,6 +43,10 @@ import javax.annotation.concurrent.ThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.europa.ec.cipa.sml.server.dns.impl.DNSClientImpl;
+import eu.europa.ec.cipa.sml.server.dns.impl.DoNothingDNSClient;
+import eu.europa.ec.cipa.sml.server.dns.impl.SMLDNSClientImpl;
+
 /**
  * Factory to init DNSClient. If property "dnsClient.enabled=true" from
  * "config.properties" a real implementation is returned, otherwise Dummy.

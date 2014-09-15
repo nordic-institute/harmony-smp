@@ -35,7 +35,7 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.sml.server.dns;
+package eu.europa.ec.cipa.sml.server.dns.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,6 +47,8 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.xbill.DNS.Record;
 
 import com.helger.commons.string.ToStringGenerator;
+
+import eu.europa.ec.cipa.sml.server.dns.ISMLDNSClient;
 
 /**
  * Dummy implementation..

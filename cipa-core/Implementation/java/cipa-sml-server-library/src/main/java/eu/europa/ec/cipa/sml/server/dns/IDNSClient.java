@@ -7,7 +7,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import org.xbill.DNS.Record;
-import org.xbill.DNS.TextParseException;
 import org.xbill.DNS.ZoneTransferException;
 
 public interface IDNSClient {
@@ -18,7 +17,7 @@ public interface IDNSClient {
 	   * @return zonename
 	   */
 	  @Nullable
-	  String getDNSZoneName ();
+	  public String getDNSZoneName ();
 
 	  /**
 	   * SML Zone name configured used by Identifiers for DNSClient. Will be
@@ -27,7 +26,7 @@ public interface IDNSClient {
 	   * @return zonename
 	   */
 	  @Nullable
-	  String getSMLZoneName ();
+	  public String getSMLZoneName ();
 
 	  /**
 	   * DNS Server handling Publisher hosts.
@@ -35,7 +34,9 @@ public interface IDNSClient {
 	   * @return server
 	   */
 	  @Nullable
-	  String getServer ();
+	  public String getServer ();
+	  
+	  public int getTTLSecs();
 
 	  @Nullable
 	  String lookupDNSRecord (@Nonnull String dnsName) throws IOException;
@@ -57,10 +58,10 @@ public interface IDNSClient {
 	   * @return true or false
 	   */
 	  boolean isHandledZone (String name);
+	 
+	  public void addRecords(List<Record> records);
+
+	  public void deleteList(List<Record> records);
 	  
-	  public void addIdentifierRecord(String participant, String publisher) throws TextParseException;
-	  
-	  public void addpublisherRecord(String publisherHost, String endpoint) throws TextParseException;
-	  
-	  public void deleteRecord (Record rec);
+	  public Record[] getRecordFromName(String name);
 }
