@@ -35,7 +35,7 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.peppol.identifier.doctype;
+package eu.europa.ec.cipa.peppol.identifier.doctype2;
 
 import java.util.List;
 
@@ -47,23 +47,23 @@ import eu.europa.ec.cipa.busdox.identifier.IBusdoxDocumentTypeIdentifierParts;
 
 /**
  * Contains all the different fields of a document identifier for PEPPOL in BIS
- * V1 style. Note: the sub type identifier is specified in more detail than in
+ * V2 style. Note: the sub type identifier is specified in more detail than in
  * BusDox: <code>&lt;customization id>::&lt;version></code> even more detailed
  * the customization ID can be split further:
- * <code>&lt;transactionId>:#&lt;extensionId>[#&lt;extensionId>]::&lt;version></code>
+ * <code>&lt;transactionId&gt;:(restrictive|extended|partly):&lt;extensionId&gt;[:(restrictive|extended|partly):&lt;extensionId&gt;]::&lt;version&gt;</code>
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public interface IPeppolDocumentTypeIdentifierParts extends IBusdoxDocumentTypeIdentifierParts {
+public interface IOpenPeppolDocumentTypeIdentifierParts extends IBusdoxDocumentTypeIdentifierParts {
   /**
    * Separates the transaction ID from the extensions
    */
-  String TRANSACTIONID_SEPARATOR = ":#";
+  String TRANSACTIONID_SEPARATOR = ":extended:";
 
   /**
    * Separates the different extensions from each other
    */
-  String EXTENSION_SEPARATOR = "#";
+  String EXTENSION_SEPARATOR = ":extended:";
 
   /**
    * Separates the customization ID from the version
