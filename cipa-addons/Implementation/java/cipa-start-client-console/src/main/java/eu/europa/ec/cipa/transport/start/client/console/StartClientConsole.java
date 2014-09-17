@@ -71,6 +71,7 @@ import eu.europa.ec.cipa.peppol.identifier.doctype.EPredefinedDocumentTypeIdenti
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.EPredefinedProcessIdentifier;
 import eu.europa.ec.cipa.peppol.sml.ESML;
+import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 import eu.europa.ec.cipa.transport.IMessageMetadata;
@@ -113,9 +114,9 @@ public class StartClientConsole {
   }
 
   @Nullable
-  private static String _getAccessPointUrl (@Nonnull final IMessageMetadata aMetadata) throws Exception {
+  private static String _getAccessPointUrl (@Nonnull final IMessageMetadata aMetadata, @Nonnull final ISMLInfo aSMLInfo) throws Exception {
     // SMP client
-    final SMPServiceCaller aServiceCaller = new SMPServiceCaller (aMetadata.getRecipientID (), ESML.PRODUCTION);
+    final SMPServiceCaller aServiceCaller = new SMPServiceCaller (aMetadata.getRecipientID (), aSMLInfo);
     // get service info
     return aServiceCaller.getEndpointAddress (aMetadata.getRecipientID (),
                                               aMetadata.getDocumentTypeID (),
@@ -226,6 +227,7 @@ public class StartClientConsole {
 
     IMessageMetadata aMetadata = null;
     Document aDoc = null;
+    final ISMLInfo aSMLInfo = ESML.PRODUCTION;
 
     if (cmd.hasOption ("ping") && Boolean.parseBoolean (cmd.getOptionValue ("ping"))) {
       System.out.println ("Sending Ping Messsage");
@@ -276,7 +278,7 @@ public class StartClientConsole {
         aResult = AccessPointClient.send (sAPURL, aMetadata, aDoc);
         break;
       case FULL:
-        sAPURL = _getAccessPointUrl (aMetadata);
+        sAPURL = _getAccessPointUrl (aMetadata, aSMLInfo);
         aResult = AccessPointClient.send (sAPURL, aMetadata, aDoc);
         break;
     }
