@@ -93,6 +93,7 @@ import com.sun.xml.ws.api.message.HeaderList;
 import com.sun.xml.ws.developer.JAXWSProperties;
 
 import eu.europa.ec.cipa.peppol.sml.ESML;
+import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 import eu.europa.ec.cipa.transport.CTransportIdentifiers;
@@ -110,11 +111,7 @@ import eu.europa.ec.cipa.transport.start.client.AccessPointClient;
  * @author Ravnholt<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-@WebService (serviceName = "limeService",
-             portName = "ResourceBindingPort",
-             endpointInterface = "org.w3._2009._02.ws_tra.Resource",
-             targetNamespace = "http://www.w3.org/2009/02/ws-tra",
-             wsdlLocation = "WEB-INF/wsdl/peppol-lime-1.0.wsdl")
+@WebService (serviceName = "limeService", portName = "ResourceBindingPort", endpointInterface = "org.w3._2009._02.ws_tra.Resource", targetNamespace = "http://www.w3.org/2009/02/ws-tra", wsdlLocation = "WEB-INF/wsdl/peppol-lime-1.0.wsdl")
 @HandlerChain (file = "WSTransferService_handler.xml")
 public class LimeService {
   private static final String FAULT_UNKNOWN_ENDPOINT = "The endpoint is not known";
@@ -172,7 +169,7 @@ public class LimeService {
    * Called to initiate a new message. All standard PEPPOL SOAP headers except
    * messageID must be passed in. The messageID is created in this method and
    * returned.
-   * 
+   *
    * @param body
    *        The body - is ignored. May be <code>null</code>.
    * @return A non-<code>null</code> response containing a
@@ -212,7 +209,7 @@ public class LimeService {
    * After {@link #create(Create)} the main document can be transmitted using
    * this method. Expects the message ID from {@link #create(Create)} as a SOAP
    * header.
-   * 
+   *
    * @param aBody
    *        The message to be put.
    * @return An empty, non-<code>null</code> put response.
@@ -223,6 +220,7 @@ public class LimeService {
     final String sMessageID = MessageMetadataHelper.getMessageID (aHeaderList);
     final String sOwnAPURL = _getOurAPURL ();
     final IMessageMetadata aMetadata = ResourceMemoryStore.getInstance ().getMessage (sMessageID, sOwnAPURL);
+    final ISMLInfo aSML = ESML.PRODUCTION;
 
     try {
       if (aMetadata == null)
@@ -230,10 +228,12 @@ public class LimeService {
 
       final String sRecipientAccessPointURLstr = _getAccessPointUrl (aMetadata.getRecipientID (),
                                                                      aMetadata.getDocumentTypeID (),
-                                                                     aMetadata.getProcessID ());
+                                                                     aMetadata.getProcessID (),
+                                                                     aSML);
       final String sSenderAccessPointURLstr = _getAccessPointUrl (aMetadata.getSenderID (),
                                                                   aMetadata.getDocumentTypeID (),
-                                                                  aMetadata.getProcessID ());
+                                                                  aMetadata.getProcessID (),
+                                                                  aSML);
 
       if (sRecipientAccessPointURLstr.equalsIgnoreCase (sSenderAccessPointURLstr)) {
         _logRequest ("This is a local request - sending directly to inbox",
@@ -263,7 +263,7 @@ public class LimeService {
 
   /**
    * Retrieve a list of messages, or a certain message from the inbox.
-   * 
+   *
    * @param body
    *        Ignored - may be <code>null</code>.
    * @return Never <code>null</code>.
@@ -292,7 +292,7 @@ public class LimeService {
 
   /**
    * Delete
-   * 
+   *
    * @param body
    *        delete body
    * @return response
@@ -505,10 +505,11 @@ public class LimeService {
   @Nullable
   private static String _getAccessPointUrl (final ParticipantIdentifierType aRecipientId,
                                             final DocumentIdentifierType aDocumentID,
-                                            final ProcessIdentifierType aProcessID) throws Exception {
-    final String ret = new SMPServiceCaller (aRecipientId, ESML.PRODUCTION).getEndpointAddress (aRecipientId,
-                                                                                                aDocumentID,
-                                                                                                aProcessID);
+                                            final ProcessIdentifierType aProcessID,
+                                            @Nonnull final ISMLInfo aSMLInfo) throws Exception {
+    final String ret = new SMPServiceCaller (aRecipientId, aSMLInfo).getEndpointAddress (aRecipientId,
+                                                                                         aDocumentID,
+                                                                                         aProcessID);
     if (ret == null)
       s_aLogger.warn ("Failed to resolve AP endpoint url for recipient " +
                       aRecipientId +
