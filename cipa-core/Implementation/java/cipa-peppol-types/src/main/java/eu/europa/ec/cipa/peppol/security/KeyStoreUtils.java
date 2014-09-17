@@ -59,7 +59,7 @@ import com.helger.commons.io.streams.StreamUtils;
 
 /**
  * Helper methods to access Java key stores of type JKS (Java KeyStore).
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -75,6 +75,12 @@ public final class KeyStoreUtils {
 
   /** The password used to access the truststores */
   public static final String TRUSTSTORE_PASSWORD = "peppol";
+
+  /** The truststore alias for the PEPPOL root certificate */
+  public static final String TRUSTSTORE_ALIAS_ROOT_PEPPOL = "peppol root test ca";
+
+  /** The truststore alias for the OpenPEPPOL root certificate */
+  public static final String TRUSTSTORE_ALIAS_ROOT_OPENPEPPOL = "peppol root ca";
 
   /** The truststore alias for the PEPPOL AP certificate */
   public static final String TRUSTSTORE_ALIAS_AP_PEPPOL = "peppol access point test ca (peppol root test ca)";
@@ -104,7 +110,7 @@ public final class KeyStoreUtils {
 
   /**
    * Load a key store from a resource.
-   * 
+   *
    * @param sKeyStorePath
    *        The path pointing to the key store. May not be <code>null</code>.
    * @param sKeyStorePassword
@@ -122,7 +128,7 @@ public final class KeyStoreUtils {
 
   /**
    * Load a key store from a resource.
-   * 
+   *
    * @param sKeyStorePath
    *        The path pointing to the key store. May not be <code>null</code>.
    * @param aKeyStorePassword
@@ -159,7 +165,7 @@ public final class KeyStoreUtils {
 
   /**
    * Create a new key store based on an existing key store
-   * 
+   *
    * @param aBaseKeyStore
    *        The source key store. May not be <code>null</code>
    * @param sAliasToCopy
