@@ -110,6 +110,7 @@ import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifi
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
 import eu.europa.ec.cipa.peppol.sml.ESML;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
+import eu.europa.ec.cipa.peppol.sml.SimpleSMLInfo;
 import eu.europa.ec.cipa.peppol.utils.CertificateUtils;
 import eu.europa.ec.cipa.peppol.utils.ExceptionUtils;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
@@ -123,7 +124,7 @@ import eu.europa.ec.cipa.transport.start.util.EAPServerMode;
 
 /**
  * WebService implementation.
- * 
+ *
  * @author Jose Gorvenia Narvaez(jose@alfa1lab.com)<br>
  *         Dante Malaga(dante@alfa1lab.com)<br>
  *         PEPPOL.AT, BRZ, Philip Helger
@@ -246,16 +247,34 @@ public class AccessPointService {
           else
             if ("smj-local".equalsIgnoreCase (sSMLMode))
               SML_INFO = ESML.DEVELOPMENT_LOCAL;
-            else
+            else {
+              // Invalid shortcut provided
               throw new InitializationException ("The provided SML Mode '" +
                                                  sSMLMode +
                                                  "' is invalid. Use sml' for the production SML, 'smk' for the test SML (=SMK), 'smj-local' for a locally running SML (on port 8080).");
+            }
     }
     else {
-      // No given - use default
-      SML_INFO = ESML.PRODUCTION;
+      // No shortcut given - check explicit fields
+      final String sDNSZone = ServerConfigFile.getSMLDNSZone ();
+      final String sHostName = ServerConfigFile.getSMLHostname ();
+      String sServiceURL = ServerConfigFile.getSMLServiceURL ();
+      final boolean bIsClientCertificateRequired = ServerConfigFile.isSMLRequiresClientCertificate ();
+      if (StringHelper.hasText (sDNSZone) && StringHelper.hasText (sHostName)) {
+        if (StringHelper.hasNoText (sServiceURL)) {
+          // In case no service URL is present, assume it is the same as the
+          // host name. It is only different, when the SML application is not
+          // running in the ROOT context of the application server
+          sServiceURL = sHostName;
+        }
+        SML_INFO = new SimpleSMLInfo (sDNSZone, sHostName, sServiceURL, bIsClientCertificateRequired);
+      }
+      else {
+        // use default
+        SML_INFO = ESML.PRODUCTION;
+      }
     }
-    s_aLogger.info ("Starting access point server in SML mode " + s_aServerMode);
+    s_aLogger.info ("Starting access point server with SML on " + SML_INFO.getManagementServiceURL ());
 
     // Read certificate from configuration only once, so it is cached for
     // reuse
@@ -344,7 +363,7 @@ public class AccessPointService {
   /**
    * Check if the certificate of the receiver is identical to the configured
    * one. This is done by checking the certificate serial numbers.
-   * 
+   *
    * @param aReceiverCert
    *        The certificate of the receiver
    * @return <code>true</code> if equal
@@ -440,7 +459,7 @@ public class AccessPointService {
 
   /**
    * Create the endpoint reference for the response.
-   * 
+   *
    * @param aMetadata
    *        The metadata provided by the sender. Explicitly the implementation
    *        class is referenced, so that the assumption that certain fields are
@@ -498,7 +517,7 @@ public class AccessPointService {
 
   /**
    * Main action for receiving.
-   * 
+   *
    * @param aBody
    * @return Never <code>null</code>
    * @throws FaultMessage

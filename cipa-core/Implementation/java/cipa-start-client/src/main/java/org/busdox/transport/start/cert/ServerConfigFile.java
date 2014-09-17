@@ -45,7 +45,7 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 
 /**
  * Wrapper around the server/client AP configuration file.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -54,6 +54,10 @@ public final class ServerConfigFile {
   private static final String CONFIG_SERVER_MODE = "server.mode";
   private static final String CONFIG_SERVER_SMP_URL = "server.smp.url";
   private static final String CONFIG_SERVER_SML_MODE = "server.sml.mode";
+  private static final String CONFIG_SERVER_SML_DNSZONE = "server.sml.dnszone";
+  private static final String CONFIG_SERVER_SML_HOSTNAME = "server.sml.hostname";
+  private static final String CONFIG_SERVER_SML_SERVICE = "server.sml.serviceurl";
+  private static final String CONFIG_SERVER_SML_REQUIRES_CLIENT_CERTIFICATE = "server.sml.requires-client-certificate";
   private static final String CONFIG_SERVER_KEYSTORE_PATH = "server.keystore.path";
   private static final String CONFIG_SERVER_KEYSTORE_PASSWORD = "server.keystore.password";
   private static final String CONFIG_SERVER_KEYSTORE_ALIAS = "server.keystore.alias";
@@ -94,6 +98,29 @@ public final class ServerConfigFile {
   @Nonnull
   public static String getServerSMLMode () {
     return s_aConfigFile.getString (CONFIG_SERVER_SML_MODE, "sml");
+  }
+
+  @Nonnull
+  public static String getSMLDNSZone () {
+    // e.g. "sml.peppolcentral.org."
+    return s_aConfigFile.getString (CONFIG_SERVER_SML_DNSZONE);
+  }
+
+  @Nonnull
+  public static String getSMLHostname () {
+    // e.g. "https://sml.peppolcentral.org"
+    return s_aConfigFile.getString (CONFIG_SERVER_SML_HOSTNAME);
+  }
+
+  @Nonnull
+  public static String getSMLServiceURL () {
+    // e.g. "https://sml.peppolcentral.org"
+    return s_aConfigFile.getString (CONFIG_SERVER_SML_SERVICE);
+  }
+
+  public static boolean isSMLRequiresClientCertificate () {
+    // true for SML and SMK
+    return s_aConfigFile.getBoolean (CONFIG_SERVER_SML_REQUIRES_CLIENT_CERTIFICATE, true);
   }
 
   @Nullable
