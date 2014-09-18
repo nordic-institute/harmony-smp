@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.europa.ec.cipa</groupId>
   <artifactId>cipa-parent-pom</artifactId>
-  <version>1.4</version>
+  <version>1.5-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>cipa-parent-pom</name>
   <description>The CIPA e-Delivery platform</description>
@@ -29,8 +29,8 @@
   
   <!-- SVN location -->
   <scm>
-    <connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/tags/1.4/cipa-parent-pom</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/tags/1.4/cipa-parent-pom</developerConnection>
+    <connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-parent-pom</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-parent-pom</developerConnection>
   </scm>
   
   <!-- Where to deploy binaries -->
