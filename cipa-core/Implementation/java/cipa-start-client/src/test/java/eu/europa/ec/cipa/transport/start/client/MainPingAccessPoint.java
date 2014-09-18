@@ -59,6 +59,7 @@ import eu.europa.ec.cipa.peppol.identifier.doctype.EPredefinedDocumentTypeIdenti
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.EPredefinedProcessIdentifier;
 import eu.europa.ec.cipa.peppol.sml.ESML;
+import eu.europa.ec.cipa.smp.client.ESMPTransportProfile;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 import eu.europa.ec.cipa.transport.IMessageMetadata;
 import eu.europa.ec.cipa.transport.MessageMetadata;
@@ -95,7 +96,8 @@ public class MainPingAccessPoint {
     // get service info
     return aServiceCaller.getEndpointAddress (aPI,
                                               EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A,
-                                              EPredefinedProcessIdentifier.BIS4A);
+                                              EPredefinedProcessIdentifier.BIS4A,
+                                              ESMPTransportProfile.TRANSPORT_PROFILE_START);
   }
 
   private static void _sendDocument (final IReadableResource aXmlRes) throws Exception {

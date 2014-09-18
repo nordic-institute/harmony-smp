@@ -80,18 +80,22 @@ import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifi
 import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
 import eu.europa.ec.cipa.peppol.security.DoNothingTrustManager;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
-import eu.europa.ec.cipa.smp.client.CSMPIdentifier;
+import eu.europa.ec.cipa.smp.client.ESMPTransportProfile;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 
 /**
  * SMP commandline client
- * 
+ *
  * @author Itella
  * @author Philip Helger
  */
 public final class SMPClient {
   private static enum ECommand {
-    ADDGROUP, ADD, DELGROUP, DEL, LIST;
+    ADDGROUP,
+    ADD,
+    DELGROUP,
+    DEL,
+    LIST;
 
     @Nullable
     public static ECommand getFromNameOrNull (@Nullable final String sName) {
@@ -353,7 +357,7 @@ public final class SMPClient {
           {
             final EndpointType aEndpoint = aObjFactory.createEndpointType ();
             aEndpoint.setEndpointReference (endpointReferenceType);
-            aEndpoint.setTransportProfile (CSMPIdentifier.TRANSPORT_PROFILE_START);
+            aEndpoint.setTransportProfile (ESMPTransportProfile.TRANSPORT_PROFILE_START.getID ());
 
             aEndpoint.setCertificate (m_sCertificateContent);
             aEndpoint.setServiceActivationDate (new Date (System.currentTimeMillis ()));

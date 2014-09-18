@@ -95,6 +95,7 @@ import com.sun.xml.ws.developer.JAXWSProperties;
 import eu.europa.ec.cipa.peppol.sml.ESML;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
+import eu.europa.ec.cipa.smp.client.ESMPTransportProfile;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 import eu.europa.ec.cipa.transport.CTransportIdentifiers;
 import eu.europa.ec.cipa.transport.IMessageMetadata;
@@ -509,7 +510,8 @@ public class LimeService {
                                             @Nonnull final ISMLInfo aSMLInfo) throws Exception {
     final String ret = new SMPServiceCaller (aRecipientId, aSMLInfo).getEndpointAddress (aRecipientId,
                                                                                          aDocumentID,
-                                                                                         aProcessID);
+                                                                                         aProcessID,
+                                                                                         ESMPTransportProfile.TRANSPORT_PROFILE_START);
     if (ret == null)
       s_aLogger.warn ("Failed to resolve AP endpoint url for recipient " +
                       aRecipientId +

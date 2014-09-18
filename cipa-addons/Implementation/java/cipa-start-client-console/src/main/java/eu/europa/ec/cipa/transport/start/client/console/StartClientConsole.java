@@ -73,6 +73,7 @@ import eu.europa.ec.cipa.peppol.identifier.process.EPredefinedProcessIdentifier;
 import eu.europa.ec.cipa.peppol.sml.ESML;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
+import eu.europa.ec.cipa.smp.client.ESMPTransportProfile;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 import eu.europa.ec.cipa.transport.IMessageMetadata;
 import eu.europa.ec.cipa.transport.MessageMetadata;
@@ -109,7 +110,8 @@ public class StartClientConsole {
     // get service info
     return aServiceCaller.getEndpointAddress (aMetadata.getRecipientID (),
                                               aMetadata.getDocumentTypeID (),
-                                              aMetadata.getProcessID ());
+                                              aMetadata.getProcessID (),
+                                              ESMPTransportProfile.TRANSPORT_PROFILE_START);
 
   }
 
@@ -120,7 +122,8 @@ public class StartClientConsole {
     // get service info
     return aServiceCaller.getEndpointAddress (aMetadata.getRecipientID (),
                                               aMetadata.getDocumentTypeID (),
-                                              aMetadata.getProcessID ());
+                                              aMetadata.getProcessID (),
+                                              ESMPTransportProfile.TRANSPORT_PROFILE_START);
 
   }
 

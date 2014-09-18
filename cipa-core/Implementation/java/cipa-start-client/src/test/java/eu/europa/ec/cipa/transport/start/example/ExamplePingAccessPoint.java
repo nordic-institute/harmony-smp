@@ -58,6 +58,7 @@ import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifi
 import eu.europa.ec.cipa.peppol.identifier.process.EPredefinedProcessIdentifier;
 import eu.europa.ec.cipa.peppol.sml.ESML;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
+import eu.europa.ec.cipa.smp.client.ESMPTransportProfile;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 import eu.europa.ec.cipa.transport.IMessageMetadata;
 import eu.europa.ec.cipa.transport.MessageMetadata;
@@ -66,7 +67,7 @@ import eu.europa.ec.cipa.transport.start.client.AccessPointClient;
 
 /**
  * Example for pinging a single Access Point
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public class ExamplePingAccessPoint {
@@ -90,7 +91,10 @@ public class ExamplePingAccessPoint {
     // SMP client
     final SMPServiceCaller aServiceCaller = new SMPServiceCaller (PI_alfa1lab, SML_INFO);
     // get service info
-    return aServiceCaller.getEndpointAddress (PI_alfa1lab, DOCUMENT_INVOICE, PROCESS_BII04);
+    return aServiceCaller.getEndpointAddress (PI_alfa1lab,
+                                              DOCUMENT_INVOICE,
+                                              PROCESS_BII04,
+                                              ESMPTransportProfile.TRANSPORT_PROFILE_START);
   }
 
   @Nonnull

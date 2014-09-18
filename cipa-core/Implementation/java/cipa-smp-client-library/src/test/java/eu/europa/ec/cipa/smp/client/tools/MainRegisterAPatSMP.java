@@ -64,13 +64,13 @@ import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import eu.europa.ec.cipa.peppol.identifier.doctype.EPredefinedDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.EPredefinedProcessIdentifier;
-import eu.europa.ec.cipa.smp.client.CSMPIdentifier;
+import eu.europa.ec.cipa.smp.client.ESMPTransportProfile;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 
 /**
  * This tool lets you register a single AP at an SMP. All the constants must be
  * modified before the tool can be executed!
- * 
+ *
  * @author PEPPOL.AT, BRZ. Philip Helger
  */
 public final class MainRegisterAPatSMP {
@@ -157,7 +157,7 @@ public final class MainRegisterAPatSMP {
               {
                 final EndpointType aEndpoint = aObjFactory.createEndpointType ();
                 aEndpoint.setEndpointReference (new W3CEndpointReferenceBuilder ().address (AP_ENDPOINTREF).build ());
-                aEndpoint.setTransportProfile (CSMPIdentifier.TRANSPORT_PROFILE_START);
+                aEndpoint.setTransportProfile (ESMPTransportProfile.TRANSPORT_PROFILE_START.getID ());
                 aEndpoint.setCertificate (AP_CERT_STRING);
                 aEndpoint.setServiceActivationDate (aStartDate);
                 aEndpoint.setServiceExpirationDate (aEndDate);

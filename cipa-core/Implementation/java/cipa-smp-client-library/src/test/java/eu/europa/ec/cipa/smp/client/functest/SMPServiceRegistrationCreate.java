@@ -61,7 +61,7 @@ import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
-import eu.europa.ec.cipa.smp.client.CSMPIdentifier;
+import eu.europa.ec.cipa.smp.client.ESMPTransportProfile;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 
 /**
@@ -108,7 +108,7 @@ public final class SMPServiceRegistrationCreate {
             {
               final EndpointType aEndpoint = s_aOF.createEndpointType ();
               aEndpoint.setEndpointReference (START_AP_ENDPOINTREF);
-              aEndpoint.setTransportProfile (CSMPIdentifier.TRANSPORT_PROFILE_START);
+              aEndpoint.setTransportProfile (ESMPTransportProfile.TRANSPORT_PROFILE_START.getID ());
               aEndpoint.setCertificate (AP_CERT_STRING);
               aEndpoint.setServiceActivationDate (_createDate (2011, Calendar.JANUARY, 1));
               aEndpoint.setServiceExpirationDate (_createDate (2020, Calendar.DECEMBER, 31));

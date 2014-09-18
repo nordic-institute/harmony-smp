@@ -42,7 +42,7 @@ import java.net.URI;
 import java.net.UnknownHostException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Nonnull;
@@ -91,7 +91,7 @@ import eu.europa.ec.cipa.smp.client.exception.UnknownException;
 /**
  * This class is used for calling the SMP REST interface. This particular class
  * only contains the read-only methods!
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public class SMPServiceCallerReadonly {
@@ -133,7 +133,7 @@ public class SMPServiceCallerReadonly {
 
   /**
    * Constructor with SML lookup
-   * 
+   *
    * @param aParticipantIdentifier
    *        The participant identifier to be used. Required to build the SMP
    *        access URI.
@@ -149,7 +149,7 @@ public class SMPServiceCallerReadonly {
 
   /**
    * Constructor with SML lookup
-   * 
+   *
    * @param aParticipantIdentifier
    *        The participant identifier to be used. Required to build the SMP
    *        access URI.
@@ -169,7 +169,7 @@ public class SMPServiceCallerReadonly {
   /**
    * Constructor with a direct SMP URL.<br>
    * Remember: must be HTTP and using port 80 only!
-   * 
+   *
    * @param aSMPHost
    *        The address of the SMP service. Must be port 80 and basic http only
    *        (no https!). Example: http://smpcompany.company.org
@@ -217,7 +217,7 @@ public class SMPServiceCallerReadonly {
   }
 
   /**
-   * @return The SMP host URI we're operating on
+   * @return The SMP host URI we're operating on. Never <code>null</code>.
    */
   @Nonnull
   public URI getSMPHost () {
@@ -225,8 +225,8 @@ public class SMPServiceCallerReadonly {
   }
 
   /**
-   * Convert the passed generic exception into a more specific exception.
-   * 
+   * Convert the passed generic HTTP exception into a more specific exception.
+   *
    * @param ex
    *        The generic exception
    * @return A new SMP specific exception, using the passed exception as the
@@ -273,7 +273,7 @@ public class SMPServiceCallerReadonly {
   /**
    * Gets a list of references to the CompleteServiceGroup's owned by the
    * specified userId.
-   * 
+   *
    * @param sUserID
    *        The username for which to retrieve service groups.
    * @param aCredentials
@@ -327,7 +327,7 @@ public class SMPServiceCallerReadonly {
   /**
    * Returns a complete service group. A complete service group contains both
    * the service group and the service metadata.
-   * 
+   *
    * @param aServiceGroupID
    *        The service group id corresponding to the service group which one
    *        wants to get.
@@ -354,7 +354,7 @@ public class SMPServiceCallerReadonly {
   /**
    * Returns a complete service group. A complete service group contains both
    * the service group and the service metadata.
-   * 
+   *
    * @param aServiceGroupID
    *        The service group id corresponding to the service group which one
    *        wants to get.
@@ -382,7 +382,7 @@ public class SMPServiceCallerReadonly {
    * the service group and the service metadata. This method is handy when using
    * the results from
    * {@link #getServiceGroupReferenceList(String, BasicAuthClientCredentials)}
-   * 
+   *
    * @param aURI
    *        The URI containing the complete service group
    * @return The complete service group containing service group and service
@@ -406,7 +406,7 @@ public class SMPServiceCallerReadonly {
    * the service group and the service metadata. This method is handy when using
    * the results from
    * {@link #getServiceGroupReferenceList(String, BasicAuthClientCredentials)}
-   * 
+   *
    * @param aURI
    *        The URI containing the complete service group
    * @return The complete service group containing service group and service
@@ -431,7 +431,7 @@ public class SMPServiceCallerReadonly {
   /**
    * Returns a complete service group. A complete service group contains both
    * the service group and the service metadata.
-   * 
+   *
    * @param aSMLInfo
    *        The SML object to be used
    * @param aServiceGroupID
@@ -472,7 +472,7 @@ public class SMPServiceCallerReadonly {
   /**
    * Returns a service group. A service group references to the service
    * metadata.
-   * 
+   *
    * @param aServiceGroupID
    *        The service group id corresponding to the service group which one
    *        wants to get.
@@ -507,7 +507,7 @@ public class SMPServiceCallerReadonly {
   /**
    * Returns a service group. A service group references to the service
    * metadata.
-   * 
+   *
    * @param aSMLInfo
    *        The SML object to be used
    * @param aServiceGroupID
@@ -550,14 +550,11 @@ public class SMPServiceCallerReadonly {
 
         // Check that the certificateUID is correct.
         boolean bCertificateSubjectFound = false;
-        final Iterator <Object> aKeyInfoIter = aMetadata.getSignature ().getKeyInfo ().getContent ().iterator ();
-        outer: while (aKeyInfoIter.hasNext ()) {
-          final JAXBElement <?> aInfo = (JAXBElement <?>) aKeyInfoIter.next ();
-          final Object aInfoValue = aInfo.getValue ();
+        outer: for (final Object aObj : aMetadata.getSignature ().getKeyInfo ().getContent ()) {
+          final Object aInfoValue = ((JAXBElement <?>) aObj).getValue ();
           if (aInfoValue instanceof X509DataType) {
             final X509DataType aX509Data = (X509DataType) aInfoValue;
-            final List <Object> aX509Objects = aX509Data.getX509IssuerSerialOrX509SKIOrX509SubjectName ();
-            for (final Object aX509Obj : aX509Objects) {
+            for (final Object aX509Obj : aX509Data.getX509IssuerSerialOrX509SKIOrX509SubjectName ()) {
               final JAXBElement <?> aX509element = (JAXBElement <?>) aX509Obj;
               // Find the first subject (of type string)
               if (aX509element.getValue () instanceof String) {
@@ -590,12 +587,12 @@ public class SMPServiceCallerReadonly {
   /**
    * Gets a signed service metadata object given by its service group id and its
    * document type.
-   * 
+   *
    * @param aServiceGroupID
    *        The service group id of the service metadata to get.
    * @param aDocumentTypeID
    *        The document type of the service metadata to get.
-   * @return A signed service metadata object.
+   * @return A signed service metadata object. Never <code>null</code>.
    * @throws UnauthorizedException
    *         A HTTP Forbidden was received, should not happen.
    * @throws NotFoundException
@@ -618,6 +615,17 @@ public class SMPServiceCallerReadonly {
     return getServiceRegistration (aFullResource);
   }
 
+  /**
+   * Gets a signed service metadata object given by its service group id and its
+   * document type.
+   *
+   * @param aServiceGroupID
+   *        The service group id of the service metadata to get.
+   * @param aDocumentTypeID
+   *        The document type of the service metadata to get.
+   * @return A signed service metadata object or <code>null</code> if any error
+   *         occurs.
+   */
   @Nullable
   public SignedServiceMetadataType getServiceRegistrationOrNull (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                                                  @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID) throws Exception {
@@ -632,7 +640,7 @@ public class SMPServiceCallerReadonly {
   /**
    * Gets a signed service metadata object given by its service group id and its
    * document type.
-   * 
+   *
    * @param aSMLInfo
    *        The SML object to be used
    * @param aServiceGroupID
@@ -658,9 +666,20 @@ public class SMPServiceCallerReadonly {
   }
 
   @Nullable
+  @Deprecated
   public EndpointType getEndpoint (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                    @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
                                    @Nonnull final IReadonlyProcessIdentifier aProcessID) throws Exception {
+    // Backwards compatibility
+    final ESMPTransportProfile eTransportProfile = ESMPTransportProfile.TRANSPORT_PROFILE_START;
+    return getEndpoint (aServiceGroupID, aDocumentTypeID, aProcessID, eTransportProfile);
+  }
+
+  @Nullable
+  public EndpointType getEndpoint (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
+                                   @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
+                                   @Nonnull final IReadonlyProcessIdentifier aProcessID,
+                                   @Nonnull final ESMPTransportProfile eTransportProfile) throws Exception {
     ValueEnforcer.notNull (aServiceGroupID, "serviceGroupID");
     ValueEnforcer.notNull (aDocumentTypeID, "DocumentTypeID");
     ValueEnforcer.notNull (aProcessID, "ProcessID");
@@ -668,14 +687,41 @@ public class SMPServiceCallerReadonly {
     // Get meta data for participant/documentType
     final SignedServiceMetadataType aSignedServiceMetadata = getServiceRegistrationOrNull (aServiceGroupID,
                                                                                            aDocumentTypeID);
-    return aSignedServiceMetadata == null ? null : getEndpoint (aSignedServiceMetadata, aProcessID);
+    return aSignedServiceMetadata == null ? null : getEndpoint (aSignedServiceMetadata, aProcessID, eTransportProfile);
   }
 
   @Nullable
+  @Deprecated
   public EndpointType getEndpoint (@Nonnull final SignedServiceMetadataType aSignedServiceMetadata,
                                    @Nonnull final IReadonlyProcessIdentifier aProcessID) throws Exception {
+    // Backwards compatibility
+    final ESMPTransportProfile eTransportProfile = ESMPTransportProfile.TRANSPORT_PROFILE_START;
+    return getEndpoint (aSignedServiceMetadata, aProcessID, eTransportProfile);
+  }
+
+  /**
+   * Extract the Endpoint from the signedServiceMetadata that matches the passed
+   * process ID and the optional required transport profile.
+   *
+   * @param aSignedServiceMetadata
+   *        The signed service meta data object (e.g. from a call to
+   *        {@link #getServiceRegistrationOrNull(IReadonlyParticipantIdentifier, IReadonlyDocumentTypeIdentifier)}
+   *        . May not be <code>null</code>.
+   * @param aProcessID
+   *        The process identifier to be looked up. May not be <code>null</code>
+   *        .
+   * @param eTransportProfile
+   *        The required transport profile to be used. May not be
+   *        <code>null</code>.
+   * @return <code>null</code> if no matchiong endpoint was found
+   */
+  @Nullable
+  public EndpointType getEndpoint (@Nonnull final SignedServiceMetadataType aSignedServiceMetadata,
+                                   @Nonnull final IReadonlyProcessIdentifier aProcessID,
+                                   @Nonnull final ESMPTransportProfile eTransportProfile) {
     ValueEnforcer.notNull (aSignedServiceMetadata, "SignedServiceMetadata");
     ValueEnforcer.notNull (aProcessID, "ProcessID");
+    ValueEnforcer.notNull (eTransportProfile, "TransportProfile");
 
     // Iterate all processes
     final List <ProcessType> aAllProcesses = aSignedServiceMetadata.getServiceMetadata ()
@@ -687,26 +733,47 @@ public class SMPServiceCallerReadonly {
       if (IdentifierUtils.areIdentifiersEqual (aProcessType.getProcessIdentifier (), aProcessID)) {
         // Get all endpoints
         final List <EndpointType> aEndpoints = aProcessType.getServiceEndpointList ().getEndpoint ();
-        if (aEndpoints.size () != 1)
+        // Filter by required transport profile
+        final List <EndpointType> aRelevantEndpoints = new ArrayList <EndpointType> ();
+        for (final EndpointType aEndpoint : aEndpoints)
+          if (eTransportProfile.getID ().equals (aEndpoint.getTransportProfile ()))
+            aRelevantEndpoints.add (aEndpoint);
+
+        if (aRelevantEndpoints.size () != 1) {
           s_aLogger.warn ("Found " +
-                          aEndpoints.size () +
+                          aRelevantEndpoints.size () +
                           " endpoints for process " +
                           aProcessID +
-                          ": " +
-                          aEndpoints.toString ());
+                          " and transport profile " +
+                          eTransportProfile.getID () +
+                          (aRelevantEndpoints.isEmpty () ? "" : ": " +
+                                                                aRelevantEndpoints.toString () +
+                                                                " - using the first one"));
+        }
 
-        // Extract the address
-        return ContainerHelper.getFirstElement (aEndpoints);
+        // Use the first endpoint or null
+        return ContainerHelper.getFirstElement (aRelevantEndpoints);
       }
     }
     return null;
   }
 
   @Nullable
+  @Deprecated
   public String getEndpointAddress (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                     @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
                                     @Nonnull final IReadonlyProcessIdentifier aProcessID) throws Exception {
-    final EndpointType aEndpoint = getEndpoint (aServiceGroupID, aDocumentTypeID, aProcessID);
+    // Backwards compatibility
+    final ESMPTransportProfile eTransportProfile = ESMPTransportProfile.TRANSPORT_PROFILE_START;
+    return getEndpointAddress (aServiceGroupID, aDocumentTypeID, aProcessID, eTransportProfile);
+  }
+
+  @Nullable
+  public String getEndpointAddress (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
+                                    @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
+                                    @Nonnull final IReadonlyProcessIdentifier aProcessID,
+                                    @Nonnull final ESMPTransportProfile eTransportProfile) throws Exception {
+    final EndpointType aEndpoint = getEndpoint (aServiceGroupID, aDocumentTypeID, aProcessID, eTransportProfile);
     return getEndpointAddress (aEndpoint);
   }
 
@@ -716,10 +783,21 @@ public class SMPServiceCallerReadonly {
   }
 
   @Nullable
+  @Deprecated
   public String getEndpointCertificateString (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                               @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
                                               @Nonnull final IReadonlyProcessIdentifier aProcessID) throws Exception {
-    final EndpointType aEndpoint = getEndpoint (aServiceGroupID, aDocumentTypeID, aProcessID);
+    // Backwards compatibility
+    final ESMPTransportProfile eTransportProfile = ESMPTransportProfile.TRANSPORT_PROFILE_START;
+    return getEndpointCertificateString (aServiceGroupID, aDocumentTypeID, aProcessID, eTransportProfile);
+  }
+
+  @Nullable
+  public String getEndpointCertificateString (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
+                                              @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
+                                              @Nonnull final IReadonlyProcessIdentifier aProcessID,
+                                              @Nonnull final ESMPTransportProfile eTransportProfile) throws Exception {
+    final EndpointType aEndpoint = getEndpoint (aServiceGroupID, aDocumentTypeID, aProcessID, eTransportProfile);
     return aEndpoint == null ? null : aEndpoint.getCertificate ();
   }
 
@@ -729,10 +807,24 @@ public class SMPServiceCallerReadonly {
   }
 
   @Nullable
+  @Deprecated
   public X509Certificate getEndpointCertificate (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                                  @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
                                                  @Nonnull final IReadonlyProcessIdentifier aProcessID) throws Exception {
-    final String sCertString = getEndpointCertificateString (aServiceGroupID, aDocumentTypeID, aProcessID);
+    // Backwards compatibility
+    final ESMPTransportProfile eTransportProfile = ESMPTransportProfile.TRANSPORT_PROFILE_START;
+    return getEndpointCertificate (aServiceGroupID, aDocumentTypeID, aProcessID, eTransportProfile);
+  }
+
+  @Nullable
+  public X509Certificate getEndpointCertificate (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
+                                                 @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
+                                                 @Nonnull final IReadonlyProcessIdentifier aProcessID,
+                                                 @Nonnull final ESMPTransportProfile eTransportProfile) throws Exception {
+    final String sCertString = getEndpointCertificateString (aServiceGroupID,
+                                                             aDocumentTypeID,
+                                                             aProcessID,
+                                                             eTransportProfile);
     return CertificateUtils.convertStringToCertficate (sCertString);
   }
 

@@ -58,7 +58,7 @@ import eu.europa.ec.cipa.peppol.sml.ESML;
 
 /**
  * Test class for class {@link SMPServiceCaller}.
- * 
+ *
  * @author philip
  */
 public final class FuncTestSMPServiceCallerPredefined {
@@ -75,12 +75,14 @@ public final class FuncTestSMPServiceCallerPredefined {
     try {
       sEndpointAddress = new SMPServiceCaller (PI_alfa1lab, ESML.PRODUCTION).getEndpointAddress (PI_alfa1lab,
                                                                                                  DOCUMENT_INVOICE,
-                                                                                                 PROCESS_BII04);
+                                                                                                 PROCESS_BII04,
+                                                                                                 ESMPTransportProfile.TRANSPORT_PROFILE_START);
       assertEquals ("https://start-ap.alfa1lab.com:443/accessPointService", sEndpointAddress);
 
       sEndpointAddress = new SMPServiceCaller (PI_helseVest, ESML.PRODUCTION).getEndpointAddress (PI_helseVest,
                                                                                                   DOCUMENT_INVOICE,
-                                                                                                  PROCESS_BII04);
+                                                                                                  PROCESS_BII04,
+                                                                                                  ESMPTransportProfile.TRANSPORT_PROFILE_START);
       assertEquals ("https://peppolap.ibxplatform.net:8443/accessPointService", sEndpointAddress);
     }
     catch (final ClientHandlerException ex) {
@@ -96,13 +98,15 @@ public final class FuncTestSMPServiceCallerPredefined {
     try {
       aEndpointCertificate = new SMPServiceCaller (PI_alfa1lab, ESML.PRODUCTION).getEndpointCertificate (PI_alfa1lab,
                                                                                                          DOCUMENT_INVOICE,
-                                                                                                         PROCESS_BII04);
+                                                                                                         PROCESS_BII04,
+                                                                                                         ESMPTransportProfile.TRANSPORT_PROFILE_START);
       assertNotNull (aEndpointCertificate);
       assertEquals ("26596158403896804150415214044400823812", aEndpointCertificate.getSerialNumber ().toString ());
 
       aEndpointCertificate = new SMPServiceCaller (PI_helseVest, ESML.PRODUCTION).getEndpointCertificate (PI_helseVest,
                                                                                                           DOCUMENT_INVOICE,
-                                                                                                          PROCESS_BII04);
+                                                                                                          PROCESS_BII04,
+                                                                                                          ESMPTransportProfile.TRANSPORT_PROFILE_START);
       assertNotNull (aEndpointCertificate);
       assertEquals ("8332247145251202016784644749780168666", aEndpointCertificate.getSerialNumber ().toString ());
     }

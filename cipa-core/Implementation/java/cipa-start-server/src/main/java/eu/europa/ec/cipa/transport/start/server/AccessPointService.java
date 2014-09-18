@@ -114,6 +114,7 @@ import eu.europa.ec.cipa.peppol.sml.SimpleSMLInfo;
 import eu.europa.ec.cipa.peppol.utils.CertificateUtils;
 import eu.europa.ec.cipa.peppol.utils.ExceptionUtils;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
+import eu.europa.ec.cipa.smp.client.ESMPTransportProfile;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 import eu.europa.ec.cipa.smp.client.SMPServiceCallerReadonly;
 import eu.europa.ec.cipa.transport.IMessageMetadata;
@@ -320,7 +321,10 @@ public class AccessPointService {
       if (s_aLogger.isDebugEnabled ())
         s_aLogger.debug (sMessageID + " Performing SMP lookup at " + aSMPClient.getSMPHost ());
 
-      return aSMPClient.getEndpoint (aRecipientID, aMetadata.getDocumentTypeID (), aMetadata.getProcessID ());
+      return aSMPClient.getEndpoint (aRecipientID,
+                                     aMetadata.getDocumentTypeID (),
+                                     aMetadata.getProcessID (),
+                                     ESMPTransportProfile.TRANSPORT_PROFILE_START);
     }
     catch (final Throwable t) {
       throw ExceptionUtils.createFaultMessage (sMessageID +

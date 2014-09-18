@@ -37,23 +37,39 @@
  */
 package eu.europa.ec.cipa.smp.client;
 
-import javax.annotation.concurrent.Immutable;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.id.IHasID;
+import com.helger.commons.lang.EnumHelper;
 
 /**
- * This class contains some important SMP constants
+ * This class contains the transport profiles for service registrations.
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-@Immutable
-@Deprecated
-public final class CSMPIdentifier {
-  /**
-   * The START transport profile to be used in EndPointType objects
-   *
-   * @deprecated Use {@link ESMPTransportProfile} instead
-   */
-  @Deprecated
-  public static final String TRANSPORT_PROFILE_START = "busdox-transport-start";
+public enum ESMPTransportProfile implements IHasID <String> {
+  /** The START transport profile to be used in EndPointType objects */
+  TRANSPORT_PROFILE_START ("busdox-transport-start"),
 
-  private CSMPIdentifier () {}
+  /** The AS2 transport profile to be used in EndPointType objects */
+  TRANSPORT_PROFILE_AS2 ("busdox-transport-as2-ver1p0");
+
+  private final String m_sID;
+
+  private ESMPTransportProfile (@Nonnull @Nonempty final String sID) {
+    m_sID = sID;
+  }
+
+  @Nonnull
+  @Nonempty
+  public String getID () {
+    return m_sID;
+  }
+
+  @Nullable
+  public static ESMPTransportProfile getFromIDOrNull (@Nullable final String sID) {
+    return EnumHelper.getFromIDOrNull (ESMPTransportProfile.class, sID);
+  }
 }
