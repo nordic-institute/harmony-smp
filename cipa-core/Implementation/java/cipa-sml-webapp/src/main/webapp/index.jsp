@@ -49,7 +49,7 @@
     </style>
   </head>
   <body>
-    <h1>PEPPOL SML waiting for you</h1>
+    <h1>CIPA E-delivery SML waiting for you</h1>
     <ul>
     <%
       if (eu.europa.ec.cipa.sml.server.dns.DNSClientConfiguration.isEnabled()) {
