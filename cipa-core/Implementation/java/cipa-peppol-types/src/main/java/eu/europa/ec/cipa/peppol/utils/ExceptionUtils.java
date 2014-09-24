@@ -51,7 +51,7 @@ import com.helger.commons.lang.StackTraceHelper;
 
 /**
  * Misc. exception utility methods.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -66,9 +66,11 @@ public final class ExceptionUtils {
 
   /**
    * Create a {@link StartException} from an existing {@link Throwable}.
-   * 
+   *
    * @param sAction
    *        The action describing what went wrong.
+   * @param sDetails
+   *        The exception details
    * @param t
    *        The throwable to be converted. May be <code>null</code>.
    * @return The newly created {@link StartException} object. Never

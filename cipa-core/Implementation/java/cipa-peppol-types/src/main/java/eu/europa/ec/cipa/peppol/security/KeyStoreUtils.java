@@ -39,13 +39,11 @@ package eu.europa.ec.cipa.peppol.security;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.GeneralSecurityException;
 import java.security.KeyStore;
 import java.security.KeyStore.PasswordProtection;
 import java.security.KeyStore.ProtectionParameter;
 import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableEntryException;
-import java.security.cert.CertificateException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -118,10 +116,13 @@ public final class KeyStoreUtils {
    *        password is required.
    * @return The Java key-store object.
    * @see KeyStore#load(InputStream, char[])
+   * @throws GeneralSecurityException
+   *         In case of a key store error
+   * @throws IOException
+   *         In case key store loading fails
    */
   @Nonnull
-  public static KeyStore loadKeyStore (@Nonnull final String sKeyStorePath, @Nullable final String sKeyStorePassword) throws NoSuchAlgorithmException,
-                                                                                                                     CertificateException,
+  public static KeyStore loadKeyStore (@Nonnull final String sKeyStorePath, @Nullable final String sKeyStorePassword) throws GeneralSecurityException,
                                                                                                                      IOException {
     return loadKeyStore (sKeyStorePath, sKeyStorePassword == null ? null : sKeyStorePassword.toCharArray ());
   }
@@ -136,10 +137,13 @@ public final class KeyStoreUtils {
    *        password is required.
    * @return The Java key-store object.
    * @see KeyStore#load(InputStream, char[])
+   * @throws GeneralSecurityException
+   *         In case of a key store error
+   * @throws IOException
+   *         In case key store loading fails
    */
   @Nonnull
-  public static KeyStore loadKeyStore (@Nonnull final String sKeyStorePath, @Nullable final char [] aKeyStorePassword) throws NoSuchAlgorithmException,
-                                                                                                                      CertificateException,
+  public static KeyStore loadKeyStore (@Nonnull final String sKeyStorePath, @Nullable final char [] aKeyStorePassword) throws GeneralSecurityException,
                                                                                                                       IOException {
     // Open the resource stream
     InputStream aIS = ClassPathResource.getInputStream (sKeyStorePath);
@@ -176,19 +180,15 @@ public final class KeyStoreUtils {
    *        If it is not <code>null</code> the same password will be used in the
    *        created key store
    * @return The created in-memory key store
-   * @throws KeyStoreException
-   * @throws NoSuchAlgorithmException
-   * @throws UnrecoverableEntryException
-   * @throws CertificateException
+   * @throws GeneralSecurityException
+   *         In case of a key store error
    * @throws IOException
+   *         In case key store loading fails
    */
   @Nonnull
   public static KeyStore createKeyStoreWithOnlyOneItem (@Nonnull final KeyStore aBaseKeyStore,
                                                         @Nonnull final String sAliasToCopy,
-                                                        @Nullable final char [] aAliasPassword) throws KeyStoreException,
-                                                                                               NoSuchAlgorithmException,
-                                                                                               UnrecoverableEntryException,
-                                                                                               CertificateException,
+                                                        @Nullable final char [] aAliasPassword) throws GeneralSecurityException,
                                                                                                IOException {
     ValueEnforcer.notNull (aBaseKeyStore, "BaseKeyStore");
     ValueEnforcer.notNull (sAliasToCopy, "AliasToCopy");
