@@ -18,6 +18,7 @@ import org.xbill.DNS.KEYRecord;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Message;
 import org.xbill.DNS.Name;
+import org.xbill.DNS.Options;
 import org.xbill.DNS.Rcode;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.Resolver;
@@ -110,7 +111,7 @@ public class DNSClientImpl implements IDNSClient {
 		Record[] t = new Record[records.size()];
 		records.toArray(t);
 		aDNSUpdate.add(t);
-		final Message response = sendMessgeToDnsServerBulk(aDNSUpdate);
+		final Message response = sendMessgeToDnsServer(aDNSUpdate);
 		_validateDNSResponse(response);
 	}
 
@@ -124,7 +125,7 @@ public class DNSClientImpl implements IDNSClient {
 		Record[] t = new Record[records.size()];
 		records.toArray(t);
 		aDNSUpdate.delete(t);
-		final Message response = sendMessgeToDnsServerBulk(aDNSUpdate);
+		final Message response = sendMessgeToDnsServer(aDNSUpdate);
 		_validateDNSResponse(response);
 	}
 
@@ -187,28 +188,17 @@ public class DNSClientImpl implements IDNSClient {
 		return SIG0Rec;
 	}
 	
-	protected Message sendMessgeToDnsServerBulk(Message m)
-	{
-		try {
-			Thread.sleep(600);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		}
-		return sendMessgeToDnsServer(m);
-	}
-
 	protected Message sendMessgeToDnsServer(Message m) {
 		boolean SIG0Enabled = false;
 		try {
-			
+			Options.set("sig0validity", "6000");
 			if (DNSClientConfiguration.isEnabled()) {
 				SIG0Enabled = DNSClientConfiguration.getSIG0();
 			}
 			if (SIG0Enabled) {
 				SIG0KeyProvider prov = new SIG0KeyProvider();
 				SIG0.signMessage(m, getSIG0Record(), prov.getPrivateSIG0Key(), null);
+				Thread.sleep(2000);
 			}
 			return createResolver().send(m);
 		} catch (IOException e) {
