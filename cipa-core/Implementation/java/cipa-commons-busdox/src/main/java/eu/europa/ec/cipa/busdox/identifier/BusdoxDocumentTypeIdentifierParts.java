@@ -53,7 +53,7 @@ import com.helger.commons.string.ToStringGenerator;
 /**
  * A standalone wrapper class for the {@link IBusdoxDocumentTypeIdentifierParts}
  * interface. The implementation is immutable.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -64,7 +64,7 @@ public final class BusdoxDocumentTypeIdentifierParts implements IBusdoxDocumentT
 
   /**
    * Constructor.
-   * 
+   *
    * @param sRootNS
    *        The root namespace. May neither be <code>null</code> nor empty
    * @param sLocalName
@@ -136,7 +136,7 @@ public final class BusdoxDocumentTypeIdentifierParts implements IBusdoxDocumentT
   /**
    * Convert an {@link IBusdoxDocumentTypeIdentifierParts} object to a full
    * document identifier value (without a scheme!)
-   * 
+   *
    * @param aParts
    *        The object to be converted. May not be <code>null</code>.
    * @return The assembled document identifier value. Never <code>null</code>
@@ -161,8 +161,9 @@ public final class BusdoxDocumentTypeIdentifierParts implements IBusdoxDocumentT
    * Split an existing document identifier value (without the scheme) into the
    * different parts.<br>
    * A document identifier value has the following layout:<br>
-   * <root NS>::<document element local name>[##<sub type identifier>]
-   * 
+   * <code>&lt;root NS&gt;::&lt;document element local name&gt;[##&lt;sub type
+   * identifier&gt;]</code>
+   *
    * @param sDocTypeID
    *        The document identifier value to be split. May neither be
    *        <code>null</code> nor empty.
