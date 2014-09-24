@@ -48,7 +48,7 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 
 /**
  * Test class for class {@link ConfiguredDNSMapperTest}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Andreas Haberl
  */
 public final class ConfiguredDNSMapperTest {
@@ -56,8 +56,9 @@ public final class ConfiguredDNSMapperTest {
    * Test method for
    * {@link eu.europa.ec.cipa.peppol.ipmapper.ConfiguredDNSMapper#getMappedDNSHost(java.net.InetAddress)}
    * .
-   * 
+   *
    * @throws UnknownHostException
+   *         Hopefully never
    */
   @Test
   public void testMapInternalInetAddress () throws UnknownHostException {
