@@ -73,7 +73,7 @@ public class RunIt {
 				if (rec.getType() == Type.CNAME) {
 					out.add(rec);
 					i++;
-					if (i == 200) {
+					if (i == 400) {
 						getDnsClient().deleteList(out);
 						out.clear();
 						i = 0;
@@ -130,7 +130,7 @@ public class RunIt {
 				Name n = Name.fromString(ent.getName(), Name.fromString(identieferZoneSuffix + "." + DNSClientConfiguration.getZone() + "."));
 				updateList.add(new CNAMERecord(n, DClass.IN, client.getTTLSecs(), Name.fromString(ent.getHost())));
 				i++;
-				if (i == 200) {
+				if (i == 400) {
 					i = 0;
 					getDnsClient().addRecords(updateList);
 					updateList.clear();
