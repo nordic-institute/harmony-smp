@@ -12,20 +12,25 @@ import java.util.Properties;
 public class KeystoreUtil
 {
 
-	private Properties properties = PropertiesUtil.getProperties(null);
+	private static Properties properties = PropertiesUtil.getProperties(null);
 	private KeyStore keyStore = null;
-	private String pathToFile;
-	private String password;
+	private String keystorePath;
+	private String keystorePwd;
 	
 	
 	public KeystoreUtil() throws Exception
 	{
-		pathToFile = properties.getProperty(PropertiesUtil.KEYSTORE_PATH);
-		password = properties.getProperty(PropertiesUtil.KEYSTORE_PASS);
+		this(properties.getProperty(PropertiesUtil.KEYSTORE_PATH), properties.getProperty(PropertiesUtil.KEYSTORE_PASS));
+		
+	}
+	
+	public KeystoreUtil(String keystorePath, String keystorePwd) throws Exception{
+		this.keystorePath = keystorePath;
+		this.keystorePwd= keystorePwd;
 		
 		String[] keystoreTypes = {"pkcs12", "jks", "jceks"};
         
-        File inFile = new File(pathToFile);
+        File inFile = new File(keystorePath);
         FileInputStream inStream = null;
         try
         {
@@ -42,7 +47,7 @@ public class KeystoreUtil
         				keyStore = KeyStore.getInstance(keystoreTypes[i]);      //but BouncyCastle doesnt have an implementation for jks! so we try with the default implementation
             		try
             		{
-            			keyStore.load(inStream, password.toCharArray());
+            			keyStore.load(inStream, keystorePwd.toCharArray());
             		}
             		catch (IOException e)
             		{
@@ -62,8 +67,8 @@ public class KeystoreUtil
             if (inStream != null)
                 inStream.close();
         }
+		
 	}
-	
 	
 	/** Creates a new certificate in the AS2 endpoint's truststore
 	 * @return
@@ -74,8 +79,8 @@ public class KeystoreUtil
 		//String uniqueAlias = ensureUniqueAliasName(keyStore, alias);
 		keyStore.setCertificateEntry(alias, cert);
 		
-		FileOutputStream output = new FileOutputStream(pathToFile);
-		keyStore.store(output, password.toCharArray());
+		FileOutputStream output = new FileOutputStream(keystorePath);
+		keyStore.store(output, keystorePwd.toCharArray());
 		output.close();
 	}
 	

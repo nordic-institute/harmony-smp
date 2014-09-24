@@ -180,7 +180,7 @@ public class AS4ReceiverServlet extends HttpServlet
 				}
 			}
 			if (!producerKnown)
-				as4Interface.createPartner(commonName, (String)inputMap.get("processIdentifier"), (String)inputMap.get("documentIdentifier"), null, cert); //TODO: is it possible to get the sender's endpointURL at this point?	
+				//as4Interface.createPartner(commonName, (String)inputMap.get("processIdentifier"), (String)inputMap.get("documentIdentifier"), null, cert); //TODO: is it possible to get the sender's endpointURL at this point?	
 
 			//now we finally redirect the request to the AS4 endpoint
 			forwardToAS4Endpoint(req, resp, buffer);
