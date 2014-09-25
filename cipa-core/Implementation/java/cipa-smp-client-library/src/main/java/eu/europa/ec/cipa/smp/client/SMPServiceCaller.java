@@ -71,10 +71,11 @@ import eu.europa.ec.cipa.smp.client.exception.UnknownException;
 /**
  * This class is used for calling the SMP REST interface. This particular class
  * contains the writing methods.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class SMPServiceCaller extends SMPServiceCallerReadonly {
+public final class SMPServiceCaller extends SMPServiceCallerReadonly
+{
   private static final Logger s_aLogger = LoggerFactory.getLogger (SMPServiceCaller.class);
 
   // Members - free to change from here on
@@ -82,7 +83,7 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
 
   /**
    * Constructor with SML lookup
-   * 
+   *
    * @param aParticipantIdentifier
    *        The participant identifier to be used. Required to build the SMP
    *        access URI.
@@ -92,13 +93,14 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
    *      ISMLInfo)
    */
   public SMPServiceCaller (@Nonnull final IReadonlyParticipantIdentifier aParticipantIdentifier,
-                           @Nonnull final ISMLInfo aSMLInfo) {
+                           @Nonnull final ISMLInfo aSMLInfo)
+  {
     super (aParticipantIdentifier, aSMLInfo);
   }
 
   /**
    * Constructor with SML lookup
-   * 
+   *
    * @param aParticipantIdentifier
    *        The participant identifier to be used. Required to build the SMP
    *        access URI.
@@ -111,25 +113,28 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
    *      String)
    */
   public SMPServiceCaller (@Nonnull final IReadonlyParticipantIdentifier aParticipantIdentifier,
-                           @Nonnull @Nonempty final String sSMLZoneName) {
+                           @Nonnull @Nonempty final String sSMLZoneName)
+  {
     super (aParticipantIdentifier, sSMLZoneName);
   }
 
   /**
    * Constructor with a direct SMP URL.<br>
    * Remember: must be HTTP and using port 80 only!
-   * 
+   *
    * @param aSMPHost
    *        The address of the SMP service. Must be port 80 and basic http only
    *        (no https!). Example: http://smpcompany.company.org
    */
-  public SMPServiceCaller (@Nonnull final URI aSMPHost) {
+  public SMPServiceCaller (@Nonnull final URI aSMPHost)
+  {
     super (aSMPHost);
   }
 
   private static void _saveServiceGroup (@Nonnull final WebResource aFullResource,
                                          @Nonnull final ServiceGroupType aServiceGroup,
-                                         @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
+                                         @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
+  {
     ValueEnforcer.notNull (aFullResource, "FullResource");
     ValueEnforcer.notNull (aServiceGroup, "ServiceGroup");
     ValueEnforcer.notNull (aCredentials, "Credentials");
@@ -137,13 +142,15 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("_saveServiceGroup from " + aFullResource.getURI ());
 
-    try {
+    try
+    {
       final Builder aBuilderWithAuth = aFullResource.header (HttpHeaders.AUTHORIZATION, aCredentials.getRequestValue ());
 
       // Important to build a JAXBElement around the service group
       aBuilderWithAuth.type (MediaType.TEXT_XML).put (s_aObjFactory.createServiceGroup (aServiceGroup));
     }
-    catch (final UniformInterfaceException e) {
+    catch (final UniformInterfaceException e)
+    {
       throw _getConvertedException (e);
     }
   }
@@ -151,11 +158,13 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
   /**
    * Saves a service group. The metadata references should not be set and are
    * not used.
-   * 
+   *
    * @param aServiceGroup
    *        The service group to save.
    * @param aCredentials
    *        The username and password to use as aCredentials.
+   * @throws Exception
+   *         in case something goes wrong
    * @throws UnauthorizedException
    *         The username or password was not correct.
    * @throws NotFoundException
@@ -167,7 +176,8 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
    *         The request was not well formed.
    */
   public void saveServiceGroup (@Nonnull final ServiceGroupType aServiceGroup,
-                                @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
+                                @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
+  {
     ValueEnforcer.notNull (aServiceGroup, "ServiceGroup");
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
@@ -178,11 +188,13 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
   /**
    * Saves a service group. The metadata references should not be set and are
    * not used.
-   * 
+   *
    * @param aParticipantID
    *        The participant identifier for which the service group is to save.
    * @param aCredentials
    *        The username and password to use as aCredentials.
+   * @throws Exception
+   *         in case something goes wrong
    * @throws UnauthorizedException
    *         The username or password was not correct.
    * @throws NotFoundException
@@ -194,7 +206,8 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
    *         The request was not well formed.
    */
   public void saveServiceGroup (@Nonnull final IReadonlyParticipantIdentifier aParticipantID,
-                                @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
+                                @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
+  {
     ValueEnforcer.notNull (aParticipantID, "ParticipantID");
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
@@ -204,29 +217,34 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
   }
 
   private static void _deleteServiceGroup (@Nonnull final WebResource aFullResource,
-                                           @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
+                                           @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
+  {
     ValueEnforcer.notNull (aFullResource, "FullResource");
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("_deleteServiceGroup from " + aFullResource.getURI ());
 
-    try {
+    try
+    {
       final Builder aBuilderWithAuth = aFullResource.header (HttpHeaders.AUTHORIZATION, aCredentials.getRequestValue ());
       aBuilderWithAuth.delete ();
     }
-    catch (final UniformInterfaceException ex) {
+    catch (final UniformInterfaceException ex)
+    {
       throw _getConvertedException (ex);
     }
   }
 
   /**
    * Deletes a service group given by its service group id.
-   * 
+   *
    * @param aServiceGroupID
    *        The service group id of the service group to delete.
    * @param aCredentials
    *        The username and password to use as aCredentials.
+   * @throws Exception
+   *         in case something goes wrong
    * @throws NotFoundException
    *         The service group id did not exist.
    * @throws UnauthorizedException
@@ -237,7 +255,8 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
    *         The request was not well formed.
    */
   public void deleteServiceGroup (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
-                                  @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
+                                  @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
+  {
     ValueEnforcer.notNull (aServiceGroupID, "ServiceGroupID");
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
@@ -247,7 +266,8 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
 
   private static void _saveServiceRegistration (@Nonnull final WebResource aFullResource,
                                                 @Nonnull final ServiceMetadataType aServiceMetadata,
-                                                @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
+                                                @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
+  {
     ValueEnforcer.notNull (aFullResource, "FullResource");
     ValueEnforcer.notNull (aServiceMetadata, "ServiceMetadata");
     ValueEnforcer.notNull (aCredentials, "Credentials");
@@ -255,13 +275,15 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("_saveServiceRegistration from " + aFullResource.getURI ());
 
-    try {
+    try
+    {
       final Builder aBuilderWithAuth = aFullResource.header (HttpHeaders.AUTHORIZATION, aCredentials.getRequestValue ());
 
       // Create JAXBElement!
       aBuilderWithAuth.type (MediaType.TEXT_XML).put (s_aObjFactory.createServiceMetadata (aServiceMetadata));
     }
-    catch (final UniformInterfaceException e) {
+    catch (final UniformInterfaceException e)
+    {
       throw _getConvertedException (e);
     }
   }
@@ -269,11 +291,13 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
   /**
    * Saves a service metadata object. The ServiceGroupReference value is
    * ignored.
-   * 
+   *
    * @param aServiceMetadata
    *        The service metadata object to save.
    * @param aCredentials
    *        The username and password to use as aCredentials.
+   * @throws Exception
+   *         in case something goes wrong
    * @throws UnauthorizedException
    *         The username or password was not correct.
    * @throws NotFoundException
@@ -285,7 +309,8 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
    *         The request was not well formed.
    */
   public void saveServiceRegistration (@Nonnull final ServiceMetadataType aServiceMetadata,
-                                       @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
+                                       @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
+  {
     ValueEnforcer.notNull (aServiceMetadata, "ServiceMetadata");
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
@@ -306,18 +331,21 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
   }
 
   private static void _deleteServiceRegistration (@Nonnull final WebResource aFullResource,
-                                                  @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
+                                                  @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
+  {
     ValueEnforcer.notNull (aFullResource, "FullResource");
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("_deleteServiceRegistration from " + aFullResource.getURI ());
 
-    try {
+    try
+    {
       final Builder aBuilderWithAuth = aFullResource.header (HttpHeaders.AUTHORIZATION, aCredentials.getRequestValue ());
       aBuilderWithAuth.delete ();
     }
-    catch (final UniformInterfaceException e) {
+    catch (final UniformInterfaceException e)
+    {
       throw _getConvertedException (e);
     }
   }
@@ -325,13 +353,15 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
   /**
    * Deletes a service metadata object given by its service group id and its
    * document type.
-   * 
+   *
    * @param aServiceGroupID
    *        The service group id of the service metadata to delete.
    * @param aDocumentTypeID
    *        The document type of the service metadata to delete.
    * @param aCredentials
    *        The username and password to use as aCredentials.
+   * @throws Exception
+   *         in case something goes wrong
    * @throws UnauthorizedException
    *         The username or password was not correct.
    * @throws NotFoundException
@@ -343,7 +373,8 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
    */
   public void deleteServiceRegistration (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                          @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
-                                         @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
+                                         @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
+  {
     ValueEnforcer.notNull (aServiceGroupID, "ServiceGroupID");
     ValueEnforcer.notNull (aDocumentTypeID, "DocumentTypeID");
     ValueEnforcer.notNull (aCredentials, "Credentials");

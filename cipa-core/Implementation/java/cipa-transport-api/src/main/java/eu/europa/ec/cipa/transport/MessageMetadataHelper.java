@@ -71,7 +71,7 @@ import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
 
 /**
  * Utility class for handling {@link IMessageMetadata} objects.
- * 
+ *
  * @author Jose Gorvenia Narvaez(jose@alfa1lab.com)<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
@@ -124,12 +124,13 @@ public final class MessageMetadataHelper
    * But note that only metadata elements that are contained are serialized. So
    * if the passed metadata object is empty (all values are <code>null</code>),
    * the returned document only contains the document element!
-   * 
+   *
    * @param aMetadata
    *        The message data object to be converted. May not be
    *        <code>null</code>.
    * @return A new DOM document. Never <code>null</code>.
    * @throws JAXBException
+   *         In case marshalling fails
    */
   @Nonnull
   public static Document createHeadersDocument (@Nonnull final IMessageMetadata aMetadata) throws JAXBException
@@ -194,11 +195,12 @@ public final class MessageMetadataHelper
 
   /**
    * Create the web service headers to be included in AP client calls
-   * 
+   *
    * @param aMetadata
    *        The source metadata object
    * @return A non-<code>null</code> mutable copy with all headers
    * @throws JAXBException
+   *         In case marshalling fails
    */
   @Nonnull
   @ReturnsMutableCopy
@@ -215,7 +217,7 @@ public final class MessageMetadataHelper
 
   /**
    * Get the header value as a string
-   * 
+   *
    * @param aHeader
    *        The header to be investigated. May be <code>null</code>.
    * @return <code>null</code> if either the header is <code>null</code> or the
@@ -232,7 +234,7 @@ public final class MessageMetadataHelper
 
   /**
    * Extract the message ID from the passed header list. Used in the AP server.
-   * 
+   *
    * @param aHeaderList
    *        The provided header list from the service. May not be
    *        <code>null</code>.
@@ -246,7 +248,7 @@ public final class MessageMetadataHelper
 
   /**
    * Extract the channel ID from the passed header list. Used in the AP server.
-   * 
+   *
    * @param aHeaderList
    *        The provided header list from the service. May not be
    *        <code>null</code>.
@@ -269,7 +271,7 @@ public final class MessageMetadataHelper
 
   /**
    * Extract the sender ID from the passed header list. Used in the AP server.
-   * 
+   *
    * @param aHeaderList
    *        The provided header list from the service. May not be
    *        <code>null</code>.
@@ -284,7 +286,7 @@ public final class MessageMetadataHelper
   /**
    * Extract the recipient ID from the passed header list. Used in the AP
    * server.
-   * 
+   *
    * @param aHeaderList
    *        The provided header list from the service. May not be
    *        <code>null</code>.
@@ -299,7 +301,7 @@ public final class MessageMetadataHelper
   /**
    * Extract the document type ID from the passed header list. Used in the AP
    * server.
-   * 
+   *
    * @param aHeaderList
    *        The provided header list from the service. May not be
    *        <code>null</code>.
@@ -315,7 +317,7 @@ public final class MessageMetadataHelper
 
   /**
    * Extract the process ID from the passed header list. Used in the AP server.
-   * 
+   *
    * @param aHeaderList
    *        The provided header list from the service. May not be
    *        <code>null</code>.
@@ -331,7 +333,7 @@ public final class MessageMetadataHelper
 
   /**
    * Extract all PEPPOL metadata from the passed header list.
-   * 
+   *
    * @param aHeaderList
    *        The provided header list from the service. May not be
    *        <code>null</code>.
@@ -351,7 +353,7 @@ public final class MessageMetadataHelper
 
   /**
    * For LIME the message ID is created on the AP side.
-   * 
+   *
    * @param aHeaderList
    *        The incoming SOAP headers. May not be <code>null</code>.
    * @param sMessageID
