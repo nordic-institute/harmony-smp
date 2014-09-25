@@ -53,7 +53,7 @@ public final class CSMPIdentifier {
    * @deprecated Use {@link ESMPTransportProfile} instead
    */
   @Deprecated
-  public static final String TRANSPORT_PROFILE_START = "busdox-transport-start";
+  public static final String TRANSPORT_PROFILE_START = ESMPTransportProfile.TRANSPORT_PROFILE_START.getID ();
 
   private CSMPIdentifier () {}
 }
