@@ -51,7 +51,7 @@ import com.helger.commons.annotations.PresentForCodeCoverage;
 /**
  * This class is used for converting between XML time elements and Java Date
  * objects.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -68,13 +68,30 @@ public final class DateAdapter {
   @Nonnull
   public static Date parseDate (final String sDate) {
     final Calendar aCal = DatatypeConverter.parseDate (sDate);
-    return aCal.getTime ();
+    final Date ret = aCal.getTime ();
+    return ret;
   }
 
   @Nonnull
   public static String printDate (@Nonnull final Date aDate) {
     final Calendar aCal = new GregorianCalendar (TIMEZONE_UTC);
     aCal.setTime (aDate);
-    return DatatypeConverter.printDate (aCal);
+    final String ret = DatatypeConverter.printDate (aCal);
+    return ret;
+  }
+
+  @Nonnull
+  public static Date parseDateTime (final String sDateTime) {
+    final Calendar aCal = DatatypeConverter.parseDateTime (sDateTime);
+    final Date ret = aCal.getTime ();
+    return ret;
+  }
+
+  @Nonnull
+  public static String printDateTime (@Nonnull final Date aDateTime) {
+    final Calendar aCal = new GregorianCalendar (TIMEZONE_UTC);
+    aCal.setTime (aDateTime);
+    final String ret = DatatypeConverter.printDateTime (aCal);
+    return ret;
   }
 }

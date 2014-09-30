@@ -48,8 +48,8 @@
           version="2.1">
   <globalBindings generateValueClass="true">
     <javaType name="java.util.Date" xmlType="xs:dateTime"
-              parseMethod="eu.europa.ec.cipa.busdox.types.DateAdapter.parseDate"
-              printMethod="eu.europa.ec.cipa.busdox.types.DateAdapter.printDate" />
+              parseMethod="eu.europa.ec.cipa.busdox.types.DateAdapter.parseDateTime"
+              printMethod="eu.europa.ec.cipa.busdox.types.DateAdapter.printDateTime" />
   </globalBindings>
   <bindings schemaLocation="../resources/WEB-INF/wsdl/Identifiers-1.0.xsd">
     <bindings node="//xs:complexType[@name='ParticipantIdentifierType']">
