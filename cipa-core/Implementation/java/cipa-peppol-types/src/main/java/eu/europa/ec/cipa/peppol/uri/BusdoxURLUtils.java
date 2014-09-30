@@ -92,6 +92,20 @@ public final class BusdoxURLUtils {
   }
 
   /**
+   * Unescape the passed URL to NOT use the percentage maskings.
+   *
+   * @param sURL
+   *        The input URL or URL part. May be <code>null</code>.
+   * @return <code>null</code> if the input string was <code>null</code>.
+   */
+  @Nullable
+  public static String createPercentDecodedURL (@Nullable final String sURL) {
+    if (sURL != null)
+      return new URLCodec ().decodeText (sURL);
+    return null;
+  }
+
+  /**
    * Get the MD5-hash-string-representation of the passed value using the
    * {@link #URL_CHARSET} encoding. Each hash byte is represented as 2
    * characters in the range [0-9a-f]. Note: the hash value creation is done
@@ -113,8 +127,12 @@ public final class BusdoxURLUtils {
   }
 
   /**
-   * Get DNS record from ParticipantIdentifier. "0010:1234 | scheme" ->
-   * "B-&lt;hash over pi>.&lt;scheme>.&lt;sml-zone-name>".
+   * Get DNS record from ParticipantIdentifier. Example PI:
+   * <code>iso6523-actorid-upis::0010:1234</code> would result in
+   * <code>B-&lt;hash over PI-Value&gt;.&lt;PI-Scheme&gt;.&lt;sml-zone-name&gt;</code>
+   * . This method ensures that the hash value is created from the lower case
+   * value of the identifier. Lower casing is done with the {@link #URL_LOCALE}
+   * locale. The result string never ends with a dot!
    *
    * @param aParticipantIdentifier
    *        Participant identifier. May not be <code>null</code>.
@@ -131,10 +149,12 @@ public final class BusdoxURLUtils {
   }
 
   /**
-   * Get DNS record from ParticipantIdentifier. "0010:1234 | scheme" ->
-   * "B-&lt;hash over pi>.&lt;scheme>.&lt;sml-zone-name>". This method ensures
-   * that the hash value is created from the lower case value of the identifier.
-   * Lower casing is done with the {@link #URL_LOCALE} locale.
+   * Get DNS record from ParticipantIdentifier. Example PI:
+   * <code>iso6523-actorid-upis::0010:1234</code> would result in
+   * <code>B-&lt;hash over PI-Value&gt;.&lt;PI-Scheme&gt;.&lt;sml-zone-name&gt;</code>
+   * . This method ensures that the hash value is created from the lower case
+   * value of the identifier. Lower casing is done with the {@link #URL_LOCALE}
+   * locale. The result string never ends with a dot!
    *
    * @param aParticipantIdentifier
    *        Participant identifier. May not be <code>null</code>.
@@ -181,12 +201,15 @@ public final class BusdoxURLUtils {
     ret.append (sScheme).append ('.');
 
     // append the SML DNS zone name (if available)
-    if (StringHelper.hasText (sSMLZoneName))
+    if (StringHelper.hasText (sSMLZoneName)) {
+      // If it is present, it ends with a dot
       ret.append (sSMLZoneName);
+    }
 
     // in some cases it gives a problem later when trying to retrieve the
     // participant's metadata ex:
     // http://B-51538b9890f1999ca08302c65f544719.iso6523-actorid-upis.sml.peppolcentral.org./iso6523-actorid-upis%3A%3A9917%3A550403315099
+    // That's wehy we cut of the dot here
     ret.deleteCharAt (ret.length () - 1);
 
     // We're fine and done
