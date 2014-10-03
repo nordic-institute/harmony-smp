@@ -167,6 +167,9 @@ public class StartClientConsole {
 
   /**
    * @param args
+   *        commandline arguments
+   * @throws Exception
+   *         in case of an error
    */
   public static void main (final String [] args) throws Exception {
     final StartClientOptions aOptions = new StartClientOptions ();
