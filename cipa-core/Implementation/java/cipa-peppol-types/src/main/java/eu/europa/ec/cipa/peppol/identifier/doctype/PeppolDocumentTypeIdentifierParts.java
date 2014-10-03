@@ -54,12 +54,27 @@ import eu.europa.ec.cipa.busdox.identifier.IBusdoxDocumentTypeIdentifierParts;
 
 /**
  * A standalone wrapper class for the {@link IPeppolDocumentTypeIdentifierParts}
- * interface.
- * 
+ * interface for PEPPOL BISs.
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
 public final class PeppolDocumentTypeIdentifierParts implements IPeppolDocumentTypeIdentifierParts {
+  /**
+   * Separates the transaction ID from the extensions
+   */
+  public static final String TRANSACTIONID_SEPARATOR = ":#";
+
+  /**
+   * Separates the different extensions from each other
+   */
+  public static final String EXTENSION_SEPARATOR = "#";
+
+  /**
+   * Separates the customization ID from the version
+   */
+  public static final String VERSION_SEPARATOR = "::";
+
   private final IBusdoxDocumentTypeIdentifierParts m_aBusdoxParts;
   private final String m_sTransactionID;
   private final List <String> m_aExtensionIDs;
@@ -67,7 +82,7 @@ public final class PeppolDocumentTypeIdentifierParts implements IPeppolDocumentT
 
   /**
    * Build the BusDox sub type identifier from the PEPPOL specific components.
-   * 
+   *
    * @param sTransactionID
    *        Transaction ID
    * @param aExtensionIDs
@@ -184,7 +199,7 @@ public final class PeppolDocumentTypeIdentifierParts implements IPeppolDocumentT
    * is further defined as <code>&lt;customization id>::&lt;version></code>. The
    * customization ID can be further detailed into
    * <code>&lt;transactionId>:#&lt;extensionId>[#&lt;extensionId>]</code>
-   * 
+   *
    * @param sDocTypeID
    *        The document identifier value to be split. May neither be
    *        <code>null</code> nor empty.

@@ -51,15 +51,31 @@ import com.helger.commons.string.ToStringGenerator;
 
 import eu.europa.ec.cipa.busdox.identifier.BusdoxDocumentTypeIdentifierParts;
 import eu.europa.ec.cipa.busdox.identifier.IBusdoxDocumentTypeIdentifierParts;
+import eu.europa.ec.cipa.peppol.identifier.doctype.IPeppolDocumentTypeIdentifierParts;
 
 /**
- * A standalone wrapper class for the
- * {@link IOpenPeppolDocumentTypeIdentifierParts} interface.
+ * A standalone wrapper class for the {@link IPeppolDocumentTypeIdentifierParts}
+ * interface for OpenPEPPOL BISs.
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
-public final class OpenPeppolDocumentTypeIdentifierParts implements IOpenPeppolDocumentTypeIdentifierParts {
+public final class OpenPeppolDocumentTypeIdentifierParts implements IPeppolDocumentTypeIdentifierParts {
+  /**
+   * Separates the transaction ID from the extensions
+   */
+  public static final String TRANSACTIONID_SEPARATOR = ":extended:";
+
+  /**
+   * Separates the different extensions from each other
+   */
+  public static final String EXTENSION_SEPARATOR = ":extended:";
+
+  /**
+   * Separates the customization ID from the version
+   */
+  public static final String VERSION_SEPARATOR = "::";
+
   private final IBusdoxDocumentTypeIdentifierParts m_aBusdoxParts;
   private final String m_sTransactionID;
   private final List <String> m_aExtensionIDs;
@@ -195,7 +211,7 @@ public final class OpenPeppolDocumentTypeIdentifierParts implements IOpenPeppolD
    *         specifications
    */
   @Nonnull
-  public static IOpenPeppolDocumentTypeIdentifierParts extractFromString (@Nonnull @Nonempty final String sDocTypeID) {
+  public static IPeppolDocumentTypeIdentifierParts extractFromString (@Nonnull @Nonempty final String sDocTypeID) {
     // Extract the main 3 elements (root namespace, local name and sub-type)
     final IBusdoxDocumentTypeIdentifierParts aBusdoxParts = BusdoxDocumentTypeIdentifierParts.extractFromString (sDocTypeID);
 

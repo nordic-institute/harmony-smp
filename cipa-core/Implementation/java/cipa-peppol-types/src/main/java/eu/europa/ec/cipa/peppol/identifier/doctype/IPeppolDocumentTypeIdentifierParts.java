@@ -58,16 +58,19 @@ public interface IPeppolDocumentTypeIdentifierParts extends IBusdoxDocumentTypeI
   /**
    * Separates the transaction ID from the extensions
    */
+  @Deprecated
   String TRANSACTIONID_SEPARATOR = ":#";
 
   /**
    * Separates the different extensions from each other
    */
+  @Deprecated
   String EXTENSION_SEPARATOR = "#";
 
   /**
    * Separates the customization ID from the version
    */
+  @Deprecated
   String VERSION_SEPARATOR = "::";
 
   /**
