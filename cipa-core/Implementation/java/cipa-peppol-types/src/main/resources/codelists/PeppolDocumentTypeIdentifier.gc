@@ -355,5 +355,27 @@
         <SimpleValue>1.2.0</SimpleValue>
       </Value>
     </Row>
+    <Row>
+      <Value ColumnRef="name">
+        <SimpleValue>PEPPOL Despatch Advice V1</SimpleValue>
+      </Value>
+      <Value ColumnRef="docid">
+        <SimpleValue>urn:oasis:names:specification:ubl:schema:xsd:DespatchAdvice-2::DespatchAdvice##urn:www.cenbii.eu:transaction:biitrns016:ver1.0:extended:urn:www.peppol.eu:bis:peppol30a:ver1.0::2.1</SimpleValue>
+      </Value>
+      <Value ColumnRef="since">
+        <SimpleValue>1.2.0</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="name">
+        <SimpleValue>PEPPOL Message Level Response V1</SimpleValue>
+      </Value>
+      <Value ColumnRef="docid">
+        <SimpleValue>urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2::ApplicationResponse##urn:www.cenbii.eu:transaction:biitrns071:ver2.0:extended:urn:www.peppol.eu:bis:peppol36a:ver1.0::2.1</SimpleValue>
+      </Value>
+      <Value ColumnRef="since">
+        <SimpleValue>1.2.0</SimpleValue>
+      </Value>
+    </Row>
   </SimpleCodeList>
 </ns2:CodeList>

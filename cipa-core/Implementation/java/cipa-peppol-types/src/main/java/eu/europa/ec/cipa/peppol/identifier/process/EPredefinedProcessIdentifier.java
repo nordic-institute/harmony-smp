@@ -126,7 +126,21 @@ public enum EPredefinedProcessIdentifier
      * @since code list 1.2.0
      * 
      */
-    urn_www_cenbii_eu_profile_bii28_ver2_0("urn:www.cenbii.eu:profile:bii28:ver2.0", "urn:www.peppol.eu:bis:peppol28a:ver1.0", new EPredefinedDocumentTypeIdentifier[] {EPredefinedDocumentTypeIdentifier.ORDER_T001_BIS28A, EPredefinedDocumentTypeIdentifier.ORDER_T076_BIS28A }, new Version("1.2.0"));
+    urn_www_cenbii_eu_profile_bii28_ver2_0("urn:www.cenbii.eu:profile:bii28:ver2.0", "urn:www.peppol.eu:bis:peppol28a:ver1.0", new EPredefinedDocumentTypeIdentifier[] {EPredefinedDocumentTypeIdentifier.ORDER_T001_BIS28A, EPredefinedDocumentTypeIdentifier.ORDER_T076_BIS28A }, new Version("1.2.0")),
+
+    /**
+     * urn:www.cenbii.eu:profile:bii30:ver2.0
+     * @since code list 1.2.0
+     * 
+     */
+    urn_www_cenbii_eu_profile_bii30_ver2_0("urn:www.cenbii.eu:profile:bii30:ver2.0", "urn:www.peppol.eu:bis:peppol30a:ver1.0", new EPredefinedDocumentTypeIdentifier[] {EPredefinedDocumentTypeIdentifier.DESPATCHADVICE_T016_BIS30A }, new Version("1.2.0")),
+
+    /**
+     * urn:www.cenbii.eu:profile:bii36:ver2.0
+     * @since code list 1.2.0
+     * 
+     */
+    urn_www_cenbii_eu_profile_bii36_ver2_0("urn:www.cenbii.eu:profile:bii36:ver2.0", "urn:www.peppol.eu:bis:peppol36a:ver1.0", new EPredefinedDocumentTypeIdentifier[] {EPredefinedDocumentTypeIdentifier.APPLICATIONRESPONSE_T071_BIS36A }, new Version("1.2.0"));
     /**
      * Same as {@link #urn_www_cenbii_eu_profile_bii01_ver1_0}
      * 
@@ -177,6 +191,16 @@ public enum EPredefinedProcessIdentifier
      * 
      */
     public final static EPredefinedProcessIdentifier BIS28A = EPredefinedProcessIdentifier.urn_www_cenbii_eu_profile_bii28_ver2_0;
+    /**
+     * Same as {@link #urn_www_cenbii_eu_profile_bii30_ver2_0}
+     * 
+     */
+    public final static EPredefinedProcessIdentifier BIS30A = EPredefinedProcessIdentifier.urn_www_cenbii_eu_profile_bii30_ver2_0;
+    /**
+     * Same as {@link #urn_www_cenbii_eu_profile_bii36_ver2_0}
+     * 
+     */
+    public final static EPredefinedProcessIdentifier BIS36A = EPredefinedProcessIdentifier.urn_www_cenbii_eu_profile_bii36_ver2_0;
     private final String m_sID;
     private final String m_sBISID;
     private final EPredefinedDocumentTypeIdentifier[] m_aDocIDs;
