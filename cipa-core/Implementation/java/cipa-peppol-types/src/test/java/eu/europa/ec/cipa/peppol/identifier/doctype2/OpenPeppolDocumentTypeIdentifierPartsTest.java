@@ -45,6 +45,8 @@ import org.junit.Test;
 
 import com.helger.commons.collections.ContainerHelper;
 
+import eu.europa.ec.cipa.peppol.identifier.doctype.IPeppolDocumentTypeIdentifierParts;
+
 /**
  * Test class for class {@link OpenPeppolDocumentTypeIdentifierParts}.
  *
@@ -53,7 +55,7 @@ import com.helger.commons.collections.ContainerHelper;
 public final class OpenPeppolDocumentTypeIdentifierPartsTest {
   @Test
   public void testBasic () {
-    final IOpenPeppolDocumentTypeIdentifierParts aParts = OpenPeppolDocumentTypeIdentifierParts.extractFromString ("root::local##basic:extended:subtype:extended:ext1:extended:ext2::ver1");
+    final IPeppolDocumentTypeIdentifierParts aParts = OpenPeppolDocumentTypeIdentifierParts.extractFromString ("root::local##basic:extended:subtype:extended:ext1:extended:ext2::ver1");
     assertNotNull (aParts);
     assertEquals ("root", aParts.getRootNS ());
     assertEquals ("local", aParts.getLocalName ());

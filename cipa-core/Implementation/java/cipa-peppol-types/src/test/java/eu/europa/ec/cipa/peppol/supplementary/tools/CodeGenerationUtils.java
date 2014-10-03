@@ -94,9 +94,16 @@ final class CodeGenerationUtils {
       throw new IllegalArgumentException ("Invalid BIS ID: " + sBISID);
 
     String ret = "BIS" + sBISID.substring (SKIP_BIS_PREFIX.length ());
-    final int nIndex = ret.indexOf (':');
-    if (nIndex >= 0)
-      ret = ret.substring (0, nIndex);
+    final int nIndex = ret.indexOf (":ver");
+    if (nIndex >= 0) {
+      // Add version number
+      String sVersion = "_V" + ret.substring (nIndex + 4, nIndex + 5) + ret.substring (nIndex + 6, nIndex + 7);
+      if (sVersion.equals ("_V10")) {
+        // For backwards compatibility
+        sVersion = "";
+      }
+      ret = ret.substring (0, nIndex) + sVersion;
+    }
     return ret.toUpperCase (Locale.US);
   }
 }

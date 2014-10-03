@@ -43,16 +43,22 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
+import eu.europa.ec.cipa.peppol.identifier.doctype2.OpenPeppolDocumentTypeIdentifierParts;
+
 /**
  * Test class for class {@link PeppolDocumentTypeIdentifierParts}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class PeppolDocumentTypeIdentifierPartsTest {
   @Test
   public void testPredefined () {
     for (final EPredefinedDocumentTypeIdentifier e : EPredefinedDocumentTypeIdentifier.values ()) {
-      final IPeppolDocumentTypeIdentifierParts aParts = PeppolDocumentTypeIdentifierParts.extractFromString (e.getValue ());
+      IPeppolDocumentTypeIdentifierParts aParts;
+      if (e.getParts () instanceof PeppolDocumentTypeIdentifierParts)
+        aParts = PeppolDocumentTypeIdentifierParts.extractFromString (e.getValue ());
+      else
+        aParts = OpenPeppolDocumentTypeIdentifierParts.extractFromString (e.getValue ());
       assertNotNull (aParts);
 
       // Check BusDox parts

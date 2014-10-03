@@ -99,6 +99,7 @@ import eu.europa.ec.cipa.peppol.identifier.doctype.IPeppolDocumentTypeIdentifier
 import eu.europa.ec.cipa.peppol.identifier.doctype.IPeppolPredefinedDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.doctype.PeppolDocumentTypeIdentifierParts;
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
+import eu.europa.ec.cipa.peppol.identifier.doctype2.OpenPeppolDocumentTypeIdentifierParts;
 import eu.europa.ec.cipa.peppol.identifier.issuingagency.IIdentifierIssuingAgency;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.IPeppolPredefinedProcessIdentifier;
@@ -112,8 +113,8 @@ import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
  */
 public final class MainCreateCodelistsFilesFromExcel {
   private static final Logger s_aLogger = LoggerFactory.getLogger (MainCreateCodelistsFilesFromExcel.class);
-  private static final Version CODELIST_VERSION = new Version (1, 1, 4);
-  private static final String EXCEL_FILE = "src/main/codelists/PEPPOL Code Lists 1.1.4.xls";
+  private static final Version CODELIST_VERSION = new Version (1, 1, 5);
+  private static final String EXCEL_FILE = "src/main/codelists/PEPPOL Code Lists 1.1.5.xls";
   private static final String SHEET_PARTICIPANT = "Participant";
   private static final String SHEET_DOCUMENT = "Document";
   private static final String SHEET_PROCESS = "Process";
@@ -378,7 +379,16 @@ public final class MainCreateCodelistsFilesFromExcel {
         final String sSince = Genericode10Utils.getRowValue (aRow, "since");
 
         // Split ID in it's pieces
-        final IPeppolDocumentTypeIdentifierParts aDocIDParts = PeppolDocumentTypeIdentifierParts.extractFromString (sDocID);
+        IPeppolDocumentTypeIdentifierParts aDocIDParts;
+        Class <?> aDocTypeIDPartsClass;
+        try {
+          aDocIDParts = PeppolDocumentTypeIdentifierParts.extractFromString (sDocID);
+          aDocTypeIDPartsClass = PeppolDocumentTypeIdentifierParts.class;
+        }
+        catch (final IllegalArgumentException ex) {
+          aDocIDParts = OpenPeppolDocumentTypeIdentifierParts.extractFromString (sDocID);
+          aDocTypeIDPartsClass = OpenPeppolDocumentTypeIdentifierParts.class;
+        }
 
         // Assemble extensions
         final JInvocation jExtensions = s_aCodeModel.ref (ContainerHelper.class).staticInvoke ("newList");
@@ -387,7 +397,7 @@ public final class MainCreateCodelistsFilesFromExcel {
 
         final String sEnumConstName = RegExHelper.getAsIdentifier (sDocID);
         final JEnumConstant jEnumConst = s_jEnumPredefinedDoc.enumConstant (sEnumConstName);
-        jEnumConst.arg (JExpr._new (s_aCodeModel.ref (PeppolDocumentTypeIdentifierParts.class))
+        jEnumConst.arg (JExpr._new (s_aCodeModel.ref (aDocTypeIDPartsClass))
                              .arg (JExpr.lit (aDocIDParts.getRootNS ()))
                              .arg (JExpr.lit (aDocIDParts.getLocalName ()))
                              .arg (JExpr.lit (aDocIDParts.getTransactionID ()))
@@ -538,7 +548,7 @@ public final class MainCreateCodelistsFilesFromExcel {
       // public IPeppolDocumentTypeIdentifierParts getParts
       m = s_jEnumPredefinedDoc.method (JMod.PUBLIC, IPeppolDocumentTypeIdentifierParts.class, "getParts");
       m.annotate (Nonnull.class);
-      m.body ()._return (JExpr._this ());
+      m.body ()._return (fParts);
     }
     catch (final Exception ex) {
       s_aLogger.warn ("Failed to create source", ex);
@@ -609,9 +619,16 @@ public final class MainCreateCodelistsFilesFromExcel {
         jEnumConst.arg (JExpr.lit (sBISID));
         final JArray jArray = JExpr.newArray (s_jEnumPredefinedDoc);
         for (final String sDocTypeID : RegExHelper.getSplitToList (sDocTypeIDs, "\n")) {
+          IPeppolDocumentTypeIdentifierParts aDocTypeIDParts;
+          try {
+            aDocTypeIDParts = PeppolDocumentTypeIdentifierParts.extractFromString (sDocTypeID);
+          }
+          catch (final IllegalArgumentException ex) {
+            aDocTypeIDParts = OpenPeppolDocumentTypeIdentifierParts.extractFromString (sDocTypeID);
+          }
+
           // Use the short name for better readability
-          final String sIdentifier = true
-                                         ? CodeGenerationUtils.createShortcutDocumentTypeIDName (PeppolDocumentTypeIdentifierParts.extractFromString (sDocTypeID))
+          final String sIdentifier = true ? CodeGenerationUtils.createShortcutDocumentTypeIDName (aDocTypeIDParts)
                                          : RegExHelper.getAsIdentifier (sDocTypeID);
           jArray.add (s_jEnumPredefinedDoc.staticRef (sIdentifier));
         }
