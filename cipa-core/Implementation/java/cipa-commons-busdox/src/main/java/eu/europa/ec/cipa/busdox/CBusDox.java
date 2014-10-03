@@ -49,7 +49,7 @@ import com.helger.commons.exceptions.InitializationException;
 
 /**
  * Constants for this BusDox implementation.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -66,10 +66,6 @@ public final class CBusDox {
   @Nonnull
   @Nonempty
   public static final String START_WSDL_RESOURCE = "/" + START_WSDL_PATH;
-
-  /** The sample path contained in the START WSDL file */
-  @Deprecated
-  public static final String START_WSDL_SAMPLE_PORT_ADDRESS = "https://host:port/serviceName";
 
   static {
     // Sanity check
@@ -90,7 +86,7 @@ public final class CBusDox {
   /**
    * Enable the Metro SOAP debugging. This shows the exchanged SOAP messages in
    * the logfile. By default this logging is disabled.
-   * 
+   *
    * @param bDebug
    *        <code>true</code> to enable debugging, <code>false</code> to disable
    *        it.
@@ -105,7 +101,7 @@ public final class CBusDox {
    * Enable advanced Metro debugging on more or less all relevant layers. This
    * method internally calls {@link #enableSoapLogging(boolean)} so it does not
    * need to be called explicitly. By default all this logging is disabled.
-   * 
+   *
    * @param bDebug
    *        <code>true</code> to enabled debugging, <code>false</code> to
    *        disable it.
