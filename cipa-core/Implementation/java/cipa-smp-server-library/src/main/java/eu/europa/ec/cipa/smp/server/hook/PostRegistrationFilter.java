@@ -56,17 +56,17 @@ import com.helger.commons.state.ESuccess;
 
 /**
  * Filter which handles post-registration hooks. If a registration was started
- * in {@link AbstractRegistrationHook}, this filter will make sure the
+ * in <code>AbstractRegistrationHook</code>, this filter will make sure the
  * registration is ended by calling
- * {@link AbstractRegistrationHook#postUpdate(ESuccess)}.
- * 
+ * <code>AbstractRegistrationHook.postUpdate(ESuccess)</code>.
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class PostRegistrationFilter implements Filter {
   /**
    * This response wrapper simply captures the status of the response in an
    * easily accessible way.
-   * 
+   *
    * @author Ravnholdt
    */
   private static final class HttpServletResponseWrapperWithStatus extends HttpServletResponseWrapper {

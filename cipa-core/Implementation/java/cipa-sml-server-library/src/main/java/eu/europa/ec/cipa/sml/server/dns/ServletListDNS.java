@@ -62,7 +62,7 @@ import com.helger.commons.io.streams.StreamUtils;
 
 /**
  * Utility servlet to list all DNS Records.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class ServletListDNS extends HttpServlet {
@@ -71,7 +71,7 @@ public final class ServletListDNS extends HttpServlet {
 
   /**
    * Write log line to servlet output stream.
-   * 
+   *
    * @param os
    * @param msg
    * @throws IOException
@@ -90,7 +90,7 @@ public final class ServletListDNS extends HttpServlet {
 
   /**
    * Write exception to servlet output stream.
-   * 
+   *
    * @param os
    * @param e
    * @throws IOException
@@ -105,10 +105,11 @@ public final class ServletListDNS extends HttpServlet {
 
   /**
    * List all DNS records to servlet output stream.
-   * 
+   *
    * @param aOS
    *        The {@link OutputStream} to write to. Will not be closed in here!
    * @throws Exception
+   *         In case of an error
    */
   public static void listAllEntries (@WillNotClose final OutputStream aOS) throws Exception {
     // Is DNS listing already running?
@@ -170,7 +171,7 @@ public final class ServletListDNS extends HttpServlet {
 
   /**
    * Handle both get/post request.
-   * 
+   *
    * @param req
    *        HTTP request
    * @param resp

@@ -37,22 +37,25 @@
  */
 package eu.europa.ec.cipa.sml.server.dns;
 
-import java.io.ByteArrayOutputStream;
+import com.helger.commons.charset.CCharset;
+import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
 
 public class MainListDNS {
   /**
    * Run listing locally. NOTE: DNS ZoneTransfer must be enabled for client.
    * Check your DNS administrator for details
-   * 
+   *
    * @param args
+   *        Commandline args
    * @throws Exception
+   *         In casse of error
    */
   public static void main (final String [] args) throws Exception {
-    final ByteArrayOutputStream baos = new ByteArrayOutputStream ();
+    final NonBlockingByteArrayOutputStream baos = new NonBlockingByteArrayOutputStream ();
     new ServletListDNS ();
     ServletListDNS.listAllEntries (baos);
 
     System.out.println ("=================================================");
-    System.out.println (baos.toString ("cp1252"));
+    System.out.println (baos.getAsString (CCharset.CHARSET_WINDOWS_1252_OBJ));
   }
 }

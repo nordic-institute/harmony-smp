@@ -76,7 +76,7 @@ public final class DNSUtils {
    * Utility methods which extracts Identifier Hash Value from DNS record.
    * Additionally it is checked whether the passed DNS name belongs to the given
    * SML zone.
-   * 
+   *
    * @param sDnsName
    *        The DNS service name.
    * @param sSmlZoneName
@@ -93,8 +93,9 @@ public final class DNSUtils {
 
   /**
    * Utility methods which extracts Identifier Hash Value from DNS record.
-   * 
+   *
    * @param sDnsName
+   *        Identifier DNS name
    * @return the hash value from the DNS name or <code>null</code> if parsing
    *         failed
    */
@@ -106,9 +107,11 @@ public final class DNSUtils {
 
   /**
    * Utility methods which extracts ParticipantIdentifier from DNS record.
-   * 
+   *
    * @param sDnsName
+   *        DNS name
    * @param sSmlZoneName
+   *        SML zone name
    * @return ParticipantIdentifier or <code>null</code> if parsing failed
    */
   @Nullable
@@ -126,14 +129,15 @@ public final class DNSUtils {
 
   /**
    * Utility methods which extracts ParticipantIdentifier from DNS record.
-   * 
+   *
    * @param sDNSName
+   *        DNS name
    * @return ParticipantIdentifier or <code>null</code> if parsing failed
    */
   @Nullable
   public static ParticipantIdentifierType getIdentiferFromDnsName (@Nullable final String sDNSName) {
     // Split in hash, scheme and rest
-    final String [] parts = RegExHelper.getSplitToArray (sDNSName, "\\.", 3);
+    final String [] parts = StringHelper.getExplodedArray ('.', sDNSName, 3);
     if (parts.length < 2) {
       s_aLogger.warn ("wrong syntax of identifier - must contain at least on separator : " + sDNSName);
       return null;
@@ -174,9 +178,11 @@ public final class DNSUtils {
   /**
    * Get the SMP ID from the passed DNS name. SMP DNS names are identified by
    * the ".publisher." identifier in the name.
-   * 
+   *
    * @param sDnsName
+   *        DNS name
    * @param sSmlZoneName
+   *        SML zone name
    * @return <code>null</code> if the passed DNS name is not an SMP DNS name
    */
   @Nullable

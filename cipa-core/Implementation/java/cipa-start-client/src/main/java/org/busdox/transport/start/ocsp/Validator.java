@@ -55,7 +55,7 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 /**
  * The main OCSP validator callback.<br>
  * Important: the name of this class is referenced from the WSDL file.
- * 
+ *
  * @author Alexander Aguirre Julcapoma(alex@alfa1lab.com) Jose Gorvenia<br>
  *         Narvaez(jose@alfa1lab.com)<br>
  *         PEPPOL.AT, BRZ, Philip Helger JLB
@@ -78,8 +78,9 @@ public final class Validator implements CertificateValidator {
 
   /**
    * Validates a X.509 Certificate.
-   * 
+   *
    * @param aCert
+   *        Certificate to validate
    * @return true if the certificate passes all validations, otherwise returns
    *         false.
    */
@@ -90,9 +91,11 @@ public final class Validator implements CertificateValidator {
 
   /**
    * This method validate the X.509 Certificate.
-   * 
+   *
    * @param aCert
+   *        Certificate to validate
    * @param sTrustStorePath
+   *        The truststore against which should be validated
    * @return {@link EValidity}
    */
   @Nonnull
@@ -115,8 +118,7 @@ public final class Validator implements CertificateValidator {
       final X509Certificate aRootCert = (X509Certificate) aTrustStore.getCertificate (sTrustStoreAlias);
       // Get certificate from new PKI by alias
       final String sTrustStoreAliasNew = s_aConf.getString (CONFIG_TRUSTORE_ALIAS_NEW);
-      final X509Certificate aRootCertNew = StringHelper.hasNoText (sTrustStoreAliasNew)
-                                                                                       ? null
+      final X509Certificate aRootCertNew = StringHelper.hasNoText (sTrustStoreAliasNew) ? null
                                                                                        : (X509Certificate) aTrustStore.getCertificate (sTrustStoreAliasNew);
 
       if (aRootCert == null && aRootCertNew == null) {

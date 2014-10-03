@@ -62,7 +62,7 @@ public interface ISMLDNSClient {
    * Create an 'anchor'/CNAME for a Publisher which points to the host/server
    * running the MetadataPublisher. ParticipantIdentifier Registrations for the
    * Publisher will point to this 'anchor'
-   * 
+   *
    * @param sSMPID
    *        unique id for Publisher
    * @param host
@@ -75,7 +75,7 @@ public interface ISMLDNSClient {
   /**
    * Delete the 'anchor'/CNAME for a Publisher which points to the host/server
    * running the MetadataPublisher.
-   * 
+   *
    * @param sSMPID
    *        unique id for Publisher
    * @throws IOException
@@ -86,7 +86,7 @@ public interface ISMLDNSClient {
   /**
    * Creates a DNS entry/CNAME for a ParticipantIdentifier pointing to the
    * 'anchor'/CNAME for the Publisher.
-   * 
+   *
    * @param pi
    *        ParticipantIdentifier
    * @param sSMPID
@@ -101,9 +101,11 @@ public interface ISMLDNSClient {
 
   /**
    * Creates a list of : DNS entry/CNAME for a ParticipantIdentifier.
-   * 
+   *
    * @param list
    *        List of {@link ParticipantIdentifierType}
+   * @param sSMPID
+   *        unique id for Publisher
    * @throws IOException
    * @throws IllegalIdentifierSchemeException
    * @throws IllegalHostnameException
@@ -114,7 +116,7 @@ public interface ISMLDNSClient {
 
   /**
    * Deletes a DNS entry/CNAME for a ParticipantIdentifier.
-   * 
+   *
    * @param pi
    *        {@link ParticipantIdentifierType}
    * @throws IOException
@@ -124,7 +126,7 @@ public interface ISMLDNSClient {
 
   /**
    * Deletes a list of : DNS entry/CNAME for a ParticipantIdentifier.
-   * 
+   *
    * @param list
    *        list of {@link ParticipantIdentifierType}
    * @throws IOException
@@ -134,7 +136,7 @@ public interface ISMLDNSClient {
 
   /**
    * Resolves a DNS Hostname.
-   * 
+   *
    * @param dnsName
    *        name to resolve
    * @return host
@@ -143,7 +145,7 @@ public interface ISMLDNSClient {
 
   /**
    * Find host/server registration for Publisher.
-   * 
+   *
    * @param sSMPID
    * @return host
    * @throws IOException
@@ -154,7 +156,7 @@ public interface ISMLDNSClient {
 
   /**
    * Create ParticipantIdentifier from DNS Name.
-   * 
+   *
    * @param name
    *        DNS Name
    * @return ParticipantIdentifier
@@ -164,7 +166,7 @@ public interface ISMLDNSClient {
 
   /**
    * Create DNS Name from ParticipantIdentifier
-   * 
+   *
    * @param pi
    *        ParticipantIdentifier
    * @return DNS Name
@@ -175,7 +177,7 @@ public interface ISMLDNSClient {
 
   /**
    * Extract Publisher Anchor from DNS Name.
-   * 
+   *
    * @param name
    * @return Publisher Anchor
    */
