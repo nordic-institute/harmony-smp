@@ -51,6 +51,7 @@ import eu.europa.ec.cipa.peppol.identifier.doctype.IPeppolDocumentTypeIdentifier
 @Immutable
 final class CodeGenerationUtils {
   private static final String SKIP_TRANSACTION_PREFIX = "urn:www.cenbii.eu:transaction:biicoretrdm";
+  private static final String SKIP_TRANSACTION_PREFIX2 = "urn:www.cenbii.eu:transaction:biitrns";
   private static final String SKIP_BIS_PREFIX = "urn:www.peppol.eu:bis:peppol";
 
   private CodeGenerationUtils () {}
@@ -66,15 +67,31 @@ final class CodeGenerationUtils {
       if (nIndex >= 0)
         sTransactionID = sTransactionID.substring (0, nIndex);
     }
+    else
+      if (aDocIDParts.getTransactionID ().startsWith (SKIP_TRANSACTION_PREFIX2)) {
+        sTransactionID = "_T" + aDocIDParts.getTransactionID ().substring (SKIP_TRANSACTION_PREFIX2.length ());
+        final int nIndex = sTransactionID.indexOf (':');
+        if (nIndex >= 0)
+          sTransactionID = sTransactionID.substring (0, nIndex);
+      }
 
     String sExtensionID = "";
     for (final String sCurExtensionID : aDocIDParts.getExtensionIDs ())
       if (sCurExtensionID.startsWith (SKIP_BIS_PREFIX)) {
         // BIS extension
         sExtensionID = "_BIS" + sCurExtensionID.substring (SKIP_BIS_PREFIX.length ());
-        final int nIndex = sExtensionID.indexOf (':');
-        if (nIndex >= 0)
-          sExtensionID = sExtensionID.substring (0, nIndex);
+        final int nIndex = sExtensionID.indexOf (":ver");
+        if (nIndex >= 0) {
+          // Add version number
+          String sVersion = "_V" +
+                            sExtensionID.substring (nIndex + 4, nIndex + 5) +
+                            sExtensionID.substring (nIndex + 6, nIndex + 7);
+          if (sVersion.equals ("_V10")) {
+            // For backwards compatibility
+            sVersion = "";
+          }
+          sExtensionID = sExtensionID.substring (0, nIndex) + sVersion;
+        }
       }
       else {
         // Non-BIS extension

@@ -46,6 +46,7 @@ import org.junit.Test;
 import com.helger.commons.collections.ContainerHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.IPeppolDocumentTypeIdentifierParts;
+import eu.europa.ec.cipa.peppol.identifier.doctype.OpenPeppolDocumentTypeIdentifierParts;
 
 /**
  * Test class for class {@link OpenPeppolDocumentTypeIdentifierParts}.

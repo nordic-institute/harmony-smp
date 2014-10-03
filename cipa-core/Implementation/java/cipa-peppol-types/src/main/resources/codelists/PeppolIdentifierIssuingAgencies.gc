@@ -46,7 +46,7 @@
   </Annotation>
   <Identification>
     <ShortName>PeppolIdentifierIssuingAgencies</ShortName>
-    <Version>1.1.5</Version>
+    <Version>1.2</Version>
     <CanonicalUri>urn:peppol.eu:names:identifier:issuingagencies</CanonicalUri>
     <CanonicalVersionUri>urn:peppol.eu:names:identifier:issuingagencies-1.0</CanonicalVersionUri>
   </Identification>

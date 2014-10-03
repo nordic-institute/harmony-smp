@@ -46,7 +46,7 @@
   </Annotation>
   <Identification>
     <ShortName>PeppolProcessIdentifier</ShortName>
-    <Version>1.1.5</Version>
+    <Version>1.2</Version>
     <CanonicalUri>urn:peppol.eu:names:identifier:process</CanonicalUri>
     <CanonicalVersionUri>urn:peppol.eu:names:identifier:process-1.0</CanonicalVersionUri>
   </Identification>
@@ -106,7 +106,7 @@ urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2::ApplicationR
     </Row>
     <Row>
       <Value ColumnRef="name">
-        <SimpleValue>BII01 - Catalogue only V2</SimpleValue>
+        <SimpleValue>BII01 - Catalogue only V4</SimpleValue>
       </Value>
       <Value ColumnRef="id">
         <SimpleValue>urn:www.cenbii.eu:profile:bii01:ver2.0</SimpleValue>
@@ -118,12 +118,12 @@ urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2::ApplicationR
         <SimpleValue>urn:oasis:names:specification:ubl:schema:xsd:Catalogue-2::Catalogue##urn:www.cenbii.eu:transaction:biitrns019:ver2.0:extended:urn:www.peppol.eu:bis:peppol1a:ver4.0::2.0</SimpleValue>
       </Value>
       <Value ColumnRef="since">
-        <SimpleValue>1.1.5</SimpleValue>
+        <SimpleValue>1.2.0</SimpleValue>
       </Value>
     </Row>
     <Row>
       <Value ColumnRef="name">
-        <SimpleValue>BII03 - Order Only</SimpleValue>
+        <SimpleValue>BII03 - Order Only V1</SimpleValue>
       </Value>
       <Value ColumnRef="id">
         <SimpleValue>urn:www.cenbii.eu:profile:bii03:ver1.0</SimpleValue>
@@ -136,6 +136,23 @@ urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2::ApplicationR
       </Value>
       <Value ColumnRef="since">
         <SimpleValue>1.0.0</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="name">
+        <SimpleValue>BII03 - Order Only V2</SimpleValue>
+      </Value>
+      <Value ColumnRef="id">
+        <SimpleValue>urn:www.cenbii.eu:profile:bii03:ver2.0</SimpleValue>
+      </Value>
+      <Value ColumnRef="bisid">
+        <SimpleValue>urn:www.peppol.eu:bis:peppol03a:ver2.0</SimpleValue>
+      </Value>
+      <Value ColumnRef="docids">
+        <SimpleValue>urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:www.cenbii.eu:transaction:biitrns001:ver2.0:extended:urn:www.peppol.eu:bis:peppol03a:ver2.0::2.1</SimpleValue>
+      </Value>
+      <Value ColumnRef="since">
+        <SimpleValue>1.2.0</SimpleValue>
       </Value>
     </Row>
     <Row>
@@ -169,12 +186,12 @@ urn:oasis:names:specification:ubl:schema:xsd:ApplicationResponse-2::ApplicationR
         <SimpleValue>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.eu:transaction:biitrns010:ver2.0:extended:urn:www.peppol.eu:bis:peppol4a:ver2.0::2.0</SimpleValue>
       </Value>
       <Value ColumnRef="since">
-        <SimpleValue>1.1.5</SimpleValue>
+        <SimpleValue>1.2.0</SimpleValue>
       </Value>
     </Row>
     <Row>
       <Value ColumnRef="name">
-        <SimpleValue>BII05 - Billing</SimpleValue>
+        <SimpleValue>BII05 - Billing V1</SimpleValue>
       </Value>
       <Value ColumnRef="id">
         <SimpleValue>urn:www.cenbii.eu:profile:bii05:ver1.0</SimpleValue>
@@ -193,7 +210,25 @@ urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.
     </Row>
     <Row>
       <Value ColumnRef="name">
-        <SimpleValue>BII06 - Procurement</SimpleValue>
+        <SimpleValue>BII05 - Billing V2</SimpleValue>
+      </Value>
+      <Value ColumnRef="id">
+        <SimpleValue>urn:www.cenbii.eu:profile:bii05:ver2.0</SimpleValue>
+      </Value>
+      <Value ColumnRef="bisid">
+        <SimpleValue>urn:www.peppol.eu:bis:peppol5a:ver2.0</SimpleValue>
+      </Value>
+      <Value ColumnRef="docids">
+        <SimpleValue>urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.eu:transaction:biitrns010:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0::2.1
+urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0::2.1</SimpleValue>
+      </Value>
+      <Value ColumnRef="since">
+        <SimpleValue>1.2.0</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="name">
+        <SimpleValue>BII06 - Procurement V1</SimpleValue>
       </Value>
       <Value ColumnRef="id">
         <SimpleValue>urn:www.cenbii.eu:profile:bii06:ver1.0</SimpleValue>
@@ -211,6 +246,24 @@ urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##urn:www.cenbii.
       </Value>
       <Value ColumnRef="since">
         <SimpleValue>1.0.0</SimpleValue>
+      </Value>
+    </Row>
+    <Row>
+      <Value ColumnRef="name">
+        <SimpleValue>BII28 - Ordering V1</SimpleValue>
+      </Value>
+      <Value ColumnRef="id">
+        <SimpleValue>urn:www.cenbii.eu:profile:bii28:ver2.0</SimpleValue>
+      </Value>
+      <Value ColumnRef="bisid">
+        <SimpleValue>urn:www.peppol.eu:bis:peppol28a:ver1.0</SimpleValue>
+      </Value>
+      <Value ColumnRef="docids">
+        <SimpleValue>urn:oasis:names:specification:ubl:schema:xsd:Order-2::Order##urn:www.cenbii.eu:transaction:biitrns001:ver2.0:extended:urn:www.peppol.eu:bis:peppol28a:ver1.0::2.1
+urn:oasis:names:specification:ubl:schema:xsd:OrderResponse-2::Order##urn:www.cenbii.eu:transaction:biitrns076:ver2.0:extended:urn:www.peppol.eu:bis:peppol28a:ver1.0::2.1</SimpleValue>
+      </Value>
+      <Value ColumnRef="since">
+        <SimpleValue>1.2.0</SimpleValue>
       </Value>
     </Row>
   </SimpleCodeList>

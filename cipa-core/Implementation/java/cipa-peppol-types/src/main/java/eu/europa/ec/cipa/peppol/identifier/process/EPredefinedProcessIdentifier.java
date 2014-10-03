@@ -67,10 +67,10 @@ public enum EPredefinedProcessIdentifier
 
     /**
      * urn:www.cenbii.eu:profile:bii01:ver2.0
-     * @since code list 1.1.5
+     * @since code list 1.2.0
      * 
      */
-    urn_www_cenbii_eu_profile_bii01_ver2_0("urn:www.cenbii.eu:profile:bii01:ver2.0", "urn:www.peppol.eu:bis:peppol1a:ver4.0", new EPredefinedDocumentTypeIdentifier[] {EPredefinedDocumentTypeIdentifier.CATALOGUE_BIS1A }, new Version("1.1.5")),
+    urn_www_cenbii_eu_profile_bii01_ver2_0("urn:www.cenbii.eu:profile:bii01:ver2.0", "urn:www.peppol.eu:bis:peppol1a:ver4.0", new EPredefinedDocumentTypeIdentifier[] {EPredefinedDocumentTypeIdentifier.CATALOGUE_T019_BIS1A_V40 }, new Version("1.2.0")),
 
     /**
      * urn:www.cenbii.eu:profile:bii03:ver1.0
@@ -78,6 +78,13 @@ public enum EPredefinedProcessIdentifier
      * 
      */
     urn_www_cenbii_eu_profile_bii03_ver1_0("urn:www.cenbii.eu:profile:bii03:ver1.0", "urn:www.peppol.eu:bis:peppol3a:ver1.0", new EPredefinedDocumentTypeIdentifier[] {EPredefinedDocumentTypeIdentifier.ORDER_T001_BIS3A }, new Version("1.0.0")),
+
+    /**
+     * urn:www.cenbii.eu:profile:bii03:ver2.0
+     * @since code list 1.2.0
+     * 
+     */
+    urn_www_cenbii_eu_profile_bii03_ver2_0("urn:www.cenbii.eu:profile:bii03:ver2.0", "urn:www.peppol.eu:bis:peppol03a:ver2.0", new EPredefinedDocumentTypeIdentifier[] {EPredefinedDocumentTypeIdentifier.ORDER_T001_BIS03A_V20 }, new Version("1.2.0")),
 
     /**
      * urn:www.cenbii.eu:profile:bii04:ver1.0
@@ -88,10 +95,10 @@ public enum EPredefinedProcessIdentifier
 
     /**
      * urn:www.cenbii.eu:profile:bii04:ver2.0
-     * @since code list 1.1.5
+     * @since code list 1.2.0
      * 
      */
-    urn_www_cenbii_eu_profile_bii04_ver2_0("urn:www.cenbii.eu:profile:bii04:ver2.0", "urn:www.peppol.eu:bis:peppol4a:ver2.0", new EPredefinedDocumentTypeIdentifier[] {EPredefinedDocumentTypeIdentifier.INVOICE_BIS4A }, new Version("1.1.5")),
+    urn_www_cenbii_eu_profile_bii04_ver2_0("urn:www.cenbii.eu:profile:bii04:ver2.0", "urn:www.peppol.eu:bis:peppol4a:ver2.0", new EPredefinedDocumentTypeIdentifier[] {EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20 }, new Version("1.2.0")),
 
     /**
      * urn:www.cenbii.eu:profile:bii05:ver1.0
@@ -101,11 +108,25 @@ public enum EPredefinedProcessIdentifier
     urn_www_cenbii_eu_profile_bii05_ver1_0("urn:www.cenbii.eu:profile:bii05:ver1.0", "urn:www.peppol.eu:bis:peppol5a:ver1.0", new EPredefinedDocumentTypeIdentifier[] {EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS5A, EPredefinedDocumentTypeIdentifier.CREDITNOTE_T014_BIS5A, EPredefinedDocumentTypeIdentifier.INVOICE_T015_BIS5A }, new Version("1.1.0")),
 
     /**
+     * urn:www.cenbii.eu:profile:bii05:ver2.0
+     * @since code list 1.2.0
+     * 
+     */
+    urn_www_cenbii_eu_profile_bii05_ver2_0("urn:www.cenbii.eu:profile:bii05:ver2.0", "urn:www.peppol.eu:bis:peppol5a:ver2.0", new EPredefinedDocumentTypeIdentifier[] {EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS5A_V20, EPredefinedDocumentTypeIdentifier.CREDITNOTE_T014_BIS5A_V20 }, new Version("1.2.0")),
+
+    /**
      * urn:www.cenbii.eu:profile:bii06:ver1.0
      * @since code list 1.0.0
      * 
      */
-    urn_www_cenbii_eu_profile_bii06_ver1_0("urn:www.cenbii.eu:profile:bii06:ver1.0", "urn:www.peppol.eu:bis:peppol6a:ver1.0", new EPredefinedDocumentTypeIdentifier[] {EPredefinedDocumentTypeIdentifier.ORDER_T001_BIS6A, EPredefinedDocumentTypeIdentifier.ORDERRESPONSESIMPLE_T002_BIS6A, EPredefinedDocumentTypeIdentifier.ORDERRESPONSESIMPLE_T003_BIS6A, EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS6A, EPredefinedDocumentTypeIdentifier.CREDITNOTE_T014_BIS6A, EPredefinedDocumentTypeIdentifier.INVOICE_T015_BIS6A }, new Version("1.0.0"));
+    urn_www_cenbii_eu_profile_bii06_ver1_0("urn:www.cenbii.eu:profile:bii06:ver1.0", "urn:www.peppol.eu:bis:peppol6a:ver1.0", new EPredefinedDocumentTypeIdentifier[] {EPredefinedDocumentTypeIdentifier.ORDER_T001_BIS6A, EPredefinedDocumentTypeIdentifier.ORDERRESPONSESIMPLE_T002_BIS6A, EPredefinedDocumentTypeIdentifier.ORDERRESPONSESIMPLE_T003_BIS6A, EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS6A, EPredefinedDocumentTypeIdentifier.CREDITNOTE_T014_BIS6A, EPredefinedDocumentTypeIdentifier.INVOICE_T015_BIS6A }, new Version("1.0.0")),
+
+    /**
+     * urn:www.cenbii.eu:profile:bii28:ver2.0
+     * @since code list 1.2.0
+     * 
+     */
+    urn_www_cenbii_eu_profile_bii28_ver2_0("urn:www.cenbii.eu:profile:bii28:ver2.0", "urn:www.peppol.eu:bis:peppol28a:ver1.0", new EPredefinedDocumentTypeIdentifier[] {EPredefinedDocumentTypeIdentifier.ORDER_T001_BIS28A, EPredefinedDocumentTypeIdentifier.ORDER_T076_BIS28A }, new Version("1.2.0"));
     /**
      * Same as {@link #urn_www_cenbii_eu_profile_bii01_ver1_0}
      * 
@@ -122,6 +143,11 @@ public enum EPredefinedProcessIdentifier
      */
     public final static EPredefinedProcessIdentifier BIS3A = EPredefinedProcessIdentifier.urn_www_cenbii_eu_profile_bii03_ver1_0;
     /**
+     * Same as {@link #urn_www_cenbii_eu_profile_bii03_ver2_0}
+     * 
+     */
+    public final static EPredefinedProcessIdentifier BIS03A_V20 = EPredefinedProcessIdentifier.urn_www_cenbii_eu_profile_bii03_ver2_0;
+    /**
      * Same as {@link #urn_www_cenbii_eu_profile_bii04_ver1_0}
      * 
      */
@@ -137,10 +163,20 @@ public enum EPredefinedProcessIdentifier
      */
     public final static EPredefinedProcessIdentifier BIS5A = EPredefinedProcessIdentifier.urn_www_cenbii_eu_profile_bii05_ver1_0;
     /**
+     * Same as {@link #urn_www_cenbii_eu_profile_bii05_ver2_0}
+     * 
+     */
+    public final static EPredefinedProcessIdentifier BIS5A_V20 = EPredefinedProcessIdentifier.urn_www_cenbii_eu_profile_bii05_ver2_0;
+    /**
      * Same as {@link #urn_www_cenbii_eu_profile_bii06_ver1_0}
      * 
      */
     public final static EPredefinedProcessIdentifier BIS6A = EPredefinedProcessIdentifier.urn_www_cenbii_eu_profile_bii06_ver1_0;
+    /**
+     * Same as {@link #urn_www_cenbii_eu_profile_bii28_ver2_0}
+     * 
+     */
+    public final static EPredefinedProcessIdentifier BIS28A = EPredefinedProcessIdentifier.urn_www_cenbii_eu_profile_bii28_ver2_0;
     private final String m_sID;
     private final String m_sBISID;
     private final EPredefinedDocumentTypeIdentifier[] m_aDocIDs;

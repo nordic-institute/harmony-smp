@@ -97,9 +97,9 @@ import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.peppol.identifier.doctype.IPeppolDocumentTypeIdentifierParts;
 import eu.europa.ec.cipa.peppol.identifier.doctype.IPeppolPredefinedDocumentTypeIdentifier;
+import eu.europa.ec.cipa.peppol.identifier.doctype.OpenPeppolDocumentTypeIdentifierParts;
 import eu.europa.ec.cipa.peppol.identifier.doctype.PeppolDocumentTypeIdentifierParts;
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.doctype2.OpenPeppolDocumentTypeIdentifierParts;
 import eu.europa.ec.cipa.peppol.identifier.issuingagency.IIdentifierIssuingAgency;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.IPeppolPredefinedProcessIdentifier;
@@ -113,8 +113,8 @@ import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
  */
 public final class MainCreateCodelistsFilesFromExcel {
   private static final Logger s_aLogger = LoggerFactory.getLogger (MainCreateCodelistsFilesFromExcel.class);
-  private static final Version CODELIST_VERSION = new Version (1, 1, 5);
-  private static final String EXCEL_FILE = "src/main/codelists/PEPPOL Code Lists 1.1.5.xls";
+  private static final Version CODELIST_VERSION = new Version (1, 2, 0);
+  private static final String EXCEL_FILE = "src/main/codelists/PEPPOL Code Lists 1.2.0.xls";
   private static final String SHEET_PARTICIPANT = "Participant";
   private static final String SHEET_DOCUMENT = "Document";
   private static final String SHEET_PROCESS = "Process";

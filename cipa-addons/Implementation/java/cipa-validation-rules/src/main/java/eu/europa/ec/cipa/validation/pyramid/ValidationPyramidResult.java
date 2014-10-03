@@ -58,7 +58,7 @@ import eu.europa.ec.cipa.validation.rules.IValidationTransaction;
 
 /**
  * Represents a result of validating the whole pyramid.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @NotThreadSafe
@@ -72,12 +72,13 @@ public class ValidationPyramidResult {
   /**
    * Constructor. Passing the input parameters to validation to query them from
    * the result object without having access to the query parameters.
-   * 
+   *
    * @param aValidationDocumentType
    *        The document type to be validated. May not be <code>null</code>.
    * @param aValidationTransaction
    *        The transaction to be validated. May not be <code>null</code>.
    * @param aValidationCountry
+   *        The relevant country. May be <code>null</code>.
    */
   public ValidationPyramidResult (@Nonnull final IValidationDocumentType aValidationDocumentType,
                                   @Nonnull final IValidationTransaction aValidationTransaction,
@@ -127,7 +128,7 @@ public class ValidationPyramidResult {
 
   /**
    * Add a new validation result layer.
-   * 
+   *
    * @param aResultLayer
    *        The new validation result layer. May not be <code>null</code>.
    */
@@ -150,7 +151,7 @@ public class ValidationPyramidResult {
    * Call this method with <code>true</code> to indicate that not the whole
    * pyramid was handled, so this result reflects only the result of validating
    * a part of the pyramid.
-   * 
+   *
    * @param bInterrupted
    *        <code>true</code> if interrupted, <code>false</code> otherwise.
    */
@@ -168,7 +169,7 @@ public class ValidationPyramidResult {
   /**
    * Check if this result set contains results for the specified validation
    * level.
-   * 
+   *
    * @param aValidationLevel
    *        The validation level to check. May not be <code>null</code>.
    * @return <code>true</code> if results are contained for the specified level,
@@ -185,7 +186,7 @@ public class ValidationPyramidResult {
 
   /**
    * Get all validation result layers for the passed validation level.
-   * 
+   *
    * @param aValidationLevel
    *        The validation level to use. May not be <code>null</code>.
    * @return A non-<code>null</code> potentially empty list of all validation
@@ -206,7 +207,7 @@ public class ValidationPyramidResult {
   /**
    * Get an aggregated error object, that contains the elements of all
    * validation result layers.
-   * 
+   *
    * @return A non-<code>null</code> aggregated result error object.
    */
   @Nonnull

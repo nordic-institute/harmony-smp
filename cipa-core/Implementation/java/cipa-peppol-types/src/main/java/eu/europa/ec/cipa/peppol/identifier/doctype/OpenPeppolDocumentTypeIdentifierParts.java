@@ -35,7 +35,7 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.peppol.identifier.doctype2;
+package eu.europa.ec.cipa.peppol.identifier.doctype;
 
 import java.util.List;
 
@@ -51,7 +51,6 @@ import com.helger.commons.string.ToStringGenerator;
 
 import eu.europa.ec.cipa.busdox.identifier.BusdoxDocumentTypeIdentifierParts;
 import eu.europa.ec.cipa.busdox.identifier.IBusdoxDocumentTypeIdentifierParts;
-import eu.europa.ec.cipa.peppol.identifier.doctype.IPeppolDocumentTypeIdentifierParts;
 
 /**
  * A standalone wrapper class for the {@link IPeppolDocumentTypeIdentifierParts}

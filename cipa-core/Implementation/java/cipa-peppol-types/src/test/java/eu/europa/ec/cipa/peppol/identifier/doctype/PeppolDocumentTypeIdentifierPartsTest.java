@@ -43,8 +43,6 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import eu.europa.ec.cipa.peppol.identifier.doctype2.OpenPeppolDocumentTypeIdentifierParts;
-
 /**
  * Test class for class {@link PeppolDocumentTypeIdentifierParts}.
  *
