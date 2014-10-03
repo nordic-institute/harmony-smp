@@ -32,7 +32,7 @@
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-transport-api</artifactId>
-      <version>2.2.0-SNAPSHOT</version>
+      <version>2.2.0</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.metro</groupId>
