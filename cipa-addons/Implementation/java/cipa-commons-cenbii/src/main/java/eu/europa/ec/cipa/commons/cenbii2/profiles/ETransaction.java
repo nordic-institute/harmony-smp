@@ -48,7 +48,7 @@ import com.helger.commons.name.IHasName;
 import com.helger.commons.string.StringHelper;
 
 /**
- * Represents a single CEN BII2 transaction used in several collaborations.<br>
+ * Represents a single CEN BII2 transaction used in several profiles.<br>
  * Sources:
  * <ul>
  * <li>http://www.cenbii.eu/deliverables/cen-bii-2/cwa-16558-bii-architecture/</li>
@@ -99,20 +99,24 @@ public enum ETransaction implements IHasID <String>, IHasName {
   private final String m_sID;
   private final String m_sName;
   private final int m_nNumber;
-  private String m_sTransactionID;
+  private final String m_sSubNumber;
+  private final String m_sVersion;
+  private final String m_sTransactionID;
   private final EGroup m_eGroup;
 
   private ETransaction (@Nonnull @Nonempty final String sName,
                         @Nonnegative final int nNumber,
                         @Nullable final String sSubNumber,
-                        @Nonnull final String sVersion,
+                        @Nonnull @Nonempty final String sVersion,
                         @Nonnull final EGroup eGroup) {
     m_sID = name ();
     m_sName = sName;
     m_nNumber = nNumber;
+    m_sSubNumber = StringHelper.getNotNull (sSubNumber, "");
+    m_sVersion = sVersion;
     m_sTransactionID = "urn:www.cenbii.eu:transaction:biitrns" +
                        StringHelper.getLeadingZero (nNumber, 3) +
-                       StringHelper.getNotNull (sSubNumber, "") +
+                       m_sSubNumber +
                        ":ver" +
                        sVersion;
     m_eGroup = eGroup;
@@ -134,22 +138,50 @@ public enum ETransaction implements IHasID <String>, IHasName {
   }
 
   /**
-   * @return The number of this transaction.
+   * @return The number of this transaction. This is only unique in combination
+   *         with the "sub number", since the number 64 is used 3 times but with
+   *         the sub numbers A, B and C!
    */
   @Nonnegative
   public int getNumber () {
     return m_nNumber;
   }
 
+  /**
+   * @return The sub number. This is only relevant for transaction 64 which is
+   *         split into A, B, and C. For all others this methods returns an
+   *         empty string.
+   */
+  @Nonnull
+  public String getSubNumber () {
+    return m_sSubNumber;
+  }
+
+  /**
+   * @return The underlying group to which this transaction belongs.
+   */
   @Nonnull
   public EGroup getGroup () {
     return m_eGroup;
   }
 
+  /**
+   * @return The complete transaction ID. E.g.
+   *         <code>urn:www.cenbii.eu:transaction:biitrns040:ver1.0</code>
+   */
   @Nonnull
   @Nonempty
   public String getTransactionID () {
     return m_sTransactionID;
+  }
+
+  /**
+   * @return The version of the transaction. Either "1.0" or "2.0".
+   */
+  @Nonnull
+  @Nonempty
+  public String getVersionNumber () {
+    return m_sVersion;
   }
 
   @Nullable

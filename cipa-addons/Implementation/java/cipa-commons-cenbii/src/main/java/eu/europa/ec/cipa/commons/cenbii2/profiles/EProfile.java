@@ -40,6 +40,7 @@ package eu.europa.ec.cipa.commons.cenbii2.profiles;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 import javax.annotation.Nonnegative;
 import javax.annotation.Nonnull;
@@ -48,13 +49,12 @@ import javax.annotation.Nullable;
 import com.helger.commons.GlobalDebug;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.annotations.ReturnsImmutableObject;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.collections.ContainerHelper;
 import com.helger.commons.name.IHasDisplayText;
 
 /**
- * Defines the predefined profiles. Each profile consists of a set of
+ * Defines the predefined CEN BII2 profiles. Each profile consists of a set of
  * transactions ({@link ETransaction}) and belongs to a group {@link EGroup}.
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
@@ -85,13 +85,12 @@ public enum EProfile implements IHasDisplayText {
 
   private final IHasDisplayText m_aName;
   private final int m_nNumber;
-  private final List <ETransaction> m_aTransactions;
+  private final EGroup m_eGroup;
+  private final Set <ETransaction> m_aTransactions;
 
   private void _checkTransactionsSameGroup () {
-    final EGroup eFirstGroup = m_aTransactions.get (0).getGroup ();
-    final int nMax = m_aTransactions.size ();
-    for (int i = 1; i < nMax; i++)
-      if (m_aTransactions.get (i).getGroup () != eFirstGroup)
+    for (final ETransaction e : m_aTransactions)
+      if (e.getGroup () != m_eGroup)
         throw new IllegalStateException ("Different groups in transactions for " + toString ());
   }
 
@@ -100,7 +99,8 @@ public enum EProfile implements IHasDisplayText {
                     @Nonnull @Nonempty final ETransaction... aTransactions) {
     m_aName = eName;
     m_nNumber = nNumber;
-    m_aTransactions = ContainerHelper.newUnmodifiableList (aTransactions);
+    m_eGroup = aTransactions[0].getGroup ();
+    m_aTransactions = ContainerHelper.newOrderedSet (aTransactions);
     if (GlobalDebug.isDebugMode ())
       _checkTransactionsSameGroup ();
   }
@@ -128,7 +128,7 @@ public enum EProfile implements IHasDisplayText {
    */
   @Nonnull
   public EGroup getGroup () {
-    return m_aTransactions.get (0).getGroup ();
+    return m_eGroup;
   }
 
   /**
@@ -137,9 +137,9 @@ public enum EProfile implements IHasDisplayText {
    */
   @Nonnull
   @Nonempty
-  @ReturnsImmutableObject
+  @ReturnsMutableCopy
   public List <ETransaction> getAllTransactions () {
-    return m_aTransactions;
+    return ContainerHelper.newList (m_aTransactions);
   }
 
   /**

@@ -37,6 +37,7 @@
  */
 package eu.europa.ec.cipa.commons.cenbii2.profiles;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 
@@ -46,19 +47,33 @@ import com.helger.commons.string.StringHelper;
 
 /**
  * Test class for class {@link ETransaction}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class ETransactionTest {
   @Test
   public void testBasic () {
+    // Add one for the MLR which has no transaction ID!
+    assertEquals (33 + 1, ETransaction.values ().length);
+
     for (final ETransaction eTransaction : ETransaction.values ()) {
       assertTrue (StringHelper.hasText (eTransaction.getID ()));
       assertTrue (StringHelper.hasText (eTransaction.getName ()));
       assertTrue (eTransaction.getNumber () > 0);
+      assertTrue (eTransaction.getTransactionID ().length () > 0);
 
       assertSame (eTransaction, ETransaction.valueOf (eTransaction.name ()));
       assertSame (eTransaction, ETransaction.getFromIDOrNull (eTransaction.getID ()));
     }
+
+    // Compare with
+    // http://www.cenbii.eu/wp-content/uploads/TransactionCustomisationID.pdf
+    assertEquals ("urn:www.cenbii.eu:transaction:biitrns001:ver2.0", ETransaction.T01.getTransactionID ());
+    assertEquals ("urn:www.cenbii.eu:transaction:biitrns001:ver2.0", ETransaction.T01.getTransactionID ());
+    assertEquals ("2.0", ETransaction.T01.getVersionNumber ());
+    assertEquals ("urn:www.cenbii.eu:transaction:biitrns064A:ver1.0", ETransaction.T64A.getTransactionID ());
+    assertEquals ("1.0", ETransaction.T64A.getVersionNumber ());
+    assertEquals ("urn:www.cenbii.eu:transaction:biitrns064C:ver1.0", ETransaction.T64C.getTransactionID ());
+    assertEquals ("1.0", ETransaction.T64C.getVersionNumber ());
   }
 }
