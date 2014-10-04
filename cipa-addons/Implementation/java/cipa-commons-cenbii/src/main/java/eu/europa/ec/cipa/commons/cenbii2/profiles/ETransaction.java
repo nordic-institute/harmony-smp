@@ -100,13 +100,13 @@ public enum ETransaction implements IHasID <String>, IHasName {
   private final String m_sName;
   private final int m_nNumber;
   private String m_sTransactionID;
-  private final EGroup m_eType;
+  private final EGroup m_eGroup;
 
   private ETransaction (@Nonnull @Nonempty final String sName,
                         @Nonnegative final int nNumber,
                         @Nullable final String sSubNumber,
                         @Nonnull final String sVersion,
-                        @Nonnull final EGroup eType) {
+                        @Nonnull final EGroup eGroup) {
     m_sID = name ();
     m_sName = sName;
     m_nNumber = nNumber;
@@ -115,7 +115,7 @@ public enum ETransaction implements IHasID <String>, IHasName {
                        StringHelper.getNotNull (sSubNumber, "") +
                        ":ver" +
                        sVersion;
-    m_eType = eType;
+    m_eGroup = eGroup;
   }
 
   @Nonnull
@@ -142,8 +142,8 @@ public enum ETransaction implements IHasID <String>, IHasName {
   }
 
   @Nonnull
-  public EGroup getType () {
-    return m_eType;
+  public EGroup getGroup () {
+    return m_eGroup;
   }
 
   @Nonnull
