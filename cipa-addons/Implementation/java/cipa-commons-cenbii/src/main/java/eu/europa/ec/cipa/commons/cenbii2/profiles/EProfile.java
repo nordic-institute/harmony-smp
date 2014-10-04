@@ -63,12 +63,22 @@ public enum EProfile implements IHasDisplayText {
   BII_MLR (EProfileName.BII_MLR, 0, ETransaction.T71),
   BII01 (EProfileName.BII01, 1, ETransaction.T19, ETransaction.T58),
   BII02 (EProfileName.BII02, 2, ETransaction.T20, ETransaction.T21, ETransaction.T59),
+  BII03 (EProfileName.BII03, 3, ETransaction.T01),
+  BII04 (EProfileName.BII04, 4, ETransaction.T10),
+  BII05 (EProfileName.BII05, 5, ETransaction.T10, ETransaction.T14),
+  BII06 (EProfileName.BII06, 6, ETransaction.T01, ETransaction.T02, ETransaction.T10, ETransaction.T14),
   BII10 (EProfileName.BII10, 10, ETransaction.T64A, ETransaction.T64B, ETransaction.T64C, ETransaction.T65),
   BII11 (EProfileName.BII11, 11, ETransaction.T41, ETransaction.T42),
   BII12 (EProfileName.BII12, 12, ETransaction.T44, ETransaction.T45),
   BII16 (EProfileName.BII16, 16, ETransaction.T22, ETransaction.T23),
   BII17 (EProfileName.BII17, 17, ETransaction.T18, ETransaction.T54, ETransaction.T55),
+  BII21 (EProfileName.BII21, 21, ETransaction.T26),
   BII22 (EProfileName.BII22, 22, ETransaction.T40),
+  BII27 (EProfileName.BII27, 27, ETransaction.T01, ETransaction.T02, ETransaction.T04, ETransaction.T05),
+  BII28 (EProfileName.BII28, 28, ETransaction.T01, ETransaction.T76),
+  BII30 (EProfileName.BII30, 30, ETransaction.T16),
+  BII31 (EProfileName.BII31, 31, ETransaction.T17),
+  BII32 (EProfileName.BII32, 32, ETransaction.T01, ETransaction.T02),
   BII33 (EProfileName.BII33, 33, ETransaction.T72, ETransaction.T73),
   BII34 (EProfileName.BII34, 34, ETransaction.T40, ETransaction.T69),
   BII35 (EProfileName.BII35, 35, ETransaction.T44, ETransaction.T68, ETransaction.T45);
@@ -106,11 +116,19 @@ public enum EProfile implements IHasDisplayText {
 
   /**
    * @return The numeric value of this profile (e.g. BII04 returns 4, BII22
-   *         returns 22 etc.)
+   *         returns 22 etc.). Only MLR returns 0!
    */
   @Nonnegative
   public int getNumber () {
     return m_nNumber;
+  }
+
+  /**
+   * @return The group to which all transaction belong. Never null
+   */
+  @Nonnull
+  public EGroup getGroup () {
+    return m_aTransactions.get (0).getGroup ();
   }
 
   /**
