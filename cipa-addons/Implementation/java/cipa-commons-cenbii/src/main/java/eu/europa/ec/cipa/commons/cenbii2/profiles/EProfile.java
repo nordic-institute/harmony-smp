@@ -67,7 +67,9 @@ public enum EProfile implements IHasDisplayText {
   BII11 (EProfileName.BII11, 11, ETransaction.T41, ETransaction.T42),
   BII12 (EProfileName.BII12, 12, ETransaction.T44, ETransaction.T45),
   BII16 (EProfileName.BII16, 16, ETransaction.T22, ETransaction.T23),
+  BII17 (EProfileName.BII17, 17, ETransaction.T18, ETransaction.T54, ETransaction.T55),
   BII22 (EProfileName.BII22, 22, ETransaction.T40),
+  BII33 (EProfileName.BII33, 33, ETransaction.T72, ETransaction.T73),
   BII34 (EProfileName.BII34, 34, ETransaction.T40, ETransaction.T69),
   BII35 (EProfileName.BII35, 35, ETransaction.T44, ETransaction.T68, ETransaction.T45);
 
