@@ -15,14 +15,9 @@
     <module>cipa-start-client-console</module>
     <module>cipa-oxalis</module>
     <module>cipa-oxalis-receiver</module>
-    <module>cipa-lime-client</module>
-    <module>cipa-lime-server</module>
     <module>cipa-commons-cenbii</module>
     <module>cipa-test-files</module>
     <module>cipa-validation-rules</module>
     <module>cipa-validation-webapp</module>
-    <module>cipa-visualization</module>
-    <module>cipa-webgui-api</module>
-    <module>cipa-webgui-webapp</module>
   </modules>
 </project>
