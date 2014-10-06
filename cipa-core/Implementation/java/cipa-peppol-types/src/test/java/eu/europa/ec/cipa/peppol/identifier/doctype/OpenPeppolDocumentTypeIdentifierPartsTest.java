@@ -35,7 +35,7 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.peppol.identifier.doctype2;
+package eu.europa.ec.cipa.peppol.identifier.doctype;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
