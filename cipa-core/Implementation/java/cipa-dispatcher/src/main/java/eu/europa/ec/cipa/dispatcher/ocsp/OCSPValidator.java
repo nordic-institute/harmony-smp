@@ -57,27 +57,26 @@ import javax.annotation.Nonnull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.phloc.commons.GlobalDebug;
-import com.phloc.commons.collections.ContainerHelper;
-import com.phloc.commons.state.EValidity;
-import com.phloc.commons.string.StringHelper;
+import com.helger.commons.GlobalDebug;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.state.EValidity;
+import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
 
-
-public class OCSPValidator {
+public class OCSPValidator
+{
   /**
    * Logger to follow this class behavior.
    */
   private static final Logger s_aLogger = LoggerFactory.getLogger (OCSPValidator.class);
 
-  private static Properties properties = PropertiesUtil.getProperties(null);
+  private static Properties properties = PropertiesUtil.getProperties (null);
 
-  
   /**
    * This method validates the X.509 Certificate.
-   * 
+   *
    * @param aCert
    * @param sTrustStorePath
    * @return {@link EValidity}
@@ -86,27 +85,27 @@ public class OCSPValidator {
   public static boolean certificateValidate (final X509Certificate aCert)
   {
 
-	  String trustStorePassword = properties.getProperty(PropertiesUtil.KEYSTORE_PASS);
-      String truststorePath = properties.getProperty(PropertiesUtil.KEYSTORE_PATH);
-	  
+    final String trustStorePassword = properties.getProperty (PropertiesUtil.KEYSTORE_PASS);
+    final String truststorePath = properties.getProperty (PropertiesUtil.KEYSTORE_PATH);
+
     try
     {
       // Load keystore
-      KeyStore trustStore = KeyStoreUtils.loadKeyStore (truststorePath, trustStorePassword);
+      final KeyStore trustStore = KeyStoreUtils.loadKeyStore (truststorePath, trustStorePassword);
 
       // Get certificate by alias;
-      String truststoreAlias = properties.getProperty(PropertiesUtil.KEYSTORE_AP_CA_ALIAS);
-      final X509Certificate aRootCert = (X509Certificate) trustStore.getCertificate(truststoreAlias);
+      final String truststoreAlias = properties.getProperty (PropertiesUtil.KEYSTORE_AP_CA_ALIAS);
+      final X509Certificate aRootCert = (X509Certificate) trustStore.getCertificate (truststoreAlias);
 
       if (aRootCert == null)
       {
-    	  s_aLogger.error ("Failed to resolve trust store alias '" + truststoreAlias + "'");
+        s_aLogger.error ("Failed to resolve trust store alias '" + truststoreAlias + "'");
       }
       else
       {
         // Get the responder URL from the configuration
         final String DEFAULT_RESPONDER_URL_NEW = "http://pki-ocsp.symauth.com:80";
-        final String responderURL = properties.getProperty(PropertiesUtil.OCSP_RESPONDER_URL);
+        final String responderURL = properties.getProperty (PropertiesUtil.OCSP_RESPONDER_URL);
         if (StringHelper.hasNoText (responderURL))
         {
           // Error
@@ -126,15 +125,13 @@ public class OCSPValidator {
     {
       s_aLogger.error ("Error validating certificate in trust store '" + truststorePath + "'", ex);
     }
-    
+
     return false;
   }
-  
-  
-  
+
   /**
    * Compares a thing to another thing.
-   * 
+   *
    * @param aCertificate
    *        Certificate to check.
    * @param aTrustedCert
@@ -145,8 +142,8 @@ public class OCSPValidator {
    */
   @Nonnull
   public static boolean check (@Nonnull final X509Certificate aCertificate,
-                                 @Nonnull final X509Certificate aTrustedCert,
-                                 final String sResponderUrl)
+                               @Nonnull final X509Certificate aTrustedCert,
+                               final String sResponderUrl)
   {
 
     try
@@ -176,19 +173,25 @@ public class OCSPValidator {
         s_aLogger.debug ("Certificate " + aCertificate.getSerialNumber () + " is OCSP valid");
       return true;
     }
-    catch (final NoSuchAlgorithmException e) {
+    catch (final NoSuchAlgorithmException e)
+    {
       s_aLogger.error ("Internal error", e);
     }
-    catch (final InvalidAlgorithmParameterException ex) {
+    catch (final InvalidAlgorithmParameterException ex)
+    {
       s_aLogger.error ("Internal error", ex);
     }
-    catch (final CertificateException ex) {
+    catch (final CertificateException ex)
+    {
       s_aLogger.error ("Certificate error", ex);
     }
-    catch (final CertPathValidatorException cpve) {
-      if (cpve.getCause () instanceof UnknownHostException) {
+    catch (final CertPathValidatorException cpve)
+    {
+      if (cpve.getCause () instanceof UnknownHostException)
+      {
         // Happens when we're offline
-        if (GlobalDebug.isDebugMode ()) {
+        if (GlobalDebug.isDebugMode ())
+        {
           s_aLogger.warn ("OCSP not checked, because we're offline. Since we're in debug mode this is OK...");
           return true;
         }
