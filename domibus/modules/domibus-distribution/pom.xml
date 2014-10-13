@@ -177,6 +177,12 @@ weblogic: like a normal build without profile but instead of tomcats servers two
             <artifactId>rampart-dist</artifactId>
             <type>pom</type>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.xalan</groupId>
+                    <artifactId>xalan</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <artifactId>xercesImpl</artifactId>
