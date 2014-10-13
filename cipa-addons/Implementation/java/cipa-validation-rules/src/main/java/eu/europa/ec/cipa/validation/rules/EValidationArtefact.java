@@ -68,7 +68,7 @@ import eu.europa.ec.cipa.validation.generic.EXMLValidationType;
  * Contains all available PEPPOL Schematron validation artefacts. XML Schema
  * artifacts need to be handled manually from the respective validation document
  * type!
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public enum EValidationArtefact implements IValidationArtefact {
@@ -98,20 +98,28 @@ public enum EValidationArtefact implements IValidationArtefact {
 
   // Legal requirements - per transaction and country only one artifact should
   // be present:
-  INVOICE_AUSTRIA_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.INVOICE, "atnat", CountryCache.getCountry ("AT"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10))),
-  INVOICE_DENMARK_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.INVOICE, "dknat", CountryCache.getCountry ("DK"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10))),
-  INVOICE_ITALY_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.INVOICE, "itnat", CountryCache.getCountry ("IT"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10))),
-  INVOICE_NORWAY_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.INVOICE, "nonat", CountryCache.getCountry ("NO"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10),
+  INVOICE_AUSTRIA_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.INVOICE, "atnat", CountryCache.getInstance ()
+                                                                                                                       .getCountry ("AT"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10))),
+  INVOICE_DENMARK_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.INVOICE, "dknat", CountryCache.getInstance ()
+                                                                                                                       .getCountry ("DK"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10))),
+  INVOICE_ITALY_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.INVOICE, "itnat", CountryCache.getInstance ()
+                                                                                                                     .getCountry ("IT"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10))),
+  INVOICE_NORWAY_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.INVOICE, "nonat", CountryCache.getInstance ()
+                                                                                                                      .getCountry ("NO"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10),
                                                                                                                                                                 ValidationTransaction.createUBLTransaction (ETransaction.T15),
                                                                                                                                                                 ValidationTransaction.createUBLTransaction (ETransaction.T17))),
-  CREDITNOTE_NORWAY_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.CREDIT_NOTE, "nonat", CountryCache.getCountry ("NO"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T14))),
+  CREDITNOTE_NORWAY_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.CREDIT_NOTE, "nonat", CountryCache.getInstance ()
+                                                                                                                             .getCountry ("NO"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T14))),
 
   // Industry specific - per transaction and country, multiple artifacts may be
   // present. They need to be identified by ID!
-  INVOICE_AUSTRIA_GOVERNMENT (EValidationLevel.INDUSTRY_SPECIFIC, EValidationDocumentType.INVOICE, "atgov", CountryCache.getCountry ("AT"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10))),
-  INVOICE_NORWAY_GOVERNMENT (EValidationLevel.INDUSTRY_SPECIFIC, EValidationDocumentType.INVOICE, "nogov", CountryCache.getCountry ("NO"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10),
+  INVOICE_AUSTRIA_GOVERNMENT (EValidationLevel.INDUSTRY_SPECIFIC, EValidationDocumentType.INVOICE, "atgov", CountryCache.getInstance ()
+                                                                                                                        .getCountry ("AT"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10))),
+  INVOICE_NORWAY_GOVERNMENT (EValidationLevel.INDUSTRY_SPECIFIC, EValidationDocumentType.INVOICE, "nogov", CountryCache.getInstance ()
+                                                                                                                       .getCountry ("NO"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10),
                                                                                                                                                                  ValidationTransaction.createUBLTransaction (ETransaction.T15))),
-  CREDITNOTE_NORWAY_GOVERNMENT (EValidationLevel.INDUSTRY_SPECIFIC, EValidationDocumentType.CREDIT_NOTE, "nogov", CountryCache.getCountry ("NO"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T14)));
+  CREDITNOTE_NORWAY_GOVERNMENT (EValidationLevel.INDUSTRY_SPECIFIC, EValidationDocumentType.CREDIT_NOTE, "nogov", CountryCache.getInstance ()
+                                                                                                                              .getCountry ("NO"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T14)));
   // Entity specific - no such default artefact is present
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (EValidationArtefact.class);
@@ -126,7 +134,7 @@ public enum EValidationArtefact implements IValidationArtefact {
 
   /**
    * Constructor for invoice validation artefacts.
-   * 
+   *
    * @param eLevel
    *        The validation level of this artefact. May not be <code>null</code>.
    * @param eDocType
@@ -330,7 +338,7 @@ public enum EValidationArtefact implements IValidationArtefact {
 
   /**
    * Shortcut for <code>getAllMatchingArtefacts (aLevel, null, null)</code>
-   * 
+   *
    * @param aLevel
    *        The desired validation level. If it is <code>null</code> all
    *        artefacts are considered.
@@ -344,7 +352,7 @@ public enum EValidationArtefact implements IValidationArtefact {
 
   /**
    * Get all matching artefacts, in the correct order.
-   * 
+   *
    * @param aLevel
    *        The desired validation level. If it is <code>null</code> all levels
    *        are considered.
@@ -396,7 +404,7 @@ public enum EValidationArtefact implements IValidationArtefact {
   /**
    * Get a set of all countries that have specific rules, matching the
    * parameters.
-   * 
+   *
    * @param aLevel
    *        The desired validation level. If it is <code>null</code> all levels
    *        are considered.
@@ -429,7 +437,7 @@ public enum EValidationArtefact implements IValidationArtefact {
 
   /**
    * Get all artefacts that have rules for the specified transaction.
-   * 
+   *
    * @param eTransaction
    *        The transaction to search. May be <code>null</code>.
    * @return A non-<code>null</code> list with all artefacts supporting the

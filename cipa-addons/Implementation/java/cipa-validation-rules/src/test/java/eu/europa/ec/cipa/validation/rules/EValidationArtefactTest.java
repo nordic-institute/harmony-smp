@@ -48,7 +48,7 @@ import com.helger.schematron.xslt.SchematronResourceXSLT;
 
 /**
  * Test class for class {@link EValidationArtefact}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class EValidationArtefactTest {
@@ -114,11 +114,26 @@ public final class EValidationArtefactTest {
                                         .size ());
 
     // Test country only
-    assertEquals (13, EValidationArtefact.getAllMatchingArtefacts (null, null, CountryCache.getCountry ("XX")).size ());
-    assertEquals (15, EValidationArtefact.getAllMatchingArtefacts (null, null, CountryCache.getCountry ("AT")).size ());
-    assertEquals (17, EValidationArtefact.getAllMatchingArtefacts (null, null, CountryCache.getCountry ("NO")).size ());
-    assertEquals (14, EValidationArtefact.getAllMatchingArtefacts (null, null, CountryCache.getCountry ("DK")).size ());
-    assertEquals (14, EValidationArtefact.getAllMatchingArtefacts (null, null, CountryCache.getCountry ("IT")).size ());
+    assertEquals (13,
+                  EValidationArtefact.getAllMatchingArtefacts (null,
+                                                               null,
+                                                               CountryCache.getInstance ().getCountry ("XX")).size ());
+    assertEquals (15,
+                  EValidationArtefact.getAllMatchingArtefacts (null,
+                                                               null,
+                                                               CountryCache.getInstance ().getCountry ("AT")).size ());
+    assertEquals (17,
+                  EValidationArtefact.getAllMatchingArtefacts (null,
+                                                               null,
+                                                               CountryCache.getInstance ().getCountry ("NO")).size ());
+    assertEquals (14,
+                  EValidationArtefact.getAllMatchingArtefacts (null,
+                                                               null,
+                                                               CountryCache.getInstance ().getCountry ("DK")).size ());
+    assertEquals (14,
+                  EValidationArtefact.getAllMatchingArtefacts (null,
+                                                               null,
+                                                               CountryCache.getInstance ().getCountry ("IT")).size ());
   }
 
   @Test

@@ -60,7 +60,7 @@ import eu.europa.ec.cipa.validation.rules.ValidationTransaction;
 
 /**
  * Test class for class {@link ValidationPyramid}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @SuppressWarnings ({ "deprecation", "javadoc" })
@@ -81,7 +81,7 @@ public final class ValidationPyramidTest {
 
   @Test
   public void testInvoiceAT () {
-    final Locale aCountry = CountryCache.getCountry ("AT");
+    final Locale aCountry = CountryCache.getInstance ().getCountry ("AT");
     final ValidationPyramid vp = new ValidationPyramid (EValidationDocumentType.INVOICE,
                                                         ValidationTransaction.createUBLTransaction (ETransaction.T10),
                                                         aCountry);

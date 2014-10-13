@@ -72,7 +72,7 @@ import eu.europa.ec.cipa.test.TestFiles;
 /**
  * Validate documents using the supplied functionality of
  * {@link EValidationArtefact}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class FuncTestDocumentValidationSuccess {
@@ -254,7 +254,7 @@ public final class FuncTestDocumentValidationSuccess {
 
   @Test
   public void testReadInvoicesATSuccess () {
-    final Locale aCountry = CountryCache.getCountry ("AT");
+    final Locale aCountry = CountryCache.getInstance ().getCountry ("AT");
     // For all available invoices
     for (final IReadableResource aTestFile : TestFiles.getSuccessFiles (ETestFileType.INVOICE, aCountry)) {
       // Ensure the UBL file validates against the scheme

@@ -47,7 +47,7 @@
     <relativePath>../../../../cipa-core/Implementation/java/cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-validation-rules</artifactId>
-  <version>2.2.1-SNAPSHOT</version>
+  <version>2.2.2-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>cipa-validation-rules</name>
 
@@ -73,12 +73,12 @@
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-commons-cenbii</artifactId>
-      <version>2.2.0</version>
+      <version>2.2.2</version>
     </dependency>
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-commons</artifactId>
-      <version>5.0.2</version>
+      <version>5.1.0</version>
     </dependency>
     <dependency>
       <groupId>com.helger</groupId>
@@ -94,7 +94,7 @@
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-test-files</artifactId>
-      <version>2.2.0</version>
+      <version>2.2.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
