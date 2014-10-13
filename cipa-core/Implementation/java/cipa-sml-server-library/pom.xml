@@ -35,17 +35,17 @@
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-peppol-types</artifactId>
-      <version>2.2.0</version>
+      <version>2.2.2</version>
     </dependency>
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-scopes</artifactId>
-      <version>6.4.0</version>
+      <version>6.5.0</version>
     </dependency>
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-db-jpa</artifactId>
-      <version>3.2.0</version>
+      <version>3.2.1</version>
     </dependency>
     <dependency>
       <groupId>com.helger</groupId>
@@ -55,12 +55,12 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-web</artifactId>
-      <version>6.0.0</version>
+      <version>6.0.1</version>
     </dependency>
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-webscopes</artifactId>
-      <version>6.5.0</version>
+      <version>6.6.0</version>
     </dependency>
     <dependency>
       <groupId>dnsjava</groupId>
@@ -88,7 +88,7 @@
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-      <version>5.1.32</version>
+      <version>5.1.33</version>
       <scope>test</scope>
     </dependency>
     <dependency>
