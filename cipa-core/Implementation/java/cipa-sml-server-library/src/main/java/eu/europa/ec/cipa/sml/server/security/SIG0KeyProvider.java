@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.math.BigInteger;
 import java.net.URL;
@@ -50,25 +52,11 @@ public class SIG0KeyProvider {
   }
 
   private PrivateKey getPrivateKey (final String filename) throws Exception {
-    final URL url = this.getClass ().getResource ("/" + filename);
-    final File f = new File (url.toURI ());
-    // FileInputStream fis = new FileInputStream(f);
-    // DataInputStream dis = new DataInputStream(fis);
-    // byte[] keyBytes = new byte[(int) f.length()];
-    // dis.readFully(keyBytes);
-    // dis.close();
-    // PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(keyBytes);
-    // KeyFactory kf = KeyFactory.getInstance("DSA");
-    // return kf.generatePrivate(spec);
-
-    // KeyStore ks = KeyStore.getInstance("PKCS12");
-    // ks.load(fis, null);
-
-    // OpenSSLKey opensslkey = new BouncyCastleOpenSSLKey(fis);
-    // PrivateKey privateKey = opensslkey.getPrivateKey();
-
+    //final URL url = this.getClass ().getResource ("/" + filename);
+    //final File f = new File (url.toURI ());
+	final InputStream in = this.getClass().getResourceAsStream("/" + filename);
     final KeyFactory keyFactory = KeyFactory.getInstance ("DSA");
-    final KeySpec privateKeySpec = readDSAPrivateKey (f);
+    final KeySpec privateKeySpec = readDSAPrivateKey (in);
     final PrivateKey key = keyFactory.generatePrivate (privateKeySpec);
     return key;
 
@@ -99,12 +87,12 @@ public class SIG0KeyProvider {
     return privkey;
   }
 
-  private DSAPrivateKeySpec readDSAPrivateKey (final File file) {
+  private DSAPrivateKeySpec readDSAPrivateKey (final InputStream inputs) {
     final BigInteger [] values = new BigInteger [6];
 
     try {
 
-      final BufferedReader in = new BufferedReader (new FileReader (file));
+      final BufferedReader in = new BufferedReader (new InputStreamReader(inputs));
       in.readLine (); // skip header
       String [] parts;
       for (int i = 0; i < values.length; ++i) {
