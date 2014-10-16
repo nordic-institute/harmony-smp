@@ -70,7 +70,7 @@ public class RunIt {
 			List<Record> out = new ArrayList<Record>();
 			int i = 0;
 			for (Record rec : recs) {
-				if (rec.getType() == Type.CNAME) {
+				if (rec.getType() == Type.CNAME || rec.getName().toString().contains(DNSClientConfiguration.getSMLZoneName())) {
 					out.add(rec);
 					i++;
 					if (i == 400) {
