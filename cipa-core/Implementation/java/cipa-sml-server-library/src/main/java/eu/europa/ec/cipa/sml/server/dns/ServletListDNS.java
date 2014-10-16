@@ -145,10 +145,9 @@ public final class ServletListDNS extends HttpServlet {
           if (aRecord instanceof ARecord || aRecord instanceof CNAMERecord) {
             // For "address records" and "CNAME records" only the ones for the
             // current SML zone name (sml.peppolcentral.org) are displayed!
-            if (!aRecord.getName ().toString ().contains (sSMLZoneName))
-              continue;
+            if (aRecord.getName ().toString ().contains (sSMLZoneName))
+            	aFilteredRecords.add (aRecord);
           }
-          aFilteredRecords.add (aRecord);
         }
       }
       _writeToStreamAndLog (aOS, " - retrieved # of records : " + aFilteredRecords.size ());
