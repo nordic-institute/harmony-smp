@@ -138,7 +138,7 @@ public final class DNSTest {
     assertEquals ("Created DNS Name must match hash from SML Spec : e49b223851f6e97cbfce4f72c3402aac : ",
                   "B-e49b223851f6e97cbfce4f72c3402aac." +
                       CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME +
-                      ".sml.smloc.xx",
+                      ".smloc.xx",
                   dnsName);
   }
 

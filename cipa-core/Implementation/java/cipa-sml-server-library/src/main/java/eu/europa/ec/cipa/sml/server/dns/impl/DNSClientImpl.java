@@ -51,7 +51,7 @@ public class DNSClientImpl implements IDNSClient {
 	protected String m_sServerName;
 	protected String m_sDNSZoneName;
 	protected Name m_aDNSZoneName;
-	protected String m_sSMLZoneName;
+	protected String m_sPublisherZoneName;
 	protected int m_nTTLSecs;
 	private KEYRecord SIG0Rec;
 
@@ -89,17 +89,17 @@ public class DNSClientImpl implements IDNSClient {
 		final String sSMLZoneNameLC = sSMLZoneName.toLowerCase(BusdoxURLUtils.URL_LOCALE);
 		if (sSMLZoneNameLC.equals(m_sDNSZoneName) || sSMLZoneNameLC.endsWith("." + m_sDNSZoneName)) {
 			// Fully qualified DNS zone provided
-			m_sSMLZoneName = sSMLZoneNameLC;
+			m_sPublisherZoneName = sSMLZoneNameLC;
 		} else {
 			// Only the sub zone provided - append the main DNS zone
 			if (sSMLZoneNameLC.endsWith("."))
-				m_sSMLZoneName = sSMLZoneNameLC + m_sDNSZoneName;
+				m_sPublisherZoneName = sSMLZoneNameLC + m_sDNSZoneName;
 			else
-				m_sSMLZoneName = sSMLZoneNameLC + "." + m_sDNSZoneName;
+				m_sPublisherZoneName = sSMLZoneNameLC + "." + m_sDNSZoneName;
 		}
 
 		m_nTTLSecs = nTTLSecs;
-		s_aLogger.info("DnsClientImpl init done. DNS Zone=" + m_sDNSZoneName + "; SML Zone=" + m_sSMLZoneName);
+		s_aLogger.info("DnsClientImpl init done. DNS Zone=" + m_sDNSZoneName + "; SML Zone=" + m_sPublisherZoneName);
 	}
 
 	public void addRecords(List<Record> records) {
@@ -287,7 +287,7 @@ public class DNSClientImpl implements IDNSClient {
 	@Nonnull
 	@Nonempty
 	public String getSMLZoneName() {
-		return m_sSMLZoneName;
+		return m_sPublisherZoneName;
 	}
 
 	@Nonnull
@@ -325,12 +325,12 @@ public class DNSClientImpl implements IDNSClient {
 	}
 
 	public boolean isHandledZone(@Nonnull final String sDnsName) {
-		return DNSUtils.isHandledZone(sDnsName, m_sSMLZoneName);
+		return DNSUtils.isHandledZone(sDnsName, m_sPublisherZoneName);
 	}
 
 	@Override
 	public String toString() {
-		return new ToStringGenerator(this).append("serverName", m_sServerName).append("dnsZoneName", m_sDNSZoneName).append("smlDnsZoneName", m_sSMLZoneName)
+		return new ToStringGenerator(this).append("serverName", m_sServerName).append("dnsZoneName", m_sDNSZoneName).append("smlDnsZoneName", m_sPublisherZoneName)
 				.append("ttlSecs", m_nTTLSecs).toString();
 	}
 
