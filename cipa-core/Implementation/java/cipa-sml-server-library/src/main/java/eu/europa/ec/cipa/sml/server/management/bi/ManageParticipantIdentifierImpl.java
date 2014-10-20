@@ -37,6 +37,9 @@
  */
 package eu.europa.ec.cipa.sml.server.management.bi;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Resource;
 import javax.jws.HandlerChain;
@@ -156,8 +159,18 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
 				throw new BadRequestException("At least one participant to be deleted must be provided");
 
 			// Validate input
-			for (final ParticipantIdentifierType aParticipantIdentifier : deleteListIn.getParticipantIdentifier())
+			List<ParticipantIdentifierType> temp = new ArrayList<ParticipantIdentifierType>();
+			for (final ParticipantIdentifierType aParticipantIdentifier : deleteListIn.getParticipantIdentifier()) {
 				DataValidator.validate(aParticipantIdentifier);
+				
+				// Check on duplicate UGLY but should work needs refactoring of types and implement equals method!
+				for (ParticipantIdentifierType part : temp) {
+					if (part.getScheme().equals(aParticipantIdentifier.getScheme()) && part.getValue().equals(aParticipantIdentifier.getValue())) {				
+						throw new BadRequestException("You try to delete the same participantIdentifier more then once");
+					}
+				}
+				temp.add(aParticipantIdentifier);			
+			}
 
 			// Validate client unique ID
 			final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID(wsContext);
