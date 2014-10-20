@@ -85,14 +85,14 @@ import eu.europa.ec.cipa.transport.cert.AccessPointX509TrustManager;
 /**
  * The accesspointClient class aims to hold all the processes required for
  * consuming an AccessPoint.
- * 
+ *
  * @author Dante Malaga(dante@alfa1lab.com) Jose Gorvenia<br>
  *         Narvaez(jose@alfa1lab.com)<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
 public class AccessPointClient {
   /** String that represents the SSL security provided. */
-  public static final String SSL_PROTOCOL = "SSL";
+  public static final String SSL_PROTOCOL = "TLS";
 
   /** Logger to follow this class behavior. */
   private static final Logger s_aLogger = LoggerFactory.getLogger (AccessPointClient.class);
@@ -106,7 +106,7 @@ public class AccessPointClient {
 
   /**
    * Sets up the certificate {@link SSLSocketFactory}.
-   * 
+   *
    * @return Never <code>null</code>.
    */
   @Nonnull
@@ -120,7 +120,7 @@ public class AccessPointClient {
 
   /**
    * Set up the hostname verifier to use.
-   * 
+   *
    * @return Never <code>null</code>.
    */
   @Nonnull
@@ -131,7 +131,7 @@ public class AccessPointClient {
   /**
    * Configures and returns a port that points to the a specific endpoint
    * address.
-   * 
+   *
    * @param sEndpointAddressURL
    *        the endpoint address of the receiving side.
    * @return The port. May be <code>null</code> in case of an error.
@@ -178,7 +178,7 @@ public class AccessPointClient {
   /**
    * Sends a Create object using a given port and attaching the given
    * SOAPHeaderObject data to the SOAP-envelope.
-   * 
+   *
    * @param aPort
    *        the port which will be used to send the message.
    * @param aMetadata
@@ -276,7 +276,7 @@ public class AccessPointClient {
 
   /**
    * Send an XML document via START to the destination AP.
-   * 
+   *
    * @param sEndpointAddressURL
    *        The absolute URL of the receiving AP. Must include the service name!
    * @param aMetadata
