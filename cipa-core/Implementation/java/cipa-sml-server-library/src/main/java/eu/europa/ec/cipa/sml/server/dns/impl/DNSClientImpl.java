@@ -76,26 +76,25 @@ public class DNSClientImpl implements IDNSClient {
 		s_aLogger.info("DnsClientImpl init: " + sServerName + " : " + sDNSZoneName + " : " + sSMLZoneName + " : " + nTTLSecs);
 		m_sServerName = sServerName;
 
-		String sRealDNSZoneName = sDNSZoneName.toLowerCase(BusdoxURLUtils.URL_LOCALE);
-		if (!sRealDNSZoneName.endsWith("."))
-			sRealDNSZoneName += '.';
-		m_sDNSZoneName = sRealDNSZoneName;
+		//we need the full qualified dns-name
+		if (!sDNSZoneName.endsWith("."))
+			sDNSZoneName += '.';
+		m_sDNSZoneName = sDNSZoneName;
 		try {
 			m_aDNSZoneName = Name.fromString(m_sDNSZoneName);
 		} catch (final TextParseException ex) {
 			throw new InitializationException("Failed to build DNS Name from '" + m_sDNSZoneName + "'", ex);
 		}
-
-		final String sSMLZoneNameLC = sSMLZoneName.toLowerCase(BusdoxURLUtils.URL_LOCALE);
-		if (sSMLZoneNameLC.equals(m_sDNSZoneName) || sSMLZoneNameLC.endsWith("." + m_sDNSZoneName)) {
+	
+		if (sSMLZoneName.equals(m_sDNSZoneName) || sSMLZoneName.endsWith("." + m_sDNSZoneName)) {
 			// Fully qualified DNS zone provided
-			m_sPublisherZoneName = sSMLZoneNameLC;
+			m_sPublisherZoneName = sSMLZoneName;
 		} else {
 			// Only the sub zone provided - append the main DNS zone
-			if (sSMLZoneNameLC.endsWith("."))
-				m_sPublisherZoneName = sSMLZoneNameLC + m_sDNSZoneName;
+			if (sSMLZoneName.endsWith("."))
+				m_sPublisherZoneName = sSMLZoneName + m_sDNSZoneName;
 			else
-				m_sPublisherZoneName = sSMLZoneNameLC + "." + m_sDNSZoneName;
+				m_sPublisherZoneName = sSMLZoneName + "." + m_sDNSZoneName;
 		}
 
 		m_nTTLSecs = nTTLSecs;
