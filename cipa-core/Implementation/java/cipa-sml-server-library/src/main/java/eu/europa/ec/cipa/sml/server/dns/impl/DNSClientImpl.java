@@ -59,8 +59,7 @@ public class DNSClientImpl implements IDNSClient {
 		super();
 	}
 
-	public DNSClientImpl(@Nonnull @Nonempty String sServerName, @Nonnull @Nonempty String sDNSZoneName, @Nonnull @Nonempty String sSMLZoneName,
-			@Nonnegative int nTTLSecs) {
+	public DNSClientImpl(@Nonnull @Nonempty String sServerName, @Nonnull @Nonempty String sDNSZoneName, @Nonnull @Nonempty String sSMLZoneName, @Nonnegative int nTTLSecs) {
 		if (StringHelper.hasNoText(sServerName))
 			throw new IllegalArgumentException("serverName may not be empty");
 
@@ -76,7 +75,7 @@ public class DNSClientImpl implements IDNSClient {
 		s_aLogger.info("DnsClientImpl init: " + sServerName + " : " + sDNSZoneName + " : " + sSMLZoneName + " : " + nTTLSecs);
 		m_sServerName = sServerName;
 
-		//we need the full qualified dns-name
+		// we need the full qualified dns-name
 		if (!sDNSZoneName.endsWith("."))
 			sDNSZoneName += '.';
 		m_sDNSZoneName = sDNSZoneName;
@@ -85,17 +84,8 @@ public class DNSClientImpl implements IDNSClient {
 		} catch (final TextParseException ex) {
 			throw new InitializationException("Failed to build DNS Name from '" + m_sDNSZoneName + "'", ex);
 		}
-	
-		if (sSMLZoneName.equals(m_sDNSZoneName) || sSMLZoneName.endsWith("." + m_sDNSZoneName)) {
-			// Fully qualified DNS zone provided
-			m_sPublisherZoneName = sSMLZoneName;
-		} else {
-			// Only the sub zone provided - append the main DNS zone
-			if (sSMLZoneName.endsWith("."))
-				m_sPublisherZoneName = sSMLZoneName + m_sDNSZoneName;
-			else
-				m_sPublisherZoneName = sSMLZoneName + "." + m_sDNSZoneName;
-		}
+
+		m_sPublisherZoneName = sSMLZoneName;
 
 		m_nTTLSecs = nTTLSecs;
 		s_aLogger.info("DnsClientImpl init done. DNS Zone=" + m_sDNSZoneName + "; SML Zone=" + m_sPublisherZoneName);
@@ -186,7 +176,7 @@ public class DNSClientImpl implements IDNSClient {
 		}
 		return SIG0Rec;
 	}
-	
+
 	protected Message sendMessgeToDnsServer(Message m) {
 		boolean SIG0Enabled = false;
 		try {
@@ -329,8 +319,7 @@ public class DNSClientImpl implements IDNSClient {
 
 	@Override
 	public String toString() {
-		return new ToStringGenerator(this).append("serverName", m_sServerName).append("dnsZoneName", m_sDNSZoneName).append("smlDnsZoneName", m_sPublisherZoneName)
-				.append("ttlSecs", m_nTTLSecs).toString();
+		return new ToStringGenerator(this).append("serverName", m_sServerName).append("dnsZoneName", m_sDNSZoneName).append("smlDnsZoneName", m_sPublisherZoneName).append("ttlSecs", m_nTTLSecs).toString();
 	}
 
 }
