@@ -59,7 +59,7 @@ import eu.europa.ec.cipa.sml.server.exceptions.IllegalIdentifierSchemeException;
  */
 public final class DNSTest {
   private static final String DNS_ZONE = "smloc.xx";
-  private static final String SML_ZONE = "sml";
+  private static final String SML_ZONE = "sml.smloc.xx";
   private static final String validPublisherId = "SMPID";
   private static final String wrongPublisherId = null;
   private static final String validSchemeIdentifier = CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME;
@@ -146,7 +146,6 @@ public final class DNSTest {
   public void testPublisherAnchor () {
     final ISMLDNSClient dnsClient = _createDNSClient ();
     assertNotNull ("Legal Publisher ", dnsClient.getPublisherAnchorFromDnsName ("SMP-ID1.publisher.sml.smloc.xx."));
-
     assertNull ("Illegal Publisher ", dnsClient.getPublisherAnchorFromDnsName ("SMP-ID1.notpublisher.sml.smloc.xx."));
   }
 }

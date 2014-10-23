@@ -84,7 +84,9 @@ public class DNSClientImpl implements IDNSClient {
 		} catch (final TextParseException ex) {
 			throw new InitializationException("Failed to build DNS Name from '" + m_sDNSZoneName + "'", ex);
 		}
-
+		
+		if (!sSMLZoneName.endsWith("."))
+			sSMLZoneName += '.';
 		m_sPublisherZoneName = sSMLZoneName;
 
 		m_nTTLSecs = nTTLSecs;
