@@ -50,6 +50,8 @@
   </head>
   <body>
     <h1>CIPA E-delivery SML waiting for you</h1>
+    <p>Version: <i> ${display_version}</i></p>
+    <p>Build: <i>${buildNumber}</i></p>
     <ul>
     <%
       if (eu.europa.ec.cipa.sml.server.dns.DNSClientConfiguration.isEnabled()) {
