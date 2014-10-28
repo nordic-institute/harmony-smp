@@ -22,7 +22,7 @@
     <properties>
         <ftp.host>wltdgt02.cc.cec.eu.int</ftp.host>
         <ftp.port>2059</ftp.port>
-        <ftp.remotedir>/ec/test/server/weblogic/u010/home/digciedt/data/CIPA-EDEL_TEST/autodeploy</ftp.remotedir>
+        <ftp.remotedir>/ec/test/server/weblogic/u010/home/digciedt/data/CIPA-EDEL_DEV/autodeploy</ftp.remotedir>
         <ftp.user>derveol</ftp.user>
         <ftp.password>we3c6sd1</ftp.password>
     </properties>
