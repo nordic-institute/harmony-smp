@@ -3,17 +3,17 @@
   <display-name>cipa-dispatcher</display-name>
   <servlet>
     <servlet-name>AS2receiver</servlet-name>
-    <servlet-class>eu.europa.ec.cipa.dispatcher.servlet.AS2ReceiverServlet</servlet-class>
+    <servlet-class>eu.europa.ec.cipa.dispatcher.servlet.as2.AS2ReceiverServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
    <servlet>
     <servlet-name>AS4receiver</servlet-name>
-    <servlet-class>eu.europa.ec.cipa.dispatcher.servlet.AS4ReceiverServlet</servlet-class>
+    <servlet-class>eu.europa.ec.cipa.dispatcher.servlet.as4.AS4ReceiverServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
   <servlet>
     <servlet-name>SendWebservice</servlet-name>
-    <servlet-class>eu.europa.ec.cipa.dispatcher.send.SendWebService</servlet-class>
+    <servlet-class>eu.europa.ec.cipa.dispatcher.servlet.SendServlet</servlet-class>
     <load-on-startup>3</load-on-startup>
   </servlet>
   <servlet-mapping>

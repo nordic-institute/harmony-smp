@@ -1,7 +1,5 @@
 package eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 public class AS4GatewayInterfaceTest {

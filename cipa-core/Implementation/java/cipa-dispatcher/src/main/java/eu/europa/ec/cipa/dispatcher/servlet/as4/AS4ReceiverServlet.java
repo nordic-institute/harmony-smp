@@ -1,4 +1,4 @@
-package eu.europa.ec.cipa.dispatcher.servlet;
+package eu.europa.ec.cipa.dispatcher.servlet.as4;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

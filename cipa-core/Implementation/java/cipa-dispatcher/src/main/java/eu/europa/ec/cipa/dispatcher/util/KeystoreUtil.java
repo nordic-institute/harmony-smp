@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.security.KeyStore;
 import java.security.Principal;
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Properties;
 
@@ -20,11 +21,12 @@ public class KeystoreUtil
 	
 	public KeystoreUtil() throws Exception
 	{
-		this(properties.getProperty(PropertiesUtil.KEYSTORE_PATH), properties.getProperty(PropertiesUtil.KEYSTORE_PASS));
 		
+		this(properties.getProperty(PropertiesUtil.KEYSTORE_PATH), properties.getProperty(PropertiesUtil.KEYSTORE_PASS));
 	}
 	
 	public KeystoreUtil(String keystorePath, String keystorePwd) throws Exception{
+		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 		this.keystorePath = keystorePath;
 		this.keystorePwd= keystorePwd;
 		
@@ -44,13 +46,14 @@ public class KeystoreUtil
         			if (keystoreTypes[i].equals("pkcs12"))
         				keyStore = KeyStore.getInstance(keystoreTypes[i], "BC");  // BouncyCastle implementation of a keystore allows for the PKCS12 keystore to accept trusted certificates. The default Java provider doesn't.
         			else
-        				keyStore = KeyStore.getInstance(keystoreTypes[i]);      //but BouncyCastle doesnt have an implementation for jks! so we try with the default implementation
+        				keyStore = KeyStore.getInstance(keystoreTypes[i]);      //but BouncyCastle doesn't have an implementation for jks! so we try with the default implementation
             		try
             		{
             			keyStore.load(inStream, keystorePwd.toCharArray());
             		}
             		catch (IOException e)
             		{
+            			e.printStackTrace();
             			success = false;
             			inStream.close();
             			inStream = new FileInputStream(inFile);  //we close and reopen the stream so it can be read again
@@ -70,7 +73,7 @@ public class KeystoreUtil
 		
 	}
 	
-	/** Creates a new certificate in the AS2 endpoint's truststore
+	/** Creates a new certificate in the AS2 or AS4 endpoint's truststore
 	 * @return
 	 */
 	public void installNewPartnerCertificate (X509Certificate cert, String alias) throws Exception
