@@ -73,7 +73,7 @@ import eu.europa.ec.cipa.smp.server.services.readonly.ServiceMetadataInterface;
  * interface is not part of the official specification. The interface makes it
  * much faster to fetch the complete data about a service group and its service
  * metadata. The interface is used by the registration web site.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Path ("/complete/{ServiceGroupId}")
@@ -116,7 +116,9 @@ public final class CompleteServiceGroupInterface {
       final List <DocumentIdentifierType> aDocTypeIds = aDataManager.getDocumentTypes (aServiceGroupID);
       for (final DocumentIdentifierType aDocTypeId : aDocTypeIds) {
         final ServiceMetadataReferenceType aMetadataReference = aObjFactory.createServiceMetadataReferenceType ();
+        // Ensure that no context is emitted by using "replacePath" first!
         aMetadataReference.setHref (m_aUriInfo.getBaseUriBuilder ()
+                                              .replacePath ("")
                                               .path (ServiceMetadataInterface.class)
                                               .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID),
                                                                  IdentifierUtils.getIdentifierURIPercentEncoded (aDocTypeId))

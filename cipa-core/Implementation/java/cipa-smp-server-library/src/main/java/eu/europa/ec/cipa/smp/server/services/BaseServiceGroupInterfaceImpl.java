@@ -64,7 +64,7 @@ import eu.europa.ec.cipa.smp.server.data.IDataManager;
  * This class implements the read-only methods for the REST ServiceGroup
  * interface. It is used in the read-only interface and in the writable
  * interface.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class BaseServiceGroupInterfaceImpl {
@@ -114,7 +114,9 @@ public final class BaseServiceGroupInterfaceImpl {
       final List <DocumentIdentifierType> aDocTypeIds = aDataManager.getDocumentTypes (aServiceGroupID);
       for (final DocumentIdentifierType aDocTypeId : aDocTypeIds) {
         final ServiceMetadataReferenceType aMetadataReference = aObjFactory.createServiceMetadataReferenceType ();
+        // Ensure that no context is emitted by using "replacePath" first!
         aMetadataReference.setHref (aUriInfo.getBaseUriBuilder ()
+                                            .replacePath ("")
                                             .path (aServiceMetadataInterface)
                                             .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID),
                                                                IdentifierUtils.getIdentifierURIPercentEncoded (aDocTypeId))

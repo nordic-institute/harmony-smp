@@ -68,7 +68,7 @@ import eu.europa.ec.cipa.smp.server.util.RequestHelper;
 /**
  * This class implements a REST frontend for getting the list of service groups
  * for a given user.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Path ("/list/{UserId}")
@@ -104,7 +104,9 @@ public final class ListInterface {
       final ServiceGroupReferenceListType aRefList = aObjFactory.createServiceGroupReferenceListType ();
       final List <ServiceGroupReferenceType> aReferenceTypes = aRefList.getServiceGroupReference ();
       for (final ParticipantIdentifierType aServiceGroupID : aServiceGroupList) {
+        // Ensure that no context is emitted by using "replacePath" first!
         final String sHref = uriInfo.getBaseUriBuilder ()
+                                    .replacePath ("")
                                     .path (CompleteServiceGroupInterface.class)
                                     .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID))
                                     .toString ();
