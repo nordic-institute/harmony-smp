@@ -106,7 +106,7 @@
 				<configuration>
 					<excludes>
 						<!-- Is an external directory! -->
-						<exclude>src/main/webapp/WEB-INF/wsdl/**</exclude>
+						<exclude>${basedir}/src/main/webapp/WEB-INF/wsdl/**</exclude>
 					</excludes>
 				</configuration>
 			</plugin>
@@ -156,7 +156,7 @@
 					</nonFilteredFileExtensions>
 					<webResources>
 						<resource>
-							<directory>src/main/webapp</directory>
+							<directory>${basedir}/src/main/webapp</directory>
 							<filtering>true</filtering>
 							<include>**/index.jsp</include>
 						</resource>
