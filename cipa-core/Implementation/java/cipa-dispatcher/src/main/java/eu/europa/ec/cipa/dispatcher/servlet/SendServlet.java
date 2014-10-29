@@ -2,10 +2,8 @@ package eu.europa.ec.cipa.dispatcher.servlet;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.io.RandomAccessFile;
 import java.net.URI;
 import java.net.URL;
@@ -13,7 +11,6 @@ import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -47,9 +44,6 @@ import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Service;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.To;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.UserMessage;
 import org.w3c.dom.Document;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 import backend.ecodex.org._1_1.BackendInterface;
 import backend.ecodex.org._1_1.BackendService11;
@@ -60,16 +54,12 @@ import backend.ecodex.org._1_1.SendResponse;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import de.mendelson.comm.as2.AS2ServerVersion;
-import de.mendelson.comm.as2.clientserver.message.ServerShutdown;
-import de.mendelson.comm.as2.server.AS2Server;
-import de.mendelson.util.clientserver.TextClient;
-import de.mendelson.util.security.BCCryptoHelper;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointDBInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointInitAndDestroyInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointSendInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.AS4GatewayInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.service.AS4PModeService;
+import eu.europa.ec.cipa.dispatcher.sbdh.SBDHHandler;
 import eu.europa.ec.cipa.dispatcher.util.KeystoreUtil;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
@@ -159,7 +149,10 @@ public class SendServlet extends HttpServlet {
 		String senderScheme = (String) resultMap.get("senderScheme");
 		String documentId = (String) resultMap.get("documentIdentifier");
 		String processId = (String) resultMap.get("processIdentifier");
-
+		String correlationId = (String) resultMap.get("correlationId");
+		if (correlationId == null){
+			correlationId= UUID.randomUUID().toString();
+		}
 		String missingField = null;
 		if (receiverIdentifier == null || receiverIdentifier.isEmpty())
 			missingField = "receiverIdentifier";
@@ -244,7 +237,7 @@ public class SendServlet extends HttpServlet {
 				documentType.setScheme(defaultDocumentTypeScheme);
 				documentType.setValue(documentId);
 				ProcessIdentifierType processType = new ProcessIdentifierType();
-				processType.setScheme(defaultProcessTypeScheme);
+				processType.setScheme(defaultProcessTypeScheme); 
 				processType.setValue(processId);
 				MessageMetadata metadata = new MessageMetadata("uuid:" + UUID.randomUUID().toString(), "peppol-channel", sender, receiver, documentType, processType);
 				DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
@@ -277,7 +270,7 @@ public class SendServlet extends HttpServlet {
 
 				BackendInterface holodeck_interface = holodeck_service.getBackendPort();
 
-				Messaging ebMSHeaderInfo = buildEBMSHeaderInfo(receiverIdentifier, processId, senderIdentifier, documentId, endpoint);
+				Messaging ebMSHeaderInfo = buildEBMSHeaderInfo(receiverIdentifier, processId, senderIdentifier, documentId, correlationId,endpoint);
 				SendRequest request = buildRequest(resultMap.get("tempFile2Path"));
 
 				SendResponse response = null;
@@ -347,9 +340,9 @@ public class SendServlet extends HttpServlet {
 		return receiverCert;
 	}
 
-	private Messaging buildEBMSHeaderInfo(String AS2To, String AS2From, String processId,  String documentId, EndpointType endpoint) {
+	private Messaging buildEBMSHeaderInfo(String receiver, String sender, String processId,  String documentId,String correlationId, EndpointType endpoint) {
 		
-		String userServiceName = processId.concat("_").concat(documentId).concat("_").concat(AS2To).concat("_").concat(AS4GatewayInterface.PMODE_ROLE);
+		String userServiceName = processId.concat("_").concat(documentId).concat("_").concat(receiver).concat("_").concat(AS4GatewayInterface.PMODE_ROLE);
 		
 		Messaging result = new Messaging();
 
@@ -359,10 +352,10 @@ public class SendServlet extends HttpServlet {
 		MessageProperties messageProperties = new MessageProperties();
 		Property finalRecipient = new Property();
 		finalRecipient.setName("finalRecipient");
-		finalRecipient.setValue(AS2To);
+		finalRecipient.setValue(receiver);
 		Property originalSender = new Property();
 		originalSender.setName("originalSender");
-		originalSender.setValue(AS2From);
+		originalSender.setValue(sender);
 		Property endpointAddress = new Property();
 		endpointAddress.setName("EndpointAddress");
 		endpointAddress.setValue(W3CEndpointReferenceUtils.getAddress(endpoint.getEndpointReference()));
@@ -380,7 +373,7 @@ public class SendServlet extends HttpServlet {
 		paramFrom.setRole(AS4GatewayInterface.PMODE_ROLE);
 		PartyId partyIdFrom = new PartyId();
 		partyIdFrom.setType(AS4GatewayInterface.ID_TYPE);
-		partyIdFrom.setValue(AS2From);
+		partyIdFrom.setValue(sender);
 		List<PartyId> listPartyId = paramFrom.getPartyId();
 		listPartyId.add(partyIdFrom);
 		partyInfo.setFrom(paramFrom);
@@ -388,7 +381,7 @@ public class SendServlet extends HttpServlet {
 		paramTo.setRole(AS4GatewayInterface.PMODE_ROLE);
 		PartyId partyIdTo = new PartyId();
 		partyIdTo.setType(AS4GatewayInterface.ID_TYPE);
-		partyIdTo.setValue(AS2To);
+		partyIdTo.setValue(receiver);
 		List<PartyId> listPartyId2 = paramTo.getPartyId();
 		listPartyId2.add(partyIdTo);
 		partyInfo.setTo(paramTo);
@@ -404,7 +397,7 @@ public class SendServlet extends HttpServlet {
 		collaborationInfo.setService(service);
 		
 		// Which one needs to be over here ?
-		collaborationInfo.setConversationId(processId);
+		collaborationInfo.setConversationId(correlationId);
 
 		userMessage.setCollaborationInfo(collaborationInfo);
 
@@ -541,155 +534,5 @@ public class SendServlet extends HttpServlet {
 		return;
 	}
 
-	private class SBDHHandler extends DefaultHandler {
-
-		private FileOutputStream file; // whole SBDH document sent by the client
-		private FileOutputStream file2; // only the payload without the SBDH
-										// headers sent by the client
-		private PrintStream stream;
-		private PrintStream stream2;
-		private String position = "";
-		private String scheme;
-		private String scopeType;
-		private Map<String, String> resultMap;
-		private boolean inPayload = false;
-
-		private static final String senderIdentifierPosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>Sender>Identifier";
-		private static final String receiverIdentifierPosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>Receiver>Identifier";
-		private static final String instanceIdentifierPosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>DocumentIdentification>InstanceIdentifier";
-		private static final String businessScopeTypePosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>BusinessScope>Scope>Type";
-		private static final String businessScopeInstanceIdentifierPosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>BusinessScope>Scope>InstanceIdentifier";
-
-		public Map<String, String> getResultMap() {
-			return this.resultMap;
-		}
-
-		public void startDocument() throws SAXException {
-			try {
-				int randomInt = 100000000 + (int) (Math.random() * 900000000); // Min
-																				// +
-																				// (int)(Math.random()
-																				// *
-																				// ((Max
-																				// -
-																				// Min)
-																				// +
-																				// 1))
-																				// ,
-																				// Min
-																				// =
-																				// 100000000,
-																				// Max
-																				// =
-																				// 999999999
-				String tempFilePath = properties.getProperty(PropertiesUtil.TEMP_FOLDER_PATH);
-				if (!tempFilePath.endsWith("/") && !tempFilePath.endsWith("\\"))
-					tempFilePath += "/";
-				tempFilePath += randomInt;
-				file = new FileOutputStream(tempFilePath);
-				stream = new PrintStream(file);
-				file2 = new FileOutputStream(tempFilePath + "_payload");
-				stream2 = new PrintStream(file2);
-
-				resultMap = new HashMap<String, String>();
-				resultMap.put("tempFilePath", tempFilePath);
-				resultMap.put("tempFile2Path", tempFilePath + "_payload");
-			} catch (Exception e) {
-				throw new SAXException(e);
-			}
-		}
-
-		public void endDocument() throws SAXException {
-			try {
-				stream.flush();
-				stream.close();
-				file.flush();
-				file.close();
-				stream2.flush();
-				stream2.close();
-				file2.flush();
-				file2.close();
-			} catch (Exception e) {
-				throw new SAXException(e);
-			}
-		}
-
-		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-			String tag = localName != null && !localName.isEmpty() ? localName : qName;
-
-			stream.print("<" + tag);
-			if (inPayload)
-				stream2.print("<" + tag);
-
-			position += ">" + tag;
-
-			if (attributes != null) {
-				String attName;
-				for (int i = 0; i < attributes.getLength(); i++) {
-					attName = attributes.getLocalName(i) != null ? attributes.getLocalName(i) : attributes.getQName(i);
-					stream.print(' ');
-					stream.print(attName);
-					stream.print('=');
-					stream.print('"' + attributes.getValue(i) + '"');
-					if (inPayload) {
-						stream2.print(' ');
-						stream2.print(attName);
-						stream2.print('=');
-						stream2.print('"' + attributes.getValue(i) + '"');
-					}
-
-					if (attName.equalsIgnoreCase("Authority"))
-						scheme = attributes.getValue(i);
-				}
-			}
-
-			stream.print(">");
-			if (inPayload)
-				stream2.print(">");
-		}
-
-		public void endElement(String uri, String localName, String qName) throws SAXException {
-			String tag = localName != null && !localName.isEmpty() ? localName : qName;
-
-			if (tag.equalsIgnoreCase("StandardBusinessDocument"))
-				inPayload = false;
-
-			stream.print("</" + tag + ">");
-			if (inPayload)
-				stream2.print("</" + tag + ">");
-
-			position = position.substring(0, position.lastIndexOf('>'));
-
-			if (tag.equalsIgnoreCase("StandardBusinessDocumentHeader"))
-				inPayload = true;
-		}
-
-		public void characters(char ch[], int start, int length) throws SAXException {
-			if (position.equalsIgnoreCase(senderIdentifierPosition)) {
-				resultMap.put("senderIdentifier", new String(ch, start, length));
-				resultMap.put("senderScheme", scheme);
-			} else if (position.equalsIgnoreCase(receiverIdentifierPosition)) {
-				resultMap.put("receiverIdentifier", new String(ch, start, length));
-				resultMap.put("receiverScheme", scheme);
-			} else if (position.equalsIgnoreCase(instanceIdentifierPosition)) {
-				resultMap.put("instanceIdentifier", new String(ch, start, length));
-			} else if (position.equalsIgnoreCase(businessScopeTypePosition)) {
-				scopeType = new String(ch, start, length);
-			} else if (position.equalsIgnoreCase(businessScopeInstanceIdentifierPosition)) {
-				if (scopeType.equalsIgnoreCase("DOCUMENTID"))
-					resultMap.put("documentIdentifier", new String(ch, start, length));
-				if (scopeType.equalsIgnoreCase("PROCESSID"))
-					resultMap.put("processIdentifier", new String(ch, start, length));
-			}
-
-			// stream.print(new String(ch, start, length)); avoiding the
-			// creation of potentially big objects
-			for (int offset = 0; offset < length; offset++) {
-				stream.print(ch[start + offset]);
-				if (inPayload)
-					stream2.print(ch[start + offset]);
-			}
-		}
-	}
 
 }
