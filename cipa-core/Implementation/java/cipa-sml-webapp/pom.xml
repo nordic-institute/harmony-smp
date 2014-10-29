@@ -158,7 +158,9 @@
 						<resource>
 							<directory>${basedir}/src/main/webapp</directory>
 							<filtering>true</filtering>
-							<include>**/index.jsp</include>
+                            <includes>
+							    <include>**/index.jsp</include>
+                            </includes>
 						</resource>
 					</webResources>
 				</configuration>
