@@ -59,7 +59,7 @@ import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointInitAndDestro
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointSendInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.AS4GatewayInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.service.AS4PModeService;
-import eu.europa.ec.cipa.dispatcher.sbdh.SBDHHandler;
+import eu.europa.ec.cipa.dispatcher.handler.SBDHHandler;
 import eu.europa.ec.cipa.dispatcher.util.KeystoreUtil;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;

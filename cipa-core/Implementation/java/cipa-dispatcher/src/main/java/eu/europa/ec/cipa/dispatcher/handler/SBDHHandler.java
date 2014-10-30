@@ -1,4 +1,4 @@
-package eu.europa.ec.cipa.dispatcher.sbdh;
+package eu.europa.ec.cipa.dispatcher.handler;
 
 import java.io.FileOutputStream;
 import java.io.PrintStream;

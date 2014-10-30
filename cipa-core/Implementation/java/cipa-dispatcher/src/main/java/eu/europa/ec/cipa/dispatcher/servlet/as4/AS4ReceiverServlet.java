@@ -54,9 +54,12 @@ import org.xml.sax.helpers.DefaultHandler;
 import eu.domibus.ebms3.config.PModePool;
 import eu.domibus.ebms3.config.Producer;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.AS4GatewayInterface;
+import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.service.AS4PModeService;
+import eu.europa.ec.cipa.dispatcher.handler.AS4Handler;
 import eu.europa.ec.cipa.dispatcher.ocsp.OCSPValidator;
 import eu.europa.ec.cipa.dispatcher.util.KeystoreUtil;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
+import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 
 public class AS4ReceiverServlet extends HttpServlet
 {
@@ -120,7 +123,14 @@ public class AS4ReceiverServlet extends HttpServlet
 			ByteArrayInputStream input = new ByteArrayInputStream(buffer.toByteArray());
 			
 	        //parse and extract input info
-	        Map inputMap = parseInput(input, resp);
+	        Map<String,String> inputMap = parseInput(input, resp);
+	        
+	        String senderIdentifier = (String) inputMap.get("senderIdentifier");
+	        String processIdentifier= (String) inputMap.get("processIdentifier");
+	        String documentIdentifier= (String) inputMap.get("documentIdentifier");
+	        String receiverIdentifier= (String) inputMap.get("receiverIdentifier");
+	        
+	      //  req.
 	        
 	        //check certificate trust
 	        byte [] binaryCert = Base64.decode((String)inputMap.get("certificate"));
@@ -155,33 +165,22 @@ public class AS4ReceiverServlet extends HttpServlet
 				return;				
 			}
 			
+			KeystoreUtil util = new KeystoreUtil();
+			//
 			
-			//find the certificate's CN
-			String commonName = extractCN(cert);
+			//find the certificate's CN 
+			String commonName = KeystoreUtil.extractCN(cert);
 					
 			if (!commonName.equals((String) inputMap.get("senderIdentifier")))
 			{
 				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "The Sender Identifier value in your message doesn't match your certificate's Common Name");
 			}
 			
+			util.installNewPartnerCertificate(cert, commonName);
 			//make the request's inputstream available to be read again
+			AS4PModeService service = new AS4PModeService();
+			service.createPartner(senderIdentifier, receiverIdentifier, processIdentifier, documentIdentifier, "");
 			input.reset();
-			
-			//check that the AS4 endpoint knows the sender, if not, create a new Partner
-			AS4GatewayInterface as4Interface = new AS4GatewayInterface();
-			PModePool pModePool = as4Interface.getPmodePool();
-			boolean producerKnown = false;
-			for (Producer prod : pModePool.getProducers())
-			{
-				if (prod.getName().equalsIgnoreCase(commonName))
-				{
-					producerKnown = true;
-					break;
-				}
-			}
-			if (!producerKnown)
-				//as4Interface.createPartner(commonName, (String)inputMap.get("processIdentifier"), (String)inputMap.get("documentIdentifier"), null, cert); //TODO: is it possible to get the sender's endpointURL at this point?	
-
 			//now we finally redirect the request to the AS4 endpoint
 			forwardToAS4Endpoint(req, resp, buffer);
 
@@ -216,7 +215,7 @@ public class AS4ReceiverServlet extends HttpServlet
 	}
 	
 	
-	private Map parseInput(ByteArrayInputStream input, HttpServletResponse resp)
+	private Map<String,String> parseInput(ByteArrayInputStream input, HttpServletResponse resp)
 	{
 		try
 		{
@@ -284,21 +283,21 @@ public class AS4ReceiverServlet extends HttpServlet
 	      return null; //means everything went well
 	}
 	
-	
-	private String extractCN(X509Certificate cert)
-	{
-		Principal principal = cert.getSubjectDN();
-		if (principal==null)
-			principal = cert.getSubjectX500Principal();
-		
-		String commonName = null;
-		String[] names = principal.getName().split(",");
-		for (String s: names)
-			if (s.trim().startsWith("CN="))
-				commonName = s.trim().substring(3);
-		
-		return commonName.trim();
-	}
+//	
+//	private String extractCN(X509Certificate cert)
+//	{
+//		Principal principal = cert.getSubjectDN();
+//		if (principal==null)
+//			principal = cert.getSubjectX500Principal();
+//		
+//		String commonName = null;
+//		String[] names = principal.getName().split(",");
+//		for (String s: names)
+//			if (s.trim().startsWith("CN="))
+//				commonName = s.trim().substring(3);
+//		
+//		return commonName.trim();
+//	}
 	
 	
 	private void forwardToAS4Endpoint(HttpServletRequest req, HttpServletResponse resp, ByteArrayOutputStream buffer)
@@ -372,74 +371,6 @@ public class AS4ReceiverServlet extends HttpServlet
 	
 	
 	
-	private class AS4Handler extends DefaultHandler
-	{
-
-		private String position = "";
-		private Map<String,String> resultMap;
-		
-		private static final String certificatePosition = ">soapenv:Envelope>soapenv:Header>wsse:Security>wsse:BinarySecurityToken";
-		private static final String senderIdentifierPosition = ">soapenv:Envelope>soapenv:Header>eb:Messaging>eb:UserMessage>eb:PartyInfo>eb:From>eb:PartyId";
-		private static final String receiverIdentifierPosition= ">soapenv:Envelope>soapenv:Header>eb:Messaging>eb:UserMessage>eb:PartyInfo>eb:To>eb:PartyId";
-		private static final String instanceIdentifierPosition= ">soapenv:Envelope>soapenv:Header>eb:Messaging>eb:UserMessage>eb:CollaborationInfo>eb:ConversationId";
-		private static final String processTypePosition= ">soapenv:Envelope>soapenv:Header>eb:Messaging>eb:UserMessage>eb:CollaborationInfo>eb:Service";
-		private static final String documentTypePosition= ">soapenv:Envelope>soapenv:Header>eb:Messaging>eb:UserMessage>eb:CollaborationInfo>eb:Action";
-		
-		
-		public Map<String,String> getResultMap()
-		{
-			return this.resultMap;
-		}
-		
-	    public void startDocument() throws SAXException
-	    {
-    		resultMap = new HashMap<String,String>();
-	    }
-
-	    public void endDocument() throws SAXException
-	    {
-	    }
-		
-		public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
-		{
-			String tag = localName!=null && !localName.isEmpty()? localName : qName;
-			
-			position += ">" + tag;
-		}
-	 
-		public void endElement(String uri, String localName,String qName) throws SAXException
-		{
-			position = position.substring(0, position.lastIndexOf('>')); 
-		}
-	 
-		public void characters(char ch[], int start, int length) throws SAXException
-		{
-			if (position.equalsIgnoreCase(senderIdentifierPosition))
-			{
-				resultMap.put("senderIdentifier", new String(ch, start, length));
-			}
-			else if (position.equalsIgnoreCase(receiverIdentifierPosition))
-			{
-				resultMap.put("receiverIdentifier", new String(ch, start, length));
-			}
-			else if (position.equalsIgnoreCase(instanceIdentifierPosition))
-			{
-				resultMap.put("instanceIdentifier", new String(ch, start, length));
-			}			
-			else if (position.equalsIgnoreCase(certificatePosition))
-			{
-				resultMap.put("certificate", new String(ch, start, length));
-			}
-			else if (position.equalsIgnoreCase(processTypePosition))
-			{
-				resultMap.put("processIdentifier", new String(ch, start, length));
-			}
-			else if (position.equalsIgnoreCase(documentTypePosition))
-			{
-				resultMap.put("documentIdentifier", new String(ch, start, length));
-			}
-		}
-	}	
 	
 	
 	
