@@ -192,6 +192,7 @@ public class AS4PModeService {
 			mep.setName(AS4GatewayInterface.MEP_NAME);
 			Leg leg = new Leg();
 			leg.setNumber(1);
+			leg.setProducer(producer);
 			leg.setProducerName(producer.getName());
 			leg.setMpc(AS4GatewayInterface.MPC);
 			leg.setUserServiceName(userservice.getName());

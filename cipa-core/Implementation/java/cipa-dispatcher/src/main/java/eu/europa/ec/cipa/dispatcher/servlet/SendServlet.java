@@ -32,10 +32,13 @@ import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.busdox.transport.identifiers._1.ProcessIdentifierType;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.CollaborationInfo;
+import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Description;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.From;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.MessageInfo;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.MessageProperties;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Messaging;
+import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.PartInfo;
+import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.PartProperties;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.PartyId;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.PartyInfo;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.PayloadInfo;
@@ -257,7 +260,9 @@ public class SendServlet extends HttpServlet {
 				KeystoreUtil util = new KeystoreUtil();
 				util.installNewPartnerCertificate(receiverCert, KeystoreUtil.extractCN(receiverCert));
 				AS4PModeService service = new AS4PModeService();
-				service.createPartner(senderIdentifier, receiverIdentifier, processId, documentId, W3CEndpointReferenceUtils.getAddress(endpoint.getEndpointReference()));
+				String senderGW=properties.getProperty(PropertiesUtil.KEYSTORE_AP_ALIAS);
+				String receiverGW =KeystoreUtil.extractCN(receiverCert);
+				service.createPartner(senderGW,receiverGW , processId, documentId, W3CEndpointReferenceUtils.getAddress(endpoint.getEndpointReference()));
 				if (holodeck_service == null)
 					try {
 						holodeck_service = new BackendService11(new URL(properties.getProperty(PropertiesUtil.EBMS_WSDL_PATH)));
@@ -270,7 +275,7 @@ public class SendServlet extends HttpServlet {
 
 				BackendInterface holodeck_interface = holodeck_service.getBackendPort();
 
-				Messaging ebMSHeaderInfo = buildEBMSHeaderInfo(receiverIdentifier, processId, senderIdentifier, documentId, correlationId,endpoint);
+				Messaging ebMSHeaderInfo = buildEBMSHeaderInfo(receiverGW, senderGW,processId,documentId,correlationId,endpoint,senderIdentifier,receiverIdentifier);
 				SendRequest request = buildRequest(resultMap.get("tempFile2Path"));
 
 				SendResponse response = null;
@@ -340,7 +345,7 @@ public class SendServlet extends HttpServlet {
 		return receiverCert;
 	}
 
-	private Messaging buildEBMSHeaderInfo(String receiver, String sender, String processId,  String documentId,String correlationId, EndpointType endpoint) {
+	private Messaging buildEBMSHeaderInfo(String receiver, String sender, String processId,  String documentId,String correlationId, EndpointType endpoint,String initialSender, String initialReceiver) {
 		
 		String userServiceName = processId.concat("_").concat(documentId).concat("_").concat(receiver).concat("_").concat(AS4GatewayInterface.PMODE_ROLE);
 		
@@ -352,10 +357,10 @@ public class SendServlet extends HttpServlet {
 		MessageProperties messageProperties = new MessageProperties();
 		Property finalRecipient = new Property();
 		finalRecipient.setName("finalRecipient");
-		finalRecipient.setValue(receiver);
+		finalRecipient.setValue(initialReceiver);
 		Property originalSender = new Property();
 		originalSender.setName("originalSender");
-		originalSender.setValue(sender);
+		originalSender.setValue(initialSender);
 		Property endpointAddress = new Property();
 		endpointAddress.setName("EndpointAddress");
 		endpointAddress.setValue(W3CEndpointReferenceUtils.getAddress(endpoint.getEndpointReference()));
@@ -408,8 +413,27 @@ public class SendServlet extends HttpServlet {
 		userMessage.setMessageInfo(info);
 
 		// payload info
-		userMessage.setPayloadInfo(new PayloadInfo());
-
+		PayloadInfo p = new PayloadInfo();
+		
+		Property prop = new Property();
+		prop.setName("MimeType");
+		prop.setValue("application/xml");
+		
+		PartProperties pProp = new PartProperties();
+		pProp.getProperty().add(prop);
+	
+		Description desc = new Description();
+		desc.setValue("#bodyload");
+		
+		PartInfo pInfo = new PartInfo();
+		pInfo.setHref("#bodyload");
+		
+		pInfo.setDescription(desc);
+		pInfo.setPartProperties(pProp);
+		
+		p.getPartInfo().add(pInfo);
+		userMessage.setPayloadInfo(p);
+		
 		List<UserMessage> listUserMessage = result.getUserMessage();
 		listUserMessage.add(userMessage);
 		return result;
@@ -424,8 +448,8 @@ public class SendServlet extends HttpServlet {
 			byte[] content = new byte[(int) f.length()];
 			f.read(content);
 			payload.setValue(content);
-			payload.setContentType("application/octet-stream");
-			payload.setPayloadId("#_" + UUID.randomUUID().toString());
+			payload.setContentType("application/xml");
+			payload.setPayloadId("#bodyload");
 
 			request.setBodyload(payload);
 		} catch (Exception e) {
