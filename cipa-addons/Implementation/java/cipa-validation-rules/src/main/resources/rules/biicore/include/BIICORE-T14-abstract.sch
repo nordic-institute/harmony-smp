@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Abstract Schematron rules for T14-->
-<pattern abstract="true" id="T14" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" abstract="true" id="T14">
   <rule context="$Credit_Note">
     <assert flag="warning" test="$BIICORE-T14-R000">[BIICORE-T14-R000]-This XML instance is NOT a BiiTrdm014 transaction</assert>
     <assert flag="warning" test="$BIICORE-T14-R001">[BIICORE-T14-R001]-An invoice SHOULD not contain empty elements.</assert>

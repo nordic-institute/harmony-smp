@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Abstract Schematron rules for T01-->
-<pattern abstract="true" id="T01" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" abstract="true" id="T01">
   <rule context="$Customer">
     <assert flag="fatal" test="$BIIRULE-T01-R009">[BIIRULE-T01-R009]-An order MUST contain the full name of the customer.</assert>
     <assert flag="warning" test="$BIIRULE-T01-R014">[BIIRULE-T01-R014]-A customer address in an order SHOULD contain at least city and zip code or have an address identifier.</assert>

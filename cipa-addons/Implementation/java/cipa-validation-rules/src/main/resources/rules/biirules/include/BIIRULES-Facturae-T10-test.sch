@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron tests for binding Facturae and transaction T10-->
-<pattern is-a="T10" id="FACTURAE-T10" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T10" id="FACTURAE-T10">
   <param name="BIIRULE-T10-R001" value="(EndDate and  StartDate) and not(number(translate(StartDate,'-','')) > number(translate(EndDate,'-',''))) or number(translate(StartDate,'-','')) = number(translate(EndDate,'-',''))" />
   <param name="BIIRULE-T10-R002" value="((LegalEntity/AddressInSpain/Town and LegalEntity/AddressInSpain/PostCode) or&#10;(LegalEntity/OverseasAddress/PostCodeandTown) or&#10;(Individual/AddressInSpain/Town and Individual/AddressInSpain/PostCode) or&#10;(Individual/OverseasAddress/PostCodeandTown))" />
   <param name="BIIRULE-T10-R003" value="((//CountryCode) and (following::BuyerParty//CountryCode) and ((//CountryCode) = (following::BuyerParty//CountryCode) or ((//CountryCode) != (following::BuyerParty//CountryCode) and starts-with(TaxIdentification/TaxIdentificationNumber, //CountryCode)))) or not(//CountryCode) or not(following::BuyerParty//CountryCode)" />

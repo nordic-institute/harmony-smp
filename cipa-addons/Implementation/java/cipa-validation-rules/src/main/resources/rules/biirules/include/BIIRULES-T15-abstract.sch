@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Abstract Schematron rules for T15-->
-<pattern abstract="true" id="T15" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" abstract="true" id="T15">
   <rule context="$Customer">
     <assert flag="warning" test="$BIIRULE-T15-R004">[BIIRULE-T15-R004]-A customer address in an invoice SHOULD contain at least city and zip code or have an address identifier.</assert>
     <assert flag="warning" test="$BIIRULE-T15-R005">[BIIRULE-T15-R005]-In cross border trade the VAT identifier for the customer should be prefixed with country code.</assert>

@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Abstract Schematron rules for T10-->
-<pattern abstract="true" id="T10" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" abstract="true" id="T10">
   <rule context="$Customer_Party">
     <assert flag="warning" test="$NOGOV-T10-R006">[NOGOV-T10-R006]-A customer number for AccountingCustomerParty SHOULD be provided according to EHF.</assert>
     <assert flag="fatal" test="$NOGOV-T10-R007">[NOGOV-T10-R007]-A contact reference identifier MUST be provided for AccountingCustomerParty according to EHF.</assert>

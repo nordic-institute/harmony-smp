@@ -38,36 +38,36 @@
     under either the MPL or the EUPL License.
 
 -->
-<ns2:CodeList xmlns:ns2="http://docs.oasis-open.org/codelist/ns/genericode/1.0/">
-  <Identification>
-    <ShortName>ItemIdentifier</ShortName>
-    <Version>0.1</Version>
-    <CanonicalUri>PEPPOL</CanonicalUri>
-    <CanonicalVersionUri>PEPPOL-0.1</CanonicalVersionUri>
-    <LocationUri>ItemIdentifier.gc</LocationUri>
-  </Identification>
-  <ColumnSet>
-    <Column Id="code" Use="required">
-      <ShortName>Code</ShortName>
-      <Data Type="normalizedString" />
-    </Column>
-    <Column Id="name" Use="optional">
-      <ShortName>Name</ShortName>
-      <Data Type="string" />
-    </Column>
-    <Key Id="codeKey">
-      <ShortName>CodeKey</ShortName>
-      <ColumnRef Ref="code" />
-    </Key>
-  </ColumnSet>
-  <SimpleCodeList>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GTIN</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>GTIN</SimpleValue>
-      </Value>
-    </Row>
-  </SimpleCodeList>
-</ns2:CodeList>
+<CodeList xmlns="http://docs.oasis-open.org/codelist/ns/genericode/1.0/">
+  <ns0:Identification xmlns:ns0="">
+    <ns0:ShortName>ItemIdentifier</ns0:ShortName>
+    <ns0:Version>0.1</ns0:Version>
+    <ns0:CanonicalUri>PEPPOL</ns0:CanonicalUri>
+    <ns0:CanonicalVersionUri>PEPPOL-0.1</ns0:CanonicalVersionUri>
+    <ns0:LocationUri>ItemIdentifier.gc</ns0:LocationUri>
+  </ns0:Identification>
+  <ns0:ColumnSet xmlns:ns0="">
+    <ns0:Column ns0:Id="code" ns0:Use="required">
+      <ns0:ShortName>Code</ns0:ShortName>
+      <ns0:Data ns0:Type="normalizedString" />
+    </ns0:Column>
+    <ns0:Column ns0:Id="name" ns0:Use="optional">
+      <ns0:ShortName>Name</ns0:ShortName>
+      <ns0:Data ns0:Type="string" />
+    </ns0:Column>
+    <ns0:Key ns0:Id="codeKey">
+      <ns0:ShortName>CodeKey</ns0:ShortName>
+      <ns0:ColumnRef ns0:Ref="code" />
+    </ns0:Key>
+  </ns0:ColumnSet>
+  <ns0:SimpleCodeList xmlns:ns0="">
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GTIN</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>GTIN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+  </ns0:SimpleCodeList>
+</CodeList>

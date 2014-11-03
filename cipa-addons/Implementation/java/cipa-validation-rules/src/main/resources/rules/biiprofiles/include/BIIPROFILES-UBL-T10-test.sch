@@ -40,9 +40,9 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron tests for binding UBL and transaction T10-->
-<pattern is-a="T10" id="UBL-T10" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T10" id="UBL-T10">
   <param name="BIIPROFILE-T10-R001" value=". = 'urn:www.cenbii.eu:profile:bii04:ver1.0' or . = 'urn:www.cenbii.eu:profile:bii05:ver1.0' or . = 'urn:www.cenbii.eu:profile:bii06:ver1.0'" />
   <param name="Invoice_Profile" value="//cbc:ProfileID" />
-  <param name="BIIPROFILE-T10-R002" value="local-name(/*) = 'Invoice' and (//cac:OrderReference/cbc:ID) and //cbc:ProfileID = 'urn:www.cenbii.eu:profile:bii06:ver1.0' or not (//cbc:ProfileID = 'urn:www.cenbii.eu:profile:bii06:ver1.0')" />
+  <param name="BIIPROFILE-T10-R002" value="(local-name(/*) = 'Invoice' and (//cac:OrderReference/cbc:ID) and //cbc:ProfileID = 'urn:www.cenbii.eu:profile:bii06:ver1.0') or not (//cbc:ProfileID = 'urn:www.cenbii.eu:profile:bii06:ver1.0')" />
   <param name="Invoice" value="/ubl:Invoice" />
 </pattern>

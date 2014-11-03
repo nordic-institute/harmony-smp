@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Abstract Schematron rules for T14-->
-<pattern abstract="true" id="T14" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" abstract="true" id="T14">
   <rule context="$Customer_Party">
     <assert flag="fatal" test="$NONAT-T14-R004">[NONAT-T14-R004]-A customer postal address in an invoice MUST contain at least, Street name, city name, zip code and country code.</assert>
   </rule>

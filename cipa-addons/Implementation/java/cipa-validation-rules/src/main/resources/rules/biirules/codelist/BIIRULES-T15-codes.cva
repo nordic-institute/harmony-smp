@@ -38,32 +38,32 @@
     under either the MPL or the EUPL License.
 
 -->
-<ns2:ContextValueAssociation name="BIIRULES-T15-codes" xmlns:ns2="http://docs.oasis-open.org/codelist/ns/ContextValueAssociation/1.0/">
-  <ValueLists>
-    <ValueList uri="CountryIdentificationCode.gc" xml:id="CountryIdentificationCode" />
-    <ValueList uri="CurrencyCode.gc" xml:id="CurrencyCode" />
-    <ValueList uri="PaymentMeansCode.gc" xml:id="PaymentMeansCode" />
-    <ValueList uri="TaxCategoryID.gc" xml:id="TaxCategoryID" />
-    <ValueList uri="TaxSchemeID.gc" xml:id="TaxSchemeID" />
-  </ValueLists>
-  <Contexts>
-    <Context address="cbc:DocumentCurrencyCode" mark="fatal" values="CurrencyCode">
-      <Message>[CL-015-002]-DocumentCurrencyCode MUST be coded using ISO code list 4217</Message>
-    </Context>
-    <Context address="@currencyID" mark="fatal" values="CurrencyCode">
-      <Message>[CL-015-003]-currencyID MUST be coded using ISO code list 4217</Message>
-    </Context>
-    <Context address="cac:Country/cbc:IdentificationCode" mark="fatal" values="CountryIdentificationCode">
-      <Message>[CL-015-004]-Country codes in an invoice MUST be coded using ISO code list 3166-1</Message>
-    </Context>
-    <Context address="cac:TaxScheme/cbc:ID" mark="warning" values="TaxSchemeID">
-      <Message>[CL-015-005]-Invoice tax schemes MUST be coded using UN/ECE 5153 code list</Message>
-    </Context>
-    <Context address="cac:PaymentMeans/cbc:PaymentMeansCode" mark="warning" values="PaymentMeansCode">
-      <Message>[CL-015-006]-Payment means in an invoice MUST be coded using CEFACT code list 4461</Message>
-    </Context>
-    <Context address="cac:TaxCategory/cbc:ID" mark="warning" values="TaxCategoryID">
-      <Message>[CL-015-007]-Invoice tax categories MUST be coded using UN/ECE 5305 code list</Message>
-    </Context>
-  </Contexts>
-</ns2:ContextValueAssociation>
+<ContextValueAssociation name="BIIRULES-T15-codes" xmlns="http://docs.oasis-open.org/codelist/ns/ContextValueAssociation/1.0/">
+  <ns0:ValueLists xmlns:ns0="">
+    <ns0:ValueList ns0:uri="CountryIdentificationCode.gc" xml:id="CountryIdentificationCode" />
+    <ns0:ValueList ns0:uri="CurrencyCode.gc" xml:id="CurrencyCode" />
+    <ns0:ValueList ns0:uri="PaymentMeansCode.gc" xml:id="PaymentMeansCode" />
+    <ns0:ValueList ns0:uri="TaxCategoryID.gc" xml:id="TaxCategoryID" />
+    <ns0:ValueList ns0:uri="TaxSchemeID.gc" xml:id="TaxSchemeID" />
+  </ns0:ValueLists>
+  <ns0:Contexts xmlns:ns0="">
+    <ns0:Context ns0:address="cbc:DocumentCurrencyCode" ns0:mark="fatal" ns0:values="CurrencyCode">
+      <ns0:Message>[CL-015-002]-DocumentCurrencyCode MUST be coded using ISO code list 4217</ns0:Message>
+    </ns0:Context>
+    <ns0:Context ns0:address="@currencyID" ns0:mark="fatal" ns0:values="CurrencyCode">
+      <ns0:Message>[CL-015-003]-currencyID MUST be coded using ISO code list 4217</ns0:Message>
+    </ns0:Context>
+    <ns0:Context ns0:address="cac:Country/cbc:IdentificationCode" ns0:mark="fatal" ns0:values="CountryIdentificationCode">
+      <ns0:Message>[CL-015-004]-Country codes in an invoice MUST be coded using ISO code list 3166-1</ns0:Message>
+    </ns0:Context>
+    <ns0:Context ns0:address="cac:TaxScheme/cbc:ID" ns0:mark="warning" ns0:values="TaxSchemeID">
+      <ns0:Message>[CL-015-005]-Invoice tax schemes MUST be coded using UN/ECE 5153 code list</ns0:Message>
+    </ns0:Context>
+    <ns0:Context ns0:address="cac:PaymentMeans/cbc:PaymentMeansCode" ns0:mark="warning" ns0:values="PaymentMeansCode">
+      <ns0:Message>[CL-015-006]-Payment means in an invoice MUST be coded using CEFACT code list 4461</ns0:Message>
+    </ns0:Context>
+    <ns0:Context ns0:address="cac:TaxCategory/cbc:ID" ns0:mark="warning" ns0:values="TaxCategoryID">
+      <ns0:Message>[CL-015-007]-Invoice tax categories MUST be coded using UN/ECE 5305 code list</ns0:Message>
+    </ns0:Context>
+  </ns0:Contexts>
+</ContextValueAssociation>

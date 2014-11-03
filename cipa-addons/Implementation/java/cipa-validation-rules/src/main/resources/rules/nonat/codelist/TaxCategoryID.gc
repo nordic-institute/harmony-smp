@@ -38,140 +38,140 @@
     under either the MPL or the EUPL License.
 
 -->
-<ns2:CodeList xmlns:ns2="http://docs.oasis-open.org/codelist/ns/genericode/1.0/">
-  <Identification>
-    <ShortName>TaxCategoryID</ShortName>
-    <Version>D08B</Version>
-    <CanonicalUri>UN/ECE 5305</CanonicalUri>
-    <CanonicalVersionUri>UN/ECE 5305-D08B</CanonicalVersionUri>
-    <LocationUri>http://docs.oasis-open.org/ubl/os-ubl-2.0/cl/gc/default/TaxCategoryID-2.0.gc</LocationUri>
-  </Identification>
-  <ColumnSet>
-    <Column Id="code" Use="required">
-      <ShortName>Code</ShortName>
-      <Data Type="normalizedString" />
-    </Column>
-    <Column Id="name" Use="optional">
-      <ShortName>Name</ShortName>
-      <Data Type="string" />
-    </Column>
-    <Key Id="codeKey">
-      <ShortName>CodeKey</ShortName>
-      <ColumnRef Ref="code" />
-    </Key>
-  </ColumnSet>
-  <SimpleCodeList>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>A</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>Mixed tax rate</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AA</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>Lower rate</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AB</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>Exempt for resale</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AC</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>Value Added Tax (VAT) not now due for payment</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AD</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>Value Added Tax (VAT) due from a previous invoice</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AE</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>VAT Reverse Charge</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>B</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>Transferred (VAT)</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>C</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>Duty paid by supplier</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>E</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>Exempt from tax</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>G</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>Free export item, tax not charged</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>H</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>Higher rate</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>O</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>Services outside scope of tax</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>S</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>Standard rate</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>Z</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>Zero rated goods</SimpleValue>
-      </Value>
-    </Row>
-  </SimpleCodeList>
-</ns2:CodeList>
+<CodeList xmlns="http://docs.oasis-open.org/codelist/ns/genericode/1.0/">
+  <ns0:Identification xmlns:ns0="">
+    <ns0:ShortName>TaxCategoryID</ns0:ShortName>
+    <ns0:Version>D08B</ns0:Version>
+    <ns0:CanonicalUri>UN/ECE 5305</ns0:CanonicalUri>
+    <ns0:CanonicalVersionUri>UN/ECE 5305-D08B</ns0:CanonicalVersionUri>
+    <ns0:LocationUri>http://docs.oasis-open.org/ubl/os-ubl-2.0/cl/gc/default/TaxCategoryID-2.0.gc</ns0:LocationUri>
+  </ns0:Identification>
+  <ns0:ColumnSet xmlns:ns0="">
+    <ns0:Column ns0:Id="code" ns0:Use="required">
+      <ns0:ShortName>Code</ns0:ShortName>
+      <ns0:Data ns0:Type="normalizedString" />
+    </ns0:Column>
+    <ns0:Column ns0:Id="name" ns0:Use="optional">
+      <ns0:ShortName>Name</ns0:ShortName>
+      <ns0:Data ns0:Type="string" />
+    </ns0:Column>
+    <ns0:Key ns0:Id="codeKey">
+      <ns0:ShortName>CodeKey</ns0:ShortName>
+      <ns0:ColumnRef ns0:Ref="code" />
+    </ns0:Key>
+  </ns0:ColumnSet>
+  <ns0:SimpleCodeList xmlns:ns0="">
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>A</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>Mixed tax rate</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AA</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>Lower rate</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AB</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>Exempt for resale</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AC</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>Value Added Tax (VAT) not now due for payment</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AD</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>Value Added Tax (VAT) due from a previous invoice</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AE</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>VAT Reverse Charge</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>B</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>Transferred (VAT)</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>C</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>Duty paid by supplier</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>E</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>Exempt from tax</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>G</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>Free export item, tax not charged</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>H</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>Higher rate</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>O</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>Services outside scope of tax</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>S</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>Standard rate</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>Z</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>Zero rated goods</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+  </ns0:SimpleCodeList>
+</CodeList>

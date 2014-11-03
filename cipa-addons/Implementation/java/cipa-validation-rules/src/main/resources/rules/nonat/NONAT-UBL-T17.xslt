@@ -38,7 +38,7 @@
     under either the MPL or the EUPL License.
 
 -->
-<xsl:stylesheet version="2.0" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:iso="http://purl.oclc.org/dsdl/schematron" xmlns:saxon="http://saxon.sf.net/" xmlns:schold="http://www.ascc.net/xml/schematron" xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Reminder-2" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="2.0" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Reminder-2" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <!--Implementers: please note that overriding process-prolog or process-root is 
     the preferred method for meta-stylesheets to use where possible. -->
 <xsl:param name="archiveDirParameter" />
@@ -53,7 +53,7 @@
 
 
 <!--PROLOG-->
-<xsl:output indent="yes" method="xml" omit-xml-declaration="no" standalone="yes" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+<xsl:output indent="yes" method="xml" omit-xml-declaration="no" standalone="yes" />
 
 <!--XSD TYPES FOR XSLT2-->
 
@@ -190,7 +190,7 @@
 
 <!--SCHEMA SETUP-->
 <xsl:template match="/">
-    <svrl:schematron-output schemaVersion="" title="NONAT T17 bound to ubl" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+    <svrl:schematron-output schemaVersion="" title="NONAT T17 bound to ubl">
       <xsl:comment>
         <xsl:value-of select="$archiveDirParameter" />   
 		 <xsl:value-of select="$archiveNameParameter" />  
@@ -222,20 +222,20 @@
   </xsl:template>
 
 <!--SCHEMATRON PATTERNS-->
-<svrl:text xmlns:svrl="http://purl.oclc.org/dsdl/svrl">NONAT T17 bound to ubl</svrl:text>
+<svrl:text>NONAT T17 bound to ubl</svrl:text>
 
 <!--PATTERN Codes-T17-->
 
 
 	<!--RULE -->
 <xsl:template match="@currencyID" mode="M6" priority="1004">
-    <svrl:fired-rule context="@currencyID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="@currencyID" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="contains('�AED�AFN�ALL�AMD�ANG�AOA�ARS�AUD�AWG�AZN�BAM�BBD�BDT�BGN�BHD�BIF�BMD�BND�BOB�BOV�BRL�BSD�BTN�BWP�BYR�BZD�CAD�CDF�CHE�CHF�CHW�CLF�CLP�CNY�COP�COU�CRC�CUP�CVE�CZK�DJF�DKK�DOP�DZD�EEK�EGP�ERN�ETB�EUR�FJD�FKP�GBP�GEL�GHS�GIP�GMD�GNF�GTQ�GWP�GYD�HKD�HNL�HRK�HTG�HUF�IDR�ILS�INR�IQD�IRR�ISK�JMD�JOD�JPY�KES�KGS�KHR�KMF�KPW�KRW�KWD�KYD�KZT�LAK�LBP�LKR�LRD�LSL�LTL�LVL�LYD�MAD�MDL�MGA�MKD�MMK�MNT�MOP�MRO�MUR�MVR�MWK�MXN�MXV�MYR�MZN�NAD�NGN�NIO�NOK�NPR�NZD�OMR�PAB�PEN�PGK�PHP�PKR�PLN�PYG�QAR�RON�RSD�RUB�RWF�SAR�SBD�SCR�SDG�SEK�SGD�SHP�SKK�SLL�SOS�SRD�STD�SVC�SYP�SZL�THB�TJS�TMM�TND�TOP�TRY�TTD�TWD�TZS�UAH�UGX�USD�USN�USS�UYI�UYU�UZS�VEF�VND�VUV�WST�XAF�XAG�XAU�XBA�XBB�XBC�XBD�XCD�XDR�XFU�XOF�XPD�XPF�XTS�XXX�YER�ZAR�ZMK�ZWD�ZWR�',concat('�',.,'�'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="contains('�AED�AFN�ALL�AMD�ANG�AOA�ARS�AUD�AWG�AZN�BAM�BBD�BDT�BGN�BHD�BIF�BMD�BND�BOB�BOV�BRL�BSD�BTN�BWP�BYR�BZD�CAD�CDF�CHE�CHF�CHW�CLF�CLP�CNY�COP�COU�CRC�CUP�CVE�CZK�DJF�DKK�DOP�DZD�EEK�EGP�ERN�ETB�EUR�FJD�FKP�GBP�GEL�GHS�GIP�GMD�GNF�GTQ�GWP�GYD�HKD�HNL�HRK�HTG�HUF�IDR�ILS�INR�IQD�IRR�ISK�JMD�JOD�JPY�KES�KGS�KHR�KMF�KPW�KRW�KWD�KYD�KZT�LAK�LBP�LKR�LRD�LSL�LTL�LVL�LYD�MAD�MDL�MGA�MKD�MMK�MNT�MOP�MRO�MUR�MVR�MWK�MXN�MXV�MYR�MZN�NAD�NGN�NIO�NOK�NPR�NZD�OMR�PAB�PEN�PGK�PHP�PKR�PLN�PYG�QAR�RON�RSD�RUB�RWF�SAR�SBD�SCR�SDG�SEK�SGD�SHP�SKK�SLL�SOS�SRD�STD�SVC�SYP�SZL�THB�TJS�TMM�TND�TOP�TRY�TTD�TWD�TZS�UAH�UGX�USD�USN�USS�UYI�UYU�UZS�VEF�VND�VUV�WST�XAF�XAG�XAU�XBA�XBB�XBC�XBD�XCD�XDR�XFU�XOF�XPD�XPF�XTS�XXX�YER�ZAR�ZMK�ZWD�ZWR�',concat('�',.,'�'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="contains('�AED�AFN�ALL�AMD�ANG�AOA�ARS�AUD�AWG�AZN�BAM�BBD�BDT�BGN�BHD�BIF�BMD�BND�BOB�BOV�BRL�BSD�BTN�BWP�BYR�BZD�CAD�CDF�CHE�CHF�CHW�CLF�CLP�CNY�COP�COU�CRC�CUP�CVE�CZK�DJF�DKK�DOP�DZD�EEK�EGP�ERN�ETB�EUR�FJD�FKP�GBP�GEL�GHS�GIP�GMD�GNF�GTQ�GWP�GYD�HKD�HNL�HRK�HTG�HUF�IDR�ILS�INR�IQD�IRR�ISK�JMD�JOD�JPY�KES�KGS�KHR�KMF�KPW�KRW�KWD�KYD�KZT�LAK�LBP�LKR�LRD�LSL�LTL�LVL�LYD�MAD�MDL�MGA�MKD�MMK�MNT�MOP�MRO�MUR�MVR�MWK�MXN�MXV�MYR�MZN�NAD�NGN�NIO�NOK�NPR�NZD�OMR�PAB�PEN�PGK�PHP�PKR�PLN�PYG�QAR�RON�RSD�RUB�RWF�SAR�SBD�SCR�SDG�SEK�SGD�SHP�SKK�SLL�SOS�SRD�STD�SVC�SYP�SZL�THB�TJS�TMM�TND�TOP�TRY�TTD�TWD�TZS�UAH�UGX�USD�USN�USS�UYI�UYU�UZS�VEF�VND�VUV�WST�XAF�XAG�XAU�XBA�XBB�XBC�XBD�XCD�XDR�XFU�XOF�XPD�XPF�XTS�XXX�YER�ZAR�ZMK�ZWD�ZWR�',concat('�',.,'�'))">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -249,13 +249,13 @@
 
 	<!--RULE -->
 <xsl:template match="cac:Country/cbc:IdentificationCode" mode="M6" priority="1003">
-    <svrl:fired-rule context="cac:Country/cbc:IdentificationCode" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="cac:Country/cbc:IdentificationCode" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="contains('�AD�AE�AF�AG�AI�AL�AM�AN�AO�AQ�AR�AS�AT�AU�AW�AX�AZ�BA�BB�BD�BE�BF�BG�BH�BI�BJ�BL�BM�BN�BO�BR�BS�BT�BV�BW�BY�BZ�CA�CC�CD�CF�CG�CH�CI�CK�CL�CM�CN�CO�CR�CU�CV�CX�CY�CZ�DE�DJ�DK�DM�DO�DZ�EC�EE�EG�EH�ER�ES�ET�FI�FJ�FK�FM�FO�FR�GA�GB�GD�GE�GF�GG�GH�GI�GL�GM�GN�GP�GQ�GR�GS�GT�GU�GW�GY�HK�HM�HN�HR�HT�HU�ID�IE�IL�IM�IN�IO�IQ�IR�IS�IT�JE�JM�JO�JP�KE�KG�KH�KI�KM�KN�KP�KR�KW�KY�KZ�LA�LB�LC�LI�LK�LR�LS�LT�LU�LV�LY�MA�MC�MD�ME�MF�MG�MH�MK�ML�MM�MN�MO�MP�MQ�MR�MS�MT�MU�MV�MW�MX�MY�MZ�NA�NC�NE�NF�NG�NI�NL�NO�NP�NR�NU�NZ�OM�PA�PE�PF�PG�PH�PK�PL�PM�PN�PR�PS�PT�PW�PY�QA�RO�RS�RU�RW�SA�SB�SC�SD�SE�SG�SH�SI�SJ�SK�SL�SM�SN�SO�SR�ST�SV�SY�SZ�TC�TD�TF�TG�TH�TJ�TK�TL�TM�TN�TO�TR�TT�TV�TW�TZ�UA�UG�UM�US�UY�UZ�VA�VC�VE�VG�VI�VN�VU�WF�WS�YE�YT�ZA�ZM�ZW�',concat('�',.,'�'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="contains('�AD�AE�AF�AG�AI�AL�AM�AN�AO�AQ�AR�AS�AT�AU�AW�AX�AZ�BA�BB�BD�BE�BF�BG�BH�BI�BJ�BL�BM�BN�BO�BR�BS�BT�BV�BW�BY�BZ�CA�CC�CD�CF�CG�CH�CI�CK�CL�CM�CN�CO�CR�CU�CV�CX�CY�CZ�DE�DJ�DK�DM�DO�DZ�EC�EE�EG�EH�ER�ES�ET�FI�FJ�FK�FM�FO�FR�GA�GB�GD�GE�GF�GG�GH�GI�GL�GM�GN�GP�GQ�GR�GS�GT�GU�GW�GY�HK�HM�HN�HR�HT�HU�ID�IE�IL�IM�IN�IO�IQ�IR�IS�IT�JE�JM�JO�JP�KE�KG�KH�KI�KM�KN�KP�KR�KW�KY�KZ�LA�LB�LC�LI�LK�LR�LS�LT�LU�LV�LY�MA�MC�MD�ME�MF�MG�MH�MK�ML�MM�MN�MO�MP�MQ�MR�MS�MT�MU�MV�MW�MX�MY�MZ�NA�NC�NE�NF�NG�NI�NL�NO�NP�NR�NU�NZ�OM�PA�PE�PF�PG�PH�PK�PL�PM�PN�PR�PS�PT�PW�PY�QA�RO�RS�RU�RW�SA�SB�SC�SD�SE�SG�SH�SI�SJ�SK�SL�SM�SN�SO�SR�ST�SV�SY�SZ�TC�TD�TF�TG�TH�TJ�TK�TL�TM�TN�TO�TR�TT�TV�TW�TZ�UA�UG�UM�US�UY�UZ�VA�VC�VE�VG�VI�VN�VU�WF�WS�YE�YT�ZA�ZM�ZW�',concat('�',.,'�'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="contains('�AD�AE�AF�AG�AI�AL�AM�AN�AO�AQ�AR�AS�AT�AU�AW�AX�AZ�BA�BB�BD�BE�BF�BG�BH�BI�BJ�BL�BM�BN�BO�BR�BS�BT�BV�BW�BY�BZ�CA�CC�CD�CF�CG�CH�CI�CK�CL�CM�CN�CO�CR�CU�CV�CX�CY�CZ�DE�DJ�DK�DM�DO�DZ�EC�EE�EG�EH�ER�ES�ET�FI�FJ�FK�FM�FO�FR�GA�GB�GD�GE�GF�GG�GH�GI�GL�GM�GN�GP�GQ�GR�GS�GT�GU�GW�GY�HK�HM�HN�HR�HT�HU�ID�IE�IL�IM�IN�IO�IQ�IR�IS�IT�JE�JM�JO�JP�KE�KG�KH�KI�KM�KN�KP�KR�KW�KY�KZ�LA�LB�LC�LI�LK�LR�LS�LT�LU�LV�LY�MA�MC�MD�ME�MF�MG�MH�MK�ML�MM�MN�MO�MP�MQ�MR�MS�MT�MU�MV�MW�MX�MY�MZ�NA�NC�NE�NF�NG�NI�NL�NO�NP�NR�NU�NZ�OM�PA�PE�PF�PG�PH�PK�PL�PM�PN�PR�PS�PT�PW�PY�QA�RO�RS�RU�RW�SA�SB�SC�SD�SE�SG�SH�SI�SJ�SK�SL�SM�SN�SO�SR�ST�SV�SY�SZ�TC�TD�TF�TG�TH�TJ�TK�TL�TM�TN�TO�TR�TT�TV�TW�TZ�UA�UG�UM�US�UY�UZ�VA�VC�VE�VG�VI�VN�VU�WF�WS�YE�YT�ZA�ZM�ZW�',concat('�',.,'�'))">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -269,13 +269,13 @@
 
 	<!--RULE -->
 <xsl:template match="cac:TaxScheme/cbc:ID" mode="M6" priority="1002">
-    <svrl:fired-rule context="cac:TaxScheme/cbc:ID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="cac:TaxScheme/cbc:ID" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="contains('�AAA�AAB�AAC�AAD�AAE�AAF�AAG�AAH�AAI�AAJ�AAK�AAL�ADD�BOL�CAP�CAR�COC�CST�CUD�CVD�ENV�EXC�EXP�FET�FRE�GCN�GST�ILL�IMP�IND�LAC�LCN�LDP�LOC�LST�MCA�MCD�OTH�PDB�PDC�PRF�SCN�SSS�STT�SUP�SUR�SWT�TAC�TOT�TOX�TTA�VAD�VAT�',concat('�',.,'�'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="contains('�AAA�AAB�AAC�AAD�AAE�AAF�AAG�AAH�AAI�AAJ�AAK�AAL�ADD�BOL�CAP�CAR�COC�CST�CUD�CVD�ENV�EXC�EXP�FET�FRE�GCN�GST�ILL�IMP�IND�LAC�LCN�LDP�LOC�LST�MCA�MCD�OTH�PDB�PDC�PRF�SCN�SSS�STT�SUP�SUR�SWT�TAC�TOT�TOX�TTA�VAD�VAT�',concat('�',.,'�'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="contains('�AAA�AAB�AAC�AAD�AAE�AAF�AAG�AAH�AAI�AAJ�AAK�AAL�ADD�BOL�CAP�CAR�COC�CST�CUD�CVD�ENV�EXC�EXP�FET�FRE�GCN�GST�ILL�IMP�IND�LAC�LCN�LDP�LOC�LST�MCA�MCD�OTH�PDB�PDC�PRF�SCN�SSS�STT�SUP�SUR�SWT�TAC�TOT�TOX�TTA�VAD�VAT�',concat('�',.,'�'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -289,13 +289,13 @@
 
 	<!--RULE -->
 <xsl:template match="cac:TaxCategory/cbc:ID" mode="M6" priority="1001">
-    <svrl:fired-rule context="cac:TaxCategory/cbc:ID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="cac:TaxCategory/cbc:ID" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="contains('�A�AA�AB�AC�AD�AE�B�C�E�G�H�O�S�Z�',concat('�',.,'�'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="contains('�A�AA�AB�AC�AD�AE�B�C�E�G�H�O�S�Z�',concat('�',.,'�'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="contains('�A�AA�AB�AC�AD�AE�B�C�E�G�H�O�S�Z�',concat('�',.,'�'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -309,13 +309,13 @@
 
 	<!--RULE -->
 <xsl:template match="cac:PostalAddress/cbc:ID/@schemeID" mode="M6" priority="1000">
-    <svrl:fired-rule context="cac:PostalAddress/cbc:ID/@schemeID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="cac:PostalAddress/cbc:ID/@schemeID" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="contains('�GLN�',concat('�',.,'�'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="contains('�GLN�',concat('�',.,'�'))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="contains('�GLN�',concat('�',.,'�'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -336,13 +336,13 @@
 
 	<!--RULE -->
 <xsl:template match="/ubl:Reminder/cac:TaxTotal" mode="M7" priority="1007">
-    <svrl:fired-rule context="/ubl:Reminder/cac:TaxTotal" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="/ubl:Reminder/cac:TaxTotal" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="(cbc:TaxAmount)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:TaxAmount)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cbc:TaxAmount)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -356,13 +356,13 @@
 
 	<!--RULE -->
 <xsl:template match="//cac:ReminderLine" mode="M7" priority="1006">
-    <svrl:fired-rule context="//cac:ReminderLine" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="//cac:ReminderLine" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="(cbc:ID)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:ID)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cbc:ID)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -376,7 +376,7 @@
 <xsl:choose>
       <xsl:when test="(//cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID) or (//cac:BillingReference/cac:CreditNoteDocumentReference/cbc:ID)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(//cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID) or (//cac:BillingReference/cac:CreditNoteDocumentReference/cbc:ID)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(//cac:BillingReference/cac:InvoiceDocumentReference/cbc:ID) or (//cac:BillingReference/cac:CreditNoteDocumentReference/cbc:ID)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -390,13 +390,13 @@
 
 	<!--RULE -->
 <xsl:template match="//cbc:ProfileID" mode="M7" priority="1005">
-    <svrl:fired-rule context="//cbc:ProfileID" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="//cbc:ProfileID" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test=". = 'urn:www.cenbii.eu:profile:bii08:ver1.0'" />
       <xsl:otherwise>
-        <svrl:failed-assert test=". = 'urn:www.cenbii.eu:profile:bii08:ver1.0'" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test=". = 'urn:www.cenbii.eu:profile:bii08:ver1.0'">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -410,13 +410,13 @@
 
 	<!--RULE -->
 <xsl:template match="//cac:AccountingCustomerParty/cac:Party" mode="M7" priority="1004">
-    <svrl:fired-rule context="//cac:AccountingCustomerParty/cac:Party" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="//cac:AccountingCustomerParty/cac:Party" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="(cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -430,7 +430,7 @@
 <xsl:choose>
       <xsl:when test="(cac:PartyIdentification/cbc:ID != '')" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:PartyIdentification/cbc:ID != '')" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:PartyIdentification/cbc:ID != '')">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -444,7 +444,7 @@
 <xsl:choose>
       <xsl:when test="(cac:PartyLegalEntity/cbc:CompanyID != '')" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:PartyLegalEntity/cbc:CompanyID != '')" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:PartyLegalEntity/cbc:CompanyID != '')">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -458,7 +458,7 @@
 <xsl:choose>
       <xsl:when test="(cac:Contact/cbc:ID != '')" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:Contact/cbc:ID != '')" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:Contact/cbc:ID != '')">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -472,13 +472,13 @@
 
 	<!--RULE -->
 <xsl:template match="//cac:LegalMonetaryTotal" mode="M7" priority="1003">
-    <svrl:fired-rule context="//cac:LegalMonetaryTotal" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="//cac:LegalMonetaryTotal" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="number(child::cbc:LineExtensionAmount) = number(round((sum(//cac:ReminderLine/cbc:DebitLineAmount) - sum(//cac:ReminderLine/cbc:CreditLineAmount)) * 100) div 100)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="number(child::cbc:LineExtensionAmount) = number(round((sum(//cac:ReminderLine/cbc:DebitLineAmount) - sum(//cac:ReminderLine/cbc:CreditLineAmount)) * 100) div 100)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="number(child::cbc:LineExtensionAmount) = number(round((sum(//cac:ReminderLine/cbc:DebitLineAmount) - sum(//cac:ReminderLine/cbc:CreditLineAmount)) * 100) div 100)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -492,13 +492,13 @@
 
 	<!--RULE -->
 <xsl:template match="//cac:AccountingSupplierParty/cac:Party" mode="M7" priority="1002">
-    <svrl:fired-rule context="//cac:AccountingSupplierParty/cac:Party" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="//cac:AccountingSupplierParty/cac:Party" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="(cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -512,7 +512,7 @@
 <xsl:choose>
       <xsl:when test="(cac:PostalAddress/cac:Country/cbc:IdentificationCode != '')" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:PostalAddress/cac:Country/cbc:IdentificationCode != '')" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:PostalAddress/cac:Country/cbc:IdentificationCode != '')">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -526,7 +526,7 @@
 <xsl:choose>
       <xsl:when test="(cac:PartyLegalEntity/cbc:CompanyID != '')" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:PartyLegalEntity/cbc:CompanyID != '')" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:PartyLegalEntity/cbc:CompanyID != '')">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -540,13 +540,13 @@
 
 	<!--RULE -->
 <xsl:template match="/ubl:Reminder" mode="M7" priority="1001">
-    <svrl:fired-rule context="/ubl:Reminder" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="/ubl:Reminder" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="(cbc:ID)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:ID)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cbc:ID)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -560,7 +560,7 @@
 <xsl:choose>
       <xsl:when test="(cbc:IssueDate)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:IssueDate)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cbc:IssueDate)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -574,7 +574,7 @@
 <xsl:choose>
       <xsl:when test="(cac:LegalMonetaryTotal/cbc:LineExtensionAmount)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:LegalMonetaryTotal/cbc:LineExtensionAmount)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:LegalMonetaryTotal/cbc:LineExtensionAmount)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -588,7 +588,7 @@
 <xsl:choose>
       <xsl:when test="(cac:LegalMonetaryTotal/cbc:PayableAmount)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:LegalMonetaryTotal/cbc:PayableAmount)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:LegalMonetaryTotal/cbc:PayableAmount)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -602,7 +602,7 @@
 <xsl:choose>
       <xsl:when test="(cac:ReminderLine)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:ReminderLine)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:ReminderLine)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -616,7 +616,7 @@
 <xsl:choose>
       <xsl:when test="not(cac:PayeeParty) or (cac:PayeeParty/cac:PartyName/cbc:Name)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="not(cac:PayeeParty) or (cac:PayeeParty/cac:PartyName/cbc:Name)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="not(cac:PayeeParty) or (cac:PayeeParty/cac:PartyName/cbc:Name)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -630,7 +630,7 @@
 <xsl:choose>
       <xsl:when test="(((//cac:TaxCategory/cbc:ID) = 'AE')  and not((//cac:TaxCategory/cbc:ID) != 'AE' )) or not((//cac:TaxCategory/cbc:ID) = 'AE') or not(//cac:TaxCategory)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(((//cac:TaxCategory/cbc:ID) = 'AE') and not((//cac:TaxCategory/cbc:ID) != 'AE' )) or not((//cac:TaxCategory/cbc:ID) = 'AE') or not(//cac:TaxCategory)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(((//cac:TaxCategory/cbc:ID) = 'AE') and not((//cac:TaxCategory/cbc:ID) != 'AE' )) or not((//cac:TaxCategory/cbc:ID) = 'AE') or not(//cac:TaxCategory)">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -642,9 +642,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = 'AE' or not ((//cac:TaxCategory/cbc:ID) = 'AE')" />
+      <xsl:when test="(//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = 'AE') or not ((//cac:TaxCategory/cbc:ID) = 'AE')" />
       <xsl:otherwise>
-        <svrl:failed-assert test="//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = 'AE' or not ((//cac:TaxCategory/cbc:ID) = 'AE')" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = 'AE') or not ((//cac:TaxCategory/cbc:ID) = 'AE')">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -658,7 +658,7 @@
 <xsl:choose>
       <xsl:when test="(cbc:UBLVersionID)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:UBLVersionID)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cbc:UBLVersionID)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -672,7 +672,7 @@
 <xsl:choose>
       <xsl:when test="(cbc:CustomizationID)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:CustomizationID)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cbc:CustomizationID)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -686,7 +686,7 @@
 <xsl:choose>
       <xsl:when test="(cbc:ProfileID)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:ProfileID)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cbc:ProfileID)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -700,7 +700,7 @@
 <xsl:choose>
       <xsl:when test="(cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -714,7 +714,7 @@
 <xsl:choose>
       <xsl:when test="(cac:AccountingCustomerParty/cac:Party/cac:PartyName/cbc:Name)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:AccountingCustomerParty/cac:Party/cac:PartyName/cbc:Name)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:AccountingCustomerParty/cac:Party/cac:PartyName/cbc:Name)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -728,13 +728,13 @@
 
 	<!--RULE -->
 <xsl:template match="//cac:TaxSubtotal" mode="M7" priority="1000">
-    <svrl:fired-rule context="//cac:TaxSubtotal" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="//cac:TaxSubtotal" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="(number(cac:TaxCategory/cbc:Percent) = 0 and (cac:TaxCategory/cbc:TaxExemptionReason or cac:TaxCategory/cbc:TaxExemptionReasonCode)) or  (number(cac:TaxCategory/cbc:Percent) !=0)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(number(cac:TaxCategory/cbc:Percent) = 0 and (cac:TaxCategory/cbc:TaxExemptionReason or cac:TaxCategory/cbc:TaxExemptionReasonCode)) or (number(cac:TaxCategory/cbc:Percent) !=0)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(number(cac:TaxCategory/cbc:Percent) = 0 and (cac:TaxCategory/cbc:TaxExemptionReason or cac:TaxCategory/cbc:TaxExemptionReasonCode)) or (number(cac:TaxCategory/cbc:Percent) !=0)">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />

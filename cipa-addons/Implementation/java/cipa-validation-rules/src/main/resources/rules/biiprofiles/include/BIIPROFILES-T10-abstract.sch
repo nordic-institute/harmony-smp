@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Abstract Schematron rules for T10-->
-<pattern abstract="true" id="T10" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" abstract="true" id="T10">
   <rule context="$Invoice_Profile">
     <assert flag="fatal" test="$BIIPROFILE-T10-R001">[BIIPROFILE-T10-R001]-An invoice transaction T10 must only be used in Profiles 4, 5 or 6.</assert>
   </rule>

@@ -38,7 +38,7 @@
     under either the MPL or the EUPL License.
 
 -->
-<xsl:stylesheet version="2.0" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:iso="http://purl.oclc.org/dsdl/schematron" xmlns:saxon="http://saxon.sf.net/" xmlns:schold="http://www.ascc.net/xml/schematron" xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Order-2" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="2.0" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Order-2" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <!--Implementers: please note that overriding process-prolog or process-root is 
     the preferred method for meta-stylesheets to use where possible. -->
 <xsl:param name="archiveDirParameter" />
@@ -53,7 +53,7 @@
 
 
 <!--PROLOG-->
-<xsl:output indent="yes" method="xml" omit-xml-declaration="no" standalone="yes" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+<xsl:output indent="yes" method="xml" omit-xml-declaration="no" standalone="yes" />
 
 <!--XSD TYPES FOR XSLT2-->
 
@@ -190,7 +190,7 @@
 
 <!--SCHEMA SETUP-->
 <xsl:template match="/">
-    <svrl:schematron-output schemaVersion="" title="EUGEN T01 bound to UBL" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+    <svrl:schematron-output schemaVersion="" title="EUGEN T01 bound to UBL">
       <xsl:comment>
         <xsl:value-of select="$archiveDirParameter" />   
 		 <xsl:value-of select="$archiveNameParameter" />  
@@ -213,20 +213,20 @@
   </xsl:template>
 
 <!--SCHEMATRON PATTERNS-->
-<svrl:text xmlns:svrl="http://purl.oclc.org/dsdl/svrl">EUGEN T01 bound to UBL</svrl:text>
+<svrl:text>EUGEN T01 bound to UBL</svrl:text>
 
 <!--PATTERN UBL-T01-->
 
 
 	<!--RULE -->
 <xsl:template match="//cac:OrderLine/cac:LineItem" mode="M5" priority="1006">
-    <svrl:fired-rule context="//cac:OrderLine/cac:LineItem" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="//cac:OrderLine/cac:LineItem" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="(cbc:Quantity) and (cbc:Quantity/@unitCode)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:Quantity) and (cbc:Quantity/@unitCode)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cbc:Quantity) and (cbc:Quantity/@unitCode)">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -240,7 +240,7 @@
 <xsl:choose>
       <xsl:when test="number(cbc:LineExtensionAmount) >= 0" />
       <xsl:otherwise>
-        <svrl:failed-assert test="number(cbc:LineExtensionAmount) >= 0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="number(cbc:LineExtensionAmount) >= 0">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -254,7 +254,7 @@
 <xsl:choose>
       <xsl:when test="number(cbc:Quantity) >= 0" />
       <xsl:otherwise>
-        <svrl:failed-assert test="number(cbc:Quantity) >= 0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="number(cbc:Quantity) >= 0">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -268,13 +268,13 @@
 
 	<!--RULE -->
 <xsl:template match="//cac:AllowanceCharge" mode="M5" priority="1005">
-    <svrl:fired-rule context="//cac:AllowanceCharge" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="//cac:AllowanceCharge" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="(cbc:AllowanceChargeReason)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:AllowanceChargeReason)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cbc:AllowanceChargeReason)">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -288,7 +288,7 @@
 <xsl:choose>
       <xsl:when test="number(cbc:Amount) >= 0" />
       <xsl:otherwise>
-        <svrl:failed-assert test="number(cbc:Amount) >= 0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="number(cbc:Amount) >= 0">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -302,13 +302,13 @@
 
 	<!--RULE -->
 <xsl:template match="//cac:BuyerCustomerParty/cac:Party" mode="M5" priority="1004">
-    <svrl:fired-rule context="//cac:BuyerCustomerParty/cac:Party" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="//cac:BuyerCustomerParty/cac:Party" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="(cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -322,13 +322,13 @@
 
 	<!--RULE -->
 <xsl:template match="//cac:Delivery/cac:RequestedDeliveryPeriod" mode="M5" priority="1003">
-    <svrl:fired-rule context="//cac:Delivery/cac:RequestedDeliveryPeriod" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="//cac:Delivery/cac:RequestedDeliveryPeriod" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="(cbc:StartDate) or (cbc:EndDate) or (cbc:StartDate and cbc:EndDate) and (number(translate(cbc:StartDate,'-','')) &lt;= number(translate(cbc:EndDate,'-','')))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:StartDate) or (cbc:EndDate) or (cbc:StartDate and cbc:EndDate) and (number(translate(cbc:StartDate,'-','')) &lt;= number(translate(cbc:EndDate,'-','')))" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cbc:StartDate) or (cbc:EndDate) or (cbc:StartDate and cbc:EndDate) and (number(translate(cbc:StartDate,'-','')) &lt;= number(translate(cbc:EndDate,'-','')))">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -342,13 +342,13 @@
 
 	<!--RULE -->
 <xsl:template match="//cac:Delivery/cac:DeliveryLocation/cac:Address" mode="M5" priority="1002">
-    <svrl:fired-rule context="//cac:Delivery/cac:DeliveryLocation/cac:Address" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="//cac:Delivery/cac:DeliveryLocation/cac:Address" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="(cbc:CityName and cbc:PostalZone and cac:Country/cbc:IdentificationCode)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:CityName and cbc:PostalZone and cac:Country/cbc:IdentificationCode)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cbc:CityName and cbc:PostalZone and cac:Country/cbc:IdentificationCode)">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -362,13 +362,13 @@
 
 	<!--RULE -->
 <xsl:template match="//cac:SellerSupplierParty/cac:Party" mode="M5" priority="1001">
-    <svrl:fired-rule context="//cac:SellerSupplierParty/cac:Party" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="//cac:SellerSupplierParty/cac:Party" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="(cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -382,13 +382,13 @@
 
 	<!--RULE -->
 <xsl:template match="//cac:AnticipatedMonetaryTotal" mode="M5" priority="1000">
-    <svrl:fired-rule context="//cac:AnticipatedMonetaryTotal" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="//cac:AnticipatedMonetaryTotal" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="number(cbc:PayableAmount) >= 0" />
       <xsl:otherwise>
-        <svrl:failed-assert test="number(cbc:PayableAmount) >= 0" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="number(cbc:PayableAmount) >= 0">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />

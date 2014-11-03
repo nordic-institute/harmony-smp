@@ -38,1988 +38,1988 @@
     under either the MPL or the EUPL License.
 
 -->
-<ns2:CodeList xmlns:ns2="http://docs.oasis-open.org/codelist/ns/genericode/1.0/">
-  <Identification>
-    <ShortName>CountryIdentificationCode</ShortName>
-    <Version>second edition 2006 with modifications dated 2008-09-30</Version>
-    <CanonicalUri>ISO</CanonicalUri>
-    <CanonicalVersionUri>ISO-second edition 2006 with modifications dated 2008-09-30</CanonicalVersionUri>
-    <LocationUri>http://docs.oasis-open.org/ubl/os-ubl-2.0/cl/gc/default/CountryIdentificationCode-2.0.gc</LocationUri>
-  </Identification>
-  <ColumnSet>
-    <Column Id="code" Use="required">
-      <ShortName>Code</ShortName>
-      <Data Type="normalizedString" />
-    </Column>
-    <Column Id="name" Use="optional">
-      <ShortName>Name</ShortName>
-      <Data Type="string" />
-    </Column>
-    <Key Id="codeKey">
-      <ShortName>CodeKey</ShortName>
-      <ColumnRef Ref="code" />
-    </Key>
-  </ColumnSet>
-  <SimpleCodeList>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AD</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ANDORRA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AE</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>UNITED ARAB EMIRATES</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AF</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>AFGHANISTAN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AG</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ANTIGUA AND BARBUDA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AI</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ANGUILLA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AL</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ALBANIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AM</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ARMENIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AN</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>NETHERLANDS ANTILLES</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AO</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ANGOLA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AQ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ANTARCTICA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AR</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ARGENTINA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AS</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>AMERICAN SAMOA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AT</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>AUSTRIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AU</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>AUSTRALIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AW</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ARUBA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AX</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ÅLAND ISLANDS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>AZ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>AZERBAIJAN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BA</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BOSNIA AND HERZEGOVINA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BB</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BARBADOS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BD</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BANGLADESH</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BE</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BELGIUM</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BF</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BURKINA FASO</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BG</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BULGARIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BH</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BAHRAIN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BI</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BURUNDI</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BL</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SAINT BARTHELEMY</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BJ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BENIN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BM</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BERMUDA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BN</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BRUNEI DARUSSALAM</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BO</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BOLIVIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BR</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BRAZIL</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BS</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BAHAMAS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BT</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BHUTAN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BV</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BOUVET ISLAND</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BW</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BOTSWANA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BY</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BELARUS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>BZ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BELIZE</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CA</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CANADA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CC</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>COCOS (KEELING) ISLANDS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CD</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CONGO, THE DEMOCRATIC REPUBLIC OF THE</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CF</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CENTRAL AFRICAN REPUBLIC</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CG</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CONGO</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CH</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SWITZERLAND</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CI</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>COTE D'IVOIRE</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CK</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>COOK ISLANDS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CL</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CHILE</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CM</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CAMEROON</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CN</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CHINA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CO</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>COLOMBIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CR</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>COSTA RICA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CU</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CUBA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CV</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CAPE VERDE</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CX</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CHRISTMAS ISLAND</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CY</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CYPRUS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CZ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CZECH REPUBLIC</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>DE</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>GERMANY</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>DJ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>DJIBOUTI</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>DK</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>DENMARK</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>DM</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>DOMINICA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>DO</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>DOMINICAN REPUBLIC</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>DZ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ALGERIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>EC</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ECUADOR</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>EE</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ESTONIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>EG</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>EGYPT</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>EH</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>WESTERN SAHARA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>ER</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ERITREA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>ES</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SPAIN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>ET</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ETHIOPIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>FI</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>FINLAND</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>FJ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>FIJI</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>FK</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>FALKLAND ISLANDS (MALVINAS)</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>FM</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MICRONESIA, FEDERATED STATES OF</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>FO</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>FAROE ISLANDS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>FR</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>FRANCE</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GA</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>GABON</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GB</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>UNITED KINGDOM</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GD</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>GRENADA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GE</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>GEORGIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GF</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>FRENCH GUIANA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GG</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>GUERNSEY</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GH</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>GHANA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GI</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>GIBRALTAR</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GL</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>GREENLAND</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GM</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>GAMBIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GN</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>GUINEA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GP</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>GUADELOUPE</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GQ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>EQUATORIAL GUINEA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GR</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>GREECE</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GS</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GT</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>GUATEMALA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GU</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>GUAM</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GW</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>GUINEA-BISSAU</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>GY</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>GUYANA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>HK</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>HONG KONG</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>HM</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>HEARD ISLAND AND MCDONALD ISLANDS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>HN</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>HONDURAS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>HR</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CROATIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>HT</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>HAITI</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>HU</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>HUNGARY</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>ID</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>INDONESIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>IE</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>IRELAND</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>IL</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ISRAEL</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>IM</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ISLE OF MAN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>IN</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>INDIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>IO</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>BRITISH INDIAN OCEAN TERRITORY</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>IQ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>IRAQ</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>IR</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>IRAN, ISLAMIC REPUBLIC OF</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>IS</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ICELAND</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>IT</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ITALY</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>JE</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>JERSEY</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>JM</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>JAMAICA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>JO</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>JORDAN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>JP</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>JAPAN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>KE</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>KENYA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>KG</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>KYRGYZSTAN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>KH</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CAMBODIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>KI</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>KIRIBATI</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>KM</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>COMOROS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>KN</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SAINT KITTS AND NEVIS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>KP</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>KOREA, DEMOCRATIC PEOPLE'S REPUBLIC OF</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>KR</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>KOREA, REPUBLIC OF</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>KW</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>KUWAIT</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>KY</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CAYMAN ISLANDS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>KZ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>KAZAKHSTAN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>LA</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>LAO PEOPLE'S DEMOCRATIC REPUBLIC</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>LB</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>LEBANON</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>LC</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SAINT LUCIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>LI</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>LIECHTENSTEIN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>LK</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SRI LANKA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>LR</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>LIBERIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>LS</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>LESOTHO</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>LT</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>LITHUANIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>LU</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>LUXEMBOURG</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>LV</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>LATVIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>LY</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>LIBYAN ARAB JAMAHIRIYA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MA</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MOROCCO</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MC</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MONACO</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MD</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MOLDOVA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>ME</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MONTENEGRO</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MF</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SAINT MARTIN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MG</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MADAGASCAR</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MH</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MARSHALL ISLANDS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MK</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MACEDONIA, THE FORMER YUGOSLAV REPUBLIC OF</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>ML</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MALI</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MM</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MYANMAR</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MN</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MONGOLIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MO</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MACAO</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MP</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>NORTHERN MARIANA ISLANDS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MQ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MARTINIQUE</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MR</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MAURITANIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MS</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MONTSERRAT</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MT</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MALTA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MU</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MAURITIUS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MV</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MALDIVES</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MW</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MALAWI</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MX</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MEXICO</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MY</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MALAYSIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>MZ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MOZAMBIQUE</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>NA</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>NAMIBIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>NC</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>NEW CALEDONIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>NE</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>NIGER</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>NF</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>NORFOLK ISLAND</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>NG</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>NIGERIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>NI</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>NICARAGUA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>NL</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>NETHERLANDS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>NO</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>NORWAY</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>NP</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>NEPAL</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>NR</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>NAURU</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>NU</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>NIUE</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>NZ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>NEW ZEALAND</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>OM</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>OMAN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>PA</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>PANAMA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>PE</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>PERU</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>PF</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>FRENCH POLYNESIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>PG</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>PAPUA NEW GUINEA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>PH</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>PHILIPPINES</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>PK</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>PAKISTAN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>PL</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>POLAND</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>PM</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SAINT PIERRE AND MIQUELON</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>PN</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>PITCAIRN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>PR</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>PUERTO RICO</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>PS</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>PALESTINIAN TERRITORY, OCCUPIED</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>PT</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>PORTUGAL</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>PW</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>PALAU</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>PY</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>PARAGUAY</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>QA</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>QATAR</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>RO</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ROMANIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>RS</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SERBIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>RU</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>RUSSIAN FEDERATION</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>RW</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>RWANDA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SA</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SAUDI ARABIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SB</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SOLOMON ISLANDS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SC</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SEYCHELLES</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SD</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SUDAN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SE</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SWEDEN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SG</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SINGAPORE</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SH</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SAINT HELENA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SI</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SLOVENIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SJ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SVALBARD AND JAN MAYEN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SK</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SLOVAKIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SL</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SIERRA LEONE</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SM</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SAN MARINO</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SN</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SENEGAL</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SO</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SOMALIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SR</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SURINAME</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>ST</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SAO TOME AND PRINCIPE</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SV</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>EL SALVADOR</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SY</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SYRIAN ARAB REPUBLIC</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>SZ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SWAZILAND</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>TC</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>TURKS AND CAICOS ISLANDS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>TD</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CHAD</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>TF</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>FRENCH SOUTHERN TERRITORIES</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>TG</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>TOGO</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>TH</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>THAILAND</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>TJ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>TAJIKISTAN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>TK</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>TOKELAU</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>TL</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>TIMOR-LESTE</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>TM</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>TURKMENISTAN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>TN</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>TUNISIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>TO</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>TONGA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>TR</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>TURKEY</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>TT</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>TRINIDAD AND TOBAGO</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>TV</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>TUVALU</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>TW</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>TAIWAN, PROVINCE OF CHINA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>TZ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>TANZANIA, UNITED REPUBLIC OF</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>UA</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>UKRAINE</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>UG</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>UGANDA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>UM</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>UNITED STATES MINOR OUTLYING ISLANDS</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>US</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>UNITED STATES</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>UY</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>URUGUAY</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>UZ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>UZBEKISTAN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>VA</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>HOLY SEE (VATICAN CITY STATE)</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>VC</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SAINT VINCENT AND THE GRENADINES</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>VE</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>VENEZUELA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>VG</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>VIRGIN ISLANDS, BRITISH</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>VI</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>VIRGIN ISLANDS, U.S.</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>VN</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>VIET NAM</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>VU</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>VANUATU</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>WF</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>WALLIS AND FUTUNA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>WS</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SAMOA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>YE</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>YEMEN</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>YT</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>MAYOTTE</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>ZA</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>SOUTH AFRICA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>ZM</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ZAMBIA</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>ZW</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>ZIMBABWE.</SimpleValue>
-      </Value>
-    </Row>
-  </SimpleCodeList>
-</ns2:CodeList>
+<CodeList xmlns="http://docs.oasis-open.org/codelist/ns/genericode/1.0/">
+  <ns0:Identification xmlns:ns0="">
+    <ns0:ShortName>CountryIdentificationCode</ns0:ShortName>
+    <ns0:Version>second edition 2006 with modifications dated 2008-09-30</ns0:Version>
+    <ns0:CanonicalUri>ISO</ns0:CanonicalUri>
+    <ns0:CanonicalVersionUri>ISO-second edition 2006 with modifications dated 2008-09-30</ns0:CanonicalVersionUri>
+    <ns0:LocationUri>http://docs.oasis-open.org/ubl/os-ubl-2.0/cl/gc/default/CountryIdentificationCode-2.0.gc</ns0:LocationUri>
+  </ns0:Identification>
+  <ns0:ColumnSet xmlns:ns0="">
+    <ns0:Column ns0:Id="code" ns0:Use="required">
+      <ns0:ShortName>Code</ns0:ShortName>
+      <ns0:Data ns0:Type="normalizedString" />
+    </ns0:Column>
+    <ns0:Column ns0:Id="name" ns0:Use="optional">
+      <ns0:ShortName>Name</ns0:ShortName>
+      <ns0:Data ns0:Type="string" />
+    </ns0:Column>
+    <ns0:Key ns0:Id="codeKey">
+      <ns0:ShortName>CodeKey</ns0:ShortName>
+      <ns0:ColumnRef ns0:Ref="code" />
+    </ns0:Key>
+  </ns0:ColumnSet>
+  <ns0:SimpleCodeList xmlns:ns0="">
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AD</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ANDORRA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AE</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>UNITED ARAB EMIRATES</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AF</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>AFGHANISTAN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AG</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ANTIGUA AND BARBUDA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AI</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ANGUILLA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AL</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ALBANIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AM</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ARMENIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AN</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>NETHERLANDS ANTILLES</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AO</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ANGOLA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AQ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ANTARCTICA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AR</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ARGENTINA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AS</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>AMERICAN SAMOA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AT</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>AUSTRIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AU</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>AUSTRALIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AW</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ARUBA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AX</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ÅLAND ISLANDS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>AZ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>AZERBAIJAN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BA</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BOSNIA AND HERZEGOVINA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BB</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BARBADOS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BD</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BANGLADESH</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BE</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BELGIUM</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BF</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BURKINA FASO</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BG</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BULGARIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BH</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BAHRAIN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BI</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BURUNDI</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BL</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SAINT BARTHELEMY</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BJ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BENIN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BM</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BERMUDA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BN</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BRUNEI DARUSSALAM</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BO</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BOLIVIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BR</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BRAZIL</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BS</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BAHAMAS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BT</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BHUTAN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BV</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BOUVET ISLAND</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BW</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BOTSWANA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BY</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BELARUS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>BZ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BELIZE</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CA</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CANADA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CC</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>COCOS (KEELING) ISLANDS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CD</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CONGO, THE DEMOCRATIC REPUBLIC OF THE</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CF</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CENTRAL AFRICAN REPUBLIC</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CG</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CONGO</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CH</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SWITZERLAND</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CI</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>COTE D'IVOIRE</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CK</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>COOK ISLANDS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CL</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CHILE</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CM</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CAMEROON</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CN</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CHINA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CO</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>COLOMBIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CR</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>COSTA RICA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CU</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CUBA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CV</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CAPE VERDE</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CX</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CHRISTMAS ISLAND</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CY</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CYPRUS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CZ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CZECH REPUBLIC</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>DE</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>GERMANY</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>DJ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>DJIBOUTI</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>DK</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>DENMARK</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>DM</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>DOMINICA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>DO</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>DOMINICAN REPUBLIC</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>DZ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ALGERIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>EC</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ECUADOR</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>EE</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ESTONIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>EG</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>EGYPT</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>EH</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>WESTERN SAHARA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>ER</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ERITREA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>ES</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SPAIN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>ET</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ETHIOPIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>FI</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>FINLAND</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>FJ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>FIJI</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>FK</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>FALKLAND ISLANDS (MALVINAS)</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>FM</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MICRONESIA, FEDERATED STATES OF</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>FO</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>FAROE ISLANDS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>FR</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>FRANCE</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GA</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>GABON</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GB</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>UNITED KINGDOM</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GD</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>GRENADA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GE</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>GEORGIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GF</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>FRENCH GUIANA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GG</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>GUERNSEY</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GH</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>GHANA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GI</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>GIBRALTAR</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GL</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>GREENLAND</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GM</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>GAMBIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GN</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>GUINEA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GP</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>GUADELOUPE</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GQ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>EQUATORIAL GUINEA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GR</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>GREECE</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GS</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SOUTH GEORGIA AND THE SOUTH SANDWICH ISLANDS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GT</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>GUATEMALA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GU</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>GUAM</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GW</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>GUINEA-BISSAU</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>GY</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>GUYANA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>HK</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>HONG KONG</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>HM</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>HEARD ISLAND AND MCDONALD ISLANDS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>HN</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>HONDURAS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>HR</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CROATIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>HT</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>HAITI</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>HU</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>HUNGARY</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>ID</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>INDONESIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>IE</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>IRELAND</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>IL</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ISRAEL</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>IM</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ISLE OF MAN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>IN</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>INDIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>IO</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>BRITISH INDIAN OCEAN TERRITORY</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>IQ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>IRAQ</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>IR</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>IRAN, ISLAMIC REPUBLIC OF</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>IS</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ICELAND</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>IT</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ITALY</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>JE</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>JERSEY</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>JM</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>JAMAICA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>JO</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>JORDAN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>JP</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>JAPAN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>KE</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>KENYA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>KG</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>KYRGYZSTAN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>KH</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CAMBODIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>KI</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>KIRIBATI</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>KM</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>COMOROS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>KN</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SAINT KITTS AND NEVIS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>KP</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>KOREA, DEMOCRATIC PEOPLE'S REPUBLIC OF</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>KR</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>KOREA, REPUBLIC OF</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>KW</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>KUWAIT</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>KY</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CAYMAN ISLANDS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>KZ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>KAZAKHSTAN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>LA</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>LAO PEOPLE'S DEMOCRATIC REPUBLIC</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>LB</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>LEBANON</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>LC</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SAINT LUCIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>LI</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>LIECHTENSTEIN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>LK</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SRI LANKA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>LR</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>LIBERIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>LS</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>LESOTHO</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>LT</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>LITHUANIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>LU</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>LUXEMBOURG</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>LV</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>LATVIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>LY</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>LIBYAN ARAB JAMAHIRIYA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MA</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MOROCCO</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MC</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MONACO</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MD</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MOLDOVA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>ME</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MONTENEGRO</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MF</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SAINT MARTIN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MG</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MADAGASCAR</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MH</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MARSHALL ISLANDS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MK</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MACEDONIA, THE FORMER YUGOSLAV REPUBLIC OF</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>ML</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MALI</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MM</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MYANMAR</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MN</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MONGOLIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MO</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MACAO</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MP</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>NORTHERN MARIANA ISLANDS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MQ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MARTINIQUE</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MR</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MAURITANIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MS</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MONTSERRAT</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MT</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MALTA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MU</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MAURITIUS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MV</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MALDIVES</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MW</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MALAWI</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MX</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MEXICO</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MY</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MALAYSIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>MZ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MOZAMBIQUE</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>NA</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>NAMIBIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>NC</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>NEW CALEDONIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>NE</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>NIGER</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>NF</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>NORFOLK ISLAND</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>NG</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>NIGERIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>NI</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>NICARAGUA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>NL</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>NETHERLANDS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>NO</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>NORWAY</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>NP</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>NEPAL</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>NR</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>NAURU</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>NU</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>NIUE</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>NZ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>NEW ZEALAND</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>OM</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>OMAN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>PA</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>PANAMA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>PE</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>PERU</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>PF</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>FRENCH POLYNESIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>PG</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>PAPUA NEW GUINEA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>PH</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>PHILIPPINES</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>PK</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>PAKISTAN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>PL</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>POLAND</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>PM</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SAINT PIERRE AND MIQUELON</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>PN</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>PITCAIRN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>PR</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>PUERTO RICO</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>PS</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>PALESTINIAN TERRITORY, OCCUPIED</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>PT</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>PORTUGAL</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>PW</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>PALAU</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>PY</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>PARAGUAY</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>QA</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>QATAR</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>RO</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ROMANIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>RS</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SERBIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>RU</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>RUSSIAN FEDERATION</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>RW</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>RWANDA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SA</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SAUDI ARABIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SB</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SOLOMON ISLANDS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SC</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SEYCHELLES</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SD</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SUDAN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SE</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SWEDEN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SG</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SINGAPORE</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SH</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SAINT HELENA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SI</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SLOVENIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SJ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SVALBARD AND JAN MAYEN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SK</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SLOVAKIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SL</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SIERRA LEONE</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SM</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SAN MARINO</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SN</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SENEGAL</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SO</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SOMALIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SR</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SURINAME</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>ST</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SAO TOME AND PRINCIPE</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SV</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>EL SALVADOR</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SY</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SYRIAN ARAB REPUBLIC</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>SZ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SWAZILAND</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>TC</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>TURKS AND CAICOS ISLANDS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>TD</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CHAD</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>TF</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>FRENCH SOUTHERN TERRITORIES</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>TG</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>TOGO</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>TH</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>THAILAND</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>TJ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>TAJIKISTAN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>TK</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>TOKELAU</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>TL</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>TIMOR-LESTE</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>TM</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>TURKMENISTAN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>TN</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>TUNISIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>TO</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>TONGA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>TR</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>TURKEY</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>TT</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>TRINIDAD AND TOBAGO</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>TV</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>TUVALU</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>TW</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>TAIWAN, PROVINCE OF CHINA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>TZ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>TANZANIA, UNITED REPUBLIC OF</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>UA</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>UKRAINE</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>UG</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>UGANDA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>UM</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>UNITED STATES MINOR OUTLYING ISLANDS</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>US</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>UNITED STATES</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>UY</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>URUGUAY</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>UZ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>UZBEKISTAN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>VA</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>HOLY SEE (VATICAN CITY STATE)</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>VC</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SAINT VINCENT AND THE GRENADINES</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>VE</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>VENEZUELA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>VG</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>VIRGIN ISLANDS, BRITISH</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>VI</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>VIRGIN ISLANDS, U.S.</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>VN</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>VIET NAM</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>VU</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>VANUATU</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>WF</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>WALLIS AND FUTUNA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>WS</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SAMOA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>YE</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>YEMEN</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>YT</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>MAYOTTE</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>ZA</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>SOUTH AFRICA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>ZM</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ZAMBIA</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>ZW</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>ZIMBABWE.</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+  </ns0:SimpleCodeList>
+</CodeList>

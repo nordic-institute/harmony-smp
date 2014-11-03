@@ -38,32 +38,32 @@
     under either the MPL or the EUPL License.
 
 -->
-<ns2:ContextValueAssociation name="EUGEN-T01-codes" xmlns:ns2="http://docs.oasis-open.org/codelist/ns/ContextValueAssociation/1.0/">
-  <ValueLists>
-    <ValueList uri="BinaryObjectMimeCode.gc" xml:id="BinaryObjectMimeCode" />
-    <ValueList uri="ItemIdentifier.gc" xml:id="ItemIdentifier" />
-    <ValueList uri="LocationIdentifier.gc" xml:id="LocationIdentifier" />
-    <ValueList uri="PartyID.gc" xml:id="PartyID" />
-    <ValueList uri="PostalAddressIdentifier.gc" xml:id="PostalAddressIdentifier" />
-  </ValueLists>
-  <Contexts>
-    <Context address="@mimeCode" mark="fatal" values="BinaryObjectMimeCode">
-      <Message>[PCL-001-001]-Mime code in attribute MUST be MIMEMediaType.</Message>
-    </Context>
-    <Context address="cac:PostalAddress/cbc:ID/@schemeID" mark="warning" values="PostalAddressIdentifier">
-      <Message>[PCL-001-002]-Postal address identifiers SHOULD be GLN.</Message>
-    </Context>
-    <Context address="cac:Delivery/cac:DeliveryLocation/cbc:ID/@schemeID" mark="warning" values="LocationIdentifier">
-      <Message>[PCL-001-003]-Location identifiers SHOULD be GLN</Message>
-    </Context>
-    <Context address="cac:Item/cac:StandardItemIdentification/cbc:ID/@schemeID" mark="warning" values="ItemIdentifier">
-      <Message>[PCL-001-004]-Standard item identifiers SHOULD be GTIN.</Message>
-    </Context>
-    <Context address="cac:PartyIdentification/cbc:ID/@schemeID" mark="fatal" values="PartyID">
-      <Message>[PCL-001-006]-Party Identifiers MUST use the PEPPOL PartyID list</Message>
-    </Context>
-    <Context address="cbc:EndpointID/@schemeID" mark="fatal" values="PartyID">
-      <Message>[PCL-001-007]-Endpoint Identifiers MUST use the PEPPOL PartyID list.</Message>
-    </Context>
-  </Contexts>
-</ns2:ContextValueAssociation>
+<ContextValueAssociation name="EUGEN-T01-codes" xmlns="http://docs.oasis-open.org/codelist/ns/ContextValueAssociation/1.0/">
+  <ns0:ValueLists xmlns:ns0="">
+    <ns0:ValueList ns0:uri="BinaryObjectMimeCode.gc" xml:id="BinaryObjectMimeCode" />
+    <ns0:ValueList ns0:uri="ItemIdentifier.gc" xml:id="ItemIdentifier" />
+    <ns0:ValueList ns0:uri="LocationIdentifier.gc" xml:id="LocationIdentifier" />
+    <ns0:ValueList ns0:uri="PartyID.gc" xml:id="PartyID" />
+    <ns0:ValueList ns0:uri="PostalAddressIdentifier.gc" xml:id="PostalAddressIdentifier" />
+  </ns0:ValueLists>
+  <ns0:Contexts xmlns:ns0="">
+    <ns0:Context ns0:address="@mimeCode" ns0:mark="fatal" ns0:values="BinaryObjectMimeCode">
+      <ns0:Message>[PCL-001-001]-Mime code in attribute MUST be MIMEMediaType.</ns0:Message>
+    </ns0:Context>
+    <ns0:Context ns0:address="cac:PostalAddress/cbc:ID/@schemeID" ns0:mark="warning" ns0:values="PostalAddressIdentifier">
+      <ns0:Message>[PCL-001-002]-Postal address identifiers SHOULD be GLN.</ns0:Message>
+    </ns0:Context>
+    <ns0:Context ns0:address="cac:Delivery/cac:DeliveryLocation/cbc:ID/@schemeID" ns0:mark="warning" ns0:values="LocationIdentifier">
+      <ns0:Message>[PCL-001-003]-Location identifiers SHOULD be GLN</ns0:Message>
+    </ns0:Context>
+    <ns0:Context ns0:address="cac:Item/cac:StandardItemIdentification/cbc:ID/@schemeID" ns0:mark="warning" ns0:values="ItemIdentifier">
+      <ns0:Message>[PCL-001-004]-Standard item identifiers SHOULD be GTIN.</ns0:Message>
+    </ns0:Context>
+    <ns0:Context ns0:address="cac:PartyIdentification/cbc:ID/@schemeID" ns0:mark="fatal" ns0:values="PartyID">
+      <ns0:Message>[PCL-001-006]-Party Identifiers MUST use the PEPPOL PartyID list</ns0:Message>
+    </ns0:Context>
+    <ns0:Context ns0:address="cbc:EndpointID/@schemeID" ns0:mark="fatal" ns0:values="PartyID">
+      <ns0:Message>[PCL-001-007]-Endpoint Identifiers MUST use the PEPPOL PartyID list.</ns0:Message>
+    </ns0:Context>
+  </ns0:Contexts>
+</ContextValueAssociation>

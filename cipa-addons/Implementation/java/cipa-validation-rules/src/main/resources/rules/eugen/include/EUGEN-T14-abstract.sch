@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Abstract Schematron rules for T14-->
-<pattern abstract="true" id="T14" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" abstract="true" id="T14">
   <rule context="$Tax_Category">
     <assert flag="fatal" test="$EUGEN-T14-R012">[EUGEN-T14-R012]-For each tax subcategory the category ID and the applicable tax percentage MUST be provided.</assert>
   </rule>

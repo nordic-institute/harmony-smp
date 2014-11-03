@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron tests for binding UBL and transaction T01-->
-<pattern is-a="T01" id="UBL-T01" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T01" id="UBL-T01">
   <param name="BIIRULE-T01-R001" value="(cbc:UBLVersionID)" />
   <param name="BIIRULE-T01-R002" value="(cbc:CustomizationID)" />
   <param name="BIIRULE-T01-R003" value="(cbc:ProfileID)" />

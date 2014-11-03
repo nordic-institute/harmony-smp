@@ -38,7 +38,7 @@
     under either the MPL or the EUPL License.
 
 -->
-<xsl:stylesheet version="2.0" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:iso="http://purl.oclc.org/dsdl/schematron" xmlns:saxon="http://saxon.sf.net/" xmlns:schold="http://www.ascc.net/xml/schematron" xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:OrderResponseSimple-2" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="2.0" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:OrderResponseSimple-2" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <!--Implementers: please note that overriding process-prolog or process-root is 
     the preferred method for meta-stylesheets to use where possible. -->
 <xsl:param name="archiveDirParameter" />
@@ -53,7 +53,7 @@
 
 
 <!--PROLOG-->
-<xsl:output indent="yes" method="xml" omit-xml-declaration="no" standalone="yes" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+<xsl:output indent="yes" method="xml" omit-xml-declaration="no" standalone="yes" />
 
 <!--XSD TYPES FOR XSLT2-->
 
@@ -190,7 +190,7 @@
 
 <!--SCHEMA SETUP-->
 <xsl:template match="/">
-    <svrl:schematron-output schemaVersion="" title="BIIRULES T03 bound to UBL" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+    <svrl:schematron-output schemaVersion="" title="BIIRULES T03 bound to UBL">
       <xsl:comment>
         <xsl:value-of select="$archiveDirParameter" />   
 		 <xsl:value-of select="$archiveNameParameter" />  
@@ -213,20 +213,20 @@
   </xsl:template>
 
 <!--SCHEMATRON PATTERNS-->
-<svrl:text xmlns:svrl="http://purl.oclc.org/dsdl/svrl">BIIRULES T03 bound to UBL</svrl:text>
+<svrl:text>BIIRULES T03 bound to UBL</svrl:text>
 
 <!--PATTERN UBL-T03-->
 
 
 	<!--RULE -->
 <xsl:template match="//cac:BuyerCustomerParty" mode="M5" priority="1003">
-    <svrl:fired-rule context="//cac:BuyerCustomerParty" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="//cac:BuyerCustomerParty" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="(cac:Party/cac:PartyName/cbc:Name)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:Party/cac:PartyName/cbc:Name)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:Party/cac:PartyName/cbc:Name)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -240,13 +240,13 @@
 
 	<!--RULE -->
 <xsl:template match="/ubl:OrderResponseSimple_Note" mode="M5" priority="1002">
-    <svrl:fired-rule context="/ubl:OrderResponseSimple_Note" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="/ubl:OrderResponseSimple_Note" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="(@languageID)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(@languageID)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(@languageID)">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -260,13 +260,13 @@
 
 	<!--RULE -->
 <xsl:template match="//cac:SellerSupplierParty" mode="M5" priority="1001">
-    <svrl:fired-rule context="//cac:SellerSupplierParty" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="//cac:SellerSupplierParty" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="(cac:Party/cac:PartyName/cbc:Name)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:Party/cac:PartyName/cbc:Name)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cac:Party/cac:PartyName/cbc:Name)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -280,13 +280,13 @@
 
 	<!--RULE -->
 <xsl:template match="/ubl:OrderResponseSimple" mode="M5" priority="1000">
-    <svrl:fired-rule context="/ubl:OrderResponseSimple" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" />
+    <svrl:fired-rule context="/ubl:OrderResponseSimple" />
 
 		<!--ASSERT -->
 <xsl:choose>
       <xsl:when test="(cbc:UBLVersionID)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:UBLVersionID)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cbc:UBLVersionID)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -300,7 +300,7 @@
 <xsl:choose>
       <xsl:when test="(cbc:CustomizationID)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:CustomizationID)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cbc:CustomizationID)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -314,7 +314,7 @@
 <xsl:choose>
       <xsl:when test="(cbc:ProfileID)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:ProfileID)" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="(cbc:ProfileID)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -328,7 +328,7 @@
 <xsl:choose>
       <xsl:when test="not(cbc:Note) or count(cbc:Note)=1" />
       <xsl:otherwise>
-        <svrl:failed-assert test="not(cbc:Note) or count(cbc:Note)=1" xmlns:svrl="http://purl.oclc.org/dsdl/svrl">
+        <svrl:failed-assert test="not(cbc:Note) or count(cbc:Note)=1">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />

@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Abstract Schematron rules for T14-->
-<pattern abstract="true" id="T14" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" abstract="true" id="T14">
   <rule context="$Customer">
     <assert flag="warning" test="$BIIRULE-T14-R004">[BIIRULE-T14-R004]-A customer address in a credit note SHOULD contain at least city and zip code or have an address identifier.</assert>
     <assert flag="warning" test="$BIIRULE-T14-R005">[BIIRULE-T14-R005]-In cross border trade the VAT identifier for the customer should be prefixed with country code.</assert>

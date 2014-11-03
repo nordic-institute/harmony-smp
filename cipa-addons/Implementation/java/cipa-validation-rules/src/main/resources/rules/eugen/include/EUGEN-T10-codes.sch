@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Code list Schematron rules for T10-->
-<pattern id="Codes-T10" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" id="Codes-T10">
   <rule context="cac:FinancialInstitution/cbc:ID/@schemeID">
     <assert flag="warning" test="contains('�BIC�',concat('�',.,'�'))">[PCL-010-002]-If FinancialAccountID is IBAN then Financial InstitutionID SHOULD be BIC code.</assert>
   </rule>

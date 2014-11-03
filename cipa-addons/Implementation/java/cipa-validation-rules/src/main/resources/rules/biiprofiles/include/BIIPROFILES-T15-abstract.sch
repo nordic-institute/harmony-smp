@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Abstract Schematron rules for T15-->
-<pattern abstract="true" id="T15" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" abstract="true" id="T15">
   <rule context="$Invoice_Profile">
     <assert flag="fatal" test="$BIIPROFILE-T15-R001">[BIIPROFILE-T15-R001]-An invoice transaction T15 must only be used in CEN BII Profiles 5, 6, 7, 8, 13 or 19.</assert>
   </rule>

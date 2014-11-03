@@ -38,132 +38,132 @@
     under either the MPL or the EUPL License.
 
 -->
-<ns2:CodeList xmlns:ns2="http://docs.oasis-open.org/codelist/ns/genericode/1.0/">
-  <Identification>
-    <ShortName>DeliveryTermsID</ShortName>
-    <Version>1</Version>
-    <CanonicalUri>INCOTERMS 2000</CanonicalUri>
-    <CanonicalVersionUri>INCOTERMS 2000-1</CanonicalVersionUri>
-    <LocationUri></LocationUri>
-  </Identification>
-  <ColumnSet>
-    <Column Id="code" Use="required">
-      <ShortName>Code</ShortName>
-      <Data Type="normalizedString" />
-    </Column>
-    <Column Id="name" Use="optional">
-      <ShortName>Name</ShortName>
-      <Data Type="string" />
-    </Column>
-    <Key Id="codeKey">
-      <ShortName>CodeKey</ShortName>
-      <ColumnRef Ref="code" />
-    </Key>
-  </ColumnSet>
-  <SimpleCodeList>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>EXW</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>EX WORKS (named place)*</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>FCA</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>FREE CARRIER (named place)</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>FAS</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>FREE ALONGSIDE SHIP (named port of shipment)*</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>FOB</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>FREE ON BOARD (named port of shipment)</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CFR</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>COST AND FREIGHT (named port of destination)</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CIF</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>COST, INSURANCE AND FREIGHT (named port of destination)*</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CPT</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CARRIAGE PAID TO (named place of destination)</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>CIP</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>CARRIAGE AND INSURANCE PAID TO (named place of destination)*</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>DAF</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>DELIVERED AT FRONTIER (named place)*</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>DES</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>DELIVERED EX SHIP (named port of destination)</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>DEQ</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>DELIVERED EX QUAY (named port of destination)*</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>DDU</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>DELIVERED DUTY UNPAID (named place of destination)*</SimpleValue>
-      </Value>
-    </Row>
-    <Row>
-      <Value ColumnRef="code">
-        <SimpleValue>DDP</SimpleValue>
-      </Value>
-      <Value ColumnRef="name">
-        <SimpleValue>DELIVERED DUTY PAID (named place of destination)*</SimpleValue>
-      </Value>
-    </Row>
-  </SimpleCodeList>
-</ns2:CodeList>
+<CodeList xmlns="http://docs.oasis-open.org/codelist/ns/genericode/1.0/">
+  <ns0:Identification xmlns:ns0="">
+    <ns0:ShortName>DeliveryTermsID</ns0:ShortName>
+    <ns0:Version>1</ns0:Version>
+    <ns0:CanonicalUri>INCOTERMS 2000</ns0:CanonicalUri>
+    <ns0:CanonicalVersionUri>INCOTERMS 2000-1</ns0:CanonicalVersionUri>
+    <ns0:LocationUri></ns0:LocationUri>
+  </ns0:Identification>
+  <ns0:ColumnSet xmlns:ns0="">
+    <ns0:Column ns0:Id="code" ns0:Use="required">
+      <ns0:ShortName>Code</ns0:ShortName>
+      <ns0:Data ns0:Type="normalizedString" />
+    </ns0:Column>
+    <ns0:Column ns0:Id="name" ns0:Use="optional">
+      <ns0:ShortName>Name</ns0:ShortName>
+      <ns0:Data ns0:Type="string" />
+    </ns0:Column>
+    <ns0:Key ns0:Id="codeKey">
+      <ns0:ShortName>CodeKey</ns0:ShortName>
+      <ns0:ColumnRef ns0:Ref="code" />
+    </ns0:Key>
+  </ns0:ColumnSet>
+  <ns0:SimpleCodeList xmlns:ns0="">
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>EXW</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>EX WORKS (named place)*</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>FCA</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>FREE CARRIER (named place)</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>FAS</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>FREE ALONGSIDE SHIP (named port of shipment)*</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>FOB</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>FREE ON BOARD (named port of shipment)</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CFR</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>COST AND FREIGHT (named port of destination)</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CIF</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>COST, INSURANCE AND FREIGHT (named port of destination)*</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CPT</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CARRIAGE PAID TO (named place of destination)</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>CIP</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>CARRIAGE AND INSURANCE PAID TO (named place of destination)*</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>DAF</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>DELIVERED AT FRONTIER (named place)*</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>DES</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>DELIVERED EX SHIP (named port of destination)</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>DEQ</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>DELIVERED EX QUAY (named port of destination)*</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>DDU</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>DELIVERED DUTY UNPAID (named place of destination)*</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+    <ns0:Row>
+      <ns0:Value ns0:ColumnRef="code">
+        <ns0:SimpleValue>DDP</ns0:SimpleValue>
+      </ns0:Value>
+      <ns0:Value ns0:ColumnRef="name">
+        <ns0:SimpleValue>DELIVERED DUTY PAID (named place of destination)*</ns0:SimpleValue>
+      </ns0:Value>
+    </ns0:Row>
+  </ns0:SimpleCodeList>
+</CodeList>

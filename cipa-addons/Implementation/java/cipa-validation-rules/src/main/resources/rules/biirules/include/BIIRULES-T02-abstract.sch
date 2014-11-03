@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Abstract Schematron rules for T02-->
-<pattern abstract="true" id="T02" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" abstract="true" id="T02">
   <rule context="$Customer">
     <assert flag="fatal" test="$BIIRULE-T02-R006">[BIIRULE-T02-R006]-An order response  MUST contain the full name of the customer.</assert>
   </rule>

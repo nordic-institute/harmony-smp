@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Abstract Schematron rules for T01-->
-<pattern abstract="true" id="T01" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" abstract="true" id="T01">
   <rule context="$Order_Line">
     <assert flag="warning" test="$EUGEN-T01-R005">[EUGEN-T01-R005]-Each order line SHOULD contain the quantity</assert>
     <assert flag="fatal" test="$EUGEN-T01-R009">[EUGEN-T01-R009]-Line extension amount MUST NOT be negative</assert>

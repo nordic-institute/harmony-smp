@@ -38,40 +38,40 @@
     under either the MPL or the EUPL License.
 
 -->
-<ns2:ContextValueAssociation name="EUGEN-T10-codes" xmlns:ns2="http://docs.oasis-open.org/codelist/ns/ContextValueAssociation/1.0/">
-  <ValueLists>
-    <ValueList uri="CommodityClassificationCode.gc" xml:id="CommodityClassificationCode" />
-    <ValueList uri="FinancialInstitutionIdentifier.gc" xml:id="FinancialInstitutionIdentifier" />
-    <ValueList uri="ItemIdentifier.gc" xml:id="ItemIdentifier" />
-    <ValueList uri="LocationIdentifier.gc" xml:id="LocationIdentifier" />
-    <ValueList uri="PartyID.gc" xml:id="PartyID" />
-    <ValueList uri="PostalAddressIdentifier.gc" xml:id="PostalAddressIdentifier" />
-    <ValueList uri="TaxExemptionReasonCode.gc" xml:id="TaxExemptionReasonCode" />
-  </ValueLists>
-  <Contexts>
-    <Context address="cac:FinancialInstitution/cbc:ID/@schemeID" mark="warning" values="FinancialInstitutionIdentifier">
-      <Message>[PCL-010-002]-If FinancialAccountID is IBAN then Financial InstitutionID SHOULD be BIC code.</Message>
-    </Context>
-    <Context address="cac:PostalAddress/cbc:ID/@schemeID" mark="warning" values="PostalAddressIdentifier">
-      <Message>[PCL-010-003]-Postal address identifiers SHOULD be GLN.</Message>
-    </Context>
-    <Context address="cac:Delivery/cac:DeliveryLocation/cbc:ID/@schemeID" mark="warning" values="LocationIdentifier">
-      <Message>[PCL-010-004]-Location identifiers SHOULD be GLN</Message>
-    </Context>
-    <Context address="cac:Item/cac:StandardItemIdentification/cbc:ID/@schemeID" mark="warning" values="ItemIdentifier">
-      <Message>[PCL-010-005]-Standard item identifiers SHOULD be GTIN.</Message>
-    </Context>
-    <Context address="cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode/@listID" mark="warning" values="CommodityClassificationCode">
-      <Message>[PCL-010-006]-Commodity classification SHOULD be one of UNSPSC, eClass or CPV.</Message>
-    </Context>
-    <Context address="cbc:TaxExemptionReasonCode" mark="fatal" values="TaxExemptionReasonCode">
-      <Message>[PCL-010-007]-Tax exemption reasons MUST be coded using Use CWA 15577 tax exemption code list. Version 2006</Message>
-    </Context>
-    <Context address="cac:PartyIdentification/cbc:ID/@schemeID" mark="fatal" values="PartyID">
-      <Message>[PCL-010-008]-Party Identifiers MUST use the PEPPOL PartyID list</Message>
-    </Context>
-    <Context address="cbc:EndpointID/@schemeID" mark="fatal" values="PartyID">
-      <Message>[PCL-010-009]-Endpoint Identifiers MUST use the PEPPOL PartyID list.</Message>
-    </Context>
-  </Contexts>
-</ns2:ContextValueAssociation>
+<ContextValueAssociation name="EUGEN-T10-codes" xmlns="http://docs.oasis-open.org/codelist/ns/ContextValueAssociation/1.0/">
+  <ns0:ValueLists xmlns:ns0="">
+    <ns0:ValueList ns0:uri="CommodityClassificationCode.gc" xml:id="CommodityClassificationCode" />
+    <ns0:ValueList ns0:uri="FinancialInstitutionIdentifier.gc" xml:id="FinancialInstitutionIdentifier" />
+    <ns0:ValueList ns0:uri="ItemIdentifier.gc" xml:id="ItemIdentifier" />
+    <ns0:ValueList ns0:uri="LocationIdentifier.gc" xml:id="LocationIdentifier" />
+    <ns0:ValueList ns0:uri="PartyID.gc" xml:id="PartyID" />
+    <ns0:ValueList ns0:uri="PostalAddressIdentifier.gc" xml:id="PostalAddressIdentifier" />
+    <ns0:ValueList ns0:uri="TaxExemptionReasonCode.gc" xml:id="TaxExemptionReasonCode" />
+  </ns0:ValueLists>
+  <ns0:Contexts xmlns:ns0="">
+    <ns0:Context ns0:address="cac:FinancialInstitution/cbc:ID/@schemeID" ns0:mark="warning" ns0:values="FinancialInstitutionIdentifier">
+      <ns0:Message>[PCL-010-002]-If FinancialAccountID is IBAN then Financial InstitutionID SHOULD be BIC code.</ns0:Message>
+    </ns0:Context>
+    <ns0:Context ns0:address="cac:PostalAddress/cbc:ID/@schemeID" ns0:mark="warning" ns0:values="PostalAddressIdentifier">
+      <ns0:Message>[PCL-010-003]-Postal address identifiers SHOULD be GLN.</ns0:Message>
+    </ns0:Context>
+    <ns0:Context ns0:address="cac:Delivery/cac:DeliveryLocation/cbc:ID/@schemeID" ns0:mark="warning" ns0:values="LocationIdentifier">
+      <ns0:Message>[PCL-010-004]-Location identifiers SHOULD be GLN</ns0:Message>
+    </ns0:Context>
+    <ns0:Context ns0:address="cac:Item/cac:StandardItemIdentification/cbc:ID/@schemeID" ns0:mark="warning" ns0:values="ItemIdentifier">
+      <ns0:Message>[PCL-010-005]-Standard item identifiers SHOULD be GTIN.</ns0:Message>
+    </ns0:Context>
+    <ns0:Context ns0:address="cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode/@listID" ns0:mark="warning" ns0:values="CommodityClassificationCode">
+      <ns0:Message>[PCL-010-006]-Commodity classification SHOULD be one of UNSPSC, eClass or CPV.</ns0:Message>
+    </ns0:Context>
+    <ns0:Context ns0:address="cbc:TaxExemptionReasonCode" ns0:mark="fatal" ns0:values="TaxExemptionReasonCode">
+      <ns0:Message>[PCL-010-007]-Tax exemption reasons MUST be coded using Use CWA 15577 tax exemption code list. Version 2006</ns0:Message>
+    </ns0:Context>
+    <ns0:Context ns0:address="cac:PartyIdentification/cbc:ID/@schemeID" ns0:mark="fatal" ns0:values="PartyID">
+      <ns0:Message>[PCL-010-008]-Party Identifiers MUST use the PEPPOL PartyID list</ns0:Message>
+    </ns0:Context>
+    <ns0:Context ns0:address="cbc:EndpointID/@schemeID" ns0:mark="fatal" ns0:values="PartyID">
+      <ns0:Message>[PCL-010-009]-Endpoint Identifiers MUST use the PEPPOL PartyID list.</ns0:Message>
+    </ns0:Context>
+  </ns0:Contexts>
+</ContextValueAssociation>

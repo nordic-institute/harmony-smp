@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron tests for binding UBL and transaction T19-->
-<pattern is-a="T19" id="UBL-T19" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T19" id="UBL-T19">
   <param name="EUGEN-T19-R001" value="(cbc:UBLVersionID)" />
   <param name="EUGEN-T19-R002" value="(cbc:CustomizationID)" />
   <param name="EUGEN-T19-R003" value="(cbc:ProfileID)" />

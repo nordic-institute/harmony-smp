@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Abstract Schematron rules for T10-->
-<pattern abstract="true" id="T10" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" abstract="true" id="T10">
   <rule context="$Customer">
     <assert flag="warning" test="$BIICORE-T10-R387">[BIICORE-T10-R387]-Element 'PartyIdentification' may occur at maximum 1 times.</assert>
     <assert flag="warning" test="$BIICORE-T10-R388">[BIICORE-T10-R388]-Element 'PartyName' must occur exactly 1 times.</assert>

@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Abstract Schematron rules for T17-->
-<pattern abstract="true" id="T17" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" abstract="true" id="T17">
   <rule context="$Tax_Total">
     <assert flag="fatal" test="$NONAT-T17-R029">[NONAT-T17-R029]-A reminder MUST specify the tax total amount.</assert>
   </rule>

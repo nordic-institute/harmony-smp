@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron tests for binding UBL and transaction T14-->
-<pattern is-a="T14" id="UBL-T14" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T14" id="UBL-T14">
   <param name="EUGEN-T14-R001" value="(cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)" />
   <param name="EUGEN-T14-R002" value="(cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)" />
   <param name="EUGEN-T14-R003" value="(cbc:CreditedQuantity and cbc:CreditedQuantity/@unitCode)" />
@@ -48,10 +48,10 @@
   <param name="EUGEN-T14-R007" value="((cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT']/cbc:TaxAmount) and (cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not((cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT'])))" />
   <param name="EUGEN-T14-R012" value="(parent::cac:AllowanceCharge) or (cbc:ID and cbc:Percent) or (cbc:ID = 'AE')" />
   <param name="EUGEN-T14-R013" value="(number(cac:TaxCategory/cbc:Percent) = 0 and (cac:TaxCategory/cbc:TaxExemptionReason or cac:TaxCategory/cbc:TaxExemptionReasonCode)) or  (number(cac:TaxCategory/cbc:Percent) !=0)" />
-  <param name="EUGEN-T14-R015" value="starts-with(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID,//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) and (//cac:TaxCategory/cbc:ID) = 'AE'  or not ((//cac:TaxCategory/cbc:ID) = 'AE' )" />
+  <param name="EUGEN-T14-R015" value="(starts-with(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID,//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) and (//cac:TaxCategory/cbc:ID) = 'AE' ) or not ((//cac:TaxCategory/cbc:ID) = 'AE' )" />
   <param name="EUGEN-T14-R016" value="(((//cac:TaxCategory/cbc:ID) = 'AE')  and not((//cac:TaxCategory/cbc:ID) != 'AE' )) or not((//cac:TaxCategory/cbc:ID) = 'AE') or not(//cac:TaxCategory)" />
-  <param name="EUGEN-T14-R017" value="(//cbc:TaxExclusiveAmount = //cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cbc:ID='AE']/cbc:TaxableAmount) and (//cac:TaxCategory/cbc:ID) = 'AE'  or not ((//cac:TaxCategory/cbc:ID) = 'AE' )" />
-  <param name="EUGEN-T14-R018" value="//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = 'AE'  or not ((//cac:TaxCategory/cbc:ID) = 'AE' )" />
+  <param name="EUGEN-T14-R017" value="((//cbc:TaxExclusiveAmount = //cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cbc:ID='AE']/cbc:TaxableAmount) and (//cac:TaxCategory/cbc:ID) = 'AE' ) or not ((//cac:TaxCategory/cbc:ID) = 'AE' )" />
+  <param name="EUGEN-T14-R018" value="(//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = 'AE' ) or not ((//cac:TaxCategory/cbc:ID) = 'AE' )" />
   <param name="EUGEN-T14-R019" value="number(cbc:PayableAmount) >= 0" />
   <param name="EUGEN-T14-R020" value="(cbc:StartDate)" />
   <param name="EUGEN-T14-R021" value="(cbc:EndDate)" />

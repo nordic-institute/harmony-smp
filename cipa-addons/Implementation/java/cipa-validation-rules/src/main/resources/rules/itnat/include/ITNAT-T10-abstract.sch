@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Abstract Schematron rules for T10-->
-<pattern abstract="true" id="T10" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" abstract="true" id="T10">
   <rule context="$Line_Level_Transport_Document">
     <assert flag="Fatal" test="$IT-T10-R032">[IT-T10-R032]-If the supplier country code is “IT”, the reference to the transport document at line level in an invoice MUST contain document identifier, issue date, reference law.</assert>
   </rule>

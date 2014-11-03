@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron tests for binding UBL and transaction T17-->
-<pattern is-a="T17" id="UBL-T17" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T17" id="UBL-T17">
   <param name="NONAT-T17-R001" value="(cbc:ID)" />
   <param name="NONAT-T17-R002" value="(cbc:IssueDate)" />
   <param name="NONAT-T17-R003" value="(cac:LegalMonetaryTotal/cbc:LineExtensionAmount)" />
@@ -54,7 +54,7 @@
   <param name="NONAT-T17-R012" value="(number(cac:TaxCategory/cbc:Percent) = 0 and (cac:TaxCategory/cbc:TaxExemptionReason or cac:TaxCategory/cbc:TaxExemptionReasonCode)) or  (number(cac:TaxCategory/cbc:Percent) !=0)" />
   <param name="NONAT-T17-R013" value="not(cac:PayeeParty) or (cac:PayeeParty/cac:PartyName/cbc:Name)" />
   <param name="NONAT-T17-R014" value="(((//cac:TaxCategory/cbc:ID) = 'AE')  and not((//cac:TaxCategory/cbc:ID) != 'AE' )) or not((//cac:TaxCategory/cbc:ID) = 'AE') or not(//cac:TaxCategory)" />
-  <param name="NONAT-T17-R015" value="//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = 'AE' or not ((//cac:TaxCategory/cbc:ID) = 'AE')" />
+  <param name="NONAT-T17-R015" value="(//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = 'AE') or not ((//cac:TaxCategory/cbc:ID) = 'AE')" />
   <param name="NONAT-T17-R016" value=". = 'urn:www.cenbii.eu:profile:bii08:ver1.0'" />
   <param name="NONAT-T17-R017" value="(cbc:UBLVersionID)" />
   <param name="NONAT-T17-R018" value="(cbc:CustomizationID)" />

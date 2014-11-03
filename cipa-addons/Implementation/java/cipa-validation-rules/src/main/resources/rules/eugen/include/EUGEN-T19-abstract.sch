@@ -40,7 +40,7 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Abstract Schematron rules for T19-->
-<pattern abstract="true" id="T19" xmlns="http://purl.oclc.org/dsdl/schematron">
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" abstract="true" id="T19">
   <rule context="$Customer">
     <assert flag="warning" test="$EUGEN-T19-R025">[EUGEN-T19-R025]-In cross border trade the VAT identifier for the customer should be prefixed with country code.</assert>
     <assert flag="fatal" test="$EUGEN-T19-R024">[EUGEN-T19-R024]-If buyer customer party ID is not specified, buyer party name is mandatory</assert>
