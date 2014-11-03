@@ -59,7 +59,6 @@ import com.sun.jersey.api.client.WebResource.Builder;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyDocumentTypeIdentifier;
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 import eu.europa.ec.cipa.peppol.uri.BusdoxURLUtils;
@@ -173,7 +172,7 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
     ValueEnforcer.notNull (aServiceGroup, "ServiceGroup");
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
-    final WebResource aFullResource = m_aWebResource.path (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroup.getParticipantIdentifier ()));
+    final WebResource aFullResource = getServiceGroupResource (aServiceGroup.getParticipantIdentifier ());
     saveServiceGroup (aFullResource, aServiceGroup, aCredentials);
   }
 
@@ -244,10 +243,9 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
    */
   public void deleteServiceGroup (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                   @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
-    ValueEnforcer.notNull (aServiceGroupID, "ServiceGroupID");
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
-    final WebResource aFullResource = m_aWebResource.path (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID));
+    final WebResource aFullResource = getServiceGroupResource (aServiceGroupID);
     deleteServiceGroup (aFullResource, aCredentials);
   }
 
@@ -307,9 +305,7 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
     if (aDocumentTypeID == null)
       throw new IllegalArgumentException ("ServiceInformation does not contain documentTypeID");
 
-    final WebResource aFullResource = m_aWebResource.path (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID) +
-                                                           "/services/" +
-                                                           IdentifierUtils.getIdentifierURIPercentEncoded (aDocumentTypeID));
+    final WebResource aFullResource = getServiceRegistrationResource (aServiceGroupID, aDocumentTypeID);
     saveServiceRegistration (aFullResource, aServiceMetadata, aCredentials);
   }
 
@@ -354,13 +350,9 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
   public void deleteServiceRegistration (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                          @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
                                          @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
-    ValueEnforcer.notNull (aServiceGroupID, "ServiceGroupID");
-    ValueEnforcer.notNull (aDocumentTypeID, "DocumentTypeID");
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
-    final WebResource aFullResource = m_aWebResource.path (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID) +
-                                                           "/services/" +
-                                                           IdentifierUtils.getIdentifierURIPercentEncoded (aDocumentTypeID));
+    final WebResource aFullResource = getServiceRegistrationResource (aServiceGroupID, aDocumentTypeID);
     deleteServiceRegistration (aFullResource, aCredentials);
   }
 }

@@ -106,6 +106,7 @@ public class SMPServiceCallerReadonly {
   private static final GenericType <JAXBElement <SignedServiceMetadataType>> TYPE_SIGNEDSERVICEMETADATA = new GenericType <JAXBElement <SignedServiceMetadataType>> () {};
 
   // Members - free to change from here on
+  @Deprecated
   private static final ConfiguredDNSMapper s_aDNSMapper = new ConfiguredDNSMapper (ConfigFile.getInstance ());
 
   private final URI m_aSMPHost;
@@ -184,6 +185,7 @@ public class SMPServiceCallerReadonly {
       s_aLogger.warn ("SMP URI " + aSMPHost + " is not running on port 80!");
 
     if (s_aDNSMapper.containsAnyMapping ()) {
+      s_aLogger.warn ("The DNSMapper originally integrated by BRZ is no longer needed and will be removed in upcoming versions! If you still need the DNSMapper please drop a note to Philip Helger or Sandro from DIGIT");
       // The DNS mapper contains at least one mapping, so try to resolve it
       try {
         final String sOriginalHost = aSMPHost.getHost ();
@@ -270,6 +272,13 @@ public class SMPServiceCallerReadonly {
     }
   }
 
+  @Nonnull
+  public WebResource getServiceGroupReferenceListResource (@Nonnull final String sUserID) {
+    ValueEnforcer.notEmpty (sUserID, "UserID");
+
+    return m_aWebResource.path ("/list/" + BusdoxURLUtils.createPercentEncodedURL (sUserID));
+  }
+
   /**
    * Gets a list of references to the CompleteServiceGroup's owned by the
    * specified userId.
@@ -293,10 +302,9 @@ public class SMPServiceCallerReadonly {
   @Nonnull
   public ServiceGroupReferenceListType getServiceGroupReferenceList (@Nonnull final String sUserID,
                                                                      @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
-    ValueEnforcer.notEmpty (sUserID, "UserID");
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
-    final WebResource aFullResource = m_aWebResource.path ("/list/" + BusdoxURLUtils.createPercentEncodedURL (sUserID));
+    final WebResource aFullResource = getServiceGroupReferenceListResource (sUserID);
     return getServiceGroupReferenceList (aFullResource, aCredentials);
   }
 
@@ -326,6 +334,13 @@ public class SMPServiceCallerReadonly {
     }
   }
 
+  @Nonnull
+  public WebResource getCompleteServiceGroupResource (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) {
+    ValueEnforcer.notNull (aServiceGroupID, "ServiceGroupID");
+
+    return m_aWebResource.path ("/complete/" + IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID));
+  }
+
   /**
    * Returns a complete service group. A complete service group contains both
    * the service group and the service metadata.
@@ -348,10 +363,7 @@ public class SMPServiceCallerReadonly {
    */
   @Nonnull
   public CompleteServiceGroupType getCompleteServiceGroup (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) throws Exception {
-    ValueEnforcer.notNull (aServiceGroupID, "ServiceGroupID");
-
-    final WebResource aFullResource = m_aWebResource.path ("/complete/" +
-                                                           IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID));
+    final WebResource aFullResource = getCompleteServiceGroupResource (aServiceGroupID);
     return getCompleteServiceGroup (aFullResource);
   }
 
@@ -481,6 +493,13 @@ public class SMPServiceCallerReadonly {
     }
   }
 
+  @Nonnull
+  public WebResource getServiceGroupResource (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) {
+    ValueEnforcer.notNull (aServiceGroupID, "ServiceGroupID");
+
+    return m_aWebResource.path (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID));
+  }
+
   /**
    * Returns a service group. A service group references to the service
    * metadata.
@@ -502,9 +521,7 @@ public class SMPServiceCallerReadonly {
    */
   @Nonnull
   public ServiceGroupType getServiceGroup (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) throws Exception {
-    ValueEnforcer.notNull (aServiceGroupID, "ServiceGroupID");
-
-    final WebResource aFullResource = m_aWebResource.path (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID));
+    final WebResource aFullResource = getServiceGroupResource (aServiceGroupID);
     return getServiceGroup (aFullResource);
   }
 
@@ -600,6 +617,18 @@ public class SMPServiceCallerReadonly {
     }
   }
 
+  @Nonnull
+  public WebResource getServiceRegistrationResource (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
+                                                     @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID) {
+    ValueEnforcer.notNull (aServiceGroupID, "ServiceGroupID");
+    ValueEnforcer.notNull (aDocumentTypeID, "DocumentTypeID");
+
+    final String sPath = IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID) +
+                         "/services/" +
+                         IdentifierUtils.getIdentifierURIPercentEncoded (aDocumentTypeID);
+    return m_aWebResourceWithSignatureCheck.path (sPath);
+  }
+
   /**
    * Gets a signed service metadata object given by its service group id and its
    * document type.
@@ -623,13 +652,7 @@ public class SMPServiceCallerReadonly {
   @Nonnull
   public SignedServiceMetadataType getServiceRegistration (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                                            @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID) throws Exception {
-    ValueEnforcer.notNull (aServiceGroupID, "ServiceGroupID");
-    ValueEnforcer.notNull (aDocumentTypeID, "DocumentTypeID");
-
-    final String sPath = IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID) +
-                         "/services/" +
-                         IdentifierUtils.getIdentifierURIPercentEncoded (aDocumentTypeID);
-    final WebResource aFullResource = m_aWebResourceWithSignatureCheck.path (sPath);
+    final WebResource aFullResource = getServiceRegistrationResource (aServiceGroupID, aDocumentTypeID);
     return getServiceRegistration (aFullResource);
   }
 
