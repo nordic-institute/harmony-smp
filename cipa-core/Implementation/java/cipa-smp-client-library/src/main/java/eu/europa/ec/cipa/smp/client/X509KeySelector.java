@@ -48,6 +48,7 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Iterator;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.xml.crypto.AlgorithmMethod;
 import javax.xml.crypto.KeySelector;
@@ -64,7 +65,7 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 
 /**
  * Finds and returns a key using the data contained in a {@link KeyInfo} object
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  * @see <a
  *      href="http://java.sun.com/developer/technicalArticles/xml/dig_signature_api/">Programming
@@ -92,9 +93,9 @@ public final class X509KeySelector extends KeySelector {
 
   public X509KeySelector () {}
 
-  private static boolean _algEquals (final String algURI, final String algName) {
-    return (algName.equalsIgnoreCase ("DSA") && algURI.equalsIgnoreCase (SignatureMethod.DSA_SHA1)) ||
-           (algName.equalsIgnoreCase ("RSA") && algURI.equalsIgnoreCase (SignatureMethod.RSA_SHA1));
+  public static boolean algorithmEquals (@Nonnull final String sAlgURI, @Nonnull final String sAlgName) {
+    return (sAlgName.equalsIgnoreCase ("DSA") && sAlgURI.equalsIgnoreCase (SignatureMethod.DSA_SHA1)) ||
+           (sAlgName.equalsIgnoreCase ("RSA") && sAlgURI.equalsIgnoreCase (SignatureMethod.RSA_SHA1));
   }
 
   @Override
@@ -137,7 +138,7 @@ public final class X509KeySelector extends KeySelector {
           final PublicKey aPublicKey = certificate.getPublicKey ();
 
           // Make sure the algorithm is compatible with the method.
-          if (_algEquals (aMethod.getAlgorithm (), aPublicKey.getAlgorithm ()))
+          if (algorithmEquals (aMethod.getAlgorithm (), aPublicKey.getAlgorithm ()))
             return new ConstantKeySelectorResult (aPublicKey);
         }
         catch (final Throwable t) {

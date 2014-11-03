@@ -131,9 +131,9 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly
     super (aSMPHost);
   }
 
-  private static void _saveServiceGroup (@Nonnull final WebResource aFullResource,
-                                         @Nonnull final ServiceGroupType aServiceGroup,
-                                         @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
+  public static void saveServiceGroup (@Nonnull final WebResource aFullResource,
+                                       @Nonnull final ServiceGroupType aServiceGroup,
+                                       @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
   {
     ValueEnforcer.notNull (aFullResource, "FullResource");
     ValueEnforcer.notNull (aServiceGroup, "ServiceGroup");
@@ -151,22 +151,22 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly
     }
     catch (final UniformInterfaceException e)
     {
-      throw _getConvertedException (e);
+      throw getConvertedException (e);
     }
   }
 
   /**
-   * Saves a service group. The metadata references should not be set and are
+   * Saves a service group. The meta data references should not be set and are
    * not used.
    *
    * @param aServiceGroup
    *        The service group to save.
    * @param aCredentials
-   *        The username and password to use as aCredentials.
+   *        The user name and password to use as aCredentials.
    * @throws Exception
    *         in case something goes wrong
    * @throws UnauthorizedException
-   *         The username or password was not correct.
+   *         The user name or password was not correct.
    * @throws NotFoundException
    *         A HTTP Not Found was received. This can happen if the service was
    *         not found.
@@ -182,21 +182,21 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
     final WebResource aFullResource = m_aWebResource.path (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroup.getParticipantIdentifier ()));
-    _saveServiceGroup (aFullResource, aServiceGroup, aCredentials);
+    saveServiceGroup (aFullResource, aServiceGroup, aCredentials);
   }
 
   /**
-   * Saves a service group. The metadata references should not be set and are
+   * Saves a service group. The meta data references should not be set and are
    * not used.
    *
    * @param aParticipantID
    *        The participant identifier for which the service group is to save.
    * @param aCredentials
-   *        The username and password to use as aCredentials.
+   *        The user name and password to use as aCredentials.
    * @throws Exception
    *         in case something goes wrong
    * @throws UnauthorizedException
-   *         The username or password was not correct.
+   *         The user name or password was not correct.
    * @throws NotFoundException
    *         A HTTP Not Found was received. This can happen if the service was
    *         not found.
@@ -216,8 +216,8 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly
     saveServiceGroup (aServiceGroup, aCredentials);
   }
 
-  private static void _deleteServiceGroup (@Nonnull final WebResource aFullResource,
-                                           @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
+  public static void deleteServiceGroup (@Nonnull final WebResource aFullResource,
+                                         @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
   {
     ValueEnforcer.notNull (aFullResource, "FullResource");
     ValueEnforcer.notNull (aCredentials, "Credentials");
@@ -232,7 +232,7 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly
     }
     catch (final UniformInterfaceException ex)
     {
-      throw _getConvertedException (ex);
+      throw getConvertedException (ex);
     }
   }
 
@@ -242,13 +242,13 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly
    * @param aServiceGroupID
    *        The service group id of the service group to delete.
    * @param aCredentials
-   *        The username and password to use as aCredentials.
+   *        The user name and password to use as aCredentials.
    * @throws Exception
    *         in case something goes wrong
    * @throws NotFoundException
    *         The service group id did not exist.
    * @throws UnauthorizedException
-   *         The username or password was not correct.
+   *         The user name or password was not correct.
    * @throws UnknownException
    *         An unknown HTTP exception was received.
    * @throws BadRequestException
@@ -261,12 +261,12 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
     final WebResource aFullResource = m_aWebResource.path (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID));
-    _deleteServiceGroup (aFullResource, aCredentials);
+    deleteServiceGroup (aFullResource, aCredentials);
   }
 
-  private static void _saveServiceRegistration (@Nonnull final WebResource aFullResource,
-                                                @Nonnull final ServiceMetadataType aServiceMetadata,
-                                                @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
+  public static void saveServiceRegistration (@Nonnull final WebResource aFullResource,
+                                              @Nonnull final ServiceMetadataType aServiceMetadata,
+                                              @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
   {
     ValueEnforcer.notNull (aFullResource, "FullResource");
     ValueEnforcer.notNull (aServiceMetadata, "ServiceMetadata");
@@ -284,22 +284,22 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly
     }
     catch (final UniformInterfaceException e)
     {
-      throw _getConvertedException (e);
+      throw getConvertedException (e);
     }
   }
 
   /**
-   * Saves a service metadata object. The ServiceGroupReference value is
+   * Saves a service meta data object. The ServiceGroupReference value is
    * ignored.
    *
    * @param aServiceMetadata
-   *        The service metadata object to save.
+   *        The service meta data object to save.
    * @param aCredentials
-   *        The username and password to use as aCredentials.
+   *        The user name and password to use as aCredentials.
    * @throws Exception
    *         in case something goes wrong
    * @throws UnauthorizedException
-   *         The username or password was not correct.
+   *         The user name or password was not correct.
    * @throws NotFoundException
    *         A HTTP Not Found was received. This can happen if the service was
    *         not found.
@@ -327,11 +327,11 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly
     final WebResource aFullResource = m_aWebResource.path (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID) +
                                                            "/services/" +
                                                            IdentifierUtils.getIdentifierURIPercentEncoded (aDocumentTypeID));
-    _saveServiceRegistration (aFullResource, aServiceMetadata, aCredentials);
+    saveServiceRegistration (aFullResource, aServiceMetadata, aCredentials);
   }
 
-  private static void _deleteServiceRegistration (@Nonnull final WebResource aFullResource,
-                                                  @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
+  public static void deleteServiceRegistration (@Nonnull final WebResource aFullResource,
+                                                @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
   {
     ValueEnforcer.notNull (aFullResource, "FullResource");
     ValueEnforcer.notNull (aCredentials, "Credentials");
@@ -346,26 +346,26 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly
     }
     catch (final UniformInterfaceException e)
     {
-      throw _getConvertedException (e);
+      throw getConvertedException (e);
     }
   }
 
   /**
-   * Deletes a service metadata object given by its service group id and its
+   * Deletes a service meta data object given by its service group id and its
    * document type.
    *
    * @param aServiceGroupID
-   *        The service group id of the service metadata to delete.
+   *        The service group id of the service meta data to delete.
    * @param aDocumentTypeID
-   *        The document type of the service metadata to delete.
+   *        The document type of the service meta data to delete.
    * @param aCredentials
-   *        The username and password to use as aCredentials.
+   *        The user name and password to use as aCredentials.
    * @throws Exception
    *         in case something goes wrong
    * @throws UnauthorizedException
-   *         The username or password was not correct.
+   *         The user name or password was not correct.
    * @throws NotFoundException
-   *         The service metadata object did not exist.
+   *         The service meta data object did not exist.
    * @throws UnknownException
    *         An unknown HTTP exception was received.
    * @throws BadRequestException
@@ -382,6 +382,6 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly
     final WebResource aFullResource = m_aWebResource.path (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID) +
                                                            "/services/" +
                                                            IdentifierUtils.getIdentifierURIPercentEncoded (aDocumentTypeID));
-    _deleteServiceRegistration (aFullResource, aCredentials);
+    deleteServiceRegistration (aFullResource, aCredentials);
   }
 }

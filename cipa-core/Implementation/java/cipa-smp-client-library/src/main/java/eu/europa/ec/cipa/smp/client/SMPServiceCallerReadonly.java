@@ -118,7 +118,7 @@ public class SMPServiceCallerReadonly
   private final WebResource m_aWebResourceWithSignatureCheck;
 
   @Nonnull
-  private static WebResource _getResourceWithSignatureCheck (@Nonnull final URI aURI)
+  public static WebResource getResourceWithSignatureCheck (@Nonnull final URI aURI)
   {
     ValueEnforcer.notNull (aURI, "URI");
 
@@ -129,7 +129,7 @@ public class SMPServiceCallerReadonly
   }
 
   @Nonnull
-  private static WebResource _getResource (@Nonnull final URI aURI)
+  public static WebResource getResourceWithoutSignatureCheck (@Nonnull final URI aURI)
   {
     ValueEnforcer.notNull (aURI, "URI");
 
@@ -227,8 +227,8 @@ public class SMPServiceCallerReadonly
       m_aSMPHost = aSMPHost;
     }
 
-    m_aWebResource = _getResource (m_aSMPHost);
-    m_aWebResourceWithSignatureCheck = _getResourceWithSignatureCheck (m_aSMPHost);
+    m_aWebResource = getResourceWithoutSignatureCheck (m_aSMPHost);
+    m_aWebResourceWithSignatureCheck = getResourceWithSignatureCheck (m_aSMPHost);
   }
 
   /**
@@ -244,12 +244,12 @@ public class SMPServiceCallerReadonly
    * Convert the passed generic HTTP exception into a more specific exception.
    *
    * @param ex
-   *        The generic exception
+   *        The generic exception. May not be <code>null</code>.
    * @return A new SMP specific exception, using the passed exception as the
    *         cause.
    */
   @Nonnull
-  protected static final Exception _getConvertedException (@Nonnull final UniformInterfaceException ex)
+  public static Exception getConvertedException (@Nonnull final UniformInterfaceException ex)
   {
     final Status eHttpStatus = ex.getResponse ().getClientResponseStatus ();
     switch (eHttpStatus)
@@ -271,8 +271,8 @@ public class SMPServiceCallerReadonly
   }
 
   @Nonnull
-  private static ServiceGroupReferenceListType _getServiceGroupReferenceList (@Nonnull final WebResource aFullResource,
-                                                                              @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
+  public static ServiceGroupReferenceListType getServiceGroupReferenceList (@Nonnull final WebResource aFullResource,
+                                                                            @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
   {
     ValueEnforcer.notNull (aFullResource, "FullResource");
     ValueEnforcer.notNull (aCredentials, "Credentials");
@@ -287,7 +287,7 @@ public class SMPServiceCallerReadonly
     }
     catch (final UniformInterfaceException e)
     {
-      throw _getConvertedException (e);
+      throw getConvertedException (e);
     }
   }
 
@@ -319,7 +319,7 @@ public class SMPServiceCallerReadonly
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
     final WebResource aFullResource = m_aWebResource.path ("/list/" + BusdoxURLUtils.createPercentEncodedURL (sUserID));
-    return _getServiceGroupReferenceList (aFullResource, aCredentials);
+    return getServiceGroupReferenceList (aFullResource, aCredentials);
   }
 
   @Nullable
@@ -337,7 +337,7 @@ public class SMPServiceCallerReadonly
   }
 
   @Nonnull
-  private static CompleteServiceGroupType _getCompleteServiceGroup (@Nonnull final WebResource aFullResource) throws Exception
+  public static CompleteServiceGroupType getCompleteServiceGroup (@Nonnull final WebResource aFullResource) throws Exception
   {
     ValueEnforcer.notNull (aFullResource, "FullResource");
 
@@ -350,7 +350,7 @@ public class SMPServiceCallerReadonly
     }
     catch (final UniformInterfaceException e)
     {
-      throw _getConvertedException (e);
+      throw getConvertedException (e);
     }
   }
 
@@ -381,7 +381,7 @@ public class SMPServiceCallerReadonly
 
     final WebResource aFullResource = m_aWebResource.path ("/complete/" +
                                                            IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID));
-    return _getCompleteServiceGroup (aFullResource);
+    return getCompleteServiceGroup (aFullResource);
   }
 
   /**
@@ -439,7 +439,7 @@ public class SMPServiceCallerReadonly
   @Nonnull
   public static CompleteServiceGroupType getCompleteServiceGroup (@Nonnull final URI aURI) throws Exception
   {
-    return _getCompleteServiceGroup (_getResource (aURI));
+    return getCompleteServiceGroup (getResourceWithoutSignatureCheck (aURI));
   }
 
   /**
@@ -504,7 +504,7 @@ public class SMPServiceCallerReadonly
   }
 
   @Nonnull
-  private static ServiceGroupType _getServiceGroup (@Nonnull final WebResource aFullResource) throws Exception
+  public static ServiceGroupType getServiceGroup (@Nonnull final WebResource aFullResource) throws Exception
   {
     ValueEnforcer.notNull (aFullResource, "FullResource");
 
@@ -517,7 +517,7 @@ public class SMPServiceCallerReadonly
     }
     catch (final UniformInterfaceException e)
     {
-      throw _getConvertedException (e);
+      throw getConvertedException (e);
     }
   }
 
@@ -546,7 +546,7 @@ public class SMPServiceCallerReadonly
     ValueEnforcer.notNull (aServiceGroupID, "ServiceGroupID");
 
     final WebResource aFullResource = m_aWebResource.path (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID));
-    return _getServiceGroup (aFullResource);
+    return getServiceGroup (aFullResource);
   }
 
   @Nullable
@@ -608,7 +608,7 @@ public class SMPServiceCallerReadonly
         final RedirectType aRedirect = aMetadata.getServiceMetadata ().getRedirect ();
 
         // Follow the redirect
-        final WebResource aRedirectFullResource = _getResourceWithSignatureCheck (URI.create (aRedirect.getHref ()));
+        final WebResource aRedirectFullResource = getResourceWithSignatureCheck (URI.create (aRedirect.getHref ()));
         s_aLogger.info ("Following a redirect to " + aRedirect.getHref ());
         aMetadata = aRedirectFullResource.get (TYPE_SIGNEDSERVICEMETADATA).getValue ();
 
@@ -650,7 +650,7 @@ public class SMPServiceCallerReadonly
     }
     catch (final UniformInterfaceException e)
     {
-      throw _getConvertedException (e);
+      throw getConvertedException (e);
     }
   }
 
