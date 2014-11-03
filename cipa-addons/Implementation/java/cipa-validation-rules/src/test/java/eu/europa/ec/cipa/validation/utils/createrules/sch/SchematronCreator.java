@@ -49,6 +49,8 @@ import javax.annotation.concurrent.Immutable;
 
 import org.odftoolkit.simple.SpreadsheetDocument;
 import org.odftoolkit.simple.table.Table;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.collections.multimap.IMultiMapListBased;
 import com.helger.commons.collections.multimap.MultiHashMapArrayListBased;
@@ -58,6 +60,7 @@ import com.helger.commons.microdom.IMicroElement;
 import com.helger.commons.microdom.impl.MicroDocument;
 import com.helger.commons.microdom.serialize.MicroWriter;
 import com.helger.commons.string.StringHelper;
+import com.helger.commons.string.StringParser;
 import com.helger.commons.xml.serialize.XMLWriterSettings;
 import com.helger.schematron.CSchematron;
 
@@ -67,6 +70,8 @@ import eu.europa.ec.cipa.validation.utils.createrules.utils.Utils;
 
 @Immutable
 public final class SchematronCreator {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronCreator.class);
+
   private static final String NS_SCHEMATRON = CSchematron.NAMESPACE_SCHEMATRON;
 
   // Map from transaction to Map from context to list of assertions
@@ -74,7 +79,7 @@ public final class SchematronCreator {
 
   private SchematronCreator () {}
 
-  private void _extractAbstractRules (final RuleSourceBusinessRule aBusinessRule,
+  private void _extractAbstractRules (@Nonnull final RuleSourceBusinessRule aBusinessRule,
                                       @Nonnull final SpreadsheetDocument aSpreadSheet) {
     final Table aFirstSheet = aSpreadSheet.getSheetByIndex (0);
     int nRow = 1;
@@ -84,14 +89,19 @@ public final class SchematronCreator {
       final String sContext = ODFUtils.getText (aFirstSheet, 2, nRow);
       final String sSeverity = ODFUtils.getText (aFirstSheet, 3, nRow);
       final String sTransaction = ODFUtils.getText (aFirstSheet, 4, nRow);
-
-      // Save in nested maps
-      IMultiMapListBased <String, RuleAssertion> aTransactionRules = m_aAbstractRules.get (sTransaction);
-      if (aTransactionRules == null) {
-        aTransactionRules = new MultiHashMapArrayListBased <String, RuleAssertion> ();
-        m_aAbstractRules.put (sTransaction, aTransactionRules);
+      final String sIsObsolete = ODFUtils.getText (aFirstSheet, 5, nRow);
+      if (StringParser.parseBool (sIsObsolete)) {
+        s_aLogger.info ("Skipping obsolete rule '" + sRuleID + "'");
       }
-      aTransactionRules.putSingle (sContext, new RuleAssertion (sRuleID, sMessage, sSeverity));
+      else {
+        // Save in nested maps
+        IMultiMapListBased <String, RuleAssertion> aTransactionRules = m_aAbstractRules.get (sTransaction);
+        if (aTransactionRules == null) {
+          aTransactionRules = new MultiHashMapArrayListBased <String, RuleAssertion> ();
+          m_aAbstractRules.put (sTransaction, aTransactionRules);
+        }
+        aTransactionRules.putSingle (sContext, new RuleAssertion (sRuleID, sMessage, sSeverity));
+      }
 
       // Next row
       ++nRow;
@@ -143,7 +153,7 @@ public final class SchematronCreator {
     return false;
   }
 
-  private void _extractBindingTests (final RuleSourceBusinessRule aBusinessRule, final Table aSheet) {
+  private void _extractBindingTests (@Nonnull final RuleSourceBusinessRule aBusinessRule, final Table aSheet) {
     final String sBindingName = aSheet.getTableName ();
     Utils.log ("    Handling sheet for binding '" + sBindingName + "'");
     int nRow = 1;
@@ -152,10 +162,11 @@ public final class SchematronCreator {
       final String sTransaction = ODFUtils.getText (aSheet, 0, nRow);
       final String sRuleID = ODFUtils.getText (aSheet, 1, nRow);
       String sTest = ODFUtils.getText (aSheet, 2, nRow);
-      final String sPrerequisite = ODFUtils.getText (aSheet, 3, nRow);
 
+      final String sPrerequisite = ODFUtils.getText (aSheet, 3, nRow);
       if (StringHelper.hasText (sPrerequisite))
-        sTest += " and " + sPrerequisite + " or not (" + sPrerequisite + ")";
+        sTest = "(" + sTest + " and " + sPrerequisite + ") or not (" + sPrerequisite + ")";
+
       aRules.putSingle (sTransaction, new RuleParam (sRuleID, sTest));
       nRow++;
     }
@@ -244,15 +255,13 @@ public final class SchematronCreator {
       aDoc.appendComment ("This file is generated automatically! Do NOT edit!");
       aDoc.appendComment ("Schematron assembly for binding " + sBindingName + " and transaction " + sTransaction);
       final IMicroElement eSchema = aDoc.appendElement (NS_SCHEMATRON, "schema");
-      eSchema.setAttribute ("xmlns:cbc", "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2");
-      eSchema.setAttribute ("xmlns:cac", "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2");
-      eSchema.setAttribute ("xmlns:" + sBindingPrefix, sNamespace);
       eSchema.setAttribute ("queryBinding", "xslt2");
       eSchema.appendElement (NS_SCHEMATRON, "title").appendText (aBusinessRule.getID () +
                                                                  " " +
                                                                  sTransaction +
                                                                  " bound to " +
                                                                  sBindingName);
+
       eSchema.appendElement (NS_SCHEMATRON, "ns")
              .setAttribute ("prefix", "cbc")
              .setAttribute ("uri", "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2");
@@ -283,9 +292,10 @@ public final class SchematronCreator {
       eInclude = eSchema.appendElement (NS_SCHEMATRON, "include");
       eInclude.setAttribute ("href", "include/" +
                                      aBusinessRule.getSchematronBindingFile (sBindingName, sTransaction).getName ());
+
       if (SimpleFileIO.writeFile (aSCHFile, MicroWriter.getXMLString (aDoc), XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ)
                       .isFailure ())
-        throw new IllegalStateException ("Failed to write " + aSCHFile);
+        throw new IllegalStateException ("Failed to write file " + aSCHFile);
 
       // Remember file for XSLT creation
       aBusinessRule.addResultSchematronFile (aSCHFile);

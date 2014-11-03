@@ -60,7 +60,7 @@ public final class MainCreateValidationRules {
 
     // Add all base directories
     final List <RuleSourceItem> aRuleSourceItems = new ArrayList <RuleSourceItem> ();
-    aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "atgov").addBussinessRule ("businessrules/atgov-T10-BusinessRules-v01.ods"));
+    aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "atgov").addBussinessRule ("businessrules/atgov-T10-BusinessRules-v02.ods"));
     aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "atnat").addBussinessRule ("businessrules/atnat-T10-BusinessRules-v02.ods"));
     // XSLT creation of biicore takes forever (approx. 25-30 minutes)!!!
     aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "biicore").addBussinessRule ("businessrules/biicore-T01-BusinessRules-v01.ods")

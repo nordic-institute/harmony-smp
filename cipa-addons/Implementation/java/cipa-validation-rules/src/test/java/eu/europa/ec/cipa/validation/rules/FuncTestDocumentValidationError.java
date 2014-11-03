@@ -42,6 +42,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -52,6 +53,8 @@ import oasis.names.specification.ubl.schema.xsd.order_2.OrderType;
 
 import org.junit.Test;
 import org.oclc.purl.dsdl.svrl.SchematronOutputType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -59,6 +62,7 @@ import com.helger.commons.CGlobal;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.error.EErrorLevel;
 import com.helger.commons.io.IReadableResource;
+import com.helger.commons.locale.country.CountryCache;
 import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.xml.serialize.DOMReader;
 import com.helger.commons.xml.serialize.XMLWriter;
@@ -84,6 +88,8 @@ import eu.europa.ec.cipa.test.error.Warning;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class FuncTestDocumentValidationError {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (FuncTestDocumentValidationError.class);
+
   @Nonnull
   @ReturnsMutableCopy
   private static Set <AbstractErrorDefinition> _getAllFailedAssertionErrorCode (@Nonnull final SchematronOutputType aSVRL) {
@@ -130,7 +136,7 @@ public final class FuncTestDocumentValidationError {
 
         if (false) {
           // For debugging purposes: print the SVRL
-          System.out.println (XMLWriter.getXMLString (SVRLWriter.createXML (aSVRL)));
+          s_aLogger.info (XMLWriter.getXMLString (SVRLWriter.createXML (aSVRL)));
         }
 
         aErrCodes.addAll (_getAllFailedAssertionErrorCode (aSVRL));
@@ -145,8 +151,8 @@ public final class FuncTestDocumentValidationError {
                         aCopy.toString (),
                     aCopy.remove (aExpectedErrCode));
       if (!aCopy.isEmpty ())
-        System.out.println (aCopy);
-      assertTrue (aTestDoc.getFilename () + " also indicated: " + aCopy, aCopy.isEmpty ());
+        s_aLogger.info (aCopy.toString ());
+      assertTrue (aTestDoc.getFilename () + " also indicated: " + aCopy.toString (), aCopy.isEmpty ());
     }
   }
 
@@ -176,7 +182,7 @@ public final class FuncTestDocumentValidationError {
 
         if (false) {
           // For debugging purposes: print the SVRL
-          System.out.println (SVRLWriter.createXMLString (aSVRL));
+          s_aLogger.info (SVRLWriter.createXMLString (aSVRL));
         }
 
         aErrCodes.addAll (_getAllFailedAssertionErrorCode (aSVRL));
@@ -190,6 +196,60 @@ public final class FuncTestDocumentValidationError {
                         aCopy.toString (),
                     aCopy.remove (aExpectedErrCode));
       assertTrue (aTestDoc.getFilename () + " also indicated: " + aCopy, aCopy.isEmpty ());
+    }
+  }
+
+  @Test
+  public void testReadInvoicesErrorAT () throws SAXException {
+    final IValidationTransaction aVT = ValidationTransaction.createUBLTransaction (ETransaction.T10);
+    // For all available orders
+    final Locale aCountry = CountryCache.getInstance ().getCountry ("AT");
+    for (final TestResource aTestDoc : TestFiles.getErrorFiles (ETestFileType.INVOICE, aCountry)) {
+      // Get the UBL XML file
+      final IReadableResource aTestFile = aTestDoc.getResource ();
+      final Document aTestFileDoc = DOMReader.readXMLDOM (aTestFile);
+
+      if (true)
+        s_aLogger.info (aTestFile.getPath ());
+
+      // Ensure the UBL file validates against the scheme
+      try {
+        final InvoiceType aUBLInvoice = UBL20Reader.readInvoice (aTestFileDoc);
+        assertNotNull (aUBLInvoice);
+
+        final Set <AbstractErrorDefinition> aErrCodes = new HashSet <AbstractErrorDefinition> ();
+
+        // Test the country-dependent invoice layers
+        for (final IValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
+                                                                                                EValidationDocumentType.INVOICE,
+                                                                                                aCountry)) {
+          SchematronOutputType aSVRL;
+          aSVRL = SchematronHelper.applySchematron (new SchematronResourcePure (eArtefact.getValidationSchematronResource (aVT)),
+                                                    aTestFileDoc);
+          assertNotNull (aSVRL);
+
+          if (false) {
+            // For debugging purposes: print the SVRL
+            s_aLogger.info (SVRLWriter.createXMLString (aSVRL));
+          }
+
+          aErrCodes.addAll (_getAllFailedAssertionErrorCode (aSVRL));
+        }
+        final Set <AbstractErrorDefinition> aCopy = new TreeSet <AbstractErrorDefinition> (aErrCodes);
+        for (final AbstractErrorDefinition aExpectedErrCode : aTestDoc.getAllExpectedErrors ())
+          assertTrue (aTestDoc.getFilename () +
+                          " expected " +
+                          aExpectedErrCode.toString () +
+                          " but having " +
+                          aCopy.toString (),
+                      aCopy.remove (aExpectedErrCode));
+        assertTrue (aTestDoc.getFilename () + " also indicated: " + aCopy, aCopy.isEmpty ());
+      }
+      catch (final OutOfMemoryError ex) {
+        // Continue with next. May happen with
+        // /test-invoices/error/atgov-t10-fail-r014.xml
+        s_aLogger.warn ("OufOfMemoryError for " + aTestFile.getPath () + " - continuing with next file!");
+      }
     }
   }
 }

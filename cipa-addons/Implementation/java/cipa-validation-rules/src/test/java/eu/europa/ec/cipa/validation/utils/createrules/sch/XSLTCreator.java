@@ -47,6 +47,9 @@ import org.w3c.dom.Document;
 import com.helger.commons.io.file.FilenameHelper;
 import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.resource.FileSystemResource;
+import com.helger.commons.microdom.IMicroElement;
+import com.helger.commons.microdom.serialize.MicroReader;
+import com.helger.commons.xml.namespace.MapBasedNamespaceContext;
 import com.helger.commons.xml.serialize.XMLWriter;
 import com.helger.commons.xml.serialize.XMLWriterSettings;
 import com.helger.schematron.xslt.ISchematronXSLTProvider;
@@ -67,7 +70,8 @@ public final class XSLTCreator {
         for (final File aSCHFile : aBusinessRule.getAllResultSchematronFiles ()) {
           Utils.log ("  Creating XSLT for " + aSCHFile.getName ());
 
-          final ISchematronXSLTProvider aXSLTProvider = SchematronResourceSCHCache.createSchematronXSLTProvider (new FileSystemResource (aSCHFile),
+          final FileSystemResource aSCHRes = new FileSystemResource (aSCHFile);
+          final ISchematronXSLTProvider aXSLTProvider = SchematronResourceSCHCache.createSchematronXSLTProvider (aSCHRes,
                                                                                                                  null,
                                                                                                                  null,
                                                                                                                  null,
@@ -78,10 +82,21 @@ public final class XSLTCreator {
           }
           final Document aXSLTDoc = aXSLTProvider.getXSLTDocument ();
 
+          final MapBasedNamespaceContext aNSCtx = new MapBasedNamespaceContext ();
+          aNSCtx.addMapping ("xsl", "http://www.w3.org/1999/XSL/Transform");
+          aNSCtx.addMapping ("svrl", "http://purl.oclc.org/dsdl/svrl");
+          // Read all mappings from Schematron file
+          for (final IMicroElement aElement : MicroReader.readMicroXML (aSCHRes)
+                                                         .getDocumentElement ()
+                                                         .getAllChildElements ("ns"))
+            aNSCtx.addMapping (aElement.getAttributeValue ("prefix"), aElement.getAttributeValue ("uri"));
+
+          final XMLWriterSettings aXWS = new XMLWriterSettings ().setNamespaceContext (aNSCtx)
+                                                                 .setPutNamespaceContextPrefixesInRoot (true);
+
           final File aXSLTFile = new File (FilenameHelper.getWithoutExtension (aSCHFile.getPath ()) + ".xslt");
-          if (SimpleFileIO.writeFile (aXSLTFile,
-                                      XMLWriter.getXMLString (aXSLTDoc),
-                                      XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ).isFailure ())
+          if (SimpleFileIO.writeFile (aXSLTFile, XMLWriter.getNodeAsString (aXSLTDoc, aXWS), aXWS.getCharsetObj ())
+                          .isFailure ())
             throw new IllegalStateException ("Failed to write " + aXSLTFile);
         }
     }
