@@ -94,21 +94,16 @@ import eu.europa.ec.cipa.smp.client.exception.UnknownException;
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public class SMPServiceCallerReadonly
-{
+public class SMPServiceCallerReadonly {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SMPServiceCallerReadonly.class);
 
   // Don't think of changing anything here! This is very sensitive. Don't
   // extract a base class or some else. DON'T TOUCH!
   // See http://sites.google.com/site/richchihlee/portal/j2ee/rs/rs-client
-  private static final GenericType <JAXBElement <ServiceGroupType>> TYPE_SERVICEGROUP = new GenericType <JAXBElement <ServiceGroupType>> ()
-  {};
-  private static final GenericType <JAXBElement <CompleteServiceGroupType>> TYPE_COMPLETESERVICEGROUP = new GenericType <JAXBElement <CompleteServiceGroupType>> ()
-  {};
-  private static final GenericType <JAXBElement <ServiceGroupReferenceListType>> TYPE_SERVICEGROUPREFERENCELIST = new GenericType <JAXBElement <ServiceGroupReferenceListType>> ()
-  {};
-  private static final GenericType <JAXBElement <SignedServiceMetadataType>> TYPE_SIGNEDSERVICEMETADATA = new GenericType <JAXBElement <SignedServiceMetadataType>> ()
-  {};
+  private static final GenericType <JAXBElement <ServiceGroupType>> TYPE_SERVICEGROUP = new GenericType <JAXBElement <ServiceGroupType>> () {};
+  private static final GenericType <JAXBElement <CompleteServiceGroupType>> TYPE_COMPLETESERVICEGROUP = new GenericType <JAXBElement <CompleteServiceGroupType>> () {};
+  private static final GenericType <JAXBElement <ServiceGroupReferenceListType>> TYPE_SERVICEGROUPREFERENCELIST = new GenericType <JAXBElement <ServiceGroupReferenceListType>> () {};
+  private static final GenericType <JAXBElement <SignedServiceMetadataType>> TYPE_SIGNEDSERVICEMETADATA = new GenericType <JAXBElement <SignedServiceMetadataType>> () {};
 
   // Members - free to change from here on
   private static final ConfiguredDNSMapper s_aDNSMapper = new ConfiguredDNSMapper (ConfigFile.getInstance ());
@@ -118,8 +113,7 @@ public class SMPServiceCallerReadonly
   private final WebResource m_aWebResourceWithSignatureCheck;
 
   @Nonnull
-  public static WebResource getResourceWithSignatureCheck (@Nonnull final URI aURI)
-  {
+  public static WebResource getResourceWithSignatureCheck (@Nonnull final URI aURI) {
     ValueEnforcer.notNull (aURI, "URI");
 
     final Client aClient = Client.create ();
@@ -129,8 +123,7 @@ public class SMPServiceCallerReadonly
   }
 
   @Nonnull
-  public static WebResource getResourceWithoutSignatureCheck (@Nonnull final URI aURI)
-  {
+  public static WebResource getResourceWithoutSignatureCheck (@Nonnull final URI aURI) {
     ValueEnforcer.notNull (aURI, "URI");
 
     final Client aClient = Client.create ();
@@ -150,8 +143,7 @@ public class SMPServiceCallerReadonly
    *      ISMLInfo)
    */
   public SMPServiceCallerReadonly (@Nonnull final IReadonlyParticipantIdentifier aParticipantIdentifier,
-                                   @Nonnull final ISMLInfo aSMLInfo)
-  {
+                                   @Nonnull final ISMLInfo aSMLInfo) {
     this (BusdoxURLUtils.getSMPURIOfParticipant (aParticipantIdentifier, aSMLInfo));
   }
 
@@ -170,8 +162,7 @@ public class SMPServiceCallerReadonly
    *      String)
    */
   public SMPServiceCallerReadonly (@Nonnull final IReadonlyParticipantIdentifier aParticipantIdentifier,
-                                   @Nonnull @Nonempty final String sSMLZoneName)
-  {
+                                   @Nonnull @Nonempty final String sSMLZoneName) {
     this (BusdoxURLUtils.getSMPURIOfParticipant (aParticipantIdentifier, sSMLZoneName));
   }
 
@@ -183,8 +174,7 @@ public class SMPServiceCallerReadonly
    *        The address of the SMP service. Must be port 80 and basic http only
    *        (no https!). Example: http://smpcompany.company.org
    */
-  public SMPServiceCallerReadonly (@Nonnull final URI aSMPHost)
-  {
+  public SMPServiceCallerReadonly (@Nonnull final URI aSMPHost) {
     ValueEnforcer.notNull (aSMPHost, "SMPHost");
 
     if (!"http".equals (aSMPHost.getScheme ()))
@@ -193,16 +183,13 @@ public class SMPServiceCallerReadonly
     if (aSMPHost.getPort () != 80 && aSMPHost.getPort () != -1)
       s_aLogger.warn ("SMP URI " + aSMPHost + " is not running on port 80!");
 
-    if (s_aDNSMapper.containsAnyMapping ())
-    {
+    if (s_aDNSMapper.containsAnyMapping ()) {
       // The DNS mapper contains at least one mapping, so try to resolve it
-      try
-      {
+      try {
         final String sOriginalHost = aSMPHost.getHost ();
         final InetAddress aInetAddr = InetAddress.getByName (sOriginalHost);
         final MappedDNSHost aRealHostToUse = s_aDNSMapper.getMappedDNSHost (aInetAddr);
-        if (!sOriginalHost.equals (aRealHostToUse.getHost ()))
-        {
+        if (!sOriginalHost.equals (aRealHostToUse.getHost ())) {
           final int nPortToUse = aRealHostToUse.getPort () != null ? aRealHostToUse.getPort ().intValue ()
                                                                   : aSMPHost.getPort ();
           m_aSMPHost = URI.create (aSMPHost.getScheme () +
@@ -214,14 +201,12 @@ public class SMPServiceCallerReadonly
         else
           m_aSMPHost = aSMPHost;
       }
-      catch (final UnknownHostException ex)
-      {
+      catch (final UnknownHostException ex) {
         // Should never occur, as the SML hosts
         throw new IllegalStateException ("Failed to resolve host from " + aSMPHost, ex);
       }
     }
-    else
-    {
+    else {
       // Avoid the above code as it may lead to problems in DMZs where no DNS
       // server is available (happened with IBM Denmark)
       m_aSMPHost = aSMPHost;
@@ -235,8 +220,7 @@ public class SMPServiceCallerReadonly
    * @return The SMP host URI we're operating on. Never <code>null</code>.
    */
   @Nonnull
-  public URI getSMPHost ()
-  {
+  public URI getSMPHost () {
     return m_aSMPHost;
   }
 
@@ -249,11 +233,9 @@ public class SMPServiceCallerReadonly
    *         cause.
    */
   @Nonnull
-  public static Exception getConvertedException (@Nonnull final UniformInterfaceException ex)
-  {
+  public static Exception getConvertedException (@Nonnull final UniformInterfaceException ex) {
     final Status eHttpStatus = ex.getResponse ().getClientResponseStatus ();
-    switch (eHttpStatus)
-    {
+    switch (eHttpStatus) {
       case FORBIDDEN:
         return new UnauthorizedException (ex);
       case NOT_FOUND:
@@ -272,21 +254,18 @@ public class SMPServiceCallerReadonly
 
   @Nonnull
   public static ServiceGroupReferenceListType getServiceGroupReferenceList (@Nonnull final WebResource aFullResource,
-                                                                            @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
-  {
+                                                                            @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     ValueEnforcer.notNull (aFullResource, "FullResource");
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("_getServiceGroupReferenceList from " + aFullResource.getURI ());
 
-    try
-    {
+    try {
       final Builder aBuilderWithAuth = aFullResource.header (HttpHeaders.AUTHORIZATION, aCredentials.getRequestValue ());
       return aBuilderWithAuth.get (TYPE_SERVICEGROUPREFERENCELIST).getValue ();
     }
-    catch (final UniformInterfaceException e)
-    {
+    catch (final UniformInterfaceException e) {
       throw getConvertedException (e);
     }
   }
@@ -313,8 +292,7 @@ public class SMPServiceCallerReadonly
    */
   @Nonnull
   public ServiceGroupReferenceListType getServiceGroupReferenceList (@Nonnull final String sUserID,
-                                                                     @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
-  {
+                                                                     @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     ValueEnforcer.notEmpty (sUserID, "UserID");
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
@@ -324,32 +302,26 @@ public class SMPServiceCallerReadonly
 
   @Nullable
   public ServiceGroupReferenceListType getServiceGroupReferenceListOrNull (@Nonnull final String sUserID,
-                                                                           @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception
-  {
-    try
-    {
+                                                                           @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
+    try {
       return getServiceGroupReferenceList (sUserID, aCredentials);
     }
-    catch (final NotFoundException ex)
-    {
+    catch (final NotFoundException ex) {
       return null;
     }
   }
 
   @Nonnull
-  public static CompleteServiceGroupType getCompleteServiceGroup (@Nonnull final WebResource aFullResource) throws Exception
-  {
+  public static CompleteServiceGroupType getCompleteServiceGroup (@Nonnull final WebResource aFullResource) throws Exception {
     ValueEnforcer.notNull (aFullResource, "FullResource");
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("_getCompleteServiceGroup from " + aFullResource.getURI ());
 
-    try
-    {
+    try {
       return aFullResource.get (TYPE_COMPLETESERVICEGROUP).getValue ();
     }
-    catch (final UniformInterfaceException e)
-    {
+    catch (final UniformInterfaceException e) {
       throw getConvertedException (e);
     }
   }
@@ -375,8 +347,7 @@ public class SMPServiceCallerReadonly
    *         The request was not well formed.
    */
   @Nonnull
-  public CompleteServiceGroupType getCompleteServiceGroup (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) throws Exception
-  {
+  public CompleteServiceGroupType getCompleteServiceGroup (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) throws Exception {
     ValueEnforcer.notNull (aServiceGroupID, "ServiceGroupID");
 
     final WebResource aFullResource = m_aWebResource.path ("/complete/" +
@@ -403,14 +374,11 @@ public class SMPServiceCallerReadonly
    *         The request was not well formed.
    */
   @Nullable
-  public CompleteServiceGroupType getCompleteServiceGroupOrNull (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) throws Exception
-  {
-    try
-    {
+  public CompleteServiceGroupType getCompleteServiceGroupOrNull (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) throws Exception {
+    try {
       return getCompleteServiceGroup (aServiceGroupID);
     }
-    catch (final NotFoundException ex)
-    {
+    catch (final NotFoundException ex) {
       return null;
     }
   }
@@ -437,8 +405,7 @@ public class SMPServiceCallerReadonly
    *         The request was not well formed.
    */
   @Nonnull
-  public static CompleteServiceGroupType getCompleteServiceGroup (@Nonnull final URI aURI) throws Exception
-  {
+  public static CompleteServiceGroupType getCompleteServiceGroup (@Nonnull final URI aURI) throws Exception {
     return getCompleteServiceGroup (getResourceWithoutSignatureCheck (aURI));
   }
 
@@ -462,14 +429,11 @@ public class SMPServiceCallerReadonly
    *         The request was not well formed.
    */
   @Nullable
-  public static CompleteServiceGroupType getCompleteServiceGroupOrNull (@Nonnull final URI aURI) throws Exception
-  {
-    try
-    {
+  public static CompleteServiceGroupType getCompleteServiceGroupOrNull (@Nonnull final URI aURI) throws Exception {
+    try {
       return getCompleteServiceGroup (aURI);
     }
-    catch (final NotFoundException ex)
-    {
+    catch (final NotFoundException ex) {
       return null;
     }
   }
@@ -498,25 +462,21 @@ public class SMPServiceCallerReadonly
    */
   @Nonnull
   public static CompleteServiceGroupType getCompleteServiceGroupByDNS (@Nonnull final ISMLInfo aSMLInfo,
-                                                                       @Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) throws Exception
-  {
+                                                                       @Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) throws Exception {
     return new SMPServiceCallerReadonly (aServiceGroupID, aSMLInfo).getCompleteServiceGroup (aServiceGroupID);
   }
 
   @Nonnull
-  public static ServiceGroupType getServiceGroup (@Nonnull final WebResource aFullResource) throws Exception
-  {
+  public static ServiceGroupType getServiceGroup (@Nonnull final WebResource aFullResource) throws Exception {
     ValueEnforcer.notNull (aFullResource, "FullResource");
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("_getServiceGroup from " + aFullResource.getURI ());
 
-    try
-    {
+    try {
       return aFullResource.get (TYPE_SERVICEGROUP).getValue ();
     }
-    catch (final UniformInterfaceException e)
-    {
+    catch (final UniformInterfaceException e) {
       throw getConvertedException (e);
     }
   }
@@ -541,8 +501,7 @@ public class SMPServiceCallerReadonly
    *         The request was not well formed.
    */
   @Nonnull
-  public ServiceGroupType getServiceGroup (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) throws Exception
-  {
+  public ServiceGroupType getServiceGroup (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) throws Exception {
     ValueEnforcer.notNull (aServiceGroupID, "ServiceGroupID");
 
     final WebResource aFullResource = m_aWebResource.path (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID));
@@ -550,14 +509,11 @@ public class SMPServiceCallerReadonly
   }
 
   @Nullable
-  public ServiceGroupType getServiceGroupOrNull (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) throws Exception
-  {
-    try
-    {
+  public ServiceGroupType getServiceGroupOrNull (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) throws Exception {
+    try {
       return getServiceGroup (aServiceGroupID);
     }
-    catch (final NotFoundException ex)
-    {
+    catch (final NotFoundException ex) {
       return null;
     }
   }
@@ -585,26 +541,22 @@ public class SMPServiceCallerReadonly
    */
   @Nonnull
   public static ServiceGroupType getServiceGroupByDNS (@Nonnull final ISMLInfo aSMLInfo,
-                                                       @Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) throws Exception
-  {
+                                                       @Nonnull final IReadonlyParticipantIdentifier aServiceGroupID) throws Exception {
     return new SMPServiceCallerReadonly (aServiceGroupID, aSMLInfo).getServiceGroup (aServiceGroupID);
   }
 
   @Nonnull
-  public static SignedServiceMetadataType getServiceRegistration (@Nonnull final WebResource aFullResource) throws Exception
-  {
+  public static SignedServiceMetadataType getServiceRegistration (@Nonnull final WebResource aFullResource) throws Exception {
     ValueEnforcer.notNull (aFullResource, "FullResource");
 
     if (s_aLogger.isDebugEnabled ())
       s_aLogger.debug ("getServiceRegistration from " + aFullResource.getURI ());
 
-    try
-    {
+    try {
       SignedServiceMetadataType aMetadata = aFullResource.get (TYPE_SIGNEDSERVICEMETADATA).getValue ();
 
       // If the Redirect element is present, then follow 1 redirect.
-      if (aMetadata.getServiceMetadata () != null && aMetadata.getServiceMetadata ().getRedirect () != null)
-      {
+      if (aMetadata.getServiceMetadata () != null && aMetadata.getServiceMetadata ().getRedirect () != null) {
         final RedirectType aRedirect = aMetadata.getServiceMetadata ().getRedirect ();
 
         // Follow the redirect
@@ -614,22 +566,17 @@ public class SMPServiceCallerReadonly
 
         // Check that the certificateUID is correct.
         boolean bCertificateSubjectFound = false;
-        outer: for (final Object aObj : aMetadata.getSignature ().getKeyInfo ().getContent ())
-        {
+        outer: for (final Object aObj : aMetadata.getSignature ().getKeyInfo ().getContent ()) {
           final Object aInfoValue = ((JAXBElement <?>) aObj).getValue ();
-          if (aInfoValue instanceof X509DataType)
-          {
+          if (aInfoValue instanceof X509DataType) {
             final X509DataType aX509Data = (X509DataType) aInfoValue;
-            for (final Object aX509Obj : aX509Data.getX509IssuerSerialOrX509SKIOrX509SubjectName ())
-            {
+            for (final Object aX509Obj : aX509Data.getX509IssuerSerialOrX509SKIOrX509SubjectName ()) {
               final JAXBElement <?> aX509element = (JAXBElement <?>) aX509Obj;
               // Find the first subject (of type string)
-              if (aX509element.getValue () instanceof String)
-              {
+              if (aX509element.getValue () instanceof String) {
                 final String sSubject = (String) aX509element.getValue ();
 
-                if (!aRedirect.getCertificateUID ().equals (sSubject))
-                {
+                if (!aRedirect.getCertificateUID ().equals (sSubject)) {
                   throw new UnknownException ("The certificate UID of the redirect did not match the certificate subject. Subject: " +
                                               sSubject +
                                               ". CertificateUID: " +
@@ -648,8 +595,7 @@ public class SMPServiceCallerReadonly
 
       return aMetadata;
     }
-    catch (final UniformInterfaceException e)
-    {
+    catch (final UniformInterfaceException e) {
       throw getConvertedException (e);
     }
   }
@@ -676,8 +622,7 @@ public class SMPServiceCallerReadonly
    */
   @Nonnull
   public SignedServiceMetadataType getServiceRegistration (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
-                                                           @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID) throws Exception
-  {
+                                                           @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID) throws Exception {
     ValueEnforcer.notNull (aServiceGroupID, "ServiceGroupID");
     ValueEnforcer.notNull (aDocumentTypeID, "DocumentTypeID");
 
@@ -703,14 +648,11 @@ public class SMPServiceCallerReadonly
    */
   @Nullable
   public SignedServiceMetadataType getServiceRegistrationOrNull (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
-                                                                 @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID) throws Exception
-  {
-    try
-    {
+                                                                 @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID) throws Exception {
+    try {
       return getServiceRegistration (aServiceGroupID, aDocumentTypeID);
     }
-    catch (final NotFoundException ex)
-    {
+    catch (final NotFoundException ex) {
       return null;
     }
   }
@@ -740,8 +682,7 @@ public class SMPServiceCallerReadonly
   @Nonnull
   public static SignedServiceMetadataType getServiceRegistrationByDNS (@Nonnull final ISMLInfo aSMLInfo,
                                                                        @Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
-                                                                       @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID) throws Exception
-  {
+                                                                       @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID) throws Exception {
     return new SMPServiceCallerReadonly (aServiceGroupID, aSMLInfo).getServiceRegistration (aServiceGroupID,
                                                                                             aDocumentTypeID);
   }
@@ -750,8 +691,7 @@ public class SMPServiceCallerReadonly
   @Deprecated
   public EndpointType getEndpoint (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                    @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
-                                   @Nonnull final IReadonlyProcessIdentifier aProcessID) throws Exception
-  {
+                                   @Nonnull final IReadonlyProcessIdentifier aProcessID) throws Exception {
     // Backwards compatibility
     final ESMPTransportProfile eTransportProfile = ESMPTransportProfile.TRANSPORT_PROFILE_START;
     return getEndpoint (aServiceGroupID, aDocumentTypeID, aProcessID, eTransportProfile);
@@ -761,8 +701,7 @@ public class SMPServiceCallerReadonly
   public EndpointType getEndpoint (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                    @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
                                    @Nonnull final IReadonlyProcessIdentifier aProcessID,
-                                   @Nonnull final ESMPTransportProfile eTransportProfile) throws Exception
-  {
+                                   @Nonnull final ESMPTransportProfile eTransportProfile) throws Exception {
     ValueEnforcer.notNull (aServiceGroupID, "serviceGroupID");
     ValueEnforcer.notNull (aDocumentTypeID, "DocumentTypeID");
     ValueEnforcer.notNull (aProcessID, "ProcessID");
@@ -776,8 +715,7 @@ public class SMPServiceCallerReadonly
   @Nullable
   @Deprecated
   public EndpointType getEndpoint (@Nonnull final SignedServiceMetadataType aSignedServiceMetadata,
-                                   @Nonnull final IReadonlyProcessIdentifier aProcessID) throws Exception
-  {
+                                   @Nonnull final IReadonlyProcessIdentifier aProcessID) throws Exception {
     // Backwards compatibility
     final ESMPTransportProfile eTransportProfile = ESMPTransportProfile.TRANSPORT_PROFILE_START;
     return getEndpoint (aSignedServiceMetadata, aProcessID, eTransportProfile);
@@ -802,8 +740,7 @@ public class SMPServiceCallerReadonly
   @Nullable
   public EndpointType getEndpoint (@Nonnull final SignedServiceMetadataType aSignedServiceMetadata,
                                    @Nonnull final IReadonlyProcessIdentifier aProcessID,
-                                   @Nonnull final ESMPTransportProfile eTransportProfile)
-  {
+                                   @Nonnull final ESMPTransportProfile eTransportProfile) {
     ValueEnforcer.notNull (aSignedServiceMetadata, "SignedServiceMetadata");
     ValueEnforcer.notNull (aProcessID, "ProcessID");
     ValueEnforcer.notNull (eTransportProfile, "TransportProfile");
@@ -813,11 +750,9 @@ public class SMPServiceCallerReadonly
                                                                    .getServiceInformation ()
                                                                    .getProcessList ()
                                                                    .getProcess ();
-    for (final ProcessType aProcessType : aAllProcesses)
-    {
+    for (final ProcessType aProcessType : aAllProcesses) {
       // Matches the requested one?
-      if (IdentifierUtils.areIdentifiersEqual (aProcessType.getProcessIdentifier (), aProcessID))
-      {
+      if (IdentifierUtils.areIdentifiersEqual (aProcessType.getProcessIdentifier (), aProcessID)) {
         // Get all endpoints
         final List <EndpointType> aEndpoints = aProcessType.getServiceEndpointList ().getEndpoint ();
         // Filter by required transport profile
@@ -826,8 +761,7 @@ public class SMPServiceCallerReadonly
           if (eTransportProfile.getID ().equals (aEndpoint.getTransportProfile ()))
             aRelevantEndpoints.add (aEndpoint);
 
-        if (aRelevantEndpoints.size () != 1)
-        {
+        if (aRelevantEndpoints.size () != 1) {
           s_aLogger.warn ("Found " +
                           aRelevantEndpoints.size () +
                           " endpoints for process " +
@@ -850,8 +784,7 @@ public class SMPServiceCallerReadonly
   @Deprecated
   public String getEndpointAddress (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                     @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
-                                    @Nonnull final IReadonlyProcessIdentifier aProcessID) throws Exception
-  {
+                                    @Nonnull final IReadonlyProcessIdentifier aProcessID) throws Exception {
     // Backwards compatibility
     final ESMPTransportProfile eTransportProfile = ESMPTransportProfile.TRANSPORT_PROFILE_START;
     return getEndpointAddress (aServiceGroupID, aDocumentTypeID, aProcessID, eTransportProfile);
@@ -861,15 +794,13 @@ public class SMPServiceCallerReadonly
   public String getEndpointAddress (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                     @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
                                     @Nonnull final IReadonlyProcessIdentifier aProcessID,
-                                    @Nonnull final ESMPTransportProfile eTransportProfile) throws Exception
-  {
+                                    @Nonnull final ESMPTransportProfile eTransportProfile) throws Exception {
     final EndpointType aEndpoint = getEndpoint (aServiceGroupID, aDocumentTypeID, aProcessID, eTransportProfile);
     return getEndpointAddress (aEndpoint);
   }
 
   @Nullable
-  public static String getEndpointAddress (@Nullable final EndpointType aEndpoint)
-  {
+  public static String getEndpointAddress (@Nullable final EndpointType aEndpoint) {
     return aEndpoint == null ? null : W3CEndpointReferenceUtils.getAddress (aEndpoint.getEndpointReference ());
   }
 
@@ -877,8 +808,7 @@ public class SMPServiceCallerReadonly
   @Deprecated
   public String getEndpointCertificateString (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                               @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
-                                              @Nonnull final IReadonlyProcessIdentifier aProcessID) throws Exception
-  {
+                                              @Nonnull final IReadonlyProcessIdentifier aProcessID) throws Exception {
     // Backwards compatibility
     final ESMPTransportProfile eTransportProfile = ESMPTransportProfile.TRANSPORT_PROFILE_START;
     return getEndpointCertificateString (aServiceGroupID, aDocumentTypeID, aProcessID, eTransportProfile);
@@ -888,15 +818,13 @@ public class SMPServiceCallerReadonly
   public String getEndpointCertificateString (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                               @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
                                               @Nonnull final IReadonlyProcessIdentifier aProcessID,
-                                              @Nonnull final ESMPTransportProfile eTransportProfile) throws Exception
-  {
+                                              @Nonnull final ESMPTransportProfile eTransportProfile) throws Exception {
     final EndpointType aEndpoint = getEndpoint (aServiceGroupID, aDocumentTypeID, aProcessID, eTransportProfile);
     return aEndpoint == null ? null : aEndpoint.getCertificate ();
   }
 
   @Nullable
-  public static String getEndpointCertificateString (@Nullable final EndpointType aEndpoint)
-  {
+  public static String getEndpointCertificateString (@Nullable final EndpointType aEndpoint) {
     return aEndpoint == null ? null : aEndpoint.getCertificate ();
   }
 
@@ -904,8 +832,7 @@ public class SMPServiceCallerReadonly
   @Deprecated
   public X509Certificate getEndpointCertificate (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                                  @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
-                                                 @Nonnull final IReadonlyProcessIdentifier aProcessID) throws Exception
-  {
+                                                 @Nonnull final IReadonlyProcessIdentifier aProcessID) throws Exception {
     // Backwards compatibility
     final ESMPTransportProfile eTransportProfile = ESMPTransportProfile.TRANSPORT_PROFILE_START;
     return getEndpointCertificate (aServiceGroupID, aDocumentTypeID, aProcessID, eTransportProfile);
@@ -915,8 +842,7 @@ public class SMPServiceCallerReadonly
   public X509Certificate getEndpointCertificate (@Nonnull final IReadonlyParticipantIdentifier aServiceGroupID,
                                                  @Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID,
                                                  @Nonnull final IReadonlyProcessIdentifier aProcessID,
-                                                 @Nonnull final ESMPTransportProfile eTransportProfile) throws Exception
-  {
+                                                 @Nonnull final ESMPTransportProfile eTransportProfile) throws Exception {
     final String sCertString = getEndpointCertificateString (aServiceGroupID,
                                                              aDocumentTypeID,
                                                              aProcessID,
@@ -925,8 +851,7 @@ public class SMPServiceCallerReadonly
   }
 
   @Nullable
-  public static X509Certificate getEndpointCertificate (@Nullable final EndpointType aEndpoint) throws CertificateException
-  {
+  public static X509Certificate getEndpointCertificate (@Nullable final EndpointType aEndpoint) throws CertificateException {
     final String sCertString = getEndpointCertificateString (aEndpoint);
     return CertificateUtils.convertStringToCertficate (sCertString);
   }
