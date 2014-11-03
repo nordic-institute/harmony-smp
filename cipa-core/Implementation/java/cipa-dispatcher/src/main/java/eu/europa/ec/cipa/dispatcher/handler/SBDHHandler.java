@@ -6,15 +6,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import eu.europa.ec.cipa.dispatcher.endpoint_interface.mendelson.AS2EndpointDBInterfaceMendelson;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 
 public class SBDHHandler extends DefaultHandler {
 	
-	
+	private static final Logger s_aLogger = LoggerFactory.getLogger (SBDHHandler.class);
 
 	private FileOutputStream file; // whole SBDH document sent by the client
 	private FileOutputStream file2; // only the payload without the SBDH
@@ -70,6 +73,7 @@ public class SBDHHandler extends DefaultHandler {
 			resultMap.put("tempFilePath", tempFilePath);
 			resultMap.put("tempFile2Path", tempFilePath + "_payload");
 		} catch (Exception e) {
+			s_aLogger.error(e.getMessage(),e);
 			throw new SAXException(e);
 		}
 	}
@@ -85,6 +89,7 @@ public class SBDHHandler extends DefaultHandler {
 			file2.flush();
 			file2.close();
 		} catch (Exception e) {
+			s_aLogger.error(e.getMessage(),e);
 			throw new SAXException(e);
 		}
 	}

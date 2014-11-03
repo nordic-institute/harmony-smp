@@ -39,9 +39,12 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.jce.provider.X509CertificateObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointDBInterface;
 import eu.europa.ec.cipa.dispatcher.ocsp.OCSPValidator;
+import eu.europa.ec.cipa.dispatcher.servlet.SendServlet;
 import eu.europa.ec.cipa.dispatcher.util.KeystoreUtil;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 
@@ -49,6 +52,7 @@ import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 public class AS2ReceiverServlet extends HttpServlet
 {
 
+	private static final Logger s_aLogger = LoggerFactory.getLogger (AS2ReceiverServlet.class);
 	Properties properties;
 
 	boolean debug=false;
@@ -57,11 +61,11 @@ public class AS2ReceiverServlet extends HttpServlet
 	public void init() throws UnavailableException
 	{
 
-		properties = PropertiesUtil.getProperties(getServletContext());
+		properties = PropertiesUtil.getProperties(null);
 
 		if (properties == null)
 		{
-			System.err.println("Error initializing AS2 receiver servlet: Couldn't load necessary configuration file");
+			s_aLogger.error("Error initializing AS2 receiver servlet: Couldn't load necessary configuration file");
 			throw new UnavailableException("Couldn't load necessary configuration file");
 		}
 
@@ -80,23 +84,19 @@ public class AS2ReceiverServlet extends HttpServlet
 		{
 			try
 			{
+				s_aLogger.error(HttpServletResponse.SC_BAD_REQUEST+ "Missing necessary AS2 headers");
 				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing necessary AS2 headers");
 			}
 			catch (Exception e)
-			{}
+			{
+				s_aLogger.error("Internal Server Error occured" + e);
+			}
 			
 			return;
 		}
 	}
 	
 	
-//	private boolean isMDN(HttpServletRequest req)
-//	{
-//		if (req.getHeader("as2-from")!=null && req.getHeader("as2-to")!=null && req.getHeader("message-id")!=null &&
-//				req.getHeader("disposition-notification-to")==null && req.getHeader("disposition-notification-options")==null /* && req.getHeader("recipient-address")==null */ )
-//			return true;
-//		return false;
-//	}
 	
 	
 	private boolean isIncomingAS2Message(HttpServletRequest req)
@@ -110,10 +110,6 @@ public class AS2ReceiverServlet extends HttpServlet
 	{
 		String as2_from = req.getHeader("as2-from");
 		String mdnURL = req.getHeader("disposition-notification-to");
-//		String mdnOption = req.getHeader("disposition-notification-options"); //if requesting signed MDN, this will exist and have a value like: signed-receipt-protocol=optional, pkcs7-signature; signed-receipt-micalg=optional, sha1, md5
-//		boolean signedMDN = (mdnOption!=null && !mdnOption.isEmpty());
-//		String receiptOption = req.getHeader("receipt-delivery-option");      //if requesting async MDN, this will exist and will have the URL to respond to.
-//		boolean syncMDN = (receiptOption==null || receiptOption.isEmpty());
 				
 		try
 		{
@@ -125,6 +121,7 @@ public class AS2ReceiverServlet extends HttpServlet
 	        X509CertificateObject cert = retrieveCertificate(input, resp);
 			if (cert == null)
 			{
+				s_aLogger.error(HttpServletResponse.SC_BAD_REQUEST+ "Unable to retrieve certificate from incoming message");
 				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unable to retrieve certificate from incoming message");
 				return;
 			}
@@ -133,6 +130,7 @@ public class AS2ReceiverServlet extends HttpServlet
 			String trustError = checkSignatureTrust((X509Certificate) cert);
 			if (trustError != null)
 			{
+				s_aLogger.error(HttpServletResponse.SC_UNAUTHORIZED+ "Untrusted/invalid signing certificate");
 				resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Untrusted/invalid signing certificate");
 				return;
 			}
@@ -144,11 +142,13 @@ public class AS2ReceiverServlet extends HttpServlet
 			}
 			catch (CertificateNotYetValidException e)
 			{
+				s_aLogger.error(HttpServletResponse.SC_UNAUTHORIZED+ "The certificate used to sign is not yet valid");
 				resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "The certificate used to sign is not yet valid");
 				return;
 			}
 			catch (CertificateExpiredException e)
 			{
+				s_aLogger.error(HttpServletResponse.SC_UNAUTHORIZED+ "The certificate used to sign has expired");
 				resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "The certificate used to sign has expired");
 				return;				
 			}
@@ -163,11 +163,13 @@ public class AS2ReceiverServlet extends HttpServlet
 				}
 				catch (Exception e)
 				{
+					s_aLogger.error("Unable to validate the incoming certificate", e);
 					valid = false;
 				}
 				
 				if (!valid)
 				{
+					s_aLogger.error( "The certificate used to sign has been revoked");
 					resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "The certificate used to sign has been revoked");
 					return;
 				}
@@ -179,6 +181,7 @@ public class AS2ReceiverServlet extends HttpServlet
 					
 			if (!commonName.equals(as2_from))
 			{
+				s_aLogger.error( "The as2-from header value in your message doesn't match your certificate's Common Name");
 				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "The as2-from header value in your message doesn't match your certificate's Common Name");
 			}
 			
@@ -200,7 +203,7 @@ public class AS2ReceiverServlet extends HttpServlet
 		{
 			try
 			{
-				System.out.println(e.getMessage());
+				s_aLogger.error( "Internal server Error occured",e);
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
 			catch (IOException ioE)
@@ -220,7 +223,9 @@ public class AS2ReceiverServlet extends HttpServlet
 	            buffer.write(temp, 0, count);
 	        in.close();
 		}
-		catch (Exception e) {}
+		catch (Exception e) {
+			s_aLogger.error( "Internal server Error occured",e);
+		}
         
         return buffer;
 	}
@@ -259,8 +264,13 @@ public class AS2ReceiverServlet extends HttpServlet
 		catch (Exception e)
 		{
 			try
-			{ resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage()); }
-			catch (Exception f) {}
+			{ 
+				s_aLogger.error( "Internal server Error occured",e);
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage()); }
+			catch (Exception f) {
+				s_aLogger.error( "Internal server Error occured",f);
+				
+			}
 			return null;
 		}
 		
@@ -293,7 +303,8 @@ public class AS2ReceiverServlet extends HttpServlet
 	      }
 	      catch (final Exception e)
 	      {
-	        return e.getMessage ();
+	    	  s_aLogger.error( "Error occured while cgecking electronic signature",e);
+	    	  return e.getMessage ();
 	      }
 	      
 	      return null; //means everything went well
@@ -379,8 +390,12 @@ public class AS2ReceiverServlet extends HttpServlet
 		}
 		catch (Exception e)
 		{
-			try { resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage()); }
-			catch (Exception f) {}
+			try { 
+				s_aLogger.error( "Internal server Error occured",e);
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage()); }
+			catch (Exception f) {
+				s_aLogger.error( "Internal server Error occured",f);
+			}
 		}
 	}
     

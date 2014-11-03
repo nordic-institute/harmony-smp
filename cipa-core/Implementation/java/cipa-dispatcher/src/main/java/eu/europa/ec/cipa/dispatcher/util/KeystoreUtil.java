@@ -10,9 +10,12 @@ import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class KeystoreUtil
 {
-
+	private static final Logger s_aLogger = LoggerFactory.getLogger (KeystoreUtil.class);
 	private static Properties properties = PropertiesUtil.getProperties(null);
 	private KeyStore keyStore = null;
 	private String keystorePath;
@@ -53,15 +56,17 @@ public class KeystoreUtil
             		}
             		catch (IOException e)
             		{
-            			e.printStackTrace();
+            			s_aLogger.error("Unable to load Keystore ", e);
             			success = false;
             			inStream.close();
             			inStream = new FileInputStream(inFile);  //we close and reopen the stream so it can be read again
             		}
             		if (success) break;
         		}
-        		if (!success)
+        		if (!success){
+        			s_aLogger.error("Unable to load Keystore ");        			
         			throw new Exception("Couldn't load the keystore");
+        		}
         		
             }
         }

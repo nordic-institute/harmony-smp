@@ -6,10 +6,16 @@ import java.util.Properties;
 
 import javax.servlet.ServletContext;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+ 
 
 public class PropertiesUtil
 {
-
+	
+	private static final Logger s_aLogger = LoggerFactory.getLogger (PropertiesUtil.class);
+	
 	private static Properties properties = null;
 	
 	
@@ -41,6 +47,9 @@ public class PropertiesUtil
 	public static final String CACHE_EXPIRE_AFTER_HOURS = "cache_expire_entry_after_hours";
 	public static final String AS4_PMODE_FILEPATH = "as4_pmodeFilePath";
 	public static final String AS4_ENDPOINT_URL = "as4_endpoint_url";
+	public static final String CONFIG_CLASS_PATH = "dispatcher.properties";
+	public static final String CONFIG_ALT_PATH = "config/conf.properties";
+	
 	
 
 	/** If properties haven't been loaded yet, loads it from context passed as parameter or default file location in case context==null.
@@ -55,7 +64,12 @@ public class PropertiesUtil
 				try
 				{
 					properties = new Properties();
-					InputStream stream =PropertiesUtil.class.getClassLoader().getResourceAsStream("config/conf.properties");
+					InputStream stream =PropertiesUtil.class.getClassLoader().getResourceAsStream("dispatcher.properties");
+					s_aLogger.debug("Loaded properties from dispatcher.properties ");
+					if (stream == null){
+						stream =PropertiesUtil.class.getClassLoader().getResourceAsStream("config/conf.properties");
+						s_aLogger.debug("Loaded properties from inside the archive config/conf.properties ");
+					}
 					properties.load(stream);
 					stream.close();
 				}

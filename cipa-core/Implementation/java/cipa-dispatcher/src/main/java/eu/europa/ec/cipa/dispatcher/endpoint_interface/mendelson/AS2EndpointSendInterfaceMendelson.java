@@ -3,29 +3,18 @@ package eu.europa.ec.cipa.dispatcher.endpoint_interface.mendelson;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.busdox.servicemetadata.publishing._1.EndpointType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import de.mendelson.comm.as2.AS2ServerVersion;
 import de.mendelson.comm.as2.clientserver.message.PartnerConfigurationChanged;
-import de.mendelson.comm.as2.clientserver.message.RefreshClientMessageOverviewList;
-import de.mendelson.comm.as2.message.AS2Message;
-import de.mendelson.util.clientserver.BaseClient;
-import de.mendelson.util.clientserver.ClientSessionHandlerCallback;
-import de.mendelson.util.clientserver.messages.ClientServerMessage;
 import de.mendelson.util.clientserver.messages.ClientServerResponse;
-import de.mendelson.util.clientserver.messages.LoginRequired;
-import de.mendelson.util.clientserver.messages.LoginState;
-import de.mendelson.util.clientserver.user.User;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointSendInterface;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
@@ -33,6 +22,8 @@ import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 
 public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterface
 {
+	
+	private static final Logger s_aLogger = LoggerFactory.getLogger (AS2EndpointSendInterfaceMendelson.class);
 	
 	public static final String MENDELSON_INSTALLATION_PATH = "mendelson_installation_path";
 	public static final String MENDELSON_MESSAGE_SERVER_HOST = "mendelson_message_server_host";
@@ -47,8 +38,10 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 		//connect to Mendelson message server, it'll keep us updated on the transmission state
 		callback = new MySessionHandlerCallback(waitingMessages);
 		callback.connect(new InetSocketAddress(properties.getProperty(MENDELSON_MESSAGE_SERVER_HOST), Integer.parseInt(properties.getProperty(MENDELSON_MESSAGE_SERVER_PORT))), 5000);
-		if (!callback.isconnected())
+		if (!callback.isconnected()){
+			s_aLogger.error("Couldn't connect to Mendelson message server");			
 			throw (new RuntimeException("Couldn't connect to Mendelson message server"));
+		}
 	}
 	
 	
@@ -83,7 +76,7 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 		catch (Exception e)
 		{
 			//updating Mendelson wasn't possible, so it doesn't make sense to send
-			Logger.getLogger(this.getClass().getName()).log(Level.SEVERE, (e.getMessage()!=null && !e.getMessage().isEmpty())? e.getMessage() : e.getCause().getLocalizedMessage());
+			s_aLogger.error("Impossible to update Mendelson's metadata about your partner. Sending the message will be cancelled. Reason:",e);
 			return "Impossible to update Mendelson's metadata about your partner. Sending the message will be cancelled. Reason: " + ((e.getMessage()!=null && !e.getMessage().isEmpty())? e.getMessage() : e.getCause().getLocalizedMessage());
 		}
 		
@@ -116,7 +109,12 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 					if (file_aux.exists())
 						break;
 					else
-						try	{ Thread.sleep(1000); }	catch(InterruptedException e) { return "Error: thread interrumpted"; }
+						try	{ Thread.sleep(1000); 
+						}	catch(InterruptedException e) { 
+							s_aLogger.error("Error: thread interrumpted while waiting for mendelson partner update",e);
+							return "Error: thread interrumpted"; 
+						
+						}
 				}
 			}
 			
@@ -129,9 +127,10 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 		    synchronized(synchronizedObject) //giving the file for Mendelson to send and populating waitingMessages form an atomic operation
 		    {
 			    boolean success = tempFile.renameTo(mendelsonFile);
-			    if (!success)
-			       	return "Error: Couldn't move the temp file " + documentFilePath + " into Mendelson folder " + path + " to be sent.";
-			    else
+			    if (!success){
+			    	s_aLogger.error("Error: Couldn't move the temp file " + documentFilePath + " into Mendelson folder " + path + " to be sent.");
+			    	return "Error: Couldn't move the temp file " + documentFilePath + " into Mendelson folder " + path + " to be sent.";
+			    }else
 			    	waitingMessages.put(documentName, signalObject);
 		    }
 		    
@@ -149,170 +148,18 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 		    }
 		    if (signalObject.getResponseValue()==SignalObject.RETURN_SUCCESS)
 		    	return null;
-		    else
-		    	return "Mendelson AS2 endpoint wasn't able to send the message";
+		    else{
+		    	s_aLogger.error("Mendelson AS2 endpoint wasn't able to send the message");
+		    	return "Mendelson AS2 endpoint wasn't able to send the message";}
 		    
 		}
 		catch (Exception e)
 		{
+			s_aLogger.error(e.getMessage(),e);
 			return (e.getMessage()!=null && !e.getMessage().isEmpty())? e.getMessage() : e.getCause().getLocalizedMessage();
 		}
 	}
 	
-}
-
-
-
-class MySessionHandlerCallback implements ClientSessionHandlerCallback
-{
-	
-	AS2EndpointDBInterfaceMendelson mendelsonDBInterface = new AS2EndpointDBInterfaceMendelson();
-	Map<String,SignalObject> waitingMessages;
-	BaseClient client = new BaseClient(this);
-	boolean loggedIn = false;
-	
-	
-	public MySessionHandlerCallback(Map<String,SignalObject> waitingMessages)
-	{
-		this.waitingMessages = waitingMessages;
-	}
-	
-	public BaseClient getBaseClient()
-	{
-		return this.client;
-	}
-	
-    @Override
-    public void loginRequestedFromServer()
-    {
-        LoginState state = this.client.login("admin", "admin".toCharArray(), AS2ServerVersion.getFullProductName());
-        if (state.getState() == LoginState.STATE_AUTHENTICATION_SUCCESS)
-        {
-        	User returnedLoginUser = state.getUser();
-        	client.setUser(returnedLoginUser);
-        	loggedIn=true;
-        }
-        else
-        {
-        	System.out.println("ERROR: Impossible to login to Mendelson server with default credentials.");
-        }
-    }
-    
-    @Override
-    public void connected(SocketAddress socketAddress)
-    {
-    }
-
-    @Override
-    public void loggedOut()
-    {
-    }
-
-    @Override
-    public void disconnected()
-    {
-    }
-    
-    /**Overwrite this in the client implementation for user defined processing
-     */
-    @Override
-    public void messageReceivedFromServer(ClientServerMessage message) {
-        //there is no user defined processing for sync responses
-        if (message._isSyncRequest()) {
-            return;
-        }
-        synchronized (this)
-        {
-        	if (message instanceof LoginRequired)
-        	{
-        		loginRequestedFromServer();
-        	}
-        	if (message instanceof RefreshClientMessageOverviewList)
-        	{
-        		RefreshClientMessageOverviewList m = (RefreshClientMessageOverviewList) message;
-        		if (m.getOperation() == RefreshClientMessageOverviewList.OPERATION_PROCESSING_UPDATE)
-        		{
-        			if (!waitingMessages.isEmpty())
-	        			try
-	        			{
-	        				Set<String> set = waitingMessages.keySet();
-	        				Map<String,Integer> updatedMessages = mendelsonDBInterface.getMessageStatesByOriginalFilenames(set);
-	        				for (String s : updatedMessages.keySet())
-	        				{
-	        					int messageState = updatedMessages.get(s);
-	        					SignalObject signalObject = waitingMessages.get(s);
-	        					
-		    	    			if (messageState==AS2Message.STATE_FINISHED)
-		    	    			{
-		    	    				//send ok signal
-		    	    				synchronized(signalObject)
-		    	    				{
-		    	    					waitingMessages.remove(s);
-			    	    				signalObject.setResponseValue(SignalObject.RETURN_SUCCESS);
-			    	    				signalObject.notify();
-		    	    				}
-		    	    			}
-		    	    			else if (messageState==AS2Message.STATE_STOPPED || messageState==0) //sending the message failed, or the messageId could no longer be found (probably the user deleted the message from the pending queue)
-		    	    			{
-		    	    				//send error signal
-		    	    				synchronized(signalObject)
-		    	    				{
-		    	    					waitingMessages.remove(s);
-			    	    				signalObject.setResponseValue(SignalObject.RETURN_ERROR);
-			    	    				signalObject.notify();
-		    	    				}
-		    	    			}
-		    	    			else
-		    	    			{
-		    	    				//if it's PENDING there's nothing to do
-		    	    			}	
-	        				}
-	
-	    	    			
-
-	        			}
-	        			catch (Exception e)
-	        			{
-	        				//we can't really do much here
-	        			}   
-        		}
-        	}
-        }
-    }
-
-    @Override
-    public void error(String message)
-    {
-    }
-    
-    @Override
-    public Logger getLogger()
-    {
-    	return Logger.getLogger("de.mendelson.as2.client");
-    }
-    
-    /**Makes this a ClientSessionCallback*/
-    @Override
-    public void syncRequestFailed(Throwable throwable)
-    {
-    }
-    
-    /**Logs something to the clients log
-     */
-    @Override
-    public void log(Level logLevel, String message)
-    {
-    }
-    
-    public void connect(final InetSocketAddress address, final long timeout)
-    {
-        client.connect(address, timeout);
-    }
-    
-    public boolean isconnected()
-    {
-    	return client.isConnected();
-    }
 }
 
 

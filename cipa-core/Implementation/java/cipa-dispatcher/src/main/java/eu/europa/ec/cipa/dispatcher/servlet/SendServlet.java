@@ -46,7 +46,10 @@ import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Property;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Service;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.To;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.UserMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+ 
 
 import backend.ecodex.org._1_1.BackendInterface;
 import backend.ecodex.org._1_1.BackendService11;
@@ -62,6 +65,7 @@ import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointInitAndDestro
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointSendInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.AS4GatewayInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.service.AS4PModeService;
+import eu.europa.ec.cipa.dispatcher.endpoint_interface.mendelson.AS2EndpointSendInterfaceMendelson;
 import eu.europa.ec.cipa.dispatcher.handler.SBDHHandler;
 import eu.europa.ec.cipa.dispatcher.util.KeystoreUtil;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
@@ -75,6 +79,8 @@ import eu.europa.ec.cipa.transport.start.client.AccessPointClientSendResult;
 
 public class SendServlet extends HttpServlet {
 
+	private static final Logger s_aLogger = LoggerFactory.getLogger (SendServlet.class);
+	
 	Properties properties = PropertiesUtil.getProperties(null);
 	BackendService11 holodeck_service = null; // created as object variable to
 												// avoid loading the holodeck
@@ -110,7 +116,7 @@ public class SendServlet extends HttpServlet {
 				initAS2Interface.init();
 			}
 		} catch (Exception e) {
-			System.out.println("AS2 server couldn't be initialized: " + e.getMessage());
+			s_aLogger.error("AS2 server couldn't be initialized: ",e );
 		}
 	}
 
@@ -122,7 +128,7 @@ public class SendServlet extends HttpServlet {
 				initAS2Interface.destroy();
 			}
 		} catch (Throwable e) {
-			System.out.println(e.getMessage());
+			s_aLogger.error(e.getMessage(),e );
 		}
 	}
 
@@ -142,6 +148,7 @@ public class SendServlet extends HttpServlet {
 			// the message on disk
 			resultMap = treatSBDHrequest(req.getInputStream());
 		} catch (Exception e) {
+			s_aLogger.error("An error occured while treating the SBDH request:\n" + e.getMessage(),e );
 			prepareResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "text/plain", "An error occured while treating the SBDH request:\n" + e.getMessage());
 			return;
 		}
@@ -166,6 +173,7 @@ public class SendServlet extends HttpServlet {
 		else if (processId == null || processId.isEmpty())
 			missingField = "processIdentifier";
 		if (missingField != null) {
+			s_aLogger.error("The mandatory field '" + missingField + "' could not be found in the SBDH header");
 			prepareResponse(resp, HttpServletResponse.SC_BAD_REQUEST, "text/plain", "The necessary field '" + missingField + "' could not be found in the SBDH header");
 			return;
 		}
@@ -202,8 +210,10 @@ public class SendServlet extends HttpServlet {
 					endpoint = partnerInterface.getPartnerData(receiverIdentifier);
 				}
 
-				if (endpoint == null || endpoint.getEndpointReference() == null)
+				if (endpoint == null || endpoint.getEndpointReference() == null){
+					s_aLogger.error("Couldn't successfully retrieve the receiver's metadata");
 					throw new Exception("Couldn't successfully retrieve the receiver's metadata");
+				}
 				cache.put(key, endpoint);
 			}
 
@@ -251,8 +261,11 @@ public class SendServlet extends HttpServlet {
 				if (apResult.isFailure()) {
 					if (apResult.getErrorMessageCount() > 0)
 						result = apResult.getAllErrorMessages().get(0);
-					else
+					else{
+						s_aLogger.error( "An error occured while communicating with the receiver access point.");						
 						result = "An error occured while communicating with the receiver access point.";
+					}
+						
 				} else
 					result = "";
 			} else if (protocol.equals(PROTOCOL_EBMS) && !properties.getProperty(PropertiesUtil.EBMS_ENDPOINT_PREFERENCE_ORDER).equals("0")) {
@@ -267,8 +280,8 @@ public class SendServlet extends HttpServlet {
 					try {
 						holodeck_service = new BackendService11(new URL(properties.getProperty(PropertiesUtil.EBMS_WSDL_PATH)));
 					} catch (Exception e) {
-						System.out.println("ERROR - Unable to integrate with Holodeck endpoint: " + e.getMessage());
-						prepareResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "text/plain", "Unable to integrate with Holodeck endpoint: " + e.getMessage());
+						s_aLogger.error( "ERROR - Unable to integrate with Domibus endpoint: ",e);
+						prepareResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "text/plain", "Unable to integrate with AS4 endpoint: " + e.getMessage());
 						holodeck_service = null;
 						return;
 					}
@@ -282,6 +295,7 @@ public class SendServlet extends HttpServlet {
 				try {
 					response = holodeck_interface.sendMessage(request, ebMSHeaderInfo);
 				} catch (Exception e) {
+					s_aLogger.error( "Unable to send message through Holodeck: " + e.getMessage(),e);
 					result = "Unable to send message through Holodeck: " + e.getMessage() != null && !e.getMessage().isEmpty() ? e.getMessage() : e.getCause().getMessage();
 					;
 					throw new Exception(result);
@@ -299,21 +313,25 @@ public class SendServlet extends HttpServlet {
 																// maybe OK
 																// responses are
 																// returned as
-																// well...
+							 									// well...
 
+				s_aLogger.error( "sending through EBMS protocol not available.");
 				prepareResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "text/plain", "sending through EBMS protocol not available.");
 				return;
 			} else {
+				s_aLogger.error("There's no activated protocol in this Access Point able to communicate with the receiver.");
 				prepareResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "text/plain", "There's no activated protocol in this Access Point able to communicate with the receiver.");
 				return;
 			}
 
 			if (result != null && !result.isEmpty()) {
+				s_aLogger.error(result);
 				prepareResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "text/plain", result);
 				return;
 			} else
 				resp.setStatus(HttpServletResponse.SC_OK);
 		} catch (Exception e) {
+			s_aLogger.error(e.getMessage(),e);
 			prepareResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "text/plain", (e.getMessage() != null && !e.getMessage().isEmpty()) ? e.getMessage() : e.getCause().getMessage());
 			return;
 		} finally {
@@ -531,7 +549,7 @@ public class SendServlet extends HttpServlet {
 					}
 				}
 			} catch (NumberFormatException e) {
-				System.err.println("There is an error in conf.properties - Endpoint preference order doesn't contain only numbers");
+				s_aLogger.error("There is an error in dispatcher confoig - Endpoint preference order doesn't contain only numbers");
 				return null;
 			}
 
@@ -553,7 +571,7 @@ public class SendServlet extends HttpServlet {
 			resp.getWriter().write(message);
 			resp.getWriter().flush();
 		} catch (Exception e) {
-			System.err.println("SendWebservice.prepareResponse(): Error trying to get the response writer");
+			s_aLogger.error("SendWebservice.prepareResponse(): Error trying to get the response writer",e);
 		}
 		return;
 	}

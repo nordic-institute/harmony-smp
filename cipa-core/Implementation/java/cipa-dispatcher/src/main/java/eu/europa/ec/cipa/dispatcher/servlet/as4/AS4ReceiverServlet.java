@@ -47,6 +47,8 @@ import org.apache.http.params.CoreConnectionPNames;
 import org.bouncycastle.cms.CMSSignedData;
 import org.bouncycastle.jce.provider.X509CertificateObject;
 import org.bouncycastle.util.encoders.Base64;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -62,20 +64,22 @@ import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 
 public class AS4ReceiverServlet extends HttpServlet
+
 {
 
 	Properties properties;
 	
 	boolean debug=false;
+	private static final Logger s_aLogger = LoggerFactory.getLogger (AS4ReceiverServlet.class);
 
 	public void init() throws UnavailableException
 	{
 
-		properties = PropertiesUtil.getProperties(getServletContext());
+		properties = PropertiesUtil.getProperties(null);
 
 		if (properties == null)
 		{
-			System.err.println("Error initializing AS4 receiver servlet: Couldn't load necessary configuration file");
+			s_aLogger.error("Error initializing AS4 receiver servlet: Couldn't load necessary configuration file");
 			throw new UnavailableException("Couldn't load necessary configuration file");
 		}
 		
@@ -93,6 +97,7 @@ public class AS4ReceiverServlet extends HttpServlet
 		{
 			try
 			{
+				s_aLogger.error(HttpServletResponse.SC_BAD_REQUEST +  " Missing necessary AS4 headers");
 				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing necessary AS4 headers");
 			}
 			catch (Exception e)
@@ -137,6 +142,7 @@ public class AS4ReceiverServlet extends HttpServlet
 	        X509Certificate cert = (X509Certificate)CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(binaryCert));
 			if (cert == null)
 			{
+				s_aLogger.error(HttpServletResponse.SC_BAD_REQUEST +  "Unable to retrieve certificate from incoming message");
 				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unable to retrieve certificate from incoming message");
 				return;
 			}
@@ -145,6 +151,7 @@ public class AS4ReceiverServlet extends HttpServlet
 			String trustError = checkSignatureTrust(cert);			
 			if (trustError != null)
 			{
+				s_aLogger.error(HttpServletResponse.SC_UNAUTHORIZED +  "Untrusted/invalid signing certificate");
 				resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Untrusted/invalid signing certificate");
 				return;
 			}
@@ -156,11 +163,13 @@ public class AS4ReceiverServlet extends HttpServlet
 			}
 			catch (CertificateNotYetValidException e)
 			{
+				s_aLogger.error(HttpServletResponse.SC_UNAUTHORIZED + "The certificate used to sign is not yet valid");
 				resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "The certificate used to sign is not yet valid");
 				return;
 			}
 			catch (CertificateExpiredException e)
 			{
+				s_aLogger.error(HttpServletResponse.SC_UNAUTHORIZED + " The certificate used to sign has expired");
 				resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "The certificate used to sign has expired");
 				return;				
 			}
@@ -171,8 +180,9 @@ public class AS4ReceiverServlet extends HttpServlet
 			//find the certificate's CN 
 			String commonName = KeystoreUtil.extractCN(cert);
 					
-			if (!commonName.equals((String) inputMap.get("senderIdentifier")))
+			if (!commonName.equalsIgnoreCase(((String) inputMap.get("senderIdentifier"))))
 			{
+				s_aLogger.error(HttpServletResponse.SC_BAD_REQUEST + " The Sender Identifier value in your message doesn't match your certificate's Common Name");
 				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "The Sender Identifier value in your message doesn't match your certificate's Common Name");
 			}
 			
@@ -189,11 +199,13 @@ public class AS4ReceiverServlet extends HttpServlet
 		{
 			try
 			{
-				System.out.println(e.getMessage());
+				s_aLogger.error(e.getMessage(),e);
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
 			catch (IOException ioE)
-			{}
+			{
+				s_aLogger.error(ioE.getMessage(),ioE);
+			}
 		}
 	}
 	
@@ -209,7 +221,10 @@ public class AS4ReceiverServlet extends HttpServlet
 	            buffer.write(temp, 0, count);
 	        in.close();
 		}
-		catch (Exception e) {}
+		catch (Exception e) {
+			
+			s_aLogger.error(e.getMessage(),e);
+		}
         
         return buffer;
 	}
@@ -245,8 +260,11 @@ public class AS4ReceiverServlet extends HttpServlet
 		catch (Exception e)
 		{
 			try
-			{ resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage()); }
-			catch (Exception f) {}
+			{ 
+				s_aLogger.error("returning http code "+HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage()); }
+			catch (Exception f) 
+			{}
 			return null;
 		}
 	}
@@ -283,21 +301,6 @@ public class AS4ReceiverServlet extends HttpServlet
 	      return null; //means everything went well
 	}
 	
-//	
-//	private String extractCN(X509Certificate cert)
-//	{
-//		Principal principal = cert.getSubjectDN();
-//		if (principal==null)
-//			principal = cert.getSubjectX500Principal();
-//		
-//		String commonName = null;
-//		String[] names = principal.getName().split(",");
-//		for (String s: names)
-//			if (s.trim().startsWith("CN="))
-//				commonName = s.trim().substring(3);
-//		
-//		return commonName.trim();
-//	}
 	
 	
 	private void forwardToAS4Endpoint(HttpServletRequest req, HttpServletResponse resp, ByteArrayOutputStream buffer)
@@ -343,7 +346,7 @@ public class AS4ReceiverServlet extends HttpServlet
 			while (headers.hasMoreElements())
 			{
 				header = headers.nextElement();
-				if (!header.equalsIgnoreCase("Content-Length"))
+				if (!header.equalsIgnoreCase("Content-Length") && !header.equalsIgnoreCase("Transfer-encoding"))
 					post.addHeader(header, req.getHeader(header));
 			}
 			
@@ -363,7 +366,9 @@ public class AS4ReceiverServlet extends HttpServlet
 		}
 		catch (Exception e)
 		{
-			try { resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage()); }
+			try { 
+				s_aLogger.error("Returninh HTTP error code "+HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e);
+				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage()); }
 			catch (Exception f) {}
 		}
 	}

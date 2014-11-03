@@ -15,6 +15,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.stream.Format;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.domibus.ebms3.config.As4Receipt;
 import eu.domibus.ebms3.config.As4Reliability;
@@ -32,9 +34,13 @@ import eu.domibus.ebms3.config.ToParty;
 import eu.domibus.ebms3.config.UserService;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.AS4GatewayInterface;
 import eu.europa.ec.cipa.dispatcher.exception.DispatcherConfigurationException;
+import eu.europa.ec.cipa.dispatcher.servlet.as4.AS4ReceiverServlet;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 
 public class AS4PModeService {
+	
+	private static final Logger s_aLogger = LoggerFactory.getLogger (AS4PModeService.class);
+	
 	private PModePool pmodePool;
 	private Properties properties;
 	private File pmodeFile;
@@ -72,14 +78,17 @@ public class AS4PModeService {
 			if (!pmodeFile.exists()) {
 				try {
 					if (!pmodeFile.createNewFile()) {
+						s_aLogger.error("Unable to create pmode file");
 						throw new DispatcherConfigurationException("Unable to create pmode file");
 					}
 				} catch (IOException e) {
+					s_aLogger.error("Unable to create pmode file");
 					throw new DispatcherConfigurationException("Unable to create pmode file");
 				}
 			}
 			pmodePool = PModePool.load(pmodeFile);
 			if (pmodePool == null) {
+				s_aLogger.error("Unable to create pmode file");
 				throw new DispatcherConfigurationException("Unable to load PMODEFile");
 			}
 
@@ -146,6 +155,10 @@ public class AS4PModeService {
 		UserService userservice = getUserService(userServiceName);
 		String bindingName = senderGatewayId.concat("_").concat(receiverGatewayId).concat("_").concat(processId).concat("_").concat(documentId);
 		Binding binding = getBinding(bindingName);
+		String oldGWAddress = null;
+		if (binding != null){
+			oldGWAddress = binding.getMep().getLegs().get(0).getEndpoint().getAddress();
+		}
 		String pmodeName = bindingName;
 		PMode pmode = getPMode(pmodeName);
 
@@ -198,10 +211,15 @@ public class AS4PModeService {
 			leg.setUserServiceName(userservice.getName());
 			leg.setSecurity(defaultSecurity);
 			Endpoint endpoint = new Endpoint();
-			endpoint.setAddress(receiverGWUlr);
+			if (receiverGWUlr != null && ! receiverGWUlr.isEmpty()){
+				endpoint.setAddress(receiverGWUlr);
+			}else if (oldGWAddress != null){
+				endpoint.setAddress(oldGWAddress);
+			}else{
+				endpoint.setAddress("Undefined address");
+			}
 			endpoint.setSoapVersion(AS4GatewayInterface.SOAP_VERSION);
 			leg.setEndpoint(endpoint);
-			
 			As4Receipt receipt = new As4Receipt();
 			receipt.setValue("response");
 			receipt.setNonRepudiation(true);
@@ -233,16 +251,17 @@ public class AS4PModeService {
 			HttpGet get = new HttpGet(builder.build());
 			httpclient.execute(get);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			s_aLogger.error("error occured while creating PMODE", e);
+			throw new DispatcherConfigurationException("Unable to update PMODEFile");
 		} catch (JAXBException e) {
-			e.printStackTrace();
-			throw new DispatcherConfigurationException("Unable to load PMODEFile");
+			s_aLogger.error("error occured while creating PMODE", e);
+			throw new DispatcherConfigurationException("Unable to update PMODEFile");
 		} catch (IOException e) {
-			throw new DispatcherConfigurationException("Unable to load PMODEFile");
+			s_aLogger.error("error occured while creating PMODE", e);
+			throw new DispatcherConfigurationException("Unable to update PMODEFile");
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			s_aLogger.error("error occured while creating PMODE", e);
+			throw new DispatcherConfigurationException("Unable to update PMODEFile");
 		}
 	}
 

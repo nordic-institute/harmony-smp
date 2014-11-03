@@ -19,13 +19,17 @@ import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 import org.apache.commons.dbcp.BasicDataSource;
 import org.bouncycastle.openssl.PEMWriter;
 import org.busdox.servicemetadata.publishing._1.EndpointType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointDBInterface;
+import eu.europa.ec.cipa.dispatcher.servlet.as4.AS4ReceiverServlet;
 import eu.europa.ec.cipa.dispatcher.util.KeystoreUtil;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 
 public class AS2EndpointDBInterfaceMendelson implements IAS2EndpointDBInterface
 {
+	private static final Logger s_aLogger = LoggerFactory.getLogger (AS2EndpointDBInterfaceMendelson.class);
 	
 	private BasicDataSource runtimeDataSource;
 	private BasicDataSource configDataSource;
@@ -169,7 +173,7 @@ public class AS2EndpointDBInterfaceMendelson implements IAS2EndpointDBInterface
         	}
         	catch (Exception e)
         	{
-        		System.out.println("Error in AS2EndpointPartnerInterfaceMendelson.getPartnerData(): " + e.getMessage());
+        		s_aLogger.error("Error in AS2EndpointPartnerInterfaceMendelson.getPartnerData()", e);
         		return null;
         	}
         }
@@ -190,6 +194,7 @@ public class AS2EndpointDBInterfaceMendelson implements IAS2EndpointDBInterface
 		}
 		catch (Exception e)
 		{
+			s_aLogger.error("Erro occure accessing AS2 Partner database", e);
 			if (con!=null)
 				con.rollback();
 			throw new Exception (e);
@@ -354,6 +359,7 @@ public class AS2EndpointDBInterfaceMendelson implements IAS2EndpointDBInterface
 		}
 		catch (Exception e)
 		{
+			s_aLogger.error("Erro occure accessing AS2 Partner database", e);
 			if (con!=null)
 				con.rollback();
 			throw new Exception (e);
