@@ -61,12 +61,11 @@ import eu.europa.ec.cipa.test.error.Warning;
 /**
  * Contains the utility methods to retrieve the test files for a certain
  * document type.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
-public final class TestFiles
-{
+public final class TestFiles {
   private static final Logger s_aLogger = LoggerFactory.getLogger (TestFiles.class);
   private static final String [] CALLFORTENDERS_SUCCESS = new String [] { "Catalogue pre award_Call for Tender_RDO MEPA_BIS 12a.xml" };
   private static final String [] CATALOGUES_SUCCESS = new String [] { "Consip_Catalogo_UBL.xml" };
@@ -227,6 +226,105 @@ public final class TestFiles
                                                                                               new Warning ("BIICORE-T10-R114"),
                                                                                               new Warning ("BIICORE-T10-R185"),
                                                                                               new Warning ("EUGEN-T10-R023")) };
+  private static final TestDocument [] INVOICES_AT_ERROR = new TestDocument [] { new TestDocument ("atgov-t10-fail-r001.xml",
+                                                                                                   new FatalError ("ATGOV-T10-R001"),
+                                                                                                   new Warning ("BIICORE-T10-R263"),
+                                                                                                   new Warning ("BIICORE-T10-R266"),
+                                                                                                   new Warning ("BIICORE-T10-R323"),
+                                                                                                   new Warning ("EUGEN-T10-R003")),
+                                                                                new TestDocument ("atgov-t10-fail-r002.xml",
+                                                                                                  new FatalError ("ATGOV-T10-R002"),
+                                                                                                  new Warning ("BIICORE-T10-R263"),
+                                                                                                  new Warning ("BIICORE-T10-R266"),
+                                                                                                  new Warning ("BIICORE-T10-R323")),
+                                                                                new TestDocument ("atgov-t10-fail-r003.xml",
+                                                                                                  new FatalError ("ATGOV-T10-R003"),
+                                                                                                  new Warning ("BIICORE-T10-R263"),
+                                                                                                  new Warning ("BIICORE-T10-R266"),
+                                                                                                  new Warning ("BIICORE-T10-R323"),
+                                                                                                  new Warning ("EUGEN-T10-R003")),
+                                                                                new TestDocument ("atgov-t10-fail-r004.xml",
+                                                                                                  new Warning ("ATGOV-T10-R004"),
+                                                                                                  new Warning ("BIICORE-T10-R323"),
+                                                                                                  new Warning ("EUGEN-T10-R003")),
+                                                                                new TestDocument ("atgov-t10-fail-r005.xml",
+                                                                                                  new Warning ("ATGOV-T10-R005"),
+                                                                                                  new Warning ("BIICORE-T10-R263"),
+                                                                                                  new Warning ("BIICORE-T10-R266"),
+                                                                                                  new Warning ("BIICORE-T10-R323"),
+                                                                                                  new Warning ("EUGEN-T10-R003")),
+                                                                                new TestDocument ("atgov-t10-fail-r007a.xml",
+                                                                                                  new FatalError ("ATGOV-T10-R007"),
+                                                                                                  new Warning ("BIICORE-T10-R263"),
+                                                                                                  new Warning ("BIICORE-T10-R266"),
+                                                                                                  new Warning ("BIICORE-T10-R323"),
+                                                                                                  new Warning ("EUGEN-T10-R003")),
+                                                                                new TestDocument ("atgov-t10-fail-r007b.xml",
+                                                                                                  new FatalError ("ATGOV-T10-R007"),
+                                                                                                  new Warning ("BIICORE-T10-R263"),
+                                                                                                  new Warning ("BIICORE-T10-R266"),
+                                                                                                  new Warning ("BIICORE-T10-R323"),
+                                                                                                  new Warning ("EUGEN-T10-R003"),
+                                                                                                  new Warning ("EUGEN-T10-R004"),
+                                                                                                  new Warning ("PCL-010-002")),
+                                                                                new TestDocument ("atgov-t10-fail-r008.xml",
+                                                                                                  new FatalError ("ATGOV-T10-R008"),
+                                                                                                  new Warning ("BIICORE-T10-R263"),
+                                                                                                  new Warning ("BIICORE-T10-R266"),
+                                                                                                  new Warning ("BIICORE-T10-R323"),
+                                                                                                  new Warning ("EUGEN-T10-R003")),
+                                                                                new TestDocument ("atgov-t10-fail-r009.xml",
+                                                                                                  new FatalError ("ATGOV-T10-R009"),
+                                                                                                  new Warning ("BIICORE-T10-R263"),
+                                                                                                  new Warning ("BIICORE-T10-R266"),
+                                                                                                  new Warning ("BIICORE-T10-R323"),
+                                                                                                  new Warning ("EUGEN-T10-R003")),
+                                                                                new TestDocument ("atgov-t10-fail-r010a.xml",
+                                                                                                  new FatalError ("ATGOV-T10-R010"),
+                                                                                                  new Warning ("BIICORE-T10-R263"),
+                                                                                                  new Warning ("BIICORE-T10-R266"),
+                                                                                                  new Warning ("BIICORE-T10-R323"),
+                                                                                                  new Warning ("EUGEN-T10-R003")),
+                                                                                new TestDocument ("atgov-t10-fail-r010b.xml",
+                                                                                                  new FatalError ("ATGOV-T10-R010"),
+                                                                                                  new Warning ("BIICORE-T10-R263"),
+                                                                                                  new Warning ("BIICORE-T10-R266"),
+                                                                                                  new Warning ("BIICORE-T10-R323"),
+                                                                                                  new Warning ("EUGEN-T10-R003")),
+                                                                                new TestDocument ("atgov-t10-fail-r011.xml",
+                                                                                                  new FatalError ("ATGOV-T10-R011"),
+                                                                                                  new Warning ("BIICORE-T10-R263"),
+                                                                                                  new Warning ("BIICORE-T10-R266"),
+                                                                                                  new Warning ("BIICORE-T10-R323"),
+                                                                                                  new Warning ("EUGEN-T10-R003")),
+                                                                                new TestDocument ("atgov-t10-fail-r012.xml",
+                                                                                                  new FatalError ("ATGOV-T10-R012"),
+                                                                                                  new Warning ("BIICORE-T10-R263"),
+                                                                                                  new Warning ("BIICORE-T10-R266"),
+                                                                                                  new Warning ("BIICORE-T10-R323"),
+                                                                                                  new Warning ("EUGEN-T10-R003")),
+                                                                                new TestDocument ("atgov-t10-fail-r013.xml",
+                                                                                                  new FatalError ("ATGOV-T10-R013"),
+                                                                                                  new Warning ("BIICORE-T10-R263"),
+                                                                                                  new Warning ("BIICORE-T10-R266"),
+                                                                                                  new Warning ("BIICORE-T10-R323"),
+                                                                                                  new Warning ("EUGEN-T10-R003")),
+                                                                                new TestDocument ("atgov-t10-fail-r014.xml",
+                                                                                                  new FatalError ("ATGOV-T10-R014"),
+                                                                                                  new Warning ("BIICORE-T10-R263"),
+                                                                                                  new Warning ("BIICORE-T10-R266"),
+                                                                                                  new Warning ("BIICORE-T10-R323"),
+                                                                                                  new Warning ("EUGEN-T10-R003")),
+                                                                                new TestDocument ("atgov-t10-fail-r015.xml",
+                                                                                                  new FatalError ("ATGOV-T10-R015"),
+                                                                                                  new Warning ("BIICORE-T10-R263"),
+                                                                                                  new Warning ("BIICORE-T10-R266"),
+                                                                                                  new Warning ("BIICORE-T10-R323")),
+                                                                                new TestDocument ("atgov-t10-fail-r016.xml",
+                                                                                                  new FatalError ("ATGOV-T10-R016"),
+                                                                                                  new Warning ("BIICORE-T10-R263"),
+                                                                                                  new Warning ("BIICORE-T10-R266"),
+                                                                                                  new Warning ("BIICORE-T10-R323")) };
 
   /**
    * TC01.4.TS1.xml, TC01.5.TS1.xml, TC01.10.TS1.xml, TC01.39.TS1.xml,
@@ -333,27 +431,24 @@ public final class TestFiles
                                                                                             new Warning ("BIIRULE-T01-R020"),
                                                                                             new Warning ("BIIRULE-T01-R021")) };
 
-  private TestFiles ()
-  {}
+  private TestFiles () {}
 
   @Nonnull
   @ReturnsMutableCopy
-  public static List <IReadableResource> getSuccessFiles (@Nonnull final ETestFileType eFileType)
-  {
+  public static List <IReadableResource> getSuccessFiles (@Nonnull final ETestFileType eFileType) {
     return getSuccessFiles (eFileType, null);
   }
 
   @Nonnull
   @ReturnsMutableCopy
   public static List <IReadableResource> getSuccessFiles (@Nonnull final ETestFileType eFileType,
-                                                          @Nullable final Locale aCountry)
-  {
+                                                          @Nullable final Locale aCountry) {
     ValueEnforcer.notNull (eFileType, "FileType");
 
-    String [] aFilenames;
     final String sCountry = aCountry == null ? null : aCountry.getCountry ();
-    switch (eFileType)
-    {
+
+    String [] aFilenames;
+    switch (eFileType) {
       case CALLFORTENDERS:
         aFilenames = CALLFORTENDERS_SUCCESS;
         break;
@@ -396,15 +491,25 @@ public final class TestFiles
 
   @Nonnull
   @ReturnsMutableCopy
-  public static List <TestResource> getErrorFiles (@Nonnull final ETestFileType eFileType)
-  {
+  public static List <TestResource> getErrorFiles (@Nonnull final ETestFileType eFileType) {
+    return getErrorFiles (eFileType, null);
+  }
+
+  @Nonnull
+  @ReturnsMutableCopy
+  public static List <TestResource> getErrorFiles (@Nonnull final ETestFileType eFileType,
+                                                   @Nullable final Locale aCountry) {
     ValueEnforcer.notNull (eFileType, "FileType");
 
+    final String sCountry = aCountry == null ? null : aCountry.getCountry ();
+
     TestDocument [] aFilenames;
-    switch (eFileType)
-    {
+    switch (eFileType) {
       case INVOICE:
-        aFilenames = INVOICES_ERROR;
+        if ("AT".equals (sCountry))
+          aFilenames = INVOICES_AT_ERROR;
+        else
+          aFilenames = INVOICES_ERROR;
         break;
       case ORDER:
         aFilenames = ORDERS_ERROR;

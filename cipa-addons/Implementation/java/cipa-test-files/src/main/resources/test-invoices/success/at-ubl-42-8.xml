@@ -43,7 +43,7 @@
   <cbc:CustomizationID schemeID="PEPPOL">urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:#urn:www.peppol.eu:bis:peppol4a:ver1.0</cbc:CustomizationID>
   <cbc:ProfileID>urn:www.cenbii.eu:profile:bii04:ver1.0</cbc:ProfileID>
   <cbc:ID>B-BS-1813</cbc:ID>
-  <cbc:IssueDate>2011-01-31</cbc:IssueDate>
+  <cbc:IssueDate>2014-01-31</cbc:IssueDate>
   <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
   <cbc:Note>Abrechnung Jänner 2011 - PEPPOL.AT Programm Mgt 2011</cbc:Note>
   <cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
@@ -109,13 +109,13 @@
     </cac:Party>
   </cac:AccountingCustomerParty>
   <cac:Delivery>
-    <cbc:ActualDeliveryDate>2011-01-31</cbc:ActualDeliveryDate>
+    <cbc:ActualDeliveryDate>2014-01-31</cbc:ActualDeliveryDate>
   </cac:Delivery>
   <cac:PaymentMeans>
     <cbc:PaymentMeansCode>31</cbc:PaymentMeansCode>
     <cbc:PaymentChannelCode>IBAN</cbc:PaymentChannelCode>
     <cac:PayeeFinancialAccount>
-      <cbc:ID schemeID="IBAN">AT89 1111 2222 33333 0000</cbc:ID>
+      <cbc:ID schemeID="IBAN">DE68 2105 0170 0012 3456 78</cbc:ID>
       <cac:FinancialInstitutionBranch>
         <cac:FinancialInstitution>
           <cbc:ID schemeID="BIC">TUVTAT21</cbc:ID>
