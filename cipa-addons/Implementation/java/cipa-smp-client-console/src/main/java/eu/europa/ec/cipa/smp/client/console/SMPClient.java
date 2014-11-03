@@ -45,9 +45,6 @@ import java.util.Date;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
 import javax.xml.ws.wsaddressing.W3CEndpointReference;
 
 import org.apache.commons.cli.CommandLine;
@@ -71,14 +68,12 @@ import com.helger.commons.charset.CCharset;
 import com.helger.commons.io.file.SimpleFileIO;
 import com.helger.commons.io.streams.NonBlockingStringWriter;
 import com.helger.commons.lang.CGStringHelper;
-import com.helger.commons.random.VerySecureRandom;
 import com.helger.commons.string.StringHelper;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
-import eu.europa.ec.cipa.peppol.security.DoNothingTrustManager;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 import eu.europa.ec.cipa.smp.client.ESMPTransportProfile;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
@@ -149,14 +144,6 @@ public final class SMPClient {
   }
 
   public static void main (final String [] args) throws Exception {
-    if (false) {
-      // Enable this section in development mode, if you want to trust all HTTPS
-      // certificates
-      final SSLContext aSSLContext = SSLContext.getInstance ("SSL");
-      aSSLContext.init (null, new TrustManager [] { new DoNothingTrustManager () }, VerySecureRandom.getInstance ());
-      HttpsURLConnection.setDefaultSSLSocketFactory (aSSLContext.getSocketFactory ());
-    }
-
     final SMPClientOptions aOptions = new SMPClientOptions ();
     final CommandLine cmd = new PosixParser ().parse (aOptions, args);
 

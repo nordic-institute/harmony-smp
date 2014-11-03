@@ -41,10 +41,10 @@ import org.apache.commons.cli.Options;
 
 /**
  * Contains the command line options for the {@link SMPClient}.
- * 
+ *
  * @author Itella
  */
-final class SMPClientOptions extends Options {
+public final class SMPClientOptions extends Options {
   public SMPClientOptions () {
     super ();
     addOption ("h", "host", true, "URL OF SMP HOST TO WORK ON");
@@ -60,6 +60,6 @@ final class SMPClientOptions extends Options {
                true,
                "File containing the Base64 encoded, DER encoded AP certificate (public key only)");
     addOption ("r", "processid", true, "Process id to perform operation on");
-    addOption ("d", "documentid", true, "Document id to perform operation on");
+    addOption ("d", "documentid", true, "Document type id to perform operation on");
   }
 }
