@@ -41,12 +41,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.lang.EnumHelper;
 import com.helger.commons.name.IHasName;
-import com.helger.commons.string.StringHelper;
 
 /**
- * Enum with all object types.
- * 
+ * Enumeration with all object types.
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public enum ESMLObjectType implements IHasName {
@@ -67,10 +67,6 @@ public enum ESMLObjectType implements IHasName {
 
   @Nullable
   public static ESMLObjectType getFromNameOrNull (@Nullable final String sName) {
-    if (StringHelper.hasText (sName))
-      for (final ESMLObjectType eCC : values ())
-        if (eCC.getName ().equalsIgnoreCase (sName))
-          return eCC;
-    return null;
+    return EnumHelper.getFromNameCaseInsensitiveOrNull (ESMLObjectType.class, sName);
   }
 }

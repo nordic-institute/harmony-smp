@@ -41,14 +41,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.string.StringHelper;
+import com.helger.commons.lang.EnumHelper;
+import com.helger.commons.name.IHasName;
 
 /**
  * Enum with all client commands.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public enum ESMLCommand {
+public enum ESMLCommand implements IHasName {
   CREATE ("create"),
   DELETE ("delete"),
   UPDATE ("update"),
@@ -71,10 +72,6 @@ public enum ESMLCommand {
 
   @Nullable
   public static ESMLCommand getFromNameOrNull (@Nullable final String sName) {
-    if (StringHelper.hasText (sName))
-      for (final ESMLCommand eCC : values ())
-        if (eCC.getName ().equalsIgnoreCase (sName))
-          return eCC;
-    return null;
+    return EnumHelper.getFromNameCaseInsensitiveOrNull (ESMLCommand.class, sName);
   }
 }

@@ -40,6 +40,7 @@ package eu.europa.ec.cipa.sml.client;
 import java.net.URL;
 
 import javax.annotation.Nonnull;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
 import javax.xml.ws.BindingProvider;
 
 import org.busdox.servicemetadata.locator._1.PublisherEndpointType;
@@ -54,23 +55,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.OverrideOnDemand;
 
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 
 /**
- * This class is used for calling the service metadata interface of the SML.
- * 
+ * This class is used for calling the service meta data interface of the SML. It
+ * is used for connecting SMPs to the SML.
+ *
  * @author Ravnholt<br>
  *         PEPPOL.AT, BRZ, Philip Helger
  */
-public final class ManageServiceMetadataServiceCaller {
+public class ManageServiceMetadataServiceCaller {
   private static final Logger s_aLogger = LoggerFactory.getLogger (ManageServiceMetadataServiceCaller.class);
 
   private final URL m_aEndpointAddress;
 
   /**
-   * Creates a service caller for the service metadata interface
-   * 
+   * Creates a service caller for the service metad ata interface
+   *
    * @param aSMLInfo
    *        The SML info object
    */
@@ -79,8 +82,8 @@ public final class ManageServiceMetadataServiceCaller {
   }
 
   /**
-   * Creates a service caller for the service metadata interface
-   * 
+   * Creates a service caller for the service meta data interface
+   *
    * @param aEndpointAddress
    *        The address of the SML management interface.
    */
@@ -93,12 +96,23 @@ public final class ManageServiceMetadataServiceCaller {
   }
 
   /**
+   * @return The endpoint address as specified in the constructor. Never
+   *         <code>null</code>.
+   */
+  @Nonnull
+  public URL getEndpointAddress () {
+    return m_aEndpointAddress;
+  }
+
+  /**
    * Create the main WebService client for the specified endpoint address.
-   * 
+   *
    * @return The WebService port to be used.
    */
   @Nonnull
-  private ManageServiceMetadataServiceSoap _createPort () {
+  @OverrideOnDemand
+  @OverridingMethodsMustInvokeSuper
+  protected ManageServiceMetadataServiceSoap createWSPort () {
     // Use default WSDL and default QName
     final ManageServiceMetadataService aService = new ManageServiceMetadataService ();
     final ManageServiceMetadataServiceSoap aPort = aService.getManageServiceMetadataServicePort ();
@@ -109,7 +123,7 @@ public final class ManageServiceMetadataServiceCaller {
 
   /**
    * Creates the service metadata for the specified user.
-   * 
+   *
    * @param sSMPID
    *        The certificate UID of the SMP
    * @param sSMPAddressPhysical
@@ -121,7 +135,7 @@ public final class ManageServiceMetadataServiceCaller {
    * @throws InternalErrorFault
    *         An internal error happened on the server.
    * @throws UnauthorizedFault
-   *         The username or password was not correct.
+   *         The user name or password was not correct.
    */
   public void create (final String sSMPID, final String sSMPAddressPhysical, final String sSMPAddressLogical) throws BadRequestFault,
                                                                                                              InternalErrorFault,
@@ -137,7 +151,7 @@ public final class ManageServiceMetadataServiceCaller {
 
   /**
    * Creates the service metadata for the specified user.
-   * 
+   *
    * @param aServiceMetadata
    *        The data about the SMP
    * @throws BadRequestFault
@@ -145,7 +159,7 @@ public final class ManageServiceMetadataServiceCaller {
    * @throws InternalErrorFault
    *         An internal error happened on the server.
    * @throws UnauthorizedFault
-   *         The username or password was not correct.
+   *         The user name or password was not correct.
    */
   public void create (@Nonnull final ServiceMetadataPublisherServiceType aServiceMetadata) throws BadRequestFault,
                                                                                           InternalErrorFault,
@@ -157,12 +171,12 @@ public final class ManageServiceMetadataServiceCaller {
                     "' and logical address '" +
                     aServiceMetadata.getPublisherEndpoint ().getLogicalAddress () +
                     "'");
-    _createPort ().create (aServiceMetadata);
+    createWSPort ().create (aServiceMetadata);
   }
 
   /**
    * Updates the specified service metadata given by the publisher id.
-   * 
+   *
    * @param sSMPID
    *        The publisher id
    * @param sSMPAddressPhysical
@@ -193,7 +207,7 @@ public final class ManageServiceMetadataServiceCaller {
 
   /**
    * Updates the specified service metadata.
-   * 
+   *
    * @param aServiceMetadata
    *        The service metadata instance to update.
    * @throws InternalErrorFault
@@ -216,12 +230,12 @@ public final class ManageServiceMetadataServiceCaller {
                     "' and logical address '" +
                     aServiceMetadata.getPublisherEndpoint ().getLogicalAddress () +
                     "'");
-    _createPort ().update (aServiceMetadata);
+    createWSPort ().update (aServiceMetadata);
   }
 
   /**
    * Deletes the service metadata given by the publisher id.
-   * 
+   *
    * @param sSMPID
    *        The publisher id of the service metadata to delete.
    * @throws InternalErrorFault
@@ -235,12 +249,12 @@ public final class ManageServiceMetadataServiceCaller {
    */
   public void delete (final String sSMPID) throws InternalErrorFault, NotFoundFault, UnauthorizedFault, BadRequestFault {
     s_aLogger.info ("Trying to delete SMP '" + sSMPID + "'");
-    _createPort ().delete (sSMPID);
+    createWSPort ().delete (sSMPID);
   }
 
   /**
    * Returns information about the publisher given by the publisher id.
-   * 
+   *
    * @param sSMPID
    *        The publisher id of the service metadata to read.
    * @return The service metadata given by the id.
@@ -264,7 +278,7 @@ public final class ManageServiceMetadataServiceCaller {
 
   /**
    * Returns information about the publisher given by the publisher id.
-   * 
+   *
    * @param aSMPService
    *        The publisher id is read from this service metadata object.
    * @return The service metadata given by the id.
@@ -282,6 +296,6 @@ public final class ManageServiceMetadataServiceCaller {
                                                                                                                   UnauthorizedFault,
                                                                                                                   BadRequestFault {
     s_aLogger.info ("Trying to read SMP '" + aSMPService.getServiceMetadataPublisherID () + "'");
-    return _createPort ().read (aSMPService);
+    return createWSPort ().read (aSMPService);
   }
 }
