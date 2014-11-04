@@ -228,15 +228,30 @@ public final class PeppolDocumentTypeIdentifierParts implements IPeppolDocumentT
                                           sSubTypeIdentifier +
                                           "' is missing the separation between customization ID and version!");
     final String sVersion = aSubTypeParts[1];
+    if (StringHelper.hasNoText (sVersion))
+      throw new IllegalArgumentException ("The sub type identifier '" +
+                                          sSubTypeIdentifier +
+                                          "' contains an empty version!");
 
-    final String [] aCustomizationIDs = RegExHelper.getSplitToArray (aSubTypeParts[0], TRANSACTIONID_SEPARATOR, 2);
+    final String sCustomizationID = aSubTypeParts[0];
+    final String [] aCustomizationIDs = RegExHelper.getSplitToArray (sCustomizationID, TRANSACTIONID_SEPARATOR, 2);
     if (aCustomizationIDs.length < 2)
       throw new IllegalArgumentException ("The sub type identifier '" +
                                           sSubTypeIdentifier +
                                           "' is missing the separation between transaction ID and the extensions!");
 
     final String sTransactionID = aCustomizationIDs[0];
+    if (StringHelper.hasNoText (sTransactionID))
+      throw new IllegalArgumentException ("The customization ID '" +
+                                          sCustomizationID +
+                                          "' contains an empty transaction ID!");
+
     final String sExtensionIDs = aCustomizationIDs[1];
+    if (StringHelper.hasNoText (sExtensionIDs))
+      throw new IllegalArgumentException ("The customization ID '" +
+                                          sCustomizationID +
+                                          "' contains an empty customization ID!");
+
     final List <String> aExtensionIDs = StringHelper.getExploded (EXTENSION_SEPARATOR, sExtensionIDs);
     return new PeppolDocumentTypeIdentifierParts (aBusdoxParts, sTransactionID, aExtensionIDs, sVersion);
   }

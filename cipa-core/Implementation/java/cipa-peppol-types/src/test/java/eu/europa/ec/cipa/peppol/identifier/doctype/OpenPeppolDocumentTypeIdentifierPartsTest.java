@@ -45,9 +45,6 @@ import org.junit.Test;
 
 import com.helger.commons.collections.ContainerHelper;
 
-import eu.europa.ec.cipa.peppol.identifier.doctype.IPeppolDocumentTypeIdentifierParts;
-import eu.europa.ec.cipa.peppol.identifier.doctype.OpenPeppolDocumentTypeIdentifierParts;
-
 /**
  * Test class for class {@link OpenPeppolDocumentTypeIdentifierParts}.
  *
@@ -77,42 +74,49 @@ public final class OpenPeppolDocumentTypeIdentifierPartsTest {
 
     try {
       // No version separator
-      OpenPeppolDocumentTypeIdentifierParts.extractFromString ("root::local:extended:subtype");
+      OpenPeppolDocumentTypeIdentifierParts.extractFromString ("root::local##subtype");
+      fail ();
+    }
+    catch (final IllegalArgumentException ex) {}
+
+    try {
+      // Empty version
+      OpenPeppolDocumentTypeIdentifierParts.extractFromString ("root::local##subtype::");
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
 
     try {
       // No transaction separator
-      OpenPeppolDocumentTypeIdentifierParts.extractFromString ("root::local:extended:subtype::");
-      fail ();
-    }
-    catch (final IllegalArgumentException ex) {}
-
-    try {
-      // No transaction separator
-      OpenPeppolDocumentTypeIdentifierParts.extractFromString ("root::local:extended:subtype::version");
+      OpenPeppolDocumentTypeIdentifierParts.extractFromString ("root::local##subtype::version");
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
 
     try {
       // No transactions
-      OpenPeppolDocumentTypeIdentifierParts.extractFromString ("root::local:extended:subtype:#::version");
+      OpenPeppolDocumentTypeIdentifierParts.extractFromString ("root::local##subtype::version");
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
 
     try {
-      // empty transaction (between ext2 and ext3)
-      OpenPeppolDocumentTypeIdentifierParts.extractFromString ("root::local:extended:subtype:#ext1#ext2##ext3::version");
+      // empty transaction (before :extended:)
+      OpenPeppolDocumentTypeIdentifierParts.extractFromString ("root::local##:extended:foo::version");
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
 
     try {
-      // empty transaction ID
-      OpenPeppolDocumentTypeIdentifierParts.extractFromString ("root::local##:#ext1#ext2::version");
+      // empty customization ID (after :extended:)
+      OpenPeppolDocumentTypeIdentifierParts.extractFromString ("root::local##bar:extended::version");
+      fail ();
+    }
+    catch (final IllegalArgumentException ex) {}
+
+    try {
+      // empty customization ID and transaction
+      OpenPeppolDocumentTypeIdentifierParts.extractFromString ("root::local##:extended::extended::version");
       fail ();
     }
     catch (final IllegalArgumentException ex) {}
