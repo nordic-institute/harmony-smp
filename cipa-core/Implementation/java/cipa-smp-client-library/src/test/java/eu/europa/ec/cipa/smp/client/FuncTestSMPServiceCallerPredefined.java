@@ -63,27 +63,35 @@ import eu.europa.ec.cipa.peppol.sml.ESML;
  */
 public final class FuncTestSMPServiceCallerPredefined {
   private static IReadonlyDocumentTypeIdentifier DOCUMENT_INVOICE = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A;
+  private static IReadonlyDocumentTypeIdentifier DOCUMENT_INVOICE_V20 = EPredefinedDocumentTypeIdentifier.INVOICE_T010_BIS4A_V20;
   private static IReadonlyProcessIdentifier PROCESS_BII04 = EPredefinedProcessIdentifier.BIS4A;
+  private static IReadonlyProcessIdentifier PROCESS_BII04_V20 = EPredefinedProcessIdentifier.BIS4A_V20;
 
+  private static IReadonlyParticipantIdentifier PI_AT_Test = SimpleParticipantIdentifier.createWithDefaultScheme ("9915:test");
   private static IReadonlyParticipantIdentifier PI_alfa1lab = SimpleParticipantIdentifier.createWithDefaultScheme ("9902:DK28158815");
-  private static IReadonlyParticipantIdentifier PI_helseVest = SimpleParticipantIdentifier.createWithDefaultScheme ("9908:983974724");
 
   @Test
   public void testGetEndpointAddress () throws Throwable {
     String sEndpointAddress;
 
     try {
+      sEndpointAddress = new SMPServiceCaller (PI_AT_Test, ESML.PRODUCTION).getEndpointAddress (PI_AT_Test,
+                                                                                                DOCUMENT_INVOICE,
+                                                                                                PROCESS_BII04,
+                                                                                                ESMPTransportProfile.TRANSPORT_PROFILE_START);
+      assertEquals ("https://test.erb.gv.at/accessPointService", sEndpointAddress);
+
+      sEndpointAddress = new SMPServiceCaller (PI_AT_Test, ESML.PRODUCTION).getEndpointAddress (PI_AT_Test,
+                                                                                                DOCUMENT_INVOICE_V20,
+                                                                                                PROCESS_BII04_V20,
+                                                                                                ESMPTransportProfile.TRANSPORT_PROFILE_AS2);
+      assertEquals ("https://test.erb.gv.at/as2", sEndpointAddress);
+
       sEndpointAddress = new SMPServiceCaller (PI_alfa1lab, ESML.PRODUCTION).getEndpointAddress (PI_alfa1lab,
                                                                                                  DOCUMENT_INVOICE,
                                                                                                  PROCESS_BII04,
                                                                                                  ESMPTransportProfile.TRANSPORT_PROFILE_START);
       assertEquals ("https://start-ap.alfa1lab.com:443/accessPointService", sEndpointAddress);
-
-      sEndpointAddress = new SMPServiceCaller (PI_helseVest, ESML.PRODUCTION).getEndpointAddress (PI_helseVest,
-                                                                                                  DOCUMENT_INVOICE,
-                                                                                                  PROCESS_BII04,
-                                                                                                  ESMPTransportProfile.TRANSPORT_PROFILE_START);
-      assertEquals ("https://peppolap.ibxplatform.net:8443/accessPointService", sEndpointAddress);
     }
     catch (final ClientHandlerException ex) {
       // Happens when being offline!
@@ -96,19 +104,26 @@ public final class FuncTestSMPServiceCallerPredefined {
     X509Certificate aEndpointCertificate;
 
     try {
+      aEndpointCertificate = new SMPServiceCaller (PI_AT_Test, ESML.PRODUCTION).getEndpointCertificate (PI_AT_Test,
+                                                                                                        DOCUMENT_INVOICE,
+                                                                                                        PROCESS_BII04,
+                                                                                                        ESMPTransportProfile.TRANSPORT_PROFILE_START);
+      assertNotNull (aEndpointCertificate);
+      assertEquals ("78329019474768541616080482084586682241", aEndpointCertificate.getSerialNumber ().toString ());
+
+      aEndpointCertificate = new SMPServiceCaller (PI_AT_Test, ESML.PRODUCTION).getEndpointCertificate (PI_AT_Test,
+                                                                                                        DOCUMENT_INVOICE_V20,
+                                                                                                        PROCESS_BII04_V20,
+                                                                                                        ESMPTransportProfile.TRANSPORT_PROFILE_AS2);
+      assertNotNull (aEndpointCertificate);
+      assertEquals ("78329019474768541616080482084586682241", aEndpointCertificate.getSerialNumber ().toString ());
+
       aEndpointCertificate = new SMPServiceCaller (PI_alfa1lab, ESML.PRODUCTION).getEndpointCertificate (PI_alfa1lab,
                                                                                                          DOCUMENT_INVOICE,
                                                                                                          PROCESS_BII04,
                                                                                                          ESMPTransportProfile.TRANSPORT_PROFILE_START);
       assertNotNull (aEndpointCertificate);
-      assertEquals ("26596158403896804150415214044400823812", aEndpointCertificate.getSerialNumber ().toString ());
-
-      aEndpointCertificate = new SMPServiceCaller (PI_helseVest, ESML.PRODUCTION).getEndpointCertificate (PI_helseVest,
-                                                                                                          DOCUMENT_INVOICE,
-                                                                                                          PROCESS_BII04,
-                                                                                                          ESMPTransportProfile.TRANSPORT_PROFILE_START);
-      assertNotNull (aEndpointCertificate);
-      assertEquals ("8332247145251202016784644749780168666", aEndpointCertificate.getSerialNumber ().toString ());
+      assertEquals ("56025519523792163866580293261663838570", aEndpointCertificate.getSerialNumber ().toString ());
     }
     catch (final ClientHandlerException ex) {
       // Happens when being offline!

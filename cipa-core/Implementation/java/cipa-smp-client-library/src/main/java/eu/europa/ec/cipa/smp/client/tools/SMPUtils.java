@@ -54,6 +54,11 @@ import eu.europa.ec.cipa.busdox.identifier.IReadonlyIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 
+/**
+ * SMP utilities mainly for debugging purposes
+ *
+ * @author PEPPOL.AT, BRZ, Philip Helger
+ */
 @Immutable
 public final class SMPUtils {
   private SMPUtils () {}

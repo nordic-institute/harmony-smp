@@ -94,6 +94,7 @@ import eu.europa.ec.cipa.smp.client.exception.UnknownException;
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
+@SuppressWarnings ("deprecation")
 public class SMPServiceCallerReadonly {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SMPServiceCallerReadonly.class);
 
@@ -110,7 +111,7 @@ public class SMPServiceCallerReadonly {
   private static final ConfiguredDNSMapper s_aDNSMapper = new ConfiguredDNSMapper (ConfigFile.getInstance ());
 
   private final URI m_aSMPHost;
-  protected final WebResource m_aWebResource;
+  private final WebResource m_aWebResource;
   private final WebResource m_aWebResourceWithSignatureCheck;
 
   @Nonnull
@@ -227,6 +228,24 @@ public class SMPServiceCallerReadonly {
   }
 
   /**
+   * @return The Jersey WebResource without signature check. Never
+   *         <code>null</code>.
+   */
+  @Nonnull
+  public WebResource getWebResource () {
+    return m_aWebResource;
+  }
+
+  /**
+   * @return The Jersey WebResource with signature check. Never
+   *         <code>null</code>.
+   */
+  @Nonnull
+  public WebResource getWebResourceWithSignatureCheck () {
+    return m_aWebResourceWithSignatureCheck;
+  }
+
+  /**
    * Convert the passed generic HTTP exception into a more specific exception.
    *
    * @param ex
@@ -261,7 +280,7 @@ public class SMPServiceCallerReadonly {
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
     if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("_getServiceGroupReferenceList from " + aFullResource.getURI ());
+      s_aLogger.debug ("getServiceGroupReferenceList from " + aFullResource.getURI ());
 
     try {
       final Builder aBuilderWithAuth = aFullResource.header (HttpHeaders.AUTHORIZATION, aCredentials.getRequestValue ());
@@ -324,7 +343,7 @@ public class SMPServiceCallerReadonly {
     ValueEnforcer.notNull (aFullResource, "FullResource");
 
     if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("_getCompleteServiceGroup from " + aFullResource.getURI ());
+      s_aLogger.debug ("getCompleteServiceGroup from " + aFullResource.getURI ());
 
     try {
       return aFullResource.get (TYPE_COMPLETESERVICEGROUP).getValue ();
@@ -483,7 +502,7 @@ public class SMPServiceCallerReadonly {
     ValueEnforcer.notNull (aFullResource, "FullResource");
 
     if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("_getServiceGroup from " + aFullResource.getURI ());
+      s_aLogger.debug ("getServiceGroup from " + aFullResource.getURI ());
 
     try {
       return aFullResource.get (TYPE_SERVICEGROUP).getValue ();
@@ -758,13 +777,18 @@ public class SMPServiceCallerReadonly {
    * @param eTransportProfile
    *        The required transport profile to be used. May not be
    *        <code>null</code>.
-   * @return <code>null</code> if no matchiong endpoint was found
+   * @return <code>null</code> if no matching endpoint was found
    */
   @Nullable
   public EndpointType getEndpoint (@Nonnull final SignedServiceMetadataType aSignedServiceMetadata,
                                    @Nonnull final IReadonlyProcessIdentifier aProcessID,
                                    @Nonnull final ESMPTransportProfile eTransportProfile) {
     ValueEnforcer.notNull (aSignedServiceMetadata, "SignedServiceMetadata");
+    ValueEnforcer.notNull (aSignedServiceMetadata.getServiceMetadata (), "SignedServiceMetadata.ServiceMetadata");
+    ValueEnforcer.notNull (aSignedServiceMetadata.getServiceMetadata ().getServiceInformation (),
+                           "SignedServiceMetadata.ServiceMetadata.ServiceInformation");
+    ValueEnforcer.notNull (aSignedServiceMetadata.getServiceMetadata ().getServiceInformation ().getProcessList (),
+                           "SignedServiceMetadata.ServiceMetadata.ServiceInformation.ProcessList");
     ValueEnforcer.notNull (aProcessID, "ProcessID");
     ValueEnforcer.notNull (eTransportProfile, "TransportProfile");
 

@@ -73,7 +73,7 @@ import eu.europa.ec.cipa.smp.client.exception.UnknownException;
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class SMPServiceCaller extends SMPServiceCallerReadonly {
+public class SMPServiceCaller extends SMPServiceCallerReadonly {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SMPServiceCaller.class);
 
   // Members - free to change from here on
@@ -293,17 +293,16 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
   public void saveServiceRegistration (@Nonnull final ServiceMetadataType aServiceMetadata,
                                        @Nonnull final BasicAuthClientCredentials aCredentials) throws Exception {
     ValueEnforcer.notNull (aServiceMetadata, "ServiceMetadata");
+    ValueEnforcer.notNull (aServiceMetadata.getServiceInformation (), "ServiceMetadata.ServiceInformation");
+    ValueEnforcer.notNull (aServiceMetadata.getServiceInformation ().getParticipantIdentifier (),
+                           "ServiceMetadata.ServiceInformation.ParticipantIdentifier");
+    ValueEnforcer.notNull (aServiceMetadata.getServiceInformation ().getDocumentIdentifier (),
+                           "ServiceMetadata.ServiceInformation.DocumentIdentifier");
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
     final ServiceInformationType aServiceInformation = aServiceMetadata.getServiceInformation ();
-    if (aServiceInformation == null)
-      throw new IllegalArgumentException ("ServiceMetadata does not contain serviceInformation");
     final IReadonlyParticipantIdentifier aServiceGroupID = aServiceInformation.getParticipantIdentifier ();
-    if (aServiceGroupID == null)
-      throw new IllegalArgumentException ("ServiceInformation does not contain serviceGroupID");
     final IReadonlyDocumentTypeIdentifier aDocumentTypeID = aServiceInformation.getDocumentIdentifier ();
-    if (aDocumentTypeID == null)
-      throw new IllegalArgumentException ("ServiceInformation does not contain documentTypeID");
 
     final WebResource aFullResource = getServiceRegistrationResource (aServiceGroupID, aDocumentTypeID);
     saveServiceRegistration (aFullResource, aServiceMetadata, aCredentials);
@@ -315,7 +314,7 @@ public final class SMPServiceCaller extends SMPServiceCallerReadonly {
     ValueEnforcer.notNull (aCredentials, "Credentials");
 
     if (s_aLogger.isDebugEnabled ())
-      s_aLogger.debug ("_deleteServiceRegistration from " + aFullResource.getURI ());
+      s_aLogger.debug ("deleteServiceRegistration from " + aFullResource.getURI ());
 
     try {
       final Builder aBuilderWithAuth = aFullResource.header (HttpHeaders.AUTHORIZATION, aCredentials.getRequestValue ());
