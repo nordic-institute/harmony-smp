@@ -7,13 +7,13 @@
     <relativePath>../cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-start-server</artifactId>
-  <version>2.2.3</version>
+  <version>2.2.4-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>cipa-start-server</name>
 
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/tags/2.2.3/cipa-start-server</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/tags/2.2.3/cipa-start-server</developerConnection>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-start-server</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-start-server</developerConnection>
   </scm>
   
   <repositories>
