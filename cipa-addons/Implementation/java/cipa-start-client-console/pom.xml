@@ -7,12 +7,12 @@
     <relativePath>../../../../cipa-core/Implementation/java/cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-start-client-console</artifactId>
-  <version>2.2.3-SNAPSHOT</version>
+  <version>2.2.3</version>
   <name>cipa-start-client-console</name>
 
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-start-client-console</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-start-client-console</developerConnection>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/tags/2.2.3/cipa-start-client-console</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/tags/2.2.3/cipa-start-client-console</developerConnection>
   </scm>
 
   <repositories>
