@@ -55,6 +55,7 @@ import com.helger.commons.mock.PHTestUtils;
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
+@Deprecated
 public final class MappedDNSHostTest {
   @Test
   public void testCtor () {

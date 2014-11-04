@@ -50,7 +50,7 @@ import com.helger.commons.GlobalDebug;
 
 /**
  * A trust manager that accepts all certificates.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class DoNothingTrustManager implements X509TrustManager {
@@ -63,6 +63,10 @@ public final class DoNothingTrustManager implements X509TrustManager {
 
   public DoNothingTrustManager (final boolean bDebug) {
     m_bDebug = bDebug;
+  }
+
+  public boolean isDebug () {
+    return m_bDebug;
   }
 
   @Nullable

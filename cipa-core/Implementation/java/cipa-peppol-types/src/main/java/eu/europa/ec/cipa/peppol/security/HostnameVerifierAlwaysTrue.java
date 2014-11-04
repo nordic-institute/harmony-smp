@@ -47,7 +47,7 @@ import com.helger.commons.GlobalDebug;
 
 /**
  * Implementation of HostnameVerifier always returning <code>true</code>.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class HostnameVerifierAlwaysTrue implements HostnameVerifier {
@@ -61,6 +61,10 @@ public final class HostnameVerifierAlwaysTrue implements HostnameVerifier {
 
   public HostnameVerifierAlwaysTrue (final boolean bDebug) {
     m_bDebug = bDebug;
+  }
+
+  public boolean isDebug () {
+    return m_bDebug;
   }
 
   public boolean verify (final String sURLHostname, final SSLSession aSession) {

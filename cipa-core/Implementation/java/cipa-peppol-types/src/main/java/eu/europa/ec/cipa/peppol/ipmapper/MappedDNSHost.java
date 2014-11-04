@@ -51,8 +51,11 @@ import com.helger.commons.string.StringParser;
 import com.helger.commons.string.ToStringGenerator;
 
 /**
+ * This class is no longer needed and will be removed in the next major release.
+ *
  * @author PEPPOL.AT, BRZ, Andreas Haberl
  */
+@Deprecated
 @Immutable
 public final class MappedDNSHost {
   private final String m_sHost;
@@ -60,7 +63,7 @@ public final class MappedDNSHost {
 
   /**
    * Constructor with no port
-   * 
+   *
    * @param sHost
    *        The host name
    */
@@ -70,7 +73,7 @@ public final class MappedDNSHost {
 
   /**
    * Constructor with host and port
-   * 
+   *
    * @param sHost
    *        Host name
    * @param nPort
@@ -132,12 +135,12 @@ public final class MappedDNSHost {
   }
 
   @Override
-  public boolean equals (final Object obj) {
-    if (obj == this)
+  public boolean equals (final Object o) {
+    if (o == this)
       return true;
-    if (!(obj instanceof MappedDNSHost))
+    if (o == null || !getClass ().equals (o.getClass ()))
       return false;
-    final MappedDNSHost other = (MappedDNSHost) obj;
+    final MappedDNSHost other = (MappedDNSHost) o;
     return m_sHost.equals (other.m_sHost) && EqualsUtils.equals (m_aPort, other.m_aPort);
   }
 
@@ -154,7 +157,7 @@ public final class MappedDNSHost {
   /**
    * Create a socket part from a string having the layout "host:port" or "host"
    * only. Port must be numeric and must be a valid port number.
-   * 
+   *
    * @param sSocketString
    *        The socket string to be parsed.
    * @return The {@link MappedDNSHost} to be used.

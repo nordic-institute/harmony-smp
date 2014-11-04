@@ -53,9 +53,12 @@ import com.helger.commons.string.StringHelper;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 
 /**
+ * This class is no longer needed and will be removed in the next major release.
+ *
  * @author PEPPOL.AT, BRZ, Andreas Haberl
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
+@Deprecated
 public class ConfiguredDNSMapper {
   /**
    * The name of the configuration property representing a mapping of external

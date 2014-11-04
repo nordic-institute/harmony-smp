@@ -51,6 +51,7 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
  *
  * @author PEPPOL.AT, BRZ, Andreas Haberl
  */
+@Deprecated
 public final class ConfiguredDNSMapperTest {
   /**
    * Test method for
