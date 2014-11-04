@@ -64,7 +64,7 @@ import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
 
 /**
  * The ID of a single process.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Embeddable
@@ -119,9 +119,7 @@ public class DBProcessID implements Serializable {
     m_sDocumentTypeIdentifierScheme = sDocumentIdentifierScheme;
   }
 
-  @Column (name = "documentIdentifier",
-           nullable = false,
-           length = CIdentifier.MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH)
+  @Column (name = "documentIdentifier", nullable = false, length = CIdentifier.MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH)
   public String getDocumentIdentifier () {
     return m_sDocumentTypeIdentifier;
   }
@@ -179,12 +177,12 @@ public class DBProcessID implements Serializable {
   }
 
   @Override
-  public boolean equals (final Object other) {
-    if (this == other)
+  public boolean equals (final Object o) {
+    if (this == o)
       return true;
-    if (!(other instanceof DBProcessID))
+    if (o == null || !getClass ().equals (o.getClass ()))
       return false;
-    final DBProcessID rhs = (DBProcessID) other;
+    final DBProcessID rhs = (DBProcessID) o;
     return EqualsUtils.equals (m_sParticipantIdentifierScheme, rhs.m_sParticipantIdentifierScheme) &&
            EqualsUtils.equals (m_sParticipantIdentifier, rhs.m_sParticipantIdentifier) &&
            EqualsUtils.equals (m_sDocumentTypeIdentifierScheme, rhs.m_sDocumentTypeIdentifierScheme) &&

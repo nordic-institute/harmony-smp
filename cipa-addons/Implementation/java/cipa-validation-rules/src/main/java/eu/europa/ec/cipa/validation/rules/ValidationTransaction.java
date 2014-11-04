@@ -51,7 +51,7 @@ import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
  * interface. It represents a single "validation transaction" consisting of a
  * syntax binding (see {@link EValidationSyntaxBinding}) and a CEN BII
  * transaction.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -61,7 +61,7 @@ public class ValidationTransaction implements IValidationTransaction {
 
   /**
    * Constructor
-   * 
+   *
    * @param aSyntaxBinding
    *        Syntax binding to use. May not be <code>null</code>.
    * @param eTransaction
@@ -95,7 +95,7 @@ public class ValidationTransaction implements IValidationTransaction {
   public boolean equals (final Object o) {
     if (o == this)
       return true;
-    if (!(o instanceof ValidationTransaction))
+    if (o == null || !getClass ().equals (o.getClass ()))
       return false;
     final ValidationTransaction rhs = (ValidationTransaction) o;
     return m_aSyntaxBinding.equals (rhs.m_aSyntaxBinding) && m_eTransaction.equals (rhs.m_eTransaction);
@@ -116,7 +116,7 @@ public class ValidationTransaction implements IValidationTransaction {
   /**
    * This is a shortcut method for creating a transaction using the UBL syntax
    * binding.
-   * 
+   *
    * @param eTransaction
    *        The transaction to use. May not be <code>null</code>.
    * @return The non-<code>null</code> object.

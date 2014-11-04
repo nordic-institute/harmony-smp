@@ -56,7 +56,7 @@ import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifi
 
 /**
  * ID for the ownership
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Embeddable
@@ -114,12 +114,12 @@ public class DBOwnershipID implements Serializable {
   }
 
   @Override
-  public boolean equals (final Object other) {
-    if (this == other)
+  public boolean equals (final Object o) {
+    if (this == o)
       return true;
-    if (!(other instanceof DBOwnershipID))
+    if (o == null || !getClass ().equals (o.getClass ()))
       return false;
-    final DBOwnershipID rhs = (DBOwnershipID) other;
+    final DBOwnershipID rhs = (DBOwnershipID) o;
     return EqualsUtils.equals (m_sUsername, rhs.m_sUsername) &&
            EqualsUtils.equals (m_sParticipantIdentifierScheme, rhs.m_sParticipantIdentifierScheme) &&
            EqualsUtils.equals (m_sParticipantIdentifier, rhs.m_sParticipantIdentifier);

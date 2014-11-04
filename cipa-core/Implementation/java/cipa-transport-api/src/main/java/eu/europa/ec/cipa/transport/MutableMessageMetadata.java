@@ -55,7 +55,7 @@ import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
 /**
  * A MessageMetadata object is used to storage the message addressing data
  * incoming in the SOAP header through a SOAPHeaderObject object.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @NotThreadSafe
@@ -83,7 +83,7 @@ public final class MutableMessageMetadata implements IMessageMetadata {
   /**
    * Set the values of the MessageMetadata object received in a SOAPHeaderObject
    * object.
-   * 
+   *
    * @param sMessageID
    *        message ID
    * @param sChannelID
@@ -117,7 +117,7 @@ public final class MutableMessageMetadata implements IMessageMetadata {
 
   /**
    * Get message identifier value.
-   * 
+   *
    * @return the messageId the value of the message identifier.
    */
   @Nullable
@@ -189,7 +189,7 @@ public final class MutableMessageMetadata implements IMessageMetadata {
   public boolean equals (final Object o) {
     if (o == this)
       return true;
-    if (!(o instanceof MutableMessageMetadata))
+    if (o == null || !getClass ().equals (o.getClass ()))
       return false;
     final MutableMessageMetadata rhs = (MutableMessageMetadata) o;
     return EqualsUtils.equals (m_sMessageID, rhs.m_sMessageID) &&

@@ -56,7 +56,7 @@ import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifi
 
 /**
  * ServiceGroupId == participant ID
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Embeddable
@@ -101,7 +101,7 @@ public class DBServiceGroupID implements Serializable {
   public boolean equals (final Object o) {
     if (this == o)
       return true;
-    if (!(o instanceof DBServiceGroupID))
+    if (o == null || !getClass ().equals (o.getClass ()))
       return false;
     final DBServiceGroupID rhs = (DBServiceGroupID) o;
     return EqualsUtils.equals (m_sParticipantIdentifierScheme, rhs.m_sParticipantIdentifierScheme) &&
