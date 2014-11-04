@@ -219,8 +219,8 @@
 
 
 	<!--RULE -->
-<xsl:template match="//cac:AccountingSupplierParty/cac:Party" mode="M5" priority="1005">
-    <svrl:fired-rule context="//cac:AccountingSupplierParty/cac:Party" />
+<xsl:template match="/ubl:Invoice/cac:AccountingSupplierParty/cac:Party" mode="M5" priority="1005">
+    <svrl:fired-rule context="/ubl:Invoice/cac:AccountingSupplierParty/cac:Party" />
 
 		<!--ASSERT -->
 <xsl:choose>
@@ -343,8 +343,8 @@
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:AdditionalDocumentReference" mode="M5" priority="1003">
-    <svrl:fired-rule context="//cac:AdditionalDocumentReference" />
+<xsl:template match="/ubl:Invoice/cac:AdditionalDocumentReference" mode="M5" priority="1003">
+    <svrl:fired-rule context="/ubl:Invoice/cac:AdditionalDocumentReference" />
 
 		<!--ASSERT -->
 <xsl:choose>
@@ -377,8 +377,8 @@
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:PaymentMeans" mode="M5" priority="1002">
-    <svrl:fired-rule context="//cac:PaymentMeans" />
+<xsl:template match="/ubl:Invoice/cac:PaymentMeans" mode="M5" priority="1002">
+    <svrl:fired-rule context="/ubl:Invoice/cac:PaymentMeans" />
 
 		<!--ASSERT -->
 <xsl:choose>
@@ -431,8 +431,8 @@
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:PaymentTerms" mode="M5" priority="1000">
-    <svrl:fired-rule context="//cac:PaymentTerms" />
+<xsl:template match="/ubl:Invoice/cac:PaymentTerms" mode="M5" priority="1000">
+    <svrl:fired-rule context="/ubl:Invoice/cac:PaymentTerms" />
 
 		<!--ASSERT -->
 <xsl:choose>

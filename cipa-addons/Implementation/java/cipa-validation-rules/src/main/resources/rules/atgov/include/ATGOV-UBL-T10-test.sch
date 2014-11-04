@@ -58,9 +58,9 @@
   <param name="ATGOV-T10-R015" value="((cbc:LineExtensionAmount/text() >= -999999999999.99 and cbc:LineExtensionAmount/text() &lt;= 999999999999.99) and (//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT')) or not ((//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT'))" />
   <param name="ATGOV-T10-R016" value="((cac:LegalMonetaryTotal/cbc:PayableAmount/text() &lt;= 999999999.99) and (//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT')) or not ((//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT'))" />
   <param name="Invoice" value="/ubl:Invoice" />
-  <param name="Payment_Means" value="//cac:PaymentMeans" />
-  <param name="Supplier" value="//cac:AccountingSupplierParty/cac:Party" />
-  <param name="Invoice_Line" value="//cac:InvoiceLine" />
-  <param name="Payment_Terms" value="//cac:PaymentTerms" />
-  <param name="Attachments" value="//cac:AdditionalDocumentReference" />
+  <param name="Payment_Means" value="/ubl:Invoice/cac:PaymentMeans" />
+  <param name="Supplier" value="/ubl:Invoice/cac:AccountingSupplierParty/cac:Party" />
+  <param name="Invoice_Line" value="/ubl:Invoice/cac:InvoiceLine" />
+  <param name="Payment_Terms" value="/ubl:Invoice/cac:PaymentTerms" />
+  <param name="Attachments" value="/ubl:Invoice/cac:AdditionalDocumentReference" />
 </pattern>
