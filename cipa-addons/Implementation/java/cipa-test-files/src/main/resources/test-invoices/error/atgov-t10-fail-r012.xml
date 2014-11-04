@@ -84,7 +84,7 @@
       <cac:Contact>
         <cbc:Telephone>+431 512 9141</cbc:Telephone>
         <cbc:Telefax>+431 512 9141 51</cbc:Telefax>
-        <cbc:ElectronicMail>buero@42virtual.com</cbc:ElectronicMail>
+        <cbc:ElectronicMail>contact@example.org</cbc:ElectronicMail>
       </cac:Contact>
     </cac:Party>
   </cac:AccountingSupplierParty>
