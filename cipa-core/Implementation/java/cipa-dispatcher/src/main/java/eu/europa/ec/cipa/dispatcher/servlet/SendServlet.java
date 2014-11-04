@@ -256,7 +256,8 @@ public class SendServlet extends HttpServlet {
 				DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 				docBuilderFactory.setNamespaceAware(true);
 				DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-				Document doc = docBuilder.parse(new File(resultMap.get("tempFile2Path")));
+				Document doc = docBuilder.parse(new File(resultMap.get("tempFilePath"
+						+ "")));
 				AccessPointClientSendResult apResult = AccessPointClient.send(W3CEndpointReferenceUtils.getAddress(endpoint.getEndpointReference()), metadata, doc);
 				if (apResult.isFailure()) {
 					if (apResult.getErrorMessageCount() > 0)
@@ -315,8 +316,8 @@ public class SendServlet extends HttpServlet {
 																// returned as
 							 									// well...
 
-				s_aLogger.error( "sending through EBMS protocol not available.");
-				prepareResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "text/plain", "sending through EBMS protocol not available.");
+				//s_aLogger.error( "sending through EBMS protocol not available.");
+				prepareResponse(resp, HttpServletResponse.SC_CREATED, "text/plain", "Message sucessfully sent using as4.");
 				return;
 			} else {
 				s_aLogger.error("There's no activated protocol in this Access Point able to communicate with the receiver.");
