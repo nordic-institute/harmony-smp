@@ -21,8 +21,7 @@
 	replace them with the notice and other provisions required by the EUPL License. 
 	If you do not delete the provisions above, a recipient may use your version 
 	of this file under either the MPL or the EUPL License. -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>eu.europa.ec.cipa</groupId>
@@ -31,13 +30,13 @@
 		<relativePath>../cipa-parent-pom/pom.xml</relativePath>
 	</parent>
 	<artifactId>cipa-peppol-types</artifactId>
-	<version>2.2.3-SNAPSHOT</version>
+	<version>2.2.3</version>
 	<packaging>bundle</packaging>
 	<name>cipa-peppol-types</name>
 
 	<scm>
-		<connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-peppol-types</connection>
-		<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-peppol-types</developerConnection>
+		<connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/tags/2.2.3/cipa-peppol-types</connection>
+		<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/tags/2.2.3/cipa-peppol-types</developerConnection>
 	</scm>
 
 	<repositories>
