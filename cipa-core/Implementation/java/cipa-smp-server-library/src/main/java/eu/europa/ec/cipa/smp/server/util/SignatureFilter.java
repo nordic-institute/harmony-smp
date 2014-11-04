@@ -59,7 +59,7 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 /**
  * This class adds a XML DSIG to successful GET's for SignedServiceMetadata
  * objects.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class SignatureFilter implements ContainerResponseFilter {
@@ -140,6 +140,7 @@ public final class SignatureFilter implements ContainerResponseFilter {
       if (sRequestPath.contains ("/services/") && !sRequestPath.endsWith ("/services/")) {
         if (s_aLogger.isDebugEnabled ())
           s_aLogger.debug ("Will sign response to " + sRequestPath);
+
         aResponse.setContainerResponseWriter (new SigningContainerResponseWriter (aResponse.getContainerResponseWriter (),
                                                                                   m_aKeyEntry,
                                                                                   m_aCert));

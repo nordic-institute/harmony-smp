@@ -42,7 +42,6 @@ import javax.annotation.concurrent.Immutable;
 
 import org.busdox.servicemetadata.publishing._1.ExtensionType;
 
-import com.helger.commons.annotations.VisibleForTesting;
 import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
@@ -80,7 +79,6 @@ public final class SMPDBUtils {
    * @return The RFC 1421 compliant string
    */
   @Nullable
-  @VisibleForTesting
   public static String getRFC1421CompliantString (@Nullable final String sCertificate) {
     if (StringHelper.hasNoText (sCertificate))
       return sCertificate;

@@ -49,16 +49,18 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.collections.ArrayHelper;
 import com.helger.commons.exceptions.InitializationException;
+import com.helger.datetime.config.PDTConfig;
 
 /**
  * This class is used for setting the timezone so that dates saved to the
  * database are always in UTC.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
 public final class TimeZoneCorrectorListener implements ServletContextListener {
   public static final String DEFAULT_TIMEZONE = "UTC";
+
   private static final Logger s_aLogger = LoggerFactory.getLogger (TimeZoneCorrectorListener.class);
 
   public void contextInitialized (@Nonnull final ServletContextEvent aServletContextEvent) {
@@ -69,15 +71,11 @@ public final class TimeZoneCorrectorListener implements ServletContextListener {
       throw new InitializationException (sErrorMsg);
     }
 
-    try {
-      // Set the default timezone
-      TimeZone.setDefault (TimeZone.getTimeZone (DEFAULT_TIMEZONE));
-      s_aLogger.info ("Default time zone set to '" + DEFAULT_TIMEZONE + "'");
-    }
-    catch (final Throwable t) {
+    // Set the default timezone both in joda as well as in java util Timezone
+    if (PDTConfig.setDefaultDateTimeZoneID (DEFAULT_TIMEZONE).isFailure ()) {
       final String sErrorMsg = "Failed to set default time zone to '" + DEFAULT_TIMEZONE + "'!";
-      s_aLogger.error (sErrorMsg, t);
-      throw new InitializationException (sErrorMsg, t);
+      s_aLogger.error (sErrorMsg);
+      throw new InitializationException (sErrorMsg);
     }
   }
 

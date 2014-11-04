@@ -43,6 +43,7 @@ import javax.annotation.concurrent.Immutable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.lang.GenericReflection;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
@@ -50,25 +51,36 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 /**
  * Factory for creating new DataManagers. This implementation retrieves the name
  * of the data manager from a configuration file.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
 public final class DataManagerFactory {
   private static final Logger s_aLogger = LoggerFactory.getLogger (DataManagerFactory.class);
   private static final String CONFIG_DATA_MANAGER_CLASS = "dataManager.class";
+  private static final String s_sDataManagerClassName;
   private static final IDataManager s_aInstance;
 
   static {
-    final String sDataManagerName = ConfigFile.getInstance ().getString (CONFIG_DATA_MANAGER_CLASS);
-    final IDataManager ret = GenericReflection.newInstance (sDataManagerName, IDataManager.class);
+    s_sDataManagerClassName = ConfigFile.getInstance ().getString (CONFIG_DATA_MANAGER_CLASS);
+    final IDataManager ret = GenericReflection.newInstance (s_sDataManagerClassName, IDataManager.class);
     if (ret == null)
-      throw new IllegalStateException ("Failed to instantiate IDataManager class '" + sDataManagerName + "'");
-    s_aLogger.info ("IDataManager class '" + sDataManagerName + "' instantiated");
+      throw new IllegalStateException ("Failed to instantiate IDataManager class '" + s_sDataManagerClassName + "'");
+    s_aLogger.info ("IDataManager class '" + s_sDataManagerClassName + "' instantiated");
     s_aInstance = ret;
   }
 
   private DataManagerFactory () {}
+
+  /**
+   * @return The name of the class used to instantiate the data manager. Neither
+   *         <code>null</code> nor empty.
+   */
+  @Nonnull
+  @Nonempty
+  public static String getDataManagerClassName () {
+    return s_sDataManagerClassName;
+  }
 
   /**
    * @return The same instance over and over again. Never <code>null</code>.
