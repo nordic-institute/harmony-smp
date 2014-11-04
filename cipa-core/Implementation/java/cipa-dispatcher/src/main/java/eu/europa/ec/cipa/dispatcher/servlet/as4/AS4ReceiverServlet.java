@@ -189,7 +189,13 @@ public class AS4ReceiverServlet extends HttpServlet
 			util.installNewPartnerCertificate(cert, commonName);
 			//make the request's inputstream available to be read again
 			AS4PModeService service = new AS4PModeService();
+			// create Pmode for receiving the message
+			s_aLogger.debug("creating/ updating PMODE for Sender :" + senderIdentifier+"Receiver : " + receiverIdentifier + "Process : "+processIdentifier + "Document Identifier " + documentIdentifier);
 			service.createPartner(senderIdentifier, receiverIdentifier, processIdentifier, documentIdentifier, "");
+
+			// create Pmode for sending receipt back (Only needed to apply security.)
+			s_aLogger.debug("creating/ updating PMODE for receipt for Sender :" + receiverIdentifier+"Receiver : " + senderIdentifier + "Process : "+processIdentifier + "Document Identifier " + documentIdentifier + "endpoit " + req.getRequestURI());
+			service.createPartner(receiverIdentifier,senderIdentifier , processIdentifier, documentIdentifier,  req.getRequestURI());
 			input.reset();
 			//now we finally redirect the request to the AS4 endpoint
 			forwardToAS4Endpoint(req, resp, buffer);
@@ -357,10 +363,14 @@ public class AS4ReceiverServlet extends HttpServlet
 	        OutputStream out = resp.getOutputStream();
 	        HttpResponse response = httpclient.execute(post);
 	        HttpEntity resEntity = response.getEntity();
+	       
 	        Header[] _headers = response.getAllHeaders();
 	        for (Header _header : _headers) {
-	        	resp.setHeader(_header.getName(), _header.getValue());
+	        	if (!_header.getName().equalsIgnoreCase("Content-Length") && !_header.getName().equalsIgnoreCase("Transfer-encoding")){
+	        		resp.setHeader(_header.getName(), _header.getValue());
+	        	}
 	        }
+	        
 	        resEntity.writeTo(out);
 	        out.close();
 		}
