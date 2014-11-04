@@ -55,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.annotations.OverrideOnDemand;
 
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
@@ -63,8 +64,8 @@ import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
  * This class is used for calling the service meta data interface of the SML. It
  * is used for connecting SMPs to the SML.
  *
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public class ManageServiceMetadataServiceCaller {
   private static final Logger s_aLogger = LoggerFactory.getLogger (ManageServiceMetadataServiceCaller.class);
@@ -72,10 +73,10 @@ public class ManageServiceMetadataServiceCaller {
   private final URL m_aEndpointAddress;
 
   /**
-   * Creates a service caller for the service metad ata interface
+   * Creates a service caller for the service metadata interface
    *
    * @param aSMLInfo
-   *        The SML info object
+   *        The SML info object. May not be <code>null</code>.
    */
   public ManageServiceMetadataServiceCaller (@Nonnull final ISMLInfo aSMLInfo) {
     this (aSMLInfo.getManageServiceMetaDataEndpointAddress ());
@@ -85,7 +86,8 @@ public class ManageServiceMetadataServiceCaller {
    * Creates a service caller for the service meta data interface
    *
    * @param aEndpointAddress
-   *        The address of the SML management interface.
+   *        The address of the SML management interface. May not be
+   *        <code>null</code>.
    */
   public ManageServiceMetadataServiceCaller (@Nonnull final URL aEndpointAddress) {
     ValueEnforcer.notNull (aEndpointAddress, "EndpointAddress");
@@ -107,7 +109,7 @@ public class ManageServiceMetadataServiceCaller {
   /**
    * Create the main WebService client for the specified endpoint address.
    *
-   * @return The WebService port to be used.
+   * @return The WebService port to be used. May not be <code>null</code>.
    */
   @Nonnull
   @OverrideOnDemand
@@ -122,14 +124,39 @@ public class ManageServiceMetadataServiceCaller {
   }
 
   /**
+   * Custom validation method to provide additional physical address validation.
+   * Throw an {@link IllegalArgumentException} if validation fails.
+   *
+   * @param sPhysicalAddress
+   *        The physical address to be validated. Neither <code>null</code> nor
+   *        empty.
+   */
+  @OverrideOnDemand
+  protected void validatePhysicalAddress (@Nonnull @Nonempty final String sPhysicalAddress) {}
+
+  /**
+   * Custom validation method to provide additional logical address validation.
+   * Throw an {@link IllegalArgumentException} if validation fails.
+   *
+   * @param sLogicalAddress
+   *        The logical address to be validated. Neither <code>null</code> nor
+   *        empty.
+   */
+  @OverrideOnDemand
+  protected void validateLogicalAddress (@Nonnull @Nonempty final String sLogicalAddress) {}
+
+  /**
    * Creates the service metadata for the specified user.
    *
    * @param sSMPID
-   *        The certificate UID of the SMP
+   *        The certificate UID of the SMP. May neither be <code>null</code> nor
+   *        empty.
    * @param sSMPAddressPhysical
-   *        The physical address of the SMP (Example: 198.0.0.1)
+   *        The physical address of the SMP (Example: 198.0.0.1). May neither be
+   *        <code>null</code> nor empty.
    * @param sSMPAddressLogical
-   *        The logical address of the SMP (Example: http://test.com/test.svc)
+   *        The logical address of the SMP (Example: http://smp.example.org/).
+   *        May neither be <code>null</code> nor empty.
    * @throws BadRequestFault
    *         The request was not well formed.
    * @throws InternalErrorFault
@@ -137,9 +164,19 @@ public class ManageServiceMetadataServiceCaller {
    * @throws UnauthorizedFault
    *         The user name or password was not correct.
    */
-  public void create (final String sSMPID, final String sSMPAddressPhysical, final String sSMPAddressLogical) throws BadRequestFault,
-                                                                                                             InternalErrorFault,
-                                                                                                             UnauthorizedFault {
+  public void create (@Nonnull @Nonempty final String sSMPID,
+                      @Nonnull @Nonempty final String sSMPAddressPhysical,
+                      @Nonnull @Nonempty final String sSMPAddressLogical) throws BadRequestFault,
+                                                                         InternalErrorFault,
+                                                                         UnauthorizedFault {
+    ValueEnforcer.notEmpty (sSMPID, "SMPID");
+    ValueEnforcer.notEmpty (sSMPAddressPhysical, "SMPAddressPhysical");
+    ValueEnforcer.notEmpty (sSMPAddressLogical, "SMPAddressLogical");
+
+    // Custom validations
+    validatePhysicalAddress (sSMPAddressPhysical);
+    validateLogicalAddress (sSMPAddressLogical);
+
     final ServiceMetadataPublisherServiceType aServiceMetadata = new ServiceMetadataPublisherServiceType ();
     aServiceMetadata.setServiceMetadataPublisherID (sSMPID);
     final PublisherEndpointType aEndpoint = new PublisherEndpointType ();
@@ -153,7 +190,7 @@ public class ManageServiceMetadataServiceCaller {
    * Creates the service metadata for the specified user.
    *
    * @param aServiceMetadata
-   *        The data about the SMP
+   *        The data about the SMP. May not be <code>null</code>.
    * @throws BadRequestFault
    *         The request was not well formed.
    * @throws InternalErrorFault
@@ -164,13 +201,24 @@ public class ManageServiceMetadataServiceCaller {
   public void create (@Nonnull final ServiceMetadataPublisherServiceType aServiceMetadata) throws BadRequestFault,
                                                                                           InternalErrorFault,
                                                                                           UnauthorizedFault {
-    s_aLogger.info ("Trying to create new SMP '" +
-                    aServiceMetadata.getServiceMetadataPublisherID () +
-                    "' with physical address '" +
-                    aServiceMetadata.getPublisherEndpoint ().getPhysicalAddress () +
-                    "' and logical address '" +
-                    aServiceMetadata.getPublisherEndpoint ().getLogicalAddress () +
-                    "'");
+    ValueEnforcer.notNull (aServiceMetadata, "ServiceMetadata");
+    ValueEnforcer.notEmpty (aServiceMetadata.getServiceMetadataPublisherID (),
+                            "ServiceMetadata.ServiceMetadataPublisherID");
+    ValueEnforcer.notNull (aServiceMetadata.getPublisherEndpoint (), "ServiceMetadata.PublisherEndpoint");
+    ValueEnforcer.notEmpty (aServiceMetadata.getPublisherEndpoint ().getPhysicalAddress (),
+                            "ServiceMetadata.PublisherEndpoint.PhysicalAddress");
+    ValueEnforcer.notEmpty (aServiceMetadata.getPublisherEndpoint ().getLogicalAddress (),
+                            "ServiceMetadata.PublisherEndpoint.LogicalAddress");
+
+    if (s_aLogger.isInfoEnabled ())
+      s_aLogger.info ("Trying to create new SMP '" +
+                      aServiceMetadata.getServiceMetadataPublisherID () +
+                      "' with physical address '" +
+                      aServiceMetadata.getPublisherEndpoint ().getPhysicalAddress () +
+                      "' and logical address '" +
+                      aServiceMetadata.getPublisherEndpoint ().getLogicalAddress () +
+                      "'");
+
     createWSPort ().create (aServiceMetadata);
   }
 
@@ -178,11 +226,13 @@ public class ManageServiceMetadataServiceCaller {
    * Updates the specified service metadata given by the publisher id.
    *
    * @param sSMPID
-   *        The publisher id
+   *        The publisher id. May neither be <code>null</code> nor empty.
    * @param sSMPAddressPhysical
-   *        The physical address of the SMP (Example: 198.0.0.1)
+   *        The physical address of the SMP (Example: 198.0.0.1). May neither be
+   *        <code>null</code> nor empty.
    * @param sSMPAddressLogical
-   *        The logical address of the SMP (Example: http://test.com/test.svc)
+   *        The logical address of the SMP (Example: http://smp.example.org/).
+   *        May neither be <code>null</code> nor empty.
    * @throws InternalErrorFault
    *         An internal error happened on the server.
    * @throws NotFoundFault
@@ -192,10 +242,20 @@ public class ManageServiceMetadataServiceCaller {
    * @throws BadRequestFault
    *         The request was not well formed.
    */
-  public void update (final String sSMPID, final String sSMPAddressPhysical, final String sSMPAddressLogical) throws InternalErrorFault,
-                                                                                                             NotFoundFault,
-                                                                                                             UnauthorizedFault,
-                                                                                                             BadRequestFault {
+  public void update (@Nonnull @Nonempty final String sSMPID,
+                      @Nonnull @Nonempty final String sSMPAddressPhysical,
+                      @Nonnull @Nonempty final String sSMPAddressLogical) throws InternalErrorFault,
+                                                                         NotFoundFault,
+                                                                         UnauthorizedFault,
+                                                                         BadRequestFault {
+    ValueEnforcer.notEmpty (sSMPID, "SMPID");
+    ValueEnforcer.notEmpty (sSMPAddressPhysical, "SMPAddressPhysical");
+    ValueEnforcer.notEmpty (sSMPAddressLogical, "SMPAddressLogical");
+
+    // Custom validations
+    validatePhysicalAddress (sSMPAddressPhysical);
+    validateLogicalAddress (sSMPAddressLogical);
+
     final ServiceMetadataPublisherServiceType aServiceMetadata = new ServiceMetadataPublisherServiceType ();
     aServiceMetadata.setServiceMetadataPublisherID (sSMPID);
     final PublisherEndpointType aEndpoint = new PublisherEndpointType ();
@@ -209,7 +269,8 @@ public class ManageServiceMetadataServiceCaller {
    * Updates the specified service metadata.
    *
    * @param aServiceMetadata
-   *        The service metadata instance to update.
+   *        The service metadata instance to update. May not be
+   *        <code>null</code>.
    * @throws InternalErrorFault
    *         An internal error happened on the server.
    * @throws NotFoundFault
@@ -223,13 +284,24 @@ public class ManageServiceMetadataServiceCaller {
                                                                                           NotFoundFault,
                                                                                           UnauthorizedFault,
                                                                                           BadRequestFault {
-    s_aLogger.info ("Trying to update SMP '" +
-                    aServiceMetadata.getServiceMetadataPublisherID () +
-                    "' with physical address '" +
-                    aServiceMetadata.getPublisherEndpoint ().getPhysicalAddress () +
-                    "' and logical address '" +
-                    aServiceMetadata.getPublisherEndpoint ().getLogicalAddress () +
-                    "'");
+    ValueEnforcer.notNull (aServiceMetadata, "ServiceMetadata");
+    ValueEnforcer.notEmpty (aServiceMetadata.getServiceMetadataPublisherID (),
+                            "ServiceMetadata.ServiceMetadataPublisherID");
+    ValueEnforcer.notNull (aServiceMetadata.getPublisherEndpoint (), "ServiceMetadata.PublisherEndpoint");
+    ValueEnforcer.notEmpty (aServiceMetadata.getPublisherEndpoint ().getPhysicalAddress (),
+                            "ServiceMetadata.PublisherEndpoint.PhysicalAddress");
+    ValueEnforcer.notEmpty (aServiceMetadata.getPublisherEndpoint ().getLogicalAddress (),
+                            "ServiceMetadata.PublisherEndpoint.LogicalAddress");
+
+    if (s_aLogger.isInfoEnabled ())
+      s_aLogger.info ("Trying to update SMP '" +
+                      aServiceMetadata.getServiceMetadataPublisherID () +
+                      "' with physical address '" +
+                      aServiceMetadata.getPublisherEndpoint ().getPhysicalAddress () +
+                      "' and logical address '" +
+                      aServiceMetadata.getPublisherEndpoint ().getLogicalAddress () +
+                      "'");
+
     createWSPort ().update (aServiceMetadata);
   }
 
@@ -237,7 +309,8 @@ public class ManageServiceMetadataServiceCaller {
    * Deletes the service metadata given by the publisher id.
    *
    * @param sSMPID
-   *        The publisher id of the service metadata to delete.
+   *        The publisher id of the service metadata to delete. May neither be
+   *        <code>null</code> nor empty.
    * @throws InternalErrorFault
    *         An internal error happened on the server.
    * @throws NotFoundFault
@@ -247,8 +320,15 @@ public class ManageServiceMetadataServiceCaller {
    * @throws BadRequestFault
    *         The request was not well formed.
    */
-  public void delete (final String sSMPID) throws InternalErrorFault, NotFoundFault, UnauthorizedFault, BadRequestFault {
-    s_aLogger.info ("Trying to delete SMP '" + sSMPID + "'");
+  public void delete (@Nonnull @Nonempty final String sSMPID) throws InternalErrorFault,
+                                                             NotFoundFault,
+                                                             UnauthorizedFault,
+                                                             BadRequestFault {
+    ValueEnforcer.notEmpty (sSMPID, "SMPID");
+
+    if (s_aLogger.isInfoEnabled ())
+      s_aLogger.info ("Trying to delete SMP '" + sSMPID + "'");
+
     createWSPort ().delete (sSMPID);
   }
 
@@ -267,10 +347,13 @@ public class ManageServiceMetadataServiceCaller {
    * @throws BadRequestFault
    *         The request was not well formed.
    */
-  public ServiceMetadataPublisherServiceType read (final String sSMPID) throws InternalErrorFault,
-                                                                       NotFoundFault,
-                                                                       UnauthorizedFault,
-                                                                       BadRequestFault {
+  @Nonnull
+  public ServiceMetadataPublisherServiceType read (@Nonnull @Nonempty final String sSMPID) throws InternalErrorFault,
+                                                                                          NotFoundFault,
+                                                                                          UnauthorizedFault,
+                                                                                          BadRequestFault {
+    ValueEnforcer.notEmpty (sSMPID, "SMPID");
+
     final ServiceMetadataPublisherServiceType aSMPService = new ServiceMetadataPublisherServiceType ();
     aSMPService.setServiceMetadataPublisherID (sSMPID);
     return read (aSMPService);
@@ -280,7 +363,8 @@ public class ManageServiceMetadataServiceCaller {
    * Returns information about the publisher given by the publisher id.
    *
    * @param aSMPService
-   *        The publisher id is read from this service metadata object.
+   *        The publisher id is read from this service metadata object. May not
+   *        be <code>null</code>.
    * @return The service metadata given by the id.
    * @throws InternalErrorFault
    *         An internal error happened on the server.
@@ -291,11 +375,17 @@ public class ManageServiceMetadataServiceCaller {
    * @throws BadRequestFault
    *         The request was not well formed.
    */
+  @Nonnull
   public ServiceMetadataPublisherServiceType read (@Nonnull final ServiceMetadataPublisherServiceType aSMPService) throws InternalErrorFault,
                                                                                                                   NotFoundFault,
                                                                                                                   UnauthorizedFault,
                                                                                                                   BadRequestFault {
-    s_aLogger.info ("Trying to read SMP '" + aSMPService.getServiceMetadataPublisherID () + "'");
+    ValueEnforcer.notNull (aSMPService, "SMPService");
+    ValueEnforcer.notEmpty (aSMPService.getServiceMetadataPublisherID (), "SMPService.ServiceMetadataPublisherID");
+
+    if (s_aLogger.isInfoEnabled ())
+      s_aLogger.info ("Trying to read SMP '" + aSMPService.getServiceMetadataPublisherID () + "'");
+
     return createWSPort ().read (aSMPService);
   }
 }

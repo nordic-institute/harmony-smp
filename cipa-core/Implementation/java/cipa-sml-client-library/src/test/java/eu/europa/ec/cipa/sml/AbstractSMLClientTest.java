@@ -98,8 +98,6 @@ public abstract class AbstractSMLClientTest {
       final KeyManagerFactory aKeyManagerFactory = KeyManagerFactory.getInstance ("SunX509");
       aKeyManagerFactory.init (aKeyStore, KEYSTORE_PASSWORD.toCharArray ());
 
-      // Trust manager
-
       // Assign key manager and empty trust manager to SSL context
       final SSLContext aSSLCtx = SSLContext.getInstance ("TLS");
       aSSLCtx.init (aKeyManagerFactory.getKeyManagers (),

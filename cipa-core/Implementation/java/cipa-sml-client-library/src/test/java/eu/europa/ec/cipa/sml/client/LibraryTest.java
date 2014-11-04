@@ -38,6 +38,7 @@
 package eu.europa.ec.cipa.sml.client;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
 import java.net.InetAddress;
@@ -49,16 +50,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.annotation.Nonnull;
+
 import org.busdox.servicemetadata.locator._1.ParticipantIdentifierPageType;
 import org.busdox.servicemetadata.locator._1.PublisherEndpointType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
 import org.busdox.servicemetadata.manageservicemetadataservice._1.NotFoundFault;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+
+import com.helger.commons.annotations.Nonempty;
 
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.sml.AbstractSMLClientTest;
@@ -81,6 +85,20 @@ public final class LibraryTest extends AbstractSMLClientTest {
   private ManageServiceMetadataServiceCaller m_aClient;
   private ServiceMetadataPublisherServiceType m_aServiceMetadataCreate;
 
+  @Nonnull
+  private static ServiceMetadataPublisherServiceType _createSmp (@Nonnull final ManageServiceMetadataServiceCaller aSMPClient,
+                                                                 @Nonnull @Nonempty final String sSMPID) throws Exception {
+    final ServiceMetadataPublisherServiceType aServiceMetadataCreate = new ServiceMetadataPublisherServiceType ();
+    aServiceMetadataCreate.setServiceMetadataPublisherID (sSMPID);
+    final PublisherEndpointType aEndpoint = new PublisherEndpointType ();
+    aEndpoint.setLogicalAddress (L_ENDPOINTADDRESS);
+    aEndpoint.setPhysicalAddress (P_ENDPOINTADDRESS);
+    aServiceMetadataCreate.setPublisherEndpoint (aEndpoint);
+
+    aSMPClient.create (aServiceMetadataCreate);
+    return aServiceMetadataCreate;
+  }
+
   @Before
   public void cleanup () throws Exception {
     m_aClient = new ManageServiceMetadataServiceCaller (SML_INFO);
@@ -91,7 +109,7 @@ public final class LibraryTest extends AbstractSMLClientTest {
       // This is fine, since we are just cleaning
     }
 
-    m_aServiceMetadataCreate = createSmp (m_aClient, SMP_ID);
+    m_aServiceMetadataCreate = _createSmp (m_aClient, SMP_ID);
   }
 
   @Ignore
@@ -106,11 +124,11 @@ public final class LibraryTest extends AbstractSMLClientTest {
       // Do nothing since we just want to make sure it doesn't exists.
     }
 
-    final String dnsString = "http://" + TEST_BUSINESS_IDENTIFIER1 + ".0010.ubis.sml.smloc.org/";
+    final String sDNSString = "http://" + TEST_BUSINESS_IDENTIFIER1 + ".0010.ubis.sml.smloc.org/";
 
-    InetAddress address;
+    InetAddress aAddress;
     try {
-      address = InetAddress.getByName (dnsString);
+      aAddress = InetAddress.getByName (sDNSString);
       fail ("The hostname shouldn't exist");
     }
     catch (final UnknownHostException e) {
@@ -119,224 +137,235 @@ public final class LibraryTest extends AbstractSMLClientTest {
 
     biClient.create (m_aServiceMetadataCreate.getServiceMetadataPublisherID (), aPI);
 
-    address = InetAddress.getByName (dnsString);
-    assertEquals (P_ENDPOINTADDRESS, address.getHostAddress ());
+    aAddress = InetAddress.getByName (sDNSString);
+    assertEquals (P_ENDPOINTADDRESS, aAddress.getHostAddress ());
   }
 
   @Test
   public void testManageServiceMetadata () throws Exception {
-    final ServiceMetadataPublisherServiceType serviceMetadataRead = m_aClient.read (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
+    final ServiceMetadataPublisherServiceType aServiceMetadataRead = m_aClient.read (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
 
-    m_aClient.delete (serviceMetadataRead.getServiceMetadataPublisherID ());
+    m_aClient.delete (aServiceMetadataRead.getServiceMetadataPublisherID ());
 
-    Assert.assertEquals (m_aServiceMetadataCreate.getServiceMetadataPublisherID (),
-                         serviceMetadataRead.getServiceMetadataPublisherID ());
-    Assert.assertEquals (m_aServiceMetadataCreate.getPublisherEndpoint ().getLogicalAddress (),
-                         serviceMetadataRead.getPublisherEndpoint ().getLogicalAddress ());
-    Assert.assertEquals (m_aServiceMetadataCreate.getPublisherEndpoint ().getPhysicalAddress (),
-                         serviceMetadataRead.getPublisherEndpoint ().getPhysicalAddress ());
+    assertEquals (m_aServiceMetadataCreate.getServiceMetadataPublisherID (),
+                  aServiceMetadataRead.getServiceMetadataPublisherID ());
+    assertEquals (m_aServiceMetadataCreate.getPublisherEndpoint ().getLogicalAddress (),
+                  aServiceMetadataRead.getPublisherEndpoint ().getLogicalAddress ());
+    assertEquals (m_aServiceMetadataCreate.getPublisherEndpoint ().getPhysicalAddress (),
+                  aServiceMetadataRead.getPublisherEndpoint ().getPhysicalAddress ());
   }
 
   @Test
   public void testManageServiceMetadataWithManyIdentifier () throws Exception {
-    final ManageParticipantIdentifierServiceCaller biClient = new ManageParticipantIdentifierServiceCaller (SML_INFO);
+    final ManageParticipantIdentifierServiceCaller aPIClient = new ManageParticipantIdentifierServiceCaller (SML_INFO);
 
-    final long startIdentifier = 5798000999999l;
-    final int lastIdentifier = 150;
-    for (int i = 0; i <= lastIdentifier; i++) {
+    final long nStartIdentifier = 5798000999999l;
+    final int nLastIdentifier = 150;
+    for (int i = 0; i <= nLastIdentifier; i++) {
       System.out.println ("Creating number: " + i);
-      final long identifier = startIdentifier + i;
-      biClient.create (m_aServiceMetadataCreate.getServiceMetadataPublisherID (),
-                       SimpleParticipantIdentifier.createWithDefaultScheme ("0088:" + identifier));
+      final long nIdentifier = nStartIdentifier + i;
+      aPIClient.create (m_aServiceMetadataCreate.getServiceMetadataPublisherID (),
+                        SimpleParticipantIdentifier.createWithDefaultScheme ("0088:" + nIdentifier));
     }
 
     m_aClient.delete (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
 
-    final ServiceMetadataPublisherServiceType serviceMetadataCreateNew = createSmp (m_aClient, SMP_ID);
+    final ServiceMetadataPublisherServiceType aServiceMetadataCreateNew = _createSmp (m_aClient, SMP_ID);
 
     // Delete one that was on a second page
-    final long identifier = startIdentifier + lastIdentifier;
-    biClient.create (serviceMetadataCreateNew.getServiceMetadataPublisherID (),
-                     SimpleParticipantIdentifier.createWithDefaultScheme ("0088:" + identifier));
+    final long nIdentifier = nStartIdentifier + nLastIdentifier;
+    aPIClient.create (aServiceMetadataCreateNew.getServiceMetadataPublisherID (),
+                      SimpleParticipantIdentifier.createWithDefaultScheme ("0088:" + nIdentifier));
   }
 
   @Test (expected = NotFoundFault.class)
   public void testManageServiceMetadataDoubleDelete () throws Exception {
-    final ServiceMetadataPublisherServiceType serviceMetadataRead = m_aClient.read (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
-    m_aClient.delete (serviceMetadataRead.getServiceMetadataPublisherID ());
-    m_aClient.delete (serviceMetadataRead.getServiceMetadataPublisherID ());
+    final ServiceMetadataPublisherServiceType aServiceMetadataRead = m_aClient.read (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
+    assertNotNull (aServiceMetadataRead);
+    m_aClient.delete (aServiceMetadataRead.getServiceMetadataPublisherID ());
+    // Delete again
+    m_aClient.delete (aServiceMetadataRead.getServiceMetadataPublisherID ());
   }
 
   @Test
   public void manageServiceMetadataUpdateTest () throws Exception {
-    final ServiceMetadataPublisherServiceType serviceMetadataRead = m_aClient.read (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
-    serviceMetadataRead.getPublisherEndpoint ().setPhysicalAddress ("173.156.1.1");
-    m_aClient.update (serviceMetadataRead);
-    final ServiceMetadataPublisherServiceType afterSignedServiceMetadataRead = m_aClient.read (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
-    m_aClient.delete (afterSignedServiceMetadataRead.getServiceMetadataPublisherID ());
-    Assert.assertEquals ("173.156.1.1", afterSignedServiceMetadataRead.getPublisherEndpoint ().getPhysicalAddress ());
+    final ServiceMetadataPublisherServiceType aServiceMetadataRead = m_aClient.read (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
+    assertNotNull (aServiceMetadataRead);
+    aServiceMetadataRead.getPublisherEndpoint ().setPhysicalAddress ("173.156.1.1");
+    m_aClient.update (aServiceMetadataRead);
+    final ServiceMetadataPublisherServiceType aAfterSignedServiceMetadataRead = m_aClient.read (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
+    m_aClient.delete (aAfterSignedServiceMetadataRead.getServiceMetadataPublisherID ());
+    assertEquals ("173.156.1.1", aAfterSignedServiceMetadataRead.getPublisherEndpoint ().getPhysicalAddress ());
   }
 
   @Test
   public void testManageBusinessIdentifier () throws Exception {
-    final ManageParticipantIdentifierServiceCaller biClient = new ManageParticipantIdentifierServiceCaller (SML_INFO);
+    final ManageParticipantIdentifierServiceCaller aPIClient = new ManageParticipantIdentifierServiceCaller (SML_INFO);
 
-    final ParticipantIdentifierType businessIdentifierCreate = SimpleParticipantIdentifier.createWithDefaultScheme (TEST_BUSINESS_IDENTIFIER1);
+    final ParticipantIdentifierType aBusinessIdentifierCreate = SimpleParticipantIdentifier.createWithDefaultScheme (TEST_BUSINESS_IDENTIFIER1);
 
-    final ServiceMetadataPublisherServiceForParticipantType serviceMetadataPublisherServiceForBusiness = new ServiceMetadataPublisherServiceForParticipantType ();
-    serviceMetadataPublisherServiceForBusiness.setParticipantIdentifier (businessIdentifierCreate);
-    serviceMetadataPublisherServiceForBusiness.setServiceMetadataPublisherID (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
+    final ServiceMetadataPublisherServiceForParticipantType saSrviceMetadataPublisherServiceForBusiness = new ServiceMetadataPublisherServiceForParticipantType ();
+    saSrviceMetadataPublisherServiceForBusiness.setParticipantIdentifier (aBusinessIdentifierCreate);
+    saSrviceMetadataPublisherServiceForBusiness.setServiceMetadataPublisherID (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
 
-    biClient.create (serviceMetadataPublisherServiceForBusiness);
+    aPIClient.create (saSrviceMetadataPublisherServiceForBusiness);
 
-    final ParticipantIdentifierPageType res = biClient.list ("",
-                                                             m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
-    final List <ParticipantIdentifierType> businessIdentifiers = res.getParticipantIdentifier ();
+    final ParticipantIdentifierPageType aResult = aPIClient.list ("",
+                                                                  m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
+    assertNotNull (aResult);
+    final List <ParticipantIdentifierType> aBusinessIdentifiers = aResult.getParticipantIdentifier ();
 
-    Assert.assertEquals (1, businessIdentifiers.size ());
+    assertEquals (1, aBusinessIdentifiers.size ());
 
-    final ParticipantIdentifierType businessIdentifierRead = businessIdentifiers.get (0);
+    final ParticipantIdentifierType aBusinessIdentifierRead = aBusinessIdentifiers.get (0);
 
-    Assert.assertEquals (businessIdentifierCreate.getScheme (), businessIdentifierRead.getScheme ());
-    Assert.assertEquals (businessIdentifierCreate.getValue (), businessIdentifierRead.getValue ());
+    assertEquals (aBusinessIdentifierCreate.getScheme (), aBusinessIdentifierRead.getScheme ());
+    assertEquals (aBusinessIdentifierCreate.getValue (), aBusinessIdentifierRead.getValue ());
 
-    biClient.deleteList (businessIdentifiers);
+    aPIClient.deleteList (aBusinessIdentifiers);
 
     m_aClient.delete (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
   }
 
   @Test (expected = org.busdox.servicemetadata.managebusinessidentifierservice._1.NotFoundFault.class)
   public void testManageBusinessIdentifierDoubleDelete () throws Exception {
-    final ManageParticipantIdentifierServiceCaller biClient = new ManageParticipantIdentifierServiceCaller (SML_INFO);
+    final ManageParticipantIdentifierServiceCaller aPIClient = new ManageParticipantIdentifierServiceCaller (SML_INFO);
 
-    final ParticipantIdentifierType businessIdentifierCreate = SimpleParticipantIdentifier.createWithDefaultScheme (TEST_BUSINESS_IDENTIFIER1);
+    final ParticipantIdentifierType aBusinessIdentifierCreate = SimpleParticipantIdentifier.createWithDefaultScheme (TEST_BUSINESS_IDENTIFIER1);
 
-    final ServiceMetadataPublisherServiceForParticipantType serviceMetadataPublisherServiceForBusiness = new ServiceMetadataPublisherServiceForParticipantType ();
-    serviceMetadataPublisherServiceForBusiness.setParticipantIdentifier (businessIdentifierCreate);
-    serviceMetadataPublisherServiceForBusiness.setServiceMetadataPublisherID (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
+    final ServiceMetadataPublisherServiceForParticipantType aServiceMetadataPublisherServiceForBusiness = new ServiceMetadataPublisherServiceForParticipantType ();
+    aServiceMetadataPublisherServiceForBusiness.setParticipantIdentifier (aBusinessIdentifierCreate);
+    aServiceMetadataPublisherServiceForBusiness.setServiceMetadataPublisherID (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
 
-    biClient.create (serviceMetadataPublisherServiceForBusiness);
+    aPIClient.create (aServiceMetadataPublisherServiceForBusiness);
 
-    final ParticipantIdentifierPageType res = biClient.list ("",
-                                                             m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
-    final List <ParticipantIdentifierType> businessIdentifiers = res.getParticipantIdentifier ();
+    final ParticipantIdentifierPageType aResult = aPIClient.list ("",
+                                                                  m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
+    assertNotNull (aResult);
+    final List <ParticipantIdentifierType> aBusinessIdentifiers = aResult.getParticipantIdentifier ();
 
-    Assert.assertEquals (1, businessIdentifiers.size ());
+    assertEquals (1, aBusinessIdentifiers.size ());
 
-    final ParticipantIdentifierType businessIdentifierRead = businessIdentifiers.get (0);
+    final ParticipantIdentifierType aBusinessIdentifierRead = aBusinessIdentifiers.get (0);
 
-    Assert.assertEquals (businessIdentifierCreate.getScheme (), businessIdentifierRead.getScheme ());
-    Assert.assertEquals (businessIdentifierCreate.getValue (), businessIdentifierRead.getValue ());
+    assertEquals (aBusinessIdentifierCreate.getScheme (), aBusinessIdentifierRead.getScheme ());
+    assertEquals (aBusinessIdentifierCreate.getValue (), aBusinessIdentifierRead.getValue ());
 
-    biClient.deleteList (businessIdentifiers);
-    biClient.deleteList (businessIdentifiers);
+    aPIClient.deleteList (aBusinessIdentifiers);
+    aPIClient.deleteList (aBusinessIdentifiers);
 
     m_aClient.delete (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
   }
 
   @Test
   public void testManageBusinessIdentifierListWithZeroElements () throws Exception {
-    final ManageParticipantIdentifierServiceCaller biClient = new ManageParticipantIdentifierServiceCaller (SML_INFO);
+    final ManageParticipantIdentifierServiceCaller aPIClient = new ManageParticipantIdentifierServiceCaller (SML_INFO);
 
-    final Collection <ParticipantIdentifierType> recipientBusinessIdentifiers = new ArrayList <ParticipantIdentifierType> ();
+    final Collection <ParticipantIdentifierType> aRecipientBusinessIdentifiers = new ArrayList <ParticipantIdentifierType> ();
 
-    biClient.createList (recipientBusinessIdentifiers, SMP_ID);
+    aPIClient.createList (aRecipientBusinessIdentifiers, SMP_ID);
 
-    final ParticipantIdentifierPageType res = biClient.list ("",
-                                                             m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
-    final List <ParticipantIdentifierType> businessIdentifiers = res.getParticipantIdentifier ();
+    final ParticipantIdentifierPageType aResult = aPIClient.list ("",
+                                                                  m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
+    assertNotNull (aResult);
 
-    Assert.assertEquals (0, businessIdentifiers.size ());
+    final List <ParticipantIdentifierType> aBusinessIdentifiers = aResult.getParticipantIdentifier ();
+    assertEquals (0, aBusinessIdentifiers.size ());
 
     m_aClient.delete (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
   }
 
   @Test
   public void testManageBusinessIdentifierListWithOneElement () throws Exception {
-    final ManageParticipantIdentifierServiceCaller biClient = new ManageParticipantIdentifierServiceCaller (SML_INFO);
+    final ManageParticipantIdentifierServiceCaller aPIClient = new ManageParticipantIdentifierServiceCaller (SML_INFO);
 
-    final Collection <ParticipantIdentifierType> recipientBusinessIdentifiers = new ArrayList <ParticipantIdentifierType> ();
+    final Collection <ParticipantIdentifierType> aRecipientBusinessIdentifiers = new ArrayList <ParticipantIdentifierType> ();
 
-    final ParticipantIdentifierType businessIdentifierCreate1 = SimpleParticipantIdentifier.createWithDefaultScheme (TEST_BUSINESS_IDENTIFIER1);
+    final ParticipantIdentifierType aBusinessIdentifierCreate1 = SimpleParticipantIdentifier.createWithDefaultScheme (TEST_BUSINESS_IDENTIFIER1);
 
-    recipientBusinessIdentifiers.add (businessIdentifierCreate1);
-    biClient.createList (recipientBusinessIdentifiers, SMP_ID);
+    aRecipientBusinessIdentifiers.add (aBusinessIdentifierCreate1);
+    aPIClient.createList (aRecipientBusinessIdentifiers, SMP_ID);
 
-    final ParticipantIdentifierPageType res = biClient.list ("",
-                                                             m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
-    final List <ParticipantIdentifierType> businessIdentifiers = res.getParticipantIdentifier ();
+    final ParticipantIdentifierPageType aResult = aPIClient.list ("",
+                                                                  m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
+    assertNotNull (aResult);
 
-    Assert.assertEquals (1, businessIdentifiers.size ());
+    final List <ParticipantIdentifierType> aBusinessIdentifiers = aResult.getParticipantIdentifier ();
 
-    final ParticipantIdentifierType businessIdentifierRead = businessIdentifiers.get (0);
+    assertEquals (1, aBusinessIdentifiers.size ());
 
-    Assert.assertEquals (businessIdentifierCreate1.getScheme (), businessIdentifierRead.getScheme ());
-    Assert.assertEquals (businessIdentifierCreate1.getValue (), businessIdentifierRead.getValue ());
+    final ParticipantIdentifierType aBusinessIdentifierRead = aBusinessIdentifiers.get (0);
 
-    biClient.deleteList (businessIdentifiers);
+    assertEquals (aBusinessIdentifierCreate1.getScheme (), aBusinessIdentifierRead.getScheme ());
+    assertEquals (aBusinessIdentifierCreate1.getValue (), aBusinessIdentifierRead.getValue ());
+
+    aPIClient.deleteList (aBusinessIdentifiers);
 
     m_aClient.delete (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
   }
 
   @Test
   public void testManageBusinessIdentifierListWithTwoElement () throws Exception {
-    final ManageParticipantIdentifierServiceCaller biClient = new ManageParticipantIdentifierServiceCaller (SML_INFO);
+    final ManageParticipantIdentifierServiceCaller aPIClient = new ManageParticipantIdentifierServiceCaller (SML_INFO);
 
-    final Map <String, ParticipantIdentifierType> businessIdentifiersCreate = new HashMap <String, ParticipantIdentifierType> ();
+    final Map <String, ParticipantIdentifierType> aBusinessIdentifiersCreate = new HashMap <String, ParticipantIdentifierType> ();
 
-    ParticipantIdentifierType businessIdentifierCreate1 = SimpleParticipantIdentifier.createWithDefaultScheme (TEST_BUSINESS_IDENTIFIER1);
-    ParticipantIdentifierType businessIdentifierCreate2 = SimpleParticipantIdentifier.createWithDefaultScheme (TEST_BUSINESS_IDENTIFIER2);
+    ParticipantIdentifierType aBusinessIdentifierCreate1 = SimpleParticipantIdentifier.createWithDefaultScheme (TEST_BUSINESS_IDENTIFIER1);
+    ParticipantIdentifierType aBusinessIdentifierCreate2 = SimpleParticipantIdentifier.createWithDefaultScheme (TEST_BUSINESS_IDENTIFIER2);
 
-    businessIdentifiersCreate.put (businessIdentifierCreate1.getValue (), businessIdentifierCreate1);
-    businessIdentifiersCreate.put (businessIdentifierCreate2.getValue (), businessIdentifierCreate2);
+    aBusinessIdentifiersCreate.put (aBusinessIdentifierCreate1.getValue (), aBusinessIdentifierCreate1);
+    aBusinessIdentifiersCreate.put (aBusinessIdentifierCreate2.getValue (), aBusinessIdentifierCreate2);
 
-    biClient.createList (businessIdentifiersCreate.values (), SMP_ID);
+    aPIClient.createList (aBusinessIdentifiersCreate.values (), SMP_ID);
 
-    final ParticipantIdentifierPageType res = biClient.list ("",
-                                                             m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
-    final List <ParticipantIdentifierType> businessIdentifiers = res.getParticipantIdentifier ();
+    final ParticipantIdentifierPageType aResult = aPIClient.list ("",
+                                                                  m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
+    assertNotNull (aResult);
 
-    Assert.assertEquals (2, businessIdentifiers.size ());
+    final List <ParticipantIdentifierType> aBusinessIdentifiers = aResult.getParticipantIdentifier ();
 
-    final ParticipantIdentifierType businessIdentifierRead1 = businessIdentifiers.get (0);
-    businessIdentifierCreate1 = businessIdentifiersCreate.get (businessIdentifierRead1.getValue ());
+    assertEquals (2, aBusinessIdentifiers.size ());
 
-    final ParticipantIdentifierType businessIdentifierRead2 = businessIdentifiers.get (1);
-    businessIdentifierCreate2 = businessIdentifiersCreate.get (businessIdentifierRead2.getValue ());
+    final ParticipantIdentifierType aBusinessIdentifierRead1 = aBusinessIdentifiers.get (0);
+    aBusinessIdentifierCreate1 = aBusinessIdentifiersCreate.get (aBusinessIdentifierRead1.getValue ());
 
-    Assert.assertEquals (businessIdentifierCreate1.getScheme (), businessIdentifierRead1.getScheme ());
-    Assert.assertEquals (businessIdentifierCreate1.getValue (), businessIdentifierRead1.getValue ());
+    final ParticipantIdentifierType aBusinessIdentifierRead2 = aBusinessIdentifiers.get (1);
+    aBusinessIdentifierCreate2 = aBusinessIdentifiersCreate.get (aBusinessIdentifierRead2.getValue ());
 
-    Assert.assertEquals (businessIdentifierCreate2.getScheme (), businessIdentifierRead2.getScheme ());
-    Assert.assertEquals (businessIdentifierCreate2.getValue (), businessIdentifierRead2.getValue ());
+    assertEquals (aBusinessIdentifierCreate1.getScheme (), aBusinessIdentifierRead1.getScheme ());
+    assertEquals (aBusinessIdentifierCreate1.getValue (), aBusinessIdentifierRead1.getValue ());
 
-    biClient.deleteList (businessIdentifiers);
+    assertEquals (aBusinessIdentifierCreate2.getScheme (), aBusinessIdentifierRead2.getScheme ());
+    assertEquals (aBusinessIdentifierCreate2.getValue (), aBusinessIdentifierRead2.getValue ());
+
+    aPIClient.deleteList (aBusinessIdentifiers);
 
     m_aClient.delete (m_aServiceMetadataCreate.getServiceMetadataPublisherID ());
   }
 
   @Test
   public void migrateTest () throws Exception {
-    final ManageParticipantIdentifierServiceCaller biClientOld = new ManageParticipantIdentifierServiceCaller (SML_INFO);
+    final ManageParticipantIdentifierServiceCaller aPIClientOld = new ManageParticipantIdentifierServiceCaller (SML_INFO);
 
-    final ManageServiceMetadataServiceCaller client2 = new ManageServiceMetadataServiceCaller (SML_INFO);
+    final ManageServiceMetadataServiceCaller aClient2 = new ManageServiceMetadataServiceCaller (SML_INFO);
     try {
-      client2.delete (SMP_ID2);
+      aClient2.delete (SMP_ID2);
     }
     catch (final NotFoundFault e) {
       // This is fine, since we are just cleaning
     }
 
-    createSmp (client2, SMP_ID2);
+    _createSmp (aClient2, SMP_ID2);
 
-    final ManageParticipantIdentifierServiceCaller biClientNew = new ManageParticipantIdentifierServiceCaller (SML_INFO);
+    final ManageParticipantIdentifierServiceCaller aPIClientNew = new ManageParticipantIdentifierServiceCaller (SML_INFO);
     final ParticipantIdentifierType aPI = SimpleParticipantIdentifier.createWithDefaultScheme (TEST_BUSINESS_IDENTIFIER1);
-    biClientOld.create (SMP_ID, aPI);
-    final UUID code = biClientOld.prepareToMigrate (aPI, SMP_ID);
-    biClientNew.migrate (aPI, code, SMP_ID2);
+    aPIClientOld.create (SMP_ID, aPI);
+    final UUID aMigrationKey = aPIClientOld.prepareToMigrate (aPI, SMP_ID);
+    assertNotNull (aMigrationKey);
+    aPIClientNew.migrate (aPI, aMigrationKey, SMP_ID2);
 
     try {
-      biClientOld.delete (aPI);
+      aPIClientOld.delete (aPI);
       fail ();
     }
     catch (final org.busdox.servicemetadata.managebusinessidentifierservice._1.UnauthorizedFault e) {
@@ -344,40 +373,27 @@ public final class LibraryTest extends AbstractSMLClientTest {
     }
 
     // Should be able to delete, since New is now the owner
-    biClientNew.delete (aPI);
+    aPIClientNew.delete (aPI);
   }
 
   @Test (expected = org.busdox.servicemetadata.managebusinessidentifierservice._1.BadRequestFault.class)
   public void createExistingBusinessIdentifierUnauthorized () throws Exception {
-    final ManageParticipantIdentifierServiceCaller biClientOld = new ManageParticipantIdentifierServiceCaller (SML_INFO);
+    final ManageParticipantIdentifierServiceCaller aPIClientOld = new ManageParticipantIdentifierServiceCaller (SML_INFO);
 
-    final ManageServiceMetadataServiceCaller client2 = new ManageServiceMetadataServiceCaller (SML_INFO);
+    final ManageServiceMetadataServiceCaller aClient2 = new ManageServiceMetadataServiceCaller (SML_INFO);
     try {
-      client2.delete (SMP_ID2);
+      aClient2.delete (SMP_ID2);
     }
     catch (final NotFoundFault e) {
       // This is fine, since we are just cleaning
     }
 
-    createSmp (client2, SMP_ID2);
+    _createSmp (aClient2, SMP_ID2);
 
-    final ManageParticipantIdentifierServiceCaller biClientNew = new ManageParticipantIdentifierServiceCaller (SML_INFO);
+    final ManageParticipantIdentifierServiceCaller aPIClientNew = new ManageParticipantIdentifierServiceCaller (SML_INFO);
 
-    biClientOld.create (SMP_ID, SimpleParticipantIdentifier.createWithDefaultScheme (TEST_BUSINESS_IDENTIFIER1));
+    aPIClientOld.create (SMP_ID, SimpleParticipantIdentifier.createWithDefaultScheme (TEST_BUSINESS_IDENTIFIER1));
 
-    biClientNew.create (SMP_ID, SimpleParticipantIdentifier.createWithDefaultScheme (TEST_BUSINESS_IDENTIFIER1));
-  }
-
-  private static ServiceMetadataPublisherServiceType createSmp (final ManageServiceMetadataServiceCaller client,
-                                                                final String ID) throws Exception {
-    final ServiceMetadataPublisherServiceType serviceMetadataCreate = new ServiceMetadataPublisherServiceType ();
-    serviceMetadataCreate.setServiceMetadataPublisherID (ID);
-    final PublisherEndpointType endpoint = new PublisherEndpointType ();
-    endpoint.setLogicalAddress (L_ENDPOINTADDRESS);
-    endpoint.setPhysicalAddress (P_ENDPOINTADDRESS);
-    serviceMetadataCreate.setPublisherEndpoint (endpoint);
-
-    client.create (serviceMetadataCreate);
-    return serviceMetadataCreate;
+    aPIClientNew.create (SMP_ID, SimpleParticipantIdentifier.createWithDefaultScheme (TEST_BUSINESS_IDENTIFIER1));
   }
 }

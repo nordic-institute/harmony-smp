@@ -70,8 +70,8 @@ import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
  * This class is used for calling the Manage Participant Identifier interface on
  * the SML.
  *
- * @author Ravnholt<br>
- *         PEPPOL.AT, BRZ, Philip Helger
+ * @author Ravnholt
+ * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public class ManageParticipantIdentifierServiceCaller {
   private static final Logger s_aLogger = LoggerFactory.getLogger (ManageParticipantIdentifierServiceCaller.class);
@@ -85,7 +85,7 @@ public class ManageParticipantIdentifierServiceCaller {
    * https://sml.peppolcentral.org/managebusinessidentifier
    *
    * @param aSMLInfo
-   *        The SML info object
+   *        The SML info object. May not be <code>null</code>.
    */
   public ManageParticipantIdentifierServiceCaller (@Nonnull final ISMLInfo aSMLInfo) {
     this (aSMLInfo.getManageParticipantIdentifierEndpointAddress ());
@@ -97,7 +97,8 @@ public class ManageParticipantIdentifierServiceCaller {
    * https://sml.peppolcentral.org/managebusinessidentifier
    *
    * @param aEndpointAddress
-   *        The URL of the manage business identifier interface.
+   *        The URL of the manage participant identifier interface. May not be
+   *        <code>null</code>.
    */
   public ManageParticipantIdentifierServiceCaller (@Nonnull final URL aEndpointAddress) {
     ValueEnforcer.notNull (aEndpointAddress, "EndpointAddress");
@@ -119,7 +120,7 @@ public class ManageParticipantIdentifierServiceCaller {
   /**
    * Create the main WebService client for the specified endpoint address.
    *
-   * @return The WebService port to be used.
+   * @return The WebService port to be used. May not be <code>null</code>.
    */
   @Nonnull
   @OverrideOnDemand
@@ -139,7 +140,7 @@ public class ManageParticipantIdentifierServiceCaller {
    *        Identifies the SMP to create the identifier for. Example:
    *        <code>test-smp-0000000001</code>
    * @param aIdentifier
-   *        The identifier to be created.
+   *        The identifier to be created. May not be <code>null</code>.
    * @throws BadRequestFault
    *         Is thrown if the request sent to the service was not well-formed.
    * @throws InternalErrorFault
@@ -149,10 +150,13 @@ public class ManageParticipantIdentifierServiceCaller {
    * @throws NotFoundFault
    *         Is thrown if the service meta data publisher was not found.
    */
-  public void create (final String sSMPID, final ParticipantIdentifierType aIdentifier) throws BadRequestFault,
-                                                                                       InternalErrorFault,
-                                                                                       UnauthorizedFault,
-                                                                                       NotFoundFault {
+  public void create (@Nonnull @Nonempty final String sSMPID, @Nonnull final ParticipantIdentifierType aIdentifier) throws BadRequestFault,
+                                                                                                                   InternalErrorFault,
+                                                                                                                   UnauthorizedFault,
+                                                                                                                   NotFoundFault {
+    ValueEnforcer.notEmpty (sSMPID, "SMPID");
+    ValueEnforcer.notNull (aIdentifier, "Identifier");
+
     final ServiceMetadataPublisherServiceForParticipantType aSMPParticpantService = new ServiceMetadataPublisherServiceForParticipantType ();
     aSMPParticpantService.setServiceMetadataPublisherID (sSMPID);
     aSMPParticpantService.setParticipantIdentifier (aIdentifier);
@@ -164,7 +168,7 @@ public class ManageParticipantIdentifierServiceCaller {
    * ServiceMetadataPublisherServiceForParticipantType.
    *
    * @param aSMPParticpantService
-   *        Specifies the identifier to create.
+   *        Specifies the identifier to create. May not be <code>null</code>.
    * @throws BadRequestFault
    *         Is thrown if the request sent to the service was not well-formed.
    * @throws InternalErrorFault
@@ -174,15 +178,22 @@ public class ManageParticipantIdentifierServiceCaller {
    * @throws NotFoundFault
    *         Is thrown if the service meta data publisher was not found.
    */
-  public void create (final ServiceMetadataPublisherServiceForParticipantType aSMPParticpantService) throws BadRequestFault,
-                                                                                                    InternalErrorFault,
-                                                                                                    UnauthorizedFault,
-                                                                                                    NotFoundFault {
-    s_aLogger.info ("Trying to create new participant " +
-                    IdentifierUtils.getIdentifierURIEncoded (aSMPParticpantService.getParticipantIdentifier ()) +
-                    " in SMP '" +
-                    aSMPParticpantService.getServiceMetadataPublisherID () +
-                    "'");
+  public void create (@Nonnull final ServiceMetadataPublisherServiceForParticipantType aSMPParticpantService) throws BadRequestFault,
+                                                                                                             InternalErrorFault,
+                                                                                                             UnauthorizedFault,
+                                                                                                             NotFoundFault {
+    ValueEnforcer.notNull (aSMPParticpantService, "SMPParticpantService");
+    ValueEnforcer.notNull (aSMPParticpantService.getParticipantIdentifier (),
+                           "SMPParticpantService.ParticipantIdentifier");
+    ValueEnforcer.notEmpty (aSMPParticpantService.getServiceMetadataPublisherID (),
+                            "SMPParticpantService.ServiceMetadataPublisherID");
+
+    if (s_aLogger.isInfoEnabled ())
+      s_aLogger.info ("Trying to create new participant " +
+                      IdentifierUtils.getIdentifierURIEncoded (aSMPParticpantService.getParticipantIdentifier ()) +
+                      " in SMP '" +
+                      aSMPParticpantService.getServiceMetadataPublisherID () +
+                      "'");
     createWSPort ().create (aSMPParticpantService);
   }
 
@@ -201,9 +212,12 @@ public class ManageParticipantIdentifierServiceCaller {
    * Creates a list of participant identifiers.
    *
    * @param aParticipantIdentifiers
-   *        The collection of identifiers to create
+   *        The collection of identifiers to create. May neither be
+   *        <code>null</code> nor empty nor may it contain <code>null</code>
+   *        values.
    * @param sSMPID
-   *        The id of the service meta data.
+   *        The id of the service meta data. May neither be <code>null</code>
+   *        nor empty.
    * @throws BadRequestFault
    *         Is thrown if the request sent to the service was not well-formed.
    * @throws InternalErrorFault
@@ -213,16 +227,20 @@ public class ManageParticipantIdentifierServiceCaller {
    * @throws UnauthorizedFault
    *         Is thrown if the user was not authorized.
    */
-  public void createList (final Collection <? extends ParticipantIdentifierType> aParticipantIdentifiers,
-                          final String sSMPID) throws BadRequestFault,
-                                              InternalErrorFault,
-                                              NotFoundFault,
-                                              UnauthorizedFault {
-    s_aLogger.info ("Trying to create multiple new participants " +
-                    _toString (aParticipantIdentifiers) +
-                    " in SMP '" +
-                    sSMPID +
-                    "'");
+  public void createList (@Nonnull @Nonempty final Collection <? extends ParticipantIdentifierType> aParticipantIdentifiers,
+                          @Nonnull @Nonempty final String sSMPID) throws BadRequestFault,
+                                                                 InternalErrorFault,
+                                                                 NotFoundFault,
+                                                                 UnauthorizedFault {
+    ValueEnforcer.notEmptyNoNullValue (aParticipantIdentifiers, "ParticipantIdentifiers");
+    ValueEnforcer.notEmpty (sSMPID, "SMPID");
+
+    if (s_aLogger.isInfoEnabled ())
+      s_aLogger.info ("Trying to create multiple new participants " +
+                      _toString (aParticipantIdentifiers) +
+                      " in SMP '" +
+                      sSMPID +
+                      "'");
     final ParticipantIdentifierPageType aParticipantList = new ParticipantIdentifierPageType ();
     aParticipantList.getParticipantIdentifier ().addAll (aParticipantIdentifiers);
     aParticipantList.setServiceMetadataPublisherID (sSMPID);
@@ -233,7 +251,7 @@ public class ManageParticipantIdentifierServiceCaller {
    * Deletes a given participant identifier
    *
    * @param aIdentifier
-   *        The business identifier to delete
+   *        The business identifier to delete. May not be <code>null</code>.
    * @throws BadRequestFault
    *         Is thrown if the request sent to the service was not well-formed.
    * @throws InternalErrorFault
@@ -244,10 +262,12 @@ public class ManageParticipantIdentifierServiceCaller {
    * @throws UnauthorizedFault
    *         Is thrown if the user was not authorized.
    */
-  public void delete (final ParticipantIdentifierType aIdentifier) throws BadRequestFault,
-                                                                  InternalErrorFault,
-                                                                  NotFoundFault,
-                                                                  UnauthorizedFault {
+  public void delete (@Nonnull final ParticipantIdentifierType aIdentifier) throws BadRequestFault,
+                                                                           InternalErrorFault,
+                                                                           NotFoundFault,
+                                                                           UnauthorizedFault {
+    ValueEnforcer.notNull (aIdentifier, "Identifier");
+
     final ServiceMetadataPublisherServiceForParticipantType aSMPParticpantService = new ServiceMetadataPublisherServiceForParticipantType ();
     // No SMP ID required here, since identifier scheme+value must be unique!
     aSMPParticpantService.setServiceMetadataPublisherID (NO_SMP_ID_REQUIRED);
@@ -260,7 +280,7 @@ public class ManageParticipantIdentifierServiceCaller {
    * ServiceMetadataPublisherServiceForBusinessType parameter.
    *
    * @param aSMPParticpantService
-   *        The participant identifier to delete.
+   *        The participant identifier to delete. May be <code>null</code>.
    * @throws BadRequestFault
    *         Is thrown if the request sent to the service was not well-formed.
    * @throws InternalErrorFault
@@ -271,12 +291,18 @@ public class ManageParticipantIdentifierServiceCaller {
    * @throws UnauthorizedFault
    *         Is thrown if the user was not authorized.
    */
-  public void delete (final ServiceMetadataPublisherServiceForParticipantType aSMPParticpantService) throws BadRequestFault,
-                                                                                                    InternalErrorFault,
-                                                                                                    NotFoundFault,
-                                                                                                    UnauthorizedFault {
-    s_aLogger.info ("Trying to delete participant " +
-                    IdentifierUtils.getIdentifierURIEncoded (aSMPParticpantService.getParticipantIdentifier ()));
+  public void delete (@Nonnull final ServiceMetadataPublisherServiceForParticipantType aSMPParticpantService) throws BadRequestFault,
+                                                                                                             InternalErrorFault,
+                                                                                                             NotFoundFault,
+                                                                                                             UnauthorizedFault {
+    ValueEnforcer.notNull (aSMPParticpantService, "SMPParticpantService");
+    ValueEnforcer.notNull (aSMPParticpantService.getParticipantIdentifier (),
+                           "SMPParticpantService.ParticipantIdentifier");
+
+    if (s_aLogger.isInfoEnabled ())
+      s_aLogger.info ("Trying to delete participant " +
+                      IdentifierUtils.getIdentifierURIEncoded (aSMPParticpantService.getParticipantIdentifier ()));
+
     createWSPort ().delete (aSMPParticpantService);
   }
 
@@ -284,7 +310,9 @@ public class ManageParticipantIdentifierServiceCaller {
    * Deletes a list of participant identifiers
    *
    * @param aParticipantIdentifiers
-   *        The list of participant identifiers
+   *        The list of participant identifiers. May neither be
+   *        <code>null</code> nor empty nor may it contain <code>null</code>
+   *        values.
    * @throws BadRequestFault
    *         Is thrown if the request sent to the service was not well-formed.
    * @throws InternalErrorFault
@@ -299,9 +327,11 @@ public class ManageParticipantIdentifierServiceCaller {
                                                                                                                   InternalErrorFault,
                                                                                                                   NotFoundFault,
                                                                                                                   UnauthorizedFault {
-    ValueEnforcer.notEmpty (aParticipantIdentifiers, "ParticipantIdentifiers");
+    ValueEnforcer.notEmptyNoNullValue (aParticipantIdentifiers, "ParticipantIdentifiers");
 
-    s_aLogger.info ("Trying to delete multiple participants " + _toString (aParticipantIdentifiers));
+    if (s_aLogger.isInfoEnabled ())
+      s_aLogger.info ("Trying to delete multiple participants " + _toString (aParticipantIdentifiers));
+
     final ParticipantIdentifierPageType deleteListIn = new ParticipantIdentifierPageType ();
     deleteListIn.getParticipantIdentifier ().addAll (aParticipantIdentifiers);
     createWSPort ().deleteList (deleteListIn);
@@ -313,9 +343,11 @@ public class ManageParticipantIdentifierServiceCaller {
    * the next page.
    *
    * @param sPageId
-   *        The id of the next page. Empty string if it is the first page.
+   *        The id of the next page. May not be <code>null</code> but maybe
+   *        empty if it is the first page.
    * @param sSMPID
-   *        The publisher id corresponding to the SMP.
+   *        The publisher id corresponding to the SMP. May neither be
+   *        <code>null</code> nor empty.
    * @return A page of participant identifiers.
    * @throws BadRequestFault
    *         Is thrown if the request sent to the service was not well-formed.
@@ -326,10 +358,13 @@ public class ManageParticipantIdentifierServiceCaller {
    * @throws UnauthorizedFault
    *         Is thrown if the user was not authorized.
    */
-  public ParticipantIdentifierPageType list (final String sPageId, final String sSMPID) throws BadRequestFault,
-                                                                                       InternalErrorFault,
-                                                                                       NotFoundFault,
-                                                                                       UnauthorizedFault {
+  public ParticipantIdentifierPageType list (@Nonnull final String sPageId, @Nonnull @Nonempty final String sSMPID) throws BadRequestFault,
+                                                                                                                   InternalErrorFault,
+                                                                                                                   NotFoundFault,
+                                                                                                                   UnauthorizedFault {
+    ValueEnforcer.notNull (sPageId, "PageId");
+    ValueEnforcer.notEmpty (sSMPID, "SMPID");
+
     final PageRequestType aPageRequest = new PageRequestType ();
     aPageRequest.setServiceMetadataPublisherID (sSMPID);
     aPageRequest.setNextPageIdentifier (sPageId);
@@ -353,12 +388,26 @@ public class ManageParticipantIdentifierServiceCaller {
    * @throws UnauthorizedFault
    *         Is thrown if the user was not authorized.
    */
-  public ParticipantIdentifierPageType list (final PageRequestType aPageRequest) throws BadRequestFault,
-                                                                                InternalErrorFault,
-                                                                                NotFoundFault,
-                                                                                UnauthorizedFault {
-    s_aLogger.info ("Trying to list participants in SMP '" + aPageRequest.getServiceMetadataPublisherID () + "'");
+  public ParticipantIdentifierPageType list (@Nonnull final PageRequestType aPageRequest) throws BadRequestFault,
+                                                                                         InternalErrorFault,
+                                                                                         NotFoundFault,
+                                                                                         UnauthorizedFault {
+    ValueEnforcer.notNull (aPageRequest, "PageRequest");
+    ValueEnforcer.notEmpty (aPageRequest.getServiceMetadataPublisherID (), "PageRequest.ServiceMetadataPublisherID");
+
+    if (s_aLogger.isInfoEnabled ())
+      s_aLogger.info ("Trying to list participants in SMP '" + aPageRequest.getServiceMetadataPublisherID () + "'");
+
     return createWSPort ().list (aPageRequest);
+  }
+
+  /**
+   * @return A new random UUID. May not be <code>null</code>.
+   */
+  @Nonnull
+  @OverrideOnDemand
+  protected UUID createUUID () {
+    return UUID.randomUUID ();
   }
 
   /**
@@ -379,16 +428,22 @@ public class ManageParticipantIdentifierServiceCaller {
    *         Is thrown if the user was not authorized.
    */
   @Nonnull
-  public UUID prepareToMigrate (@Nonnull final ParticipantIdentifierType aIdentifier, final String sSMPID) throws BadRequestFault,
-                                                                                                          InternalErrorFault,
-                                                                                                          NotFoundFault,
-                                                                                                          UnauthorizedFault {
-    s_aLogger.info ("Preparing to migrate participant " +
-                    IdentifierUtils.getIdentifierURIEncoded (aIdentifier) +
-                    " from SMP '" +
-                    sSMPID +
-                    "'");
-    final UUID aUUID = UUID.randomUUID ();
+  public UUID prepareToMigrate (@Nonnull final ParticipantIdentifierType aIdentifier,
+                                @Nonnull @Nonempty final String sSMPID) throws BadRequestFault,
+                                                                       InternalErrorFault,
+                                                                       NotFoundFault,
+                                                                       UnauthorizedFault {
+    ValueEnforcer.notNull (aIdentifier, "Identifier");
+    ValueEnforcer.notEmpty (sSMPID, "SMPID");
+
+    if (s_aLogger.isInfoEnabled ())
+      s_aLogger.info ("Preparing to migrate participant " +
+                      IdentifierUtils.getIdentifierURIEncoded (aIdentifier) +
+                      " from SMP '" +
+                      sSMPID +
+                      "'");
+
+    final UUID aUUID = createUUID ();
     final MigrationRecordType aMigrationRecord = new MigrationRecordType ();
     aMigrationRecord.setParticipantIdentifier (aIdentifier);
     aMigrationRecord.setMigrationKey (aUUID.toString ());
@@ -403,11 +458,13 @@ public class ManageParticipantIdentifierServiceCaller {
    * id.
    *
    * @param aIdentifier
-   *        The participant identifier to migrate.
+   *        The participant identifier to migrate. May not be <code>null</code>.
    * @param aMigrationKey
-   *        The migration key received by the previous owner.
+   *        The migration key received by the previous owner. May not be
+   *        <code>null</code>.
    * @param sSMPID
-   *        The publisher id corresponding to the new owner SMP.
+   *        The publisher id corresponding to the new owner SMP. May neither be
+   *        <code>null</code> nor empty.
    * @throws BadRequestFault
    *         Is thrown if the request sent to the service was not well-formed.
    * @throws InternalErrorFault
@@ -419,20 +476,28 @@ public class ManageParticipantIdentifierServiceCaller {
    */
   public void migrate (@Nonnull final ParticipantIdentifierType aIdentifier,
                        @Nonnull final UUID aMigrationKey,
-                       final String sSMPID) throws BadRequestFault,
-                                           InternalErrorFault,
-                                           NotFoundFault,
-                                           UnauthorizedFault {
-    s_aLogger.info ("Finishing migration of participant " +
-                    IdentifierUtils.getIdentifierURIEncoded (aIdentifier) +
-                    " to SMP '" +
-                    sSMPID +
-                    "' using migration key '" +
-                    aMigrationKey.toString () +
-                    "'");
+                       @Nonnull @Nonempty final String sSMPID) throws BadRequestFault,
+                                                              InternalErrorFault,
+                                                              NotFoundFault,
+                                                              UnauthorizedFault {
+    ValueEnforcer.notNull (aIdentifier, "Identifier");
+    ValueEnforcer.notNull (aMigrationKey, "MigrationKey");
+    ValueEnforcer.notEmpty (sSMPID, "SMPID");
+
+    // Convert UUID to string
+    final String sMigrationKey = aMigrationKey.toString ();
+    if (s_aLogger.isInfoEnabled ())
+      s_aLogger.info ("Finishing migration of participant " +
+                      IdentifierUtils.getIdentifierURIEncoded (aIdentifier) +
+                      " to SMP '" +
+                      sSMPID +
+                      "' using migration key '" +
+                      sMigrationKey +
+                      "'");
+
     final MigrationRecordType aMigrationRecord = new MigrationRecordType ();
     aMigrationRecord.setParticipantIdentifier (aIdentifier);
-    aMigrationRecord.setMigrationKey (aMigrationKey.toString ());
+    aMigrationRecord.setMigrationKey (sMigrationKey);
     aMigrationRecord.setServiceMetadataPublisherID (sSMPID);
 
     createWSPort ().migrate (aMigrationRecord);

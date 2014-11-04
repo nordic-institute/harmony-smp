@@ -89,14 +89,14 @@ public final class WildcardTest extends AbstractSMLClientTest {
     }
 
     // Create SMP
-    final ServiceMetadataPublisherServiceType serviceMetadataCreate = new ServiceMetadataPublisherServiceType ();
-    serviceMetadataCreate.setServiceMetadataPublisherID (SMP_ID);
-    final PublisherEndpointType endpoint = new PublisherEndpointType ();
-    endpoint.setLogicalAddress (ADDRESS_LOGICAL);
-    endpoint.setPhysicalAddress (ADDRESS_PHYSICAL);
-    serviceMetadataCreate.setPublisherEndpoint (endpoint);
+    final ServiceMetadataPublisherServiceType aServiceMetadataCreate = new ServiceMetadataPublisherServiceType ();
+    aServiceMetadataCreate.setServiceMetadataPublisherID (SMP_ID);
+    final PublisherEndpointType aEndpoint = new PublisherEndpointType ();
+    aEndpoint.setLogicalAddress (ADDRESS_LOGICAL);
+    aEndpoint.setPhysicalAddress (ADDRESS_PHYSICAL);
+    aServiceMetadataCreate.setPublisherEndpoint (aEndpoint);
 
-    m_aClient.create (serviceMetadataCreate);
+    m_aClient.create (aServiceMetadataCreate);
   }
 
   @After

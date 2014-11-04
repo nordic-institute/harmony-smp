@@ -96,19 +96,19 @@ public final class SSLConnectTest extends AbstractSMLClientTest {
     aSSLContext.init (aKMF.getKeyManagers (), aTrustMgrs, VerySecureRandom.getInstance ());
 
     // Configure and open connection
-    final HttpsURLConnection uc = (HttpsURLConnection) new URL ("https://sml.peppolcentral.org/").openConnection ();
-    uc.setSSLSocketFactory (aSSLContext.getSocketFactory ());
-    uc.setHostnameVerifier (new HostnameVerifierAlwaysTrue (true));
-    uc.setRequestMethod ("GET");
+    final HttpsURLConnection aURLConn = (HttpsURLConnection) new URL ("https://sml.peppolcentral.org/").openConnection ();
+    aURLConn.setSSLSocketFactory (aSSLContext.getSocketFactory ());
+    aURLConn.setHostnameVerifier (new HostnameVerifierAlwaysTrue (true));
+    aURLConn.setRequestMethod ("GET");
 
     // Debug status on URL connection
     if (true) {
-      s_aLogger.info ("Status code:  " + uc.getResponseCode ());
-      s_aLogger.info ("Cipher suite: " + uc.getCipherSuite ());
-      s_aLogger.info ("Encoding:     " + uc.getContentEncoding ());
+      s_aLogger.info ("Status code:  " + aURLConn.getResponseCode ());
+      s_aLogger.info ("Cipher suite: " + aURLConn.getCipherSuite ());
+      s_aLogger.info ("Encoding:     " + aURLConn.getContentEncoding ());
       if (false) {
         int i = 0;
-        for (final Certificate aCert : uc.getServerCertificates ()) {
+        for (final Certificate aCert : aURLConn.getServerCertificates ()) {
           s_aLogger.info (" Cert " + (++i) + ":");
           s_aLogger.info ("  Cert type:  " + aCert.getType ());
           s_aLogger.info ("  Hash code:  " + aCert.hashCode ());
@@ -125,12 +125,12 @@ public final class SSLConnectTest extends AbstractSMLClientTest {
 
     try {
       // Show success
-      final String sResult = StreamUtils.getAllBytesAsString (uc.getInputStream (), CCharset.CHARSET_UTF_8_OBJ);
+      final String sResult = StreamUtils.getAllBytesAsString (aURLConn.getInputStream (), CCharset.CHARSET_UTF_8_OBJ);
       s_aLogger.info ("\n" + sResult);
     }
     catch (final IOException ex) {
       // Show error
-      final String sError = StreamUtils.getAllBytesAsString (uc.getErrorStream (), CCharset.CHARSET_UTF_8_OBJ);
+      final String sError = StreamUtils.getAllBytesAsString (aURLConn.getErrorStream (), CCharset.CHARSET_UTF_8_OBJ);
       s_aLogger.info ("\n" + sError);
     }
   }
