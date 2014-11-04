@@ -61,7 +61,6 @@ import org.xbill.DNS.Update;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 
-import eu.europa.ec.cipa.peppol.sml.CSMLDefault;
 import eu.europa.ec.cipa.peppol.uri.BusdoxURLUtils;
 import eu.europa.ec.cipa.sml.server.dns.DNSUtils;
 import eu.europa.ec.cipa.sml.server.dns.ISMLDNSClient;

@@ -51,7 +51,6 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 import eu.europa.ec.cipa.sml.server.security.BlueCoatClientCertificateHandler;
 import eu.europa.ec.cipa.sml.server.security.ClientUniqueIDProvider;
 import eu.europa.ec.cipa.sml.server.security.PeppolClientCertificateValidator;

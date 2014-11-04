@@ -2,7 +2,6 @@ package eu.europa.ec.cipa.sml.server.security;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -12,13 +11,10 @@ import java.util.Date;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import javax.security.auth.x500.X500Principal;
 import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 

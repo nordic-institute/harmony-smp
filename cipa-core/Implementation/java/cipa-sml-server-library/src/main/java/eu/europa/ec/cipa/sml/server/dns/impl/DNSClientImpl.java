@@ -37,7 +37,6 @@ import com.helger.commons.exceptions.InitializationException;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
 
-import eu.europa.ec.cipa.peppol.uri.BusdoxURLUtils;
 import eu.europa.ec.cipa.sml.server.dns.DNSClientConfiguration;
 import eu.europa.ec.cipa.sml.server.dns.DNSUtils;
 import eu.europa.ec.cipa.sml.server.dns.IDNSClient;
