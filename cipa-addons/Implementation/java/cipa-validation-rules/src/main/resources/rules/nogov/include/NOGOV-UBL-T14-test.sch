@@ -41,12 +41,12 @@
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron tests for binding ubl and transaction T14-->
 <pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T14" id="UBL-T14">
-  <param name="NOGOV-T14-R001" value="((cac:Contact/cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
-  <param name="NOGOV-T14-R002" value="((cac:SellersItemIdentification/cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
-  <param name="NOGOV-T14-R003" value="((cbc:CreditedQuantity/@unitCode != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
-  <param name="NOGOV-T14-R004" value="((cac:PartyLegalEntity/cbc:CompanyID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
-  <param name="NOGOV-T14-R006" value="((cac:PartyIdentification/cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
-  <param name="NOGOV-T14-R007" value="((cac:Contact/cbc:ID != '') and (//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
+  <param name="NOGOV-T14-R001" value="((cac:Contact/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
+  <param name="NOGOV-T14-R002" value="((cac:SellersItemIdentification/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
+  <param name="NOGOV-T14-R003" value="((cbc:CreditedQuantity/@unitCode != '') and $Prerequisite1) or not ($Prerequisite1)" />
+  <param name="NOGOV-T14-R004" value="((cac:PartyLegalEntity/cbc:CompanyID != '') and $Prerequisite1) or not ($Prerequisite1)" />
+  <param name="NOGOV-T14-R006" value="((cac:PartyIdentification/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
+  <param name="NOGOV-T14-R007" value="((cac:Contact/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
   <param name="NOGOV-T14-R008" value="(cac:PostalAddress/cac:Country/cbc:IdentificationCode != '')" />
   <param name="Customer_Party" value="//cac:AccountingCustomerParty/cac:Party" />
   <param name="CreditNote_Line" value="//cac:CreditNoteLine" />

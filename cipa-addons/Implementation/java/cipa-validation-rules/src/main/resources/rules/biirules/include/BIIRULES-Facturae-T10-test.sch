@@ -99,14 +99,4 @@
   <param name="Tax_Scheme" value="//TaxesOutputs" />
   <param name="Annex" value="//cac:AdditionalDocumentReference" />
   <param name="Country" value="//CountryCode" />
-  <param name="BIIRULE-T10-R048" value="./false" />
-  <param name="BIIRULE-T10-R037" value="./false" />
-  <param name="BIIRULE-T10-R028" value="./false" />
-  <param name="BIIRULE-T10-R030" value="./false" />
-  <param name="BIIRULE-T10-R031" value="./false" />
-  <param name="BIIRULE-T10-R035" value="./false" />
-  <param name="BIIRULE-T10-R036" value="./false" />
-  <param name="BIIRULE-T10-R052" value="./false" />
-  <param name="Tax_Subtotal" value="//NonExistingDummyNode" />
-  <param name="BIIRULE-T10-R051" value="./false" />
 </pattern>

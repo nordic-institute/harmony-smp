@@ -38,10 +38,12 @@
 package eu.europa.ec.cipa.validation.utils.createrules.sch;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.validation.utils.createrules.utils.Utils;
 
@@ -49,13 +51,24 @@ import eu.europa.ec.cipa.validation.utils.createrules.utils.Utils;
 final class RuleParam {
   private final String m_sRuleID;
   private final String m_sTest;
+  private final String m_sPrerequisite;
+  private final String m_sPrerequisiteVarName;
 
   public RuleParam (@Nonnull @Nonempty final String sRuleID, @Nonnull @Nonempty final String sTest) {
+    this (sRuleID, sTest, null, null);
+  }
+
+  public RuleParam (@Nonnull @Nonempty final String sRuleID,
+                    @Nonnull @Nonempty final String sTest,
+                    @Nullable final String sPrerequisite,
+                    @Nullable final String sPrerequisiteVarName) {
     ValueEnforcer.notEmpty (sRuleID, "RuleID");
     ValueEnforcer.notEmpty (sTest, "Test");
 
     m_sRuleID = Utils.makeID (sRuleID);
     m_sTest = sTest;
+    m_sPrerequisite = sPrerequisite;
+    m_sPrerequisiteVarName = sPrerequisiteVarName;
   }
 
   @Nonnull
@@ -64,9 +77,39 @@ final class RuleParam {
     return m_sRuleID;
   }
 
+  @Nullable
+  public String getRulePrerequisiteVarName () {
+    return m_sPrerequisiteVarName;
+  }
+
+  public boolean hasPrerequisite () {
+    return StringHelper.hasText (m_sPrerequisite);
+  }
+
+  @Nullable
+  public String getPrerequisite () {
+    return m_sPrerequisite;
+  }
+
   @Nonnull
   @Nonempty
-  public String getTest () {
+  public String getTestWithPrequisiteInline () {
+    if (hasPrerequisite ())
+      return "(" + m_sTest + " and " + m_sPrerequisite + ") or not (" + m_sPrerequisite + ")";
+    return m_sTest;
+  }
+
+  @Nonnull
+  @Nonempty
+  public String getTestWithPrequisiteParameter () {
+    if (hasPrerequisite ())
+      return "(" +
+             m_sTest +
+             " and $" +
+             getRulePrerequisiteVarName () +
+             ") or not ($" +
+             getRulePrerequisiteVarName () +
+             ")";
     return m_sTest;
   }
 }

@@ -54,10 +54,10 @@
   <param name="EUGEN-T15-R011" value="(//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT']/cbc:TaxAmount and cbc:ID) or not((//cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT']))" />
   <param name="EUGEN-T15-R012" value="number(cbc:MultiplierFactorNumeric) >=0" />
   <param name="EUGEN-T15-R013" value="(cbc:MultiplierFactorNumeric and cbc:BaseAmount) or (not(cbc:MultiplierFactorNumeric) and not(cbc:BaseAmount))" />
-  <param name="EUGEN-T15-R015" value="(starts-with(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID,//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) and (//cac:TaxCategory/cbc:ID) = 'AE') or not ((//cac:TaxCategory/cbc:ID) = 'AE')" />
+  <param name="EUGEN-T15-R015" value="(starts-with(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID,//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode) and $Prerequisite1) or not ($Prerequisite1)" />
   <param name="EUGEN-T15-R016" value="(((//cac:TaxCategory/cbc:ID) = 'AE')  and not((//cac:TaxCategory/cbc:ID) != 'AE' )) or not((//cac:TaxCategory/cbc:ID) = 'AE') or not(//cac:TaxCategory)" />
-  <param name="EUGEN-T15-R017" value="((//cbc:TaxExclusiveAmount = //cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cbc:ID='AE']/cbc:TaxableAmount) and (//cac:TaxCategory/cbc:ID) = 'AE') or not ((//cac:TaxCategory/cbc:ID) = 'AE')" />
-  <param name="EUGEN-T15-R018" value="(//cac:TaxTotal/cbc:TaxAmount = 0 and (//cac:TaxCategory/cbc:ID) = 'AE') or not ((//cac:TaxCategory/cbc:ID) = 'AE')" />
+  <param name="EUGEN-T15-R017" value="((//cbc:TaxExclusiveAmount = //cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cbc:ID='AE']/cbc:TaxableAmount) and $Prerequisite1) or not ($Prerequisite1)" />
+  <param name="EUGEN-T15-R018" value="(//cac:TaxTotal/cbc:TaxAmount = 0 and $Prerequisite1) or not ($Prerequisite1)" />
   <param name="EUGEN-T15-R019" value="number(cbc:PayableAmount) >= 0" />
   <param name="EUGEN-T15-R020" value="(cbc:StartDate)" />
   <param name="EUGEN-T15-R021" value="(cbc:EndDate)" />

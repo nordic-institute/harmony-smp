@@ -71,6 +71,12 @@ final class RuleAssertion {
 
   @Nonnull
   @Nonempty
+  public String getRulePrerequisiteID () {
+    return m_sRuleID + "-Prerequisite";
+  }
+
+  @Nonnull
+  @Nonempty
   public String getMessage () {
     return m_sMessage;
   }

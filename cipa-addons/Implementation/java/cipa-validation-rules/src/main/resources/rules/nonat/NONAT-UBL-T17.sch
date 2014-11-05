@@ -40,11 +40,12 @@
 -->
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron assembly for binding ubl and transaction T17-->
-<schema xmlns="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt2">
+<schema xmlns="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt">
   <title>NONAT T17 bound to ubl</title>
   <ns prefix="cbc" uri="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" />
   <ns prefix="cac" uri="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" />
   <ns prefix="ubl" uri="urn:oasis:names:specification:ubl:schema:xsd:Reminder-2" />
+  <let name="Prerequisite1" value="(//cac:TaxCategory/cbc:ID) = 'AE'" />
   <phase id="NONAT_T17_phase">
     <active pattern="UBL-T17" />
   </phase>
