@@ -53,6 +53,9 @@ public class DNSClientImpl implements IDNSClient {
 	protected String m_sPublisherZoneName;
 	protected int m_nTTLSecs;
 	private KEYRecord SIG0Rec;
+	private static String buildNumber = "${buildNumber}";
+	private static String displayVersion = "${display_version}";
+	
 
 	public DNSClientImpl() {
 		super();
@@ -70,7 +73,7 @@ public class DNSClientImpl implements IDNSClient {
 
 		if (nTTLSecs < 0)
 			throw new IllegalArgumentException("TTL is invalid: " + nTTLSecs);
-
+		s_aLogger.info("DnsClientImpl v"+displayVersion+" b"+buildNumber);
 		s_aLogger.info("DnsClientImpl init: " + sServerName + " : " + sDNSZoneName + " : " + sSMLZoneName + " : " + nTTLSecs);
 		m_sServerName = sServerName;
 
