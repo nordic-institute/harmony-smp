@@ -49,7 +49,6 @@ import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.UserMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
- 
 
 import backend.ecodex.org._1_1.BackendInterface;
 import backend.ecodex.org._1_1.BackendService11;
@@ -65,7 +64,6 @@ import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointInitAndDestro
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointSendInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.AS4GatewayInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.service.AS4PModeService;
-import eu.europa.ec.cipa.dispatcher.endpoint_interface.mendelson.AS2EndpointSendInterfaceMendelson;
 import eu.europa.ec.cipa.dispatcher.handler.SBDHHandler;
 import eu.europa.ec.cipa.dispatcher.util.KeystoreUtil;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;

@@ -1,14 +1,9 @@
 package eu.europa.ec.cipa.dispatcher.endpoint_interface;
 
 import java.security.cert.X509Certificate;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Properties;
 
-import org.apache.commons.dbcp.BasicDataSource;
 import org.busdox.servicemetadata.publishing._1.EndpointType;
-
-import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 
 public interface IAS2EndpointDBInterface
 {

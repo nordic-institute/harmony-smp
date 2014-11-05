@@ -4,10 +4,8 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,7 +15,6 @@ import de.mendelson.util.clientserver.BaseClient;
 import de.mendelson.util.clientserver.ClientSessionHandlerCallback;
 import de.mendelson.util.clientserver.ClientsideMessageProcessor;
 import de.mendelson.util.clientserver.messages.ClientServerMessage;
-import de.mendelson.util.clientserver.user.User;
 
 public class ClientConnectTest
 {

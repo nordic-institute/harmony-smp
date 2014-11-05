@@ -1,8 +1,5 @@
 package eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus;
 
-import java.io.File;
-import java.util.Properties;
-
 import eu.domibus.ebms3.config.PModePool;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS4GatewayInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.service.AS4PModeService;

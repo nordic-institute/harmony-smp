@@ -34,7 +34,6 @@ import eu.domibus.ebms3.config.ToParty;
 import eu.domibus.ebms3.config.UserService;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.AS4GatewayInterface;
 import eu.europa.ec.cipa.dispatcher.exception.DispatcherConfigurationException;
-import eu.europa.ec.cipa.dispatcher.servlet.as4.AS4ReceiverServlet;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 
 public class AS4PModeService {

@@ -4,22 +4,15 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.security.KeyStore;
-import java.security.Principal;
-import java.security.cert.CertStore;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
-import java.util.Collection;
 import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -44,24 +37,14 @@ import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
-import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.jce.provider.X509CertificateObject;
 import org.bouncycastle.util.encoders.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
-import eu.domibus.ebms3.config.PModePool;
-import eu.domibus.ebms3.config.Producer;
-import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.AS4GatewayInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.service.AS4PModeService;
 import eu.europa.ec.cipa.dispatcher.handler.AS4Handler;
-import eu.europa.ec.cipa.dispatcher.ocsp.OCSPValidator;
 import eu.europa.ec.cipa.dispatcher.util.KeystoreUtil;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
-import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 
 public class AS4ReceiverServlet extends HttpServlet
 

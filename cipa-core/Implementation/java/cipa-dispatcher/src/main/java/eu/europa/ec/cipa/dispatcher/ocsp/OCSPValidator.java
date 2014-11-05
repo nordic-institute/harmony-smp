@@ -62,7 +62,6 @@ import com.helger.commons.collections.ContainerHelper;
 import com.helger.commons.state.EValidity;
 import com.helger.commons.string.StringHelper;
 
-import eu.europa.ec.cipa.dispatcher.handler.SBDHHandler;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
 

@@ -12,7 +12,6 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import eu.europa.ec.cipa.dispatcher.endpoint_interface.mendelson.AS2EndpointDBInterfaceMendelson;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 
 public class SBDHHandler extends DefaultHandler {

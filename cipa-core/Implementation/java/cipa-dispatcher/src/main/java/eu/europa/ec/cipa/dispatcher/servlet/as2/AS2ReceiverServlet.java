@@ -44,7 +44,6 @@ import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointDBInterface;
 import eu.europa.ec.cipa.dispatcher.ocsp.OCSPValidator;
-import eu.europa.ec.cipa.dispatcher.servlet.SendServlet;
 import eu.europa.ec.cipa.dispatcher.util.KeystoreUtil;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 

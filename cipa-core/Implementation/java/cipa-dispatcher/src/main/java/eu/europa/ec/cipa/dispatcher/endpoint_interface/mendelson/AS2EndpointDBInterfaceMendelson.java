@@ -23,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointDBInterface;
-import eu.europa.ec.cipa.dispatcher.servlet.as4.AS4ReceiverServlet;
 import eu.europa.ec.cipa.dispatcher.util.KeystoreUtil;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 

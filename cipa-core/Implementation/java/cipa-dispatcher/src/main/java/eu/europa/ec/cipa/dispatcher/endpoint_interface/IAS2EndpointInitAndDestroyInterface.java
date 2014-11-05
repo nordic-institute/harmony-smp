@@ -1,6 +1,5 @@
 package eu.europa.ec.cipa.dispatcher.endpoint_interface;
 
-import java.util.Properties;
 
 public interface IAS2EndpointInitAndDestroyInterface
 {
