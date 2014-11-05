@@ -41,22 +41,8 @@ public class SBDHHandler extends DefaultHandler {
 
 	public void startDocument() throws SAXException {
 		try {
-			int randomInt = 100000000 + (int) (Math.random() * 900000000); // Min
-																			// +
-																			// (int)(Math.random()
-																			// *
-																			// ((Max
-																			// -
-																			// Min)
-																			// +
-																			// 1))
-																			// ,
-																			// Min
-																			// =
-																			// 100000000,
-																			// Max
-																			// =
-																			// 999999999
+			int randomInt = 100000000 + (int) (Math.random() * 900000000); 
+			// Min + (int)(Math.random() * ((Max - Min) + 1)) , Min = 100000000, Max = 999999999
 			Properties properties = PropertiesUtil.getProperties(null);
 			String tempFilePath = properties
 					.getProperty(PropertiesUtil.TEMP_FOLDER_PATH);
@@ -93,8 +79,7 @@ public class SBDHHandler extends DefaultHandler {
 		}
 	}
 
-	public void startElement(String uri, String localName, String qName,
-			Attributes attributes) throws SAXException {
+	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		String tag = localName != null && !localName.isEmpty() ? localName
 				: qName;
 
@@ -148,8 +133,7 @@ public class SBDHHandler extends DefaultHandler {
 			inPayload = true;
 	}
 
-	public void characters(char ch[], int start, int length)
-			throws SAXException {
+	public void characters(char ch[], int start, int length) throws SAXException {
 		if (position.equalsIgnoreCase(senderIdentifierPosition)) {
 			resultMap.put("senderIdentifier", new String(ch, start, length));
 			resultMap.put("senderScheme", scheme);
@@ -160,14 +144,11 @@ public class SBDHHandler extends DefaultHandler {
 			resultMap.put("instanceIdentifier", new String(ch, start, length));
 		} else if (position.equalsIgnoreCase(businessScopeTypePosition)) {
 			scopeType = new String(ch, start, length);
-		} else if (position
-				.equalsIgnoreCase(businessScopeInstanceIdentifierPosition)) {
+		} else if (position.equalsIgnoreCase(businessScopeInstanceIdentifierPosition)) {
 			if (scopeType.equalsIgnoreCase("DOCUMENTID"))
-				resultMap.put("documentIdentifier", new String(ch, start,
-						length));
+				resultMap.put("documentIdentifier", new String(ch, start, length));
 			if (scopeType.equalsIgnoreCase("PROCESSID"))
-				resultMap.put("processIdentifier",
-						new String(ch, start, length));
+				resultMap.put("processIdentifier", new String(ch, start, length));
 			if (scopeType.equalsIgnoreCase("CORRELATIONID"))
 				resultMap.put("correlationId", new String(ch, start, length));
 		}

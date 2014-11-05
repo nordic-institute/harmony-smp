@@ -80,21 +80,13 @@ public class SendServlet extends HttpServlet {
 	private static final Logger s_aLogger = LoggerFactory.getLogger (SendServlet.class);
 	
 	Properties properties = PropertiesUtil.getProperties(null);
-	BackendService11 holodeck_service = null; // created as object variable to
-												// avoid loading the holodeck
-												// service WSDL everytime we
-												// call it.
+	BackendService11 holodeck_service = null; 
+	// created as object variable to avoid loading the holodeck
+	// service WSDL everytime we call it.
 
 	private static String defaultDocumentTypeScheme = "busdox-docid-qns";
-	private static final String defaultProcessTypeScheme = "cenbii-procid-ubl"; // TODO:
-																				// is
-																				// this
-																				// the
-																				// default
-																				// value,
-																				// or
-																				// "cenbiimeta-procid-ubl"
-																				// ?
+	private static final String defaultProcessTypeScheme = "cenbii-procid-ubl"; 
+	// TODO: is this the default value, or "cenbiimeta-procid-ubl" ?
 	private static String PROTOCOL_START = "busdox-transport-start";
 	private static String PROTOCOL_AS2 = "busdox-transport-as2-ver1p0";
 	private static String PROTOCOL_EBMS = "ebms3-as4";
@@ -303,17 +295,9 @@ public class SendServlet extends HttpServlet {
 				if (response.getMessageID() == null || response.getMessageID().size() == 0)
 					result = "";
 				else
-					result = response.getMessageID().get(0); // TODO: are we
-																// sure there
-																// are only
-																// error
-																// messages in
-																// the response?
-																// maybe OK
-																// responses are
-																// returned as
-							 									// well...
-
+					result = response.getMessageID().get(0); 
+				// TODO: are we sure there are only error messages in the response? 
+				// maybe OK responses are returned as well...
 				//s_aLogger.error( "sending through EBMS protocol not available.");
 				prepareResponse(resp, HttpServletResponse.SC_CREATED, "text/plain", "Message sucessfully sent using as4.");
 				return;
