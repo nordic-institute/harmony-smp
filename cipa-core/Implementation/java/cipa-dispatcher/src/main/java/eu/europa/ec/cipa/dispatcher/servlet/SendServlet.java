@@ -77,15 +77,15 @@ import eu.europa.ec.cipa.transport.start.client.AccessPointClientSendResult;
 
 public class SendServlet extends HttpServlet {
 
-	private static final Logger s_aLogger = LoggerFactory.getLogger (SendServlet.class);
-	
+	private static final Logger s_aLogger = LoggerFactory.getLogger(SendServlet.class);
+
 	Properties properties = PropertiesUtil.getProperties(null);
-	BackendService11 holodeck_service = null; 
+	BackendService11 holodeck_service = null;
 	// created as object variable to avoid loading the holodeck
 	// service WSDL everytime we call it.
 
 	private static String defaultDocumentTypeScheme = "busdox-docid-qns";
-	private static final String defaultProcessTypeScheme = "cenbii-procid-ubl"; 
+	private static final String defaultProcessTypeScheme = "cenbii-procid-ubl";
 	// TODO: is this the default value, or "cenbiimeta-procid-ubl" ?
 	private static String PROTOCOL_START = "busdox-transport-start";
 	private static String PROTOCOL_AS2 = "busdox-transport-as2-ver1p0";
@@ -106,7 +106,7 @@ public class SendServlet extends HttpServlet {
 				initAS2Interface.init();
 			}
 		} catch (Exception e) {
-			s_aLogger.error("AS2 server couldn't be initialized: ",e );
+			s_aLogger.error("AS2 server couldn't be initialized: ", e);
 		}
 	}
 
@@ -118,7 +118,7 @@ public class SendServlet extends HttpServlet {
 				initAS2Interface.destroy();
 			}
 		} catch (Throwable e) {
-			s_aLogger.error(e.getMessage(),e );
+			s_aLogger.error(e.getMessage(), e);
 		}
 	}
 
@@ -138,7 +138,7 @@ public class SendServlet extends HttpServlet {
 			// the message on disk
 			resultMap = treatSBDHrequest(req.getInputStream());
 		} catch (Exception e) {
-			s_aLogger.error("An error occured while treating the SBDH request:\n" + e.getMessage(),e );
+			s_aLogger.error("An error occured while treating the SBDH request:\n" + e.getMessage(), e);
 			prepareResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "text/plain", "An error occured while treating the SBDH request:\n" + e.getMessage());
 			return;
 		}
@@ -150,8 +150,8 @@ public class SendServlet extends HttpServlet {
 		String documentId = (String) resultMap.get("documentIdentifier");
 		String processId = (String) resultMap.get("processIdentifier");
 		String correlationId = (String) resultMap.get("correlationId");
-		if (correlationId == null){
-			correlationId= UUID.randomUUID().toString();
+		if (correlationId == null) {
+			correlationId = UUID.randomUUID().toString();
 		}
 		String missingField = null;
 		if (receiverIdentifier == null || receiverIdentifier.isEmpty())
@@ -200,7 +200,7 @@ public class SendServlet extends HttpServlet {
 					endpoint = partnerInterface.getPartnerData(receiverIdentifier);
 				}
 
-				if (endpoint == null || endpoint.getEndpointReference() == null){
+				if (endpoint == null || endpoint.getEndpointReference() == null) {
 					s_aLogger.error("Couldn't successfully retrieve the receiver's metadata");
 					throw new Exception("Couldn't successfully retrieve the receiver's metadata");
 				}
@@ -240,23 +240,22 @@ public class SendServlet extends HttpServlet {
 				documentType.setScheme(defaultDocumentTypeScheme);
 				documentType.setValue(documentId);
 				ProcessIdentifierType processType = new ProcessIdentifierType();
-				processType.setScheme(defaultProcessTypeScheme); 
+				processType.setScheme(defaultProcessTypeScheme);
 				processType.setValue(processId);
 				MessageMetadata metadata = new MessageMetadata("uuid:" + UUID.randomUUID().toString(), "peppol-channel", sender, receiver, documentType, processType);
 				DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
 				docBuilderFactory.setNamespaceAware(true);
 				DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-				Document doc = docBuilder.parse(new File(resultMap.get("tempFilePath"
-						+ "")));
+				Document doc = docBuilder.parse(new File(resultMap.get("tempFilePath" + "")));
 				AccessPointClientSendResult apResult = AccessPointClient.send(W3CEndpointReferenceUtils.getAddress(endpoint.getEndpointReference()), metadata, doc);
 				if (apResult.isFailure()) {
 					if (apResult.getErrorMessageCount() > 0)
 						result = apResult.getAllErrorMessages().get(0);
-					else{
-						s_aLogger.error( "An error occured while communicating with the receiver access point.");						
+					else {
+						s_aLogger.error("An error occured while communicating with the receiver access point.");
 						result = "An error occured while communicating with the receiver access point.";
 					}
-						
+
 				} else
 					result = "";
 			} else if (protocol.equals(PROTOCOL_EBMS) && !properties.getProperty(PropertiesUtil.EBMS_ENDPOINT_PREFERENCE_ORDER).equals("0")) {
@@ -264,14 +263,14 @@ public class SendServlet extends HttpServlet {
 				KeystoreUtil util = new KeystoreUtil();
 				util.installNewPartnerCertificate(receiverCert, KeystoreUtil.extractCN(receiverCert));
 				AS4PModeService service = new AS4PModeService();
-				String senderGW=properties.getProperty(PropertiesUtil.KEYSTORE_AP_ALIAS);
-				String receiverGW =KeystoreUtil.extractCN(receiverCert);
-				service.createPartner(senderGW,receiverGW , processId, documentId, W3CEndpointReferenceUtils.getAddress(endpoint.getEndpointReference()));
+				String senderGW = properties.getProperty(PropertiesUtil.KEYSTORE_AP_ALIAS);
+				String receiverGW = KeystoreUtil.extractCN(receiverCert);
+				service.createPartner(senderGW, receiverGW, processId, documentId, W3CEndpointReferenceUtils.getAddress(endpoint.getEndpointReference()));
 				if (holodeck_service == null)
 					try {
 						holodeck_service = new BackendService11(new URL(properties.getProperty(PropertiesUtil.EBMS_WSDL_PATH)));
 					} catch (Exception e) {
-						s_aLogger.error( "ERROR - Unable to integrate with Domibus endpoint: ",e);
+						s_aLogger.error("ERROR - Unable to integrate with Domibus endpoint: ", e);
 						prepareResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "text/plain", "Unable to integrate with AS4 endpoint: " + e.getMessage());
 						holodeck_service = null;
 						return;
@@ -279,14 +278,14 @@ public class SendServlet extends HttpServlet {
 
 				BackendInterface holodeck_interface = holodeck_service.getBackendPort();
 
-				Messaging ebMSHeaderInfo = buildEBMSHeaderInfo(receiverGW, senderGW,processId,documentId,correlationId,endpoint,senderIdentifier,receiverIdentifier);
+				Messaging ebMSHeaderInfo = buildEBMSHeaderInfo(receiverGW, senderGW, processId, documentId, correlationId, endpoint, senderIdentifier, receiverIdentifier);
 				SendRequest request = buildRequest(resultMap.get("tempFile2Path"));
 
 				SendResponse response = null;
 				try {
 					response = holodeck_interface.sendMessage(request, ebMSHeaderInfo);
 				} catch (Exception e) {
-					s_aLogger.error( "Unable to send message through Holodeck: " + e.getMessage(),e);
+					s_aLogger.error("Unable to send message through Holodeck: " + e.getMessage(), e);
 					result = "Unable to send message through Holodeck: " + e.getMessage() != null && !e.getMessage().isEmpty() ? e.getMessage() : e.getCause().getMessage();
 					;
 					throw new Exception(result);
@@ -295,10 +294,12 @@ public class SendServlet extends HttpServlet {
 				if (response.getMessageID() == null || response.getMessageID().size() == 0)
 					result = "";
 				else
-					result = response.getMessageID().get(0); 
-				// TODO: are we sure there are only error messages in the response? 
+					result = response.getMessageID().get(0);
+				// TODO: are we sure there are only error messages in the
+				// response?
 				// maybe OK responses are returned as well...
-				//s_aLogger.error( "sending through EBMS protocol not available.");
+				// s_aLogger.error(
+				// "sending through EBMS protocol not available.");
 				prepareResponse(resp, HttpServletResponse.SC_CREATED, "text/plain", "Message sucessfully sent using as4.");
 				return;
 			} else {
@@ -314,7 +315,7 @@ public class SendServlet extends HttpServlet {
 			} else
 				resp.setStatus(HttpServletResponse.SC_OK);
 		} catch (Exception e) {
-			s_aLogger.error(e.getMessage(),e);
+			s_aLogger.error(e.getMessage(), e);
 			prepareResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "text/plain", (e.getMessage() != null && !e.getMessage().isEmpty()) ? e.getMessage() : e.getCause().getMessage());
 			return;
 		} finally {
@@ -346,10 +347,10 @@ public class SendServlet extends HttpServlet {
 		return receiverCert;
 	}
 
-	private Messaging buildEBMSHeaderInfo(String receiver, String sender, String processId,  String documentId,String correlationId, EndpointType endpoint,String initialSender, String initialReceiver) {
-		
+	private Messaging buildEBMSHeaderInfo(String receiver, String sender, String processId, String documentId, String correlationId, EndpointType endpoint, String initialSender, String initialReceiver) {
+
 		String userServiceName = processId.concat("_").concat(documentId).concat("_").concat(receiver).concat("_").concat(AS4GatewayInterface.PMODE_ROLE);
-		
+
 		Messaging result = new Messaging();
 
 		UserMessage userMessage = new UserMessage();
@@ -398,10 +399,10 @@ public class SendServlet extends HttpServlet {
 		CollaborationInfo collaborationInfo = new CollaborationInfo();
 		collaborationInfo.setAction(documentId);
 		Service service = new Service();
-		/*service.setType("XXXXXXX");*/
+		/* service.setType("XXXXXXX"); */
 		service.setValue(processId);
 		collaborationInfo.setService(service);
-		
+
 		// Which one needs to be over here ?
 		collaborationInfo.setConversationId(correlationId);
 
@@ -415,26 +416,26 @@ public class SendServlet extends HttpServlet {
 
 		// payload info
 		PayloadInfo p = new PayloadInfo();
-		
+
 		Property prop = new Property();
 		prop.setName("MimeType");
 		prop.setValue("application/xml");
-		
+
 		PartProperties pProp = new PartProperties();
 		pProp.getProperty().add(prop);
-	
+
 		Description desc = new Description();
 		desc.setValue("#bodyload");
-		
+
 		PartInfo pInfo = new PartInfo();
 		pInfo.setHref("#bodyload");
-		
+
 		pInfo.setDescription(desc);
 		pInfo.setPartProperties(pProp);
-		
+
 		p.getPartInfo().add(pInfo);
 		userMessage.setPayloadInfo(p);
-		
+
 		List<UserMessage> listUserMessage = result.getUserMessage();
 		listUserMessage.add(userMessage);
 		return result;
@@ -554,10 +555,9 @@ public class SendServlet extends HttpServlet {
 			resp.getWriter().write(message);
 			resp.getWriter().flush();
 		} catch (Exception e) {
-			s_aLogger.error("SendWebservice.prepareResponse(): Error trying to get the response writer",e);
+			s_aLogger.error("SendWebservice.prepareResponse(): Error trying to get the response writer", e);
 		}
 		return;
 	}
-
 
 }
