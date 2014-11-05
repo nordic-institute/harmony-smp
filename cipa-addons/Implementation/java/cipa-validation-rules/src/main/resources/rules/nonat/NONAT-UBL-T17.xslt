@@ -640,9 +640,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(//cac:TaxTotal/cbc:TaxAmount = 0 and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and //cac:TaxTotal/cbc:TaxAmount = 0) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(//cac:TaxTotal/cbc:TaxAmount = 0 and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and //cac:TaxTotal/cbc:TaxAmount = 0) or not ($Prerequisite1)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />

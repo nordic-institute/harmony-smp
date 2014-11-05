@@ -39,17 +39,14 @@
 
 -->
 <!--This file is generated automatically! Do NOT edit!-->
-<!--Schematron tests for binding UBL and transaction T10-->
-<pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T10" id="UBL-T10">
-  <param name="NONAT-T10-R001" value="($Prerequisite1 and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R002" value="($Prerequisite1 and //cac:PaymentMeans/cbc:PaymentDueDate) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R003" value="($Prerequisite1 and //cac:Delivery/cbc:ActualDeliveryDate) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R004" value="($Prerequisite1 and //cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CityName and //cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:PostalZone and //cac:Delivery/cac:DeliveryLocation/cac:Address/cac:Country/cbc:IdentificationCode) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R005" value="($Prerequisite1 and cbc:InvoicedQuantity) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R006" value="($Prerequisite1 and (cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R007" value="($Prerequisite1 and (cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
-  <param name="Supplier_Party" value="//cac:AccountingSupplierParty/cac:Party" />
-  <param name="Invoice_Line" value="//cac:InvoiceLine" />
-  <param name="Invoice" value="/ubl:Invoice" />
-  <param name="Customer_Party" value="//cac:AccountingCustomerParty/cac:Party" />
+<!--Schematron tests for binding UBL and transaction T14-->
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T14" id="UBL-T14">
+  <param name="ATNAT-T14-R001" value="($Prerequisite1 and //cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not ($Prerequisite1)" />
+  <param name="ATNAT-T14-R002" value="($Prerequisite2 and (cbc:ID = 'E') or (cbc:ID = 'AE')) or not ($Prerequisite2)" />
+  <param name="ATNAT-T14-R003" value="($Prerequisite3 and (//cac:Delivery/cbc:ActualDeliveryDate) or (//cac:InvoicePeriod/cbc:StartDate and //cac:InvoicePeriod/cbc:EndDate)) or not ($Prerequisite3)" />
+  <param name="ATNAT-T14-R004" value="($Prerequisite4 and //cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not ($Prerequisite4)" />
+  <param name="ATNAT-T14-R005" value="($Prerequisite5 and //cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not ($Prerequisite5)" />
+  <param name="ATNAT-T14-R006" value="($Prerequisite6 and number(../cbc:TaxAmount) = 0) or not ($Prerequisite6)" />
+  <param name="CreditNote" value="/ubl:CreditNote" />
+  <param name="Tax_Category" value="//cac:TaxCategory" />
 </pattern>

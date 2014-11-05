@@ -41,12 +41,12 @@
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron tests for binding ubl and transaction T14-->
 <pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T14" id="UBL-T14">
-  <param name="NOGOV-T14-R001" value="((cac:Contact/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NOGOV-T14-R002" value="((cac:SellersItemIdentification/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NOGOV-T14-R003" value="((cbc:CreditedQuantity/@unitCode != '') and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NOGOV-T14-R004" value="((cac:PartyLegalEntity/cbc:CompanyID != '') and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NOGOV-T14-R006" value="((cac:PartyIdentification/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NOGOV-T14-R007" value="((cac:Contact/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
+  <param name="NOGOV-T14-R001" value="($Prerequisite1 and (cac:Contact/cbc:ID != '')) or not ($Prerequisite1)" />
+  <param name="NOGOV-T14-R002" value="($Prerequisite1 and (cac:SellersItemIdentification/cbc:ID != '')) or not ($Prerequisite1)" />
+  <param name="NOGOV-T14-R003" value="($Prerequisite1 and (cbc:CreditedQuantity/@unitCode != '')) or not ($Prerequisite1)" />
+  <param name="NOGOV-T14-R004" value="($Prerequisite1 and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ($Prerequisite1)" />
+  <param name="NOGOV-T14-R006" value="($Prerequisite1 and (cac:PartyIdentification/cbc:ID != '')) or not ($Prerequisite1)" />
+  <param name="NOGOV-T14-R007" value="($Prerequisite1 and (cac:Contact/cbc:ID != '')) or not ($Prerequisite1)" />
   <param name="NOGOV-T14-R008" value="(cac:PostalAddress/cac:Country/cbc:IdentificationCode != '')" />
   <param name="Customer_Party" value="//cac:AccountingCustomerParty/cac:Party" />
   <param name="CreditNote_Line" value="//cac:CreditNoteLine" />

@@ -41,19 +41,19 @@
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron tests for binding ubl and transaction T15-->
 <pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T15" id="UBL-T15">
-  <param name="NOGOV-T15-R005" value="((cac:ContractDocumentReference/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NOGOV-T15-R007" value="((cac:Contact/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NOGOV-T15-R006" value="((cac:PartyIdentification/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NOGOV-T15-R001" value="((cac:Contact/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NOGOV-T15-R002" value="((cac:SellersItemIdentification/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NOGOV-T15-R003" value="((cbc:AccountingCost) and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NOGOV-T15-R004" value="((cac:OrderLineReference/cbc:LineID != '') and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NOGOV-T15-R008" value="((number(cac:ClassifiedTaxCategory/cbc:Percent) >=0) and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NOGOV-T15-R009" value="((cac:PartyLegalEntity/cbc:CompanyID != '') and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NOGOV-T15-R010" value="((child::cbc:InvoicedQuantity/@unitCode != '') and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NOGOV-T15-R011" value="((cac:PayeeFinancialAccount/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NOGOV-T15-R012" value="((cbc:PaymentID != '') and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NOGOV-T15-R013" value="((child::cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
+  <param name="NOGOV-T15-R005" value="($Prerequisite1 and (cac:ContractDocumentReference/cbc:ID != '')) or not ($Prerequisite1)" />
+  <param name="NOGOV-T15-R007" value="($Prerequisite1 and (cac:Contact/cbc:ID != '')) or not ($Prerequisite1)" />
+  <param name="NOGOV-T15-R006" value="($Prerequisite1 and (cac:PartyIdentification/cbc:ID != '')) or not ($Prerequisite1)" />
+  <param name="NOGOV-T15-R001" value="($Prerequisite1 and (cac:Contact/cbc:ID != '')) or not ($Prerequisite1)" />
+  <param name="NOGOV-T15-R002" value="($Prerequisite1 and (cac:SellersItemIdentification/cbc:ID != '')) or not ($Prerequisite1)" />
+  <param name="NOGOV-T15-R003" value="($Prerequisite1 and (cbc:AccountingCost)) or not ($Prerequisite1)" />
+  <param name="NOGOV-T15-R004" value="($Prerequisite1 and (cac:OrderLineReference/cbc:LineID != '')) or not ($Prerequisite1)" />
+  <param name="NOGOV-T15-R008" value="($Prerequisite1 and (number(cac:ClassifiedTaxCategory/cbc:Percent) >=0)) or not ($Prerequisite1)" />
+  <param name="NOGOV-T15-R009" value="($Prerequisite1 and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ($Prerequisite1)" />
+  <param name="NOGOV-T15-R010" value="($Prerequisite1 and (child::cbc:InvoicedQuantity/@unitCode != '')) or not ($Prerequisite1)" />
+  <param name="NOGOV-T15-R011" value="($Prerequisite1 and (cac:PayeeFinancialAccount/cbc:ID != '')) or not ($Prerequisite1)" />
+  <param name="NOGOV-T15-R012" value="($Prerequisite1 and (cbc:PaymentID != '')) or not ($Prerequisite1)" />
+  <param name="NOGOV-T15-R013" value="($Prerequisite1 and (child::cbc:ID != '')) or not ($Prerequisite1)" />
   <param name="NOGOV-T15-R014" value="(cac:PostalAddress/cac:Country/cbc:IdentificationCode != '')" />
   <param name="Customer_Party" value="/ubl:Invoice/cac:AccountingCustomerParty/cac:Party" />
   <param name="Invoice_Line" value="//cac:InvoiceLine" />

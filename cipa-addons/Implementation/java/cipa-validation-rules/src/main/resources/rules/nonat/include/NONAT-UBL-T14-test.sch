@@ -41,10 +41,10 @@
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron tests for binding UBL and transaction T14-->
 <pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T14" id="UBL-T14">
-  <param name="NONAT-T14-R001" value="((cac:PartyLegalEntity/cbc:CompanyID != '') and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NONAT-T14-R002" value="(cbc:CreditedQuantity and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NONAT-T14-R003" value="((cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode) and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="NONAT-T14-R004" value="((cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode) and $Prerequisite1) or not ($Prerequisite1)" />
+  <param name="NONAT-T14-R001" value="($Prerequisite1 and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ($Prerequisite1)" />
+  <param name="NONAT-T14-R002" value="($Prerequisite1 and cbc:CreditedQuantity) or not ($Prerequisite1)" />
+  <param name="NONAT-T14-R003" value="($Prerequisite1 and (cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
+  <param name="NONAT-T14-R004" value="($Prerequisite1 and (cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
   <param name="Supplier_Party" value="//cac:AccountingSupplierParty/cac:Party" />
   <param name="Credit_Note_Line" value="//cac:CreditNoteLine" />
   <param name="Customer_Party" value="//cac:AccountingCustomerParty/cac:Party" />

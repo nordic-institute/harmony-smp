@@ -95,7 +95,7 @@ final class RuleParam {
   @Nonempty
   public String getTestWithPrequisiteInline () {
     if (hasPrerequisite ())
-      return "(" + m_sTest + " and " + m_sPrerequisite + ") or not (" + m_sPrerequisite + ")";
+      return "(" + m_sPrerequisite + " and " + m_sTest + ") or not (" + m_sPrerequisite + ")";
     return m_sTest;
   }
 
@@ -103,10 +103,10 @@ final class RuleParam {
   @Nonempty
   public String getTestWithPrequisiteParameter () {
     if (hasPrerequisite ())
-      return "(" +
-             m_sTest +
-             " and $" +
+      return "($" +
              getRulePrerequisiteVarName () +
+             " and " +
+             m_sTest +
              ") or not ($" +
              getRulePrerequisiteVarName () +
              ")";

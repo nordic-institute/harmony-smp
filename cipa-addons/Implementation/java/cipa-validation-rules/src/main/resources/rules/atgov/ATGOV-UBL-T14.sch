@@ -39,17 +39,20 @@
 
 -->
 <!--This file is generated automatically! Do NOT edit!-->
-<!--Schematron tests for binding UBL and transaction T10-->
-<pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T10" id="UBL-T10">
-  <param name="NONAT-T10-R001" value="($Prerequisite1 and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R002" value="($Prerequisite1 and //cac:PaymentMeans/cbc:PaymentDueDate) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R003" value="($Prerequisite1 and //cac:Delivery/cbc:ActualDeliveryDate) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R004" value="($Prerequisite1 and //cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CityName and //cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:PostalZone and //cac:Delivery/cac:DeliveryLocation/cac:Address/cac:Country/cbc:IdentificationCode) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R005" value="($Prerequisite1 and cbc:InvoicedQuantity) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R006" value="($Prerequisite1 and (cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R007" value="($Prerequisite1 and (cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
-  <param name="Supplier_Party" value="//cac:AccountingSupplierParty/cac:Party" />
-  <param name="Invoice_Line" value="//cac:InvoiceLine" />
-  <param name="Invoice" value="/ubl:Invoice" />
-  <param name="Customer_Party" value="//cac:AccountingCustomerParty/cac:Party" />
-</pattern>
+<!--Schematron assembly for binding UBL and transaction T14-->
+<schema xmlns="http://purl.oclc.org/dsdl/schematron" queryBinding="xslt">
+  <title>ATGOV T14 bound to UBL</title>
+  <ns prefix="cbc" uri="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" />
+  <ns prefix="cac" uri="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" />
+  <ns prefix="ubl" uri="urn:oasis:names:specification:ubl:schema:xsd:creditnote-2" />
+  <let name="Prerequisite1" value="(//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT')" />
+  <let name="Prerequisite2" value="(//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT') and (cbc:Note)" />
+  <let name="Prerequisite3" value="(//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT') and (string(number(//cac:OrderReference/cbc:ID)) != 'NaN')" />
+  <let name="Prerequisite4" value="(//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT') and (cbc:SettlementDiscountPercent)" />
+  <let name="Prerequisite5" value="(//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT') and (cac:Attachment/cbc:EmbeddedDocumentBinaryObject)" />
+  <phase id="ATGOV_T14_phase">
+    <active pattern="UBL-T14" />
+  </phase>
+  <include href="include/ATGOV-T14-abstract.sch" />
+  <include href="include/ATGOV-UBL-T14-test.sch" />
+</schema>

@@ -41,12 +41,12 @@
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron tests for binding UBL and transaction T10-->
 <pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T10" id="UBL-T10">
-  <param name="ATNAT-T10-R001" value="(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="ATNAT-T10-R002" value="((cbc:ID = 'E') or (cbc:ID = 'AE') and $Prerequisite2) or not ($Prerequisite2)" />
-  <param name="ATNAT-T10-R003" value="((//cac:Delivery/cbc:ActualDeliveryDate) or (//cac:InvoicePeriod/cbc:StartDate and //cac:InvoicePeriod/cbc:EndDate) and $Prerequisite3) or not ($Prerequisite3)" />
-  <param name="ATNAT-T10-R004" value="(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID and $Prerequisite4) or not ($Prerequisite4)" />
-  <param name="ATNAT-T10-R005" value="(//cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID and $Prerequisite5) or not ($Prerequisite5)" />
-  <param name="ATNAT-T10-R006" value="(number(../cbc:TaxAmount) = 0 and $Prerequisite6) or not ($Prerequisite6)" />
+  <param name="ATNAT-T10-R001" value="($Prerequisite1 and //cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not ($Prerequisite1)" />
+  <param name="ATNAT-T10-R002" value="($Prerequisite2 and (cbc:ID = 'E') or (cbc:ID = 'AE')) or not ($Prerequisite2)" />
+  <param name="ATNAT-T10-R003" value="($Prerequisite3 and (//cac:Delivery/cbc:ActualDeliveryDate) or (//cac:InvoicePeriod/cbc:StartDate and //cac:InvoicePeriod/cbc:EndDate)) or not ($Prerequisite3)" />
+  <param name="ATNAT-T10-R004" value="($Prerequisite4 and //cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not ($Prerequisite4)" />
+  <param name="ATNAT-T10-R005" value="($Prerequisite5 and //cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not ($Prerequisite5)" />
+  <param name="ATNAT-T10-R006" value="($Prerequisite6 and number(../cbc:TaxAmount) = 0) or not ($Prerequisite6)" />
   <param name="Invoice" value="/ubl:Invoice" />
   <param name="Tax_Category" value="//cac:TaxCategory" />
 </pattern>

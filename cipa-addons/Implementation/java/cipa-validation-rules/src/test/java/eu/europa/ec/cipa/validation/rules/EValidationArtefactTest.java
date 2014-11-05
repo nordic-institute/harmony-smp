@@ -94,9 +94,9 @@ public final class EValidationArtefactTest {
                                      .size ());
     assertEquals (2, EValidationArtefact.getAllMatchingArtefacts (EValidationLevel.PROFILE_REQUIREMENTS, null, null)
                                         .size ());
-    assertEquals (5, EValidationArtefact.getAllMatchingArtefacts (EValidationLevel.LEGAL_REQUIREMENTS, null, null)
+    assertEquals (6, EValidationArtefact.getAllMatchingArtefacts (EValidationLevel.LEGAL_REQUIREMENTS, null, null)
                                         .size ());
-    assertEquals (3, EValidationArtefact.getAllMatchingArtefacts (EValidationLevel.INDUSTRY_SPECIFIC, null, null)
+    assertEquals (4, EValidationArtefact.getAllMatchingArtefacts (EValidationLevel.INDUSTRY_SPECIFIC, null, null)
                                         .size ());
     assertEquals (0, EValidationArtefact.getAllMatchingArtefacts (EValidationLevel.ENTITY_SPECIFC, null, null).size ());
 
@@ -110,7 +110,7 @@ public final class EValidationArtefactTest {
     assertEquals (1, EValidationArtefact.getAllMatchingArtefacts (null, EValidationDocumentType.ORDERRESPONSE, null)
                                         .size ());
     assertEquals (10, EValidationArtefact.getAllMatchingArtefacts (null, EValidationDocumentType.INVOICE, null).size ());
-    assertEquals (6, EValidationArtefact.getAllMatchingArtefacts (null, EValidationDocumentType.CREDIT_NOTE, null)
+    assertEquals (8, EValidationArtefact.getAllMatchingArtefacts (null, EValidationDocumentType.CREDIT_NOTE, null)
                                         .size ());
 
     // Test country only
@@ -118,7 +118,7 @@ public final class EValidationArtefactTest {
                   EValidationArtefact.getAllMatchingArtefacts (null,
                                                                null,
                                                                CountryCache.getInstance ().getCountry ("XX")).size ());
-    assertEquals (15,
+    assertEquals (17,
                   EValidationArtefact.getAllMatchingArtefacts (null,
                                                                null,
                                                                CountryCache.getInstance ().getCountry ("AT")).size ());

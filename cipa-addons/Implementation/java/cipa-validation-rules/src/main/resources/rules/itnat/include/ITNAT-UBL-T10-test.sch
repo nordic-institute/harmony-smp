@@ -41,15 +41,15 @@
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron tests for binding UBL and transaction T10-->
 <pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T10" id="UBL-T10">
-  <param name="IT-T10-R003" value="((cac:PartyTaxScheme/cbc:CompanyID[@schemeID = 'IT:VAT'] and cac:PartyName/cbc:Name) and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="IT-T10-R005" value="((cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode) and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="IT-T10-R008" value="((cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode) and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="IT-T10-R013" value="(not(cac:PartyLegalEntity/cbc:CompanyID[@schemeID = 'IT:CC']) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentity) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentityCode) and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="IT-T10-R016" value="(cbc:InvoiceTypeCode and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="IT-T10-R017" value="((cbc:ID and cbc:IssueDate and cbc:DocumentType) and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="IT-T10-R024" value="((cbc:InvoicedQuantity) and (cbc:InvoicedQuantity/@unitCode) and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="IT-T10-R031" value="((cac:Price/cbc:PriceAmount) and $Prerequisite1) or not ($Prerequisite1)" />
-  <param name="IT-T10-R032" value="((cbc:ID and cbc:IssueDate and cbc:DocumentType) and $Prerequisite1) or not ($Prerequisite1)" />
+  <param name="IT-T10-R003" value="($Prerequisite1 and (cac:PartyTaxScheme/cbc:CompanyID[@schemeID = 'IT:VAT'] and cac:PartyName/cbc:Name)) or not ($Prerequisite1)" />
+  <param name="IT-T10-R005" value="($Prerequisite1 and (cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
+  <param name="IT-T10-R008" value="($Prerequisite1 and (cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
+  <param name="IT-T10-R013" value="($Prerequisite1 and not(cac:PartyLegalEntity/cbc:CompanyID[@schemeID = 'IT:CC']) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentity) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentityCode)) or not ($Prerequisite1)" />
+  <param name="IT-T10-R016" value="($Prerequisite1 and cbc:InvoiceTypeCode) or not ($Prerequisite1)" />
+  <param name="IT-T10-R017" value="($Prerequisite1 and (cbc:ID and cbc:IssueDate and cbc:DocumentType)) or not ($Prerequisite1)" />
+  <param name="IT-T10-R024" value="($Prerequisite1 and (cbc:InvoicedQuantity) and (cbc:InvoicedQuantity/@unitCode)) or not ($Prerequisite1)" />
+  <param name="IT-T10-R031" value="($Prerequisite1 and (cac:Price/cbc:PriceAmount)) or not ($Prerequisite1)" />
+  <param name="IT-T10-R032" value="($Prerequisite1 and (cbc:ID and cbc:IssueDate and cbc:DocumentType)) or not ($Prerequisite1)" />
   <param name="Invoice_Line" value="//cac:InvoiceLine" />
   <param name="Invoice" value="/ubl:Invoice" />
   <param name="Supplier_Party_Address" value="//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress" />

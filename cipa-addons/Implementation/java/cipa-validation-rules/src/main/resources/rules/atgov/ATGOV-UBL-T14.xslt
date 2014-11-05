@@ -38,7 +38,7 @@
     under either the MPL or the EUPL License.
 
 -->
-<xsl:stylesheet version="1.0" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+<xsl:stylesheet version="1.0" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:svrl="http://purl.oclc.org/dsdl/svrl" xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:creditnote-2" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 <!--Implementers: please note that overriding process-prolog or process-root is 
     the preferred method for meta-stylesheets to use where possible. -->
 <xsl:param name="archiveDirParameter" />
@@ -187,7 +187,7 @@
 
 <!--SCHEMA SETUP-->
 <xsl:template match="/">
-    <svrl:schematron-output schemaVersion="" title="NOGOV T10 bound to UBL">
+    <svrl:schematron-output schemaVersion="" title="ATGOV T14 bound to UBL">
       <xsl:comment>
         <xsl:value-of select="$archiveDirParameter" />   
 		 <xsl:value-of select="$archiveNameParameter" />  
@@ -196,265 +196,277 @@
       </xsl:comment>
       <svrl:ns-prefix-in-attribute-values prefix="cbc" uri="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" />
       <svrl:ns-prefix-in-attribute-values prefix="cac" uri="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" />
-      <svrl:ns-prefix-in-attribute-values prefix="ubl" uri="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" />
+      <svrl:ns-prefix-in-attribute-values prefix="ubl" uri="urn:oasis:names:specification:ubl:schema:xsd:creditnote-2" />
       <svrl:active-pattern>
         <xsl:attribute name="document">
           <xsl:value-of select="document-uri(/)" />
         </xsl:attribute>
-        <xsl:attribute name="id">UBL-T10</xsl:attribute>
-        <xsl:attribute name="name">UBL-T10</xsl:attribute>
+        <xsl:attribute name="id">UBL-T14</xsl:attribute>
+        <xsl:attribute name="name">UBL-T14</xsl:attribute>
         <xsl:apply-templates />
       </svrl:active-pattern>
-      <xsl:apply-templates mode="M6" select="/" />
+      <xsl:apply-templates mode="M10" select="/" />
     </svrl:schematron-output>
   </xsl:template>
 
 <!--SCHEMATRON PATTERNS-->
-<svrl:text>NOGOV T10 bound to UBL</svrl:text>
-  <xsl:param name="Prerequisite1" select="(//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO')" />
+<svrl:text>ATGOV T14 bound to UBL</svrl:text>
+  <xsl:param name="Prerequisite1" select="(//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT')" />
+  <xsl:param name="Prerequisite2" select="(//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT') and (cbc:Note)" />
+  <xsl:param name="Prerequisite3" select="(//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT') and (string(number(//cac:OrderReference/cbc:ID)) != 'NaN')" />
+  <xsl:param name="Prerequisite4" select="(//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT') and (cbc:SettlementDiscountPercent)" />
+  <xsl:param name="Prerequisite5" select="(//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT') and (cac:Attachment/cbc:EmbeddedDocumentBinaryObject)" />
 
-<!--PATTERN UBL-T10-->
+<!--PATTERN UBL-T14-->
 
 
 	<!--RULE -->
-<xsl:template match="/ubl:Invoice/cac:AccountingCustomerParty/cac:Party" mode="M6" priority="1006">
-    <svrl:fired-rule context="/ubl:Invoice/cac:AccountingCustomerParty/cac:Party" />
+<xsl:template match="/ubl:CreditNote" mode="M10" priority="1005">
+    <svrl:fired-rule context="/ubl:CreditNote" />
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and (cac:PartyIdentification/cbc:ID != '')) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and count(//cac:CreditNoteLine) &lt; 999) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (cac:PartyIdentification/cbc:ID != '')) or not ($Prerequisite1)">
-          <xsl:attribute name="flag">warning</xsl:attribute>
-          <xsl:attribute name="location">
-            <xsl:apply-templates mode="schematron-select-full-path" select="." />
-          </xsl:attribute>
-          <svrl:text>[NOGOV-T10-R006]-A customer number for AccountingCustomerParty SHOULD be provided according to EHF.</svrl:text>
-        </svrl:failed-assert>
-      </xsl:otherwise>
-    </xsl:choose>
-
-		<!--ASSERT -->
-<xsl:choose>
-      <xsl:when test="($Prerequisite1 and (cac:Contact/cbc:ID != '')) or not ($Prerequisite1)" />
-      <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (cac:Contact/cbc:ID != '')) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and count(//cac:CreditNoteLine) &lt; 999) or not ($Prerequisite1)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[NOGOV-T10-R007]-A contact reference identifier MUST be provided for AccountingCustomerParty according to EHF.</svrl:text>
+          <svrl:text>[ATGOV-T14-R002]-A maximum number of 999 invoice lines must be present.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and (cac:OrderReference/cbc:ID)) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and (cac:OrderReference/cbc:ID)) or not ($Prerequisite1)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[NOGOV-T10-R009]-PartyLegalEntity for AccountingCustomerParty MUST be provided according to EHF.</svrl:text>
+          <svrl:text>[ATGOV-T14-R003]-The order number or buyer group must be present.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
-  </xsl:template>
-
-	<!--RULE -->
-<xsl:template match="//cac:Item" mode="M6" priority="1005">
-    <svrl:fired-rule context="//cac:Item" />
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and (cac:SellersItemIdentification/cbc:ID != '')) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and count(//cac:PayeeFinancialAccount/cbc:ID) = 1) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (cac:SellersItemIdentification/cbc:ID != '')) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and count(//cac:PayeeFinancialAccount/cbc:ID) = 1) or not ($Prerequisite1)">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[NOGOV-T10-R002]-The sellers ID for the item SHOULD be provided according to EHF.</svrl:text>
+          <svrl:text>[ATGOV-T14-R005]-Exactly 1 beneficiary account may be present.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and (number(cac:ClassifiedTaxCategory/cbc:Percent) >=0)) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and count(//cac:PaymentTerms/cac:SettlementPeriod) &lt;= 2) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (number(cac:ClassifiedTaxCategory/cbc:Percent) >=0)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and count(//cac:PaymentTerms/cac:SettlementPeriod) &lt;= 2) or not ($Prerequisite1)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[NOGOV-T10-R008]-The item's tax rate, expressed as a percentage MUST be provided according to EHF.</svrl:text>
-        </svrl:failed-assert>
-      </xsl:otherwise>
-    </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
-  </xsl:template>
-
-	<!--RULE -->
-<xsl:template match="/ubl:Invoice/cac:AccountingSupplierParty/cac:Party" mode="M6" priority="1004">
-    <svrl:fired-rule context="/ubl:Invoice/cac:AccountingSupplierParty/cac:Party" />
-
-		<!--ASSERT -->
-<xsl:choose>
-      <xsl:when test="($Prerequisite1 and (cac:Contact/cbc:ID != '')) or not ($Prerequisite1)" />
-      <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (cac:Contact/cbc:ID != '')) or not ($Prerequisite1)">
-          <xsl:attribute name="flag">warning</xsl:attribute>
-          <xsl:attribute name="location">
-            <xsl:apply-templates mode="schematron-select-full-path" select="." />
-          </xsl:attribute>
-          <svrl:text>[NOGOV-T10-R001]-A contact reference identifier SHOULD be provided for AccountingSupplierParty according to EHF.</svrl:text>
+          <svrl:text>[ATGOV-T14-R009]-At last 2 cashbacks may be present.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(cac:PostalAddress/cac:Country/cbc:IdentificationCode != '')" />
+      <xsl:when test="($Prerequisite1 and count(//cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject) &lt;= 200) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cac:PostalAddress/cac:Country/cbc:IdentificationCode != '')">
+        <svrl:failed-assert test="($Prerequisite1 and count(//cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject) &lt;= 200) or not ($Prerequisite1)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[NOGOV-T10-R014]-Country code for the supplier address MUST be provided according to EHF.</svrl:text>
+          <svrl:text>[ATGOV-T14-R013]-A maximum of 200 attachments are allowed within a single document.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
-  </xsl:template>
-
-	<!--RULE -->
-<xsl:template match="/ubl:Invoice" mode="M6" priority="1003">
-    <svrl:fired-rule context="/ubl:Invoice" />
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and (cac:ContractDocumentReference/cbc:ID != '')) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and string-length(string-join(//cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject/text(),'')) * 3 div 4 &lt;= 15728640) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (cac:ContractDocumentReference/cbc:ID != '')) or not ($Prerequisite1)">
-          <xsl:attribute name="flag">warning</xsl:attribute>
-          <xsl:attribute name="location">
-            <xsl:apply-templates mode="schematron-select-full-path" select="." />
-          </xsl:attribute>
-          <svrl:text>[NOGOV-T10-R005]-ContractDocumentReference SHOULD be provided according to EHF.</svrl:text>
-        </svrl:failed-assert>
-      </xsl:otherwise>
-    </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
-  </xsl:template>
-
-	<!--RULE -->
-<xsl:template match="//cac:PaymentMeans" mode="M6" priority="1002">
-    <svrl:fired-rule context="//cac:PaymentMeans" />
-
-		<!--ASSERT -->
-<xsl:choose>
-      <xsl:when test="($Prerequisite1 and (cac:PayeeFinancialAccount/cbc:ID != '')) or not ($Prerequisite1)" />
-      <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (cac:PayeeFinancialAccount/cbc:ID != '')) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and string-length(string-join(//cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject/text(),'')) * 3 div 4 &lt;= 15728640) or not ($Prerequisite1)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[NOGOV-T10-R011]-PayeeFinancialAccount MUST be provided  according EHF.</svrl:text>
+          <svrl:text>[ATGOV-T14-R014]-The maximum size of all attachments after Base64 decoding must not exceed 15 Megabytes.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and (cbc:PaymentID != '')) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and number(cac:LegalMonetaryTotal/cbc:PayableAmount) &lt;= 999999999.99) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (cbc:PaymentID != '')) or not ($Prerequisite1)">
-          <xsl:attribute name="flag">warning</xsl:attribute>
+        <svrl:failed-assert test="($Prerequisite1 and number(cac:LegalMonetaryTotal/cbc:PayableAmount) &lt;= 999999999.99) or not ($Prerequisite1)">
+          <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[NOGOV-T10-R012]-Payment Identifier (KID number) SHOULD be used according to EHF.</svrl:text>
+          <svrl:text>[ATGOV-T14-R016]-The payable amount of an invoice must be smaller or equal than 999999999.99.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M10" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:InvoiceLine" mode="M6" priority="1001">
-    <svrl:fired-rule context="//cac:InvoiceLine" />
+<xsl:template match="/ubl:CreditNote/cac:AccountingSupplierParty/cac:Party" mode="M10" priority="1004">
+    <svrl:fired-rule context="/ubl:CreditNote/cac:AccountingSupplierParty/cac:Party" />
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and (cbc:AccountingCost)) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and (cac:Contact/cbc:ElectronicMail)) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (cbc:AccountingCost)) or not ($Prerequisite1)">
-          <xsl:attribute name="flag">warning</xsl:attribute>
+        <svrl:failed-assert test="($Prerequisite1 and (cac:Contact/cbc:ElectronicMail)) or not ($Prerequisite1)">
+          <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[NOGOV-T10-R003]-The buyer's accounting code applied to the Invoice Line SHOULD be provided according to EHF.</svrl:text>
+          <svrl:text>[ATGOV-T14-R001]-The email address of the biller is mandatory.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-
-		<!--ASSERT -->
-<xsl:choose>
-      <xsl:when test="($Prerequisite1 and (cac:OrderLineReference/cbc:LineID != '')) or not ($Prerequisite1)" />
-      <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (cac:OrderLineReference/cbc:LineID != '')) or not ($Prerequisite1)">
-          <xsl:attribute name="flag">warning</xsl:attribute>
-          <xsl:attribute name="location">
-            <xsl:apply-templates mode="schematron-select-full-path" select="." />
-          </xsl:attribute>
-          <svrl:text>[NOGOV-T10-R004]-An association to Order Line Reference SHOULD be provided according to EHF.</svrl:text>
-        </svrl:failed-assert>
-      </xsl:otherwise>
-    </xsl:choose>
-
-		<!--ASSERT -->
-<xsl:choose>
-      <xsl:when test="($Prerequisite1 and (child::cbc:InvoicedQuantity/@unitCode != '')) or not ($Prerequisite1)" />
-      <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (child::cbc:InvoicedQuantity/@unitCode != '')) or not ($Prerequisite1)">
-          <xsl:attribute name="flag">warning</xsl:attribute>
-          <xsl:attribute name="location">
-            <xsl:apply-templates mode="schematron-select-full-path" select="." />
-          </xsl:attribute>
-          <svrl:text>[NOGOV-T10-R010]-The unit qualifier of the invoiced quantity SHOULD be provided according to EHF.</svrl:text>
-        </svrl:failed-assert>
-      </xsl:otherwise>
-    </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M10" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:OrderReference" mode="M6" priority="1000">
-    <svrl:fired-rule context="//cac:OrderReference" />
+<xsl:template match="/ubl:CreditNoteLine" mode="M10" priority="1003">
+    <svrl:fired-rule context="/ubl:CreditNoteLine" />
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and (child::cbc:ID != '')) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite3 and (cac:OrderReferenceLine/cbc:LineID)) or not ($Prerequisite3)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (child::cbc:ID != '')) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite3 and (cac:OrderReferenceLine/cbc:LineID)) or not ($Prerequisite3)">
+          <xsl:attribute name="flag">fatal</xsl:attribute>
+          <xsl:attribute name="location">
+            <xsl:apply-templates mode="schematron-select-full-path" select="." />
+          </xsl:attribute>
+          <svrl:text>[ATGOV-T14-R008]-The order position number (per line item) must be present when the OrderID is a PO number (10 digit numeric).</svrl:text>
+        </svrl:failed-assert>
+      </xsl:otherwise>
+    </xsl:choose>
+
+		<!--ASSERT -->
+<xsl:choose>
+      <xsl:when test="($Prerequisite1 and (number(cbc:LineExtensionAmount) >= -999999999999.99 and number(cbc:LineExtensionAmount) &lt;= 999999999999.99)) or not ($Prerequisite1)" />
+      <xsl:otherwise>
+        <svrl:failed-assert test="($Prerequisite1 and (number(cbc:LineExtensionAmount) >= -999999999999.99 and number(cbc:LineExtensionAmount) &lt;= 999999999999.99)) or not ($Prerequisite1)">
+          <xsl:attribute name="flag">fatal</xsl:attribute>
+          <xsl:attribute name="location">
+            <xsl:apply-templates mode="schematron-select-full-path" select="." />
+          </xsl:attribute>
+          <svrl:text>[ATGOV-T14-R015]-The gross amount of a single invoice line must be greater or equal than -999999999999.99 and smaller or equal than 999999999999.99.</svrl:text>
+        </svrl:failed-assert>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:apply-templates mode="M10" select="*|comment()|processing-instruction()" />
+  </xsl:template>
+
+	<!--RULE -->
+<xsl:template match="/ubl:CreditNote/cac:AdditionalDocumentReference" mode="M10" priority="1002">
+    <svrl:fired-rule context="/ubl:CreditNote/cac:AdditionalDocumentReference" />
+
+		<!--ASSERT -->
+<xsl:choose>
+      <xsl:when test="($Prerequisite1 and count(cac:Attachment/cac:ExternalReference) = 0) or not ($Prerequisite1)" />
+      <xsl:otherwise>
+        <svrl:failed-assert test="($Prerequisite1 and count(cac:Attachment/cac:ExternalReference) = 0) or not ($Prerequisite1)">
+          <xsl:attribute name="flag">fatal</xsl:attribute>
+          <xsl:attribute name="location">
+            <xsl:apply-templates mode="schematron-select-full-path" select="." />
+          </xsl:attribute>
+          <svrl:text>[ATGOV-T14-R011]-Attachments to the invoice must be included into the invoice document and may not be referenced from external sources.</svrl:text>
+        </svrl:failed-assert>
+      </xsl:otherwise>
+    </xsl:choose>
+
+		<!--ASSERT -->
+<xsl:choose>
+      <xsl:when test="($Prerequisite5 and cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@mimeCode = 'application/vnd.ms-excel' or cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@mimeCode = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' or cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@mimeCode = 'application/pdf' or cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@mimeCode = 'image/png' or cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@mimeCode = 'application/xml' or cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@mimeCode = 'text/xml') or not ($Prerequisite5)" />
+      <xsl:otherwise>
+        <svrl:failed-assert test="($Prerequisite5 and cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@mimeCode = 'application/vnd.ms-excel' or cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@mimeCode = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' or cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@mimeCode = 'application/pdf' or cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@mimeCode = 'image/png' or cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@mimeCode = 'application/xml' or cac:Attachment/cbc:EmbeddedDocumentBinaryObject/@mimeCode = 'text/xml') or not ($Prerequisite5)">
+          <xsl:attribute name="flag">fatal</xsl:attribute>
+          <xsl:attribute name="location">
+            <xsl:apply-templates mode="schematron-select-full-path" select="." />
+          </xsl:attribute>
+          <svrl:text>[ATGOV-T14-R012]-Attachments included within the invoice must be of one of the following file formats: XLS (application/vnd.ms-excel), XLSX (application/vnd.openxmlformats-officedocument.spreadsheetml.sheet), PDF (application/pdf), PNG (image/png) or XML (application/xml or text/xml).</svrl:text>
+        </svrl:failed-assert>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:apply-templates mode="M10" select="*|comment()|processing-instruction()" />
+  </xsl:template>
+
+	<!--RULE -->
+<xsl:template match="/ubl:CreditNote/cac:PaymentMeans" mode="M10" priority="1001">
+    <svrl:fired-rule context="/ubl:CreditNote/cac:PaymentMeans" />
+
+		<!--ASSERT -->
+<xsl:choose>
+      <xsl:when test="($Prerequisite1 and cbc:PaymentMeansCode = '31' and  (cac:PayeeFinancialAccount/cbc:ID/@schemeID and cac:PayeeFinancialAccount/cbc:ID/@schemeID = 'IBAN') and  (cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:ID/@schemeID and cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:ID/@schemeID = 'BIC')) or not ($Prerequisite1)" />
+      <xsl:otherwise>
+        <svrl:failed-assert test="($Prerequisite1 and cbc:PaymentMeansCode = '31' and (cac:PayeeFinancialAccount/cbc:ID/@schemeID and cac:PayeeFinancialAccount/cbc:ID/@schemeID = 'IBAN') and (cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:ID/@schemeID and cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:ID/@schemeID = 'BIC')) or not ($Prerequisite1)">
+          <xsl:attribute name="flag">fatal</xsl:attribute>
+          <xsl:attribute name="location">
+            <xsl:apply-templates mode="schematron-select-full-path" select="." />
+          </xsl:attribute>
+          <svrl:text>[ATGOV-T14-R007]-Only BIC and IBAN are allowed as beneficiary account information.</svrl:text>
+        </svrl:failed-assert>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:apply-templates mode="M10" select="*|comment()|processing-instruction()" />
+  </xsl:template>
+
+	<!--RULE -->
+<xsl:template match="/ubl:CreditNote/cac:PaymentTerms" mode="M10" priority="1000">
+    <svrl:fired-rule context="/ubl:CreditNote/cac:PaymentTerms" />
+
+		<!--ASSERT -->
+<xsl:choose>
+      <xsl:when test="($Prerequisite2 and cbc:SettlementDiscountPercent and cac:SettlementPeriod) or not ($Prerequisite2)" />
+      <xsl:otherwise>
+        <svrl:failed-assert test="($Prerequisite2 and cbc:SettlementDiscountPercent and cac:SettlementPeriod) or not ($Prerequisite2)">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[NOGOV-T10-R013]-An association to Order Reference SHOULD be provided according to EHF.</svrl:text>
+          <svrl:text>[ATGOV-T14-R004]-A credit note should not specify only textual payment terms.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+
+		<!--ASSERT -->
+<xsl:choose>
+      <xsl:when test="($Prerequisite4 and number(cbc:SettlementDiscountPercent) > 0 and number(cbc:SettlementDiscountPercent) &lt; 100) or not ($Prerequisite4)" />
+      <xsl:otherwise>
+        <svrl:failed-assert test="($Prerequisite4 and number(cbc:SettlementDiscountPercent) > 0 and number(cbc:SettlementDiscountPercent) &lt; 100) or not ($Prerequisite4)">
+          <xsl:attribute name="flag">fatal</xsl:attribute>
+          <xsl:attribute name="location">
+            <xsl:apply-templates mode="schematron-select-full-path" select="." />
+          </xsl:attribute>
+          <svrl:text>[ATGOV-T14-R010]-The percentage of a cashback item must be greater 0 and lower than 100.</svrl:text>
+        </svrl:failed-assert>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:apply-templates mode="M10" select="*|comment()|processing-instruction()" />
   </xsl:template>
-  <xsl:template match="text()" mode="M6" priority="-1" />
-  <xsl:template match="@*|node()" mode="M6" priority="-2">
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+  <xsl:template match="text()" mode="M10" priority="-1" />
+  <xsl:template match="@*|node()" mode="M10" priority="-2">
+    <xsl:apply-templates mode="M10" select="*|comment()|processing-instruction()" />
   </xsl:template>
 </xsl:stylesheet>

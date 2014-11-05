@@ -242,9 +242,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(local-name(/*) = 'Invoice' and (//cac:OrderReference/cbc:ID) and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and local-name(/*) = 'Invoice' and (//cac:OrderReference/cbc:ID)) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(local-name(/*) = 'Invoice' and (//cac:OrderReference/cbc:ID) and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and local-name(/*) = 'Invoice' and (//cac:OrderReference/cbc:ID)) or not ($Prerequisite1)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />

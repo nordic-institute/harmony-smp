@@ -108,6 +108,8 @@ public enum EValidationArtefact implements IValidationArtefact {
                                                                                                                       .getCountry ("NO"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10),
                                                                                                                                                                 ValidationTransaction.createUBLTransaction (ETransaction.T15),
                                                                                                                                                                 ValidationTransaction.createUBLTransaction (ETransaction.T17))),
+  CREDITNOTE_AUSTRIA_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.CREDIT_NOTE, "atnat", CountryCache.getInstance ()
+                                                                                                                              .getCountry ("AT"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T14))),
   CREDITNOTE_NORWAY_NATIONAL (EValidationLevel.LEGAL_REQUIREMENTS, EValidationDocumentType.CREDIT_NOTE, "nonat", CountryCache.getInstance ()
                                                                                                                              .getCountry ("NO"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T14))),
 
@@ -118,6 +120,8 @@ public enum EValidationArtefact implements IValidationArtefact {
   INVOICE_NORWAY_GOVERNMENT (EValidationLevel.INDUSTRY_SPECIFIC, EValidationDocumentType.INVOICE, "nogov", CountryCache.getInstance ()
                                                                                                                        .getCountry ("NO"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T10),
                                                                                                                                                                  ValidationTransaction.createUBLTransaction (ETransaction.T15))),
+  CREDITNOTE_AUSTRIA_GOVERNMENT (EValidationLevel.INDUSTRY_SPECIFIC, EValidationDocumentType.CREDIT_NOTE, "atgov", CountryCache.getInstance ()
+                                                                                                                               .getCountry ("AT"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T14))),
   CREDITNOTE_NORWAY_GOVERNMENT (EValidationLevel.INDUSTRY_SPECIFIC, EValidationDocumentType.CREDIT_NOTE, "nogov", CountryCache.getInstance ()
                                                                                                                               .getCountry ("NO"), ArrayHelper.newArray (ValidationTransaction.createUBLTransaction (ETransaction.T14)));
   // Entity specific - no such default artefact is present

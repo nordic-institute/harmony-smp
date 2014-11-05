@@ -222,9 +222,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((cbc:CreditedQuantity/@unitCode != '') and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and (cbc:CreditedQuantity/@unitCode != '')) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((cbc:CreditedQuantity/@unitCode != '') and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and (cbc:CreditedQuantity/@unitCode != '')) or not ($Prerequisite1)">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -242,9 +242,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((cac:PartyLegalEntity/cbc:CompanyID != '') and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((cac:PartyLegalEntity/cbc:CompanyID != '') and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ($Prerequisite1)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -256,9 +256,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((cac:PartyIdentification/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and (cac:PartyIdentification/cbc:ID != '')) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((cac:PartyIdentification/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and (cac:PartyIdentification/cbc:ID != '')) or not ($Prerequisite1)">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -270,9 +270,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((cac:Contact/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and (cac:Contact/cbc:ID != '')) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((cac:Contact/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and (cac:Contact/cbc:ID != '')) or not ($Prerequisite1)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -290,9 +290,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((cac:SellersItemIdentification/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and (cac:SellersItemIdentification/cbc:ID != '')) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((cac:SellersItemIdentification/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and (cac:SellersItemIdentification/cbc:ID != '')) or not ($Prerequisite1)">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -310,9 +310,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((cac:Contact/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and (cac:Contact/cbc:ID != '')) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((cac:Contact/cbc:ID != '') and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and (cac:Contact/cbc:ID != '')) or not ($Prerequisite1)">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />

@@ -222,9 +222,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((cbc:ID and cbc:IssueDate and cbc:DocumentType) and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and (cbc:ID and cbc:IssueDate and cbc:DocumentType)) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((cbc:ID and cbc:IssueDate and cbc:DocumentType) and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and (cbc:ID and cbc:IssueDate and cbc:DocumentType)) or not ($Prerequisite1)">
           <xsl:attribute name="flag">Fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -242,9 +242,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((cac:PartyTaxScheme/cbc:CompanyID[@schemeID = 'IT:VAT'] and cac:PartyName/cbc:Name) and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and (cac:PartyTaxScheme/cbc:CompanyID[@schemeID = 'IT:VAT'] and cac:PartyName/cbc:Name)) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((cac:PartyTaxScheme/cbc:CompanyID[@schemeID = 'IT:VAT'] and cac:PartyName/cbc:Name) and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and (cac:PartyTaxScheme/cbc:CompanyID[@schemeID = 'IT:VAT'] and cac:PartyName/cbc:Name)) or not ($Prerequisite1)">
           <xsl:attribute name="flag">Warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -262,9 +262,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(not(cac:PartyLegalEntity/cbc:CompanyID[@schemeID = 'IT:CC']) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentity) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentityCode) and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and not(cac:PartyLegalEntity/cbc:CompanyID[@schemeID = 'IT:CC']) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentity) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentityCode)) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(not(cac:PartyLegalEntity/cbc:CompanyID[@schemeID = 'IT:CC']) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentity) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentityCode) and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and not(cac:PartyLegalEntity/cbc:CompanyID[@schemeID = 'IT:CC']) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentity) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentityCode)) or not ($Prerequisite1)">
           <xsl:attribute name="flag">Warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -282,9 +282,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode) and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and (cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode) and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and (cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)">
           <xsl:attribute name="flag">Fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -302,9 +302,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(cbc:InvoiceTypeCode and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and cbc:InvoiceTypeCode) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(cbc:InvoiceTypeCode and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and cbc:InvoiceTypeCode) or not ($Prerequisite1)">
           <xsl:attribute name="flag">Fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -322,9 +322,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((cbc:ID and cbc:IssueDate and cbc:DocumentType) and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and (cbc:ID and cbc:IssueDate and cbc:DocumentType)) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((cbc:ID and cbc:IssueDate and cbc:DocumentType) and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and (cbc:ID and cbc:IssueDate and cbc:DocumentType)) or not ($Prerequisite1)">
           <xsl:attribute name="flag">Fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -342,9 +342,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((cbc:InvoicedQuantity) and (cbc:InvoicedQuantity/@unitCode) and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and (cbc:InvoicedQuantity) and (cbc:InvoicedQuantity/@unitCode)) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((cbc:InvoicedQuantity) and (cbc:InvoicedQuantity/@unitCode) and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and (cbc:InvoicedQuantity) and (cbc:InvoicedQuantity/@unitCode)) or not ($Prerequisite1)">
           <xsl:attribute name="flag">Fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -356,9 +356,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((cac:Price/cbc:PriceAmount) and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and (cac:Price/cbc:PriceAmount)) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((cac:Price/cbc:PriceAmount) and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and (cac:Price/cbc:PriceAmount)) or not ($Prerequisite1)">
           <xsl:attribute name="flag">Fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -376,9 +376,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode) and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and (cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode) and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and (cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)">
           <xsl:attribute name="flag">Fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />

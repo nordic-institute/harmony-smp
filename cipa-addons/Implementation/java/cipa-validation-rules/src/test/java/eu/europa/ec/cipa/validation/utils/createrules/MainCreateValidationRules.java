@@ -51,8 +51,7 @@ import eu.europa.ec.cipa.validation.utils.createrules.utils.Utils;
 
 public final class MainCreateValidationRules {
   public static void main (final String [] args) throws Exception {
-    if (false)
-      GlobalDebug.setDebugModeDirect (true);
+    GlobalDebug.setDebugModeDirect (false);
 
     // Base directory for source rules
     final File aRuleSource = new File ("src/test/resources/rule-source");
@@ -60,47 +59,51 @@ public final class MainCreateValidationRules {
 
     // Add all base directories
     final List <RuleSourceItem> aRuleSourceItems = new ArrayList <RuleSourceItem> ();
-    aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "atgov").addBussinessRule ("businessrules/atgov-T10-BusinessRules-v02.ods"));
-    aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "atnat").addBussinessRule ("businessrules/atnat-T10-BusinessRules-v02.ods"));
-    // XSLT creation of biicore takes forever (approx. 25-30 minutes)!!!
-    aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "biicore").addBussinessRule ("businessrules/biicore-T01-BusinessRules-v01.ods")
-                                                                                  .addBussinessRule ("businessrules/biicore-T10-BusinessRules-v01.ods")
-                                                                                  .addBussinessRule ("businessrules/biicore-T14-BusinessRules-v01.ods")
-                                                                                  .addBussinessRule ("businessrules/biicore-T15-BusinessRules-v01.ods"));
-    aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "biiprofiles").addBussinessRule ("businessrules/biiprofiles-T10-BusinessRules-v01.ods")
-                                                                                      .addBussinessRule ("businessrules/biiprofiles-T14-BusinessRules-v01.ods")
-                                                                                      .addBussinessRule ("businessrules/biiprofiles-T15-BusinessRules-v01.ods"));
-    aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "biirules").addCodeList ("businessrules/biirules-CodeLists-v01.ods")
-                                                                                   .addBussinessRule ("businessrules/biirules-T01-BusinessRules-v02.ods",
-                                                                                                      "T01")
-                                                                                   .addBussinessRule ("businessrules/biirules-T02-BusinessRules-v01.ods")
-                                                                                   .addBussinessRule ("businessrules/biirules-T03-BusinessRules-v01.ods")
-                                                                                   .addBussinessRule ("businessrules/biirules-T10-BusinessRules-v02.ods",
-                                                                                                      "T10")
-                                                                                   .addBussinessRule ("businessrules/biirules-T14-BusinessRules-v01.ods",
-                                                                                                      "T14")
-                                                                                   .addBussinessRule ("businessrules/biirules-T15-BusinessRules-v01.ods",
-                                                                                                      "T15"));
-    aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "dknat").addBussinessRule ("businessrules/dknat-T10-BusinessRules-v01.ods"));
-    aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "eugen").addCodeList ("businessrules/eugen-CodeLists-v01.ods")
-                                                                                .addBussinessRule ("businessrules/eugen-T01-BusinessRules-v02.ods")
-                                                                                .addBussinessRule ("businessrules/eugen-T10-BusinessRules-v01.ods",
-                                                                                                   "T10")
-                                                                                .addBussinessRule ("businessrules/eugen-T14-BusinessRules-v01.ods",
-                                                                                                   "T14")
-                                                                                .addBussinessRule ("businessrules/eugen-T15-BusinessRules-v01.ods",
-                                                                                                   "T15")
-                                                                                .addBussinessRule ("businessrules/eugen-T19-BusinessRules-v01.ods"));
-    aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "itnat").addBussinessRule ("businessrules/itnat-T10-BusinessRules-v03.ods"));
-    aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "nogov").addBussinessRule ("businessrules/nogov-T10-BusinessRules-v01.ods")
-                                                                                .addBussinessRule ("businessrules/nogov-T14-BusinessRules-v01.ods")
-                                                                                .addBussinessRule ("businessrules/nogov-T15-BusinessRules-v01.ods"));
-    aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "nonat").addCodeList ("businessrules/nonat-T17-CodeLists-v01.ods")
-                                                                                .addBussinessRule ("businessrules/nonat-T10-BusinessRules-v01.ods")
-                                                                                .addBussinessRule ("businessrules/nonat-T14-BusinessRules-v01.ods")
-                                                                                .addBussinessRule ("businessrules/nonat-T15-BusinessRules-v01.ods")
-                                                                                .addBussinessRule ("businessrules/nonat-T17-BusinessRules-v01.ods",
-                                                                                                   "T17"));
+    aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "atgov").addBussinessRule ("businessrules/atgov-T10-BusinessRules-v02.ods")
+                                                                                .addBussinessRule ("businessrules/atgov-T14-BusinessRules-v02.ods"));
+    aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "atnat").addBussinessRule ("businessrules/atnat-T10-BusinessRules-v02.ods")
+                                                                                .addBussinessRule ("businessrules/atnat-T14-BusinessRules-v02.ods"));
+    {
+      // XSLT creation of biicore takes forever (approx. 25-30 minutes)!!!
+      aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "biicore").addBussinessRule ("businessrules/biicore-T01-BusinessRules-v01.ods")
+                                                                                    .addBussinessRule ("businessrules/biicore-T10-BusinessRules-v01.ods")
+                                                                                    .addBussinessRule ("businessrules/biicore-T14-BusinessRules-v01.ods")
+                                                                                    .addBussinessRule ("businessrules/biicore-T15-BusinessRules-v01.ods"));
+      aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "biiprofiles").addBussinessRule ("businessrules/biiprofiles-T10-BusinessRules-v01.ods")
+                                                                                        .addBussinessRule ("businessrules/biiprofiles-T14-BusinessRules-v01.ods")
+                                                                                        .addBussinessRule ("businessrules/biiprofiles-T15-BusinessRules-v01.ods"));
+      aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "biirules").addCodeList ("businessrules/biirules-CodeLists-v01.ods")
+                                                                                     .addBussinessRule ("businessrules/biirules-T01-BusinessRules-v02.ods",
+                                                                                                        "T01")
+                                                                                     .addBussinessRule ("businessrules/biirules-T02-BusinessRules-v01.ods")
+                                                                                     .addBussinessRule ("businessrules/biirules-T03-BusinessRules-v01.ods")
+                                                                                     .addBussinessRule ("businessrules/biirules-T10-BusinessRules-v02.ods",
+                                                                                                        "T10")
+                                                                                     .addBussinessRule ("businessrules/biirules-T14-BusinessRules-v01.ods",
+                                                                                                        "T14")
+                                                                                     .addBussinessRule ("businessrules/biirules-T15-BusinessRules-v01.ods",
+                                                                                                        "T15"));
+      aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "dknat").addBussinessRule ("businessrules/dknat-T10-BusinessRules-v01.ods"));
+      aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "eugen").addCodeList ("businessrules/eugen-CodeLists-v01.ods")
+                                                                                  .addBussinessRule ("businessrules/eugen-T01-BusinessRules-v02.ods")
+                                                                                  .addBussinessRule ("businessrules/eugen-T10-BusinessRules-v01.ods",
+                                                                                                     "T10")
+                                                                                  .addBussinessRule ("businessrules/eugen-T14-BusinessRules-v01.ods",
+                                                                                                     "T14")
+                                                                                  .addBussinessRule ("businessrules/eugen-T15-BusinessRules-v01.ods",
+                                                                                                     "T15")
+                                                                                  .addBussinessRule ("businessrules/eugen-T19-BusinessRules-v01.ods"));
+      aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "itnat").addBussinessRule ("businessrules/itnat-T10-BusinessRules-v03.ods"));
+      aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "nogov").addBussinessRule ("businessrules/nogov-T10-BusinessRules-v01.ods")
+                                                                                  .addBussinessRule ("businessrules/nogov-T14-BusinessRules-v01.ods")
+                                                                                  .addBussinessRule ("businessrules/nogov-T15-BusinessRules-v01.ods"));
+      aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "nonat").addCodeList ("businessrules/nonat-T17-CodeLists-v01.ods")
+                                                                                  .addBussinessRule ("businessrules/nonat-T10-BusinessRules-v01.ods")
+                                                                                  .addBussinessRule ("businessrules/nonat-T14-BusinessRules-v01.ods")
+                                                                                  .addBussinessRule ("businessrules/nonat-T15-BusinessRules-v01.ods")
+                                                                                  .addBussinessRule ("businessrules/nonat-T17-BusinessRules-v01.ods",
+                                                                                                     "T17"));
+    }
 
     // Create all codelists (GC + CVA)
     // Processing time: quite quick

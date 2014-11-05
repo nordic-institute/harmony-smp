@@ -227,9 +227,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((cbc:ID = 'E') or (cbc:ID = 'AE') and $Prerequisite2) or not ($Prerequisite2)" />
+      <xsl:when test="($Prerequisite2 and (cbc:ID = 'E') or (cbc:ID = 'AE')) or not ($Prerequisite2)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((cbc:ID = 'E') or (cbc:ID = 'AE') and $Prerequisite2) or not ($Prerequisite2)">
+        <svrl:failed-assert test="($Prerequisite2 and (cbc:ID = 'E') or (cbc:ID = 'AE')) or not ($Prerequisite2)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -241,14 +241,14 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(number(../cbc:TaxAmount) = 0 and $Prerequisite6) or not ($Prerequisite6)" />
+      <xsl:when test="($Prerequisite6 and number(../cbc:TaxAmount) = 0) or not ($Prerequisite6)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(number(../cbc:TaxAmount) = 0 and $Prerequisite6) or not ($Prerequisite6)">
+        <svrl:failed-assert test="($Prerequisite6 and number(../cbc:TaxAmount) = 0) or not ($Prerequisite6)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[ATNAT-T10-R006]-If products or services are subject to the Reverse Charge System (customer has to bear the tax, not the supplier - Austria: UStG § 19) the VAT tax amount must be 0</svrl:text>
+          <svrl:text>[ATNAT-T10-R006]-If products or services are subject to the Reverse Charge System (customer has to bear the tax, not the supplier - Austria: UStG § 19) the VAT tax amount must be 0.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
@@ -261,23 +261,23 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID and $Prerequisite1) or not ($Prerequisite1)" />
+      <xsl:when test="($Prerequisite1 and //cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not ($Prerequisite1)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID and $Prerequisite1) or not ($Prerequisite1)">
+        <svrl:failed-assert test="($Prerequisite1 and //cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not ($Prerequisite1)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[ATNAT-T10-R001]-If the invoice total exceeds € 10.000, the VAT number of the customer MUST be provided, if the supplier has a registered office in Austria</svrl:text>
+          <svrl:text>[ATNAT-T10-R001]-If the invoice total exceeds € 10.000, the VAT number of the customer MUST be provided, if the supplier has a registered office in Austria.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="((//cac:Delivery/cbc:ActualDeliveryDate) or (//cac:InvoicePeriod/cbc:StartDate and //cac:InvoicePeriod/cbc:EndDate) and $Prerequisite3) or not ($Prerequisite3)" />
+      <xsl:when test="($Prerequisite3 and (//cac:Delivery/cbc:ActualDeliveryDate) or (//cac:InvoicePeriod/cbc:StartDate and //cac:InvoicePeriod/cbc:EndDate)) or not ($Prerequisite3)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="((//cac:Delivery/cbc:ActualDeliveryDate) or (//cac:InvoicePeriod/cbc:StartDate and //cac:InvoicePeriod/cbc:EndDate) and $Prerequisite3) or not ($Prerequisite3)">
+        <svrl:failed-assert test="($Prerequisite3 and (//cac:Delivery/cbc:ActualDeliveryDate) or (//cac:InvoicePeriod/cbc:StartDate and //cac:InvoicePeriod/cbc:EndDate)) or not ($Prerequisite3)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -289,28 +289,28 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID and $Prerequisite4) or not ($Prerequisite4)" />
+      <xsl:when test="($Prerequisite4 and //cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not ($Prerequisite4)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID and $Prerequisite4) or not ($Prerequisite4)">
+        <svrl:failed-assert test="($Prerequisite4 and //cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not ($Prerequisite4)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[ATNAT-T10-R004]-If products or services are subject to the Reverse Charge System (customer has to bear the tax, not the supplier - Austria: UStG § 19) the VAT identification number of the customer MUST be provided</svrl:text>
+          <svrl:text>[ATNAT-T10-R004]-If products or services are subject to the Reverse Charge System (customer has to bear the tax, not the supplier - Austria: UStG § 19) the VAT identification number of the customer MUST be provided.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="(//cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID and $Prerequisite5) or not ($Prerequisite5)" />
+      <xsl:when test="($Prerequisite5 and //cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not ($Prerequisite5)" />
       <xsl:otherwise>
-        <svrl:failed-assert test="(//cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID and $Prerequisite5) or not ($Prerequisite5)">
+        <svrl:failed-assert test="($Prerequisite5 and //cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not ($Prerequisite5)">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[ATNAT-T10-R005]-If the invoice total exceeds € 400, the VAT number of the supplier MUST be provided, if the supplier has a registered office in Austria</svrl:text>
+          <svrl:text>[ATNAT-T10-R005]-If the invoice total exceeds € 400, the VAT number of the supplier MUST be provided, if the supplier has a registered office in Austria.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>

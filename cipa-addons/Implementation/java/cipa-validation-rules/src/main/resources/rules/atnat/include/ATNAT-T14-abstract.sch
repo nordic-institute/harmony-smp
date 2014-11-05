@@ -39,17 +39,16 @@
 
 -->
 <!--This file is generated automatically! Do NOT edit!-->
-<!--Schematron tests for binding UBL and transaction T10-->
-<pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T10" id="UBL-T10">
-  <param name="NONAT-T10-R001" value="($Prerequisite1 and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R002" value="($Prerequisite1 and //cac:PaymentMeans/cbc:PaymentDueDate) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R003" value="($Prerequisite1 and //cac:Delivery/cbc:ActualDeliveryDate) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R004" value="($Prerequisite1 and //cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CityName and //cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:PostalZone and //cac:Delivery/cac:DeliveryLocation/cac:Address/cac:Country/cbc:IdentificationCode) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R005" value="($Prerequisite1 and cbc:InvoicedQuantity) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R006" value="($Prerequisite1 and (cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
-  <param name="NONAT-T10-R007" value="($Prerequisite1 and (cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
-  <param name="Supplier_Party" value="//cac:AccountingSupplierParty/cac:Party" />
-  <param name="Invoice_Line" value="//cac:InvoiceLine" />
-  <param name="Invoice" value="/ubl:Invoice" />
-  <param name="Customer_Party" value="//cac:AccountingCustomerParty/cac:Party" />
+<!--Abstract Schematron rules for T14-->
+<pattern xmlns="http://purl.oclc.org/dsdl/schematron" abstract="true" id="T14">
+  <rule context="$CreditNote">
+    <assert flag="fatal" test="$ATNAT-T14-R001">[ATNAT-T14-R001]-If the credit note total exceeds € 10.000, the VAT number of the customer MUST be provided, if the supplier has a registered office in Austria.</assert>
+    <assert flag="fatal" test="$ATNAT-T14-R003">[ATNAT-T14-R003]-The credit note MUST contain either the actual delivery date or the delivery period.</assert>
+    <assert flag="fatal" test="$ATNAT-T14-R004">[ATNAT-T14-R004]-If products or services are subject to the Reverse Charge System (customer has to bear the tax, not the supplier - Austria: UStG § 19) the VAT identification number of the customer MUST be provided.</assert>
+    <assert flag="fatal" test="$ATNAT-T14-R005">[ATNAT-T14-R005]-If the credit note total exceeds € 400, the VAT number of the supplier MUST be provided, if the supplier has a registered office in Austria.</assert>
+  </rule>
+  <rule context="$Tax_Category">
+    <assert flag="fatal" test="$ATNAT-T14-R002">[ATNAT-T14-R002]-If the tax percentage in a tax category is 0% then the tax category identifier MUST be "E" or "AE" (UN-5305).</assert>
+    <assert flag="fatal" test="$ATNAT-T14-R006">[ATNAT-T14-R006]-If products or services are subject to the Reverse Charge System (customer has to bear the tax, not the supplier - Austria: UStG § 19) the VAT tax amount must be 0.</assert>
+  </rule>
 </pattern>
