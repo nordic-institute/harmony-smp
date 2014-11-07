@@ -5,10 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.KeyStore;
-import java.security.Principal;
 import java.security.cert.CertStore;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
@@ -16,14 +14,12 @@ import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Properties;
 
 import javax.mail.Part;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
 import javax.net.ssl.HostnameVerifier;
 import javax.servlet.UnavailableException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -44,34 +40,19 @@ import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointDBInterface;
 import eu.europa.ec.cipa.dispatcher.ocsp.OCSPValidator;
+import eu.europa.ec.cipa.dispatcher.servlet.AbstractReceiverServlet;
 import eu.europa.ec.cipa.dispatcher.util.KeystoreUtil;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 
 
-public class AS2ReceiverServlet extends HttpServlet
+public class AS2ReceiverServlet extends AbstractReceiverServlet
 {
 
 	private static final Logger s_aLogger = LoggerFactory.getLogger (AS2ReceiverServlet.class);
-	Properties properties;
-
-	boolean debug=false;
 	
-	
-	public void init() throws UnavailableException
-	{
-
-		properties = PropertiesUtil.getProperties(null);
-
-		if (properties == null)
-		{
-			s_aLogger.error("Error initializing AS2 receiver servlet: Couldn't load necessary configuration file");
-			throw new UnavailableException("Couldn't load necessary configuration file");
-		}
-
-		
-		if ("DEBUG".equalsIgnoreCase(properties.getProperty(PropertiesUtil.SERVER_MODE, "DEBUG")))
-			debug = true;
-		
+	public void init() throws UnavailableException {
+		classType = "AS2";
+		super.init();
 	}
 	
 	
@@ -95,9 +76,6 @@ public class AS2ReceiverServlet extends HttpServlet
 		}
 	}
 	
-	
-	
-	
 	private boolean isIncomingAS2Message(HttpServletRequest req)
 	{
 		if (req.getHeader("as2-from")!=null && req.getHeader("as2-to")!=null && req.getHeader("message-id")!=null && /* req.getHeader("recipient-address")!=null && */ req.getHeader("disposition-notification-to")!=null)
@@ -118,65 +96,11 @@ public class AS2ReceiverServlet extends HttpServlet
 			
 	        //extract the certificate from the request
 	        X509CertificateObject cert = retrieveCertificate(input, resp);
-			if (cert == null)
-			{
-				s_aLogger.error(HttpServletResponse.SC_BAD_REQUEST+ "Unable to retrieve certificate from incoming message");
-				resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unable to retrieve certificate from incoming message");
-				return;
-			}
-						
-			//check the certificate was signed by our AP CA, if not, it's not a valid request
-			String trustError = checkSignatureTrust((X509Certificate) cert);
-			if (trustError != null)
-			{
-				s_aLogger.error(HttpServletResponse.SC_UNAUTHORIZED+ "Untrusted/invalid signing certificate");
-				resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Untrusted/invalid signing certificate");
-				return;
-			}
-			
-			//check the certificate is not expired
-			try
-			{
-				cert.checkValidity();			
-			}
-			catch (CertificateNotYetValidException e)
-			{
-				s_aLogger.error(HttpServletResponse.SC_UNAUTHORIZED+ "The certificate used to sign is not yet valid");
-				resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "The certificate used to sign is not yet valid");
-				return;
-			}
-			catch (CertificateExpiredException e)
-			{
-				s_aLogger.error(HttpServletResponse.SC_UNAUTHORIZED+ "The certificate used to sign has expired");
-				resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "The certificate used to sign has expired");
-				return;				
-			}
-			
-			//OCSP validation of the certificate used to sign this message
-			boolean valid = true;
-			if ("true".equalsIgnoreCase(properties.getProperty(PropertiesUtil.OCSP_VALIDATION_ACTIVATED)))
-			{
-				try
-				{
-					valid = OCSPValidator.certificateValidate(cert);
-				}
-				catch (Exception e)
-				{
-					s_aLogger.error("Unable to validate the incoming certificate", e);
-					valid = false;
-				}
-				
-				if (!valid)
-				{
-					s_aLogger.error( "The certificate used to sign has been revoked");
-					resp.sendError(HttpServletResponse.SC_UNAUTHORIZED, "The certificate used to sign has been revoked");
-					return;
-				}
-			}
+	        if (!validateCertificate(resp, cert)) return;
 			
 			
 			//find the certificate's CN
-			String commonName = extractCN(cert);
+			String commonName = KeystoreUtil.extractCN(cert);
 					
 			if (!commonName.equals(as2_from))
 			{
@@ -189,7 +113,7 @@ public class AS2ReceiverServlet extends HttpServlet
 
 			
 			//check that the AS2 endpoint knows the sender, if not, create a new Partner
-			String className = properties.getProperty(PropertiesUtil.PARTNER_INTERFACE_IMPLEMENTATION_CLASS);
+			String className = getProperties().getProperty(PropertiesUtil.PARTNER_INTERFACE_IMPLEMENTATION_CLASS);
 			IAS2EndpointDBInterface partnerInterface = (IAS2EndpointDBInterface) Class.forName(className).newInstance();
 			if (!partnerInterface.isPartnerKown(commonName))
 				partnerInterface.createNewPartner(commonName, commonName, "", mdnURL, (X509Certificate)cert); //we dont know the partner's endpointUrl at this point, so we can't provide it.	
@@ -211,25 +135,8 @@ public class AS2ReceiverServlet extends HttpServlet
 	}
 	
 	
-	private	ByteArrayOutputStream copyToMarkableBuffer(InputStream in)
-	{
-		ByteArrayOutputStream buffer = null;
-		try
-		{
-			buffer = new ByteArrayOutputStream();
-	        byte temp[] = new byte[0x10000];
-	        for(int count = in.read(temp); count > 0; count = in.read(temp))
-	            buffer.write(temp, 0, count);
-	        in.close();
-		}
-		catch (Exception e) {
-			s_aLogger.error( "Internal server Error occured",e);
-		}
-        
-        return buffer;
-	}
-	
-	
+
+
 	private X509CertificateObject retrieveCertificate(ByteArrayInputStream input, HttpServletResponse resp)
 	{
 		Object cert = null;
@@ -276,81 +183,31 @@ public class AS2ReceiverServlet extends HttpServlet
 		return (X509CertificateObject) cert;
 	}
 	
-	
-	/** checks if the user-provided certificate is valid and has been signed by the peppol AP CA certificate
-	 * @return an error message if the certificate is expired or not trusted, null if everything is ok. Throws exception if there was a problem loading the necessary keystore.
-	 */
-	private String checkSignatureTrust (X509Certificate userCert) throws Exception
-	{
-		KeystoreUtil keystoreAccess = new KeystoreUtil();
-		X509Certificate caCert = keystoreAccess.getApCaCertificate();
-		
-		  // Verify the current certificate using the issuer certificate
-	      try
-	      {
-	    	  userCert.verify (caCert.getPublicKey());
-	      }
-	      catch (final Exception e)
-	      {
-	        return e.getMessage ();
-	      }
-	
-	      // Check time validity
-	      try
-	      {
-	    	  userCert.checkValidity ();
-	      }
-	      catch (final Exception e)
-	      {
-	    	  s_aLogger.error( "Error occured while cgecking electronic signature",e);
-	    	  return e.getMessage ();
-	      }
-	      
-	      return null; //means everything went well
-	}
-	
-	
-	private String extractCN(X509Certificate cert)
-	{
-		Principal principal = cert.getSubjectDN();
-		if (principal==null)
-			principal = cert.getSubjectX500Principal();
-		
-		String commonName = null;
-		String[] names = principal.getName().split(",");
-		for (String s: names)
-			if (s.trim().startsWith("CN="))
-				commonName = s.trim().substring(3);
-		
-		return commonName.trim();
-	}
-	
-	
 	private void forwardToAS2Endpoint(HttpServletRequest req, HttpServletResponse resp, ByteArrayOutputStream buffer)
 	{
 		
 		try
 		{
-			String url = properties.getProperty(PropertiesUtil.AS2_ENDPOINT_URL); 
+			String url = getProperties().getProperty(PropertiesUtil.AS2_ENDPOINT_URL); 
 			DefaultHttpClient httpclient = new DefaultHttpClient();
 	        HttpPost post = new HttpPost(url);
-	        httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, debug? 3000000 : 30000); //3000sec for tests purposes, 30sec in production
-			httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, debug? 3000000 : 30000); //3000sec for tests purposes, 30sec in production
+	        httpclient.getParams().setParameter(CoreConnectionPNames.SO_TIMEOUT, isDebug()? 3000000 : 30000); //3000sec for tests purposes, 30sec in production
+			httpclient.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, isDebug()? 3000000 : 30000); //3000sec for tests purposes, 30sec in production
 						
 			//setting up SSL connection with the AS2 endpoint if specified in properties
 			if (url.startsWith("https"))
 			{
 				KeyStore trustStore  = KeyStore.getInstance("JKS");        
-				FileInputStream instream = new FileInputStream(new File(properties.getProperty(PropertiesUtil.SSL_TRUSTSTORE)));
+				FileInputStream instream = new FileInputStream(new File(getProperties().getProperty(PropertiesUtil.SSL_TRUSTSTORE)));
 				try {
-				    trustStore.load(instream, properties.getProperty(PropertiesUtil.SSL_TRUSTSTORE_PASSWORD).toCharArray());
+				    trustStore.load(instream, getProperties().getProperty(PropertiesUtil.SSL_TRUSTSTORE_PASSWORD).toCharArray());
 				} finally {
 				    instream.close();
 				}
 	
 				SSLSocketFactory socketFactory = new SSLSocketFactory(trustStore);
 				
-		        if (debug)  //if we are in debug, do not verify that the signer of the SSL certificate is the appropiate one (so we can use self signed certificates in tests)
+		        if (isDebug())  //if we are in debug, do not verify that the signer of the SSL certificate is the appropiate one (so we can use self signed certificates in tests)
 		        {
 		        	HostnameVerifier hostnameVerifier = org.apache.http.conn.ssl.SSLSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER;
 		        	socketFactory.setHostnameVerifier((X509HostnameVerifier) hostnameVerifier);

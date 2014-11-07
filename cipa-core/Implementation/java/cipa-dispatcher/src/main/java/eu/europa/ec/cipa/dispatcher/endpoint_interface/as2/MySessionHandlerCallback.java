@@ -1,4 +1,4 @@
-package eu.europa.ec.cipa.dispatcher.endpoint_interface.mendelson;
+package eu.europa.ec.cipa.dispatcher.endpoint_interface.as2;
 
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;

@@ -1,4 +1,4 @@
-package eu.europa.ec.cipa.dispatcher.endpoint_interface.mendelson;
+package eu.europa.ec.cipa.dispatcher.endpoint_interface.as2;
 
 import de.mendelson.comm.as2.AS2ServerVersion;
 import de.mendelson.comm.as2.clientserver.message.ServerShutdown;

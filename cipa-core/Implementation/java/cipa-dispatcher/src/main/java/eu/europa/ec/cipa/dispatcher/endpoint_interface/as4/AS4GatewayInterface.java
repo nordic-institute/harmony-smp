@@ -1,8 +1,8 @@
-package eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus;
+package eu.europa.ec.cipa.dispatcher.endpoint_interface.as4;
 
 import eu.domibus.ebms3.config.PModePool;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS4GatewayInterface;
-import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.service.AS4PModeService;
+import eu.europa.ec.cipa.dispatcher.endpoint_interface.as4.service.AS4PModeService;
 import eu.europa.ec.cipa.dispatcher.exception.DispatcherConfigurationException;
 
 public class AS4GatewayInterface implements IAS4GatewayInterface {

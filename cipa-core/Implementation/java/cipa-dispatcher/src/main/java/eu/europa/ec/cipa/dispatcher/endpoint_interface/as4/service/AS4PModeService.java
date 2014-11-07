@@ -1,4 +1,4 @@
-package eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.service;
+package eu.europa.ec.cipa.dispatcher.endpoint_interface.as4.service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,7 +32,7 @@ import eu.domibus.ebms3.config.Producer;
 import eu.domibus.ebms3.config.Service;
 import eu.domibus.ebms3.config.ToParty;
 import eu.domibus.ebms3.config.UserService;
-import eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus.AS4GatewayInterface;
+import eu.europa.ec.cipa.dispatcher.endpoint_interface.as4.AS4GatewayInterface;
 import eu.europa.ec.cipa.dispatcher.exception.DispatcherConfigurationException;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 

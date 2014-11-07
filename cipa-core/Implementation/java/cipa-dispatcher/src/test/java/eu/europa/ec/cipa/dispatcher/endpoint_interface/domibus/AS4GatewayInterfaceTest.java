@@ -2,6 +2,8 @@ package eu.europa.ec.cipa.dispatcher.endpoint_interface.domibus;
 
 import org.junit.Test;
 
+import eu.europa.ec.cipa.dispatcher.endpoint_interface.as4.AS4GatewayInterface;
+
 public class AS4GatewayInterfaceTest {
 
 	@Test
