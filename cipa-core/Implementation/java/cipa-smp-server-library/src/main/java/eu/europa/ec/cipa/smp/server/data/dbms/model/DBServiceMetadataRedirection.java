@@ -51,7 +51,7 @@ import javax.persistence.Table;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Entity
-@Table (name = "smp_service_metadata_redirection")
+@Table (name = "smp_service_metadata_red")
 public class DBServiceMetadataRedirection implements Serializable {
   private DBServiceMetadataRedirectionID m_aID;
   private String m_sRedirectionUrl;
