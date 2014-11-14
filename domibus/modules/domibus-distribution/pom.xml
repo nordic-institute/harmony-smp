@@ -810,9 +810,7 @@
                             <outputFolder>${project.build.directory}/soapui-reports</outputFolder>
                             <junitReport>true</junitReport>
                             <printReport>true</printReport>
-                            <projectFile>
-                                file:/${project.build.testOutputDirectory}/soapui_testsuites/e-CODEXBackendServiceTestSuite.xml
-                            </projectFile>
+                            <projectFile>src/test/resources/soapui_testsuites/e-CODEXBackendServiceTestSuite.xml</projectFile>
                             <projectProperties>
                                 <value>ServiceEndpoint_sending=${domibus.module.ebms3.MSH.host}:${domibus.module.ebms3.MSH.pt}/domibus/services/BackendService_1_1</value>
                                 <value>ServiceEndpoint_receiving=${domibus.testing.MSH.host}:${domibus.testing.MSH.pt}/domibus/services/BackendService_1_1</value>
