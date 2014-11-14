@@ -1,47 +1,44 @@
 <Context path="/domibus" privileged="false">
 
-    <Environment name="domibus.persistence.unit" value="@domibus.persistence.unit@"
+    <Environment name="domibus.persistence.unit" value="domibusPU"
                  type="java.lang.String"/>
 
     <Environment name="domibus.module.backend.messagesFolder"
-                 value="@domibus.module.backend.messagesFolder@" type="java.lang.String"/>
+                 value="store/backend_store" type="java.lang.String"/>
     <Environment name="domibus.module.backend.messagesTimeLive"
-                 value="@domibus.module.backend.messagesTimeLive@" type="java.lang.String"/>
+                 value="60" type="java.lang.String"/>
     <Environment name="domibus.module.backend.deleteMessagesCron"
-                 value="@domibus.module.backend.deleteMessagesCron@" type="java.lang.String"/>
-    <Environment name="domibus.module.ebms3.attachmentFolder" value="@domibus.module.ebms3.attachmentFolder@"
+                 value="0 1/2 * * * ?" type="java.lang.String"/>
+    <Environment name="domibus.module.ebms3.attachmentFolder" value="store/attachments"
                  type="java.lang.String"/>
-    <Environment name="domibus.module.ebms3.PModesDir" value="@domibus.module.ebms3.PModesDir@"
+    <Environment name="domibus.module.ebms3.PModesDir" value="conf/domibus/pmodes"
                  type="java.lang.String"/>
     <Environment name="domibus.module.ebms3.gatewayConfigFile"
-                 value="@domibus.module.ebms3.gatewayConfigFile@" type="java.lang.String"/>
+                 value="conf/domibus/gateway.xml" type="java.lang.String"/>
     <Environment name="domibus.module.ebms3.submittedMessagesFolder"
-                 value="@domibus.module.ebms3.submittedMessagesFolder@" type="java.lang.String"/>
+                 value="store/send" type="java.lang.String"/>
     <Environment name="domibus.module.ebms3.receivedMessagesFolder"
-                 value="@domibus.module.ebms3.receivedMessagesFolder@" type="java.lang.String"/>
-    <Environment name="domibus.module.ebms3.hostnames" value="@domibus.module.ebms3.hostnames@"
+                 value="store/receive" type="java.lang.String"/>
+    <Environment name="domibus.module.ebms3.hostnames" value="localhost,127.0.0.1"
                  type="java.lang.String"/>
     <Environment name="domibus.module.ebms3.workersFile"
-                 value="@domibus.module.ebms3.workersFile@" type="java.lang.String"/>
+                 value="conf/domibus/workers.xml" type="java.lang.String"/>
     <Environment name="domibus.module.ebms3.enforce.1_3.compatibility"
-                 value="@domibus.module.ebms3.enforce.1_3.compatibility@" type="java.lang.Boolean"/>
-
+                 value="true" type="java.lang.Boolean"/>
     <Environment name="domibus.module.security.configFile"
-                 value="@domibus.module.security.configFile@" type="java.lang.String"/>
+                 value="conf/domibus/security-config.xml" type="java.lang.String"/>
     <Environment name="domibus.module.security.policiesFolder"
-                 value="@domibus.module.security.policiesFolder@" type="java.lang.String"/>
+                 value="conf/domibus/policies" type="java.lang.String"/>
     <Environment name="domibus.module.security.keysFolder"
-                 value="@domibus.module.security.keysFolder@" type="java.lang.String"/>
+                 value="conf/domibus/keys" type="java.lang.String"/>
     <Environment name="domibus.module.security.config.timeout"
-                 value="@domibus.module.security.config.timeout@" type="java.lang.String"/>
+                 value="30000" type="java.lang.String"/>
     <Environment name="domibus.module.security.config.privatekey.password"
-                 value="@domibus.module.security.config.privatekey.password@" type="java.lang.String"/>
-
-
+                 value="apache" type="java.lang.String"/>
     <Environment name="domibus.persistence.properties"
-                 value="@domibus.persistence.properties@" type="java.lang.String"/>
+                 value="conf/domibus/hibernate.properties" type="java.lang.String"/>
 
-    <Resource name="@domibus.persistence.unit@"
+    <Resource name="domibusPU"
               auth="Container"
               factory="org.apache.naming.factory.BeanFactory"
               type="com.mchange.v2.c3p0.ComboPooledDataSource"
@@ -60,7 +57,7 @@
               preferredTestQuery="SELECT 1"
               debugUnreturnedConnectionStackTraces="true"
               autoCommitOnClose="true"
-              jdbcUrl="@domibus.persistence.testing.url@"
+              jdbcUrl="@domibus.persistence.url@"
               user="@domibus.persistence.user@"
               password="@domibus.persistence.password@"/>
 </Context>
