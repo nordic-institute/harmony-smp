@@ -477,6 +477,9 @@
                         <configuration>
                             <container>
                                 <containerId>tomcat8x</containerId>
+                                <zipUrlInstaller>
+                                    <url>https://joinup.ec.europa.eu/nexus/content/groups/public/org/apache/tomcat/tomcat/8.0.15/tomcat-8.0.15.zip</url>
+                                </zipUrlInstaller>
                                 <dependencies>
                                     <dependency>
                                         <groupId>org.apache.derby</groupId>
@@ -564,6 +567,9 @@
                         <configuration>
                             <container>
                                 <containerId>tomcat8x</containerId>
+                                <zipUrlInstaller>
+                                    <url>https://joinup.ec.europa.eu/nexus/content/groups/public/org/apache/tomcat/tomcat/8.0.15/tomcat-8.0.15.zip</url>
+                                </zipUrlInstaller>
                                 <dependencies>
                                     <dependency>
                                         <groupId>org.apache.derby</groupId>
