@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tns:PModes xmlns:tns="http://www.e-codex.eu/domibus/pmodes/0.1"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.e-codex.eu/domibus/pmodes/0.1 pmodes.xsd">
+	<!--
+         ************* 
+         Producers. A producer represents an entity
+         (person, application, corporation, etc...) that produces User Messages. A User Message is
+         simply a message that contains payload data, and therefore, it is intended to be consumed
+         by some entity that is beyond the MSH (i.e. sitting behind the MSH). A User Message always
+         contains in its SOAP Header the element <eb:UserMessage>. A Producer is
+         OPTIONAL. This means that the PMode could be used by many types of senders. When a sender
+         uses this PMode to send out a message, the sender must therefore tell the MSH about its
+         <eb:From> party. This is a way to share the same PMode with multiple
+         different senders. If the PMode has to be used by a single specific sender, a
+         <Producer> element MUST be declared; each element <Leg> must
+         point to a <Producer> element. 
+         ************* 
+      -->
+	<tns:Producer name="TESTGW2-GW">
+		<tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">TESTGW2</tns:PartyId>
+		<tns:Role>GW</tns:Role>
+	</tns:Producer>
+	<!--
+          *************
+          UserServices. A UserService represents the
+          destination where the User Message will go. In the ebXML specification, this is represented
+          by the xml elements <eb:To>, <eb:CollaborationInfo>,
+          <eb:PayloadInfo> and <eb:MessageProperties>.
+          *************
+       -->
+	<tns:UserService name="Invalid_endpoint_TESTGW1">
+		<tns:ToPartyInfo>
+			<tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">TESTGW1</tns:PartyId>
+			<tns:Role>GW</tns:Role>
+		</tns:ToPartyInfo>
+		<tns:CollaborationInfo>
+			<tns:Service>TEST</tns:Service>
+			<tns:Action>invalid_endpoint</tns:Action>
+		</tns:CollaborationInfo>
+	</tns:UserService>
+	<tns:UserService name="Unreliable_maxPayloadMin_TESTGW1" maxPayloadSize="1">
+		<tns:ToPartyInfo>
+			<tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">TESTGW1</tns:PartyId>
+			<tns:Role>GW</tns:Role>
+		</tns:ToPartyInfo>
+		<tns:CollaborationInfo>
+			<tns:Service>TEST</tns:Service>
+			<tns:Action>unreliable_maxPayloadMin</tns:Action>
+		</tns:CollaborationInfo>
+	</tns:UserService>
+	<tns:UserService name="Unreliable_TESTGW1">
+		<tns:ToPartyInfo>
+			<tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">TESTGW1</tns:PartyId>
+			<tns:Role>GW</tns:Role>
+		</tns:ToPartyInfo>
+		<tns:CollaborationInfo>
+			<tns:Service>TEST</tns:Service>
+			<tns:Action>unreliable</tns:Action>
+		</tns:CollaborationInfo>
+	</tns:UserService>
+	<tns:UserService name="As4_response_TESTGW1">
+		<tns:ToPartyInfo>
+			<tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">TESTGW1</tns:PartyId>
+			<tns:Role>GW</tns:Role>
+		</tns:ToPartyInfo>
+		<tns:CollaborationInfo>
+			<tns:Service>TEST</tns:Service>
+			<tns:Action>as4_response</tns:Action>
+		</tns:CollaborationInfo>
+	</tns:UserService>
+	<tns:UserService name="As4_callback_TESTGW1">
+		<tns:ToPartyInfo>
+			<tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">TESTGW1</tns:PartyId>
+			<tns:Role>GW</tns:Role>
+		</tns:ToPartyInfo>
+		<tns:CollaborationInfo>
+			<tns:Service>TEST</tns:Service>
+			<tns:Action>as4_callback</tns:Action>
+		</tns:CollaborationInfo>
+	</tns:UserService>
+	<tns:UserService name="As4_invalid_endpoint_TESTGW1">
+		<tns:ToPartyInfo>
+			<tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">TESTGW1</tns:PartyId>
+			<tns:Role>GW</tns:Role>
+		</tns:ToPartyInfo>
+		<tns:CollaborationInfo>
+			<tns:Service>TEST</tns:Service>
+			<tns:Action>as4_invalid_endpoint</tns:Action>
+		</tns:CollaborationInfo>
+	</tns:UserService>
+	<!--
+          *************
+          Bindings. A Binding contains information mostly
+          related to transport, such as the URL address of the destination, the soap version, the
+          soap action, and the MEP (Message Exchange Pattern) to use. The Binding element also
+          contains detailed information of each leg of the MEP being used.
+          *************
+       -->
+	<tns:Binding name="Binding_TESTGW2_TESTGW1_Unreliable">
+		<tns:MEP name="One-Way/Push">
+			<tns:Leg number="1" producer="TESTGW2-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="Unreliable_TESTGW1"
+                     security="sign-body-header_TESTGW2_TESTGW1">
+				<tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+				<tns:As4Receipt nonRepudiation="false" method="response">
+					<tns:As4Reliability duplicateElimination="true"/>
+				</tns:As4Receipt>
+			</tns:Leg>
+		</tns:MEP>
+	</tns:Binding>
+	<tns:Binding name="Binding_TESTGW2_TESTGW1_As4_response">
+		<tns:MEP name="One-Way/Push">
+			<tns:Leg number="1" producer="TESTGW2-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="As4_response_TESTGW1"
+                     security="sign-body-header_TESTGW2_TESTGW1">
+				<tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+				<tns:As4Receipt nonRepudiation="false" method="response">
+					<tns:As4Reliability duplicateElimination="true"/>
+				</tns:As4Receipt>
+			</tns:Leg>
+		</tns:MEP>
+	</tns:Binding>
+	<tns:Binding name="Binding_TESTGW2_TESTGW1_As4_callback">
+		<tns:MEP name="One-Way/Push">
+			<tns:Leg number="1" producer="TESTGW2-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="As4_callback_TESTGW1"
+                     security="sign-body-header_TESTGW2_TESTGW1">
+				<tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+				<tns:As4Receipt nonRepudiation="false" method="callback">
+					<tns:As4Reliability duplicateElimination="true"/>
+				</tns:As4Receipt>
+			</tns:Leg>
+		</tns:MEP>
+	</tns:Binding>
+	<tns:Binding name="Binding_TESTGW2_TESTGW1_Invalid_endpoint">
+		<tns:MEP name="One-Way/Push">
+			<tns:Leg number="1" producer="TESTGW2-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="Invalid_endpoint_TESTGW1"
+                     security="sign-body-header_TESTGW2_TESTGW1">
+				<tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+				<tns:As4Receipt nonRepudiation="false" method="response">
+					<tns:As4Reliability duplicateElimination="true"/>
+				</tns:As4Receipt>
+			</tns:Leg>
+		</tns:MEP>
+	</tns:Binding>
+	<tns:Binding name="Binding_TESTGW2_TESTGW1_As4_invalid_endpoint">
+		<tns:MEP name="One-Way/Push">
+			<tns:Leg number="1" producer="TESTGW2-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="As4_invalid_endpoint_TESTGW1"
+                     security="sign-body-header_TESTGW2_TESTGW1">
+				<tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+				<tns:As4Receipt nonRepudiation="false" method="response">
+					<tns:As4Reliability duplicateElimination="true"/>
+				</tns:As4Receipt>
+			</tns:Leg>
+		</tns:MEP>
+	</tns:Binding>
+	<tns:Binding name="Binding_TESTGW2_TESTGW1_Unreliable_maxPayloadMin">
+		<tns:MEP name="One-Way/Push">
+			<tns:Leg number="1" producer="TESTGW2-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="Unreliable_maxPayloadMin_TESTGW1"
+                     security="sign-body-header_TESTGW2_TESTGW1">
+				<tns:Endpoint
+                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        soapVersion="1.2"/>
+				<tns:As4Receipt nonRepudiation="false" method="response">
+					<tns:As4Reliability duplicateElimination="true"/>
+				</tns:As4Receipt>
+			</tns:Leg>
+		</tns:MEP>
+	</tns:Binding>
+	<!--
+          *************
+          PModes. A PMode (short for Processing Mode) is a
+          concept introduced in the ebMS 3 core specifiction to deal with agreements. A Processing
+          Mode always has one single Binding.
+          *************
+       -->
+	<tns:PMode name="TESTGW2_TESTGW1_Unreliable" binding="Binding_TESTGW2_TESTGW1_Unreliable"/>
+	<tns:PMode name="TESTGW2_TESTGW1_As4_response" binding="Binding_TESTGW2_TESTGW1_As4_response"/>	
+	<tns:PMode name="TESTGW2_TESTGW1_As4_callback" binding="Binding_TESTGW2_TESTGW1_As4_callback"/>	
+	<tns:PMode name="TESTGW2_TESTGW1_Invalid_endpoint" binding="Binding_TESTGW2_TESTGW1_Invalid_endpoint"/>	
+	<tns:PMode name="TESTGW2_TESTGW1_As4_invalid_endpoint"
+               binding="Binding_TESTGW2_TESTGW1_As4_invalid_endpoint"/>	
+	<tns:PMode name="TESTGW2_TESTGW1_Unreliable_maxPayloadMin"
+               binding="Binding_TESTGW2_TESTGW1_Unreliable_maxPayloadMin"/>
+
+</tns:PModes>
