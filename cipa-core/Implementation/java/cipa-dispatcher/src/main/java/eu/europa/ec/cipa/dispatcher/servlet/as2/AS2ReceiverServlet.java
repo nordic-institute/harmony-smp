@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.security.KeyStore;
 import java.security.cert.CertStore;
-import java.security.cert.CertificateExpiredException;
-import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -39,7 +37,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointDBInterface;
-import eu.europa.ec.cipa.dispatcher.ocsp.OCSPValidator;
 import eu.europa.ec.cipa.dispatcher.servlet.AbstractReceiverServlet;
 import eu.europa.ec.cipa.dispatcher.util.KeystoreUtil;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
