@@ -15,8 +15,8 @@ import org.xml.sax.helpers.DefaultHandler;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 
 public class SBDHHandler extends DefaultHandler {
-	
-	private static final Logger s_aLogger = LoggerFactory.getLogger (SBDHHandler.class);
+
+	private static final Logger s_aLogger = LoggerFactory.getLogger(SBDHHandler.class);
 
 	private FileOutputStream file; // whole SBDH document sent by the client
 	private FileOutputStream file2; // only the payload without the SBDH
@@ -26,26 +26,28 @@ public class SBDHHandler extends DefaultHandler {
 	private String position = "";
 	private String scheme;
 	private String scopeType;
+	private String documentType = null;
 	private Map<String, String> resultMap;
 	private boolean inPayload = false;
 
+	private static final String headerVersionPosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>HeaderVersion";
 	private static final String senderIdentifierPosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>Sender>Identifier";
 	private static final String receiverIdentifierPosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>Receiver>Identifier";
 	private static final String instanceIdentifierPosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>DocumentIdentification>InstanceIdentifier";
 	private static final String businessScopeTypePosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>BusinessScope>Scope>Type";
 	private static final String businessScopeInstanceIdentifierPosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>BusinessScope>Scope>InstanceIdentifier";
-
+	private static final String documentTypePosition =">StandardBusinessDocument>StandardBusinessDocumentHeader>DocumentIdentification>Type";
+	
 	public Map<String, String> getResultMap() {
 		return this.resultMap;
 	}
 
 	public void startDocument() throws SAXException {
 		try {
-			int randomInt = 100000000 + (int) (Math.random() * 900000000); 
+			int randomInt = 100000000 + (int) (Math.random() * 900000000);
 			// Min + (int)(Math.random() * ((Max - Min) + 1)) , Min = 100000000, Max = 999999999
 			Properties properties = PropertiesUtil.getProperties(null);
-			String tempFilePath = properties
-					.getProperty(PropertiesUtil.TEMP_FOLDER_PATH);
+			String tempFilePath = properties.getProperty(PropertiesUtil.TEMP_FOLDER_PATH);
 			if (!tempFilePath.endsWith("/") && !tempFilePath.endsWith("\\"))
 				tempFilePath += "/";
 			tempFilePath += randomInt;
@@ -58,7 +60,7 @@ public class SBDHHandler extends DefaultHandler {
 			resultMap.put("tempFilePath", tempFilePath);
 			resultMap.put("tempFile2Path", tempFilePath + "_payload");
 		} catch (Exception e) {
-			s_aLogger.error(e.getMessage(),e);
+			s_aLogger.error(e.getMessage(), e);
 			throw new SAXException(e);
 		}
 	}
@@ -74,15 +76,17 @@ public class SBDHHandler extends DefaultHandler {
 			file2.flush();
 			file2.close();
 		} catch (Exception e) {
-			s_aLogger.error(e.getMessage(),e);
+			s_aLogger.error(e.getMessage(), e);
 			throw new SAXException(e);
 		}
 	}
 
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-		String tag = localName != null && !localName.isEmpty() ? localName
-				: qName;
+		String tag = localName != null && !localName.isEmpty() ? localName : qName;
 
+		if(inPayload && !tag.equalsIgnoreCase(documentType))
+			throw new SAXException("The document Type is not equal to the payload");
+		
 		stream.print("<" + tag);
 		if (inPayload)
 			stream2.print("<" + tag);
@@ -92,8 +96,7 @@ public class SBDHHandler extends DefaultHandler {
 		if (attributes != null) {
 			String attName;
 			for (int i = 0; i < attributes.getLength(); i++) {
-				attName = attributes.getLocalName(i) != null ? attributes
-						.getLocalName(i) : attributes.getQName(i);
+				attName = attributes.getLocalName(i) != null ? attributes.getLocalName(i) : attributes.getQName(i);
 				stream.print(' ');
 				stream.print(attName);
 				stream.print('=');
@@ -115,10 +118,8 @@ public class SBDHHandler extends DefaultHandler {
 			stream2.print(">");
 	}
 
-	public void endElement(String uri, String localName, String qName)
-			throws SAXException {
-		String tag = localName != null && !localName.isEmpty() ? localName
-				: qName;
+	public void endElement(String uri, String localName, String qName) throws SAXException {
+		String tag = localName != null && !localName.isEmpty() ? localName : qName;
 
 		if (tag.equalsIgnoreCase("StandardBusinessDocument"))
 			inPayload = false;
@@ -133,7 +134,9 @@ public class SBDHHandler extends DefaultHandler {
 			inPayload = true;
 	}
 
+	
 	public void characters(char ch[], int start, int length) throws SAXException {
+		
 		if (position.equalsIgnoreCase(senderIdentifierPosition)) {
 			resultMap.put("senderIdentifier", new String(ch, start, length));
 			resultMap.put("senderScheme", scheme);
@@ -151,6 +154,10 @@ public class SBDHHandler extends DefaultHandler {
 				resultMap.put("processIdentifier", new String(ch, start, length));
 			if (scopeType.equalsIgnoreCase("CORRELATIONID"))
 				resultMap.put("correlationId", new String(ch, start, length));
+		}else if (position.equalsIgnoreCase(headerVersionPosition) && !new String(ch, start, length).equalsIgnoreCase("1.0"))
+			{throw new SAXException("HeaderVersion not valid");}
+		else if (position.equalsIgnoreCase(documentTypePosition)){
+			documentType = new String(ch, start, length);
 		}
 
 		// stream.print(new String(ch, start, length)); avoiding the
