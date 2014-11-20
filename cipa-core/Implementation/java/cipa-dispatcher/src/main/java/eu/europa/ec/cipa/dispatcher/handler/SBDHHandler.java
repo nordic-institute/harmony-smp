@@ -29,6 +29,7 @@ public class SBDHHandler extends DefaultHandler {
 	private String documentType = null;
 	private Map<String, String> resultMap;
 	private boolean inPayload = false;
+	private boolean FirstOfPayload = true;
 
 	private static final String headerVersionPosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>HeaderVersion";
 	private static final String senderIdentifierPosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>Sender>Identifier";
@@ -36,8 +37,8 @@ public class SBDHHandler extends DefaultHandler {
 	private static final String instanceIdentifierPosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>DocumentIdentification>InstanceIdentifier";
 	private static final String businessScopeTypePosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>BusinessScope>Scope>Type";
 	private static final String businessScopeInstanceIdentifierPosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>BusinessScope>Scope>InstanceIdentifier";
-	private static final String documentTypePosition =">StandardBusinessDocument>StandardBusinessDocumentHeader>DocumentIdentification>Type";
-	
+	private static final String documentTypePosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>DocumentIdentification>Type";
+
 	public Map<String, String> getResultMap() {
 		return this.resultMap;
 	}
@@ -84,9 +85,13 @@ public class SBDHHandler extends DefaultHandler {
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		String tag = localName != null && !localName.isEmpty() ? localName : qName;
 
-		if(inPayload && !tag.equalsIgnoreCase(documentType))
-			throw new SAXException("The document Type is not equal to the payload");
-		
+		if (inPayload) {
+			if (FirstOfPayload && !tag.equalsIgnoreCase(documentType))
+				throw new SAXException("The document Type is not equal to the payload");
+			else
+				FirstOfPayload = false;
+		}
+
 		stream.print("<" + tag);
 		if (inPayload)
 			stream2.print("<" + tag);
@@ -134,9 +139,8 @@ public class SBDHHandler extends DefaultHandler {
 			inPayload = true;
 	}
 
-	
 	public void characters(char ch[], int start, int length) throws SAXException {
-		
+
 		if (position.equalsIgnoreCase(senderIdentifierPosition)) {
 			resultMap.put("senderIdentifier", new String(ch, start, length));
 			resultMap.put("senderScheme", scheme);
@@ -154,9 +158,9 @@ public class SBDHHandler extends DefaultHandler {
 				resultMap.put("processIdentifier", new String(ch, start, length));
 			if (scopeType.equalsIgnoreCase("CORRELATIONID"))
 				resultMap.put("correlationId", new String(ch, start, length));
-		}else if (position.equalsIgnoreCase(headerVersionPosition) && !new String(ch, start, length).equalsIgnoreCase("1.0"))
-			{throw new SAXException("HeaderVersion not valid");}
-		else if (position.equalsIgnoreCase(documentTypePosition)){
+		} else if (position.equalsIgnoreCase(headerVersionPosition) && !new String(ch, start, length).equalsIgnoreCase("1.0")) {
+			throw new SAXException("HeaderVersion not valid");
+		} else if (position.equalsIgnoreCase(documentTypePosition)) {
 			documentType = new String(ch, start, length);
 		}
 
