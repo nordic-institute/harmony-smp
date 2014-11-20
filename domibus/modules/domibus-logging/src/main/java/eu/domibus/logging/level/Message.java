@@ -1,6 +1,7 @@
 package eu.domibus.logging.level;
 
 import org.apache.log4j.Level;
+import org.apache.log4j.Priority;
 
 
 /**
@@ -13,9 +14,9 @@ import org.apache.log4j.Level;
 @SuppressWarnings("serial")
 public class Message extends Level {
 
-    public static final int MESSAGE_INT = INFO_INT + 10;
+    public static final int MESSAGE_INT = Priority.INFO_INT + 10;
 
-    public static final Level MESSAGE = new Message(MESSAGE_INT, "MESSAGE", 6);
+    public static final Level MESSAGE = new Message(Message.MESSAGE_INT, "MESSAGE", 6);
 
     protected Message(final int level, final String levelStr, final int syslogEquivalent) {
         super(level, levelStr, syslogEquivalent);
@@ -23,32 +24,32 @@ public class Message extends Level {
 
 
     public static Level toLevel(final String level) {
-        if (level != null && level.toUpperCase().equals("MESSAGE")) {
-            return MESSAGE;
+        if ((level != null) && "MESSAGE".equals(level.toUpperCase())) {
+            return Message.MESSAGE;
         }
-        return toLevel(level, Level.INFO);
+        return Message.toLevel(level, Level.INFO);
     }
 
 
     public static Level toLevel(final int value) {
-        if (value == MESSAGE_INT) {
-            return MESSAGE;
+        if (value == Message.MESSAGE_INT) {
+            return Message.MESSAGE;
         }
-        return toLevel(value, Level.INFO);
+        return Message.toLevel(value, Level.INFO);
     }
 
 
     public static Level toLevel(final int value, final Level defaultLevel) {
-        if (value == MESSAGE_INT) {
-            return MESSAGE;
+        if (value == Message.MESSAGE_INT) {
+            return Message.MESSAGE;
         }
         return Level.toLevel(value, defaultLevel);
     }
 
 
     public static Level toLevel(final String level, final Level defaultLevel) {
-        if (level != null && level.toUpperCase().equals("MESSAGE")) {
-            return MESSAGE;
+        if ((level != null) && "MESSAGE".equals(level.toUpperCase())) {
+            return Message.MESSAGE;
         }
         return Level.toLevel(level, defaultLevel);
     }

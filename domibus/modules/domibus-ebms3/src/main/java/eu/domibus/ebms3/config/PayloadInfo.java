@@ -3,6 +3,7 @@ package eu.domibus.ebms3.config;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * @author Hamid Ben Malek
  */
 @Root(name = "PayloadInfo", strict = false)
-public class PayloadInfo implements java.io.Serializable {
+public class PayloadInfo implements Serializable {
     private static final long serialVersionUID = -5593310293832120737L;
 
     @ElementList(inline = true)
@@ -25,15 +26,15 @@ public class PayloadInfo implements java.io.Serializable {
 
     public void addMessagePayload(final String label, final String maxSize, final List<Part> parts) {
         final MessagePayload p = new MessagePayload(label, maxSize, parts);
-        messagePayloads.add(p);
+        this.messagePayloads.add(p);
     }
 
     public void addMessagePayload(final MessagePayload p) {
-        messagePayloads.add(p);
+        this.messagePayloads.add(p);
     }
 
     public List<MessagePayload> getMessagePayloads() {
-        return messagePayloads;
+        return this.messagePayloads;
     }
 
     public void setMessagePayloads(final List<MessagePayload> messages) {
@@ -42,12 +43,12 @@ public class PayloadInfo implements java.io.Serializable {
 
     /* To serialize objects to Flex UI */
     public MessagePayload[] getMessagePayloadsArray() {
-        if (messagePayloads == null) {
+        if (this.messagePayloads == null) {
             return null;
         }
-        final MessagePayload[] res = new MessagePayload[messagePayloads.size()];
+        final MessagePayload[] res = new MessagePayload[this.messagePayloads.size()];
         int i = 0;
-        for (final MessagePayload p : messagePayloads) {
+        for (final MessagePayload p : this.messagePayloads) {
             res[i] = p;
             i++;
         }
@@ -55,20 +56,20 @@ public class PayloadInfo implements java.io.Serializable {
     }
 
     public void setMessagePayloadsArray(final MessagePayload[] list) {
-        if (list == null || list.length == 0) {
-            if (messagePayloads != null && messagePayloads.size() > 0) {
-                messagePayloads.clear();
+        if ((list == null) || (list.length == 0)) {
+            if ((this.messagePayloads != null) && !this.messagePayloads.isEmpty()) {
+                this.messagePayloads.clear();
             }
             return;
         }
-        if (messagePayloads == null) {
-            messagePayloads = new ArrayList<MessagePayload>();
+        if (this.messagePayloads == null) {
+            this.messagePayloads = new ArrayList<MessagePayload>();
         }
-        if (messagePayloads.size() > 0) {
-            messagePayloads.clear();
+        if (!this.messagePayloads.isEmpty()) {
+            this.messagePayloads.clear();
         }
         for (final MessagePayload p : list) {
-            addMessagePayload(p);
+            this.addMessagePayload(p);
         }
     }
 }

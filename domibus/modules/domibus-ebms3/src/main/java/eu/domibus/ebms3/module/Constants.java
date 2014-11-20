@@ -1,13 +1,14 @@
 package eu.domibus.ebms3.module;
 
+import eu.domibus.common.util.JNDIUtil;
+import eu.domibus.ebms3.config.PMode;
+import eu.domibus.ebms3.workers.WorkerPool;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisModule;
 import org.apache.axis2.description.Parameter;
 import org.apache.log4j.Logger;
-import eu.domibus.common.util.JNDIUtil;
-import eu.domibus.ebms3.workers.WorkerPool;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -90,6 +91,14 @@ public class Constants {
     public static final String ATTACHMENT_FOLDER_PARAMETER = "domibus.module.ebms3.attachmentFolder";
     public static final String WORKERS_FILE_PARAMETER = "domibus.module.ebms3.workersFile";
     public static final String ENFORCE_1_3_COMPATIBILITY = "domibus.module.ebms3.enforce.1_3.compatibility";
+    public static final String ENABLE_WHITE_LIST = "domibus.module.ebms3.whitelist";
+    public static final String COMPRESSION_PROPERTY_NAME = "CompressionType";
+    public static final String COMPRESSION_GZIP_MIMETYPE = "application/gzip";
+    public static final String MIMETYPE_PROPERTY_NAME = "MimeType";
+    public static final String CHARACTERSET_PROPERTY_NAME = "CharacterSet";
+    public static final String MESSAGE_ID_PREFIX = "@e-codex.eu";
+
+
     // Simple MEPs:
     public static String ONE_WAY_PULL = "One-Way/Pull";
     public static String ONE_WAY_PUSH = "One-Way/Push";
@@ -103,34 +112,34 @@ public class Constants {
     public static AxisModule module;
     public static String[] engagedModules = new String[]{"domibus-ebms3"};
     public static ConfigurationContext configContext;
-    public static Map<String, eu.domibus.ebms3.config.PMode> pmodes;
+    public static Map<String, PMode> pmodes;
     public static WorkerPool workerPool;
     public static File workersFile;
-    
+
     public static final String ECODEX_SERVICE_URI_VALUE = "urn:e-codex:services:";
-	public static final String SERVICE_MESSAGE_FORMAT = ECODEX_SERVICE_URI_VALUE + "{0}";
+    public static final String SERVICE_MESSAGE_FORMAT = Constants.ECODEX_SERVICE_URI_VALUE + "{0}";
     public static final String ECODEX_PARTY_ID_URI_VALUE = "urn:e-codex:parties:";
-	public static final String PARTY_ID_MESSAGE_FORMAT = ECODEX_PARTY_ID_URI_VALUE + "{0}";
+    public static final String PARTY_ID_MESSAGE_FORMAT = Constants.ECODEX_PARTY_ID_URI_VALUE + "{0}";
 
     public static void setAxisModule(final AxisModule m) {
-        module = m;
+        Constants.module = m;
     }
 
     public static String getSubmitFolder() {
 
-        return JNDIUtil.getStringEnvironmentParameter(SUBMITTED_MESSAGES_FOLDER_PARAMETER);
+        return JNDIUtil.getStringEnvironmentParameter(Constants.SUBMITTED_MESSAGES_FOLDER_PARAMETER);
     }
 
     public static String getReceivedFolder() {
-        return JNDIUtil.getStringEnvironmentParameter(RECEIVED_MESSAGES_FOLDER_PARAMETER);
+        return JNDIUtil.getStringEnvironmentParameter(Constants.RECEIVED_MESSAGES_FOLDER_PARAMETER);
     }
 
     public static String getAttachmentDir() {
 
-        final Parameter attachDirParam = configContext.getAxisConfiguration().getParameter(
+        final Parameter attachDirParam = Constants.configContext.getAxisConfiguration().getParameter(
                 org.apache.axis2.Constants.Configuration.ATTACHMENT_TEMP_DIR);
 
-        final String attachmentFolder = JNDIUtil.getStringEnvironmentParameter(ATTACHMENT_FOLDER_PARAMETER);
+        final String attachmentFolder = JNDIUtil.getStringEnvironmentParameter(Constants.ATTACHMENT_FOLDER_PARAMETER);
         final File sub = new File(attachmentFolder);
         if (!sub.exists()) {
             sub.mkdirs();
@@ -141,19 +150,19 @@ public class Constants {
             final Parameter p =
                     new Parameter(org.apache.axis2.Constants.Configuration.ATTACHMENT_TEMP_DIR, attachmentFolder);
             try {
-                configContext.getAxisConfiguration().addParameter(p);
+                Constants.configContext.getAxisConfiguration().addParameter(p);
             } catch (AxisFault e) {
-               log.error("Error while adding Parameter to AxisConfiguration", e);
+                Constants.log.error("Error while adding Parameter to AxisConfiguration", e);
             }
         }
         return attachmentFolder;
     }
 
     public static File getWorkersFile() {
-        if (workersFile != null) {
-            return workersFile;
+        if (Constants.workersFile != null) {
+            return Constants.workersFile;
         }
-        final String workersName = JNDIUtil.getStringEnvironmentParameter(WORKERS_FILE_PARAMETER);
+        final String workersName = JNDIUtil.getStringEnvironmentParameter(Constants.WORKERS_FILE_PARAMETER);
         final File workersFile = new File(workersName);
         if (!workersFile.exists()) {
             throw new RuntimeException(

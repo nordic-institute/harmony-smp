@@ -43,10 +43,10 @@ public class SecurityConfig {
      * Gets the value of the keystores property.
      *
      * @return possible object is
-     *         {@link Keystores }
+     * {@link Keystores }
      */
     public Keystores getKeystores() {
-        return keystores;
+        return this.keystores;
     }
 
     /**
@@ -63,10 +63,10 @@ public class SecurityConfig {
      * Gets the value of the securities property.
      *
      * @return possible object is
-     *         {@link Securities }
+     * {@link Securities }
      */
     public Securities getSecurities() {
-        return securities;
+        return this.securities;
     }
 
     /**

@@ -1,10 +1,6 @@
 package eu.domibus.ebms3.handlers;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axis2.AxisFault;
-import org.apache.axis2.context.MessageContext;
-import org.apache.axis2.handlers.AbstractHandler;
-import org.apache.log4j.Logger;
+import eu.domibus.common.persistent.TempStoreDAO;
 import eu.domibus.common.util.WSUtil;
 import eu.domibus.common.util.XMLUtil;
 import eu.domibus.ebms3.config.As4Receipt;
@@ -13,6 +9,11 @@ import eu.domibus.ebms3.module.Constants;
 import eu.domibus.ebms3.module.EbUtil;
 import eu.domibus.ebms3.persistent.ReceiptTracking;
 import eu.domibus.ebms3.persistent.ReceiptTrackingDAO;
+import org.apache.axiom.om.OMElement;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.handlers.AbstractHandler;
+import org.apache.log4j.Logger;
 
 import java.util.Date;
 
@@ -25,8 +26,9 @@ import java.util.Date;
  * @author Hamid Ben Malek
  */
 public class ReceiptProcessor extends AbstractHandler {
-    private static final Logger log = Logger.getLogger(ReceiptProcessor.class.getName());
+    private static final Logger LOG = Logger.getLogger(ReceiptProcessor.class.getName());
     private final ReceiptTrackingDAO rtd = new ReceiptTrackingDAO();
+    private final TempStoreDAO tsd = new TempStoreDAO();
 
     private String logPrefix = "";
 
@@ -35,8 +37,8 @@ public class ReceiptProcessor extends AbstractHandler {
             return InvocationResponse.CONTINUE;
         }
 
-        if (log.isDebugEnabled()) {
-            logPrefix = WSUtil.logPrefix(msgCtx);
+        if (ReceiptProcessor.LOG.isDebugEnabled()) {
+            this.logPrefix = WSUtil.logPrefix(msgCtx);
         }
 
         // Step 1) Find Receipt
@@ -59,16 +61,17 @@ public class ReceiptProcessor extends AbstractHandler {
 
         final String refToMessageId =
                 XMLUtil.getFirstChildWithNameNS(messageInfo, Constants.REF_TO_MESSAGE_ID, Constants.NS).getText();
-        log.info(logPrefix + " Received a receipt for messageId " + refToMessageId);
+        ReceiptProcessor.LOG.debug(this.logPrefix + " Received a receipt for messageId " + refToMessageId);
 
         // Step 2) Process receipt
 
-        if (isAcceptableReceipt(receipt, refToMessageId)) {
-            setReceiptTrackingStatus(refToMessageId, ReceiptTracking.STATUS_RECEIPT_RECEIVED, signalMessage);
+        if (this.isAcceptableReceipt(receipt, refToMessageId)) {
+            this.setReceiptTrackingStatus(refToMessageId, ReceiptTracking.STATUS_RECEIPT_RECEIVED, signalMessage);
         } else {
-            setReceiptTrackingStatus(refToMessageId, ReceiptTracking.STATUS_UNRECOVERABLE_ERROR, signalMessage);
+            this.setReceiptTrackingStatus(refToMessageId, ReceiptTracking.STATUS_UNRECOVERABLE_ERROR, signalMessage);
         }
-        AS4ReliabilityUtil.removeAttachedFiles(refToMessageId);
+        //TODO: remove attachments
+        this.tsd.deleteAttachments(refToMessageId);
 
         return InvocationResponse.CONTINUE;
     }
@@ -82,19 +85,19 @@ public class ReceiptProcessor extends AbstractHandler {
      * @return {@code true} if the receipt matches the stipulated type of receipt
      */
     private boolean isAcceptableReceipt(final OMElement receipt, final String refToMessageId) {
-        final ReceiptTracking receiptTracking = rtd.getReceiptTrackerForUserMsg(refToMessageId);
+        final ReceiptTracking receiptTracking = this.rtd.getReceiptTrackerForUserMsg(refToMessageId);
 
         final String pmodeName = receiptTracking.getPmode();
-        if (pmodeName == null || pmodeName.isEmpty()) {
-            log.error("Unrecoverable Error: Empty PMode name in ReceiptTracking" +
-                      " for messageId=" + refToMessageId);
+        if ((pmodeName == null) || pmodeName.isEmpty()) {
+            ReceiptProcessor.LOG.error("Unrecoverable Error: Empty PMode name in ReceiptTracking" +
+                                       " for messageId=" + refToMessageId);
             return false;
         }
 
         final As4Receipt as4Receipt = AS4ReliabilityUtil.getReceiptConfig(pmodeName);
         if (as4Receipt == null) {
-            log.error("Unrecoverable Error: No As4Receipt configuration" +
-                      " in PMode=" + pmodeName + " for messageId=" + refToMessageId);
+            ReceiptProcessor.LOG.error("Unrecoverable Error: No As4Receipt configuration" +
+                                       " in PMode=" + pmodeName + " for messageId=" + refToMessageId);
             return false;
         }
 
@@ -102,9 +105,9 @@ public class ReceiptProcessor extends AbstractHandler {
             final OMElement nonRepudiationInformation =
                     XMLUtil.getFirstChildWithNameNS(receipt, Constants.NON_REPUDIATION_INFORMATION, Constants.ebbpNS);
             if (nonRepudiationInformation == null) {
-                log.error("Unrecoverable Error: Cannot find " +
-                          Constants.NON_REPUDIATION_INFORMATION +
-                          " in Receipt for messageId=" + refToMessageId);
+                ReceiptProcessor.LOG.error("Unrecoverable Error: Cannot find " +
+                                           Constants.NON_REPUDIATION_INFORMATION +
+                                           " in Receipt for messageId=" + refToMessageId);
                 return false;
             }
             // Found the NON_REPUDIATION_INFORMATION.
@@ -113,9 +116,9 @@ public class ReceiptProcessor extends AbstractHandler {
             final OMElement copyOfUserMessage =
                     XMLUtil.getFirstChildWithNameNS(receipt, Constants.USER_MESSAGE, Constants.NS);
             if (copyOfUserMessage == null) {
-                log.error("Unrecoverable Error: Cannot find " +
-                          Constants.USER_MESSAGE +
-                          " in Receipt for messageId=" + refToMessageId);
+                ReceiptProcessor.LOG.error("Unrecoverable Error: Cannot find " +
+                                           Constants.USER_MESSAGE +
+                                           " in Receipt for messageId=" + refToMessageId);
                 return false;
             }
             // Found the USER_MESSAGE.
@@ -135,15 +138,15 @@ public class ReceiptProcessor extends AbstractHandler {
      */
     private void setReceiptTrackingStatus(final String refToMessageId, final String newStatus,
                                           final OMElement signalMessage) {
-        final int updatedRows = rtd.updateTrackingStatus(newStatus, refToMessageId);
+        final int updatedRows = this.rtd.updateTrackingStatus(newStatus, refToMessageId);
         if (updatedRows == 0) {
-            log.info("Received out-of-order receipt" +
-                     " for messageId=" + refToMessageId);
+            ReceiptProcessor.LOG.info("Received out-of-order receipt" +
+                                      " for messageId=" + refToMessageId);
         } else {
-            log.info("Received receipt" +
-                     " for messageId=" + refToMessageId);
+            ReceiptProcessor.LOG.debug("Received receipt" +
+                                       " for messageId=" + refToMessageId);
             if (signalMessage != null) {
-                rtd.setReceipt(refToMessageId, XMLUtil.toString(signalMessage), new Date());
+                this.rtd.setReceipt(refToMessageId, XMLUtil.toString(signalMessage), new Date());
             }
         }
     }

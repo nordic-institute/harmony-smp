@@ -1,10 +1,10 @@
 package eu.domibus.ebms3.packaging;
 
-import org.apache.axiom.om.OMElement;
 import eu.domibus.common.soap.Element;
 import eu.domibus.common.util.JNDIUtil;
 import eu.domibus.common.util.XMLUtil;
 import eu.domibus.ebms3.module.Constants;
+import org.apache.axiom.om.OMElement;
 
 import java.text.MessageFormat;
 import java.util.Iterator;
@@ -19,26 +19,26 @@ public class PartyInfo extends Element {
 
     public PartyInfo() {
         super(Constants.PARTY_INFO, Constants.NS, Constants.PREFIX);
-        if (from == null) {
-            from = new Element(Constants.FROM, Constants.NS, Constants.PREFIX);
+        if (this.from == null) {
+            this.from = new Element(Constants.FROM, Constants.NS, Constants.PREFIX);
         }
-        if (to == null) {
-            to = new Element(Constants.TO, Constants.NS, Constants.PREFIX);
+        if (this.to == null) {
+            this.to = new Element(Constants.TO, Constants.NS, Constants.PREFIX);
         }
-        addChild(from);
-        addChild(to);
+        this.addChild(this.from);
+        this.addChild(this.to);
     }
 
     public PartyInfo(final String fromPartyID, final String toPartyID) {
         this();
-        addFromParty(fromPartyID, null, null);
-        addToParty(toPartyID, null, null);
+        this.addFromParty(fromPartyID, null, null);
+        this.addToParty(toPartyID, null, null);
     }
 
     public PartyInfo(final String[] fromPartyIDs, final String[] toPartyIDs) {
         this();
-        addFromParties(fromPartyIDs, null);
-        addToParties(toPartyIDs, null);
+        this.addFromParties(fromPartyIDs, null);
+        this.addToParties(toPartyIDs, null);
     }
 
     public void addFromParty(final String partyId, final String partyIdType, final String role) {
@@ -46,7 +46,7 @@ public class PartyInfo extends Element {
             return;
         }
         final Element p = new Element(Constants.PARTY_ID, Constants.NS, Constants.PREFIX);
-        if (partyIdType != null && !partyIdType.trim().equals("")) {
+        if ((partyIdType != null) && !"".equals(partyIdType.trim())) {
             p.setText(partyId);
             p.addAttribute("type", partyIdType);
         } else {
@@ -55,50 +55,50 @@ public class PartyInfo extends Element {
                 p.setAttribute("type", eu.domibus.ebms3.module.Constants.ECODEX_PARTY_ID_URI_VALUE);
             }
         }
-        from.addChild(p);
-        if (role != null && !role.trim().equals("")) {
+        this.from.addChild(p);
+        if ((role != null) && !"".equals(role.trim())) {
             final Element r = new Element(Constants.ROLE, Constants.NS, Constants.PREFIX);
             r.setText(role);
-            from.addChild(r);
+            this.from.addChild(r);
         }
     }
 
     public void addFromParties(final String[] partyIds, final String role) {
-        if (partyIds == null || partyIds.length == 0) {
+        if ((partyIds == null) || (partyIds.length == 0)) {
             return;
         }
         for (final String partyId : partyIds) {
-            addFromParty(partyId, null, null);
+            this.addFromParty(partyId, null, null);
         }
-        if (role != null && !role.trim().equals("")) {
+        if ((role != null) && !"".equals(role.trim())) {
             final Element r = new Element(Constants.ROLE, Constants.NS, Constants.PREFIX);
             r.setText(role);
-            from.addChild(r);
+            this.from.addChild(r);
         }
     }
 
     public void addFromParties(final String[] partyIds, final String[] types, final String role) {
-        if (partyIds == null || partyIds.length == 0) {
+        if ((partyIds == null) || (partyIds.length == 0)) {
             return;
         }
-        if (types != null && types.length > 0) {
+        if ((types != null) && (types.length > 0)) {
             for (int i = 0; i < Math.min(partyIds.length, types.length); i++) {
-                addFromParty(partyIds[i], types[i], null);
+                this.addFromParty(partyIds[i], types[i], null);
             }
             if (partyIds.length > types.length) {
                 for (int j = types.length; j < partyIds.length; j++) {
-                    addFromParty(partyIds[j], null, null);
+                    this.addFromParty(partyIds[j], null, null);
                 }
             }
         } else {
             for (final String partyId : partyIds) {
-                addFromParty(partyId, null, null);
+                this.addFromParty(partyId, null, null);
             }
         }
-        if (role != null && !role.trim().equals("")) {
+        if ((role != null) && !"".equals(role.trim())) {
             final Element r = new Element(Constants.ROLE, Constants.NS, Constants.PREFIX);
             r.setText(role);
-            from.addChild(r);
+            this.from.addChild(r);
         }
     }
 
@@ -108,7 +108,7 @@ public class PartyInfo extends Element {
             return;
         }
         final Element p = new Element(Constants.PARTY_ID, Constants.NS, Constants.PREFIX);
-        if (partyIdType != null && !partyIdType.trim().isEmpty()) {
+        if ((partyIdType != null) && !partyIdType.trim().isEmpty()) {
             p.setText(partyId);
             p.addAttribute("type", partyIdType);
         } else {
@@ -116,65 +116,65 @@ public class PartyInfo extends Element {
                 p.setText(MessageFormat.format(eu.domibus.ebms3.module.Constants.PARTY_ID_MESSAGE_FORMAT, partyId));
             }
         }
-        to.addChild(p);
-        if (role != null && !role.trim().equals("")) {
+        this.to.addChild(p);
+        if ((role != null) && !"".equals(role.trim())) {
             final Element r = new Element(Constants.ROLE, Constants.NS, Constants.PREFIX);
             r.setText(role);
-            to.addChild(r);
+            this.to.addChild(r);
         }
     }
 
     public void addToParties(final String[] partyIds, final String role) {
-        if (partyIds == null || partyIds.length == 0) {
+        if ((partyIds == null) || (partyIds.length == 0)) {
             return;
         }
         for (final String partyId : partyIds) {
-            addToParty(partyId, null, null);
+            this.addToParty(partyId, null, null);
         }
-        if (role != null && !role.trim().equals("")) {
+        if ((role != null) && !"".equals(role.trim())) {
             final Element r = new Element(Constants.ROLE, Constants.NS, Constants.PREFIX);
             r.setText(role);
-            to.addChild(r);
+            this.to.addChild(r);
         }
     }
 
     public void addToParties(final String[] partyIds, final String[] types, final String role) {
-        if (partyIds == null || partyIds.length == 0) {
+        if ((partyIds == null) || (partyIds.length == 0)) {
             return;
         }
-        if (types != null && types.length > 0) {
+        if ((types != null) && (types.length > 0)) {
             for (int i = 0; i < Math.min(partyIds.length, types.length); i++) {
-                addToParty(partyIds[i], types[i], null);
+                this.addToParty(partyIds[i], types[i], null);
             }
             if (partyIds.length > types.length) {
                 for (int j = types.length; j < partyIds.length; j++) {
-                    addToParty(partyIds[j], null, null);
+                    this.addToParty(partyIds[j], null, null);
                 }
             }
         } else {
             for (final String partyId : partyIds) {
-                addToParty(partyId, null, null);
+                this.addToParty(partyId, null, null);
             }
         }
-        if (role != null && !role.trim().equals("")) {
+        if ((role != null) && !"".equals(role.trim())) {
             final Element r = new Element(Constants.ROLE, Constants.NS, Constants.PREFIX);
             r.setText(role);
-            to.addChild(r);
+            this.to.addChild(r);
         }
     }
 
     public String getFromRole() {
         //return Util.getGrandChildValue(from, Constants.ROLE);
-        return XMLUtil.getGrandChildValue(from.getElement(), Constants.ROLE);
+        return XMLUtil.getGrandChildValue(this.from.getElement(), Constants.ROLE);
     }
 
     public void setFromRole(final String role) {
-        if (role == null || role.trim().equals("")) {
+        if ((role == null) || "".equals(role.trim())) {
             return;
         }
-        final Iterator it = from.getChildElements();
+        final Iterator it = this.from.getChildElements();
         boolean found = false;
-        while (it != null && it.hasNext()) {
+        while ((it != null) && it.hasNext()) {
             final OMElement e = (OMElement) it.next();
             if (e.getLocalName().equals(Constants.ROLE)) {
                 e.setText(role);
@@ -184,22 +184,22 @@ public class PartyInfo extends Element {
         if (!found) {
             final Element r = new Element(Constants.ROLE, Constants.NS, Constants.PREFIX);
             r.setText(role);
-            from.addChild(r);
+            this.from.addChild(r);
         }
     }
 
     public String getToRole() {
         //return Util.getGrandChildValue(to, Constants.ROLE);
-        return XMLUtil.getGrandChildValue(to.getElement(), Constants.ROLE);
+        return XMLUtil.getGrandChildValue(this.to.getElement(), Constants.ROLE);
     }
 
     public void setToRole(final String role) {
-        if (role == null || role.trim().equals("")) {
+        if ((role == null) || "".equals(role.trim())) {
             return;
         }
-        final Iterator it = to.getChildElements();
+        final Iterator it = this.to.getChildElements();
         boolean found = false;
-        while (it != null && it.hasNext()) {
+        while ((it != null) && it.hasNext()) {
             final OMElement e = (OMElement) it.next();
             if (e.getLocalName().equals(Constants.ROLE)) {
                 e.setText(role);
@@ -209,7 +209,7 @@ public class PartyInfo extends Element {
         if (!found) {
             final Element r = new Element(Constants.ROLE, Constants.NS, Constants.PREFIX);
             r.setText(role);
-            to.addChild(r);
+            this.to.addChild(r);
         }
     }
 }

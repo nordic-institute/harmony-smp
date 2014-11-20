@@ -1,8 +1,9 @@
 package eu.domibus.common.persistent;
 
-import org.apache.log4j.Logger;
+import eu.domibus.common.Constants;
 import eu.domibus.common.exceptions.ConfigurationException;
 import eu.domibus.common.util.JNDIUtil;
+import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -29,15 +30,14 @@ public class JpaUtil
 
 
     public JpaUtil() {
-        em = getEntityManager();
+        this.em = JpaUtil.getEntityManager();
     }
 
     public static EntityManager getEntityManager() {
         synchronized (JpaUtil.class) {
-            if (emf == null) {
-                final String pUnit =
-                        JNDIUtil.getStringEnvironmentParameter(eu.domibus.common.Constants.PERSISTENCE_UNIT);
-                LOG.debug("Using PersistenceUnit : " + pUnit);
+            if (JpaUtil.emf == null) {
+                final String pUnit = JNDIUtil.getStringEnvironmentParameter(Constants.PERSISTENCE_UNIT);
+                JpaUtil.LOG.debug("Using PersistenceUnit : " + pUnit);
                 final Properties hbmProps = new Properties();
                 try {
                     hbmProps.load(new FileReader(JNDIUtil.getStringEnvironmentParameter(
@@ -45,13 +45,13 @@ public class JpaUtil
                 } catch (IOException e) {
                     throw new ConfigurationException("hibernate properties not found", e);
                 }
-                emf = Persistence.createEntityManagerFactory(pUnit, hbmProps);
+                JpaUtil.emf = Persistence.createEntityManagerFactory(pUnit, hbmProps);
             }
         }
-        return emf.createEntityManager();
+        return JpaUtil.emf.createEntityManager();
     }
 
     public void close() {
-        emf.close();
+        JpaUtil.emf.close();
     }
 }

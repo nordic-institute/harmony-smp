@@ -1,35 +1,61 @@
-<!-- Description of the build process: validate initialize -Read domibus.properties 
-	from domibus-config/domibus.properties using properties-maven-plugin. Those 
-	values will be filtered later into the server configuration. generate-sources 
-	process-sources generate-resources -domibus-config is copied to target/domibus-config 
-	-src/main/modules of the domibus modules are copied to target/${project.build.finalName}/WEB-INF/modules 
-	-project resources (i.e. persistence.xml) are filtered process-resources 
-	compile process-classes generate-test-sources process-test-sources -test 
-	resources (i.e. src/test/resources/META-INF/persistence.xml) are filtered. 
-	generate-test-resources process-test-resources test-compile process-test-classes 
-	test -unit tests not matching *IntegrationTest.java are executed prepare-package 
-	package pre-integration-test -read build.properties from domibus-config/build.properties 
-	using properties-maven-plugin. Values defined here are overriding values 
-	defined in domibus.properties for the purpose of integration testing. -copy 
-	filtered domibus-config to tatget/domibus-integration/config -database scripts 
-	are generated using hibernate3-maven-plugin. The persistence.xml located 
-	in src/test/resources/META-INF is used for this. -derby database is started 
-	using derby-maven-plugin -the generated derby script is imported into the 
-	database using sql-maven-plugin -tomcat is set up using integration-test-config, 
-	packaged and started integration-test -unit tests matching *IntegrationTest.java 
-	are executed post-integration-test -tomcat is shut down verify -if the jenkins 
-	profile is activated all configured assemblies are built, using the properties 
-	set in domibus.properties install deploy -deployment is made to ecodex-nexus, 
-	deployer credentials are required profiles: jenkins: The build server profile. 
-	Generates assemblies debug: starts the server in debug mode, listening for 
-	a debugger on port 8000. Server is stopped with ctrl-c. To suspend the server 
-	until a debugger is connected start the build with -Ddebug.suspend=y parameter 
-	debug_both: starts two tomcat servers in debug mode, listening for a debugger 
-	on port 8000 and 9000(integration-test-server). Servers are stopped with 
-	ctrl-c. To suspend the server until a debugger is connected start the build 
-	with -Ddebug.suspend=y parameter weblogic: like a normal build without profile 
-	but instead of tomcats servers two weblogic 11g servers were used for integration 
-	tests -->
+<!-- Description of the build process:
+
+
+validate 	
+initialize 				-Read domibus.properties from domibus-config/domibus.properties using properties-maven-plugin.
+							Those values will be filtered later into the server configuration. 
+generate-sources 	
+process-sources 	
+generate-resources 		-domibus-config is copied to target/domibus-config
+						-src/main/modules of the domibus modules are copied to target/${project.build.finalName}/WEB-INF/modules
+						-project resources (i.e. persistence.xml) are filtered 
+
+
+process-resources 	
+compile 	
+process-classes 	
+generate-test-sources 	
+process-test-sources 	-test resources (i.e. src/test/resources/META-INF/persistence.xml) are filtered.
+generate-test-resources 
+process-test-resources 	
+test-compile 	
+process-test-classes 	
+test 					-unit tests not matching *IntegrationTest.java are executed
+prepare-package 	
+package 	
+pre-integration-test 	-read build.properties from domibus-config/build.properties using properties-maven-plugin.
+							Values defined here are overriding values defined in domibus.properties for the purpose of integration testing.
+						-copy filtered domibus-config to tatget/domibus-integration/config
+						-database scripts are generated using hibernate3-maven-plugin. The persistence.xml located in 
+							src/test/resources/META-INF is used for this.
+						-derby database is started using derby-maven-plugin
+						-the generated derby script is imported into the database using sql-maven-plugin
+						-tomcat is set up using integration-test-config, packaged and started
+						
+						
+integration-test 		-unit tests matching *IntegrationTest.java are executed
+post-integration-test 	-tomcat is shut down
+verify 					-if the jenkins profile is activated all configured assemblies are built, using the properties set in domibus.properties
+install 	
+deploy 					-deployment is made to ecodex-nexus, deployer credentials are required
+
+
+
+profiles:
+
+jenkins:
+The build server profile. Generates assemblies
+
+debug:
+starts the server in debug mode, listening for a debugger on port 8000. Server is stopped with ctrl-c. To suspend the server until a debugger is 
+connected start the build with -Ddebug.suspend=y parameter
+
+debug_both: 
+starts two tomcat servers in debug mode, listening for a debugger on port 8000 and 9000(integration-test-server). Servers are stopped with ctrl-c.
+To suspend the server until a debugger is connected start the build with -Ddebug.suspend=y parameter 
+
+weblogic: like a normal build without profile but instead of tomcats servers two weblogic 11g servers were used for integration tests
+ -->
 
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -38,12 +64,12 @@
     <parent>
         <groupId>eu.domibus</groupId>
         <artifactId>domibus</artifactId>
-        <version>1.4.1.1-FINAL</version>
+        <version>2.0-BETA-3</version>
         <relativePath>../../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>domibus-distribution</artifactId>
-    <name>Domibus Distribution</name>
+    <name>domibus Distribution</name>
     <packaging>war</packaging>
     <properties>
         <prefix.jndi>java:comp/env/</prefix.jndi>
@@ -55,9 +81,40 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>org.apache.axis2</groupId>
+            <artifactId>axis2-spring</artifactId>
+            <version>1.6.2</version>
+        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>net.timewalker</groupId>-->
+            <!--<artifactId>ffmq</artifactId>-->
+            <!--<version>3.0.5</version>-->
+        <!--</dependency>-->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jms</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.jms</groupId>
+            <artifactId>javax.jms-api</artifactId>
+            <version>2.0</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>commons-httpclient</groupId>
             <artifactId>commons-httpclient</artifactId>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-ssl</groupId>
+            <artifactId>commons-ssl</artifactId>
+            <version>0.3.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.axis2</groupId>
@@ -89,7 +146,6 @@
             <artifactId>hibernate-core</artifactId>
             <scope>compile</scope>
         </dependency>
-
         <dependency>
             <groupId>org.opensymphony.quartz</groupId>
             <artifactId>quartz</artifactId>
@@ -107,10 +163,29 @@
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
-            <artifactId>spring</artifactId>
+            <artifactId>spring-context</artifactId>
             <scope>compile</scope>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <scope>compile</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-all</artifactId>
@@ -145,6 +220,10 @@
                 <exclusion>
                     <groupId>bouncycastle</groupId>
                     <artifactId>bcprov-jdk15</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>ca.juliusdavies</groupId>
+                    <artifactId>not-yet-commons-ssl</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -205,7 +284,7 @@
         </dependency>
         <dependency>
             <groupId>eu.domibus</groupId>
-            <artifactId>domibus-backend</artifactId>
+            <artifactId>domibus-submission</artifactId>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -543,7 +622,7 @@
                                     </outputDirectory>
                                     <resources>
                                         <resource>
-                                            <directory>../domibus-backend/src/main/modules</directory>
+                                            <directory>../domibus-submission/src/main/modules</directory>
                                             <includes>
                                                 <include>**/*</include>
                                             </includes>
@@ -660,7 +739,7 @@
                     <plugin>
                         <groupId>com.smartbear.soapui</groupId>
                         <artifactId>soapui-maven-plugin</artifactId>
-                        <version>5.1.2</version>
+                        <version>5.0.0</version>
                         <executions>
                             <execution>
                                 <phase>integration-test</phase>

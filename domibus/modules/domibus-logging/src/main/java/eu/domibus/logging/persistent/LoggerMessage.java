@@ -6,6 +6,7 @@ import eu.domibus.common.persistent.AbstractBaseEntity;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -16,7 +17,7 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "TB_LOGGER_MESSAGE")
-public class LoggerMessage extends AbstractBaseEntity implements java.io.Serializable {
+public class LoggerMessage extends AbstractBaseEntity implements Serializable {
     private static final long serialVersionUID = 1200796957717630663L;
 
     public final static String MESSAGE_SENT_INIT_STATUS = "SENT_INIT";
@@ -60,12 +61,13 @@ public class LoggerMessage extends AbstractBaseEntity implements java.io.Seriali
 
 
     public LoggerMessage() {
-        timestamp = new Date();
+        this.timestamp = new Date();
     }
 
 
-    public LoggerMessage(final String messageId, final String sender, final String fromRole, final String recipient, final String toRole, final String service, final String action,
-                         final String conversationId, final String pmode, final String status) {
+    public LoggerMessage(final String messageId, final String sender, final String fromRole, final String recipient,
+                         final String toRole, final String service, final String action, final String conversationId,
+                         final String pmode, final String status) {
         super();
         this.messageId = messageId;
         this.sender = sender;
@@ -101,7 +103,7 @@ public class LoggerMessage extends AbstractBaseEntity implements java.io.Seriali
      * Setter and Getter
      */
     public String getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(final String id) {
@@ -109,7 +111,7 @@ public class LoggerMessage extends AbstractBaseEntity implements java.io.Seriali
     }
 
     public String getPmode() {
-        return pmode;
+        return this.pmode;
     }
 
     public void setPmode(final String pmode) {
@@ -118,7 +120,7 @@ public class LoggerMessage extends AbstractBaseEntity implements java.io.Seriali
 
 
     public String getMessageId() {
-        return messageId;
+        return this.messageId;
     }
 
     public void setMessageId(final String messageId) {
@@ -126,7 +128,7 @@ public class LoggerMessage extends AbstractBaseEntity implements java.io.Seriali
     }
 
     public String getSender() {
-        return sender;
+        return this.sender;
     }
 
     public void setSender(final String sender) {
@@ -134,7 +136,7 @@ public class LoggerMessage extends AbstractBaseEntity implements java.io.Seriali
     }
 
     public String getFromRole() {
-        return fromRole;
+        return this.fromRole;
     }
 
     public void setFromRole(final String fromRole) {
@@ -142,7 +144,7 @@ public class LoggerMessage extends AbstractBaseEntity implements java.io.Seriali
     }
 
     public String getRecipient() {
-        return recipient;
+        return this.recipient;
     }
 
     public void setRecipient(final String recipient) {
@@ -150,7 +152,7 @@ public class LoggerMessage extends AbstractBaseEntity implements java.io.Seriali
     }
 
     public String getToRole() {
-        return toRole;
+        return this.toRole;
     }
 
     public void setToRole(final String toRole) {
@@ -158,7 +160,7 @@ public class LoggerMessage extends AbstractBaseEntity implements java.io.Seriali
     }
 
     public String getService() {
-        return service;
+        return this.service;
     }
 
     public void setService(final String service) {
@@ -166,7 +168,7 @@ public class LoggerMessage extends AbstractBaseEntity implements java.io.Seriali
     }
 
     public String getAction() {
-        return action;
+        return this.action;
     }
 
     public void setAction(final String action) {
@@ -174,7 +176,7 @@ public class LoggerMessage extends AbstractBaseEntity implements java.io.Seriali
     }
 
     public String getConversationId() {
-        return conversationId;
+        return this.conversationId;
     }
 
     public void setConversationId(final String conversationId) {
@@ -182,7 +184,7 @@ public class LoggerMessage extends AbstractBaseEntity implements java.io.Seriali
     }
 
     public Date getTimestamp() {
-        return timestamp;
+        return this.timestamp;
     }
 
     public void setTimestamp(final Date timestamp) {
@@ -190,7 +192,7 @@ public class LoggerMessage extends AbstractBaseEntity implements java.io.Seriali
     }
 
     public String getStatus() {
-        return status;
+        return this.status;
     }
 
     public void setStatus(final String status) {

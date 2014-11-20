@@ -1,64 +1,127 @@
-<Context path="/domibus" privileged="false">
+<Context path="/domibus" privileged="false" reloadable="false">
 
-    <Environment name="domibus.persistence.unit" value="domibusPU"
-                 type="java.lang.String"/>
-
-    <Environment name="domibus.module.backend.messagesFolder"
-                 value="store/backend_store" type="java.lang.String"/>
-    <Environment name="domibus.module.backend.messagesTimeLive"
-                 value="60" type="java.lang.String"/>
-    <Environment name="domibus.module.backend.deleteMessagesCron"
-                 value="0 1/2 * * * ?" type="java.lang.String"/>
-    <Environment name="domibus.module.ebms3.attachmentFolder" value="store/attachments"
-                 type="java.lang.String"/>
-    <Environment name="domibus.module.ebms3.PModesDir" value="conf/domibus/pmodes"
-                 type="java.lang.String"/>
-    <Environment name="domibus.module.ebms3.gatewayConfigFile"
-                 value="conf/domibus/gateway.xml" type="java.lang.String"/>
-    <Environment name="domibus.module.ebms3.submittedMessagesFolder"
-                 value="store/send" type="java.lang.String"/>
-    <Environment name="domibus.module.ebms3.receivedMessagesFolder"
-                 value="store/receive" type="java.lang.String"/>
-    <Environment name="domibus.module.ebms3.hostnames" value="localhost,127.0.0.1"
-                 type="java.lang.String"/>
-    <Environment name="domibus.module.ebms3.workersFile"
-                 value="conf/domibus/workers.xml" type="java.lang.String"/>
-    <Environment name="domibus.module.ebms3.enforce.1_3.compatibility"
-                 value="true" type="java.lang.Boolean"/>
-    <Environment name="domibus.module.security.configFile"
-                 value="conf/domibus/security-config.xml" type="java.lang.String"/>
-    <Environment name="domibus.module.security.policiesFolder"
-                 value="conf/domibus/policies" type="java.lang.String"/>
-    <Environment name="domibus.module.security.keysFolder"
-                 value="conf/domibus/keys" type="java.lang.String"/>
-    <Environment name="domibus.module.security.config.timeout"
-                 value="30000" type="java.lang.String"/>
-    <Environment name="domibus.module.security.config.privatekey.password"
-                 value="apache" type="java.lang.String"/>
-    <Environment name="domibus.persistence.properties"
-                 value="conf/domibus/hibernate.properties" type="java.lang.String"/>
-
+    <!-- DATABASE CONFIGURATION START -->
+    <!-- Database configuration, driverClassName, url, username and password
+        must be changed -->
     <Resource name="domibusPU"
               auth="Container"
               factory="org.apache.naming.factory.BeanFactory"
               type="com.mchange.v2.c3p0.ComboPooledDataSource"
               driverClass="@domibus.persistence.driverClassName@"
-              maxPoolSize="50"
-              minPoolSize="15"
-              acquireIncrement="3"
-              acquireRetryAttempts="0"
-              acquireRetryDelay="3000"
-              breakAfterAcquireFailure="false"
-              maxConnectionAge="60"
-              maxIdleTime="30"
-              maxIdleTimeExcessConnections="10"
-              idleConnectionTestPeriod="15"
-              testConnectionOnCheckout="false"
-              preferredTestQuery="SELECT 1"
-              debugUnreturnedConnectionStackTraces="true"
-              autoCommitOnClose="true"
               jdbcUrl="@domibus.persistence.url@"
+              maxPoolSize="15"
+              minPoolSize="15"
               user="@domibus.persistence.user@"
               password="@domibus.persistence.password@"/>
+
+    <!-- Name of the database connection as defined above -->
+    <Environment name="domibus.persistence.unit" value="domibusPU"
+                 type="java.lang.String"/>
+
+    <!-- File where addidtional persistence properties are defined -->
+    <Environment name="domibus.persistence.properties" value="conf/domibus/hibernate.properties"
+                 type="java.lang.String"/>
+    <!-- DATABASE CONFIGURATION END -->
+
+
+    <!-- SECURITY CONFIGURATION START -->
+    <!-- File where the security module is configured -->
+    <Environment name="domibus.module.security.configFile"
+                 value="conf/domibus/security-config.xml" type="java.lang.String"/>
+
+    <!-- Folder where security policies are defined -->
+    <Environment name="domibus.module.security.policiesFolder"
+                 value="conf/domibus/policies" type="java.lang.String"/>
+
+    <!-- Timeout in milliseconds for the expiration of the security configuration
+        cache -->
+    <Environment name="domibus.module.security.config.timeout"
+                 value="30000" type="java.lang.String"/>
+
+    <!-- Password for the private key used by the gateway -->
+    <Environment name="domibus.module.security.config.privatekey.password"
+                 value="apache" type="java.lang.String"/>
+    <!-- SECURITY CONFIGURATION END -->
+
+
+    <!-- FILE SYSTEM CONFIGURATION START -->
+    <!-- Folder where the backend module stores messages -->
+    <Environment name="domibus.module.backend.messagesFolder"
+                 value="store/backend_store" type="java.lang.String"/>
+
+    <!-- Folder where the ebms3 module stores attachments -->
+    <Environment name="domibus.module.ebms3.attachmentFolder"
+                 value="store/attachments" type="java.lang.String"/>
+
+    <!-- Folder where the PMode configuration files are located -->
+    <Environment name="domibus.module.ebms3.PModesDir" value="conf/domibus/pmodes"
+                 type="java.lang.String"/>
+
+    <!-- File where gateway consumption rules are defined -->
+    <Environment name="domibus.module.ebms3.gatewayConfigFile"
+                 value="conf/domibus/gateway.xml" type="java.lang.String"/>
+
+    <!-- Folder where the ebms3 module stores submitted messages -->
+    <Environment name="domibus.module.ebms3.submittedMessagesFolder"
+                 value="store/send" type="java.lang.String"/>
+
+    <!-- Folder where the ebms3 module stores received messages -->
+    <Environment name="domibus.module.ebms3.receivedMessagesFolder"
+                 value="store/receive" type="java.lang.String"/>
+
+    <!-- File where worker execution rules are defined -->
+    <Environment name="domibus.module.ebms3.workersFile"
+                 value="conf/domibus/workers.xml" type="java.lang.String"/>
+
+    <!--  support for domibus 1.3 messages -->
+    <Environment name="domibus.module.ebms3.enforce.1_3.compatibility"
+                 value="true" type="java.lang.Boolean"/>
+    <!-- FILE SYSTEM CONFIGURATION END -->
+
+
+    <!-- MISC CONFIGURATION START -->
+    <!-- Number of days after which not downloaded messages are deleted -->
+    <Environment name="domibus.module.backend.messagesTimeToLive"
+                 value="60" type="java.lang.Integer"/>
+
+    <Environment name="domibus.module.submission.downloadedMessagesTimeToLive"
+                 value="60" type="java.lang.Integer"/>
+
+    <!-- Cron expression determining how often the check for the time limit
+        defined above is executed -->
+    <Environment name="domibus.module.backend.deleteMessagesCron"
+                 value="0 1/2 * * * ?" type="java.lang.String"/>
+
+    <!-- Hostnames of the server the gateway is running on -->
+    <Environment name="domibus.module.ebms3.hostnames" value="localhost,127.0.0.1"
+                 type="java.lang.String"/>
+
+    <!-- Support of the SMP Whitelist feature to check if it is allowed to receive messages from the sending GW -->
+    <Environment name="domibus.module.ebms3.whitelist" value="false"
+                 type="java.lang.Boolean"/>
+
+    <!-- MISC CONFIGURATION END -->
+
+    <!-- Two way SSL configuration -->
+    <Environment name="domibus.ssl.truststore.path" value="conf/domibus/keys/truststore.jks"
+                 type="java.lang.String"/>
+
+    <Environment name="domibus.ssl.truststore.password" value="apache"
+                 type="java.lang.String"/>
+
+    <Environment name="domibus.ssl.keystore.path" value="conf/domibus/keys/keystore.jks"
+                 type="java.lang.String"/>
+
+    <Environment name="domibus.ssl.keystore.password" value="apache"
+                 type="java.lang.String"/>
+
+    <!-- backend interafce configuration -->
+    <Environment name="domibus.module.submission.webserviceFolder"
+                 value="conf/domibus/services"
+                 type="java.lang.String"/>
+
+    <Environment name="domibus.module.spring.context.folder"
+                 value="conf/domibus/spring/context"
+                 type="java.lang.String"/>
 </Context>
 

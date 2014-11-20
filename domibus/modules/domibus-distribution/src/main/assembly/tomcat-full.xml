@@ -25,10 +25,13 @@
             <filtered>false</filtered>
         </fileSet>
         <fileSet>
-            <directory>${project.build.directory}/domibus-config/delta_scripts/</directory>
+            <directory>${project.build.directory}/../../../domibus-config/delta_scripts/</directory>
             <useDefaultExcludes>true</useDefaultExcludes>
             <outputDirectory>domibus/sql-scripts/delta_scripts</outputDirectory>
             <!-- excludes/ -->
+            <includes>
+                <include>**/*</include>
+            </includes>
             <fileMode>0444</fileMode>
             <directoryMode>0555</directoryMode>
             <!-- directory/ -->
@@ -40,7 +43,7 @@
             <outputDirectory>domibus</outputDirectory>
             <useDefaultExcludes>true</useDefaultExcludes>
             <excludes>
-                <exclude>work</exclude>
+                <exclude>work/**/*</exclude>
                 <exclude>${domibus.module.backend.messagesFolder}/**/*</exclude>
                 <exclude>${domibus.module.ebms3.submittedMessagesFolder}/**/*</exclude>
                 <exclude>${domibus.module.ebms3.receivedMessagesFolder}/**/*</exclude>
@@ -50,14 +53,16 @@
                 <exclude>webapps/domibus/**/*</exclude>
                 <exclude>conf/Catalina/**/*</exclude>
                 <exclude>conf/domibus/**/*</exclude>
+                <exclude>common/**/*</exclude>
+                <exclude>shared/**/*</exclude>
             </excludes>
-            <filtered>false</filtered>
-        </fileSet>
-        <fileSet>
-            <directory>${project.build.directory}/artifacts/tomcat</directory>
-            <outputDirectory>domibus</outputDirectory>
-            <useDefaultExcludes>true</useDefaultExcludes>
             <includes>
+                <include>lib/**/*</include>
+                <include>bin/**/*</include>
+                <include>LICENSE</include>
+                <include>NOTICE</include>
+                <include>RELEASE-NOTES</include>
+                <include>RUNNING.txt</include>
                 <include>${domibus.module.backend.messagesFolder}</include>
                 <include>${domibus.module.ebms3.submittedMessagesFolder}</include>
                 <include>${domibus.module.ebms3.receivedMessagesFolder}</include>

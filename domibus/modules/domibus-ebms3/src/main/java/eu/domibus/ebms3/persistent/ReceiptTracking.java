@@ -20,8 +20,9 @@ import java.util.Set;
 @NamedQueries({
 
                       @NamedQuery(name = "ReceiptTracking.getReceiptTrackerForUserMsg",
-                                  query = "SELECT rt FROM ReceiptTracking rt WHERE rt.messageId = :MESSAGE_ID"), @NamedQuery(name = "ReceiptTracking.setReceipt",
-                                                                                                                             query = "UPDATE ReceiptTracking set receiptSignal = :RECEIPT, firstReception = :FIRST_RECEPTION where messageId = :MESSAGE_ID and receiptSignal is null"),
+                                  query = "SELECT rt FROM ReceiptTracking rt WHERE rt.messageId = :MESSAGE_ID"),
+                      @NamedQuery(name = "ReceiptTracking.setReceipt",
+                                  query = "UPDATE ReceiptTracking set receiptSignal = :RECEIPT, firstReception = :FIRST_RECEPTION where messageId = :MESSAGE_ID and receiptSignal is null"),
                       @NamedQuery(name = "ReceiptTracking.updateTrackingStatus",
                                   query = "UPDATE ReceiptTracking set status = :NEW_STATUS where messageId = :MESSAGE_ID and status = 'IN_PROCESS'"),
 
@@ -55,7 +56,7 @@ public class ReceiptTracking extends AbstractBaseEntity implements Serializable 
     @Column(name = "STATUS")
     protected String status;
     @Column(name = "FIRST_RECEPTION")
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)
     protected Date firstReception;
     @Lob
     @Column(name = "RECEIPT", length = 9999999)
@@ -75,22 +76,19 @@ public class ReceiptTracking extends AbstractBaseEntity implements Serializable 
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "RECEIPT_TRACKING_PK")
-    private Set<ReceiptTrackingAttempt> attempts = new HashSet<ReceiptTrackingAttempt>();
+    private final Set<ReceiptTrackingAttempt> attempts = new HashSet<ReceiptTrackingAttempt>();
 
-
-    public ReceiptTracking() {
-    }
 
     public String getMessageId() {
         return this.messageId;
     }
 
-    public void addAttempt(ReceiptTrackingAttempt attempt) {
-        attempts.add(attempt);
+    public void addAttempt(final ReceiptTrackingAttempt attempt) {
+        this.attempts.add(attempt);
     }
 
     public Collection<ReceiptTrackingAttempt> getAttempts() {
-        return attempts;
+        return this.attempts;
     }
 
     public void setMessageId(final String messageId) {

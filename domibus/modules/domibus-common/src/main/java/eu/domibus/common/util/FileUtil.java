@@ -1,6 +1,7 @@
 package eu.domibus.common.util;
 
 
+import eu.domibus.common.exceptions.EbMS3Exception;
 import org.apache.log4j.Logger;
 
 import javax.activation.DataHandler;
@@ -9,16 +10,17 @@ import javax.activation.MimetypesFileTypeMap;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.WritableByteChannel;
+import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
 public class FileUtil {
 
     private static final Logger log = Logger.getLogger(FileUtil.class);
 
-    private static MimetypesFileTypeMap mimeTypes = null;
+    private static MimetypesFileTypeMap mimeTypes;
 
     public static String mimeType(final String fileName) {
-        if (fileName == null || fileName.trim().equals("")) {
+        if ((fileName == null) || "".equals(fileName.trim())) {
             return null;
         }
         final int dot = fileName.lastIndexOf(".");
@@ -27,211 +29,211 @@ public class FileUtil {
         }
         final String extension = fileName.substring(dot + 1);
 
-        if (extension.equalsIgnoreCase("wmv")) {
+        if ("wmv".equalsIgnoreCase(extension)) {
             return "video/x-ms-wmv";
         }
-        if (extension.equalsIgnoreCase("mp4")) {
+        if ("mp4".equalsIgnoreCase(extension)) {
             return "video/mp4";
         }
-        if (extension.equalsIgnoreCase("mov")) {
+        if ("mov".equalsIgnoreCase(extension)) {
             return "video/quicktime";
         }
-        if (extension.equalsIgnoreCase("hqx")) {
+        if ("hqx".equalsIgnoreCase(extension)) {
             return "application/mac-binhex40";
         }
-        if (extension.equalsIgnoreCase("cpt")) {
+        if ("cpt".equalsIgnoreCase(extension)) {
             return "application/mac-compactpro";
         }
-        if (extension.equalsIgnoreCase("doc")) {
+        if ("doc".equalsIgnoreCase(extension)) {
             return "application/msword";
         }
-        if (extension.equalsIgnoreCase("pdf")) {
+        if ("pdf".equalsIgnoreCase(extension)) {
             return "application/pdf";
         }
-        if (extension.equalsIgnoreCase("ai") ||
-            extension.equalsIgnoreCase("eps") ||
-            extension.equalsIgnoreCase("ps")) {
+        if ("ai".equalsIgnoreCase(extension) ||
+            "eps".equalsIgnoreCase(extension) ||
+            "ps".equalsIgnoreCase(extension)) {
             return "application/postscript";
         }
-        if (extension.equalsIgnoreCase("rtf")) {
+        if ("rtf".equalsIgnoreCase(extension)) {
             return "application/rtf";
         }
-        if (extension.equalsIgnoreCase("bcpio")) {
+        if ("bcpio".equalsIgnoreCase(extension)) {
             return "application/x-bcpio";
         }
-        if (extension.equalsIgnoreCase("bz2")) {
+        if ("bz2".equalsIgnoreCase(extension)) {
             return "application/x-bzip2";
         }
-        if (extension.equalsIgnoreCase("csh")) {
+        if ("csh".equalsIgnoreCase(extension)) {
             return "application/x-csh";
         }
-        if (extension.equalsIgnoreCase("gtar")) {
+        if ("gtar".equalsIgnoreCase(extension)) {
             return "application/x-gtar";
         }
-        if (extension.equalsIgnoreCase("tgz")) {
+        if ("tgz".equalsIgnoreCase(extension)) {
             return "application/x-gzip";
         }
-        if (extension.equalsIgnoreCase("gz") || extension.equalsIgnoreCase("gzip")) {
+        if ("gz".equalsIgnoreCase(extension) || "gzip".equalsIgnoreCase(extension)) {
             return "application/gzip";
         }
-        if (extension.equalsIgnoreCase("kwd") || extension.equalsIgnoreCase("kwt")) {
+        if ("kwd".equalsIgnoreCase(extension) || "kwt".equalsIgnoreCase(extension)) {
             return "application/x-kword";
         }
-        if (extension.equalsIgnoreCase("ksp")) {
+        if ("ksp".equalsIgnoreCase(extension)) {
             return "application/x-kspread";
         }
-        if (extension.equalsIgnoreCase("kpr") || extension.equalsIgnoreCase("kpt")) {
+        if ("kpr".equalsIgnoreCase(extension) || "kpt".equalsIgnoreCase(extension)) {
             return "application/x-kpresenter";
         }
-        if (extension.equalsIgnoreCase("chrt")) {
+        if ("chrt".equalsIgnoreCase(extension)) {
             return "application/x-kchart";
         }
-        if (extension.equalsIgnoreCase("latex")) {
+        if ("latex".equalsIgnoreCase(extension)) {
             return "application/x-latex";
         }
-        if (extension.equalsIgnoreCase("sh")) {
+        if ("sh".equalsIgnoreCase(extension)) {
             return "application/x-sh";
         }
-        if (extension.equalsIgnoreCase("shar")) {
+        if ("shar".equalsIgnoreCase(extension)) {
             return "application/x-shar";
         }
-        if (extension.equalsIgnoreCase("swf")) {
+        if ("swf".equalsIgnoreCase(extension)) {
             return "application/x-shockwave-flash";
         }
-        if (extension.equalsIgnoreCase("tar")) {
+        if ("tar".equalsIgnoreCase(extension)) {
             return "application/x-tar";
         }
-        if (extension.equalsIgnoreCase("tcl")) {
+        if ("tcl".equalsIgnoreCase(extension)) {
             return "application/x-tcl";
         }
-        if (extension.equalsIgnoreCase("tex")) {
+        if ("tex".equalsIgnoreCase(extension)) {
             return "application/x-tex";
         }
-        if (extension.equalsIgnoreCase("texinfo") || extension.equalsIgnoreCase("texi")) {
+        if ("texinfo".equalsIgnoreCase(extension) || "texi".equalsIgnoreCase(extension)) {
             return "application/x-texinfo";
         }
-        if (extension.equalsIgnoreCase("t") ||
-            extension.equalsIgnoreCase("tr") ||
-            extension.equalsIgnoreCase("roff")) {
+        if ("t".equalsIgnoreCase(extension) ||
+            "tr".equalsIgnoreCase(extension) ||
+            "roff".equalsIgnoreCase(extension)) {
             return "application/x-troff";
         }
-        if (extension.equalsIgnoreCase("man")) {
+        if ("man".equalsIgnoreCase(extension)) {
             return "application/x-troff-man";
         }
-        if (extension.equalsIgnoreCase("zip")) {
+        if ("zip".equalsIgnoreCase(extension)) {
             return "application/zip";
         }
-        if (extension.equalsIgnoreCase("mpga") ||
-            extension.equalsIgnoreCase("mp2") ||
-            extension.equalsIgnoreCase("mp3")) {
+        if ("mpga".equalsIgnoreCase(extension) ||
+            "mp2".equalsIgnoreCase(extension) ||
+            "mp3".equalsIgnoreCase(extension)) {
             return "audio/mpeg";
         }
-        if (extension.equalsIgnoreCase("aif") ||
-            extension.equalsIgnoreCase("aiff") ||
-            extension.equalsIgnoreCase("aifc")) {
+        if ("aif".equalsIgnoreCase(extension) ||
+            "aiff".equalsIgnoreCase(extension) ||
+            "aifc".equalsIgnoreCase(extension)) {
             return "audio/x-aiff";
         }
-        if (extension.equalsIgnoreCase("wav")) {
+        if ("wav".equalsIgnoreCase(extension)) {
             return "audio/x-wav";
         }
-        if (extension.equalsIgnoreCase("gif")) {
+        if ("gif".equalsIgnoreCase(extension)) {
             return "image/gif";
         }
-        if (extension.equalsIgnoreCase("ief")) {
+        if ("ief".equalsIgnoreCase(extension)) {
             return "image/ief";
         }
-        if (extension.equalsIgnoreCase("jpeg") ||
-            extension.equalsIgnoreCase("jpg") ||
-            extension.equalsIgnoreCase("jpe")) {
+        if ("jpeg".equalsIgnoreCase(extension) ||
+            "jpg".equalsIgnoreCase(extension) ||
+            "jpe".equalsIgnoreCase(extension)) {
             return "image/jpeg";
         }
-        if (extension.equalsIgnoreCase("png")) {
+        if ("png".equalsIgnoreCase(extension)) {
             return "image/png";
         }
-        if (extension.equalsIgnoreCase("tif") || extension.equalsIgnoreCase("tiff")) {
+        if ("tif".equalsIgnoreCase(extension) || "tiff".equalsIgnoreCase(extension)) {
             return "image/tiff";
         }
-        if (extension.equalsIgnoreCase("txt") || extension.equalsIgnoreCase("asc")) {
+        if ("txt".equalsIgnoreCase(extension) || "asc".equalsIgnoreCase(extension)) {
             return "text/plain";
         }
-        if (extension.equalsIgnoreCase("rtf")) {
+        if ("rtf".equalsIgnoreCase(extension)) {
             return "text/rtf";
         }
-        if (extension.equalsIgnoreCase("sgml") || extension.equalsIgnoreCase("sgm")) {
+        if ("sgml".equalsIgnoreCase(extension) || "sgm".equalsIgnoreCase(extension)) {
             return "text/sgml";
         }
-        if (extension.equalsIgnoreCase("xml")) {
+        if ("xml".equalsIgnoreCase(extension)) {
             return "text/xml";
         }
-        if (extension.equalsIgnoreCase("mpeg") ||
-            extension.equalsIgnoreCase("mpg") ||
-            extension.equalsIgnoreCase("mpe")) {
+        if ("mpeg".equalsIgnoreCase(extension) ||
+            "mpg".equalsIgnoreCase(extension) ||
+            "mpe".equalsIgnoreCase(extension)) {
             return "video/mpeg";
         }
-        if (extension.equalsIgnoreCase("avi")) {
+        if ("avi".equalsIgnoreCase(extension)) {
             return "video/x-msvideo";
         }
-        if (extension.equalsIgnoreCase("html") || extension.equalsIgnoreCase("htm")) {
+        if ("html".equalsIgnoreCase(extension) || "htm".equalsIgnoreCase(extension)) {
             return "text/html";
         }
-        if (extension.equalsIgnoreCase("rtx")) {
+        if ("rtx".equalsIgnoreCase(extension)) {
             return "text/richtext";
         }
-        if (extension.equalsIgnoreCase("sct")) {
+        if ("sct".equalsIgnoreCase(extension)) {
             return "text/scriptlet";
         }
-        if (extension.equalsIgnoreCase("tsv")) {
+        if ("tsv".equalsIgnoreCase(extension)) {
             return "text/tab-separated-values";
         }
-        if (extension.equalsIgnoreCase("css")) {
+        if ("css".equalsIgnoreCase(extension)) {
             return "text/css";
         }
-        if (extension.equalsIgnoreCase("pfx")) {
+        if ("pfx".equalsIgnoreCase(extension)) {
             return "application/x-pkcs12";
         }
-        if (extension.equalsIgnoreCase("dll")) {
+        if ("dll".equalsIgnoreCase(extension)) {
             return "application/x-msdownload";
         }
-        if (extension.equalsIgnoreCase("js")) {
+        if ("js".equalsIgnoreCase(extension)) {
             return "application/x-javascript";
         }
-        if (extension.equalsIgnoreCase("iii")) {
+        if ("iii".equalsIgnoreCase(extension)) {
             return "application/x-iphone";
         }
-        if (extension.equalsIgnoreCase("dvi")) {
+        if ("dvi".equalsIgnoreCase(extension)) {
             return "application/x-dvi";
         }
-        if (extension.equalsIgnoreCase("xla")) {
+        if ("xla".equalsIgnoreCase(extension)) {
             return "application/vnd.ms-excel";
         }
-        if (extension.equalsIgnoreCase("bin")) {
+        if ("bin".equalsIgnoreCase(extension)) {
             return "application/octet-stream";
         }
-        if (extension.equalsIgnoreCase("fif")) {
+        if ("fif".equalsIgnoreCase(extension)) {
             return "application/fractals";
         }
-        if (extension.equalsIgnoreCase("ppt")) {
+        if ("ppt".equalsIgnoreCase(extension)) {
             return "application/vnd.ms-powerpoint";
         }
-        if (extension.equalsIgnoreCase("wps")) {
+        if ("wps".equalsIgnoreCase(extension)) {
             return "application/vnd.ms-works";
         }
-        if (extension.equalsIgnoreCase("mdb")) {
+        if ("mdb".equalsIgnoreCase(extension)) {
             return "application/x-msaccess";
         }
-        if (extension.equalsIgnoreCase("pub")) {
+        if ("pub".equalsIgnoreCase(extension)) {
             return "application/x-mspublisher";
         }
-        if (extension.equalsIgnoreCase("der")) {
+        if ("der".equalsIgnoreCase(extension)) {
             return "application/x-x509-ca-cert";
         }
-        if (extension.equalsIgnoreCase("ra")) {
+        if ("ra".equalsIgnoreCase(extension)) {
             return "audio/x-pn-realaudio";
         }
-        if (extension.equalsIgnoreCase("svg")) {
+        if ("svg".equalsIgnoreCase(extension)) {
             return "image/svg+xml";
         }
-        if (extension.equalsIgnoreCase("ico")) {
+        if ("ico".equalsIgnoreCase(extension)) {
             return "image/x-icon";
         }
 
@@ -239,62 +241,62 @@ public class FileUtil {
     }
 
     public static MimetypesFileTypeMap getMimeTypes() {
-        if (mimeTypes != null) {
-            return mimeTypes;
+        if (FileUtil.mimeTypes != null) {
+            return FileUtil.mimeTypes;
         }
-        mimeTypes = new MimetypesFileTypeMap();
+        FileUtil.mimeTypes = new MimetypesFileTypeMap();
 
-        mimeTypes.addMimeTypes("image/png png");
-        mimeTypes.addMimeTypes("video/mp4 mp4");
-        mimeTypes.addMimeTypes("application/mac-binhex40 hqx");
-        mimeTypes.addMimeTypes("application/mac-compactpro cpt");
-        mimeTypes.addMimeTypes("application/msword doc");
-        mimeTypes.addMimeTypes("application/pdf pdf");
-        mimeTypes.addMimeTypes("application/postscript ai eps ps");
-        mimeTypes.addMimeTypes("application/rtf rtf");
-        mimeTypes.addMimeTypes("application/x-bcpio bcpio");
-        mimeTypes.addMimeTypes("application/x-bzip2 bz2");
-        mimeTypes.addMimeTypes("application/x-csh csh");
-        mimeTypes.addMimeTypes("application/x-gtar gtar");
-        mimeTypes.addMimeTypes("application/x-gzip tgz");
-        mimeTypes.addMimeTypes("application/gzip gz");
-        mimeTypes.addMimeTypes("application/x-kword kwd kwt");
-        mimeTypes.addMimeTypes("application/x-kspread ksp");
-        mimeTypes.addMimeTypes("application/x-kpresenter kpr kpt");
-        mimeTypes.addMimeTypes("application/x-kchart chrt");
-        mimeTypes.addMimeTypes("application/x-latex latex");
-        mimeTypes.addMimeTypes("application/x-sh sh");
-        mimeTypes.addMimeTypes("application/x-shar shar");
-        mimeTypes.addMimeTypes("application/x-shockwave-flash swf");
-        mimeTypes.addMimeTypes("application/x-tar tar");
-        mimeTypes.addMimeTypes("application/x-tcl tcl");
-        mimeTypes.addMimeTypes("video/quicktime mov");
+        FileUtil.mimeTypes.addMimeTypes("image/png png");
+        FileUtil.mimeTypes.addMimeTypes("video/mp4 mp4");
+        FileUtil.mimeTypes.addMimeTypes("application/mac-binhex40 hqx");
+        FileUtil.mimeTypes.addMimeTypes("application/mac-compactpro cpt");
+        FileUtil.mimeTypes.addMimeTypes("application/msword doc");
+        FileUtil.mimeTypes.addMimeTypes("application/pdf pdf");
+        FileUtil.mimeTypes.addMimeTypes("application/postscript ai eps ps");
+        FileUtil.mimeTypes.addMimeTypes("application/rtf rtf");
+        FileUtil.mimeTypes.addMimeTypes("application/x-bcpio bcpio");
+        FileUtil.mimeTypes.addMimeTypes("application/x-bzip2 bz2");
+        FileUtil.mimeTypes.addMimeTypes("application/x-csh csh");
+        FileUtil.mimeTypes.addMimeTypes("application/x-gtar gtar");
+        FileUtil.mimeTypes.addMimeTypes("application/x-gzip tgz");
+        FileUtil.mimeTypes.addMimeTypes("application/gzip gz");
+        FileUtil.mimeTypes.addMimeTypes("application/x-kword kwd kwt");
+        FileUtil.mimeTypes.addMimeTypes("application/x-kspread ksp");
+        FileUtil.mimeTypes.addMimeTypes("application/x-kpresenter kpr kpt");
+        FileUtil.mimeTypes.addMimeTypes("application/x-kchart chrt");
+        FileUtil.mimeTypes.addMimeTypes("application/x-latex latex");
+        FileUtil.mimeTypes.addMimeTypes("application/x-sh sh");
+        FileUtil.mimeTypes.addMimeTypes("application/x-shar shar");
+        FileUtil.mimeTypes.addMimeTypes("application/x-shockwave-flash swf");
+        FileUtil.mimeTypes.addMimeTypes("application/x-tar tar");
+        FileUtil.mimeTypes.addMimeTypes("application/x-tcl tcl");
+        FileUtil.mimeTypes.addMimeTypes("video/quicktime mov");
 
-        mimeTypes.addMimeTypes("text/richtext rtx");
-        mimeTypes.addMimeTypes("text/scriptlet sct");
-        mimeTypes.addMimeTypes("text/tab-separated-values tsv");
-        mimeTypes.addMimeTypes("text/css css");
-        mimeTypes.addMimeTypes("application/x-pkcs12 pfx");
-        mimeTypes.addMimeTypes("application/x-msdownload dll");
-        mimeTypes.addMimeTypes("application/x-javascript js");
-        mimeTypes.addMimeTypes("application/x-iphone iii");
-        mimeTypes.addMimeTypes("application/x-dvi dvi");
-        mimeTypes.addMimeTypes("application/vnd.ms-excel xla");
-        mimeTypes.addMimeTypes("application/octet-stream bin");
-        mimeTypes.addMimeTypes("application/fractals fif");
-        mimeTypes.addMimeTypes("application/vnd.ms-powerpoint ppt");
-        mimeTypes.addMimeTypes("application/vnd.ms-works wps");
-        mimeTypes.addMimeTypes("application/x-msaccess mdb");
-        mimeTypes.addMimeTypes("application/x-mspublisher pub");
-        mimeTypes.addMimeTypes("application/x-x509-ca-cert der");
-        mimeTypes.addMimeTypes("audio/x-pn-realaudio ra");
-        mimeTypes.addMimeTypes("image/svg+xml svg");
-        mimeTypes.addMimeTypes("image/x-icon ico");
-        mimeTypes.addMimeTypes("video/x-ms-wmv wmv");
-        mimeTypes.addMimeTypes("video/x-ms-asf asf");
-        mimeTypes.addMimeTypes("audio/mp3 mp3");
+        FileUtil.mimeTypes.addMimeTypes("text/richtext rtx");
+        FileUtil.mimeTypes.addMimeTypes("text/scriptlet sct");
+        FileUtil.mimeTypes.addMimeTypes("text/tab-separated-values tsv");
+        FileUtil.mimeTypes.addMimeTypes("text/css css");
+        FileUtil.mimeTypes.addMimeTypes("application/x-pkcs12 pfx");
+        FileUtil.mimeTypes.addMimeTypes("application/x-msdownload dll");
+        FileUtil.mimeTypes.addMimeTypes("application/x-javascript js");
+        FileUtil.mimeTypes.addMimeTypes("application/x-iphone iii");
+        FileUtil.mimeTypes.addMimeTypes("application/x-dvi dvi");
+        FileUtil.mimeTypes.addMimeTypes("application/vnd.ms-excel xla");
+        FileUtil.mimeTypes.addMimeTypes("application/octet-stream bin");
+        FileUtil.mimeTypes.addMimeTypes("application/fractals fif");
+        FileUtil.mimeTypes.addMimeTypes("application/vnd.ms-powerpoint ppt");
+        FileUtil.mimeTypes.addMimeTypes("application/vnd.ms-works wps");
+        FileUtil.mimeTypes.addMimeTypes("application/x-msaccess mdb");
+        FileUtil.mimeTypes.addMimeTypes("application/x-mspublisher pub");
+        FileUtil.mimeTypes.addMimeTypes("application/x-x509-ca-cert der");
+        FileUtil.mimeTypes.addMimeTypes("audio/x-pn-realaudio ra");
+        FileUtil.mimeTypes.addMimeTypes("image/svg+xml svg");
+        FileUtil.mimeTypes.addMimeTypes("image/x-icon ico");
+        FileUtil.mimeTypes.addMimeTypes("video/x-ms-wmv wmv");
+        FileUtil.mimeTypes.addMimeTypes("video/x-ms-asf asf");
+        FileUtil.mimeTypes.addMimeTypes("audio/mp3 mp3");
 
-        return mimeTypes;
+        return FileUtil.mimeTypes;
     }
 
     public static FileTypeMap getMimeTypes(final String mimetype) {
@@ -313,209 +315,209 @@ public class FileUtil {
     }
 
     public static String getFileExtension(final String mimeType) {
-        if (mimeType == null || mimeType.trim().equals("")) {
+        if ((mimeType == null) || "".equals(mimeType.trim())) {
             return null;
         }
 
-        if (mimeType.equalsIgnoreCase("video/mp4")) {
+        if ("video/mp4".equalsIgnoreCase(mimeType)) {
             return "mp4";
         }
-        if (mimeType.equalsIgnoreCase("audio/mp3")) {
+        if ("audio/mp3".equalsIgnoreCase(mimeType)) {
             return "mp3";
         }
-        if (mimeType.equalsIgnoreCase("audio/x-mp3")) {
+        if ("audio/x-mp3".equalsIgnoreCase(mimeType)) {
             return "mp3";
         }
-        if (mimeType.equalsIgnoreCase("audio/mpeg")) {
+        if ("audio/mpeg".equalsIgnoreCase(mimeType)) {
             return "mp3";
         }
-        if (mimeType.equalsIgnoreCase("video/x-ms-asf")) {
+        if ("video/x-ms-asf".equalsIgnoreCase(mimeType)) {
             return "asf";
         }
-        if (mimeType.equalsIgnoreCase("video/x-ms-wmv")) {
+        if ("video/x-ms-wmv".equalsIgnoreCase(mimeType)) {
             return "wmv";
         }
-        if (mimeType.equalsIgnoreCase("video/quicktime")) {
+        if ("video/quicktime".equalsIgnoreCase(mimeType)) {
             return "mov";
         }
-        if (mimeType.equalsIgnoreCase("application/mac-binhex40")) {
+        if ("application/mac-binhex40".equalsIgnoreCase(mimeType)) {
             return "hqx";
         }
-        if (mimeType.equalsIgnoreCase("application/mac-compactpro")) {
+        if ("application/mac-compactpro".equalsIgnoreCase(mimeType)) {
             return "cpt";
         }
-        if (mimeType.equalsIgnoreCase("application/msword")) {
+        if ("application/msword".equalsIgnoreCase(mimeType)) {
             return "doc";
         }
-        if (mimeType.equalsIgnoreCase("application/pdf")) {
+        if ("application/pdf".equalsIgnoreCase(mimeType)) {
             return "pdf";
         }
-        if (mimeType.equalsIgnoreCase("application/postscript")) {
+        if ("application/postscript".equalsIgnoreCase(mimeType)) {
             return "ps";
         }
-        if (mimeType.equalsIgnoreCase("application/rtf")) {
+        if ("application/rtf".equalsIgnoreCase(mimeType)) {
             return "rtf";
         }
-        if (mimeType.equalsIgnoreCase("application/x-bcpio")) {
+        if ("application/x-bcpio".equalsIgnoreCase(mimeType)) {
             return "bcpio";
         }
-        if (mimeType.equalsIgnoreCase("application/x-bzip2")) {
+        if ("application/x-bzip2".equalsIgnoreCase(mimeType)) {
             return "bz2";
         }
-        if (mimeType.equalsIgnoreCase("application/x-csh")) {
+        if ("application/x-csh".equalsIgnoreCase(mimeType)) {
             return "csh";
         }
-        if (mimeType.equalsIgnoreCase("application/x-gtar")) {
+        if ("application/x-gtar".equalsIgnoreCase(mimeType)) {
             return "gtar";
         }
-        if (mimeType.equalsIgnoreCase("application/x-gzip") || mimeType.equalsIgnoreCase("application/gzip")) {
+        if ("application/x-gzip".equalsIgnoreCase(mimeType) || "application/gzip".equalsIgnoreCase(mimeType)) {
             return "gz";
         }
-        if (mimeType.equalsIgnoreCase("application/x-kword")) {
+        if ("application/x-kword".equalsIgnoreCase(mimeType)) {
             return "kwd";
         }
-        if (mimeType.equalsIgnoreCase("application/x-kspread")) {
+        if ("application/x-kspread".equalsIgnoreCase(mimeType)) {
             return "ksp";
         }
-        if (mimeType.equalsIgnoreCase("application/x-kpresenter")) {
+        if ("application/x-kpresenter".equalsIgnoreCase(mimeType)) {
             return "kpr";
         }
-        if (mimeType.equalsIgnoreCase("application/x-kchart")) {
+        if ("application/x-kchart".equalsIgnoreCase(mimeType)) {
             return "chrt";
         }
-        if (mimeType.equalsIgnoreCase("application/x-latex")) {
+        if ("application/x-latex".equalsIgnoreCase(mimeType)) {
             return "latex";
         }
-        if (mimeType.equalsIgnoreCase("application/x-sh")) {
+        if ("application/x-sh".equalsIgnoreCase(mimeType)) {
             return "sh";
         }
-        if (mimeType.equalsIgnoreCase("application/x-shar")) {
+        if ("application/x-shar".equalsIgnoreCase(mimeType)) {
             return "shar";
         }
-        if (mimeType.equalsIgnoreCase("application/x-shockwave-flash")) {
+        if ("application/x-shockwave-flash".equalsIgnoreCase(mimeType)) {
             return "swf";
         }
-        if (mimeType.equalsIgnoreCase("application/x-tar")) {
+        if ("application/x-tar".equalsIgnoreCase(mimeType)) {
             return "tar";
         }
-        if (mimeType.equalsIgnoreCase("application/x-tcl")) {
+        if ("application/x-tcl".equalsIgnoreCase(mimeType)) {
             return "tcl";
         }
-        if (mimeType.equalsIgnoreCase("application/x-tex")) {
+        if ("application/x-tex".equalsIgnoreCase(mimeType)) {
             return "tex";
         }
-        if (mimeType.equalsIgnoreCase("application/x-texinfo")) {
+        if ("application/x-texinfo".equalsIgnoreCase(mimeType)) {
             return "texi";
         }
-        if (mimeType.equalsIgnoreCase("application/x-troff")) {
+        if ("application/x-troff".equalsIgnoreCase(mimeType)) {
             return "roff";
         }
-        if (mimeType.equalsIgnoreCase("application/x-troff-man")) {
+        if ("application/x-troff-man".equalsIgnoreCase(mimeType)) {
             return "man";
         }
-        if (mimeType.equalsIgnoreCase("application/zip")) {
+        if ("application/zip".equalsIgnoreCase(mimeType)) {
             return "zip";
         }
-        if (mimeType.equalsIgnoreCase("audio/x-aiff")) {
+        if ("audio/x-aiff".equalsIgnoreCase(mimeType)) {
             return "aif";
         }
-        if (mimeType.equalsIgnoreCase("audio/x-wav")) {
+        if ("audio/x-wav".equalsIgnoreCase(mimeType)) {
             return "wav";
         }
-        if (mimeType.equalsIgnoreCase("image/gif")) {
+        if ("image/gif".equalsIgnoreCase(mimeType)) {
             return "gif";
         }
-        if (mimeType.equalsIgnoreCase("image/ief")) {
+        if ("image/ief".equalsIgnoreCase(mimeType)) {
             return "ief";
         }
-        if (mimeType.equalsIgnoreCase("image/jpeg")) {
+        if ("image/jpeg".equalsIgnoreCase(mimeType)) {
             return "jpg";
         }
-        if (mimeType.equalsIgnoreCase("image/png")) {
+        if ("image/png".equalsIgnoreCase(mimeType)) {
             return "png";
         }
-        if (mimeType.equalsIgnoreCase("image/tiff")) {
+        if ("image/tiff".equalsIgnoreCase(mimeType)) {
             return "tif";
         }
-        if (mimeType.equalsIgnoreCase("text/plain")) {
+        if ("text/plain".equalsIgnoreCase(mimeType)) {
             return "txt";
         }
-        if (mimeType.equalsIgnoreCase("text/rtf")) {
+        if ("text/rtf".equalsIgnoreCase(mimeType)) {
             return "rtf";
         }
-        if (mimeType.equalsIgnoreCase("text/sgml")) {
+        if ("text/sgml".equalsIgnoreCase(mimeType)) {
             return "sgml";
         }
-        if (mimeType.equalsIgnoreCase("text/xml")) {
+        if ("text/xml".equalsIgnoreCase(mimeType)) {
             return "xml";
         }
-        if (mimeType.equalsIgnoreCase("video/mpeg")) {
+        if ("video/mpeg".equalsIgnoreCase(mimeType)) {
             return "mpeg";
         }
-        if (mimeType.equalsIgnoreCase("video/x-msvideo")) {
+        if ("video/x-msvideo".equalsIgnoreCase(mimeType)) {
             return "avi";
         }
-        if (mimeType.equalsIgnoreCase("text/html")) {
+        if ("text/html".equalsIgnoreCase(mimeType)) {
             return "html";
         }
-        if (mimeType.equalsIgnoreCase("text/richtext")) {
+        if ("text/richtext".equalsIgnoreCase(mimeType)) {
             return "rtx";
         }
-        if (mimeType.equalsIgnoreCase("text/scriptlet")) {
+        if ("text/scriptlet".equalsIgnoreCase(mimeType)) {
             return "sct";
         }
-        if (mimeType.equalsIgnoreCase("text/tab-separated-values")) {
+        if ("text/tab-separated-values".equalsIgnoreCase(mimeType)) {
             return "tsv";
         }
-        if (mimeType.equalsIgnoreCase("text/css")) {
+        if ("text/css".equalsIgnoreCase(mimeType)) {
             return "css";
         }
-        if (mimeType.equalsIgnoreCase("application/x-pkcs12")) {
+        if ("application/x-pkcs12".equalsIgnoreCase(mimeType)) {
             return "pfx";
         }
-        if (mimeType.equalsIgnoreCase("application/x-msdownload")) {
+        if ("application/x-msdownload".equalsIgnoreCase(mimeType)) {
             return "dll";
         }
-        if (mimeType.equalsIgnoreCase("application/x-javascript")) {
+        if ("application/x-javascript".equalsIgnoreCase(mimeType)) {
             return "js";
         }
-        if (mimeType.equalsIgnoreCase("application/x-iphone")) {
+        if ("application/x-iphone".equalsIgnoreCase(mimeType)) {
             return "iii";
         }
-        if (mimeType.equalsIgnoreCase("application/x-dvi")) {
+        if ("application/x-dvi".equalsIgnoreCase(mimeType)) {
             return "dvi";
         }
-        if (mimeType.equalsIgnoreCase("application/vnd.ms-excel")) {
+        if ("application/vnd.ms-excel".equalsIgnoreCase(mimeType)) {
             return "xla";
         }
-        if (mimeType.equalsIgnoreCase("application/octet-stream")) {
+        if ("application/octet-stream".equalsIgnoreCase(mimeType)) {
             return "bin";
         }
-        if (mimeType.equalsIgnoreCase("application/fractals")) {
+        if ("application/fractals".equalsIgnoreCase(mimeType)) {
             return "fif";
         }
-        if (mimeType.equalsIgnoreCase("application/vnd.ms-powerpoint")) {
+        if ("application/vnd.ms-powerpoint".equalsIgnoreCase(mimeType)) {
             return "ppt";
         }
-        if (mimeType.equalsIgnoreCase("application/vnd.ms-works")) {
+        if ("application/vnd.ms-works".equalsIgnoreCase(mimeType)) {
             return "wps";
         }
-        if (mimeType.equalsIgnoreCase("application/x-msaccess")) {
+        if ("application/x-msaccess".equalsIgnoreCase(mimeType)) {
             return "mdb";
         }
-        if (mimeType.equalsIgnoreCase("application/x-mspublisher")) {
+        if ("application/x-mspublisher".equalsIgnoreCase(mimeType)) {
             return "pub";
         }
-        if (mimeType.equalsIgnoreCase("application/x-x509-ca-cert")) {
+        if ("application/x-x509-ca-cert".equalsIgnoreCase(mimeType)) {
             return "der";
         }
-        if (mimeType.equalsIgnoreCase("audio/x-pn-realaudio")) {
+        if ("audio/x-pn-realaudio".equalsIgnoreCase(mimeType)) {
             return "ra";
         }
-        if (mimeType.equalsIgnoreCase("image/svg+xml")) {
+        if ("image/svg+xml".equalsIgnoreCase(mimeType)) {
             return "svg";
         }
-        if (mimeType.equalsIgnoreCase("image/x-icon")) {
+        if ("image/x-icon".equalsIgnoreCase(mimeType)) {
             return "ico";
         }
 
@@ -523,7 +525,7 @@ public class FileUtil {
     }
 
     public static void writeDataHandlerToFile(final DataHandler dataHandler, final File file) {
-        if (dataHandler == null || file == null) {
+        if ((dataHandler == null) || (file == null)) {
             return;
         }
         try {
@@ -533,15 +535,15 @@ public class FileUtil {
             fileOutputStream.flush();
             fileOutputStream.close();
         } catch (FileNotFoundException ex) {
-            log.error("Data could be written to file", ex);
+            FileUtil.log.error("Data could be written to file", ex);
         } catch (IOException e) {
-            log.error("I/O exception during write process occured", e);
+            FileUtil.log.error("I/O exception during write process occured", e);
         }
     }
 
     // not tested yet...
     public static void writeToFile(final File file, final InputStream fileIs) {
-        if (file == null || fileIs == null) {
+        if ((file == null) || (fileIs == null)) {
             return;
         }
         file.getParentFile().mkdirs();
@@ -557,8 +559,10 @@ public class FileUtil {
                     count = fileIs.read(bytes);
                     index = 0;
                 }
-                while (index < count && buf.hasRemaining()) {
-                    buf.put(bytes[index++]);
+                while ((index < count) && buf.hasRemaining()) {
+                    index++;
+                    buf.put(bytes[index]);
+
                 }
                 buf.flip();
                 //int numWritten =
@@ -576,7 +580,7 @@ public class FileUtil {
     }
 
     public static void doCompressFile(final String inFileName) {
-        if (inFileName == null || inFileName.trim().equals("")) {
+        if ((inFileName == null) || "".equals(inFileName.trim())) {
             return;
         }
         try {
@@ -598,8 +602,218 @@ public class FileUtil {
             in.close();
             gzos.close();
         } catch (IOException e) {
-            log.error("I/O exception during write process occured", e);
+            FileUtil.log.error("I/O exception during write process occured", e);
         }
     }
 
+    /**
+     * Same as {@link eu.domibus.common.util.FileUtil#doCompress(String, String)} but with only one parameter (sourceFileName).
+     * Creates a compressed file with prefix .gz in the same directory with the same filename as the source.
+     *
+     * @param sourceFileName
+     * @throws IOException
+     */
+    public static void doCompress(final String sourceFileName) throws IOException {
+        doCompress(sourceFileName, sourceFileName + ".gz");
+    }
+
+
+    /**
+     * Compresses a given file with GZIP [RFC1952] and creates a compressed
+     * file with prefix .gz at a specified location
+     *
+     * @param sourceFileName
+     * @param targetFileName
+     * @throws IOException
+     */
+    public static void doCompress(final String sourceFileName, final String targetFileName) throws IOException {
+
+        if (sourceFileName == null || "".equals(sourceFileName)) {
+            log.error("Given filename of the source file was null or empty");
+            throw new NullPointerException("Given filename of the source file was null or empty");
+        }
+
+        if (targetFileName == null || "".equals(targetFileName)) {
+            log.error("Given filename of the target file was null or empty");
+            throw new NullPointerException("Given filename of the target file was null or empty");
+        }
+
+        try {
+            final File sourceFileObject = new File(sourceFileName);
+            log.debug("Inputfile: " + sourceFileName);
+
+            final FileInputStream fin = new FileInputStream(sourceFileObject);
+            final BufferedInputStream sourceStream = new BufferedInputStream(fin);
+            log.debug("Creating BufferedInputStream for " + sourceFileName);
+
+
+            final File targetFileObject = new File(targetFileName);
+            log.debug("Outputfile: " + targetFileName);
+
+            final FileOutputStream fos = new FileOutputStream(targetFileObject);
+            log.debug("Creating FileOutputStream for: " + targetFileName);
+
+            final GZIPOutputStream targetStream = new GZIPOutputStream(fos);
+            log.debug("Creating GZIP OutputStream");
+
+
+            doCompress(sourceStream, targetStream);
+
+        } catch (FileNotFoundException e) {
+            log.error("File not found or no premission to write", e);
+            throw e;
+        } catch (IOException e) {
+            log.error("Error during compression");
+            throw e;
+        }
+    }
+
+    /**
+     * Compress given Stream via GZIP [RFC1952].
+     *
+     * @param sourceStream Stream of uncompressed data
+     * @param targetStream Stream of compressed data
+     * @throws IOException
+     */
+    public static void doCompress(final InputStream sourceStream, final GZIPOutputStream targetStream)
+            throws IOException {
+
+        final byte[] buffer = new byte[1024];
+
+        try {
+            int i;
+            while ((i = sourceStream.read(buffer)) > 0) {
+                targetStream.write(buffer, 0, i);
+            }
+
+            sourceStream.close();
+
+            targetStream.finish();
+            targetStream.close();
+
+            log.debug("doCompress finished");
+
+        } catch (IOException e) {
+            log.error("I/O exception during gzip compression. method: doCompress(Inputstream, GZIPOutputStream)", e);
+            throw e;
+        }
+    }
+
+    /**
+     * Decompress given file
+     *
+     * @param sourceFileName name of the file that needs to be decompressed
+     * @param targetFileName name of the resulting decompressed file
+     * @throws IOException
+     */
+    public static void doDecompress(String sourceFileName, String targetFileName) throws IOException {
+
+        if (sourceFileName == null || "".equals(sourceFileName)) {
+            log.error("Given filename of the source file was null or empty");
+            throw new NullPointerException("Given filename of the source file was null or empty");
+        }
+
+        if (targetFileName == null || "".equals(targetFileName)) {
+            log.error("Given filename of the target file was null or empty");
+            throw new NullPointerException("Given filename of the target file was null or empty");
+        }
+
+        try {
+            final File sourceFileObject = new File(sourceFileName);
+            log.debug("Inputfile: " + sourceFileName);
+
+            final FileInputStream fin = new FileInputStream(sourceFileObject);
+            final GZIPInputStream sourceStream = new GZIPInputStream(fin);
+            log.debug("Creating GZIP InputStream for " + sourceFileName);
+
+
+            final File targetFileObject = new File(targetFileName);
+            log.debug("Outputfile: " + targetFileName);
+
+            final FileOutputStream targetStream = new FileOutputStream(targetFileObject);
+            log.debug("Creating FileOutputStream for: " + targetFileName);
+
+
+            doDecompress(sourceStream, targetStream);
+
+        } catch (FileNotFoundException e) {
+            log.error("File not found or no premission to write", e);
+            throw e;
+        } catch (IOException e) {
+            log.error("Error during compression");
+            throw new EbMS3Exception(EbMS3Exception.EbMS3ErrorCode.EBMS_0303);
+        }
+    }
+
+    /**
+     * Decompress given GZIP Stream. Separated from {@link eu.domibus.common.util.FileUtil#doCompress(java.io.InputStream, java.util.zip.GZIPOutputStream)}
+     * just for a better overview even though they share the same logic (except finish() ).
+     *
+     * @param sourceStream
+     * @param targetStream
+     * @throws IOException
+     */
+    public static void doDecompress(final GZIPInputStream sourceStream, final OutputStream targetStream)
+            throws IOException {
+
+        final byte[] buffer = new byte[1024];
+
+        try {
+            int i;
+            while ((i = sourceStream.read(buffer)) > 0) {
+                targetStream.write(buffer, 0, i);
+            }
+
+            sourceStream.close();
+            targetStream.close();
+
+        } catch (IOException e) {
+            log.error("I/O exception during gzip compression. method: doDecompress(GZIPInputStream, OutputStream");
+            throw e;
+        }
+    }
+
+    /**
+     * Compresses the given byte[]. If an error occures a {@link eu.domibus.common.exceptions.EbMS3Exception} is thrown
+     *
+     * @param uncompressed the byte[] to compress
+     * @return the compressed byte[]
+     * @throws EbMS3Exception if an error occures a {@link eu.domibus.common.exceptions.EbMS3Exception}
+     *          with {@link eu.domibus.common.exceptions.EbMS3Exception.EbMS3ErrorCode#EBMS_0303} is thrown
+     */
+    public static byte[] doCompress(byte[] uncompressed) throws EbMS3Exception {
+        if(uncompressed == null) {
+            throw new EbMS3Exception(EbMS3Exception.EbMS3ErrorCode.EBMS_0303);
+        }
+
+        ByteArrayOutputStream compressedContent = new ByteArrayOutputStream();
+
+        try {
+            doCompress(new ByteArrayInputStream(uncompressed), new GZIPOutputStream(compressedContent));
+        } catch (IOException e) {
+            FileUtil.log.error(e);
+            throw new EbMS3Exception(EbMS3Exception.EbMS3ErrorCode.EBMS_0303, e.getMessage());
+        }
+
+        return compressedContent.toByteArray();
+    }
+
+
+    public static byte[] doDecompress(byte[] compressed) throws EbMS3Exception {
+        if(compressed == null) {
+            throw new EbMS3Exception(EbMS3Exception.EbMS3ErrorCode.EBMS_0303);
+        }
+
+        ByteArrayInputStream compressedContent = new ByteArrayInputStream(compressed);
+        ByteArrayOutputStream decompressedContent = new ByteArrayOutputStream();
+
+        try {
+            doDecompress(new GZIPInputStream(compressedContent), decompressedContent);
+        } catch (IOException e) {
+            FileUtil.log.error(e);
+            throw new EbMS3Exception(EbMS3Exception.EbMS3ErrorCode.EBMS_0303);
+        }
+
+        return decompressedContent.toByteArray();
+    }
 }

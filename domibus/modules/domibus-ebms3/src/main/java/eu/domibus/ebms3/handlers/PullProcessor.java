@@ -1,14 +1,5 @@
 package eu.domibus.ebms3.handlers;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.soap.SOAPBody;
-import org.apache.axiom.soap.SOAPEnvelope;
-import org.apache.axiom.soap.SOAPFactory;
-import org.apache.axiom.soap.SOAPHeader;
-import org.apache.axis2.AxisFault;
-import org.apache.axis2.context.MessageContext;
-import org.apache.axis2.handlers.AbstractHandler;
-import org.apache.log4j.Logger;
 import eu.domibus.common.util.WSUtil;
 import eu.domibus.common.util.XMLUtil;
 import eu.domibus.ebms3.config.PMode;
@@ -20,6 +11,15 @@ import eu.domibus.ebms3.packaging.*;
 import eu.domibus.ebms3.persistent.UserMsgToPull;
 import eu.domibus.ebms3.persistent.UserMsgToPullDAO;
 import eu.domibus.ebms3.submit.MsgInfoSet;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.soap.SOAPBody;
+import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axiom.soap.SOAPFactory;
+import org.apache.axiom.soap.SOAPHeader;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.handlers.AbstractHandler;
+import org.apache.log4j.Logger;
 
 import java.util.Iterator;
 
@@ -32,7 +32,7 @@ import java.util.Iterator;
  * @author Hamid Ben Malek
  */
 public class PullProcessor extends AbstractHandler {
-    private static final Logger log = Logger.getLogger(PullProcessor.class.getName());
+    private static final Logger LOG = Logger.getLogger(PullProcessor.class.getName());
     private String logPrefix = "";
     private final UserMsgToPullDAO umd = new UserMsgToPullDAO();
 
@@ -45,11 +45,11 @@ public class PullProcessor extends AbstractHandler {
             return InvocationResponse.CONTINUE;
         }
 
-        if (log.isDebugEnabled()) {
-            logPrefix = WSUtil.logPrefix(msgCtx);
+        if (PullProcessor.LOG.isDebugEnabled()) {
+            this.logPrefix = WSUtil.logPrefix(msgCtx);
         }
         //log.debug(logPrefix + msgCtx.getEnvelope().getHeader());
-        XMLUtil.debug(log, logPrefix, msgCtx.getEnvelope().getHeader());
+        XMLUtil.debug(PullProcessor.LOG, this.logPrefix, msgCtx.getEnvelope().getHeader());
 
         if (msgCtx.getFLOW() == MessageContext.IN_FLOW) {
             final OMElement ebms3Pull = XMLUtil.getGrandChildNameNS(header, Constants.PULL_REQUEST, Constants.NS);
@@ -61,7 +61,7 @@ public class PullProcessor extends AbstractHandler {
                 final String msgId = XMLUtil.getGrandChildValue(ebMess, Constants.MESSAGE_ID);
                 final String address = msgCtx.getTo().getAddress();
                 final PMode pmode = Configuration.getPMode(Constants.ONE_WAY_PULL, mpc, address);
-                log.info(logPrefix + "Received a PullRequest message on mpc: " + mpc);
+                PullProcessor.LOG.debug(this.logPrefix + "Received a PullRequest message on mpc: " + mpc);
                 if (pmode == null) {
                     // generate an ebms3 mismatch pmode error and send it:
                     final eu.domibus.ebms3.packaging.Error pmodeMismatch =
@@ -71,7 +71,8 @@ public class PullProcessor extends AbstractHandler {
                     final SOAPEnvelope env = factory.getDefaultEnvelope();
                     new Messaging(env, modeMismatch, null);
                     WSUtil.sendResponse(env, msgCtx);
-                    log.info(logPrefix + "Mode Mismatch Error is being sent as response to the pull");
+                    PullProcessor.LOG
+                            .warn(this.logPrefix + "Mode Mismatch Error is being sent as response to the pull");
                     return InvocationResponse.ABORT;
                 }
 
@@ -82,28 +83,28 @@ public class PullProcessor extends AbstractHandler {
                 // If the queue is empty, then let the request propagate to the service
                 // who may send back a user message as a response to the pull request:
 
-                final UserMsgToPull message = umd.getNextUserMsgToPull(mpc);
+                final UserMsgToPull message = this.umd.getNextUserMsgToPull(mpc);
                 if (message != null) {
                     //MessageContext resp =
                     //    message.getMessageContext(msgCtx.getConfigurationContext());
                     message.setConfigurationContext(msgCtx.getConfigurationContext());
                     final MessageContext resp = message.getMessageContext();
 
-                    log.info(logPrefix + "Found UserMessage to pull from DB for mpc " + mpc);
+                    PullProcessor.LOG.debug(this.logPrefix + "Found UserMessage to pull from DB for mpc " + mpc);
                     final MsgInfoSet mis = message.getMsgInfoSet();
                     resp.setProperty(Constants.MESSAGE_INFO_SET, mis);
                     resp.setProperty("attachments", message.getAttachments());
                     final Messaging ebM = PackagingFactory.createMessagingElement(resp);
                     ebM.addToHeader(resp.getEnvelope());
-                    log.info(logPrefix + "ebms headers have been added to pulled user message");
+                    PullProcessor.LOG.trace(this.logPrefix + "ebms headers have been added to pulled user message");
                     WSUtil.sendResponse(resp, msgCtx);
-                    log.info(logPrefix + "A UserMessage is being sent as response to the pull request");
-                    XMLUtil.debug(log, logPrefix, resp.getEnvelope().getHeader());
+                    PullProcessor.LOG
+                            .debug(this.logPrefix + "A UserMessage is being sent as response to the pull request");
+                    XMLUtil.debug(PullProcessor.LOG, this.logPrefix, resp.getEnvelope().getHeader());
                     return InvocationResponse.ABORT;
-                } else {
-                    log.info(logPrefix + "No UserMessage found in DB to pull, " +
-                             "so continuing until the final partyId decides what message to be pulled");
                 }
+                PullProcessor.LOG.info(this.logPrefix + "No UserMessage found in DB to pull, " +
+                                       "so continuing until the final partyId decides what message to be pulled");
 
                 msgCtx.setProperty(Constants.IN_PULL_REQUEST, ebms3Pull);
                 msgCtx.setProperty(Constants.IN_MESSAGING, ebMess);
@@ -131,7 +132,7 @@ public class PullProcessor extends AbstractHandler {
         // an ebms3 warning of type "Empty MPC":
         final SOAPBody body = msgCtx.getEnvelope().getBody();
         final Iterator it = body.getChildElements();
-        if (it == null || !it.hasNext()) {
+        if ((it == null) || !it.hasNext()) {
             final String ref = XMLUtil.getGrandChildValue(ebMess, Constants.MESSAGE_ID);
             final eu.domibus.ebms3.packaging.Error emptyMPC =
                     eu.domibus.ebms3.packaging.Error.getEmptyPartitionError(ref);

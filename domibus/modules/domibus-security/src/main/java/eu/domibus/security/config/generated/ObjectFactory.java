@@ -46,12 +46,6 @@ public class ObjectFactory {
             new QName("http://www.e-codex.eu/domibus/securityconfig/0.1", "storepwd");
 
     /**
-     * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: eu.domibus.security.config.generated
-     */
-    public ObjectFactory() {
-    }
-
-    /**
      * Create an instance of {@link PublicKeystore }
      */
     public PublicKeystore createPublicKeystore() {
@@ -99,7 +93,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.e-codex.eu/domibus/securityconfig/0.1", name = "keypwd")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     public JAXBElement<String> createKeypwd(final String value) {
-        return new JAXBElement<String>(_Keypwd_QNAME, String.class, null, value);
+        return new JAXBElement<String>(ObjectFactory._Keypwd_QNAME, String.class, null, value);
     }
 
     /**
@@ -108,7 +102,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.e-codex.eu/domibus/securityconfig/0.1", name = "remoteAlias")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     public JAXBElement<String> createRemoteAlias(final String value) {
-        return new JAXBElement<String>(_RemoteAlias_QNAME, String.class, null, value);
+        return new JAXBElement<String>(ObjectFactory._RemoteAlias_QNAME, String.class, null, value);
     }
 
     /**
@@ -116,7 +110,7 @@ public class ObjectFactory {
      */
     @XmlElementDecl(namespace = "http://www.e-codex.eu/domibus/securityconfig/0.1", name = "file")
     public JAXBElement<String> createFile(final String value) {
-        return new JAXBElement<String>(_File_QNAME, String.class, null, value);
+        return new JAXBElement<String>(ObjectFactory._File_QNAME, String.class, null, value);
     }
 
     /**
@@ -125,7 +119,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.e-codex.eu/domibus/securityconfig/0.1", name = "localAlias")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     public JAXBElement<String> createLocalAlias(final String value) {
-        return new JAXBElement<String>(_LocalAlias_QNAME, String.class, null, value);
+        return new JAXBElement<String>(ObjectFactory._LocalAlias_QNAME, String.class, null, value);
     }
 
     /**
@@ -134,7 +128,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.e-codex.eu/domibus/securityconfig/0.1", name = "policyFile")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     public JAXBElement<String> createPolicyFile(final String value) {
-        return new JAXBElement<String>(_PolicyFile_QNAME, String.class, null, value);
+        return new JAXBElement<String>(ObjectFactory._PolicyFile_QNAME, String.class, null, value);
     }
 
     /**
@@ -143,7 +137,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.e-codex.eu/domibus/securityconfig/0.1", name = "storeType")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     public JAXBElement<String> createStoreType(final String value) {
-        return new JAXBElement<String>(_StoreType_QNAME, String.class, null, value);
+        return new JAXBElement<String>(ObjectFactory._StoreType_QNAME, String.class, null, value);
     }
 
     /**
@@ -152,7 +146,7 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://www.e-codex.eu/domibus/securityconfig/0.1", name = "storepwd")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     public JAXBElement<String> createStorepwd(final String value) {
-        return new JAXBElement<String>(_Storepwd_QNAME, String.class, null, value);
+        return new JAXBElement<String>(ObjectFactory._Storepwd_QNAME, String.class, null, value);
     }
 
 }

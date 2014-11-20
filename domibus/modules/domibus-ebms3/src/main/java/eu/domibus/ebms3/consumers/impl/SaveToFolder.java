@@ -1,8 +1,5 @@
 package eu.domibus.ebms3.consumers.impl;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axis2.context.MessageContext;
-import org.apache.log4j.Logger;
 import eu.domibus.common.util.WSUtil;
 import eu.domibus.common.util.XMLUtil;
 import eu.domibus.ebms3.consumers.EbConsumer;
@@ -10,6 +7,9 @@ import eu.domibus.ebms3.module.Constants;
 import eu.domibus.ebms3.module.EbUtil;
 import eu.domibus.ebms3.persistent.MsgInfo;
 import eu.domibus.ebms3.persistent.PartInfo;
+import org.apache.axiom.om.OMElement;
+import org.apache.axis2.context.MessageContext;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -29,10 +29,10 @@ public class SaveToFolder implements EbConsumer {
     public void push() {
         final MsgInfo msgInfo = EbUtil.getMsgInfo();
         final MessageContext msgCtx = MessageContext.getCurrentMessageContext();
-        final String directory = getSaveLocation(msgInfo.getMpc());
-        writeAttachments(msgCtx, msgInfo.getParts(), directory);
-        writeEnvelope(msgCtx, directory);
-        writeSoapHeader(msgCtx, directory);
+        final String directory = this.getSaveLocation(msgInfo.getMpc());
+        this.writeAttachments(msgCtx, msgInfo.getParts(), directory);
+        this.writeEnvelope(msgCtx, directory);
+        this.writeSoapHeader(msgCtx, directory);
 
     }
 
@@ -41,8 +41,8 @@ public class SaveToFolder implements EbConsumer {
     }
 
     private String getSaveLocation(String mpc) {
-        String dir = parameters.get("directory");
-        if (mpc == null || mpc.trim().equals("")) {
+        String dir = this.parameters.get("directory");
+        if ((mpc == null) || "".equals(mpc.trim())) {
             mpc = "default";
         }
         if (mpc.startsWith("mpc://")) {
@@ -53,10 +53,10 @@ public class SaveToFolder implements EbConsumer {
         }
         mpc = mpc.replaceAll(":", "-");
         mpc = mpc.replaceAll("/", "_");
-        if (dir == null || dir.trim().equals("")) {
-            dir = "Messages_" + mpc + File.separator + "Msg_" + getDate();
+        if ((dir == null) || "".equals(dir.trim())) {
+            dir = "Messages_" + mpc + File.separator + "Msg_" + this.getDate();
         } else {
-            dir = dir + "_" + mpc + File.separator + "Msg_" + getDate();
+            dir = dir + "_" + mpc + File.separator + "Msg_" + this.getDate();
         }
         final File location = new File(dir);
         if (location.exists() && location.isDirectory()) {
@@ -66,7 +66,7 @@ public class SaveToFolder implements EbConsumer {
         final String path = receivedMsgsFolder + File.separator + dir;
         final boolean b = new File(path).mkdirs();
         if (!b) {
-            log.error("Unable to create directory " + path);
+            SaveToFolder.log.error("Unable to create directory " + path);
         }
         return path;
     }
@@ -76,12 +76,13 @@ public class SaveToFolder implements EbConsumer {
             final String file = location + File.separator + "envelope.xml";
             XMLUtil.prettyPrint(msgCtx.getEnvelope(), file);
         } catch (Exception ex) {
-            log.error("Error while writing Envelope (prettyPrint)", ex);
+            SaveToFolder.log.error("Error while writing Envelope (prettyPrint)", ex);
         }
     }
 
-    private void writeAttachments(final MessageContext msgCtx, final Collection<PartInfo> parts, final String location) {
-        if (msgCtx == null || parts == null || parts.size() <= 0) {
+    private void writeAttachments(final MessageContext msgCtx, final Collection<PartInfo> parts,
+                                  final String location) {
+        if ((msgCtx == null) || (parts == null) || (parts.size() <= 0)) {
             return;
         }
         final List<String> cids = new ArrayList<String>();
@@ -103,7 +104,7 @@ public class SaveToFolder implements EbConsumer {
             final String file = location + File.separator + "SOAP-Header.xml";
             XMLUtil.prettyPrint(header, file);
         } catch (Exception ex) {
-            log.error("Error while writing SOAPHeader (prettyPrint)", ex);
+            SaveToFolder.log.error("Error while writing SOAPHeader (prettyPrint)", ex);
         }
     }
 

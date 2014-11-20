@@ -1,12 +1,5 @@
 package eu.domibus.ebms3.handlers;
 
-import org.apache.axiom.attachments.Attachments;
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.soap.SOAPHeader;
-import org.apache.axis2.AxisFault;
-import org.apache.axis2.context.MessageContext;
-import org.apache.axis2.handlers.AbstractHandler;
-import org.apache.log4j.Logger;
 import eu.domibus.common.util.WSUtil;
 import eu.domibus.common.util.XMLUtil;
 import eu.domibus.ebms3.config.Leg;
@@ -19,6 +12,13 @@ import eu.domibus.ebms3.packaging.Messaging;
 import eu.domibus.ebms3.packaging.PackagingFactory;
 import eu.domibus.ebms3.packaging.UserMessage;
 import eu.domibus.ebms3.persistent.MsgInfo;
+import org.apache.axiom.attachments.Attachments;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.soap.SOAPHeader;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.handlers.AbstractHandler;
+import org.apache.log4j.Logger;
 
 /**
  * This handler runs only on the server side, and its main job is to populate
@@ -27,7 +27,7 @@ import eu.domibus.ebms3.persistent.MsgInfo;
  * @author Hamid Ben Malek
  */
 public class ResponsePackager extends AbstractHandler {
-    private static final Logger log = Logger.getLogger(ResponsePackager.class);
+    private static final Logger LOG = Logger.getLogger(ResponsePackager.class);
 
     private String logPrefix = "";
 
@@ -35,8 +35,8 @@ public class ResponsePackager extends AbstractHandler {
         if (!msgCtx.isServerSide()) {
             return InvocationResponse.CONTINUE;
         }
-        if (log.isDebugEnabled()) {
-            logPrefix = WSUtil.logPrefix(msgCtx);
+        if (ResponsePackager.LOG.isDebugEnabled()) {
+            this.logPrefix = WSUtil.logPrefix(msgCtx);
         }
 
         if (msgCtx.getFLOW() == MessageContext.IN_FLOW) {
@@ -51,7 +51,7 @@ public class ResponsePackager extends AbstractHandler {
             }
 
             //log.debug(logPrefix + msgCtx.getEnvelope().getHeader());
-            XMLUtil.debug(log, logPrefix, msgCtx.getEnvelope().getHeader());
+            XMLUtil.debug(ResponsePackager.LOG, this.logPrefix, msgCtx.getEnvelope().getHeader());
 
             MsgInfo msgInfo = (MsgInfo) msgCtx.getProperty(Constants.IN_MSG_INFO);
             if (msgInfo == null) {
@@ -62,20 +62,21 @@ public class ResponsePackager extends AbstractHandler {
         }
 
         if (msgCtx.getFLOW() == MessageContext.OUT_FLOW) {
-            log.info(logPrefix + "processing out_flow");
+            ResponsePackager.LOG.trace(this.logPrefix + "processing out_flow");
             final MsgInfo msgInfo = (MsgInfo) WSUtil.getPropertyFromInMsgCtx(msgCtx, Constants.IN_MSG_INFO);
             if (msgInfo == null) {
-                log.info(logPrefix + "could not find msgInfo from previous in request");
+                ResponsePackager.LOG.info(this.logPrefix + "could not find msgInfo from previous in request");
                 return InvocationResponse.CONTINUE;
             }
             if (msgInfo.getService() != null) {
-                log.debug(logPrefix + "msgInfo and its service are not null");
+                ResponsePackager.LOG.debug(this.logPrefix + "msgInfo and its service are not null");
                 // construct a UserMessage header and add it to the SOAP header...
                 final Leg leg = Configuration.getLeg(msgInfo, 2, Constants.TWO_WAY_SYNC);
                 if (leg == null) {
-                    log.info("this is not a two-way/sync mep");
+                    ResponsePackager.LOG.debug("this is not a two-way/sync mep");
                     // check if previous request is expecting a receipt or an ack:
-                    final boolean expectReceipt = (Boolean) WSUtil.getPropertyFromInMsgCtx(msgCtx, eu.domibus.common.Constants.EXPECT_RECEIPT);
+                    final boolean expectReceipt = (Boolean) WSUtil
+                            .getPropertyFromInMsgCtx(msgCtx, eu.domibus.common.Constants.EXPECT_RECEIPT);
                     // insert an empty eb:Messsaging header here...
                     if (expectReceipt) {
                         new Messaging(msgCtx.getEnvelope());
@@ -87,9 +88,9 @@ public class ResponsePackager extends AbstractHandler {
                 final Attachments att = msgCtx.getAttachmentMap();
                 final UserMessage userMessage = PackagingFactory.createRespUserMessage(msgInfo, producer, us, att);
                 new Messaging(msgCtx.getEnvelope(), null, userMessage);
-                XMLUtil.debug(log, logPrefix, msgCtx.getEnvelope());
+                XMLUtil.debug(ResponsePackager.LOG, this.logPrefix, msgCtx.getEnvelope());
             } else {
-                log.debug(logPrefix + "found msgInfo but its service is null");
+                ResponsePackager.LOG.debug(this.logPrefix + "found msgInfo but its service is null");
             }
         }
 

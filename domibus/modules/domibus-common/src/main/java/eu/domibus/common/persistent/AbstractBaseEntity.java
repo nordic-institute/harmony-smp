@@ -23,15 +23,15 @@ public abstract class AbstractBaseEntity {
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return this.id.hashCode();
     }
 
     public String getId() {
-        return id;
+        return this.id;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
@@ -41,8 +41,8 @@ public abstract class AbstractBaseEntity {
         if (!(obj instanceof AbstractBaseEntity)) {
             return false;
         }
-        AbstractBaseEntity other = (AbstractBaseEntity) obj;
-        return getId().equals(other.getId());
+        final AbstractBaseEntity other = (AbstractBaseEntity) obj;
+        return this.getId().equals(other.getId());
     }
 }
 

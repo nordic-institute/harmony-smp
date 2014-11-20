@@ -16,7 +16,7 @@ import java.util.Map;
  * @author Thorsten Niedzwetzki
  */
 public class PingConsumer implements EbConsumer {
-    private static final Logger log = Logger.getLogger(PingConsumer.class);
+    private static final Logger LOG = Logger.getLogger(PingConsumer.class);
 
     private Map<String, String> parameters;
 
@@ -35,8 +35,8 @@ public class PingConsumer implements EbConsumer {
      */
     @Override
     public void push() {
-        if (isConfigured(PARAMETER_LOG_PUSH)) {
-            log.info("Push");
+        if (this.isConfigured(PingConsumer.PARAMETER_LOG_PUSH)) {
+            PingConsumer.LOG.debug("Push");
         }
     }
 
@@ -45,8 +45,8 @@ public class PingConsumer implements EbConsumer {
      */
     @Override
     public void pull() {
-        if (isConfigured(PARAMETER_LOG_PULL)) {
-            log.info("Pull");
+        if (this.isConfigured(PingConsumer.PARAMETER_LOG_PULL)) {
+            PingConsumer.LOG.debug("Pull");
         }
     }
 
@@ -66,7 +66,7 @@ public class PingConsumer implements EbConsumer {
      * @return {@code true} if the {@code parameterName} is set to {@code true}
      */
     private boolean isConfigured(final String parameterName) {
-        return parameters != null && String.valueOf(true).equals(parameters.get(parameterName));
+        return (this.parameters != null) && String.valueOf(true).equals(this.parameters.get(parameterName));
     }
 
 }

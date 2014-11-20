@@ -62,10 +62,10 @@ public class PrivateKeystore {
      * Gets the value of the localAlias property.
      *
      * @return possible object is
-     *         {@link String }
+     * {@link String }
      */
     public String getLocalAlias() {
-        return localAlias;
+        return this.localAlias;
     }
 
     /**
@@ -82,10 +82,10 @@ public class PrivateKeystore {
      * Gets the value of the storepwd property.
      *
      * @return possible object is
-     *         {@link String }
+     * {@link String }
      */
     public String getStorepwd() {
-        return storepwd;
+        return this.storepwd;
     }
 
     /**
@@ -102,10 +102,10 @@ public class PrivateKeystore {
      * Gets the value of the keypwd property.
      *
      * @return possible object is
-     *         {@link String }
+     * {@link String }
      */
     public String getKeypwd() {
-        return keypwd;
+        return this.keypwd;
     }
 
     /**
@@ -122,10 +122,10 @@ public class PrivateKeystore {
      * Gets the value of the file property.
      *
      * @return possible object is
-     *         {@link String }
+     * {@link String }
      */
     public String getFile() {
-        return file;
+        return this.file;
     }
 
     /**
@@ -142,10 +142,10 @@ public class PrivateKeystore {
      * Gets the value of the storeType property.
      *
      * @return possible object is
-     *         {@link String }
+     * {@link String }
      */
     public String getStoreType() {
-        return storeType;
+        return this.storeType;
     }
 
     /**

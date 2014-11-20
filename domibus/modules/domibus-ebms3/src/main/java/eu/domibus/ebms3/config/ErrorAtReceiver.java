@@ -3,11 +3,13 @@ package eu.domibus.ebms3.config;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 
+import java.io.Serializable;
+
 /**
  * @author Hamid Ben Malek
  */
 @Root(name = "ErrorAtReceiver", strict = false)
-public class ErrorAtReceiver implements java.io.Serializable {
+public class ErrorAtReceiver implements Serializable {
     private static final long serialVersionUID = -8309197098760417779L;
 
     @Attribute(required = false)
@@ -25,7 +27,7 @@ public class ErrorAtReceiver implements java.io.Serializable {
     }
 
     public boolean isNotifiyProducer() {
-        return notifiyProducer;
+        return this.notifiyProducer;
     }
 
     public void setNotifiyProducer(final boolean notifiyProducer) {
@@ -33,7 +35,7 @@ public class ErrorAtReceiver implements java.io.Serializable {
     }
 
     public boolean isNotifyConsumer() {
-        return notifyConsumer;
+        return this.notifyConsumer;
     }
 
     public void setNotifyConsumer(final boolean notifyConsumer) {

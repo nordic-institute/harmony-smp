@@ -52,7 +52,7 @@ public class ErrorMessage extends AbstractBaseEntity implements Serializable {
     private String flow;
 
     @Column(name = "APPEARANCE")
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date appearance;
 
     @Column(name = "DELIVERED")
@@ -62,7 +62,7 @@ public class ErrorMessage extends AbstractBaseEntity implements Serializable {
     private String toURL;
 
     public String getOrigin() {
-        return origin;
+        return this.origin;
     }
 
     public void setOrigin(final String origin) {
@@ -70,7 +70,7 @@ public class ErrorMessage extends AbstractBaseEntity implements Serializable {
     }
 
     public String getCategory() {
-        return category;
+        return this.category;
     }
 
     public void setCategory(final String category) {
@@ -78,7 +78,7 @@ public class ErrorMessage extends AbstractBaseEntity implements Serializable {
     }
 
     public String getErrorCode() {
-        return errorCode;
+        return this.errorCode;
     }
 
     public void setErrorCode(final String errorCode) {
@@ -86,7 +86,7 @@ public class ErrorMessage extends AbstractBaseEntity implements Serializable {
     }
 
     public String getSeverity() {
-        return severity;
+        return this.severity;
     }
 
     public void setSeverity(final String severity) {
@@ -94,7 +94,7 @@ public class ErrorMessage extends AbstractBaseEntity implements Serializable {
     }
 
     public String getRefToMessageInError() {
-        return refToMessageInError;
+        return this.refToMessageInError;
     }
 
     public void setRefToMessageInError(final String refToMessageInError) {
@@ -102,7 +102,7 @@ public class ErrorMessage extends AbstractBaseEntity implements Serializable {
     }
 
     public String getShortDescription() {
-        return shortDescription;
+        return this.shortDescription;
     }
 
     public void setShortDescription(final String shortDescription) {
@@ -110,7 +110,7 @@ public class ErrorMessage extends AbstractBaseEntity implements Serializable {
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     public void setDescription(final String description) {
@@ -118,7 +118,7 @@ public class ErrorMessage extends AbstractBaseEntity implements Serializable {
     }
 
     public String getErrorDetail() {
-        return errorDetail;
+        return this.errorDetail;
     }
 
     public void setErrorDetail(final String errorDetail) {
@@ -126,7 +126,7 @@ public class ErrorMessage extends AbstractBaseEntity implements Serializable {
     }
 
     public String getSite() {
-        return site;
+        return this.site;
     }
 
     public void setSite(final String site) {
@@ -134,7 +134,7 @@ public class ErrorMessage extends AbstractBaseEntity implements Serializable {
     }
 
     public String getFlow() {
-        return flow;
+        return this.flow;
     }
 
     public void setFlow(final String flow) {
@@ -142,7 +142,7 @@ public class ErrorMessage extends AbstractBaseEntity implements Serializable {
     }
 
     public Date getAppearance() {
-        return appearance;
+        return this.appearance;
     }
 
     public void setAppearance(final Date appearance) {
@@ -150,7 +150,7 @@ public class ErrorMessage extends AbstractBaseEntity implements Serializable {
     }
 
     public boolean isDelivered() {
-        return delivered;
+        return this.delivered;
     }
 
     public void setDelivered(final boolean delivered) {
@@ -158,7 +158,7 @@ public class ErrorMessage extends AbstractBaseEntity implements Serializable {
     }
 
     public String getToURL() {
-        return toURL;
+        return this.toURL;
     }
 
     public void setToURL(final String toURL) {
@@ -167,42 +167,42 @@ public class ErrorMessage extends AbstractBaseEntity implements Serializable {
 
     @Transient
     public boolean isLocal() {
-        return SITE_LOCAL.equalsIgnoreCase(getSite());
+        return ErrorMessage.SITE_LOCAL.equalsIgnoreCase(this.getSite());
     }
 
     @Transient
     public boolean isRemote() {
-        return SITE_REMOTE.equalsIgnoreCase(getSite());
+        return ErrorMessage.SITE_REMOTE.equalsIgnoreCase(this.getSite());
     }
 
     @Transient
     public void setLocal() {
-        setSite(SITE_LOCAL);
+        this.setSite(ErrorMessage.SITE_LOCAL);
     }
 
     @Transient
     public void setRemote() {
-        setSite(SITE_REMOTE);
+        this.setSite(ErrorMessage.SITE_REMOTE);
     }
 
     @Transient
     public void setInFlow() {
-        setFlow(FLOW_IN);
+        this.setFlow(ErrorMessage.FLOW_IN);
     }
 
     @Transient
     public void setOutFlow() {
-        setFlow(FLOW_OUT);
+        this.setFlow(ErrorMessage.FLOW_OUT);
     }
 
     @Transient
     public boolean isInFlow() {
-        return FLOW_IN.equalsIgnoreCase(getFlow());
+        return ErrorMessage.FLOW_IN.equalsIgnoreCase(this.getFlow());
     }
 
     @Transient
     public boolean isOutFlow() {
-        return FLOW_OUT.equalsIgnoreCase(getFlow());
+        return ErrorMessage.FLOW_OUT.equalsIgnoreCase(this.getFlow());
     }
 
 }

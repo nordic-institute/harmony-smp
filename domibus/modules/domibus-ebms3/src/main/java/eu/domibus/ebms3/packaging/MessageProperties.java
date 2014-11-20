@@ -15,17 +15,17 @@ public class MessageProperties extends Element {
 
     public MessageProperties(final String propertyName, final String propertyValue) {
         this();
-        addProperty(propertyName, propertyValue);
+        this.addProperty(propertyName, propertyValue);
     }
 
     public MessageProperties(final String[] propertyNames, final String[] propertyValues) {
         this();
-        if (propertyNames == null || propertyNames.length == 0) {
+        if ((propertyNames == null) || (propertyNames.length == 0)) {
             return;
         }
         for (int i = 0; i < propertyNames.length; i++) {
-            if (propertyValues != null && propertyValues.length > i) {
-                addProperty(propertyNames[i], propertyValues[i]);
+            if ((propertyValues != null) && (propertyValues.length > i)) {
+                this.addProperty(propertyNames[i], propertyValues[i]);
             }
         }
     }
@@ -34,7 +34,7 @@ public class MessageProperties extends Element {
         if (name == null) {
             return;
         }
-        final Element child = addElement(Constants.PROPERTY, Constants.PREFIX);
+        final Element child = this.addElement(Constants.PROPERTY, Constants.PREFIX);
         child.setText(value);
         child.addAttribute("name", name);
     }

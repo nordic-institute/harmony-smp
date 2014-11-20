@@ -1,11 +1,5 @@
 package eu.domibus.ebms3.handlers;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.soap.SOAPHeader;
-import org.apache.axis2.AxisFault;
-import org.apache.axis2.context.MessageContext;
-import org.apache.axis2.handlers.AbstractHandler;
-import org.apache.log4j.Logger;
 import eu.domibus.common.util.WSUtil;
 import eu.domibus.common.util.XMLUtil;
 import eu.domibus.ebms3.config.Leg;
@@ -14,11 +8,17 @@ import eu.domibus.ebms3.module.Configuration;
 import eu.domibus.ebms3.module.Constants;
 import eu.domibus.ebms3.module.EbUtil;
 import eu.domibus.ebms3.persistent.MsgInfo;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.soap.SOAPHeader;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.handlers.AbstractHandler;
+import org.apache.log4j.Logger;
 
 /**
  * This handler runs during the <b>InFlow</b> and its job is to determine the P-Mode
  * that can handle the incoming UserMessage. The retrieved information is stored as
- * property {@link Constants.IN_PMODE} in the MessageContext.
+ * property {@link eu.domibus.ebms3.module.Constants#IN_PMODE} in the MessageContext.
  * <p/>
  * <p>Note that this handler only gets the P-Mode for UserMessage, for ebMS
  * SignalMessage the specific handlers that will handle the signal has to determine
@@ -29,7 +29,7 @@ import eu.domibus.ebms3.persistent.MsgInfo;
  */
 public class PModeFinder extends AbstractHandler {
 
-    private static final Logger log = Logger.getLogger(PModeFinder.class);
+    private static final Logger LOG = Logger.getLogger(PModeFinder.class);
     private String logPrefix = "";
 
     public InvocationResponse invoke(final MessageContext msgCtx) throws AxisFault {
@@ -41,8 +41,8 @@ public class PModeFinder extends AbstractHandler {
         if (header == null) {
             return InvocationResponse.CONTINUE;
         }
-        if (log.isDebugEnabled()) {
-            logPrefix = WSUtil.logPrefix(msgCtx);
+        if (PModeFinder.LOG.isDebugEnabled()) {
+            this.logPrefix = WSUtil.logPrefix(msgCtx);
         }
 
         if (!EbUtil.isUserMessage(msgCtx)) {
@@ -59,7 +59,7 @@ public class PModeFinder extends AbstractHandler {
         final Leg leg = Configuration.getLeg(msgMetaData);
 
         if (leg == null) {
-            log.error("No P-Mode found for received UserMessage [" + msgMetaData.getMessageId() + "]");
+            PModeFinder.LOG.error("No P-Mode found for received UserMessage [" + msgMetaData.getMessageId() + "]");
         }
 
         msgCtx.setProperty(Constants.IN_PMODE, leg.getPmode());
@@ -67,11 +67,12 @@ public class PModeFinder extends AbstractHandler {
         msgCtx.setProperty(Constants.MESSAGE_INFO, msgMetaData);
 
         if (leg != null && leg.getReceiptReply() != null &&
-            leg.getReceiptReply().equalsIgnoreCase("Response")) {
+            "Response".equalsIgnoreCase(leg.getReceiptReply())) {
             msgCtx.setProperty(eu.domibus.common.Constants.EXPECT_RECEIPT, true);
-            log.info(logPrefix + "This incoming request message expects an AS4 Receipt on the back-channel");
+            LOG.info(this.logPrefix + "This incoming request message expects an AS4 Receipt on the back-channel");
         } else {
-            log.info(logPrefix + "This incoming request message does not expect an AS4 Receipt on the back-channel");
+            LOG.info(this.logPrefix +
+                     "This incoming request message does not expect an AS4 Receipt on the back-channel");
             msgCtx.setProperty(eu.domibus.common.Constants.EXPECT_RECEIPT, false);
         }
 
@@ -97,9 +98,6 @@ public class PModeFinder extends AbstractHandler {
         if (pullReq != null) {
             final String mpc = XMLUtil.getAttributeValue(pullReq, "mpc");
             pmode = Configuration.matchPMode(mpc, address);
-            if (pmode != null) {
-                return pmode;
-            }
         } else {
             final OMElement userMessage = XMLUtil.getGrandChildNameNS(header, Constants.USER_MESSAGE, Constants.NS);
             if (userMessage == null) {
@@ -117,9 +115,6 @@ public class PModeFinder extends AbstractHandler {
                 requestMsgCtx.setProperty(Constants.IN_MSG_INFO, mi);
             }
             pmode = Configuration.match(mi, address);
-            if (pmode != null) {
-                return pmode;
-            }
         }
         return pmode;
     }

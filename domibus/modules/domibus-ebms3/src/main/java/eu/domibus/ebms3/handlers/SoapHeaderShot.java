@@ -1,13 +1,13 @@
 package eu.domibus.ebms3.handlers;
 
+import eu.domibus.common.util.WSUtil;
+import eu.domibus.ebms3.module.Constants;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.handlers.AbstractHandler;
 import org.apache.log4j.Logger;
-import eu.domibus.common.util.WSUtil;
-import eu.domibus.ebms3.module.Constants;
 
 /**
  * This handler runs only at the server side when a message is received and its purpose is just to take a picture of the
@@ -28,8 +28,8 @@ public class SoapHeaderShot extends AbstractHandler {
             return InvocationResponse.CONTINUE;
         }
 
-        if (log.isDebugEnabled()) {
-            logPrefix = WSUtil.logPrefix(msgCtx);
+        if (SoapHeaderShot.log.isDebugEnabled()) {
+            this.logPrefix = WSUtil.logPrefix(msgCtx);
         }
 
         final SOAPHeader header = msgCtx.getEnvelope().getHeader();
@@ -37,7 +37,7 @@ public class SoapHeaderShot extends AbstractHandler {
         if (header != null) {
             final OMElement clone = header.cloneOMElement();
             msgCtx.setProperty(Constants.IN_SOAP_HEADER, clone);
-            log.debug(logPrefix + " Saved original SOAP Header as a property in MessageContext");
+            SoapHeaderShot.log.debug(this.logPrefix + " Saved original SOAP Header as a property in MessageContext");
         }
 
         return InvocationResponse.CONTINUE;

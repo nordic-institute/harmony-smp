@@ -3,12 +3,9 @@ package eu.domibus.common.persistent;
 
 import eu.domibus.common.util.FileUtil;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.io.File;
 import java.io.Serializable;
 
 
@@ -39,19 +36,19 @@ public class Attachment extends AbstractBaseEntity implements Serializable {
         this.filePath = file;
         final String mimeType = FileUtil.mimeType(file);
         if (mimeType != null) {
-            setContentType(mimeType);
+            this.setContentType(mimeType);
         }
     }
 
     public Attachment(final String file, final String cid) {
         this(file);
-        if (cid != null && !cid.trim().equals("")) {
-            setContentID(cid);
+        if ((cid != null) && !"".equals(cid.trim())) {
+            this.setContentID(cid);
         }
     }
 
     public String getContentType() {
-        return contentType;
+        return this.contentType;
     }
 
     public void setContentType(final String contentType) {
@@ -59,7 +56,7 @@ public class Attachment extends AbstractBaseEntity implements Serializable {
     }
 
     public String getContentID() {
-        return contentID;
+        return this.contentID;
     }
 
     public void setContentID(final String contentID) {
@@ -74,33 +71,11 @@ public class Attachment extends AbstractBaseEntity implements Serializable {
   } */
 
     public String getFilePath() {
-        return filePath;
+        return this.filePath;
     }
 
     public void setFilePath(final String filePath) {
         this.filePath = filePath;
     }
 
-    public DataHandler getDataHandler(final String storageFolder) {
-        if (filePath == null || filePath.trim().equals("")) {
-            return null;
-        }
-        final File f = new File(filePath);
-        if (f.exists()) {
-            final FileDataSource fileDataSource = new FileDataSource(f);
-            fileDataSource.setFileTypeMap(FileUtil.getMimeTypes());
-            return new DataHandler(fileDataSource);
-        } else if (storageFolder != null && !storageFolder.trim().equals("")) {
-            final String path = storageFolder + File.separator +
-                                f.getParentFile().getName() + File.separator +
-                                f.getName();
-            final File file = new File(path);
-            if (file.exists()) {
-                final FileDataSource fileDataSource = new FileDataSource(file);
-                fileDataSource.setFileTypeMap(FileUtil.getMimeTypes());
-                return new DataHandler(fileDataSource);
-            }
-        }
-        return null;
-    }
 }

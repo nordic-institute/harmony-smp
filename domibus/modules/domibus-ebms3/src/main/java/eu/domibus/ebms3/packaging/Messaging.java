@@ -4,12 +4,12 @@ package eu.domibus.ebms3.packaging;
 //import eu.domibus.ebms3.config.PModeConfig;
 //import eu.domibus.ebms3.config.PModeConfigRegistry;
 
+import eu.domibus.ebms3.module.Constants;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPHeaderBlock;
-import eu.domibus.ebms3.module.Constants;
 
 //import org.apache.axiom.attachments.*;
 //import org.apache.axis2.context.MessageContext;
@@ -25,8 +25,8 @@ public class Messaging {
             return;
         }
         final OMNamespace ns = factory.createOMNamespace(Constants.NS, Constants.PREFIX);
-        root = factory.createSOAPHeaderBlock(Constants.MESSAGING, ns);
-        root.setMustUnderstand(true);
+        this.root = factory.createSOAPHeaderBlock(Constants.MESSAGING, ns);
+        this.root.setMustUnderstand(true);
     }
 
     public Messaging(final SOAPEnvelope env) {
@@ -36,13 +36,13 @@ public class Messaging {
         final SOAPFactory factory = (SOAPFactory) env.getOMFactory();
         final OMNamespace ns = factory.createOMNamespace(Constants.NS, Constants.PREFIX);
         env.declareNamespace(ns);
-        root = factory.createSOAPHeaderBlock(Constants.MESSAGING, ns);
-        root.setMustUnderstand(true);
+        this.root = factory.createSOAPHeaderBlock(Constants.MESSAGING, ns);
+        this.root.setMustUnderstand(true);
         SOAPHeader header = env.getHeader();
         if (header == null) {
             header = factory.createSOAPHeader(env);
         }
-        header.addChild(root);
+        header.addChild(this.root);
     }
 
     public Messaging(final SOAPFactory factory, final SignalMessage s, final UserMessage u) {
@@ -51,10 +51,10 @@ public class Messaging {
         //if ( u != null ) root.addChild(u);
 
         if (s != null) {
-            root.addChild(s.getElement());
+            this.root.addChild(s.getElement());
         }
         if (u != null) {
-            root.addChild(u.getElement());
+            this.root.addChild(u.getElement());
         }
     }
 
@@ -64,24 +64,24 @@ public class Messaging {
         //if ( u != null ) root.addChild(u);
 
         if (s != null) {
-            root.addChild(s.getElement());
+            this.root.addChild(s.getElement());
         }
         if (u != null) {
-            root.addChild(u.getElement());
+            this.root.addChild(u.getElement());
         }
     }
 
     public Messaging(final SOAPFactory factory, final SignalMessage[] s, final UserMessage[] u) {
         this(factory);
-        if (s != null && s.length > 0) {
+        if ((s != null) && (s.length > 0)) {
             for (final SignalMessage sm : s) {
-                root.addChild(sm.getElement());
+                this.root.addChild(sm.getElement());
             }
             //root.addChild(sm);
         }
-        if (u != null && u.length > 0) {
+        if ((u != null) && (u.length > 0)) {
             for (final UserMessage um : u) {
-                root.addChild(um.getElement());
+                this.root.addChild(um.getElement());
             }
             //root.addChild(um);
         }
@@ -89,22 +89,22 @@ public class Messaging {
 
     public Messaging(final SOAPEnvelope env, final SignalMessage[] s, final UserMessage[] u) {
         this(env);
-        if (s != null && s.length > 0) {
+        if ((s != null) && (s.length > 0)) {
             for (final SignalMessage sm : s) {
-                root.addChild(sm.getElement());
+                this.root.addChild(sm.getElement());
             }
             //root.addChild(sm);
         }
-        if (u != null && u.length > 0) {
+        if ((u != null) && (u.length > 0)) {
             for (final UserMessage um : u) {
-                root.addChild(um.getElement());
+                this.root.addChild(um.getElement());
             }
             //root.addChild(um);
         }
     }
 
     public SOAPHeaderBlock getRoot() {
-        return root;
+        return this.root;
     }
 
     public void addToHeader(final SOAPEnvelope env) {
@@ -119,7 +119,7 @@ public class Messaging {
         if (header == null) {
             header = ((SOAPFactory) env.getOMFactory()).createSOAPHeader(env);
         }
-        header.addChild(getRoot());
+        header.addChild(this.getRoot());
         //env.getHeader().addChild(getRoot());
     }
   /*

@@ -19,42 +19,42 @@ public abstract class DirWatcher extends TimerTask implements FileFilter {
     }
 
     public DirWatcher(final String path) {
-        setPath(path);
+        this.setPath(path);
     }
 
     public void setPath(final String path) {
         this.path = path;
         final File dirToWatch = new File(path);
-        filesArray = dirToWatch.listFiles(this);
-        if (filesArray == null) {
+        this.filesArray = dirToWatch.listFiles(this);
+        if (this.filesArray == null) {
             throw new RuntimeException("directory to watch:" + dirToWatch.getAbsolutePath() + "not found");
         }
 
         // transfer to the hashmap be used a reference and keep the
         // lastModfied value
-        for (final File aFilesArray : filesArray) {
-            dir.put(aFilesArray, aFilesArray.lastModified());
+        for (final File aFilesArray : this.filesArray) {
+            this.dir.put(aFilesArray, aFilesArray.lastModified());
         }
     }
 
     public final void run() {
-        final File dirToWatch = new File(path);
-        filesArray = dirToWatch.listFiles(this);
-        if (filesArray == null) {
+        final File dirToWatch = new File(this.path);
+        this.filesArray = dirToWatch.listFiles(this);
+        if (this.filesArray == null) {
             throw new RuntimeException("directory to watch:" + dirToWatch.getAbsolutePath() + "not found");
         }
 
         // scan the files and check for modification/addition
-        for (final File aFilesArray : filesArray) {
-            final Long current = dir.get(aFilesArray);
+        for (final File aFilesArray : this.filesArray) {
+            final Long current = this.dir.get(aFilesArray);
             if (current == null) {
                 // new file
-                dir.put(aFilesArray, aFilesArray.lastModified());
-                onChange(aFilesArray, "add");
+                this.dir.put(aFilesArray, aFilesArray.lastModified());
+                this.onChange(aFilesArray, "add");
             } else if (current != aFilesArray.lastModified()) {
                 // modified file
-                dir.put(aFilesArray, aFilesArray.lastModified());
-                onChange(aFilesArray, "modify");
+                this.dir.put(aFilesArray, aFilesArray.lastModified());
+                this.onChange(aFilesArray, "modify");
             }
         }
     }

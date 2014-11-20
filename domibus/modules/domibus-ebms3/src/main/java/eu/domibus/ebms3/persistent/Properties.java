@@ -1,7 +1,7 @@
 package eu.domibus.ebms3.persistent;
 
-import org.apache.log4j.Logger;
 import eu.domibus.common.persistent.AbstractBaseEntity;
+import org.apache.log4j.Logger;
 import org.simpleframework.xml.ElementMap;
 import org.simpleframework.xml.Root;
 
@@ -28,7 +28,7 @@ public class Properties extends AbstractBaseEntity {
 
 
     public Map<String, String> getProperties() {
-        return properties;
+        return this.properties;
     }
 
     public void setProperties(final Map<String, String> properties) {
@@ -36,10 +36,10 @@ public class Properties extends AbstractBaseEntity {
     }
 
     public void addProperty(final String name, final String value) {
-        properties.put(name, value);
+        this.properties.put(name, value);
     }
 
     public String getProperty(final String propertyName) {
-        return properties.get(propertyName);
+        return this.properties.get(propertyName);
     }
 }

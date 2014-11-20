@@ -34,7 +34,7 @@ public class Property extends AbstractBaseEntity {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(final String name) {
@@ -42,7 +42,7 @@ public class Property extends AbstractBaseEntity {
     }
 
     public String getValue() {
-        return value;
+        return this.value;
     }
 
     public void setValue(final String v) {

@@ -15,7 +15,7 @@ public class DateUtil {
     final static SimpleDateFormat fullDateTimePatternFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
     static {
-        fullDateTimePatternFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
+        DateUtil.fullDateTimePatternFormatter.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     /**
@@ -28,7 +28,7 @@ public class DateUtil {
         if (date == null) {
             return null;
         }
-        return fullDateTimePatternFormatter.format(date);
+        return DateUtil.fullDateTimePatternFormatter.format(date);
     }
 
 }

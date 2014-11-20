@@ -176,7 +176,7 @@
                         method="Callback"
                         nonRepudiation="false"
                         receiptTo="${domibus.testing.MSH.protocol}://${domibus.testing.MSH.host}:${domibus.testing.MSH.pt}/${domibus.testing.MSH.contextPath}">
-                <tns:As4Reliability
+                    <tns:As4Reliability
                             maxRetries="3"
                             interval="5"
                             shutdown="10"/>
@@ -238,7 +238,7 @@
                         method="Callback"
                         nonRepudiation="false"
                         receiptTo="${domibus.testing.MSH.protocol}://${domibus.testing.MSH.host}:${domibus.testing.MSH.pt}/${domibus.testing.MSH.contextPath}">
-                <tns:As4Reliability
+                    <tns:As4Reliability
                             maxRetries="3"
                             interval="5"
                             shutdown="10"/>

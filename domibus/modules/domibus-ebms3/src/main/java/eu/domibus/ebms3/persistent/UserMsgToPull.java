@@ -1,15 +1,16 @@
 package eu.domibus.ebms3.persistent;
 
-import org.apache.axis2.context.MessageContext;
+import eu.domibus.common.persistent.TempStore;
 import eu.domibus.ebms3.module.Configuration;
 import eu.domibus.ebms3.module.Constants;
 import eu.domibus.ebms3.submit.MsgInfoSet;
+import org.apache.axis2.context.MessageContext;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import java.io.File;
+import java.util.Collection;
 
 
 /**
@@ -26,33 +27,33 @@ public class UserMsgToPull extends MessageToSend {
 
 
     public UserMsgToPull() {
-        setStorageFolder(Constants.getSubmitFolder());
+        this.setStorageFolder(Constants.getSubmitFolder());
     }
 
 
     public UserMsgToPull(final MessageContext context, final MsgInfoSet mis) {
-        setStorageFolder(Constants.getSubmitFolder());
-        setMessageContext(context);
+        this.setStorageFolder(Constants.getSubmitFolder());
+        this.setMessageContext(context);
         this.mpc = Configuration.getMpc(mis.getPmode(), mis.getLegNumber());
         super.setMsgInfoSet(mis);
-        getMsgInfoSet().setCreateTimeInMillis(System.currentTimeMillis());
+        this.getMsgInfoSet().setCreateTimeInMillis(System.currentTimeMillis());
     }
 
-    public UserMsgToPull(final File folder, final MsgInfoSet mis) {
-        super(folder, mis);
+    public UserMsgToPull(final String tempGroup, final MsgInfoSet mis, final Collection<TempStore> attachmentData) {
+        super(tempGroup, mis, attachmentData);
 
-        setMsgInfoSet(mis);
-        getMsgInfoSet().setCreateTimeInMillis(System.currentTimeMillis());
-        setStorageFolder(Constants.getSubmitFolder());
+        this.setMsgInfoSet(mis);
+        this.getMsgInfoSet().setCreateTimeInMillis(System.currentTimeMillis());
+        this.setStorageFolder(Constants.getSubmitFolder());
     }
 
 
     public String getMpc() {
-        return mpc;
+        return this.mpc;
     }
 
     public boolean isPulled() {
-        return sent;
+        return this.sent;
     }
 
     public void setPulled(final boolean pulled) {

@@ -1,23 +1,10 @@
 <Workers>
 
-    <!-- <Worker name="pull1" interval="20000" total="1" activate="false" -->
-    <!-- workerClass="eu.domibus.ebms3.workers.impl.PullWorker"> -->
-
-    <!-- <parameter name="pmode">ImagePulling</parameter> -->
-    <!-- <parameter name="mpc">mpc://imageStore</parameter> -->
-    <!-- <parameter name="callbackClass">eu.domibus.ebms3.submit.SaveReceivedMsg</parameter> -->
-
-    <!-- </Worker> -->
-
 
     <Worker name="pmodesWatcher" interval="20000" activate="true"
             workerClass="eu.domibus.ebms3.workers.impl.PModesWatcher">
         <parameter name="pmodesDir">config/domibus/pmodes</parameter>
     </Worker>
-
-    <!-- The "submitWorker" accepts messages in the folder domibus/store/send -->
-    <Worker name="submitWorker" interval="5000" activate="true"
-            workerClass="eu.domibus.ebms3.workers.impl.SubmitWorker"/>
 
     <!-- The "retransmitWorker" triggers retransmits of user messages (AS4 Reliability) -->
     <Worker name="retransmitWorker" interval="10000" activate="true"
@@ -25,7 +12,7 @@
 
     <!-- The "senderWorker" retransmits user messages (AS4 Reliability) -->
     <Worker name="senderWorker" interval="20000" activate="true"
-            workerClass="eu.domibus.ebms3.workers.impl.SenderWorker"/>
+            workerClass="eu.domibus.ebms3.workers.impl.DatabaseSenderWorker"/>
 
     <!-- The "receiptSenderWorker" sends call-back receipts (AS4 reliability) -->
     <Worker name="receiptSenderWorker" interval="6000" activate="true"
@@ -34,5 +21,11 @@
     <!-- The "shutdownWorker" finalizes timed out time schedules (AS4 reliability) -->
     <Worker name="shutdownWorker" interval="120000" activate="true"
             workerClass="eu.domibus.ebms3.workers.impl.AS4ShutdownIntervalWorker"/>
+
+    <Worker name="deleteExpiredMessages" interval="20000" activate="true"
+            workerClass="eu.eCODEX.submission.worker.DeleteExpiredMessagesWorker"/>
+        
+    <!--Worker name="pushJMSMessages" interval="20000" activate="true"
+            workerClass="eu.eCODEX.submission.jms.QueueMessageSender"/-->
 
 </Workers>

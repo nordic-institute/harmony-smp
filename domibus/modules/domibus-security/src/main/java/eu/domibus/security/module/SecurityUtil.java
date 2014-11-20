@@ -1,8 +1,8 @@
 package eu.domibus.security.module;
 
+import eu.domibus.common.util.JNDIUtil;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisModule;
-import eu.domibus.common.util.JNDIUtil;
 
 /**
  * @author Hamid Ben Malek

@@ -48,8 +48,8 @@ public class AxisAdminServlet extends AxisServlet {
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
             throws ServletException, IOException {
         try {
-            req.getSession().setAttribute(Constants.SERVICE_PATH, configContext.getServicePath());
-            agent.handle(req, resp);
+            req.getSession().setAttribute(Constants.SERVICE_PATH, this.configContext.getServicePath());
+            this.agent.handle(req, resp);
         } catch (Exception e) {
             throw new ServletException(e);
         }
@@ -61,7 +61,7 @@ public class AxisAdminServlet extends AxisServlet {
         final ServletContext servletContext = config.getServletContext();
         this.configContext = (ConfigurationContext) servletContext.getAttribute(CONFIGURATION_CONTEXT);
         servletContext.setAttribute(this.getClass().getName(), this);
-        agent = new AdminAgent(configContext);
+        this.agent = new AdminAgent(this.configContext);
         this.servletConfig = config;
     }
 

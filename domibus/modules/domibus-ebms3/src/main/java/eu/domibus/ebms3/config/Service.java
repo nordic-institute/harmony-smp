@@ -4,11 +4,13 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 import org.simpleframework.xml.Text;
 
+import java.io.Serializable;
+
 /**
  * @author Hamid Ben Malek
  */
 @Root(name = "Service", strict = false)
-public class Service implements java.io.Serializable {
+public class Service implements Serializable {
     private static final long serialVersionUID = -8309197955456717779L;
 
     @Text
@@ -26,7 +28,7 @@ public class Service implements java.io.Serializable {
     }
 
     public String getValue() {
-        return value;
+        return this.value;
     }
 
     public void setValue(final String value) {
@@ -34,7 +36,7 @@ public class Service implements java.io.Serializable {
     }
 
     public String getType() {
-        return type;
+        return this.type;
     }
 
     public void setType(final String type) {
@@ -42,14 +44,15 @@ public class Service implements java.io.Serializable {
     }
 
     public boolean equals(final Object obj) {
-        if (obj == null || !(obj instanceof Service)) {
+        if ((obj == null) || !(obj instanceof Service)) {
             return false;
         }
         final Service s = (Service) obj;
-        if ((type == null || type.trim().equals(""))) {
-            return !(s.getType() != null && !s.getType().trim().equals("")) && value.equalsIgnoreCase(s.getValue());
+        if (((this.type == null) || "".equals(this.type.trim()))) {
+            return !((s.getType() != null) && !"".equals(s.getType().trim())) &&
+                   this.value.equalsIgnoreCase(s.getValue());
         } else {
-            return value.equalsIgnoreCase(s.getValue()) && type.equalsIgnoreCase(s.getType());
+            return this.value.equalsIgnoreCase(s.getValue()) && this.type.equalsIgnoreCase(s.getType());
         }
     }
 }

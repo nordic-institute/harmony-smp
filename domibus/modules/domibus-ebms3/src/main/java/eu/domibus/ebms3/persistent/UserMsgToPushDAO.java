@@ -50,7 +50,7 @@ public class UserMsgToPushDAO extends AbstractDAO<UserMsgToPush> {
         final EntityManager em = JpaUtil.getEntityManager();
         final Query q = em.createNamedQuery("UserMsgToPush.setRetransmit");
         q.setParameter("MESSAGE_ID", messageId);
-        EntityTransaction tx = em.getTransaction();
+        final EntityTransaction tx = em.getTransaction();
         tx.begin();
         q.executeUpdate();
         tx.commit();
@@ -61,6 +61,8 @@ public class UserMsgToPushDAO extends AbstractDAO<UserMsgToPush> {
         final EntityManager em = JpaUtil.getEntityManager();
         final Query q = em.createNamedQuery("UserMsgToPush.findByMessageId");
         q.setParameter("MESSAGE_ID", messageId);
-        return q.getResultList();
+        final List<UserMsgToPush> res = q.getResultList();
+        em.close();
+        return res;
     }
 }

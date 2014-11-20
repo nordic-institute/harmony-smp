@@ -1,10 +1,11 @@
 package eu.domibus.ebms3.packaging;
 
-import org.apache.axiom.util.UIDGenerator;
 import eu.domibus.common.soap.Element;
 import eu.domibus.common.util.DateUtil;
 import eu.domibus.ebms3.module.Constants;
+import eu.domibus.ebms3.module.EbUtil;
 import eu.domibus.ebms3.submit.MsgInfoSet;
+import org.apache.axiom.util.UIDGenerator;
 
 import java.util.Date;
 
@@ -20,14 +21,14 @@ public class MessageInfo extends Element {
 
     public MessageInfo(final Date time, final String messageId, final String refToMessageId) {
         super(Constants.MESSAGE_INFO, Constants.NS, Constants.PREFIX);
-        final Element timestamp = addElement(Constants.TIMESTAMP, Constants.PREFIX);
-        timestamp.setText(time != null ? DateUtil.dateToUtc(time) : DateUtil.dateToUtc(new Date()));
+        final Element timestamp = this.addElement(Constants.TIMESTAMP, Constants.PREFIX);
+        timestamp.setText((time != null) ? DateUtil.dateToUtc(time) : DateUtil.dateToUtc(new Date()));
 
-        final Element msgId = addElement(Constants.MESSAGE_ID, Constants.PREFIX);
-        msgId.setText(messageId != null ? messageId : UIDGenerator.generateURNString());
+        final Element msgId = this.addElement(Constants.MESSAGE_ID, Constants.PREFIX);
+        msgId.setText((messageId != null) ? messageId : EbUtil.generateMessageID());
 
-        if (refToMessageId != null && !refToMessageId.trim().isEmpty()) {
-            final Element refMsgId = addElement(Constants.REF_TO_MESSAGE_ID, Constants.PREFIX);
+        if ((refToMessageId != null) && !refToMessageId.trim().isEmpty()) {
+            final Element refMsgId = this.addElement(Constants.REF_TO_MESSAGE_ID, Constants.PREFIX);
             refMsgId.setText(refToMessageId);
         }
     }
@@ -39,14 +40,14 @@ public class MessageInfo extends Element {
     //  =========================== Getter methods ===============================
 
     public String getMessageId() {
-        return getGrandChildValue(Constants.MESSAGE_ID);
+        return this.getGrandChildValue(Constants.MESSAGE_ID);
     }
 
     public String getRefToMessageId() {
-        return getGrandChildValue(Constants.REF_TO_MESSAGE_ID);
+        return this.getGrandChildValue(Constants.REF_TO_MESSAGE_ID);
     }
 
     public String getTimestamp() {
-        return getGrandChildValue(Constants.TIMESTAMP);
+        return this.getGrandChildValue(Constants.TIMESTAMP);
     }
 }

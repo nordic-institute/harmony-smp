@@ -1,5 +1,6 @@
 package eu.domibus.ebms3.module;
 
+import eu.domibus.common.util.FileUtil;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.builder.StAXBuilder;
 import org.apache.axiom.soap.SOAP12Constants;
@@ -7,6 +8,7 @@ import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFaultCode;
 import org.apache.axiom.util.UIDGenerator;
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingHelper;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.ConfigurationContext;
@@ -27,7 +29,6 @@ import org.apache.axis2.transport.http.util.RESTUtil;
 import org.apache.axis2.util.JavaUtils;
 import org.apache.axis2.util.MessageContextBuilder;
 import org.apache.log4j.Logger;
-import eu.domibus.common.util.FileUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -45,7 +46,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public class DomibusServlet extends HttpServlet implements TransportListener {
     // private static final Log log = LogFactory.getLog(AxisServlet.class);
-    private static final Logger log = Logger.getLogger(AxisServlet.class);
+    private static final Logger LOG = Logger.getLogger(AxisServlet.class);
     public static final String CONFIGURATION_CONTEXT = "CONFIGURATION_CONTEXT";
     public static final String SESSION_ID = "SessionId";
     protected transient ConfigurationContext configContext;
@@ -54,9 +55,9 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
     protected transient ServletConfig servletConfig;
 
     private transient MyListingAgent agent;
-    private String contextRoot = null;
+    private String contextRoot;
 
-    protected boolean disableREST = false;
+    protected boolean disableREST;
     private static final String LIST_SERVICES_SUFIX = "/services/listServices";
     private static final String LIST_FAUKT_SERVICES_SUFIX = "/services/ListFaultyServices";
     private boolean closeReader = true;
@@ -73,22 +74,29 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
      */
     protected void doPost(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
-        final String msgFile = saveRequest(request);
-        final InputStream in = getInputStream(msgFile);
+        final String msgFile = this.saveRequest(request);
+        final InputStream in = this.getInputStream(msgFile);
 
         // set the initial buffer for a larger value
-        response.setBufferSize(BUFFER_SIZE);
+        response.setBufferSize(DomibusServlet.BUFFER_SIZE);
 
-        initContextRoot(request);
+        this.initContextRoot(request);
 
         final MessageContext msgContext;
         final OutputStream out = response.getOutputStream();
         final String contentType = request.getContentType();
-        if (!HTTPTransportUtils.isRESTRequest(contentType)) {
-            msgContext = createMessageContext(request, response);
+        if (HTTPTransportUtils.isRESTRequest(contentType)) {
+            if (this.disableREST) {
+                this.showRestDisabledErrorMessage(response);
+            } else {
+                new RestRequestProcessor(Constants.Configuration.HTTP_METHOD_POST, request, response)
+                        .processXMLRequest();
+            }
+        } else {
+            msgContext = this.createMessageContext(request, response);
             msgContext.setProperty("RequestFile", msgFile);
             msgContext.setProperty("ContentType", contentType);
-            msgContext.setProperty(org.apache.axis2.Constants.Configuration.CONTENT_TYPE, contentType);
+            msgContext.setProperty(Constants.Configuration.CONTENT_TYPE, contentType);
             try {
                 // adding ServletContext into msgContext;
                 final InvocationResponse pi = HTTPTransportUtils
@@ -99,12 +107,12 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
                 final Boolean holdResponse = (Boolean) msgContext.getProperty(RequestResponseTransport.HOLD_RESPONSE);
 
                 if (pi.equals(InvocationResponse.SUSPEND) ||
-                    (holdResponse != null && Boolean.TRUE.equals(holdResponse))) {
+                    ((holdResponse != null) && Boolean.TRUE.equals(holdResponse))) {
                     ((RequestResponseTransport) msgContext.getProperty(RequestResponseTransport.TRANSPORT_CONTROL))
                             .awaitResponse();
                 }
-                response.setContentType("text/xml; charset=" + msgContext
-                        .getProperty(org.apache.axis2.Constants.Configuration.CHARACTER_SET_ENCODING));
+                response.setContentType(
+                        "text/xml; charset=" + msgContext.getProperty(Constants.Configuration.CHARACTER_SET_ENCODING));
                 // if data has not been sent back and this is not a signal
                 // response
                 if (!TransportUtils.isResponseWritten(msgContext) &&
@@ -114,15 +122,15 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
                 }
 
             } catch (AxisFault e) {
-                setResponseState(msgContext, response);
-                log.debug(e);
+                this.setResponseState(msgContext, response);
+                DomibusServlet.LOG.debug(e);
                 if (msgContext != null) {
-                    processAxisFault(msgContext, response, out, e);
+                    this.processAxisFault(msgContext, response, out, e);
                 } else {
                     throw new ServletException(e);
                 }
             } catch (Throwable t) {
-                log.error(t.getMessage(), t);
+                DomibusServlet.LOG.error(t.getMessage(), t);
                 try {
                     // If the fault is not going along the back channel we
                     // should be 202ing
@@ -131,11 +139,11 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
                     } else {
                         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 
-                        final AxisBindingOperation axisBindingOperation = (AxisBindingOperation) msgContext
-                                .getProperty(org.apache.axis2.Constants.AXIS_BINDING_OPERATION);
+                        final AxisBindingOperation axisBindingOperation =
+                                (AxisBindingOperation) msgContext.getProperty(Constants.AXIS_BINDING_OPERATION);
                         if (axisBindingOperation != null) {
                             final AxisBindingMessage axisBindingMessage = axisBindingOperation
-                                    .getFault((String) msgContext.getProperty(org.apache.axis2.Constants.FAULT_NAME));
+                                    .getFault((String) msgContext.getProperty(Constants.FAULT_NAME));
                             if (axisBindingMessage != null) {
                                 final Integer code =
                                         (Integer) axisBindingMessage.getProperty(WSDL2Constants.ATTR_WHTTP_CODE);
@@ -145,21 +153,14 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
                             }
                         }
                     }
-                    handleFault(msgContext, out, new AxisFault(t.toString(), t));
+                    this.handleFault(msgContext, out, new AxisFault(t.toString(), t));
                 } catch (AxisFault e2) {
-                    log.info(e2);
+                    DomibusServlet.LOG.info(e2);
                     throw new ServletException(e2);
                 }
             } finally {
-                closeStaxBuilder(msgContext);
+                this.closeStaxBuilder(msgContext);
                 TransportUtils.deleteAttachments(msgContext);
-            }
-        } else {
-            if (!disableREST) {
-                new RestRequestProcessor(org.apache.axis2.Constants.Configuration.HTTP_METHOD_POST, request, response)
-                        .processXMLRequest();
-            } else {
-                showRestDisabledErrorMessage(response);
             }
         }
     }
@@ -176,7 +177,7 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
     protected void doGet(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
 
-        initContextRoot(request);
+        this.initContextRoot(request);
 
         // this method is also used to serve for the listServices request.
 
@@ -188,25 +189,25 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
         // 2. list services requests
         // 3. REST requests.
         if ((query != null) &&
-            (query.indexOf("wsdl2") >= 0 || query.indexOf("wsdl") >= 0 || query.indexOf("xsd") >= 0 ||
-             query.indexOf("policy") >= 0)) {
+            ((query.indexOf("wsdl2") >= 0) || (query.indexOf("wsdl") >= 0) || (query.indexOf("xsd") >= 0) ||
+             (query.indexOf("policy") >= 0))) {
             // handling meta data exchange stuff
-            agent.initTransportListener(request);
-            agent.processListService(request, response);
+            this.agent.initTransportListener(request);
+            this.agent.processListService(request, response);
         } else if (requestURI.endsWith(".xsd") || requestURI.endsWith(".wsdl")) {
-            agent.processExplicitSchemaAndWSDL(request, response);
-        } else if (requestURI.endsWith(LIST_SERVICES_SUFIX) || requestURI.endsWith(LIST_FAUKT_SERVICES_SUFIX)) {
+            this.agent.processExplicitSchemaAndWSDL(request, response);
+        } else if (requestURI.endsWith(DomibusServlet.LIST_SERVICES_SUFIX) ||
+                   requestURI.endsWith(DomibusServlet.LIST_FAUKT_SERVICES_SUFIX)) {
             // handling list services request
             try {
-                agent.handle(request, response);
+                this.agent.handle(request, response);
             } catch (Exception e) {
                 throw new ServletException(e);
             }
-        } else if (!disableREST) {
-            new RestRequestProcessor(org.apache.axis2.Constants.Configuration.HTTP_METHOD_GET, request, response)
-                    .processURLRequest();
+        } else if (!this.disableREST) {
+            new RestRequestProcessor(Constants.Configuration.HTTP_METHOD_GET, request, response).processURLRequest();
         } else {
-            showRestDisabledErrorMessage(response);
+            this.showRestDisabledErrorMessage(response);
         }
     }
 
@@ -222,13 +223,12 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
     protected void doDelete(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
 
-        initContextRoot(request);
+        this.initContextRoot(request);
         // this method is also used to serve for the listServices request.
-        if (!disableREST) {
-            new RestRequestProcessor(org.apache.axis2.Constants.Configuration.HTTP_METHOD_DELETE, request, response)
-                    .processURLRequest();
+        if (this.disableREST) {
+            this.showRestDisabledErrorMessage(response);
         } else {
-            showRestDisabledErrorMessage(response);
+            new RestRequestProcessor(Constants.Configuration.HTTP_METHOD_DELETE, request, response).processURLRequest();
         }
     }
 
@@ -243,13 +243,12 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
     protected void doPut(final HttpServletRequest request, final HttpServletResponse response)
             throws ServletException, IOException {
 
-        initContextRoot(request);
+        this.initContextRoot(request);
         // this method is also used to serve for the listServices request.
-        if (!disableREST) {
-            new RestRequestProcessor(org.apache.axis2.Constants.Configuration.HTTP_METHOD_PUT, request, response)
-                    .processXMLRequest();
+        if (this.disableREST) {
+            this.showRestDisabledErrorMessage(response);
         } else {
-            showRestDisabledErrorMessage(response);
+            new RestRequestProcessor(Constants.Configuration.HTTP_METHOD_PUT, request, response).processXMLRequest();
         }
     }
 
@@ -274,7 +273,7 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
      * @throws ServletException
      */
     private void closeStaxBuilder(final MessageContext messageContext) throws ServletException {
-        if (closeReader && messageContext != null) {
+        if (this.closeReader && (messageContext != null)) {
             try {
                 final SOAPEnvelope envelope = messageContext.getEnvelope();
                 if (envelope != null) {
@@ -284,7 +283,7 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
                     }
                 }
             } catch (Exception e) {
-                log.debug(e.toString(), e);
+                DomibusServlet.LOG.error(e.toString(), e);
             }
         }
     }
@@ -306,18 +305,18 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
                 res.setStatus(HttpServletResponse.SC_ACCEPTED);
             } else {
 
-                final String status = (String) msgContext.getProperty(org.apache.axis2.Constants.HTTP_RESPONSE_STATE);
+                final String status = (String) msgContext.getProperty(Constants.HTTP_RESPONSE_STATE);
                 if (status == null) {
                     res.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
                 } else {
                     res.setStatus(Integer.parseInt(status));
                 }
 
-                final AxisBindingOperation axisBindingOperation = (AxisBindingOperation) msgContext
-                        .getProperty(org.apache.axis2.Constants.AXIS_BINDING_OPERATION);
+                final AxisBindingOperation axisBindingOperation =
+                        (AxisBindingOperation) msgContext.getProperty(Constants.AXIS_BINDING_OPERATION);
                 if (axisBindingOperation != null) {
-                    final AxisBindingMessage fault = axisBindingOperation
-                            .getFault((String) msgContext.getProperty(org.apache.axis2.Constants.FAULT_NAME));
+                    final AxisBindingMessage fault =
+                            axisBindingOperation.getFault((String) msgContext.getProperty(Constants.FAULT_NAME));
                     if (fault != null) {
                         final Integer code = (Integer) fault.getProperty(WSDL2Constants.ATTR_WHTTP_CODE);
                         if (code != null) {
@@ -326,9 +325,9 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
                     }
                 }
             }
-            handleFault(msgContext, out, e);
+            this.handleFault(msgContext, out, e);
         } catch (AxisFault e2) {
-            log.info(e2);
+            DomibusServlet.LOG.error(e2);
         }
     }
 
@@ -374,26 +373,26 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
         super.init(config);
         try {
             this.servletConfig = config;
-            final ServletContext servletContext = servletConfig.getServletContext();
-            this.configContext = (ConfigurationContext) servletContext.getAttribute(CONFIGURATION_CONTEXT);
-            if (configContext == null) {
-                configContext = initConfigContext(config);
-                config.getServletContext().setAttribute(CONFIGURATION_CONTEXT, configContext);
+            final ServletContext servletContext = this.servletConfig.getServletContext();
+            this.configContext =
+                    (ConfigurationContext) servletContext.getAttribute(DomibusServlet.CONFIGURATION_CONTEXT);
+            if (this.configContext == null) {
+                this.configContext = this.initConfigContext(config);
+                config.getServletContext().setAttribute(DomibusServlet.CONFIGURATION_CONTEXT, this.configContext);
             }
-            axisConfiguration = configContext.getAxisConfiguration();
+            this.axisConfiguration = this.configContext.getAxisConfiguration();
 
             final ListenerManager listenerManager = new ListenerManager();
-            listenerManager.init(configContext);
-            final TransportInDescription transportInDescription =
-                    new TransportInDescription(org.apache.axis2.Constants.TRANSPORT_HTTP);
+            listenerManager.init(this.configContext);
+            final TransportInDescription transportInDescription = new TransportInDescription(Constants.TRANSPORT_HTTP);
             transportInDescription.setReceiver(this);
             listenerManager.addListener(transportInDescription, true);
             listenerManager.start();
             // FIXME ListenerManager.defaultConfigurationContext =
             // configContext;
-            agent = new MyListingAgent(configContext);
+            this.agent = new MyListingAgent(this.configContext);
 
-            initParams();
+            this.initParams();
 
         } catch (Exception e) {
             throw new ServletException(e);
@@ -406,16 +405,16 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
     public void destroy() {
         // stoping listner manager
         try {
-            if (configContext != null) {
-                configContext.terminate();
+            if (this.configContext != null) {
+                this.configContext.terminate();
             }
         } catch (AxisFault axisFault) {
-            log.info(axisFault.getMessage());
+            DomibusServlet.LOG.error(axisFault.getMessage());
         }
         try {
             super.destroy();
         } catch (Exception e) {
-            log.info(e.getMessage());
+            DomibusServlet.LOG.error(e.getMessage());
         }
     }
 
@@ -425,15 +424,15 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
     protected void initParams() {
         Parameter parameter;
         // do we need to completely disable REST support
-        parameter = axisConfiguration.getParameter(org.apache.axis2.Constants.Configuration.DISABLE_REST);
+        parameter = this.axisConfiguration.getParameter(Constants.Configuration.DISABLE_REST);
         if (parameter != null) {
-            disableREST = !JavaUtils.isFalseExplicitly(parameter.getValue());
+            this.disableREST = !JavaUtils.isFalseExplicitly(parameter.getValue());
         }
 
         // Should we close the reader(s)
-        parameter = axisConfiguration.getParameter("axis2.close.reader");
+        parameter = this.axisConfiguration.getParameter("axis2.close.reader");
         if (parameter != null) {
-            closeReader = JavaUtils.isTrueExplicitly(parameter.getValue());
+            this.closeReader = JavaUtils.isTrueExplicitly(parameter.getValue());
         }
 
     }
@@ -445,7 +444,7 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
      */
     public void init() throws ServletException {
         if (this.servletConfig != null) {
-            init(this.servletConfig);
+            this.init(this.servletConfig);
         }
     }
 
@@ -460,8 +459,7 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
         try {
             final ConfigurationContext configContext =
                     ConfigurationContextFactory.createConfigurationContext(new WarBasedAxisConfigurator(config));
-            configContext
-                    .setProperty(org.apache.axis2.Constants.CONTAINER_MANAGED, org.apache.axis2.Constants.VALUE_TRUE);
+            configContext.setProperty(Constants.CONTAINER_MANAGED, Constants.VALUE_TRUE);
             return configContext;
         } catch (Exception e) {
             throw new ServletException(e);
@@ -474,18 +472,18 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
      * @param req
      */
     public void initContextRoot(final HttpServletRequest req) {
-        if (contextRoot != null && contextRoot.trim().length() != 0) {
+        if ((this.contextRoot != null) && !this.contextRoot.trim().isEmpty()) {
             return;
         }
         String contextPath = req.getContextPath();
         // handling ROOT scenario, for servlets in the default (root) context,
         // this method returns ""
-        if (contextPath != null && contextPath.length() == 0) {
+        if ((contextPath != null) && contextPath.isEmpty()) {
             contextPath = "/";
         }
         this.contextRoot = contextPath;
 
-        configContext.setContextRoot(contextRoot);
+        this.configContext.setContextRoot(this.contextRoot);
     }
 
     /**
@@ -499,7 +497,7 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
     }
 
     public EndpointReference getEPRForService(final String serviceName, final String ip) throws AxisFault {
-        return getEPRsForService(serviceName, ip)[0];
+        return this.getEPRsForService(serviceName, ip)[0];
     }
 
     public EndpointReference[] getEPRsForService(final String serviceName, String ip) throws AxisFault {
@@ -518,10 +516,10 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
         }
 
         String endpointRefernce = "http://" + ip + ":" + port;
-        if (configContext.getServiceContextPath().startsWith("/")) {
-            endpointRefernce = endpointRefernce + configContext.getServiceContextPath() + "/" + serviceName;
+        if (this.configContext.getServiceContextPath().startsWith("/")) {
+            endpointRefernce = endpointRefernce + this.configContext.getServiceContextPath() + "/" + serviceName;
         } else {
-            endpointRefernce = endpointRefernce + '/' + configContext.getServiceContextPath() + "/" + serviceName;
+            endpointRefernce = endpointRefernce + '/' + this.configContext.getServiceContextPath() + "/" + serviceName;
         }
         final EndpointReference endpoint = new EndpointReference(endpointRefernce);
 
@@ -555,7 +553,7 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
      */
     protected MessageContext createMessageContext(final HttpServletRequest request, final HttpServletResponse response,
                                                   final boolean invocationType) throws IOException {
-        final MessageContext msgContext = configContext.createMessageContext();
+        final MessageContext msgContext = this.configContext.createMessageContext();
         String requestURI = request.getRequestURI();
 
         String trsPrefix = request.getRequestURL().toString();
@@ -564,17 +562,17 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
             trsPrefix = trsPrefix.substring(0, sepindex);
             msgContext.setIncomingTransportName(trsPrefix);
         } else {
-            msgContext.setIncomingTransportName(org.apache.axis2.Constants.TRANSPORT_HTTP);
-            trsPrefix = org.apache.axis2.Constants.TRANSPORT_HTTP;
+            msgContext.setIncomingTransportName(Constants.TRANSPORT_HTTP);
+            trsPrefix = Constants.TRANSPORT_HTTP;
         }
         final TransportInDescription transportIn =
-                axisConfiguration.getTransportIn(msgContext.getIncomingTransportName());
+                this.axisConfiguration.getTransportIn(msgContext.getIncomingTransportName());
         // set the default output description. This will be http
 
-        TransportOutDescription transportOut = axisConfiguration.getTransportOut(trsPrefix);
+        TransportOutDescription transportOut = this.axisConfiguration.getTransportOut(trsPrefix);
         if (transportOut == null) {
             // if the req coming via https but we do not have a https sender
-            transportOut = axisConfiguration.getTransportOut(org.apache.axis2.Constants.TRANSPORT_HTTP);
+            transportOut = this.axisConfiguration.getTransportOut(Constants.TRANSPORT_HTTP);
         }
 
         msgContext.setTransportIn(transportIn);
@@ -591,10 +589,9 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
         msgContext.setTo(new EndpointReference(requestURI));
         msgContext.setFrom(new EndpointReference(request.getRemoteAddr()));
         msgContext.setProperty(MessageContext.REMOTE_ADDR, request.getRemoteAddr());
-        msgContext
-                .setProperty(org.apache.axis2.Constants.OUT_TRANSPORT_INFO, new ServletBasedOutTransportInfo(response));
+        msgContext.setProperty(Constants.OUT_TRANSPORT_INFO, new ServletBasedOutTransportInfo(response));
         // set the transport Headers
-        msgContext.setProperty(MessageContext.TRANSPORT_HEADERS, getTransportHeaders(request));
+        msgContext.setProperty(MessageContext.TRANSPORT_HEADERS, this.getTransportHeaders(request));
         msgContext.setProperty(HTTPConstants.MC_HTTP_SERVLETREQUEST, request);
         msgContext.setProperty(HTTPConstants.MC_HTTP_SERVLETRESPONSE, response);
 
@@ -617,7 +614,7 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
 
     protected MessageContext createMessageContext(final HttpServletRequest req, final HttpServletResponse resp)
             throws IOException {
-        return createMessageContext(req, resp, true);
+        return this.createMessageContext(req, resp, true);
     }
 
     /**
@@ -630,71 +627,71 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
         final HttpServletRequest req =
                 (HttpServletRequest) messageContext.getProperty(HTTPConstants.MC_HTTP_SERVLETREQUEST);
         SessionContext sessionContext =
-                (SessionContext) req.getSession(true).getAttribute(org.apache.axis2.Constants.SESSION_CONTEXT_PROPERTY);
+                (SessionContext) req.getSession(true).getAttribute(Constants.SESSION_CONTEXT_PROPERTY);
         final String sessionId = req.getSession().getId();
         if (sessionContext == null) {
             sessionContext = new SessionContext(null);
             sessionContext.setCookieID(sessionId);
-            req.getSession().setAttribute(org.apache.axis2.Constants.SESSION_CONTEXT_PROPERTY, sessionContext);
+            req.getSession().setAttribute(Constants.SESSION_CONTEXT_PROPERTY, sessionContext);
         }
         messageContext.setSessionContext(sessionContext);
-        messageContext.setProperty(SESSION_ID, sessionId);
+        messageContext.setProperty(DomibusServlet.SESSION_ID, sessionId);
         return sessionContext;
     }
 
     protected class ServletRequestResponseTransport implements RequestResponseTransport {
         private final HttpServletResponse response;
-        private boolean responseWritten = false;
+        private boolean responseWritten;
         private final CountDownLatch responseReadySignal = new CountDownLatch(1);
         RequestResponseTransportStatus status = RequestResponseTransportStatus.INITIAL;
-        AxisFault faultToBeThrownOut = null;
+        AxisFault faultToBeThrownOut;
 
         ServletRequestResponseTransport(final HttpServletResponse response) {
             this.response = response;
         }
 
         public void acknowledgeMessage(final MessageContext msgContext) throws AxisFault {
-            log.debug("Acking one-way request");
-            response.setContentType("text/xml; charset=" + msgContext
-                    .getProperty(org.apache.axis2.Constants.Configuration.CHARACTER_SET_ENCODING));
+            DomibusServlet.LOG.debug("Acking one-way request");
+            this.response.setContentType(
+                    "text/xml; charset=" + msgContext.getProperty(Constants.Configuration.CHARACTER_SET_ENCODING));
 
-            response.setStatus(HttpServletResponse.SC_ACCEPTED);
+            this.response.setStatus(HttpServletResponse.SC_ACCEPTED);
             try {
-                response.flushBuffer();
+                this.response.flushBuffer();
             } catch (IOException e) {
                 throw new AxisFault("Error sending acknowledgement", e);
             }
 
-            signalResponseReady();
+            this.signalResponseReady();
         }
 
         public void awaitResponse() throws InterruptedException, AxisFault {
-            log.debug("Blocking servlet thread -- awaiting response");
-            status = RequestResponseTransportStatus.WAITING;
-            responseReadySignal.await();
+            DomibusServlet.LOG.debug("Blocking servlet thread -- awaiting response");
+            this.status = RequestResponseTransportStatus.WAITING;
+            this.responseReadySignal.await();
 
-            if (faultToBeThrownOut != null) {
-                throw faultToBeThrownOut;
+            if (this.faultToBeThrownOut != null) {
+                throw this.faultToBeThrownOut;
             }
         }
 
         public void signalResponseReady() {
-            log.debug("Signalling response available");
-            status = RequestResponseTransportStatus.SIGNALLED;
-            responseReadySignal.countDown();
+            DomibusServlet.LOG.debug("Signalling response available");
+            this.status = RequestResponseTransportStatus.SIGNALLED;
+            this.responseReadySignal.countDown();
         }
 
         public RequestResponseTransportStatus getStatus() {
-            return status;
+            return this.status;
         }
 
         public void signalFaultReady(final AxisFault fault) {
-            faultToBeThrownOut = fault;
-            signalResponseReady();
+            this.faultToBeThrownOut = fault;
+            this.signalResponseReady();
         }
 
         public boolean isResponseWritten() {
-            return responseWritten;
+            return this.responseWritten;
         }
 
         public void setResponseWritten(final boolean responseWritten) {
@@ -704,12 +701,11 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
     }
 
     private void setResponseState(final MessageContext messageContext, final HttpServletResponse response) {
-        final String state = (String) messageContext.getProperty(org.apache.axis2.Constants.HTTP_RESPONSE_STATE);
+        final String state = (String) messageContext.getProperty(Constants.HTTP_RESPONSE_STATE);
         if (state != null) {
             final int stateInt = Integer.parseInt(state);
             if (stateInt == HttpServletResponse.SC_UNAUTHORIZED) { // Unauthorized
-                final String realm =
-                        (String) messageContext.getProperty(org.apache.axis2.Constants.HTTP_BASIC_AUTH_REALM);
+                final String realm = (String) messageContext.getProperty(Constants.HTTP_BASIC_AUTH_REALM);
                 response.addHeader("WWW-Authenticate", "basic realm=\"" + realm + "\"");
             }
         }
@@ -720,7 +716,7 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
      * processing of doGet, doPut , doDelete and doPost.
      */
     protected class RestRequestProcessor {
-        private MessageContext messageContext;
+        private final MessageContext messageContext;
         private final HttpServletRequest request;
         private final HttpServletResponse response;
 
@@ -728,43 +724,45 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
                                     final HttpServletResponse response) throws IOException {
             this.request = request;
             this.response = response;
-            messageContext = createMessageContext(this.request, this.response, false);
-            messageContext.setProperty(org.apache.axis2.transport.http.HTTPConstants.HTTP_METHOD, httpMethodString);
+            this.messageContext = DomibusServlet.this.createMessageContext(this.request, this.response, false);
+            this.messageContext.setProperty(HTTPConstants.HTTP_METHOD, httpMethodString);
         }
 
         public void processXMLRequest() throws IOException, ServletException {
             try {
-                RESTUtil.processXMLRequest(messageContext, request.getInputStream(), response.getOutputStream(),
-                                           request.getContentType());
+                RESTUtil.processXMLRequest(this.messageContext, this.request.getInputStream(),
+                                           this.response.getOutputStream(), this.request.getContentType());
                 this.checkResponseWritten();
             } catch (AxisFault axisFault) {
-                processFault(axisFault);
+                this.processFault(axisFault);
             }
-            closeStaxBuilder(messageContext);
+            DomibusServlet.this.closeStaxBuilder(this.messageContext);
         }
 
         public void processURLRequest() throws IOException, ServletException {
             try {
-                RESTUtil.processURLRequest(messageContext, response.getOutputStream(), request.getContentType());
+                RESTUtil.processURLRequest(this.messageContext, this.response.getOutputStream(),
+                                           this.request.getContentType());
                 this.checkResponseWritten();
             } catch (AxisFault e) {
-                setResponseState(messageContext, response);
-                processFault(e);
+                DomibusServlet.this.setResponseState(this.messageContext, this.response);
+                this.processFault(e);
             }
-            closeStaxBuilder(messageContext);
+            DomibusServlet.this.closeStaxBuilder(this.messageContext);
 
         }
 
         private void checkResponseWritten() {
-            if (!TransportUtils.isResponseWritten(messageContext)) {
-                response.setStatus(HttpServletResponse.SC_ACCEPTED);
+            if (!TransportUtils.isResponseWritten(this.messageContext)) {
+                this.response.setStatus(HttpServletResponse.SC_ACCEPTED);
             }
         }
 
         private void processFault(final AxisFault e) throws ServletException, IOException {
-            log.debug(e);
-            if (messageContext != null) {
-                processAxisFault(messageContext, response, response.getOutputStream(), e);
+            DomibusServlet.LOG.debug(e);
+            if (this.messageContext != null) {
+                DomibusServlet.this
+                        .processAxisFault(this.messageContext, this.response, this.response.getOutputStream(), e);
             } else {
                 throw new ServletException(e);
             }
@@ -785,7 +783,7 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
 
     public String saveRequest(final HttpServletRequest req) {
         try {
-            final ServletContext servletContext = servletConfig.getServletContext();
+            final ServletContext servletContext = this.servletConfig.getServletContext();
             final String path = servletContext.getRealPath("/WEB-INF");
             String random = UIDGenerator.generateURNString();
             if (random.indexOf(":") >= 0) {
@@ -796,7 +794,7 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
             FileUtil.writeToFile(msg, req.getInputStream());
             return filePath;
         } catch (IOException ex) {
-            log.error("Problem while getting InputStream from HttpServletRequest", ex);
+            DomibusServlet.LOG.error("Problem while getting InputStream from HttpServletRequest", ex);
             return null;
         }
     }
@@ -808,7 +806,7 @@ public class DomibusServlet extends HttpServlet implements TransportListener {
         try {
             return new FileInputStream(file);
         } catch (FileNotFoundException ex) {
-            log.error("Could not create FileInputStream because file was not found", ex);
+            DomibusServlet.LOG.error("Could not create FileInputStream because file was not found", ex);
             return null;
         }
     }

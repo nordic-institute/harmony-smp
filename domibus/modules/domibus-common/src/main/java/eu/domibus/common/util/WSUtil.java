@@ -59,7 +59,7 @@ public class WSUtil {
     public SOAPEnvelope createEnvelope(final double soapVersion, final OMElement[] headers,
                                        final OMElement bodyPayload) {
         final SOAPEnvelope env = XMLUtil.createEnvelope(soapVersion);
-        if (headers != null && headers.length > 0) {
+        if ((headers != null) && (headers.length > 0)) {
             for (final OMElement header : headers) {
                 env.getHeader().addChild(header);
             }
@@ -112,7 +112,7 @@ public class WSUtil {
             final MessageContext mc = new MessageContext();
             mc.setDoingSwA(true);
             mc.setEnvelope(env);
-            if (attachments != null && attachments.length > 0) {
+            if ((attachments != null) && (attachments.length > 0)) {
                 for (final DataHandler att : attachments) {
                     mc.addAttachment(att);
                 }
@@ -122,7 +122,7 @@ public class WSUtil {
             mepClient.execute(true);
             return mepClient.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
         } catch (AxisFault ex) {
-            log.error("Problem occured during invoke", ex);
+            WSUtil.log.error("Problem occured during invoke", ex);
             throw new RuntimeException(ex);
         }
     }
@@ -135,7 +135,7 @@ public class WSUtil {
      * @return OMElement
      */
     public static OMElement getHeaderElementByName(final MessageContext context, final String localName) {
-        if (context == null || localName == null) {
+        if ((context == null) || (localName == null)) {
             return null;
         }
         if (context.getEnvelope() == null) {
@@ -147,7 +147,7 @@ public class WSUtil {
         }
         final Iterator it = soapHeader.getChildElements();
         OMElement temp = null;
-        while (it != null && it.hasNext()) {
+        while ((it != null) && it.hasNext()) {
             temp = XMLUtil.getFirstGrandChildWithName((OMElement) it.next(), localName);
             if (temp != null) {
                 return temp;
@@ -165,7 +165,7 @@ public class WSUtil {
      * @return Object
      */
     public static Object getPropertyFromInMsgCtx(final MessageContext outMsgCtx, final String key) {
-        if (outMsgCtx == null || key == null) {
+        if ((outMsgCtx == null) || (key == null)) {
             return null;
         }
         try {
@@ -173,7 +173,7 @@ public class WSUtil {
             final MessageContext inMsgContext = opContext.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
             return inMsgContext.getProperty(key);
         } catch (AxisFault ex) {
-            log.error("Error while executing propertyFromInMsgCtx", ex);
+            WSUtil.log.error("Error while executing propertyFromInMsgCtx", ex);
             return null;
         }
     }
@@ -189,7 +189,7 @@ public class WSUtil {
             return respMsgCtx.getServiceContext().getLastOperationContext()
                              .getMessageContext(WSDLConstants.MESSAGE_LABEL_OUT_VALUE);
         } catch (AxisFault ex) {
-            log.error("Error while executing getOutgoingMsgCtxFromResponse", ex);
+            WSUtil.log.error("Error while executing getOutgoingMsgCtxFromResponse", ex);
         }
         return null;
     }
@@ -209,7 +209,7 @@ public class WSUtil {
             final MessageContext inMsgContext = opContext.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
             return inMsgContext.getEnvelope();
         } catch (AxisFault ex) {
-            log.error("Error while executing getEnvelopeFromInMsg", ex);
+            WSUtil.log.error("Error while executing getEnvelopeFromInMsg", ex);
             return null;
         }
     }
@@ -243,8 +243,8 @@ public class WSUtil {
      * @param requestMessageContext MessageContext
      * @throws AxisFault
      */
-    private static void sendMessage(MessageContext outMessage, final SOAPEnvelope response,
-                                    MessageContext requestMessageContext) throws AxisFault {
+    private static void sendMessage(final MessageContext outMessage, final SOAPEnvelope response,
+                                    final MessageContext requestMessageContext) throws AxisFault {
         outMessage.setEnvelope(response);
         outMessage.setResponseWritten(true);
         final ConfigurationContext context = requestMessageContext.getConfigurationContext();
@@ -262,10 +262,10 @@ public class WSUtil {
      */
     public static void sendResponse(final SOAPEnvelope response, final MessageContext requestMessageContext) {
         try {
-            MessageContext outMessage = createMessageContext(requestMessageContext);
-            sendMessage(outMessage, response, requestMessageContext);
+            final MessageContext outMessage = WSUtil.createMessageContext(requestMessageContext);
+            WSUtil.sendMessage(outMessage, response, requestMessageContext);
         } catch (AxisFault ex) {
-            log.error("Error during sendResponse for a given SOAPEnvelope", ex);
+            WSUtil.log.error("Error during sendResponse for a given SOAPEnvelope", ex);
         }
     }
 
@@ -277,14 +277,14 @@ public class WSUtil {
      */
     public static void sendResponse(final MessageContext respMessage, final MessageContext requestMessageContext) {
         try {
-            MessageContext outMessage = createMessageContext(requestMessageContext);
+            final MessageContext outMessage = WSUtil.createMessageContext(requestMessageContext);
 
             if (respMessage.getAttachmentMap() != null) {
                 outMessage.setAttachmentMap(respMessage.getAttachmentMap());
             }
-            sendMessage(outMessage, respMessage.getEnvelope(), requestMessageContext);
+            WSUtil.sendMessage(outMessage, respMessage.getEnvelope(), requestMessageContext);
         } catch (AxisFault ex) {
-            log.error("Error during sendResponse for a given MessageContext", ex);
+            WSUtil.log.error("Error during sendResponse for a given MessageContext", ex);
         }
     }
 
@@ -301,7 +301,7 @@ public class WSUtil {
         final StringBuffer sb = new StringBuffer();
         sb.append(msgCtx.isServerSide() ? "ServerSide" : "ClientSide");
         sb.append(", ");
-        sb.append(msgCtx.getFLOW() == MessageContext.OUT_FLOW ? "OutFlow: " : "InFlow: ");
+        sb.append((msgCtx.getFLOW() == MessageContext.OUT_FLOW) ? "OutFlow: " : "InFlow: ");
         return sb.toString();
     }
 
@@ -315,7 +315,7 @@ public class WSUtil {
      * @return String
      */
     public static String writeMessage(final MessageContext ctx, final File file) {
-        if (ctx == null || file == null) {
+        if ((ctx == null) || (file == null)) {
             return null;
         }
         final long start = System.currentTimeMillis();
@@ -347,14 +347,14 @@ public class WSUtil {
             fos.flush();
             fos.close();
         } catch (FileNotFoundException fnfe) {
-            log.error("Problem while opening FileOutputStream", fnfe);
+            WSUtil.log.error("Problem while opening FileOutputStream", fnfe);
         } catch (AxisFault af) {
-            log.error("Error while writing SOAPMessage to file", af);
+            WSUtil.log.error("Error while writing SOAPMessage to file", af);
         } catch (IOException ioe) {
-            log.error("I/O error occured", ioe);
+            WSUtil.log.error("I/O error occured", ioe);
         }
         final long end = System.currentTimeMillis();
-        log.debug("--- It took " + (end - start) + " milliseconds to write Message to file");
+        WSUtil.log.debug("--- It took " + (end - start) + " milliseconds to write Message to file");
         return ct;
     }
 
@@ -371,7 +371,7 @@ public class WSUtil {
      * @return MessageContext
      */
     public static MessageContext readMessage(MessageContext mc, final File file, final String ct) {
-        if (file == null || !file.exists()) {
+        if ((file == null) || !file.exists()) {
             return null;
         }
         if (mc == null) {
@@ -381,20 +381,20 @@ public class WSUtil {
             final FileInputStream in = new FileInputStream(file);
 
             final SOAPEnvelope envelope = TransportUtils.createSOAPMessage(mc, in, ct);
-            final String startCID = getStartCID(ct);
+            final String startCID = WSUtil.getStartCID(ct);
             final Attachments atts = mc.getAttachmentMap();
             atts.removeDataHandler(startCID);
             mc.setEnvelope(envelope);
         } catch (FileNotFoundException fnfe) {
-            log.error("Problem while opening FileOutputStream", fnfe);
+            WSUtil.log.error("Problem while opening FileOutputStream", fnfe);
         } catch (AxisFault af) {
-            log.error("AxisFault during readMessage", af);
+            WSUtil.log.error("AxisFault during readMessage", af);
         } catch (OMException ome) {
-            log.error("OMFault during readMessage", ome);
+            WSUtil.log.error("OMFault during readMessage", ome);
         } catch (XMLStreamException xse) {
-            log.error("XMLStreamException during readMessage", xse);
+            WSUtil.log.error("XMLStreamException during readMessage", xse);
         } catch (FactoryConfigurationError fce) {
-            log.error("FactoryConfigurationError during readMessage", fce);
+            WSUtil.log.error("FactoryConfigurationError during readMessage", fce);
         }
         return mc;
     }
@@ -457,7 +457,7 @@ public class WSUtil {
         try {
             return formatter.getBytes(ctx, format);
         } catch (AxisFault af) {
-            log.error("Error occured while getting formatted SOAP Message in bytes", af);
+            WSUtil.log.error("Error occured while getting formatted SOAP Message in bytes", af);
         }
         return null;
     }
@@ -473,7 +473,7 @@ public class WSUtil {
      */
     public static void writeAttachments(final MessageContext msgCtx, final List<String> cids,
                                         final List<String> contentTypes, final File location) {
-        if (msgCtx == null || cids == null || cids.size() <= 0) {
+        if ((msgCtx == null) || (cids == null) || (cids.size() <= 0)) {
             return;
         }
         final Attachments atts = msgCtx.getAttachmentMap();
@@ -482,7 +482,7 @@ public class WSUtil {
         }
         final String soapPartCid = atts.getRootPartContentID();
         for (int i = 0; i < cids.size(); i++) {
-            if (cids.get(i) != null && !cids.get(i).equals(soapPartCid)) {
+            if ((cids.get(i) != null) && !cids.get(i).equals(soapPartCid)) {
                 String extension1 = null;
                 if (contentTypes.get(i) != null) {
                     extension1 = FileUtil.getFileExtension(contentTypes.get(i));
@@ -497,7 +497,7 @@ public class WSUtil {
                 }
                 final String extension2 = FileUtil.getFileExtension(dh.getContentType());
                 final String path = location.getAbsolutePath() + File.separator + name + "." +
-                                    (extension1 == null ? "" : extension1 + ".") + extension2;
+                                    ((extension1 == null) ? "" : (extension1 + ".")) + extension2;
                 final File att = new File(path);
                 FileUtil.writeDataHandlerToFile(dh, att);
             }

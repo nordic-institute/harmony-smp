@@ -5,6 +5,7 @@ import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * @author Hamid Ben Malek
  */
 @Root(name = "Message", strict = false)
-public class MessagePayload implements java.io.Serializable {
+public class MessagePayload implements Serializable {
     private static final long serialVersionUID = -1827366571062220737L;
 
     @Attribute(required = false)
@@ -38,15 +39,15 @@ public class MessagePayload implements java.io.Serializable {
 
     public void addPart(final String cid, final String mimeType, final String schemaLocation, final String desc) {
         final Part p = new Part(cid, mimeType, schemaLocation, desc);
-        parts.add(p);
+        this.parts.add(p);
     }
 
     public void addPart(final Part part) {
-        parts.add(part);
+        this.parts.add(part);
     }
 
     public String getLabel() {
-        return label;
+        return this.label;
     }
 
     public void setLabel(final String label) {
@@ -54,7 +55,7 @@ public class MessagePayload implements java.io.Serializable {
     }
 
     public String getMaxSize() {
-        return maxSize;
+        return this.maxSize;
     }
 
     public void setMaxSize(final String maxSize) {
@@ -62,7 +63,7 @@ public class MessagePayload implements java.io.Serializable {
     }
 
     public String getSoapBodySchema() {
-        return soapBodySchema;
+        return this.soapBodySchema;
     }
 
     public void setSoapBodySchema(final String soapBodySchema) {
@@ -70,7 +71,7 @@ public class MessagePayload implements java.io.Serializable {
     }
 
     public List<Part> getParts() {
-        return parts;
+        return this.parts;
     }
 
     public void setParts(final List<Part> parts) {
@@ -79,12 +80,12 @@ public class MessagePayload implements java.io.Serializable {
 
     /* Needed to serialize objects to Flex UI */
     public Part[] getPartsArray() {
-        if (parts == null) {
+        if (this.parts == null) {
             return null;
         }
-        final Part[] res = new Part[parts.size()];
+        final Part[] res = new Part[this.parts.size()];
         int i = 0;
-        for (final Part p : parts) {
+        for (final Part p : this.parts) {
             res[i] = p;
             i++;
         }
@@ -92,20 +93,20 @@ public class MessagePayload implements java.io.Serializable {
     }
 
     public void setPartsArray(final Part[] list) {
-        if (list == null || list.length == 0) {
-            if (parts != null && parts.size() > 0) {
-                parts.clear();
+        if ((list == null) || (list.length == 0)) {
+            if ((this.parts != null) && !this.parts.isEmpty()) {
+                this.parts.clear();
             }
             return;
         }
-        if (parts == null) {
-            parts = new ArrayList<Part>();
+        if (this.parts == null) {
+            this.parts = new ArrayList<Part>();
         }
-        if (parts.size() > 0) {
-            parts.clear();
+        if (!this.parts.isEmpty()) {
+            this.parts.clear();
         }
         for (final Part p : list) {
-            addPart(p);
+            this.addPart(p);
         }
     }
 }

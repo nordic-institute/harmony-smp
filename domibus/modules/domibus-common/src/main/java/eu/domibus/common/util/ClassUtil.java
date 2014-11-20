@@ -24,7 +24,7 @@ public class ClassUtil {
                 instance = innerConstructor.newInstance(containerInstance);
             }
         } catch (Exception e) {
-            log.error("Error during createInstance", e);
+            ClassUtil.log.error("Error during createInstance", e);
         }
         return instance;
     }

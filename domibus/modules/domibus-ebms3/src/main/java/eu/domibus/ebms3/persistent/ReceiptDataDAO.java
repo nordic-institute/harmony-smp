@@ -1,8 +1,8 @@
 package eu.domibus.ebms3.persistent;
 
-import org.apache.log4j.Logger;
 import eu.domibus.common.persistent.AbstractDAO;
 import eu.domibus.common.persistent.JpaUtil;
+import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -53,7 +53,7 @@ public class ReceiptDataDAO extends AbstractDAO<ReceiptData> {
         try {
             res = (ReceiptData) q.getSingleResult();
         } catch (NoResultException e) {
-            LOG.debug("no receipt found for pmode " + pmode);
+            ReceiptDataDAO.LOG.debug("no receipt found for pmode " + pmode);
         } finally {
             em.close();
         }

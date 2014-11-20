@@ -1,7 +1,7 @@
 package eu.domibus.common.util;
 
-import org.apache.log4j.Logger;
 import eu.domibus.common.exceptions.ConfigurationException;
+import org.apache.log4j.Logger;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -32,7 +32,7 @@ public class JNDIUtil {
      * @return the string value associated to the parameter
      */
     public static String getStringEnvironmentParameter(final String parameter) {
-        return (String) getEnvironmentParameter(parameter);
+        return (String) JNDIUtil.getEnvironmentParameter(parameter);
     }
 
     /**
@@ -42,7 +42,7 @@ public class JNDIUtil {
      * @return the boolean value associated to the parameter
      */
     public static Boolean getBooleanEnvironmentParameter(final String parameter) {
-        return (Boolean) getEnvironmentParameter(parameter);
+        return (Boolean) JNDIUtil.getEnvironmentParameter(parameter);
     }
 
     /**
@@ -54,24 +54,23 @@ public class JNDIUtil {
     public static Object getEnvironmentParameter(final String parameter) {
 
         try {
-            final String initCtxProvider = (String) ctx.getEnvironment().get(Context.INITIAL_CONTEXT_FACTORY);
+            final String initCtxProvider = (String) JNDIUtil.ctx.getEnvironment().get(Context.INITIAL_CONTEXT_FACTORY);
             String prefix = "";
 
             // Weblogic does not allow to define configuration variable in the
             // JNDI so we must load from a file
-            if (initCtxProvider != null && initCtxProvider.contains("weblogic")) {
-                if (props == null) {
-                    props = new Properties();
-                    props.load(JNDIUtil.class.getClassLoader().getResourceAsStream("weblogic.properties"));
+            if ((initCtxProvider != null) && initCtxProvider.contains("weblogic")) {
+                if (JNDIUtil.props == null) {
+                    JNDIUtil.props = new Properties();
+                    JNDIUtil.props.load(JNDIUtil.class.getClassLoader().getResourceAsStream("weblogic.properties"));
                 }
-                return props.getProperty(parameter);
+                return JNDIUtil.props.getProperty(parameter);
 
-            } else {
-                // assume application was deployed in tomcat
-                prefix = JNDI_ENV_PREFIX;
             }
+            // assume application was deployed in tomcat
+            prefix = JNDIUtil.JNDI_ENV_PREFIX;
 
-            return (ctx.lookup(prefix + parameter));
+            return (JNDIUtil.ctx.lookup(prefix + parameter));
         } catch (NamingException e) {
             throw new ConfigurationException("Parameter " + parameter + " can not be found in the JNDI context", e);
         } catch (IOException e) {

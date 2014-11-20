@@ -1,8 +1,8 @@
 package eu.domibus.security.config.model;
 
-import org.apache.neethi.Policy;
 import eu.domibus.security.config.generated.PublicKeystore;
 import eu.domibus.security.config.generated.Security;
+import org.apache.neethi.Policy;
 
 public class RemoteSecurityConfig {
     private final Security security;
@@ -17,15 +17,15 @@ public class RemoteSecurityConfig {
     }
 
     public Security getSecurity() {
-        return security;
+        return this.security;
     }
 
     public PublicKeystore getPublicKeystore() {
-        return publicKeystore;
+        return this.publicKeystore;
     }
 
     public Policy getPolicy() {
-        return policy;
+        return this.policy;
     }
 
 }

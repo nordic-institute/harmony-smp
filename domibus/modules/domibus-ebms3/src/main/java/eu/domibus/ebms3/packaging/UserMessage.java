@@ -13,28 +13,28 @@ public class UserMessage extends Element {
                        final MessageProperties mp, final PayloadInfo pi) {
         super(Constants.USER_MESSAGE, Constants.NS, Constants.PREFIX);
         if (mi != null) {
-            addChild(mi);
+            this.addChild(mi);
         } else {
-            addChild(new MessageInfo(mi.getMessageId(), null));
+            this.addChild(new MessageInfo(mi.getMessageId(), null));
         }
         if (partyInfo != null) {
-            addChild(partyInfo);
+            this.addChild(partyInfo);
         }
         if (ci != null) {
-            addChild(ci);
+            this.addChild(ci);
         }
         if (mp != null) {
-            addChild(mp);
+            this.addChild(mp);
         }
         if (pi != null) {
-            addChild(pi);
+            this.addChild(pi);
         }
     }
 
     public UserMessage(final String mpc, final MessageInfo mi, final PartyInfo partInfo, final CollaborationInfo ci,
                        final MessageProperties mp, final PayloadInfo pi) {
         this(mi, partInfo, ci, mp, pi);
-        addAttribute("mpc", mpc);
+        this.addAttribute("mpc", mpc);
     }
 
     //  public UserMessage(String mpc, String[] fromPartyIds, String[] toPartyIds,

@@ -34,7 +34,7 @@ public class Party extends AbstractBaseEntity {
     }
 
     public String getPartyId() {
-        return partyId;
+        return this.partyId;
     }
 
     public void setPartyId(final String partyId) {
@@ -42,7 +42,7 @@ public class Party extends AbstractBaseEntity {
     }
 
     public String getType() {
-        return type;
+        return this.type;
     }
 
     public void setType(final String type) {
@@ -51,15 +51,16 @@ public class Party extends AbstractBaseEntity {
 
     @Override
     public int hashCode() {
-        return partyId.hashCode();
+        return this.partyId.hashCode();
     }
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj == null || !(obj instanceof Party)) {
+        if ((obj == null) || !(obj instanceof Party)) {
             return false;
         }
         final Party p = (Party) obj;
-        return partyId.equals(p.getPartyId()) && ((this.type == null && p.type == null) || (this.type != null && type.equals(p.type)));
+        return this.partyId.equals(p.getPartyId()) &&
+               (((this.type == null) && (p.type == null)) || ((this.type != null) && this.type.equals(p.type)));
     }
 }

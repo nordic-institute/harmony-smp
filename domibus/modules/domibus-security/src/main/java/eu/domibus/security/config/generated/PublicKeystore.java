@@ -52,10 +52,10 @@ public class PublicKeystore {
      * Gets the value of the storepwd property.
      *
      * @return possible object is
-     *         {@link String }
+     * {@link String }
      */
     public String getStorepwd() {
-        return storepwd;
+        return this.storepwd;
     }
 
     /**
@@ -72,10 +72,10 @@ public class PublicKeystore {
      * Gets the value of the file property.
      *
      * @return possible object is
-     *         {@link String }
+     * {@link String }
      */
     public String getFile() {
-        return file;
+        return this.file;
     }
 
     /**
@@ -92,10 +92,10 @@ public class PublicKeystore {
      * Gets the value of the storeType property.
      *
      * @return possible object is
-     *         {@link String }
+     * {@link String }
      */
     public String getStoreType() {
-        return storeType;
+        return this.storeType;
     }
 
     /**

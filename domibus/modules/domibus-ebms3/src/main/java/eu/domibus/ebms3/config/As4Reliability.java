@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.domibus.ebms3.config;
 
 import org.simpleframework.xml.Attribute;
@@ -63,7 +59,7 @@ public class As4Reliability implements Serializable {
      * @see #interval
      */
     @Attribute(required = false)
-    private boolean exponentialBackoff = false;
+    private boolean exponentialBackoff;
 
     /**
      * Randomize the interval.
@@ -74,13 +70,13 @@ public class As4Reliability implements Serializable {
      * @see #interval
      */
     @Attribute(required = false)
-    private boolean randomize = false;
+    private boolean randomize;
 
     /**
      * @return the maxRetries
      */
     public int getMaxRetries() {
-        return maxRetries;
+        return this.maxRetries;
     }
 
     /**
@@ -94,7 +90,7 @@ public class As4Reliability implements Serializable {
      * @return the interval
      */
     public int getInterval() {
-        return interval;
+        return this.interval;
     }
 
     /**
@@ -108,11 +104,11 @@ public class As4Reliability implements Serializable {
      * @return the shutdown interval
      */
     public int getShutdown() {
-        return shutdown;
+        return this.shutdown;
     }
 
     /**
-     * @param interval the shutdown interval to set
+     * @param shutdown the shutdown interval to set
      */
     public void setShutdown(final int shutdown) {
         this.shutdown = shutdown;
@@ -122,7 +118,7 @@ public class As4Reliability implements Serializable {
      * @return the duplicateElimination
      */
     public boolean isDuplicateElimination() {
-        return duplicateElimination;
+        return this.duplicateElimination;
     }
 
     /**
@@ -133,7 +129,7 @@ public class As4Reliability implements Serializable {
     }
 
     public boolean isExponentialBackoff() {
-        return exponentialBackoff;
+        return this.exponentialBackoff;
     }
 
     public void setExponentialBackoff(final boolean exponentialBackoff) {
@@ -141,7 +137,7 @@ public class As4Reliability implements Serializable {
     }
 
     public boolean isRandomize() {
-        return randomize;
+        return this.randomize;
     }
 
     public void setRandomize(final boolean randomize) {

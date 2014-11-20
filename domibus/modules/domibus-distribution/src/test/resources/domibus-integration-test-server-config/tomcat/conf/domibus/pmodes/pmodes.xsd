@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schema version="1.0"
+<schema version="1.1"
         xmlns="http://www.w3.org/2001/XMLSchema"
         targetNamespace="http://www.e-codex.eu/domibus/pmodes/0.1"
         xmlns:tns="http://www.e-codex.eu/domibus/pmodes/0.1"
@@ -38,7 +38,7 @@
 
     <complexType name="As4ReceiptType">
         <sequence>
-            <element name="As4Reliability" minOccurs="0"/>
+            <element name="As4Reliability" type="tns:As4ReliabilityType" minOccurs="0"/>
         </sequence>
         <attribute name="receiptTo" type="anyURI"/>
         <attribute name="deliverySemantics" default="Received">
@@ -68,6 +68,19 @@
         <attribute name="exponentialBackoff" type="boolean" default="false"/>
         <attribute name="randomize" type="boolean" default="false"/>
     </complexType>
+
+    <complexType name="PayloadService">
+        <sequence>
+            <element name="CompressionType" type="tns:CompressionType" minOccurs="1" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+
+    <simpleType name="CompressionType">
+        <restriction base="string">
+            <enumeration value="application/gzip"/>
+            <enumeration value=""/>
+        </restriction>
+    </simpleType>
 
     <complexType name="AuthorizationType">
         <attribute name="type" type="token" use="required"/>
@@ -124,6 +137,7 @@
             <element name="ErrorAtReceiver" type="tns:ErrorAtReceiverType" minOccurs="0"/>
             <element name="Authorization" type="tns:AuthorizationType" minOccurs="0"/>
             <element name="As4Receipt" type="tns:As4ReceiptType" minOccurs="0"/>
+            <element name="PayloadService" type="tns:PayloadService" minOccurs="0" maxOccurs="1"/>
         </sequence>
         <attribute name="number">
             <simpleType>

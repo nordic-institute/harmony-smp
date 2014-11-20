@@ -23,11 +23,11 @@ public class ReceiptTrackingAttempt extends AbstractBaseEntity implements Serial
      * The timestamp of this attempt to send out the message
      */
     @Column(name = "TRANSMISSION")
-    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Temporal(TemporalType.TIMESTAMP)
     private Date transmission;
 
     public Date getTransmission() {
-        return transmission;
+        return this.transmission;
     }
 
     public void setTransmission(final Date transmission) {

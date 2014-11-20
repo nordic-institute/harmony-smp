@@ -25,7 +25,7 @@ public class Consumption {
     protected List<ConsumerInfo> consumers = new ArrayList<ConsumerInfo>();
 
     public MsgInfo getFilter() {
-        return filter;
+        return this.filter;
     }
 
     public void setFilter(final MsgInfo filter) {
@@ -33,7 +33,7 @@ public class Consumption {
     }
 
     public List<ConsumerInfo> getConsumers() {
-        return consumers;
+        return this.consumers;
     }
 
     public void setConsumers(final List<ConsumerInfo> consumers) {
@@ -44,50 +44,53 @@ public class Consumption {
         if (consumerInfo == null) {
             return;
         }
-        consumers.add(consumerInfo);
+        this.consumers.add(consumerInfo);
     }
 
     public boolean matchesCurrentMessageContext()
 
     {
         final MsgInfo info = EbUtil.getMsgInfo();
-        if (filter == null) {
+        if (this.filter == null) {
             return true;
         }
-        if (filter.getMpc() != null && !filter.getMpc().equalsIgnoreCase(info.getMpc())) {
+        if ((this.filter.getMpc() != null) && !this.filter.getMpc().equalsIgnoreCase(info.getMpc())) {
             return false;
         }
-        if (filter.getMessageId() != null && !filter.getMessageId().equalsIgnoreCase(info.getMessageId())) {
+        if ((this.filter.getMessageId() != null) && !this.filter.getMessageId().equalsIgnoreCase(info.getMessageId())) {
             return false;
         }
-        if (filter.getRefToMessageId() != null && !filter.getRefToMessageId().equalsIgnoreCase(info.getRefToMessageId())) {
+        if ((this.filter.getRefToMessageId() != null) &&
+            !this.filter.getRefToMessageId().equalsIgnoreCase(info.getRefToMessageId())) {
             return false;
         }
-        if (filter.getFromRole() != null && !filter.getFromRole().equalsIgnoreCase(info.getFromRole())) {
+        if ((this.filter.getFromRole() != null) && !this.filter.getFromRole().equalsIgnoreCase(info.getFromRole())) {
             return false;
         }
-        if (filter.getToRole() != null && !filter.getToRole().equalsIgnoreCase(info.getToRole())) {
+        if ((this.filter.getToRole() != null) && !this.filter.getToRole().equalsIgnoreCase(info.getToRole())) {
             return false;
         }
-        if (filter.getAgreementRef() != null && !filter.getAgreementRef().equalsIgnoreCase(info.getAgreementRef())) {
+        if ((this.filter.getAgreementRef() != null) &&
+            !this.filter.getAgreementRef().equalsIgnoreCase(info.getAgreementRef())) {
             return false;
         }
-        if (filter.getPmode() != null && !filter.getPmode().equalsIgnoreCase(info.getPmode())) {
+        if ((this.filter.getPmode() != null) && !this.filter.getPmode().equalsIgnoreCase(info.getPmode())) {
             return false;
         }
-        if (filter.getService() != null && !filter.getService().equalsIgnoreCase(info.getService())) {
+        if ((this.filter.getService() != null) && !this.filter.getService().equalsIgnoreCase(info.getService())) {
             return false;
         }
-        if (filter.getAction() != null && !filter.getAction().equalsIgnoreCase(info.getAction())) {
+        if ((this.filter.getAction() != null) && !this.filter.getAction().equalsIgnoreCase(info.getAction())) {
             return false;
         }
-        if (filter.getConversationId() != null && !filter.getConversationId().equalsIgnoreCase(info.getConversationId())) {
+        if ((this.filter.getConversationId() != null) &&
+            !this.filter.getConversationId().equalsIgnoreCase(info.getConversationId())) {
             return false;
         }
-        if (!subsetOf(filter.getFromParties(), info.getFromParties())) {
+        if (!this.subsetOf(this.filter.getFromParties(), info.getFromParties())) {
             return false;
         }
-        if (!subsetOf(filter.getToParties(), info.getToParties())) {
+        if (!this.subsetOf(this.filter.getToParties(), info.getToParties())) {
             return false;
         }
 
@@ -97,13 +100,13 @@ public class Consumption {
     }
 
     private boolean subsetOf(final Collection<Party> p1, final Collection<Party> p2) {
-        if ((p1 == null || p1.size() == 0) && (p2 == null || p2.size() == 0)) {
+        if (((p1 == null) || p1.isEmpty()) && ((p2 == null) || p2.isEmpty())) {
             return true;
         }
-        if (p2 != null && (p1 == null || p1.size() == 0)) {
+        if ((p2 != null) && ((p1 == null) || p1.isEmpty())) {
             return true;
         }
-        if (p1 != null && p1.size() > 0 && (p2 == null || p2.size() == 0)) {
+        if ((p1 != null) && !p1.isEmpty() && ((p2 == null) || p2.isEmpty())) {
             return false;
         }
 

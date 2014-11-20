@@ -1,5 +1,6 @@
 package eu.domibus.ebms3.packaging;
 
+import eu.domibus.common.exceptions.EbMS3Exception;
 import eu.domibus.common.soap.Element;
 import eu.domibus.ebms3.module.Constants;
 
@@ -15,81 +16,86 @@ public class Error extends Element {
 
     public Error(final String errorCode, final String severity) {
         this();
-        if (errorCode != null && !errorCode.trim().equals("")) {
-            addAttribute("errorCode", errorCode);
+        if ((errorCode != null) && !"".equals(errorCode.trim())) {
+            this.addAttribute("errorCode", errorCode);
         }
-        if (severity != null && !severity.trim().equals("")) {
-            addAttribute("severity", severity);
+        if ((severity != null) && !"".equals(severity.trim())) {
+            this.addAttribute("severity", severity);
         }
+    }
+
+    public Error(final EbMS3Exception ebms3Exception, String refToMessageInError) {
+        this(ebms3Exception.getOrigin(), ebms3Exception.getCategory(), ebms3Exception.getErrorCode(),
+             ebms3Exception.getSeverity(), refToMessageInError, ebms3Exception.getShortDescription());
     }
 
     public Error(final String errorCode, final String severity, final String refToMessageInError) {
         this(errorCode, severity);
-        if (refToMessageInError != null && !refToMessageInError.trim().equals("")) {
-            addAttribute("refToMessageInError", refToMessageInError);
+        if ((refToMessageInError != null) && !"".equals(refToMessageInError.trim())) {
+            this.addAttribute("refToMessageInError", refToMessageInError);
         }
     }
 
     public Error(final String origin, final String category, final String errorCode, final String severity,
                  final String refToMessageInError) {
         this(errorCode, severity, refToMessageInError);
-        setOrigin(origin);
-        setCategory(category);
+        this.setOrigin(origin);
+        this.setCategory(category);
     }
 
     public Error(final String origin, final String category, final String errorCode, final String severity,
                  final String refToMessageInError, final String shortDescription) {
         this(origin, category, errorCode, severity, refToMessageInError);
-        addAttribute("shortDescription", shortDescription);
+        this.addAttribute("shortDescription", shortDescription);
     }
 
     public String getOrigin() {
-        return getAttributeValue("origin");
+        return this.getAttributeValue("origin");
     }
 
     public void setOrigin(final String origin) {
-        if (origin != null && !origin.trim().equals("")) {
-            addAttribute("origin", origin);
+        if ((origin != null) && !"".equals(origin.trim())) {
+            this.addAttribute("origin", origin);
         }
     }
 
     public String getCategory() {
-        return getAttributeValue("category");
+        return this.getAttributeValue("category");
     }
 
     public void setCategory(final String category) {
-        if (category != null && !category.trim().equals("")) {
-            addAttribute("category", category);
+        if ((category != null) && !"".equals(category.trim())) {
+            this.addAttribute("category", category);
         }
     }
 
     public String getErrorCode() {
-        return getAttributeValue("errorCode");
+        return this.getAttributeValue("errorCode");
     }
 
     public void setErrorCode(final String errorCode) {
-        if (errorCode != null && !errorCode.trim().equals("")) {
-            addAttribute("errorCode", errorCode);
+        if ((errorCode != null) && !"".equals(errorCode.trim())) {
+            this.addAttribute("errorCode", errorCode);
         }
     }
 
     public String getSeverity() {
-        return getAttributeValue("severity");
+        return this.getAttributeValue("severity");
     }
 
     public void setSeverity(final String severity) {
-        if (severity != null && !severity.trim().equals("")) {
-            addAttribute("severity", severity);
+        if ((severity != null) && !"".equals(severity.trim())) {
+            this.addAttribute("severity", severity);
         }
     }
 
     public String getRefToMessageInError() {
-        return getAttributeValue("refToMessageInError");
+        return this.getAttributeValue("refToMessageInError");
     }
 
     public void setRefToMessageInError(final String refToMessageInError) {
-        if (refToMessageInError != null && !refToMessageInError.trim().equals("")) {
-            addAttribute("refToMessageInError", refToMessageInError);
+        if ((refToMessageInError != null) && !"".equals(refToMessageInError.trim())) {
+            this.addAttribute("refToMessageInError", refToMessageInError);
         }
     }
 

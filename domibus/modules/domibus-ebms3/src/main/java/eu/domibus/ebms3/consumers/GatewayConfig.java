@@ -15,7 +15,7 @@ public class GatewayConfig {
     protected List<Consumption> consumptions = new ArrayList<Consumption>();
 
     public List<Consumption> getConsumptions() {
-        return consumptions;
+        return this.consumptions;
     }
 
     public void setConsumptions(final List<Consumption> consumptions) {
@@ -26,15 +26,15 @@ public class GatewayConfig {
         if (consumption == null) {
             return;
         }
-        consumptions.add(consumption);
+        this.consumptions.add(consumption);
     }
 
     public Consumption getMatchingConsumption() {
-        if (consumptions == null || consumptions.size() == 0) {
+        if ((this.consumptions == null) || this.consumptions.isEmpty()) {
             return null;
         }
-        for (int i = 0; i < consumptions.size(); i++) {
-            final Consumption c = consumptions.get(i);
+        for (int i = 0; i < this.consumptions.size(); i++) {
+            final Consumption c = this.consumptions.get(i);
             if (c.matchesCurrentMessageContext()) {
                 return c;
             }

@@ -21,7 +21,7 @@ public abstract class FileWatcher extends TimerTask {
     }
 
     public File getSource() {
-        return source;
+        return this.source;
     }
 
     public void setSource(final File source) {
@@ -34,11 +34,11 @@ public abstract class FileWatcher extends TimerTask {
     }
 
     public final void run() {
-        final long timeStamp = source.lastModified();
+        final long timeStamp = this.source.lastModified();
 
         if (this.timeStamp != timeStamp) {
             this.timeStamp = timeStamp;
-            onChange(source);
+            this.onChange(this.source);
         }
     }
 

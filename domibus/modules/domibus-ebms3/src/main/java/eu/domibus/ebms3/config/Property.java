@@ -3,11 +3,13 @@ package eu.domibus.ebms3.config;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 
+import java.io.Serializable;
+
 /**
  * @author Hamid Ben Malek
  */
 @Root(name = "Property", strict = false)
-public class Property implements java.io.Serializable {
+public class Property implements Serializable {
     private static final long serialVersionUID = 3026385474435552009L;
 
     @Attribute
@@ -20,7 +22,7 @@ public class Property implements java.io.Serializable {
     protected String description;
 
     @Attribute(required = false)
-    protected boolean required = false;
+    protected boolean required;
 
     public Property() {
     }
@@ -33,7 +35,7 @@ public class Property implements java.io.Serializable {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(final String name) {
@@ -41,7 +43,7 @@ public class Property implements java.io.Serializable {
     }
 
     public String getType() {
-        return type;
+        return this.type;
     }
 
     public void setType(final String type) {
@@ -49,7 +51,7 @@ public class Property implements java.io.Serializable {
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     public void setDescription(final String description) {
@@ -57,7 +59,7 @@ public class Property implements java.io.Serializable {
     }
 
     public boolean isRequired() {
-        return required;
+        return this.required;
     }
 
     public void setRequired(final boolean required) {

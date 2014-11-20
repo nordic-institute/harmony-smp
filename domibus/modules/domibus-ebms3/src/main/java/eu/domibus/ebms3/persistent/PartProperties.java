@@ -1,7 +1,7 @@
 package eu.domibus.ebms3.persistent;
 
-import org.apache.log4j.Logger;
 import eu.domibus.common.persistent.AbstractBaseEntity;
+import org.apache.log4j.Logger;
 import org.simpleframework.xml.ElementMap;
 import org.simpleframework.xml.Root;
 
@@ -27,7 +27,7 @@ public class PartProperties extends AbstractBaseEntity {
     protected Map<String, String> properties = new HashMap<String, String>();
 
     public Map<String, String> getPartProperties() {
-        return properties;
+        return this.properties;
     }
 
     public void setPartProperties(final Map<String, String> properties) {
@@ -35,20 +35,20 @@ public class PartProperties extends AbstractBaseEntity {
     }
 
     public void addProperty(final String name, final String value) {
-        properties.put(name, value);
+        this.properties.put(name, value);
     }
 
     public String getProperty(final String propertyName) {
-        return properties.get(propertyName);
+        return this.properties.get(propertyName);
     }
 
     // Only for convertion from Flex 2:
     public void setPropertyArray(final Property[] p) {
-        if (p == null || p.length == 0) {
+        if ((p == null) || (p.length == 0)) {
             return;
         }
         for (final Property prop : p) {
-            addProperty(prop.getName(), prop.getValue());
+            this.addProperty(prop.getName(), prop.getValue());
         }
 
         // debugging only:
@@ -56,14 +56,14 @@ public class PartProperties extends AbstractBaseEntity {
     }
 
     public Property[] getPartPropertiesArray() {
-        if (properties == null || properties.keySet() == null) {
+        if ((this.properties == null) || (this.properties.keySet() == null)) {
             return null;
         }
-        final int size = properties.keySet().size();
+        final int size = this.properties.keySet().size();
         final Property[] res = new Property[size];
         int i = 0;
-        for (final String key : properties.keySet()) {
-            res[i] = new Property(key, properties.get(key));
+        for (final String key : this.properties.keySet()) {
+            res[i] = new Property(key, this.properties.get(key));
             i++;
         }
         return res;
@@ -71,12 +71,12 @@ public class PartProperties extends AbstractBaseEntity {
 
     // Just for debugging:
     private void printProperties() {
-        if (properties == null || properties.keySet() == null) {
+        if ((this.properties == null) || (this.properties.keySet() == null)) {
             return;
         }
-        for (final String key : properties.keySet()) {
-            log.debug("[==== property " + key +
-                      " has value " + properties.get(key));
+        for (final String key : this.properties.keySet()) {
+            PartProperties.log.debug("[==== property " + key +
+                                     " has value " + this.properties.get(key));
         }
     }
 }

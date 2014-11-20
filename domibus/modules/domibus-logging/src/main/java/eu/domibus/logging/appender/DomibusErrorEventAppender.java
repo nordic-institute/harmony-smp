@@ -1,10 +1,10 @@
 package eu.domibus.logging.appender;
 
+import eu.domibus.logging.persistent.LoggerEvent;
+import eu.domibus.logging.persistent.LoggerEventDAO;
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
-import eu.domibus.logging.persistent.LoggerEvent;
-import eu.domibus.logging.persistent.LoggerEventDAO;
 
 /**
  * A custom appender for logging into a database via hibernate
@@ -34,10 +34,10 @@ public class DomibusErrorEventAppender extends AppenderSkeleton implements Appen
      * @param event
      */
     protected void append(final LoggingEvent event) {
-        if (led == null) {
-            led = new LoggerEventDAO();
+        if (this.led == null) {
+            this.led = new LoggerEventDAO();
         }
         final LoggerEvent le = new LoggerEvent(event);
-        led.persist(le);
+        this.led.persist(le);
     }
 }

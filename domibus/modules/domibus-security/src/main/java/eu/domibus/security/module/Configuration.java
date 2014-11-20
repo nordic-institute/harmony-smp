@@ -1,12 +1,5 @@
 package eu.domibus.security.module;
 
-import org.apache.axiom.om.impl.builder.StAXOMBuilder;
-import org.apache.log4j.Logger;
-import org.apache.neethi.Policy;
-import org.apache.neethi.PolicyEngine;
-import org.apache.rampart.policy.model.CryptoConfig;
-import org.apache.rampart.policy.model.RampartConfig;
-import org.apache.ws.security.components.crypto.Merlin;
 import eu.domibus.common.exceptions.ConfigurationException;
 import eu.domibus.common.util.JNDIUtil;
 import eu.domibus.security.config.generated.PrivateKeystore;
@@ -14,6 +7,13 @@ import eu.domibus.security.config.generated.PublicKeystore;
 import eu.domibus.security.config.generated.Security;
 import eu.domibus.security.config.generated.SecurityConfig;
 import eu.domibus.security.config.model.RemoteSecurityConfig;
+import org.apache.axiom.om.impl.builder.StAXOMBuilder;
+import org.apache.log4j.Logger;
+import org.apache.neethi.Policy;
+import org.apache.neethi.PolicyEngine;
+import org.apache.rampart.policy.model.CryptoConfig;
+import org.apache.rampart.policy.model.RampartConfig;
+import org.apache.ws.security.components.crypto.Merlin;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -27,50 +27,56 @@ import java.util.Properties;
 
 public class Configuration extends SecurityUtil {
     private final static Logger log = Logger.getLogger(Configuration.class);
-    private static Map<String, RemoteSecurityConfig> remoteSecurities = null;
+    private static Map<String, RemoteSecurityConfig> remoteSecurities;
     private static long securityConfigFileLastModified;
 
     public static void loadSecurityConfiguration() {
-        loadSecurityConfigFileIfModified();
+        Configuration.loadSecurityConfigFileIfModified();
     }
 
     static void loadSecurityConfigFileIfModified() {
-        loadSecurityConfigFileIfModified(JNDIUtil.getStringEnvironmentParameter(Constants.CONFIG_FILE_PARAMETER));
+        Configuration.loadSecurityConfigFileIfModified(
+                JNDIUtil.getStringEnvironmentParameter(Constants.CONFIG_FILE_PARAMETER));
     }
 
-    static void loadSecurityConfigFileIfModified(String securityFilePath) {
-        loadSecurityConfigFileIfModified(new File(securityFilePath), JNDIUtil.getStringEnvironmentParameter(Constants.POLICIES_FOLDER_PARAMETER));
+    static void loadSecurityConfigFileIfModified(final String securityFilePath) {
+        Configuration.loadSecurityConfigFileIfModified(new File(securityFilePath),
+                                                       JNDIUtil.getStringEnvironmentParameter(
+                                                               Constants.POLICIES_FOLDER_PARAMETER));
     }
 
-    public static void loadSecurityConfigFileIfModified(File securityFile, String policyPath) {
-        final File securityConfigFile = securityFile;
-        final long newSecurityConfigFileLastModified = securityConfigFile.lastModified();
+    public static void loadSecurityConfigFileIfModified(final File securityFile, final String policyPath) {
+        final long newSecurityConfigFileLastModified = securityFile.lastModified();
 
 
-        if (securityConfigFileLastModified != newSecurityConfigFileLastModified) {
-            Map<String, RemoteSecurityConfig> newSecurities = new HashMap<String, RemoteSecurityConfig>();
+        if (Configuration.securityConfigFileLastModified != newSecurityConfigFileLastModified) {
+            final Map<String, RemoteSecurityConfig> newSecurities = new HashMap<String, RemoteSecurityConfig>();
 
             try {
                 final JAXBContext jc = JAXBContext.newInstance("eu.domibus.security.config.generated");
                 final Unmarshaller u = jc.createUnmarshaller();
-                SecurityConfig securityConfig = (SecurityConfig) u.unmarshal(securityConfigFile);
+                final SecurityConfig securityConfig = (SecurityConfig) u.unmarshal(securityFile);
                 for (final Security securityEntry : securityConfig.getSecurities().getSecurity()) {
-                    final Policy policy = loadPolicy(policyPath, securityEntry.getPolicyFile());
-                    attachRampartConfig(policy, securityEntry, securityConfig);
-                    newSecurities.put(securityEntry.getName(), new RemoteSecurityConfig(securityEntry, securityConfig.getKeystores().getPublicKeystore(), policy));
-                    log.debug(securityEntry.getName() + " loaded.");
+                    final Policy policy = Configuration.loadPolicy(policyPath, securityEntry.getPolicyFile());
+                    Configuration.attachRampartConfig(policy, securityEntry, securityConfig);
+                    newSecurities.put(securityEntry.getName(), new RemoteSecurityConfig(securityEntry,
+                                                                                        securityConfig.getKeystores()
+                                                                                                      .getPublicKeystore(),
+                                                                                        policy));
+                    Configuration.log.debug(securityEntry.getName() + " loaded.");
                 }
-                remoteSecurities = newSecurities;
+                Configuration.remoteSecurities = newSecurities;
 
             } catch (JAXBException e) {
                 throw new ConfigurationException(e);
             }
         }
-        log.debug("Security Config file " + securityConfigFile.getName() + " has been loaded");
-        securityConfigFileLastModified = newSecurityConfigFileLastModified;
+        Configuration.log.debug("Security Config file " + securityFile.getName() + " has been loaded");
+        Configuration.securityConfigFileLastModified = newSecurityConfigFileLastModified;
     }
 
-    private static void attachRampartConfig(final Policy policy, final Security securityEntry, final SecurityConfig securityConfig) {
+    private static void attachRampartConfig(final Policy policy, final Security securityEntry,
+                                            final SecurityConfig securityConfig) {
         final PrivateKeystore prK = securityConfig.getKeystores().getPrivateKeystore();
         final PublicKeystore puK = securityConfig.getKeystores().getPublicKeystore();
         final RampartConfig rc = new RampartConfig();
@@ -116,16 +122,16 @@ public class Configuration extends SecurityUtil {
     }
 
     public static RemoteSecurityConfig getRemoteSecurity(final String securityName) {
-        if (remoteSecurities == null) {
+        if (Configuration.remoteSecurities == null) {
             throw new NullPointerException("List of RemoteSecurities is null");
         }
 
-        final RemoteSecurityConfig rsc = remoteSecurities.get(securityName);
+        final RemoteSecurityConfig rsc = Configuration.remoteSecurities.get(securityName);
         if (rsc == null) {
             throw new SecurityException("RemoteSecurityConfig for " + securityName + " not found");
         }
 
-        return remoteSecurities.get(securityName);
+        return Configuration.remoteSecurities.get(securityName);
     }
 
 
@@ -136,7 +142,8 @@ public class Configuration extends SecurityUtil {
      * @return
      */
     private static Policy loadPolicy(final String policyFile) {
-        return loadPolicy(JNDIUtil.getStringEnvironmentParameter(Constants.POLICIES_FOLDER_PARAMETER), policyFile);
+        return Configuration
+                .loadPolicy(JNDIUtil.getStringEnvironmentParameter(Constants.POLICIES_FOLDER_PARAMETER), policyFile);
     }
 
     /**
@@ -149,16 +156,14 @@ public class Configuration extends SecurityUtil {
     private static Policy loadPolicy(final String path, final String policyFile) {
 
         Policy policy = null;
-        {
-            final StAXOMBuilder builder;
-            try {
-                builder = new StAXOMBuilder(path + "/" + policyFile);
-                policy = PolicyEngine.getPolicy(builder.getDocumentElement());
-            } catch (FileNotFoundException e) {
-                throw new ConfigurationException(e);
-            } catch (XMLStreamException e) {
-                throw new ConfigurationException(e);
-            }
+        final StAXOMBuilder builder;
+        try {
+            builder = new StAXOMBuilder(path + "/" + policyFile);
+            policy = PolicyEngine.getPolicy(builder.getDocumentElement());
+        } catch (FileNotFoundException e) {
+            throw new ConfigurationException(e);
+        } catch (XMLStreamException e) {
+            throw new ConfigurationException(e);
         }
         return policy;
     }

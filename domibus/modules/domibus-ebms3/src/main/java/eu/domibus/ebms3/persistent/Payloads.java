@@ -33,7 +33,7 @@ public class Payloads extends AbstractBaseEntity {
         if (this.bodyPayload == null) {
             return null;
         }
-        return this.bodyPayload.getFile();
+        return this.bodyPayload.getQualifiedFileName();
     }
 
     public void setBodyPayload(final EbmsPayload bodyPayload) {
@@ -42,13 +42,13 @@ public class Payloads extends AbstractBaseEntity {
 
     public void setBodyPayload(final String payloadURI) {
         this.bodyPayload = new EbmsPayload();
-        this.bodyPayload.setFile(payloadURI);
+        this.bodyPayload.setQualifiedFileName(payloadURI);
     }
 
     public void setBodyPayload(final String cid, final String payloadURI) {
         this.bodyPayload = new EbmsPayload();
         this.bodyPayload.setCid(cid);
-        this.bodyPayload.setFile(payloadURI);
+        this.bodyPayload.setQualifiedFileName(payloadURI);
     }
 
     public String getBodyPayloadCID() {
@@ -154,7 +154,7 @@ public class Payloads extends AbstractBaseEntity {
     public void addPayload(final String cid, final String payloadURI) {
         final EbmsPayload p = new EbmsPayload();
         p.setCid(cid);
-        p.setFile(payloadURI);
+        p.setQualifiedFileName(payloadURI);
         this.payloads.add(p);
     }
 
@@ -197,7 +197,7 @@ public class Payloads extends AbstractBaseEntity {
         }
         final EbmsPayload p = new EbmsPayload();
         p.setCid(cid);
-        p.setFile(payloadFie);
+        p.setQualifiedFileName(payloadFie);
         this.payloads.add(p);
     }
 

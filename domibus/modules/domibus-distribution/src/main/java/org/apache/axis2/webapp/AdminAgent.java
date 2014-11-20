@@ -83,11 +83,11 @@ public class AdminAgent extends AbstractAgent {
     public AdminAgent(final ConfigurationContext aConfigContext) {
         super(aConfigContext);
         try {
-            if (configContext.getAxisConfiguration().getRepository() != null) {
-                final File repoDir = new File(configContext.getAxisConfiguration().getRepository().getFile());
-                serviceDir = new File(repoDir, "services");
-                if (!serviceDir.exists()) {
-                    serviceDir.mkdirs();
+            if (this.configContext.getAxisConfiguration().getRepository() != null) {
+                final File repoDir = new File(this.configContext.getAxisConfiguration().getRepository().getFile());
+                this.serviceDir = new File(repoDir, "services");
+                if (!this.serviceDir.exists()) {
+                    this.serviceDir.mkdirs();
                 }
             }
         } catch (Exception e) {
@@ -122,10 +122,10 @@ public class AdminAgent extends AbstractAgent {
     public void processUpload(final HttpServletRequest req, final HttpServletResponse res)
             throws IOException, ServletException {
         final String hasHotDeployment =
-                (String) configContext.getAxisConfiguration().getParameterValue("hotdeployment");
-        final String hasHotUpdate = (String) configContext.getAxisConfiguration().getParameterValue("hotupdate");
-        req.setAttribute("hotDeployment", (hasHotDeployment.equals("true")) ? "enabled" : "disabled");
-        req.setAttribute("hotUpdate", (hasHotUpdate.equals("true")) ? "enabled" : "disabled");
+                (String) this.configContext.getAxisConfiguration().getParameterValue("hotdeployment");
+        final String hasHotUpdate = (String) this.configContext.getAxisConfiguration().getParameterValue("hotupdate");
+        req.setAttribute("hotDeployment", ("true".equals(hasHotDeployment)) ? "enabled" : "disabled");
+        req.setAttribute("hotUpdate", ("true".equals(hasHotUpdate)) ? "enabled" : "disabled");
         final RequestContext reqContext = new ServletRequestContext(req);
 
         final boolean isMultipart = ServletFileUpload.isMultipartContent(reqContext);
@@ -158,7 +158,7 @@ public class AdminAgent extends AbstractAgent {
                                 fileNameOnly = fileName.substring(fileName.lastIndexOf("\\") + 1, fileName.length());
                             }
 
-                            final File uploadedFile = new File(serviceDir, fileNameOnly);
+                            final File uploadedFile = new File(this.serviceDir, fileNameOnly);
                             item.write(uploadedFile);
                             req.setAttribute("status", "success");
                             req.setAttribute("filename", fileNameOnly);
@@ -188,9 +188,9 @@ public class AdminAgent extends AbstractAgent {
         }
 
         final String adminUserName =
-                (String) configContext.getAxisConfiguration().getParameter(Constants.USER_NAME).getValue();
+                (String) this.configContext.getAxisConfiguration().getParameter(Constants.USER_NAME).getValue();
         final String adminPassword =
-                (String) configContext.getAxisConfiguration().getParameter(Constants.PASSWORD).getValue();
+                (String) this.configContext.getAxisConfiguration().getParameter(Constants.PASSWORD).getValue();
 
         if (username.equals(adminUserName) && password.equals(adminPassword)) {
             req.getSession().setAttribute(Constants.LOGGED, "Yes");
@@ -205,7 +205,7 @@ public class AdminAgent extends AbstractAgent {
             throws IOException, ServletException {
         final String serviceName = req.getParameter("axisService");
         if (req.getParameter("changePara") != null) {
-            final AxisService service = configContext.getAxisConfiguration().getService(serviceName);
+            final AxisService service = this.configContext.getAxisConfiguration().getService(serviceName);
             if (service != null) {
                 for (final Parameter parameter : service.getParameters()) {
                     final String para = req.getParameter(serviceName + "_" + parameter.getName());
@@ -227,12 +227,13 @@ public class AdminAgent extends AbstractAgent {
             req.setAttribute("status", "Parameters Changed Successfully.");
             req.getSession().removeAttribute(Constants.SERVICE);
         } else {
-            final AxisService serviceTemp = configContext.getAxisConfiguration().getServiceForActivation(serviceName);
+            final AxisService serviceTemp =
+                    this.configContext.getAxisConfiguration().getServiceForActivation(serviceName);
             if (serviceTemp.isActive()) {
 
                 if (serviceName != null) {
-                    req.getSession()
-                       .setAttribute(Constants.SERVICE, configContext.getAxisConfiguration().getService(serviceName));
+                    req.getSession().setAttribute(Constants.SERVICE,
+                                                  this.configContext.getAxisConfiguration().getService(serviceName));
                 }
             } else {
                 req.setAttribute("status", "Service " + serviceName + " is not an active service" +
@@ -244,7 +245,7 @@ public class AdminAgent extends AbstractAgent {
 
     public void processEngagingGlobally(final HttpServletRequest req, final HttpServletResponse res)
             throws IOException, ServletException {
-        final Map<String, AxisModule> modules = configContext.getAxisConfiguration().getModules();
+        final Map<String, AxisModule> modules = this.configContext.getAxisConfiguration().getModules();
 
         req.getSession().setAttribute(Constants.MODULE_MAP, modules);
 
@@ -254,7 +255,7 @@ public class AdminAgent extends AbstractAgent {
 
         if (moduleName != null) {
             try {
-                configContext.getAxisConfiguration().engageModule(moduleName);
+                this.configContext.getAxisConfiguration().engageModule(moduleName);
                 req.getSession()
                    .setAttribute(Constants.ENGAGE_STATUS, moduleName + " module engaged globally successfully");
             } catch (AxisFault axisFault) {
@@ -269,7 +270,7 @@ public class AdminAgent extends AbstractAgent {
 
     public void processListOperations(final HttpServletRequest req, final HttpServletResponse res)
             throws IOException, ServletException {
-        final Map<String, AxisModule> modules = configContext.getAxisConfiguration().getModules();
+        final Map<String, AxisModule> modules = this.configContext.getAxisConfiguration().getModules();
 
         req.getSession().setAttribute(Constants.MODULE_MAP, modules);
 
@@ -287,17 +288,18 @@ public class AdminAgent extends AbstractAgent {
         }
 
         req.getSession().setAttribute(Constants.OPERATION_MAP,
-                                      configContext.getAxisConfiguration().getService(serviceName).getOperations());
+                                      this.configContext.getAxisConfiguration().getService(serviceName)
+                                                        .getOperations());
         req.getSession().setAttribute(Constants.ENGAGE_STATUS, null);
 
         final String operationName = req.getParameter("axisOperation");
 
         if ((serviceName != null) && (moduleName != null) && (operationName != null)) {
             try {
-                final AxisOperation od = configContext.getAxisConfiguration().getService(serviceName)
-                                                      .getOperation(new QName(operationName));
+                final AxisOperation od = this.configContext.getAxisConfiguration().getService(serviceName)
+                                                           .getOperation(new QName(operationName));
 
-                od.engageModule(configContext.getAxisConfiguration().getModule(moduleName));
+                od.engageModule(this.configContext.getAxisConfiguration().getModule(moduleName));
                 req.getSession()
                    .setAttribute(Constants.ENGAGE_STATUS, moduleName + " module engaged to the operation successfully");
             } catch (AxisFault axisFault) {
@@ -311,7 +313,7 @@ public class AdminAgent extends AbstractAgent {
 
     public void processEngageToService(final HttpServletRequest req, final HttpServletResponse res)
             throws IOException, ServletException {
-        final Map<String, AxisModule> modules = configContext.getAxisConfiguration().getModules();
+        final Map<String, AxisModule> modules = this.configContext.getAxisConfiguration().getModules();
 
         req.getSession().setAttribute(Constants.MODULE_MAP, modules);
         populateSessionInformation(req);
@@ -327,8 +329,8 @@ public class AdminAgent extends AbstractAgent {
 
         if ((serviceName != null) && (moduleName != null)) {
             try {
-                configContext.getAxisConfiguration().getService(serviceName)
-                             .engageModule(configContext.getAxisConfiguration().getModule(moduleName));
+                this.configContext.getAxisConfiguration().getService(serviceName)
+                                  .engageModule(this.configContext.getAxisConfiguration().getModule(moduleName));
                 req.getSession()
                    .setAttribute(Constants.ENGAGE_STATUS, moduleName + " module engaged to the service successfully");
             } catch (AxisFault axisFault) {
@@ -342,11 +344,11 @@ public class AdminAgent extends AbstractAgent {
 
     public void processEngageToServiceGroup(final HttpServletRequest req, final HttpServletResponse res)
             throws IOException, ServletException {
-        final Map<String, AxisModule> modules = configContext.getAxisConfiguration().getModules();
+        final Map<String, AxisModule> modules = this.configContext.getAxisConfiguration().getModules();
 
         req.getSession().setAttribute(Constants.MODULE_MAP, modules);
 
-        final Iterator<AxisServiceGroup> services = configContext.getAxisConfiguration().getServiceGroups();
+        final Iterator<AxisServiceGroup> services = this.configContext.getAxisConfiguration().getServiceGroups();
 
         req.getSession().setAttribute(Constants.SERVICE_GROUP_MAP, services);
 
@@ -360,8 +362,8 @@ public class AdminAgent extends AbstractAgent {
         req.getSession().setAttribute(Constants.ENGAGE_STATUS, null);
 
         if ((serviceName != null) && (moduleName != null)) {
-            configContext.getAxisConfiguration().getServiceGroup(serviceName)
-                         .engageModule(configContext.getAxisConfiguration().getModule(moduleName));
+            this.configContext.getAxisConfiguration().getServiceGroup(serviceName)
+                              .engageModule(this.configContext.getAxisConfiguration().getModule(moduleName));
             req.getSession()
                .setAttribute(Constants.ENGAGE_STATUS, moduleName + " module engaged to the service group successfully");
         }
@@ -381,10 +383,10 @@ public class AdminAgent extends AbstractAgent {
             throws IOException, ServletException {
         final String type = req.getParameter("TYPE");
         final String sgID = req.getParameter("ID");
-        final ServiceGroupContext sgContext = configContext.getServiceGroupContext(sgID);
+        final ServiceGroupContext sgContext = this.configContext.getServiceGroupContext(sgID);
         req.getSession().setAttribute("ServiceGroupContext", sgContext);
         req.getSession().setAttribute("TYPE", type);
-        req.getSession().setAttribute("ConfigurationContext", configContext);
+        req.getSession().setAttribute("ConfigurationContext", this.configContext);
         renderView("viewServiceGroupContext.jsp", req, res);
     }
 
@@ -393,7 +395,7 @@ public class AdminAgent extends AbstractAgent {
         final String type = req.getParameter("TYPE");
         final String sgID = req.getParameter("PID");
         final String ID = req.getParameter("ID");
-        final ServiceGroupContext sgContext = configContext.getServiceGroupContext(sgID);
+        final ServiceGroupContext sgContext = this.configContext.getServiceGroupContext(sgID);
         if (sgContext != null) {
             final AxisService service = sgContext.getDescription().getService(ID);
             final ServiceContext serviceContext = sgContext.getServiceContext(service);
@@ -428,7 +430,7 @@ public class AdminAgent extends AbstractAgent {
             final String turnon = req.getParameter("turnon");
             if (serviceName != null) {
                 if (turnon != null) {
-                    configContext.getAxisConfiguration().startService(serviceName);
+                    this.configContext.getAxisConfiguration().startService(serviceName);
                 }
             }
         }
@@ -443,7 +445,7 @@ public class AdminAgent extends AbstractAgent {
             final String turnoff = req.getParameter("turnoff");
             if (serviceName != null) {
                 if (turnoff != null) {
-                    configContext.getAxisConfiguration().stopService(serviceName);
+                    this.configContext.getAxisConfiguration().stopService(serviceName);
                 }
                 populateSessionInformation(req);
             }
@@ -457,7 +459,7 @@ public class AdminAgent extends AbstractAgent {
 
     public void processViewGlobalHandlers(final HttpServletRequest req, final HttpServletResponse res)
             throws IOException, ServletException {
-        req.getSession().setAttribute(Constants.GLOBAL_HANDLERS, configContext.getAxisConfiguration());
+        req.getSession().setAttribute(Constants.GLOBAL_HANDLERS, this.configContext.getAxisConfiguration());
 
         renderView(VIEW_GLOBAL_HANDLERS_JSP_NAME, req, res);
     }
@@ -468,7 +470,7 @@ public class AdminAgent extends AbstractAgent {
 
         if (service != null) {
             req.getSession()
-               .setAttribute(Constants.SERVICE_HANDLERS, configContext.getAxisConfiguration().getService(service));
+               .setAttribute(Constants.SERVICE_HANDLERS, this.configContext.getAxisConfiguration().getService(service));
         }
 
         renderView(VIEW_SERVICE_HANDLERS_JSP_NAME, req, res);
@@ -477,14 +479,14 @@ public class AdminAgent extends AbstractAgent {
 
     public void processListPhases(final HttpServletRequest req, final HttpServletResponse res)
             throws IOException, ServletException {
-        final PhasesInfo info = configContext.getAxisConfiguration().getPhasesInfo();
+        final PhasesInfo info = this.configContext.getAxisConfiguration().getPhasesInfo();
         req.getSession().setAttribute(Constants.PHASE_LIST, info);
         renderView(LIST_PHASES_JSP_NAME, req, res);
     }
 
     public void processListServiceGroups(final HttpServletRequest req, final HttpServletResponse res)
             throws IOException, ServletException {
-        final Iterator<AxisServiceGroup> serviceGroups = configContext.getAxisConfiguration().getServiceGroups();
+        final Iterator<AxisServiceGroup> serviceGroups = this.configContext.getAxisConfiguration().getServiceGroups();
         populateSessionInformation(req);
         req.getSession().setAttribute(Constants.SERVICE_GROUP_MAP, serviceGroups);
 
@@ -495,7 +497,7 @@ public class AdminAgent extends AbstractAgent {
             throws IOException, ServletException {
         populateSessionInformation(req);
         req.getSession()
-           .setAttribute(Constants.ERROR_SERVICE_MAP, configContext.getAxisConfiguration().getFaultyServices());
+           .setAttribute(Constants.ERROR_SERVICE_MAP, this.configContext.getAxisConfiguration().getFaultyServices());
 
         renderView(LIST_SERVICES_JSP_NAME, req, res);
     }
@@ -505,7 +507,7 @@ public class AdminAgent extends AbstractAgent {
         req.getSession().setAttribute(Constants.IS_FAULTY, ""); //Clearing out any old values.
         final String serviceName = req.getParameter("serviceName");
         if (serviceName != null) {
-            final AxisService service = configContext.getAxisConfiguration().getService(serviceName);
+            final AxisService service = this.configContext.getAxisConfiguration().getService(serviceName);
             req.getSession().setAttribute(Constants.SINGLE_SERVICE, service);
         }
         renderView(LIST_SINGLE_SERVICES_JSP_NAME, req, res);
@@ -514,13 +516,13 @@ public class AdminAgent extends AbstractAgent {
 
     public void processListContexts(final HttpServletRequest req, final HttpServletResponse res)
             throws IOException, ServletException {
-        req.getSession().setAttribute(Constants.CONFIG_CONTEXT, configContext);
+        req.getSession().setAttribute(Constants.CONFIG_CONTEXT, this.configContext);
         renderView("ViewContexts.jsp", req, res);
     }
 
     public void processglobalModules(final HttpServletRequest req, final HttpServletResponse res)
             throws IOException, ServletException {
-        final Collection<AxisModule> modules = configContext.getAxisConfiguration().getEngagedModules();
+        final Collection<AxisModule> modules = this.configContext.getAxisConfiguration().getEngagedModules();
 
         req.getSession().setAttribute(Constants.MODULE_MAP, modules);
 
@@ -529,11 +531,11 @@ public class AdminAgent extends AbstractAgent {
 
     public void processListModules(final HttpServletRequest req, final HttpServletResponse res)
             throws IOException, ServletException {
-        final Map<String, AxisModule> modules = configContext.getAxisConfiguration().getModules();
+        final Map<String, AxisModule> modules = this.configContext.getAxisConfiguration().getModules();
 
         req.getSession().setAttribute(Constants.MODULE_MAP, modules);
         req.getSession()
-           .setAttribute(Constants.ERROR_MODULE_MAP, configContext.getAxisConfiguration().getFaultyModules());
+           .setAttribute(Constants.ERROR_MODULE_MAP, this.configContext.getAxisConfiguration().getFaultyModules());
 
         renderView(LIST_AVAILABLE_MODULES_JSP_NAME, req, res);
     }
@@ -543,10 +545,10 @@ public class AdminAgent extends AbstractAgent {
         final String type = req.getParameter("type");
         final String serviceName = req.getParameter("serviceName");
         final String moduleName = req.getParameter("module");
-        final AxisConfiguration axisConfiguration = configContext.getAxisConfiguration();
+        final AxisConfiguration axisConfiguration = this.configContext.getAxisConfiguration();
         final AxisService service = axisConfiguration.getService(serviceName);
         final AxisModule module = axisConfiguration.getModule(moduleName);
-        if (type.equals("operation")) {
+        if ("operation".equals(type)) {
             if (service.isEngaged(module.getName()) || axisConfiguration.isEngaged(module.getName())) {
                 req.getSession().setAttribute("status", "Can not disengage module " + moduleName +
                                                         ". This module is engaged at a higher level.");
@@ -573,7 +575,7 @@ public class AdminAgent extends AbstractAgent {
     public void processdeleteService(final HttpServletRequest req, final HttpServletResponse res)
             throws IOException, ServletException {
         final String serviceName = req.getParameter("serviceName");
-        final AxisConfiguration axisConfiguration = configContext.getAxisConfiguration();
+        final AxisConfiguration axisConfiguration = this.configContext.getAxisConfiguration();
         if (axisConfiguration.getService(serviceName) != null) {
             axisConfiguration.removeService(serviceName);
             req.getSession().setAttribute("status", "Service '" + serviceName + "' has been successfully removed.");
@@ -601,7 +603,7 @@ public class AdminAgent extends AbstractAgent {
 
     private boolean axisSecurityEnabled() {
         final Parameter parameter =
-                configContext.getAxisConfiguration().getParameter(Constants.ADMIN_SECURITY_DISABLED);
+                this.configContext.getAxisConfiguration().getParameter(Constants.ADMIN_SECURITY_DISABLED);
         return parameter == null || !"true".equals(parameter.getValue());
     }
 

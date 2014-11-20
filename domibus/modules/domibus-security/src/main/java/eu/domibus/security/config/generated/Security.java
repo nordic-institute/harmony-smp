@@ -54,10 +54,10 @@ public class Security {
      * Gets the value of the remoteAlias property.
      *
      * @return possible object is
-     *         {@link String }
+     * {@link String }
      */
     public String getRemoteAlias() {
-        return remoteAlias;
+        return this.remoteAlias;
     }
 
     /**
@@ -74,10 +74,10 @@ public class Security {
      * Gets the value of the policyFile property.
      *
      * @return possible object is
-     *         {@link String }
+     * {@link String }
      */
     public String getPolicyFile() {
-        return policyFile;
+        return this.policyFile;
     }
 
     /**
@@ -94,10 +94,10 @@ public class Security {
      * Gets the value of the name property.
      *
      * @return possible object is
-     *         {@link String }
+     * {@link String }
      */
     public String getName() {
-        return name;
+        return this.name;
     }
 
     /**

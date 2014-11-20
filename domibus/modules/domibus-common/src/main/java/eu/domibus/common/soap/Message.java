@@ -17,10 +17,7 @@ import org.apache.axis2.wsdl.WSDLConstants;
 import org.apache.log4j.Logger;
 
 import javax.activation.DataHandler;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,37 +27,37 @@ import java.util.List;
 /**
  * @author Hamid Ben Malek
  */
-public class Message implements java.io.Serializable {
+public class Message implements Serializable {
     private static final long serialVersionUID = -4289356544949842551L;
 
     private static final Logger log = Logger.getLogger(Message.class);
 
     private double soapVersion = 1.1;
-    private List<OMElement> headerElements = new ArrayList<OMElement>();
-    private List<OMElement> bodyElements = new ArrayList<OMElement>();
-    private MessageContext msgContext = new MessageContext();
+    private final List<OMElement> headerElements = new ArrayList<OMElement>();
+    private final List<OMElement> bodyElements = new ArrayList<OMElement>();
+    private final MessageContext msgContext = new MessageContext();
 
     public Message() {
-        msgContext.setDoingSwA(true);
+        this.msgContext.setDoingSwA(true);
     }
 
     public Message(final OMElement[] headers, final OMElement bodyElement) {
         this();
-        if (headers != null && headers.length > 0) {
+        if ((headers != null) && (headers.length > 0)) {
             for (final OMElement header : headers) {
-                headerElements.add(header);
+                this.headerElements.add(header);
             }
         }
         if (bodyElement != null) {
-            bodyElements.add(bodyElement);
+            this.bodyElements.add(bodyElement);
         }
     }
 
     public Message(final OMElement[] headers, final OMElement bodyElement, final DataHandler[] payloads) {
         this(headers, bodyElement);
-        if (payloads != null && payloads.length > 0) {
+        if ((payloads != null) && (payloads.length > 0)) {
             for (final DataHandler attachment : payloads) {
-                msgContext.addAttachment(attachment);
+                this.msgContext.addAttachment(attachment);
             }
         }
     }
@@ -69,22 +66,22 @@ public class Message implements java.io.Serializable {
         if (attachment == null) {
             return null;
         }
-        return msgContext.addAttachment(attachment);
+        return this.msgContext.addAttachment(attachment);
     }
 
     public DataHandler getAttachment(final String cid) {
-        return msgContext.getAttachment(cid);
+        return this.msgContext.getAttachment(cid);
     }
 
     public void addHeaderElement(final OMElement header) {
         if (header == null) {
             return;
         }
-        headerElements.add(header);
+        this.headerElements.add(header);
     }
 
     public SOAPHeaderBlock addHeaderElement(final String localName, final String uri, final String prefix) {
-        final SOAPEnvelope env = getEnvelope();
+        final SOAPEnvelope env = this.getEnvelope();
         final OMNamespace ns = env.getOMFactory().createOMNamespace(uri, prefix);
         SOAPHeader soapHeader = env.getHeader();
         if (soapHeader == null) {
@@ -94,7 +91,7 @@ public class Message implements java.io.Serializable {
     }
 
     public SOAPHeaderBlock createHeaderElement(final String localName, final String uri, final String prefix) {
-        final SOAPFactory factory = getSOAPFactory();
+        final SOAPFactory factory = this.getSOAPFactory();
         final OMNamespace ns = factory.createOMNamespace(uri, prefix);
         return factory.createSOAPHeaderBlock(localName, ns);
     }
@@ -103,29 +100,29 @@ public class Message implements java.io.Serializable {
         if (payload == null) {
             return;
         }
-        bodyElements.add(payload);
+        this.bodyElements.add(payload);
     }
 
     public SOAPEnvelope getEnvelope() {
-        final SOAPEnvelope env = createEnvelope();
+        final SOAPEnvelope env = this.createEnvelope();
         try {
-            msgContext.setEnvelope(env);
+            this.msgContext.setEnvelope(env);
         } catch (AxisFault ex) {
-            log.error("Error occured while setting Envelope on MessageContext", ex);
+            Message.log.error("Error occured while setting Envelope on MessageContext", ex);
         }
 
         return env;
     }
 
     public MessageContext getMessageContext() {
-        final SOAPEnvelope env = createEnvelope();
+        final SOAPEnvelope env = this.createEnvelope();
         try {
-            msgContext.setEnvelope(env);
+            this.msgContext.setEnvelope(env);
         } catch (AxisFault ex) {
-            log.error("Error occured while setting Envelope on MessageContext", ex);
+            Message.log.error("Error occured while setting Envelope on MessageContext", ex);
         }
 
-        return msgContext;
+        return this.msgContext;
     }
 
     public void setSoapVersion(final double version) {
@@ -133,12 +130,12 @@ public class Message implements java.io.Serializable {
     }
 
     public double getSoapVersion() {
-        return soapVersion;
+        return this.soapVersion;
     }
 
     private SOAPFactory getSOAPFactory() {
         SOAPFactory omFactory = null;
-        if (soapVersion < 1.2) {
+        if (this.soapVersion < 1.2) {
             omFactory = OMAbstractFactory.getSOAP11Factory();
         } else {
             omFactory = OMAbstractFactory.getSOAP12Factory();
@@ -147,17 +144,17 @@ public class Message implements java.io.Serializable {
     }
 
     private SOAPEnvelope createEnvelope() {
-        final SOAPFactory omFactory = getSOAPFactory();
+        final SOAPFactory omFactory = this.getSOAPFactory();
         final SOAPEnvelope envelope = omFactory.getDefaultEnvelope();
         envelope.declareNamespace("http://www.w3.org/1999/XMLSchema-instance/", "xsi");
         envelope.declareNamespace("http://www.w3.org/1999/XMLSchema", "xsd");
-        if (headerElements != null && headerElements.size() > 0) {
-            for (final OMElement header : headerElements) {
+        if ((this.headerElements != null) && !this.headerElements.isEmpty()) {
+            for (final OMElement header : this.headerElements) {
                 envelope.getHeader().addChild(header);
             }
         }
-        if (bodyElements != null && bodyElements.size() > 0) {
-            for (final OMElement paylod : bodyElements) {
+        if ((this.bodyElements != null) && !this.bodyElements.isEmpty()) {
+            for (final OMElement paylod : this.bodyElements) {
                 envelope.getBody().addChild(paylod);
             }
         }
@@ -165,7 +162,7 @@ public class Message implements java.io.Serializable {
     }
 
     public MessageContext call(final String soapAction, final String endpointURI) {
-        if (endpointURI == null || endpointURI.trim().equals("")) {
+        if ((endpointURI == null) || "".equals(endpointURI.trim())) {
             return null;
         }
         final EndpointReference targetEPR = new EndpointReference(endpointURI);
@@ -173,7 +170,7 @@ public class Message implements java.io.Serializable {
         options.setAction(soapAction);
         options.setTo(targetEPR);
         options.setProperty(Constants.Configuration.ENABLE_SWA, Constants.VALUE_TRUE);
-        if (soapVersion < 1.2) {
+        if (this.soapVersion < 1.2) {
             options.setSoapVersionURI(SOAP11Constants.SOAP_ENVELOPE_NAMESPACE_URI);
         } else {
             options.setSoapVersionURI(SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);
@@ -194,11 +191,11 @@ public class Message implements java.io.Serializable {
             sender.setOptions(options);
             final OperationClient mepClient = sender.createClient(ServiceClient.ANON_OUT_IN_OP);
 
-            mepClient.addMessageContext(getMessageContext());
+            mepClient.addMessageContext(this.getMessageContext());
             mepClient.execute(true);
             return mepClient.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
         } catch (AxisFault ex) {
-            log.error("Error while setting up OperationClient", ex);
+            Message.log.error("Error while setting up OperationClient", ex);
         }
         return null;
     }
@@ -217,13 +214,13 @@ public class Message implements java.io.Serializable {
         try {
             final BufferedOutputStream bout = new BufferedOutputStream(out);
             bout.write(cth.getBytes());
-            smf.writeTo(getMessageContext(), format, bout, true);
+            smf.writeTo(this.getMessageContext(), format, bout, true);
             bout.flush();
             bout.close();
         } catch (AxisFault ex) {
-            log.error("Error during serialization of message", ex);
+            Message.log.error("Error during serialization of message", ex);
         } catch (IOException e) {
-            log.error("I/O exception occured while writing message to outputstream", e);
+            Message.log.error("I/O exception occured while writing message to outputstream", e);
         }
     }
 }

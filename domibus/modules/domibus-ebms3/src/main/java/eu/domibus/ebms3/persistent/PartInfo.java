@@ -10,9 +10,11 @@ import java.util.Set;
 /**
  * @author Hamid Ben Malek
  */
+
+
 @Entity
 @Table(name = "TB_PART_INFO")
-public class PartInfo extends AbstractBaseEntity {
+public class PartInfo extends AbstractBaseEntity {   //TODO: rename to TB_PART
 
     @Column(name = "HREF")
     private String href;
@@ -33,6 +35,14 @@ public class PartInfo extends AbstractBaseEntity {
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
     private Set<Property> properties;
 
+    // eager loading because the payload is necessary in all cases
+    @Column(name = "PAYLOAD_DATA")
+    @Lob
+    private byte[] payloadData;
+
+    @Column(name = "BODY")
+    private boolean body;
+
     public PartInfo() {
     }
 
@@ -43,7 +53,7 @@ public class PartInfo extends AbstractBaseEntity {
     }
 
     public String getHref() {
-        return href;
+        return this.href;
     }
 
     public void setHref(final String href) {
@@ -51,7 +61,7 @@ public class PartInfo extends AbstractBaseEntity {
     }
 
     public String getSchemaLocation() {
-        return schemaLocation;
+        return this.schemaLocation;
     }
 
     public void setSchemaLocation(final String schemaLocation) {
@@ -59,7 +69,7 @@ public class PartInfo extends AbstractBaseEntity {
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     public void setDescription(final String desc) {
@@ -67,7 +77,7 @@ public class PartInfo extends AbstractBaseEntity {
     }
 
     public String getMimeType() {
-        return mimeType;
+        return this.mimeType;
     }
 
     public void setMimeType(final String mimeType) {
@@ -75,7 +85,7 @@ public class PartInfo extends AbstractBaseEntity {
     }
 
     public boolean isCompressed() {
-        return compressed;
+        return this.compressed;
     }
 
     public void setCompressed(final boolean compressed) {
@@ -84,18 +94,18 @@ public class PartInfo extends AbstractBaseEntity {
 
     // A convenient method:
     public String getCid() {
-        if (href == null || href.trim().equals("")) {
+        if ((this.href == null) || "".equals(this.href.trim())) {
             return null;
         }
-        if (href.startsWith("cid:")) {
-            return href.substring(4);
+        if (this.href.startsWith("cid:")) {
+            return this.href.substring(4);
         } else {
             return null;
         }
     }
 
     public Collection<Property> getProperties() {
-        return properties;
+        return this.properties;
     }
 
     public void setProperties(final Set<Property> properties) {
@@ -103,14 +113,30 @@ public class PartInfo extends AbstractBaseEntity {
     }
 
     public void addProperty(final Property property) {
-        if (properties == null) {
-            properties = new HashSet<Property>();
+        if (this.properties == null) {
+            this.properties = new HashSet<Property>();
         }
 
-        properties.add(property);
+        this.properties.add(property);
     }
 
     public void addProperty(final String name, final String value) {
-        addProperty(new Property(name, value));
+        this.addProperty(new Property(name, value));
+    }
+
+    public byte[] getPayloadData() {
+        return this.payloadData;
+    }
+
+    public void setPayloadData(final byte[] payloadData) {
+        this.payloadData = payloadData;
+    }
+
+    public boolean isBody() {
+        return this.body;
+    }
+
+    public void setBody(final boolean body) {
+        this.body = body;
     }
 }

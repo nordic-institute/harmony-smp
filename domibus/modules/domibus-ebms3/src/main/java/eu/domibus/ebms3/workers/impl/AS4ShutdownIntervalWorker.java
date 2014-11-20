@@ -1,10 +1,11 @@
 package eu.domibus.ebms3.workers.impl;
 
-import org.apache.log4j.Logger;
+import eu.domibus.common.persistent.TempStoreDAO;
 import eu.domibus.ebms3.config.As4Reliability;
 import eu.domibus.ebms3.module.AS4ReliabilityUtil;
 import eu.domibus.ebms3.persistent.ReceiptTracking;
 import eu.domibus.ebms3.persistent.ReceiptTrackingDAO;
+import org.apache.log4j.Logger;
 
 import java.util.Collection;
 
@@ -21,23 +22,24 @@ import java.util.Collection;
  * @see ReceiptTracking#STATUS_NO_RECEIPT
  */
 public class AS4ShutdownIntervalWorker implements Runnable {
-    private static final Logger log = Logger.getLogger(AS4ShutdownIntervalWorker.class);
+    private static final Logger LOG = Logger.getLogger(AS4ShutdownIntervalWorker.class);
     private final ReceiptTrackingDAO rtd = new ReceiptTrackingDAO();
+    private final TempStoreDAO tsd = new TempStoreDAO();
 
     @Override
     public void run() {
-        final Collection<ReceiptTracking> waitingReceiptTrackings = rtd.getAllWaitingForReceipt();
-        if (log.isInfoEnabled()) {
+        final Collection<ReceiptTracking> waitingReceiptTrackings = this.rtd.getAllWaitingForReceipt();
+        if (AS4ShutdownIntervalWorker.LOG.isInfoEnabled()) {
             final int messages = waitingReceiptTrackings.size();
             switch (messages) {
                 case 0:
-                    log.debug("No message is waiting for a receipt");
+                    AS4ShutdownIntervalWorker.LOG.debug("No message is waiting for a receipt");
                     break;
                 case 1:
-                    log.info("One message is waiting for a receipt");
+                    AS4ShutdownIntervalWorker.LOG.info("One message is waiting for a receipt");
                     break;
                 default:
-                    log.info(messages + " messages are waiting for a receipt");
+                    AS4ShutdownIntervalWorker.LOG.info(messages + " messages are waiting for a receipt");
                     break;
             }
         }
@@ -51,8 +53,8 @@ public class AS4ShutdownIntervalWorker implements Runnable {
 
             final As4Reliability as4Reliability = AS4ReliabilityUtil.getReliabilityConfig(pModeName);
             if (as4Reliability == null) {
-                log.error("No As4Reliability configuration found. " +
-                          "PMode=" + pModeName + "; messageID=" + messageID);
+                AS4ShutdownIntervalWorker.LOG.error("No As4Reliability configuration found. " +
+                                                    "PMode=" + pModeName + "; messageID=" + messageID);
                 continue;
             }
 
@@ -70,12 +72,15 @@ public class AS4ShutdownIntervalWorker implements Runnable {
                     shutdownInMilliseconds *= 1 << (receiptTracking.getRetries() - 1);
                 }
             }
-            if (now - receiptTracking.getLastTransmission().getTime() >= shutdownInMilliseconds) {
-                log.info("No receipt received after final (re)transmission. " +
-                         "PMode=" + pModeName + "; shutdown=" + shutdownInMilliseconds + " seconds; messageID=" +
-                         messageID);
-                rtd.updateTrackingStatus(ReceiptTracking.STATUS_NO_RECEIPT, messageID);
-                AS4ReliabilityUtil.removeAttachedFiles(messageID);
+            if ((now - receiptTracking.getLastTransmission().getTime()) >= shutdownInMilliseconds) {
+                AS4ShutdownIntervalWorker.LOG.warn("No receipt received after final (re)transmission. " +
+                                                   "PMode=" + pModeName + "; shutdown=" + shutdownInMilliseconds +
+                                                   " seconds; messageID=" +
+                                                   messageID);
+                this.rtd.updateTrackingStatus(ReceiptTracking.STATUS_NO_RECEIPT, messageID);
+
+                //TODO: remove attachments
+                this.tsd.deleteAttachments(messageID);
             }
         }
     }

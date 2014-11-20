@@ -4,11 +4,13 @@ package eu.domibus.ebms3.config;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
+import java.io.Serializable;
+
 /**
  * @author Hamid Ben Malek
  */
 @Root(name = "CollaborationInfo", strict = false)
-public class CollaborationInfo implements java.io.Serializable {
+public class CollaborationInfo implements Serializable {
     private static final long serialVersionUID = -5593316571234520737L;
 
     @Element(name = "Service")
@@ -26,7 +28,7 @@ public class CollaborationInfo implements java.io.Serializable {
     }
 
     public Service getService() {
-        return service;
+        return this.service;
     }
 
     public void setService(final Service service) {
@@ -34,7 +36,7 @@ public class CollaborationInfo implements java.io.Serializable {
     }
 
     public String getAction() {
-        return action;
+        return this.action;
     }
 
     public void setAction(final String action) {
@@ -42,10 +44,10 @@ public class CollaborationInfo implements java.io.Serializable {
     }
 
     public boolean equals(final Object obj) {
-        if (obj == null || !(obj instanceof CollaborationInfo)) {
+        if ((obj == null) || !(obj instanceof CollaborationInfo)) {
             return false;
         }
         final CollaborationInfo c = (CollaborationInfo) obj;
-        return action.equalsIgnoreCase(c.getAction()) && service.equals(c.getService());
+        return this.action.equalsIgnoreCase(c.getAction()) && this.service.equals(c.getService());
     }
 }

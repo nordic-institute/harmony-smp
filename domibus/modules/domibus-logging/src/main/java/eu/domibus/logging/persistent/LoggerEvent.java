@@ -1,8 +1,8 @@
 package eu.domibus.logging.persistent;
 
+import eu.domibus.common.persistent.AbstractBaseEntity;
 import org.apache.log4j.spi.LocationInfo;
 import org.apache.log4j.spi.LoggingEvent;
-import eu.domibus.common.persistent.AbstractBaseEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -45,18 +45,19 @@ public class LoggerEvent extends AbstractBaseEntity {
     protected String Msg;
 
     public LoggerEvent() {
-        LOGDate = new Date();
+        this.LOGDate = new Date();
     }
 
-    public LoggerEvent(final String logger, final String priority, final String log_ClassName, final String log_MethodName, final String log_LineNumber, final String msg) {
+    public LoggerEvent(final String logger, final String priority, final String log_ClassName,
+                       final String log_MethodName, final String log_LineNumber, final String msg) {
         super();
-        LOGDate = new Date();
-        Logger = logger;
-        Priority = priority;
-        Log_ClassName = log_ClassName;
-        Log_MethodName = log_MethodName;
-        Log_LineNumber = log_LineNumber;
-        Msg = msg;
+        this.LOGDate = new Date();
+        this.Logger = logger;
+        this.Priority = priority;
+        this.Log_ClassName = log_ClassName;
+        this.Log_MethodName = log_MethodName;
+        this.Log_LineNumber = log_LineNumber;
+        this.Msg = msg;
     }
 
     /**
@@ -69,67 +70,67 @@ public class LoggerEvent extends AbstractBaseEntity {
         this.LOGDate = new Date(event.getTimeStamp());
         this.Logger = event.getLoggerName();
         this.Priority = event.getLevel().toString();
-        Log_ClassName = locinfo.getClassName();
-        Log_MethodName = locinfo.getMethodName();
-        Log_LineNumber = locinfo.getLineNumber();
-        Msg = event.getMessage() == null ? "null" : event.getMessage().toString();
+        this.Log_ClassName = locinfo.getClassName();
+        this.Log_MethodName = locinfo.getMethodName();
+        this.Log_LineNumber = locinfo.getLineNumber();
+        this.Msg = event.getMessage() == null ? "null" : event.getMessage().toString();
     }
 
 
     public Date getLOGDate() {
-        return LOGDate;
+        return this.LOGDate;
     }
 
     public void setLOGDate(final Date lOGDate) {
-        LOGDate = lOGDate;
+        this.LOGDate = lOGDate;
     }
 
     public String getLogger() {
-        return Logger;
+        return this.Logger;
     }
 
     public void setLogger(final String logger) {
-        Logger = logger;
+        this.Logger = logger;
     }
 
     public String getPriority() {
-        return Priority;
+        return this.Priority;
     }
 
     public void setPriority(final String priority) {
-        Priority = priority;
+        this.Priority = priority;
     }
 
     public String getLog_ClassName() {
-        return Log_ClassName;
+        return this.Log_ClassName;
     }
 
     public void setLog_ClassName(final String log_ClassName) {
-        Log_ClassName = log_ClassName;
+        this.Log_ClassName = log_ClassName;
     }
 
     public String getLog_MethodName() {
-        return Log_MethodName;
+        return this.Log_MethodName;
     }
 
     public void setLog_MethodName(final String log_MethodName) {
-        Log_MethodName = log_MethodName;
+        this.Log_MethodName = log_MethodName;
     }
 
     public String getLog_LineNumber() {
-        return Log_LineNumber;
+        return this.Log_LineNumber;
     }
 
     public void setLog_LineNumber(final String log_LineNumber) {
-        Log_LineNumber = log_LineNumber;
+        this.Log_LineNumber = log_LineNumber;
     }
 
     public String getMsg() {
-        return Msg;
+        return this.Msg;
     }
 
     public void setMsg(final String msg) {
-        Msg = msg;
+        this.Msg = msg;
     }
 
     //TODO: remove this, as it is only used for a test and id should not be settable from external

@@ -3,11 +3,13 @@ package eu.domibus.ebms3.config;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 
+import java.io.Serializable;
+
 /**
  * @author Hamid Ben Malek
  */
 @Root(name = "Endpoint", strict = false)
-public class Endpoint implements java.io.Serializable {
+public class Endpoint implements Serializable {
     private static final long serialVersionUID = -8309197123450417779L;
 
     @Attribute(required = false)
@@ -25,7 +27,7 @@ public class Endpoint implements java.io.Serializable {
     }
 
     public String getAddress() {
-        return address;
+        return this.address;
     }
 
     public void setAddress(final String address) {
@@ -33,7 +35,7 @@ public class Endpoint implements java.io.Serializable {
     }
 
     public String getSoapVersion() {
-        return soapVersion;
+        return this.soapVersion;
     }
 
     public void setSoapVersion(final String version) {

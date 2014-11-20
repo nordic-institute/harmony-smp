@@ -6,7 +6,22 @@
 <web-app>
     <display-name>Apache-Axis2</display-name>
 
+
     <!-- ================================== Domibus Stuff =================================== -->
+
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/spring-dispatcher-servlet.xml</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>contextInitializerClasses</param-name>
+        <param-value>eu.eCODEX.spring.ContextInitializer</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
 
     <servlet>
         <servlet-name>Gateway</servlet-name>
@@ -15,6 +30,7 @@
         <load-on-startup>1</load-on-startup>
     </servlet>
     <!-- ================================ End of Domibus Stuff ============================== -->
+
 
     <!-- ===================================== Axis2 Stuff =================================== -->
     <servlet>
@@ -37,17 +53,6 @@
      <servlet>
         <servlet-name>ReloadPModeServlet</servlet-name>
         <servlet-class>eu.domibus.ebms3.util.ReloadPModeServlet</servlet-class>
-        <!-- <servlet-class>eu.domibus.ebms3.module.DomibusServlet</servlet-class> -->
-        <!--<init-param> -->
-        <!--<param-name>axis2.xml.path</param-name> -->
-        <!--<param-value>/WEB-INF/conf/axis2.xml</param-value> -->
-        <!--<param-name>axis2.xml.url</param-name> -->
-        <!--<param-value>http://localhot/myrepo/axis2.xml</param-value> -->
-        <!--<param-name>axis2.repository.path</param-name> -->
-        <!--<param-value>/WEB-INF</param-value> -->
-        <!--<param-name>axis2.repository.url</param-name> -->
-        <!--<param-value>http://localhot/myrepo</param-value> -->
-        <!--</init-param> -->
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet>

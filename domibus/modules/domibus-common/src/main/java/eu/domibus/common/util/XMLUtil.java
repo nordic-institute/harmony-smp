@@ -11,7 +11,12 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.util.XMLPrettyPrinter;
 import org.apache.log4j.Logger;
 import org.jaxen.JaxenException;
+import org.jdom.Document;
+import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
 
 import javax.xml.stream.*;
 import javax.xml.transform.*;
@@ -25,14 +30,14 @@ import java.util.List;
 
 public class XMLUtil {
 
-    private static OMFactory factory = OMAbstractFactory.getOMFactory();
+    private static final OMFactory factory = OMAbstractFactory.getOMFactory();
 
-    private static final Logger log = Logger.getLogger(XMLUtil.class);
+    private static final Logger LOG = Logger.getLogger(XMLUtil.class);
 
 
     public static OMElement newElement(final String localName, final String uri, final String prefix) {
-        final OMNamespace ns = factory.createOMNamespace(uri, prefix);
-        return factory.createOMElement(localName, ns);
+        final OMNamespace ns = XMLUtil.factory.createOMNamespace(uri, prefix);
+        return XMLUtil.factory.createOMElement(localName, ns);
     }
 
     public static String toString(final OMElement element) {
@@ -40,7 +45,7 @@ public class XMLUtil {
             return null;
         }
         final StringWriter sw = new StringWriter();
-        writeTo(element, sw);
+        XMLUtil.writeTo(element, sw);
         return sw.toString();
     }
 
@@ -51,14 +56,14 @@ public class XMLUtil {
             element.serialize(w);
             writer.flush();
         } catch (XMLStreamException ex) {
-            log.error("An unexpected error during the xml processing occured", ex);
+            XMLUtil.LOG.error("An unexpected error during the xml processing occured", ex);
         } catch (IOException e) {
-            log.error("Error while flushing writer", e);
+            XMLUtil.LOG.error("Error while flushing writer", e);
         }
     }
 
     public static void prettyPrint(final OMElement element, final String fileName) {
-        if (element == null || fileName == null || fileName.trim().equals("")) {
+        if ((element == null) || (fileName == null) || "".equals(fileName.trim())) {
             return;
         }
         try {
@@ -67,9 +72,9 @@ public class XMLUtil {
             fos.flush();
             fos.close();
         } catch (IOException ex) {
-            log.error("Error on FileOutStream operation", ex);
+            XMLUtil.LOG.error("Error on FileOutStream operation", ex);
         } catch (Exception e) {
-            log.error("Error while calling XMLPrettyPrinter on element");
+            XMLUtil.LOG.error("Error while calling XMLPrettyPrinter on element");
         }
     }
 
@@ -78,59 +83,59 @@ public class XMLUtil {
             return null;
         }
         try {
-            final java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+            final ByteArrayOutputStream bos = new ByteArrayOutputStream();
             XMLPrettyPrinter.prettify(element, bos);
             return bos.toString();
         } catch (Exception ex) {
-            log.error("Error while calling XMLPrettyPrinter on element");
+            XMLUtil.LOG.error("Error while calling XMLPrettyPrinter on element");
         }
         return element.toString();
     }
 
     public static void debug(final Logger log, final OMElement element) {
-        if (log == null || element == null) {
+        if ((log == null) || (element == null)) {
             return;
         }
-        log.debug(prettyToString(element));
+        log.debug(XMLUtil.prettyToString(element));
     }
 
     public static void debug(final Logger log, final String message, final OMElement element) {
-        if (log == null || element == null) {
+        if ((log == null) || (element == null)) {
             return;
         }
-        log.debug(message + " " + prettyToString(element));
+        log.debug(message + " " + XMLUtil.prettyToString(element));
     }
 
     public static void info(final Logger log, final OMElement element) {
-        if (log == null || element == null) {
+        if ((log == null) || (element == null)) {
             return;
         }
-        log.info(prettyToString(element));
+        log.info(XMLUtil.prettyToString(element));
     }
 
     public static void info(final Logger log, final String message, final OMElement element) {
-        if (log == null || element == null) {
+        if ((log == null) || (element == null)) {
             return;
         }
-        log.info(message + " " + prettyToString(element));
+        log.info(message + " " + XMLUtil.prettyToString(element));
     }
 
     public static void error(final Logger log, final OMElement element) {
-        if (log == null || element == null) {
+        if ((log == null) || (element == null)) {
             return;
         }
-        log.error(prettyToString(element));
+        log.error(XMLUtil.prettyToString(element));
     }
 
     public static void error(final Logger log, final String message, final OMElement element) {
-        if (log == null || element == null) {
+        if ((log == null) || (element == null)) {
             return;
         }
-        log.error(message + " " + prettyToString(element));
+        log.error(message + " " + XMLUtil.prettyToString(element));
     }
 
     public static OMElement toOMElement(final String xml) {
-        if (xml == null || xml.trim().equals("")) {
+        if ((xml == null) || "".equals(xml.trim())) {
             return null;
         }
         final OMElement element = null;
@@ -141,15 +146,15 @@ public class XMLUtil {
             final StAXOMBuilder builder = new StAXOMBuilder(reader);
             return builder.getDocumentElement();
         } catch (FactoryConfigurationError e) {
-            log.error("FactoryConfigurationError during toElement", e);
+            XMLUtil.LOG.error("FactoryConfigurationError during toElement", e);
         } catch (XMLStreamException e) {
-            log.error("Problem while XML Stream processing", e);
+            XMLUtil.LOG.error("Problem while XML Stream processing", e);
         }
         return element;
     }
 
     public static OMElement rootElement(final File xmlFile) {
-        if (xmlFile == null || !xmlFile.exists()) {
+        if ((xmlFile == null) || !xmlFile.exists()) {
             return null;
         }
         try {
@@ -159,11 +164,11 @@ public class XMLUtil {
             final StAXOMBuilder builder = new StAXOMBuilder(reader);
             return builder.getDocumentElement();
         } catch (FactoryConfigurationError e) {
-            log.error("FactoryConfigurationError during toElement", e);
+            XMLUtil.LOG.error("FactoryConfigurationError during toElement", e);
         } catch (XMLStreamException e) {
-            log.error("Problem while XML Stream processing", e);
+            XMLUtil.LOG.error("Problem while XML Stream processing", e);
         } catch (FileNotFoundException e) {
-            log.error("Error while reading XMLFile. File not found", e);
+            XMLUtil.LOG.error("Error while reading XMLFile. File not found", e);
         }
         return null;
     }
@@ -178,23 +183,23 @@ public class XMLUtil {
             final StAXOMBuilder builder = new StAXOMBuilder(reader);
             return builder.getDocumentElement();
         } catch (FactoryConfigurationError e) {
-            log.error("FactoryConfigurationError during toElement", e);
+            XMLUtil.LOG.error("FactoryConfigurationError during toElement", e);
         } catch (XMLStreamException e) {
-            log.error("Problem while XML Stream processing", e);
+            XMLUtil.LOG.error("Problem while XML Stream processing", e);
         }
         return null;
     }
 
     public static OMAttribute getAttribute(final OMElement element, final String attLocalName) {
-        if (element == null || attLocalName == null ||
-            attLocalName.trim().equals("")) {
+        if ((element == null) || (attLocalName == null) ||
+            "".equals(attLocalName.trim())) {
             return null;
         }
         final Iterator it = element.getAllAttributes();
         OMAttribute att = null;
-        while (it != null && it.hasNext()) {
+        while ((it != null) && it.hasNext()) {
             att = (OMAttribute) it.next();
-            if (att != null && att.getLocalName().equals(attLocalName)) {
+            if ((att != null) && att.getLocalName().equals(attLocalName)) {
                 return att;
             }
         }
@@ -202,7 +207,7 @@ public class XMLUtil {
     }
 
     public static String getAttributeValue(final OMElement element, final String attLocalName) {
-        final OMAttribute att = getAttribute(element, attLocalName);
+        final OMAttribute att = XMLUtil.getAttribute(element, attLocalName);
         if (att != null) {
             return att.getAttributeValue();
         } else {
@@ -211,7 +216,7 @@ public class XMLUtil {
     }
 
     public static void addAttributeTo(final OMElement element, final String attName, final String attValue) {
-        if (element == null || (attName == null || attName.trim().equals(""))) {
+        if ((element == null) || ((attName == null) || "".equals(attName.trim()))) {
             return;
         }
         final OMAttribute att = element.getOMFactory().createOMAttribute(attName, null, attValue);
@@ -220,11 +225,11 @@ public class XMLUtil {
 
     public static void addAttributeTo(final OMElement element, final String attName, final String uri,
                                       final String prefix, final String attValue) {
-        if (element == null || (attName == null || attName.trim().equals(""))) {
+        if ((element == null) || ((attName == null) || "".equals(attName.trim()))) {
             return;
         }
         OMNamespace ns = null;
-        if (uri != null || prefix != null) {
+        if ((uri != null) || (prefix != null)) {
             if (uri == null) {
                 ns = element.findNamespaceURI(prefix);
             }
@@ -237,11 +242,11 @@ public class XMLUtil {
     }
 
     public static OMElement getFirstChildWithName(final OMElement parent, final String childName) {
-        if (parent == null || childName == null || childName.trim().equals("")) {
+        if ((parent == null) || (childName == null) || "".equals(childName.trim())) {
             return null;
         }
         final Iterator it = parent.getChildElements();
-        if (it == null || !it.hasNext()) {
+        if ((it == null) || !it.hasNext()) {
             return null;
         }
         Object obj = null;
@@ -260,15 +265,15 @@ public class XMLUtil {
 
     public static OMElement getFirstChildWithNameNS(final OMElement root, final String localName,
                                                     final String namespaceURI) {
-        if (localName == null || localName.trim().equals("") || root == null) {
+        if ((localName == null) || "".equals(localName.trim()) || (root == null)) {
             return null;
         }
         final Iterator<?> it = root.getChildren();
-        while (it != null && it.hasNext()) {
+        while ((it != null) && it.hasNext()) {
             final Object object = it.next();
             if (object instanceof OMElement) {
                 final OMElement element = (OMElement) object;
-                if (element.getLocalName().equals(localName) && hasNamespaceURI(element, namespaceURI)) {
+                if (element.getLocalName().equals(localName) && XMLUtil.hasNamespaceURI(element, namespaceURI)) {
                     return element;
                 }
             }
@@ -277,15 +282,15 @@ public class XMLUtil {
     }
 
     public static OMElement getFirstGrandChildWithName(final OMElement root, final String localName) {
-        if (root == null || localName == null || localName.trim().equals("")) {
+        if ((root == null) || (localName == null) || "".equals(localName.trim())) {
             return null;
         }
         final Iterator it = root.getChildElements();
-        if (it == null || !it.hasNext()) {
+        if ((it == null) || !it.hasNext()) {
             return null;
         }
         OMElement result = null;
-        result = getFirstChildWithName(root, localName);
+        result = XMLUtil.getFirstChildWithName(root, localName);
         if (result != null) {
             return result;
         }
@@ -296,7 +301,7 @@ public class XMLUtil {
             obj = it.next();
             if (obj instanceof OMElement) {
                 child = (OMElement) obj;
-                result = getFirstGrandChildWithName(child, localName);
+                result = XMLUtil.getFirstGrandChildWithName(child, localName);
                 if (result != null) {
                     return result;
                 }
@@ -309,16 +314,16 @@ public class XMLUtil {
     // will be used by modules
     public static String getGrandChildAttributeValue(final OMElement root, final String localName,
                                                      final String attributeName) {
-        final OMElement gc = getFirstGrandChildWithName(root, localName);
+        final OMElement gc = XMLUtil.getFirstGrandChildWithName(root, localName);
         if (gc == null) {
             return null;
         }
-        return getAttributeValue(gc, attributeName);
+        return XMLUtil.getAttributeValue(gc, attributeName);
     }
 
     // will be used by modules
     public static String getGrandChildValue(final OMElement root, final String localName) {
-        final OMElement gc = getFirstGrandChildWithName(root, localName);
+        final OMElement gc = XMLUtil.getFirstGrandChildWithName(root, localName);
         if (gc == null) {
             return null;
         }
@@ -328,17 +333,17 @@ public class XMLUtil {
     // will be used by modules
     public static OMElement getGrandChildNameNS(final OMElement root, final String _localName,
                                                 final String namespaceURI) {
-        if (_localName == null || _localName.trim().equals("") || root == null) {
+        if ((_localName == null) || "".equals(_localName.trim()) || (root == null)) {
             return null;
         }
         final Iterator it = root.getChildElements();
         OMElement e = null;
-        while (it != null && it.hasNext()) {
+        while ((it != null) && it.hasNext()) {
             e = (OMElement) it.next();
-            if (e.getLocalName().equals(_localName) && hasNamespaceURI(e, namespaceURI)) {
+            if (e.getLocalName().equals(_localName) && XMLUtil.hasNamespaceURI(e, namespaceURI)) {
                 return e;
             }
-            final OMElement temp = getGrandChildNameNS(e, _localName, namespaceURI);
+            final OMElement temp = XMLUtil.getGrandChildNameNS(e, _localName, namespaceURI);
             if (temp != null) {
                 return temp;
             }
@@ -348,19 +353,19 @@ public class XMLUtil {
 
     public static List<OMElement> getGrandChildrenNameNS(final OMElement root, final String _localName,
                                                          final String namespaceURI) {
-        if (_localName == null || _localName.trim().equals("") || root == null) {
+        if ((_localName == null) || "".equals(_localName.trim()) || (root == null)) {
             return null;
         }
         final List<OMElement> result = new ArrayList<OMElement>();
         final Iterator it = root.getChildElements();
         OMElement e = null;
-        while (it != null && it.hasNext()) {
+        while ((it != null) && it.hasNext()) {
             e = (OMElement) it.next();
-            if (e.getLocalName().equals(_localName) && hasNamespaceURI(e, namespaceURI)) {
+            if (e.getLocalName().equals(_localName) && XMLUtil.hasNamespaceURI(e, namespaceURI)) {
                 result.add(e);
             }
-            final List<OMElement> tmp = getGrandChildrenNameNS(e, _localName, namespaceURI);
-            if (tmp != null && tmp.size() > 0) {
+            final List<OMElement> tmp = XMLUtil.getGrandChildrenNameNS(e, _localName, namespaceURI);
+            if ((tmp != null) && !tmp.isEmpty()) {
                 result.addAll(tmp);
             }
         }
@@ -368,19 +373,19 @@ public class XMLUtil {
     }
 
     public static List<OMElement> getGrandChildrenName(final OMElement root, final String _localName) {
-        if (_localName == null || _localName.trim().equals("") || root == null) {
+        if ((_localName == null) || "".equals(_localName.trim()) || (root == null)) {
             return null;
         }
         final List<OMElement> result = new ArrayList<OMElement>();
         final Iterator it = root.getChildElements();
         OMElement e = null;
-        while (it != null && it.hasNext()) {
+        while ((it != null) && it.hasNext()) {
             e = (OMElement) it.next();
             if (e.getLocalName().equals(_localName)) {
                 result.add(e);
             }
-            final List<OMElement> tmp = getGrandChildrenName(e, _localName);
-            if (tmp != null && tmp.size() > 0) {
+            final List<OMElement> tmp = XMLUtil.getGrandChildrenName(e, _localName);
+            if ((tmp != null) && !tmp.isEmpty()) {
                 result.addAll(tmp);
             }
         }
@@ -391,57 +396,57 @@ public class XMLUtil {
         if (e == null) {
             return false;
         }
-        if (e.getNamespace() != null &&
-            e.getNamespace().getNamespaceURI() != null &&
-            uri != null && e.getNamespace().getNamespaceURI().equals(uri)) {
+        if ((e.getNamespace() != null) &&
+            (e.getNamespace().getNamespaceURI() != null) &&
+            (uri != null) && e.getNamespace().getNamespaceURI().equals(uri)) {
             return true;
         }
-        return e.getNamespace() == null && (uri == null || uri.trim().equals(""));
+        return (e.getNamespace() == null) && ((uri == null) || "".equals(uri.trim()));
     }
 
-    public static org.jdom.Element toJdomElement(final OMElement omElement) {
+    public static Element toJdomElement(final OMElement omElement) {
         if (omElement == null) {
             return null;
         }
         omElement.build();
         final StringWriter sw = new StringWriter();
-        writeTo(omElement, sw);
+        XMLUtil.writeTo(omElement, sw);
         final StringReader sr = new StringReader(sw.toString());
         try {
-            final org.jdom.input.SAXBuilder builder = new org.jdom.input.SAXBuilder();
+            final SAXBuilder builder = new SAXBuilder();
             return builder.build(sr).getRootElement();
         } catch (JDOMException ex) {
-            log.error("Error while parsing XML", ex);
+            XMLUtil.LOG.error("Error while parsing XML", ex);
         } catch (IOException e) {
-            log.error("I/O exception prevents document from being fully parsed", e);
+            XMLUtil.LOG.error("I/O exception prevents document from being fully parsed", e);
         } finally {
             return null;
         }
     }
 
-    public static OMElement toOMElement(final org.jdom.Element element) {
+    public static OMElement toOMElement(final Element element) {
         if (element == null) {
             return null;
         }
-        final String xml = toXML(element);
+        final String xml = XMLUtil.toXML(element);
         final ByteArrayOutputStream out = new ByteArrayOutputStream();
         final PrintWriter pw = new PrintWriter(out);
         pw.write(xml);
         pw.close();
         final ByteArrayInputStream in = new ByteArrayInputStream(out.toByteArray());
-        return rootElement(in);
+        return XMLUtil.rootElement(in);
     }
 
-    public static String toXML(final org.jdom.Element element) {
+    public static String toXML(final Element element) {
         String xml = null;
         try {
-            final org.jdom.output.XMLOutputter xo = new org.jdom.output.XMLOutputter();
-            xo.setFormat(org.jdom.output.Format.getPrettyFormat());
+            final XMLOutputter xo = new XMLOutputter();
+            xo.setFormat(Format.getPrettyFormat());
             final StringWriter st = new StringWriter();
             xo.output(element, st);
             xml = st.toString();
         } catch (IOException e) {
-            log.error("I/O exception prevents document from being fully parsed", e);
+            XMLUtil.LOG.error("I/O exception prevents document from being fully parsed", e);
         }
         return xml;
     }
@@ -461,7 +466,7 @@ public class XMLUtil {
     }
 
     public static OMElement performXLST(final InputStream styleSheet, final OMElement source) {
-        if (styleSheet == null || source == null) {
+        if ((styleSheet == null) || (source == null)) {
             return source;
         }
         try {
@@ -478,16 +483,16 @@ public class XMLUtil {
             final StAXOMBuilder builder = new StAXOMBuilder(new ByteArrayInputStream(baosForTarget.toByteArray()));
             return builder.getDocumentElement();
         } catch (XMLStreamException e) {
-            log.error("Error while reading XML file");
+            XMLUtil.LOG.error("Error while reading XML file");
         } catch (TransformerConfigurationException e) {
-            log.error("XMl Transformer was not configured sufficiently");
+            XMLUtil.LOG.error("XMl Transformer was not configured sufficiently");
         } catch (TransformerException e) {
-            log.error("Error occured during XML Transformation", e);
+            XMLUtil.LOG.error("Error occured during XML Transformation", e);
         }
         return source;
     }
 
-    public static org.jdom.Element performXLST(final InputStream stylesheetFile, final org.jdom.Element sourceDoc) {
+    public static Element performXLST(final InputStream stylesheetFile, final Element sourceDoc) {
         try {
             final TransformerFactory transformerFactory = TransformerFactory.newInstance();
             final Templates stylesheet = transformerFactory.newTemplates(new StreamSource(stylesheetFile));
@@ -502,7 +507,7 @@ public class XMLUtil {
             // Convert the output target for use in Xalan-J 2
             final StreamResult result = new StreamResult(resultOut);
             // Get a means for output of the JDOM Document
-            final org.jdom.output.XMLOutputter xmlOutputter = new org.jdom.output.XMLOutputter();
+            final XMLOutputter xmlOutputter = new XMLOutputter();
             // Output to the I/O stream
             xmlOutputter.output(sourceDoc, sourceOut);
             sourceOut.close();
@@ -510,35 +515,35 @@ public class XMLUtil {
             processor.transform(source, result);
             resultOut.close();
             // Convert the resultant transformed document back to JDOM
-            final org.jdom.input.SAXBuilder builder = new org.jdom.input.SAXBuilder();
-            final org.jdom.Document resultDoc = builder.build(resultIn);
+            final SAXBuilder builder = new SAXBuilder();
+            final Document resultDoc = builder.build(resultIn);
             return resultDoc.getRootElement();
         } catch (TransformerConfigurationException ex) {
-            log.error("XMl Transformer was not configured sufficiently");
+            XMLUtil.LOG.error("XMl Transformer was not configured sufficiently");
         } catch (JDOMException e) {
-            log.error("Error while parsing XML", e);
+            XMLUtil.LOG.error("Error while parsing XML", e);
         } catch (TransformerException e) {
-            log.error("Error occured during XML Transformation", e);
+            XMLUtil.LOG.error("Error occured during XML Transformation", e);
         } catch (IOException e) {
-            log.error("I/O exception prevents document from being fully parsed", e);
+            XMLUtil.LOG.error("I/O exception prevents document from being fully parsed", e);
         } finally {
             return null;
         }
     }
 
     public static OMElement performXLST(final String xsltFile, final OMElement source) {
-        if (xsltFile == null || xsltFile.trim().equals("") || source == null) {
+        if ((xsltFile == null) || "".equals(xsltFile.trim()) || (source == null)) {
             return source;
         }
         final File xsl = new File(xsltFile);
         if (!xsl.exists()) {
-            log.error("xslt file: " + xsltFile + " does not exist");
+            XMLUtil.LOG.error("xslt file: " + xsltFile + " does not exist");
             return source;
         }
         try {
-            return performXLST(new FileInputStream(xsltFile), source);
+            return XMLUtil.performXLST(new FileInputStream(xsltFile), source);
         } catch (Exception e) {
-           log.error("Error while XSLT processing", e);
+            XMLUtil.LOG.error("Error while XSLT processing", e);
         }
         return source;
     }
@@ -548,15 +553,15 @@ public class XMLUtil {
             final AXIOMXPath sourceXPath = new AXIOMXPath(xpathExpression);
             sourceXPath.addNamespace("SOAP-ENV", context.isSOAP11() ? SOAP11Constants.SOAP_ENVELOPE_NAMESPACE_URI :
                                                  SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);
-            log.debug("Transformation against source element evaluated by : " + sourceXPath);
+            XMLUtil.LOG.debug("Transformation against source element evaluated by : " + sourceXPath);
             final Object o = sourceXPath.evaluate(context.getEnvelope());
             if (o instanceof OMNode) {
                 return (OMNode) o;
-            } else if (o instanceof List && !((List) o).isEmpty()) {
+            } else if ((o instanceof List) && !((List) o).isEmpty()) {
                 return (OMNode) ((List) o).get(0);  // Always fetches *only* the first
             }
         } catch (JaxenException e) {
-            log.error("Syntax error while parsing xpathexpression", e);
+            XMLUtil.LOG.error("Syntax error while parsing xpathexpression", e);
         }
         return null;
     }
@@ -565,7 +570,7 @@ public class XMLUtil {
         if (source == null) {
             return null;
         }
-        if (xpathExpression == null || xpathExpression.trim().equals("")) {
+        if ((xpathExpression == null) || "".equals(xpathExpression.trim())) {
             return null;
         }
         try {
@@ -577,28 +582,28 @@ public class XMLUtil {
          return (OMNode) ((List) o).get(0);
       if ( o == null ) return null;
       */
-            log.debug(">>>>====== evaluating xpath " + xpathExpression);
+            XMLUtil.LOG.trace(">>>>====== evaluating xpath " + xpathExpression);
             final List result = sourceXPath.selectNodes(source);
-            if (result == null || result.size() == 0) {
+            if ((result == null) || result.isEmpty()) {
                 return null;
             }
 
             // Debugging:
             if (result.get(0) == null) {
-                log.debug("node is null");
+                XMLUtil.LOG.trace("node is null");
             } else {
-                log.debug("node is not null");
+                XMLUtil.LOG.debug("node is not null");
             }
-            log.debug("node's type is " + result.get(0).getClass().getName());
+            XMLUtil.LOG.trace("node's type is " + result.get(0).getClass().getName());
             if (result.get(0) instanceof OMAttribute) {
-                log.debug("node is an instance of OMAttribute");
+                XMLUtil.LOG.trace("node is an instance of OMAttribute");
             } else {
-                log.debug("node is not an instance of OMAttribute");
+                XMLUtil.LOG.trace("node is not an instance of OMAttribute");
             }
 
             return result.get(0);
         } catch (JaxenException e) {
-            log.error("Syntax error while parsing xpathexpression", e);
+            XMLUtil.LOG.error("Syntax error while parsing xpathexpression", e);
         }
         return null;
     }
@@ -607,7 +612,7 @@ public class XMLUtil {
         if (source == null) {
             return null;
         }
-        if (xpathExpression == null || xpathExpression.trim().equals("")) {
+        if ((xpathExpression == null) || "".equals(xpathExpression.trim())) {
             return null;
         }
         final List<OMNode> result = new ArrayList<OMNode>();
@@ -618,7 +623,7 @@ public class XMLUtil {
                 result.add((OMNode) o);
                 return result;
             }
-            if (o instanceof List && !((List) o).isEmpty()) {
+            if ((o instanceof List) && !((List) o).isEmpty()) {
                 return ((List<OMNode>) o);
             }
 
@@ -626,14 +631,14 @@ public class XMLUtil {
                 return null;
             }
         } catch (JaxenException e) {
-            log.error("Syntax error while parsing xpathexpression", e);
+            XMLUtil.LOG.error("Syntax error while parsing xpathexpression", e);
         }
         return null;
     }
 
     public static OMElement performXLST(final URL xsltUrl, final String xpathExpression, final MessageContext context) {
         try {
-            final OMNode sourceNode = evaluate(xpathExpression, context);
+            final OMNode sourceNode = XMLUtil.evaluate(xpathExpression, context);
             if (sourceNode == null) {
                 return null;
             }
@@ -646,7 +651,7 @@ public class XMLUtil {
             final XMLStreamWriter xsWriterForSource =
                     XMLOutputFactory.newInstance().createXMLStreamWriter(baosForSource);
 
-            log.debug("Transformation source : " + sourceNode);
+            XMLUtil.LOG.debug("Transformation source : " + sourceNode);
             sourceNode.serialize(xsWriterForSource);
             final Source transformSrc = new StreamSource(new ByteArrayInputStream(baosForSource.toByteArray()));
 
@@ -659,13 +664,13 @@ public class XMLUtil {
             final StAXOMBuilder builder = new StAXOMBuilder(new ByteArrayInputStream(baosForTarget.toByteArray()));
             return builder.getDocumentElement();
         } catch (TransformerConfigurationException ex) {
-            log.error("XMl Transformer was not configured sufficiently");
+            XMLUtil.LOG.error("XMl Transformer was not configured sufficiently");
         } catch (XMLStreamException e) {
-            log.error("Error while reading XML file");
+            XMLUtil.LOG.error("Error while reading XML file");
         } catch (TransformerException e) {
-            log.error("Error occured during XML Transformation", e);
+            XMLUtil.LOG.error("Error occured during XML Transformation", e);
         } catch (IOException e) {
-            log.error("I/O exception prevents document from being fully parsed", e);
+            XMLUtil.LOG.error("I/O exception prevents document from being fully parsed", e);
         }
         return null;
     }

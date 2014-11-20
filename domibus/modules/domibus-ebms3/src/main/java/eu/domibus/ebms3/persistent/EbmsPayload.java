@@ -22,7 +22,7 @@ public class EbmsPayload extends AbstractBaseEntity {
 
     @Attribute(required = false)
     @Column(name = "COMPRESSED")
-    protected boolean compressed = false;
+    protected boolean compressed;
 
     @Attribute(required = false)
     @Column(name = "DESCRIPTION")
@@ -37,8 +37,8 @@ public class EbmsPayload extends AbstractBaseEntity {
     protected String schemaLocation;
 
     @Element(required = true)
-    @Column(name = "FILE_NAME")
-    protected String file;
+    @Column(name = "TEMP_STORE")
+    protected String fileName;
 
     @Element(name = "PartProperties", required = false)
     @JoinColumn(name = "EBMS_PAYLOAD_ID")
@@ -46,7 +46,7 @@ public class EbmsPayload extends AbstractBaseEntity {
     protected PartProperties partProperties;
 
     public String getCid() {
-        return cid;
+        return this.cid;
     }
 
     public void setCid(final String cid) {
@@ -54,7 +54,7 @@ public class EbmsPayload extends AbstractBaseEntity {
     }
 
     public boolean isCompressed() {
-        return compressed;
+        return this.compressed;
     }
 
     public void setCompressed(final boolean compressed) {
@@ -62,7 +62,7 @@ public class EbmsPayload extends AbstractBaseEntity {
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     public void setDescription(final String description) {
@@ -70,7 +70,7 @@ public class EbmsPayload extends AbstractBaseEntity {
     }
 
     public String getSchemaLocation() {
-        return schemaLocation;
+        return this.schemaLocation;
     }
 
     public void setSchemaLocation(final String schemaLocation) {
@@ -78,15 +78,19 @@ public class EbmsPayload extends AbstractBaseEntity {
     }
 
     public String getFile() {
-        return file;
+        return this.fileName.substring(this.fileName.lastIndexOf("/") + 1);
     }
 
-    public void setFile(final String file) {
-        this.file = file;
+    public void setQualifiedFileName(final String file) {
+        this.fileName = file.replace('\\', '/');
+    }
+
+    public String getQualifiedFileName() {
+        return this.fileName;
     }
 
     public PartProperties getPartProperties() {
-        return partProperties;
+        return this.partProperties;
     }
 
     public void setPartProperties(final PartProperties partProperties) {
@@ -94,36 +98,36 @@ public class EbmsPayload extends AbstractBaseEntity {
     }
 
     public Map<String, String> getPartPropertiesMap() {
-        if (partProperties != null) {
-            return partProperties.getPartProperties();
+        if (this.partProperties != null) {
+            return this.partProperties.getPartProperties();
         } else {
             return null;
         }
     }
 
     public void setPartPropertiesMap(final Map<String, String> props) {
-        if (partProperties == null) {
-            partProperties = new PartProperties();
+        if (this.partProperties == null) {
+            this.partProperties = new PartProperties();
         }
-        partProperties.setPartProperties(props);
+        this.partProperties.setPartProperties(props);
     }
 
     public void addPartProperties(final String name, final String value) {
-        if (partProperties == null) {
-            partProperties = new PartProperties();
+        if (this.partProperties == null) {
+            this.partProperties = new PartProperties();
         }
-        partProperties.addProperty(name, value);
+        this.partProperties.addProperty(name, value);
     }
 
     public String getPartProperties(final String propertyName) {
-        if (partProperties == null) {
-            partProperties = new PartProperties();
+        if (this.partProperties == null) {
+            this.partProperties = new PartProperties();
         }
-        return partProperties.getProperty(propertyName);
+        return this.partProperties.getProperty(propertyName);
     }
 
     public String getContentType() {
-        return contentType;
+        return this.contentType;
     }
 
     public void setContentType(final String contentType) {
@@ -132,9 +136,11 @@ public class EbmsPayload extends AbstractBaseEntity {
 
     @Override
     public String toString() {
-        return "EbmsPayload [cid=" + cid + ", compressed=" + compressed + ", description=" + description +
-               ", contentType=" + contentType + ", schemaLocation=" + schemaLocation + ", file=" + file +
-               ", partProperties=" + partProperties + "]";
+        return "EbmsPayload [cid=" + this.cid + ", compressed=" + this.compressed + ", description=" +
+               this.description +
+               ", contentType=" + this.contentType + ", schemaLocation=" + this.schemaLocation + ", file=" +
+               this.fileName +
+               ", partProperties=" + this.partProperties + "]";
     }
 
 }

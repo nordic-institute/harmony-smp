@@ -1,5 +1,6 @@
 package eu.domibus.security.module;
 
+import eu.domibus.common.util.JNDIUtil;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisDescription;
@@ -8,7 +9,6 @@ import org.apache.axis2.modules.Module;
 import org.apache.log4j.Logger;
 import org.apache.neethi.Assertion;
 import org.apache.neethi.Policy;
-import eu.domibus.common.util.JNDIUtil;
 
 import java.util.Timer;
 
@@ -20,23 +20,22 @@ public class SecurityModule implements Module {
 
 
     public void init(final ConfigurationContext configContext, final AxisModule module) throws AxisFault {
-        if (log.isDebugEnabled()) {
-            log.debug("initialization..., ");
+        if (SecurityModule.log.isDebugEnabled()) {
+            SecurityModule.log.debug("initialization..., ");
         }
 
 
         // Load the security config file, usually domibus/config/security-config.xml
         Configuration.loadSecurityConfiguration();
         // Reload the security config file if its file timestamp changes
-        final int timeout = getSecurityConfigFileCheckTimeout(module);
+        final int timeout = this.getSecurityConfigFileCheckTimeout(module);
         //    System.out.println(SecurityUtil.SECCONFIG_TIMEOUT + " = " + timeout + " ms");
         new Timer().schedule(new ConfigurationAutoUpdate(), timeout, timeout);
-        log.debug("Domibus-Security module started");
+        SecurityModule.log.debug("Domibus-Security module started");
     }
 
     private int getSecurityConfigFileCheckTimeout(final AxisModule module) {
         return Integer.parseInt(JNDIUtil.getStringEnvironmentParameter(Constants.SECURITY_RELOAD_PARAMETER));
-
     }
 
 

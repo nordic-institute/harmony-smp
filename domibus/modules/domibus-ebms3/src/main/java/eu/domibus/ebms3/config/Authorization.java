@@ -3,11 +3,13 @@ package eu.domibus.ebms3.config;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 
+import java.io.Serializable;
+
 /**
  * @author Hamid Ben Malek
  */
 @Root(name = "Authorization", strict = false)
-public class Authorization implements java.io.Serializable {
+public class Authorization implements Serializable {
     private static final long serialVersionUID = 746582737443013947L;
 
     public static final String USERNAME_TOKEN = "UsernameToken";
@@ -24,29 +26,29 @@ public class Authorization implements java.io.Serializable {
 
 
     public Authorization(final String type, final String username, final String password) {
-        if (type != null && type.equalsIgnoreCase(USERNAME_TOKEN)) {
-            this.type = USERNAME_TOKEN;
-        } else if (type != null && type.equalsIgnoreCase(SIGNATURE)) {
-            this.type = SIGNATURE;
+        if ((type != null) && type.equalsIgnoreCase(Authorization.USERNAME_TOKEN)) {
+            this.type = Authorization.USERNAME_TOKEN;
+        } else if ((type != null) && type.equalsIgnoreCase(Authorization.SIGNATURE)) {
+            this.type = Authorization.SIGNATURE;
         }
         this.username = username;
         this.password = password;
     }
 
     public String getType() {
-        return type;
+        return this.type;
     }
 
     public void setType(final String type) {
-        if (type != null && type.equalsIgnoreCase(USERNAME_TOKEN)) {
-            this.type = USERNAME_TOKEN;
-        } else if (type != null && type.equalsIgnoreCase(SIGNATURE)) {
-            this.type = SIGNATURE;
+        if ((type != null) && type.equalsIgnoreCase(Authorization.USERNAME_TOKEN)) {
+            this.type = Authorization.USERNAME_TOKEN;
+        } else if ((type != null) && type.equalsIgnoreCase(Authorization.SIGNATURE)) {
+            this.type = Authorization.SIGNATURE;
         }
     }
 
     public String getUsername() {
-        return username;
+        return this.username;
     }
 
     public void setUsername(final String username) {
@@ -54,7 +56,7 @@ public class Authorization implements java.io.Serializable {
     }
 
     public String getPassword() {
-        return password;
+        return this.password;
     }
 
     public void setPassword(final String password) {
@@ -62,6 +64,6 @@ public class Authorization implements java.io.Serializable {
     }
 
     public boolean isUsernameToken() {
-        return type.equalsIgnoreCase(USERNAME_TOKEN);
+        return this.type.equalsIgnoreCase(Authorization.USERNAME_TOKEN);
     }
 }

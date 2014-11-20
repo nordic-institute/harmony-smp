@@ -42,50 +42,50 @@ public class SubmitUtil {
      */
     public static int msgCategory(final MsgInfoSet mis) {
         if (mis == null) {
-            return TO_BE_PUSHED;
+            return SubmitUtil.TO_BE_PUSHED;
         }
 
         final String mep = Configuration.getMep(mis);
         //    Binding binding = getBinding(mis);
         //    String mep = binding.getMep();
-        final int ln = getLegNumber(mis);
+        final int ln = SubmitUtil.getLegNumber(mis);
         //getLegNumber(mep, binding.getFirstLeg().getAddress());
         if (mep.equalsIgnoreCase(Constants.ONE_WAY_PUSH)) {
-            return TO_BE_PUSHED;
+            return SubmitUtil.TO_BE_PUSHED;
         }
         if (mep.equalsIgnoreCase(Constants.ONE_WAY_PULL)) {
-            return TO_BE_PULLED;
+            return SubmitUtil.TO_BE_PULLED;
         }
         if (mep.equalsIgnoreCase(Constants.TWO_WAY_SYNC)) {
             if (ln == 1) {
-                return TO_BE_PUSHED;
+                return SubmitUtil.TO_BE_PUSHED;
             } else {
-                return TO_BE_SYNC_RESPONSE;
+                return SubmitUtil.TO_BE_SYNC_RESPONSE;
             }
         }
         if (mep.equalsIgnoreCase(Constants.TWO_WAY_PUSH_AND_PUSH)) {
-            return TO_BE_PUSHED;
+            return SubmitUtil.TO_BE_PUSHED;
         }
         if (mep.equalsIgnoreCase(Constants.TWO_WAY_PUSH_AND_PULL)) {
             if (ln == 1) {
-                return TO_BE_PUSHED;
+                return SubmitUtil.TO_BE_PUSHED;
             } else {
-                return TO_BE_PULLED;
+                return SubmitUtil.TO_BE_PULLED;
             }
         }
         if (mep.equalsIgnoreCase(Constants.TWO_WAY_PULL_AND_PUSH)) {
             if (ln == 2) {
-                return TO_BE_PULLED;
+                return SubmitUtil.TO_BE_PULLED;
             } else {
-                return TO_BE_PUSHED;
+                return SubmitUtil.TO_BE_PUSHED;
             }
         }
         if (mep.equalsIgnoreCase(Constants.TWO_WAY_PULL_AND_Pull)) {
-            return TO_BE_PULLED;
+            return SubmitUtil.TO_BE_PULLED;
         }
 
         // this should never be reached:
-        return TO_BE_PUSHED;
+        return SubmitUtil.TO_BE_PUSHED;
     }
 
     public static int getLegNumber(final MsgInfoSet metadata) {
@@ -97,7 +97,7 @@ public class SubmitUtil {
         }
         final String mep = Configuration.getMep(metadata.getPmode());
         final String address = Configuration.getAddress(metadata.getPmode(), 1);
-        final int ln = getLegNumber(mep, address);
+        final int ln = SubmitUtil.getLegNumber(mep, address);
         //    Binding binding = getBinding(metadata);
         //    String mep = binding.getMep();
         //    int ln = getLegNumber(mep, binding.getFirstLeg().getAddress());

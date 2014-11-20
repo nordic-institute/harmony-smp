@@ -12,6 +12,14 @@
     <parameter name="attachmentDIR"></parameter>
     <parameter name="sizeThreshold">4000</parameter>
 
+    <!--<parameter name="Proxy">
+        <Configuration>
+            <ProxyHost>localhost</ProxyHost>
+            <ProxyPort>1234</ProxyPort>
+        </Configuration>
+    </parameter>-->
+
+
     <!--Uncomment if you want to plugin your own attachments lifecycle implementation -->
     <!--<attachmentsLifecycleManager class="org.apache.axiom.attachments.lifecycle.impl.LifecycleManagerImpl"/>-->
 
@@ -27,13 +35,13 @@
 
     <!--During a fault, stack trace can be sent with the fault message. The following flag will control -->
     <!--that behavior.-->
-    <parameter name="sendStacktraceDetailsWithFaults">false</parameter>
+    <parameter name="sendStacktraceDetailsWithFaults">true</parameter>
 
     <!--If there aren't any information available to find out the fault reason, we set the message of the exception-->
     <!--as the faultreason/Reason. But when a fault is thrown from a service or some where, it will be -->
     <!--wrapped by different levels. Due to this the initial exception message can be lost. If this flag-->
     <!--is set, then Axis2 tries to get the first exception and set its message as the faultreason/Reason.-->
-    <parameter name="DrillDownToRootCauseForFaultReason">false</parameter>
+    <parameter name="DrillDownToRootCauseForFaultReason">true</parameter>
 
     <parameter name="userName">admin</parameter>
     <parameter name="password">axis2</parameter>
@@ -178,6 +186,7 @@
         <!-- <parameter name="requestMaxThreadPoolSize">100</parameter>                     -->
         <!-- <parameter name="threadKeepAliveTime">240000</parameter>                  -->
         <!-- <parameter name="threadKeepAliveTimeUnit">MILLISECONDS</parameter>            -->
+        <parameter name="requestCoreThreadPoolSize">50</parameter>
     </transportReceiver>
 
     <!--Uncomment if you want to have TCP transport support-->
@@ -428,11 +437,11 @@
     <!-- Phases  -->
     <!-- ================================================= -->
     <phaseOrder type="InFlow">
-       <!-- <phase name="domibusLoggingInPhase">
+        <!--phase name="domibusLoggingInPhase">
             <handler name="messageLoggingHandler" class="eu.domibus.logging.handler.MessageLoggingHandler">
                 <order phase="domibusLoggingInPhase"/>
             </handler>
-        </phase>-->
+        </phase-->
         <!--  System predefined phases       -->
         <phase name="Transport">
 
@@ -463,11 +472,11 @@
                 <order phase="Addressing"/>
             </handler>
         </phase>
-       <!-- <phase name="domibusLoggingInPhase">
+        <!--phase name="domibusLoggingInPhase">
             <handler name="messageLoggingHandler" class="eu.domibus.logging.handler.MessageLoggingHandler">
                 <order phase="domibusLoggingInPhase"/>
             </handler>
-        </phase>-->
+        </phase-->
         <phase name="domibusSecurityInPhase"/>
         <phase name="Security"/>
         <phase name="PreDispatch"/>

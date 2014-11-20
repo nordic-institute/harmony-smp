@@ -1,5 +1,7 @@
 package eu.domibus.logging.module;
 
+import eu.domibus.logging.persistent.LoggerEvent;
+import eu.domibus.logging.persistent.LoggerEventDAO;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisBinding;
 import org.apache.axis2.description.AxisDescription;
@@ -8,8 +10,6 @@ import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.log4j.Logger;
 import org.apache.neethi.Assertion;
 import org.apache.neethi.Policy;
-import eu.domibus.logging.persistent.LoggerEvent;
-import eu.domibus.logging.persistent.LoggerEventDAO;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -182,7 +182,7 @@ public class LoggingModuleTest {
     public void setUp() throws Exception {
         // Create initial context
 
-        log.log(eu.domibus.logging.level.Message.MESSAGE, "string");
+        //log.log(eu.domibus.logging.level.Message.MESSAGE, "string");
 
     }
 

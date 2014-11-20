@@ -43,15 +43,15 @@ public class Producer {
 
     public void addParty(final String type, final String partyId) {
         final Party p = new Party(type, partyId);
-        parties.add(p);
+        this.parties.add(p);
     }
 
     public void addParty(final Party party) {
-        parties.add(party);
+        this.parties.add(party);
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(final String name) {
@@ -59,7 +59,7 @@ public class Producer {
     }
 
     public Collection<Party> getParties() {
-        return parties;
+        return this.parties;
     }
 
     public void setParties(final Set<Party> parties) {
@@ -67,7 +67,7 @@ public class Producer {
     }
 
     public String getRole() {
-        return role;
+        return this.role;
     }
 
     public void setRole(final String role) {

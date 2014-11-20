@@ -104,12 +104,12 @@
             <filtered>false</filtered>
         </fileSet>
         <fileSet>
-            <directory>${project.build.directory}/domibus-config/delta_scripts/</directory>
+            <directory>${project.build.directory}/../../../domibus-config/delta_scripts/</directory>
             <useDefaultExcludes>true</useDefaultExcludes>
             <outputDirectory>sql-scripts/delta_scripts</outputDirectory>
-            <!--includes>
-            <include>*.ddl</include>
-            </includes-->
+            <includes>
+            <include>**/*</include>
+            </includes>
             <!-- excludes/-->
             <fileMode>0444</fileMode>
             <directoryMode>0555</directoryMode>

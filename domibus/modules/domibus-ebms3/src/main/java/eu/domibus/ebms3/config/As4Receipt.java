@@ -4,12 +4,14 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
+import java.io.Serializable;
+
 /**
  * @author Sander Fieten
  * @author Hamid Ben Malek
  */
 @Root(name = "As4Receipt", strict = false)
-public class As4Receipt implements java.io.Serializable {
+public class As4Receipt implements Serializable {
     private static final long serialVersionUID = -8309185769038462379L;
 
     @Attribute(required = false)
@@ -28,14 +30,14 @@ public class As4Receipt implements java.io.Serializable {
     protected String method;
 
     @Attribute(required = false)
-    protected boolean nonRepudiation = false;
+    protected boolean nonRepudiation;
 
     @Element(name = "As4Reliability", required = false)
     private As4Reliability as4Reliability;
 
 
     public String getReceiptTo() {
-        return receiptTo;
+        return this.receiptTo;
     }
 
     public void setReceiptTo(final String receiptTo) {
@@ -43,7 +45,7 @@ public class As4Receipt implements java.io.Serializable {
     }
 
     public String getValue() {
-        return method;
+        return this.method;
     }
 
     public void setValue(final String value) {
@@ -54,7 +56,7 @@ public class As4Receipt implements java.io.Serializable {
      * @return the as4Reliability
      */
     public As4Reliability getAs4Reliability() {
-        return as4Reliability;
+        return this.as4Reliability;
     }
 
     /**
@@ -65,7 +67,7 @@ public class As4Receipt implements java.io.Serializable {
     }
 
     public boolean isNonRepudiation() {
-        return nonRepudiation;
+        return this.nonRepudiation;
     }
 
     public void setNonRepudiation(final boolean nonRepudiation) {
@@ -73,7 +75,7 @@ public class As4Receipt implements java.io.Serializable {
     }
 
     public String getDeliverySemantics() {
-        return deliverySemantics;
+        return this.deliverySemantics;
     }
 
     public void setDeliverySemantics(final String deliverySemantics) {

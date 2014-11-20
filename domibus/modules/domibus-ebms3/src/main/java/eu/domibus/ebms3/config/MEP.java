@@ -5,6 +5,7 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import java.util.List;
  * @author Hamid Ben Malek
  */
 @Root(name = "MEP", strict = false)
-public class MEP implements java.io.Serializable {
+public class MEP implements Serializable {
     private static final long serialVersionUID = -5593310192832220737L;
 
     public static final String ONE_WAY_PUSH = "One-Way/Push";
@@ -40,15 +41,15 @@ public class MEP implements java.io.Serializable {
     public void addLeg(final int number, final String us, final String mpc, final String producer,
                        final Endpoint endpoint) {
         final Leg p = new Leg(number, us, mpc, producer, endpoint);
-        legs.add(p);
+        this.legs.add(p);
     }
 
     public void addLeg(final Leg leg) {
-        legs.add(leg);
+        this.legs.add(leg);
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(final String name) {
@@ -56,7 +57,7 @@ public class MEP implements java.io.Serializable {
     }
 
     public List<Leg> getLegs() {
-        return legs;
+        return this.legs;
     }
 
     public void setLegs(final List<Leg> legs) {
@@ -67,8 +68,8 @@ public class MEP implements java.io.Serializable {
         if (pmode == null) {
             return;
         }
-        if (legs != null && legs.size() > 0) {
-            for (final Leg leg : legs) {
+        if ((this.legs != null) && !this.legs.isEmpty()) {
+            for (final Leg leg : this.legs) {
                 leg.setPmode(pmode);
             }
         }
@@ -76,12 +77,12 @@ public class MEP implements java.io.Serializable {
 
     /* To serialize objects to Flex UI */
     public Leg[] getLegsArray() {
-        if (legs == null) {
+        if (this.legs == null) {
             return null;
         }
-        final Leg[] res = new Leg[legs.size()];
+        final Leg[] res = new Leg[this.legs.size()];
         int i = 0;
-        for (final Leg leg : legs) {
+        for (final Leg leg : this.legs) {
             res[i] = leg;
             i++;
         }
@@ -89,25 +90,25 @@ public class MEP implements java.io.Serializable {
     }
 
     public void setLegsArray(final Leg[] list) {
-        if (list == null || list.length == 0) {
-            if (legs != null && legs.size() > 0) {
-                legs.clear();
+        if ((list == null) || (list.length == 0)) {
+            if ((this.legs != null) && !this.legs.isEmpty()) {
+                this.legs.clear();
             }
             return;
         }
-        if (legs == null) {
-            legs = new ArrayList<Leg>();
+        if (this.legs == null) {
+            this.legs = new ArrayList<Leg>();
         }
-        if (legs.size() > 0) {
-            legs.clear();
+        if (!this.legs.isEmpty()) {
+            this.legs.clear();
         }
         for (final Leg leg : list) {
-            addLeg(leg);
+            this.addLeg(leg);
         }
     }
 
     public Leg getLegByNumber(final int i) {
-        for (final Leg leg : legs) {
+        for (final Leg leg : this.legs) {
             if (leg.getNumber() == i) {
                 return leg;
             }

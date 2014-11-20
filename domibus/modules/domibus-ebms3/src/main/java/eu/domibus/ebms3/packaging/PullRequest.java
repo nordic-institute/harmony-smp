@@ -15,14 +15,14 @@ public class PullRequest extends Element {
 
     public PullRequest(final String mpc) {
         this();
-        addAttribute("mpc", mpc);
+        this.addAttribute("mpc", mpc);
     }
 
     public String getPartition() {
-        return getAttributeValue("mpc");
+        return this.getAttributeValue("mpc");
     }
 
     public void setPartition(final String mpc) {
-        setAttribute("mpc", mpc);
+        this.setAttribute("mpc", mpc);
     }
 }

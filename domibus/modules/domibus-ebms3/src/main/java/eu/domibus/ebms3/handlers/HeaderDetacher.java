@@ -1,14 +1,14 @@
 package eu.domibus.ebms3.handlers;
 
+import eu.domibus.common.util.WSUtil;
+import eu.domibus.common.util.XMLUtil;
+import eu.domibus.ebms3.module.Constants;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.handlers.AbstractHandler;
 import org.apache.log4j.Logger;
-import eu.domibus.common.util.WSUtil;
-import eu.domibus.common.util.XMLUtil;
-import eu.domibus.ebms3.module.Constants;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class HeaderDetacher extends AbstractHandler {
     //  private static final Log log = LogFactory.getLog(HeaderDetacher.class.getName());
-    private static final Logger log = Logger.getLogger(HeaderDetacher.class);
+    private static final Logger LOG = Logger.getLogger(HeaderDetacher.class);
 
     private String logPrefix = "";
 
@@ -26,23 +26,23 @@ public class HeaderDetacher extends AbstractHandler {
             return InvocationResponse.CONTINUE;
         }
 
-        if (log.isDebugEnabled()) {
-            logPrefix = WSUtil.logPrefix(msgCtx);
+        if (HeaderDetacher.LOG.isDebugEnabled()) {
+            this.logPrefix = WSUtil.logPrefix(msgCtx);
         }
         //log.debug(logPrefix + msgCtx.getEnvelope().getHeader());
-        XMLUtil.debug(log, logPrefix, msgCtx.getEnvelope().getHeader());
+        XMLUtil.debug(HeaderDetacher.LOG, this.logPrefix, msgCtx.getEnvelope().getHeader());
 
         final SOAPHeader header = msgCtx.getEnvelope().getHeader();
         if (header == null) {
             return InvocationResponse.CONTINUE;
         }
 
-        log.info(logPrefix + "Storing the eb:Messaging header in msg context before removal");
+        HeaderDetacher.LOG.trace(this.logPrefix + "Storing the eb:Messaging header in msg context before removal");
         final OMElement ebMess = XMLUtil.getGrandChildNameNS(header, Constants.MESSAGING, Constants.NS);
         msgCtx.setProperty(Constants.IN_MESSAGING, ebMess);
 
-        removeWSSHeaders(header);
-        removeEbmsHeaders(header);
+        this.removeWSSHeaders(header);
+        this.removeEbmsHeaders(header);
 /*
     if ( !isPureEbms3(msgCtx) )
     {
@@ -158,13 +158,13 @@ public class HeaderDetacher extends AbstractHandler {
         final String ns10 = "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd";
         final String ns12 = "http://docs.oasis-open.org/wss/oasis-wss-wssecurity-secext-1.1.xsd";
         final List<OMElement> securities10 = XMLUtil.getGrandChildrenNameNS(header, "Security", ns10);
-        if (securities10 != null && securities10.size() > 0) {
+        if ((securities10 != null) && !securities10.isEmpty()) {
             for (final OMElement e : securities10) {
                 e.detach();
             }
         }
         final List<OMElement> securities12 = XMLUtil.getGrandChildrenNameNS(header, "Security", ns12);
-        if (securities12 != null && securities12.size() > 0) {
+        if ((securities12 != null) && !securities12.isEmpty()) {
             for (final OMElement e : securities12) {
                 e.detach();
             }

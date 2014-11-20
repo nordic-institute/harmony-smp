@@ -25,12 +25,7 @@
 
     <!-- Consume any message, other than EBMS3 test or EBMS3/AS4 service/test -->
     <consumption>
-        <consumer className="eu.domibus.backend.consumer.BackendConsumer">
-            <!-- a parameter to indicate to the consumer application "ConsumerTest"
-                      where to save the attachment in the request. The value could be either an
-                      absolute path or relative to the "Received_Messages_Folder" (directory where
-                      the MSH saves attachments of the received messages) -->
-            <parameter name="directory">Messages</parameter>
+        <consumer className="eu.eCODEX.submission.consumer.SubmissionConsumer">
         </consumer>
     </consumption>
 

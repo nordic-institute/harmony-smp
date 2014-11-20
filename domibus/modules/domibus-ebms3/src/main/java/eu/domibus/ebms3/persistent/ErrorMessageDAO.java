@@ -15,8 +15,10 @@ public class ErrorMessageDAO extends AbstractDAO<ErrorMessage> {
      * {@inheritDoc}
      */
     @Override
-    public ErrorMessage findById(String id) {
+    public ErrorMessage findById(final String id) {
         final EntityManager em = JpaUtil.getEntityManager();
-        return em.find(ErrorMessage.class, id);
+        final ErrorMessage res = em.find(ErrorMessage.class, id);
+        em.close();
+        return res;
     }
 }

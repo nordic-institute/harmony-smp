@@ -1,5 +1,15 @@
 package eu.domibus.ebms3.submit;
 
+import eu.domibus.common.persistent.AbstractBaseEntity;
+import eu.domibus.common.persistent.Attachment;
+import eu.domibus.common.persistent.TempStore;
+import eu.domibus.common.persistent.TempStoreDAO;
+import eu.domibus.common.util.XMLUtil;
+import eu.domibus.ebms3.config.Leg;
+import eu.domibus.ebms3.module.Configuration;
+import eu.domibus.ebms3.module.Constants;
+import eu.domibus.ebms3.persistent.EbmsPayload;
+import eu.domibus.ebms3.persistent.Payloads;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.*;
@@ -18,20 +28,12 @@ import org.apache.axis2.wsdl.WSDLConstants;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.log4j.Logger;
-import eu.domibus.common.persistent.AbstractBaseEntity;
-import eu.domibus.common.persistent.Attachment;
-import eu.domibus.common.util.FileUtil;
-import eu.domibus.common.util.XMLUtil;
-import eu.domibus.ebms3.config.Leg;
-import eu.domibus.ebms3.module.Configuration;
-import eu.domibus.ebms3.module.Constants;
-import eu.domibus.ebms3.persistent.EbmsPayload;
-import eu.domibus.ebms3.persistent.Payloads;
 
 import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
+import javax.activation.DataSource;
+import javax.mail.util.ByteArrayDataSource;
 import javax.persistence.*;
-import java.io.File;
+import java.io.ByteArrayInputStream;
 import java.util.*;
 
 
@@ -49,6 +51,9 @@ public class EbMessage extends AbstractBaseEntity {
     private static final Logger LOG = Logger.getLogger(EbMessage.class);
 
     @Transient
+    private final TempStoreDAO tsd = new TempStoreDAO();
+
+    @Transient
     protected static ConfigurationContext configContext;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = {CascadeType.ALL})
@@ -56,10 +61,10 @@ public class EbMessage extends AbstractBaseEntity {
     protected Set<Attachment> attachments = new HashSet<Attachment>();
 
     @Column(name = "MIME_FILE")
-    protected String mimeFile = null;
+    protected String mimeFile;
 
     @Column(name = "CONTENT_TYPE")
-    protected String contentType = null;
+    protected String contentType;
 
     @Transient
     protected double soapVersion = 1.1;
@@ -74,10 +79,17 @@ public class EbMessage extends AbstractBaseEntity {
     protected boolean enableSWA = true;
 
     @Transient
-    protected String storageFolder = null;
+    protected String storageFolder;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private Map<String, String> contextProps = new HashMap<String, String>();
+    private final Map<String, String> contextProps = new HashMap<String, String>();
+
+    public Collection<TempStore> getAttachmentData() {
+        return this.attachmentData;
+    }
+
+    @Transient
+    private Collection<TempStore> attachmentData = new HashSet<TempStore>();
 
 
     public EbMessage() {
@@ -96,12 +108,27 @@ public class EbMessage extends AbstractBaseEntity {
         this.setMsgInfoSet(mis);
     }
 
-    public EbMessage(final File folder, final MsgInfoSet mis) {
+    public EbMessage(final String tempGroup, final MsgInfoSet mis) {
+        this(tempGroup, mis, null);
+    }
+    
+    
+
+    public EbMessage(final String tempGroup, final MsgInfoSet mis, final Collection<TempStore> attachmentData) {
         this(mis);
+        if (this.getAttachmentData() == null || this.getAttachmentData().isEmpty()) {
+            if (attachmentData == null || attachmentData.isEmpty()) {
+                throw new RuntimeException(
+                        "No attachments available in EbMessage. Please add at least one instance of TempStore (body payload) to attachmentData");
+            } else {
+                this.attachmentData = attachmentData;
+            }
+        }
+        this.tsd.persistAll(this.getAttachmentData());
+
         final String bodyPayload = mis.getBodyPayload();
         if ((bodyPayload != null) && !bodyPayload.trim().isEmpty()) {
-            final String bodyFile = folder.getAbsolutePath() + File.separator + bodyPayload.trim();
-            this.addToBody(bodyFile);
+            this.addToBody(bodyPayload);
         }
 
         // The payloads are defined by the Metadata/Payloads/EbmsPayload elements
@@ -110,19 +137,14 @@ public class EbMessage extends AbstractBaseEntity {
         if ((payloadsElement != null) && (payloadsElement.getPayloads() != null)) {
             for (final EbmsPayload payload : payloadsElement.getPayloads()) {
                 final String payloadLocalFilename = payload.getFile();
-                final String payloadAbsoluteFilename = folder + File.separator + payloadLocalFilename;
+                final String payloadAbsoluteFilename = tempGroup + "/" + payloadLocalFilename;
                 final String existingContentId = mis.getCID(payloadLocalFilename);
                 final String contentType = payload.getContentType();
                 final String newContentId;
-                if (mis.isCompressed(payloadLocalFilename)) {
-                    FileUtil.doCompressFile(payloadAbsoluteFilename);
-                    newContentId = this.addFileAttachment(payloadAbsoluteFilename + ".gz", existingContentId);
+                if ((contentType != null) && !"".equals(contentType)) {
+                    newContentId = this.addFileAttachment(payloadAbsoluteFilename, existingContentId, contentType);
                 } else {
-                    if ((contentType != null) && !"".equals(contentType)) {
-                        newContentId = this.addFileAttachment(payloadAbsoluteFilename, existingContentId, contentType);
-                    } else {
-                        newContentId = this.addFileAttachment(payloadAbsoluteFilename, existingContentId);
-                    }
+                    newContentId = this.addFileAttachment(payloadAbsoluteFilename, existingContentId);
                 }
                 if (!newContentId.equals(existingContentId)) {
                     mis.setCID(newContentId, payloadLocalFilename);
@@ -147,6 +169,7 @@ public class EbMessage extends AbstractBaseEntity {
         conmgr.getParams().setDefaultMaxConnectionsPerHost(10);
         final HttpClient client = new HttpClient(conmgr);
         configurationContext.setProperty(HTTPConstants.CACHED_HTTP_CLIENT, client);
+
     }
 
     public static SOAPEnvelope createEnvelope(final double soapVersion) {
@@ -166,12 +189,12 @@ public class EbMessage extends AbstractBaseEntity {
     @PrePersist
     @PreUpdate
     private void refreshContextProps() {
-        contextProps.clear();
-        final Iterator<String> propertyIterator = messageContext.getPropertyNames();
+        this.contextProps.clear();
+        final Iterator<String> propertyIterator = this.messageContext.getPropertyNames();
         while (propertyIterator.hasNext()) {
             final String key = propertyIterator.next();
-            if (messageContext.getProperty(key) instanceof String) {
-                contextProps.put(key, (String) messageContext.getProperty(key));
+            if (this.messageContext.getProperty(key) instanceof String) {
+                this.contextProps.put(key, (String) this.messageContext.getProperty(key));
             }
         }
 
@@ -181,8 +204,8 @@ public class EbMessage extends AbstractBaseEntity {
 
     @PostLoad
     private void refreshMessageContext() {
-        for (final Map.Entry<String, String> prop : contextProps.entrySet()) {
-            messageContext.setProperty(prop.getKey(), prop.getValue());
+        for (final Map.Entry<String, String> prop : this.contextProps.entrySet()) {
+            this.messageContext.setProperty(prop.getKey(), prop.getValue());
         }
     }
 
@@ -268,18 +291,19 @@ public class EbMessage extends AbstractBaseEntity {
     }
 
     public OMElement addToBody(final String xmlDocFile) {
-        final File payload = new File(xmlDocFile);
-        if (!payload.exists()) {
-            return null;
-        }
-        final OMElement pLoad = XMLUtil.rootElement(payload);
+        String[] splittedPath = xmlDocFile.split("/");
+
+        byte[] payload = this.tsd.findByGroupAndArtifact(splittedPath[0], splittedPath[1]).getBytes();
+
+
+        final OMElement pLoad = XMLUtil.rootElement(new ByteArrayInputStream(payload));
         this.addToBody(pLoad);
         return pLoad;
     }
 
     public MessageContext getMessageContext() {
-        messageContext.setProperty("attachments", attachments);
-        return messageContext;
+        this.messageContext.setProperty("attachments", this.attachments);
+        return this.messageContext;
     }
 
     public void setMessageContext(final MessageContext messageContext) {
@@ -364,9 +388,9 @@ public class EbMessage extends AbstractBaseEntity {
         options.setTo(targetEPR);
         if (this.enableSWA) {
             options.setProperty(org.apache.axis2.Constants.Configuration.ENABLE_SWA,
-                    org.apache.axis2.Constants.VALUE_TRUE);
+                                org.apache.axis2.Constants.VALUE_TRUE);
             options.setProperty(org.apache.axis2.Constants.Configuration.CACHE_ATTACHMENTS,
-                    org.apache.axis2.Constants.VALUE_TRUE);
+                                org.apache.axis2.Constants.VALUE_TRUE);
             options.setProperty(org.apache.axis2.Constants.Configuration.FILE_SIZE_THRESHOLD, "4000");
 
             final String attachDir = this.getAttachmentDirectory();
@@ -399,45 +423,30 @@ public class EbMessage extends AbstractBaseEntity {
     }
 
     public String addFileAttachment(final String file, String cid) {
-        if ((file == null) || "".equals(file.trim())) {
-            return cid;
-        }
-        final File data = new File(file);
-        if (!data.exists()) {
-            return cid;
-        }
-        if ((cid == null) || "".equals(cid.trim())) {
-            cid = UIDGenerator.generateURNString();
-        }
-
-        final FileDataSource fileDataSource = new FileDataSource(data);
-        fileDataSource.setFileTypeMap(FileUtil.getMimeTypes());
-        final DataHandler dataHandler = new DataHandler(fileDataSource);
-        final Attachment part = new Attachment(file, cid);
-        this.attachments.add(part);
-        this.getMessageContext().addAttachment(cid, dataHandler);
-        return cid;
+        return addFileAttachment(file, cid, null);
     }
 
     public String addFileAttachment(final String file, String cid, final String mimeType) {
         if ((file == null) || "".equals(file.trim())) {
             return cid;
         }
-        final File data = new File(file);
-        if (!data.exists()) {
-            return cid;
-        }
+
         if ((cid == null) || "".equals(cid.trim())) {
             cid = UIDGenerator.generateURNString();
         }
 
-        final FileDataSource fileDataSource = new FileDataSource(data);
-        fileDataSource.setFileTypeMap(FileUtil.getMimeTypes(mimeType));
-        final DataHandler dataHandler = new DataHandler(fileDataSource);
+        String[] splittedPath = file.split("/");
+
+        byte[] payload = this.tsd.findByGroupAndArtifact(splittedPath[0], splittedPath[1]).getBytes();
+        final DataSource ds = new ByteArrayDataSource(payload, "application/octet-stream");
+        final DataHandler dh = new DataHandler(ds);
+
         final Attachment part = new Attachment(file, cid);
-        part.setContentType(mimeType);
+        if (mimeType != null) {
+            part.setContentType(mimeType);
+        }
         this.attachments.add(part);
-        this.getMessageContext().addAttachment(cid, dataHandler);
+        this.getMessageContext().addAttachment(cid, dh);
         return cid;
     }
 
@@ -463,8 +472,8 @@ public class EbMessage extends AbstractBaseEntity {
 
     private String getAttachmentDirectory() {
 
-        return (String) EbMessage.configContext.getAxisConfiguration()
-                .getParameter(org.apache.axis2.Constants.Configuration.ATTACHMENT_TEMP_DIR).getValue();
+        return (String) EbMessage.configContext.getAxisConfiguration().getParameter(
+                org.apache.axis2.Constants.Configuration.ATTACHMENT_TEMP_DIR).getValue();
     }
 
     public void insertMsgInfoSet(final MsgInfoSet mis) {
@@ -513,6 +522,7 @@ public class EbMessage extends AbstractBaseEntity {
         }
     }
 
+    //submission
     public MessageContext inOut(final MsgInfoSet mis) {
         final String[] modules = Constants.engagedModules;
 
@@ -557,7 +567,7 @@ public class EbMessage extends AbstractBaseEntity {
         }
 
         this.getMessageContext().setProperty("MESSAGE_INFO_SET", mis);
-        messageContext.setProperty("MESSAGE_ID", mis.getMessageId());
+        this.messageContext.setProperty("MESSAGE_ID", mis.getMessageId());
 
         final String rel = Configuration.getReliability(mis);
         if (rel != null) {
@@ -579,15 +589,17 @@ public class EbMessage extends AbstractBaseEntity {
         final Leg leg = Configuration.getLeg(mis);
         if (mep.equalsIgnoreCase(Constants.ONE_WAY_PUSH) || mep.equalsIgnoreCase(Constants.TWO_WAY_PUSH_AND_PUSH)) {
             if ((leg != null) && (leg.getReceiptReply() != null) &&
-                    "Response".equalsIgnoreCase(leg.getReceiptReply())) {
+                "Response".equalsIgnoreCase(leg.getReceiptReply())) {
                 return this.inOut(mis);
-            } else if ((leg != null) && (leg.getReliability() != null)) {
+            }
+            if ((leg != null) && (leg.getReliability() != null)) {
                 return this.inOut(mis);
             } else {
                 this.inOnly(mis);
             }
             return null;
-        } else if (mep.equalsIgnoreCase(Constants.ONE_WAY_PULL)) {
+        }
+        if (mep.equalsIgnoreCase(Constants.ONE_WAY_PULL)) {
             if (ln == 1) {
                 if (callback == null) {
                     return this.inOut(mis);
@@ -614,7 +626,7 @@ public class EbMessage extends AbstractBaseEntity {
         } else if (mep.equalsIgnoreCase(Constants.TWO_WAY_PUSH_AND_PULL)) {
             if (ln == 1) {
                 if ((leg != null) && (leg.getReceiptReply() != null) &&
-                        "Response".equalsIgnoreCase(leg.getReceiptReply())) {
+                    "Response".equalsIgnoreCase(leg.getReceiptReply())) {
                     return this.inOut(mis);
                 } else if ((leg != null) && (leg.getReliability() != null)) {
                     return this.inOut(mis);
@@ -646,7 +658,7 @@ public class EbMessage extends AbstractBaseEntity {
                 return null;
             } else if (ln == 3) {
                 if ((leg != null) && (leg.getReceiptReply() != null) &&
-                        "Response".equalsIgnoreCase(leg.getReceiptReply())) {
+                    "Response".equalsIgnoreCase(leg.getReceiptReply())) {
                     return this.inOut(mis);
                 } else if ((leg != null) && (leg.getReliability() != null)) {
                     return this.inOut(mis);

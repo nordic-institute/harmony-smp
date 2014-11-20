@@ -28,12 +28,11 @@ public class MsgIdCallbackDAO extends AbstractDAO<MsgIdCallback> {
         final Query q = em.createNamedQuery("MsgIdCallback.findByMsgId");
         q.setParameter("MESSAGEID", messageId);
 
-        try{
+        try {
             return (MsgIdCallback) q.getSingleResult();
-        } catch (NoResultException nre){
+        } catch (NoResultException nre) {
             return null;
-        }
-        finally {
+        } finally {
             em.close();
         }
     }

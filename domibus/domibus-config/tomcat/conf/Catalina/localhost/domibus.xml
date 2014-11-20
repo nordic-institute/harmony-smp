@@ -8,21 +8,9 @@
               factory="org.apache.naming.factory.BeanFactory"
               type="com.mchange.v2.c3p0.ComboPooledDataSource"
               driverClass="@domibus.persistence.driverClassName@"
-              maxPoolSize="50"
-              minPoolSize="15"
-              acquireIncrement="3"
-              acquireRetryAttempts="0"
-              acquireRetryDelay="3000"
-              breakAfterAcquireFailure="false"
-              maxConnectionAge="60"
-              maxIdleTime="30"
-              maxIdleTimeExcessConnections="10"
-              idleConnectionTestPeriod="15"
-              testConnectionOnCheckout="false"
-              preferredTestQuery="SELECT 1"
-              debugUnreturnedConnectionStackTraces="true"
-              autoCommitOnClose="true"
               jdbcUrl="@domibus.persistence.url@"
+              maxPoolSize="15"
+              minPoolSize="15"
               user="@domibus.persistence.user@"
               password="@domibus.persistence.password@"/>
 
@@ -54,7 +42,6 @@
     <Environment name="domibus.module.security.config.privatekey.password"
                  value="apache" type="java.lang.String"/>
     <!-- SECURITY CONFIGURATION END -->
-
 
     <!-- FILE SYSTEM CONFIGURATION START -->
     <!-- Folder where the backend module stores messages -->
@@ -93,8 +80,11 @@
 
     <!-- MISC CONFIGURATION START -->
     <!-- Number of days after which not downloaded messages are deleted -->
-    <Environment name="domibus.module.backend.messagesTimeLive"
-                 value="@domibus.module.backend.messagesTimeLive@" type="java.lang.String"/>
+    <Environment name="domibus.module.backend.messagesTimeToLive"
+                 value="@domibus.module.backend.messagesTimeToLive@" type="java.lang.Integer"/>
+
+    <Environment name="domibus.module.submission.downloadedMessagesTimeToLive"
+                 value="@domibus.module.submission.downloadedMessagesTimeToLive@" type="java.lang.Integer"/>
 
     <!-- Cron expression determining how often the check for the time limit
         defined above is executed -->
@@ -104,6 +94,32 @@
     <!-- Hostnames of the server the gateway is running on -->
     <Environment name="domibus.module.ebms3.hostnames" value="@domibus.module.ebms3.hostnames@"
                  type="java.lang.String"/>
+
+    <!-- Support of the SMP Whitelist feature to check if it is allowed to receive messages from the sending GW -->
+    <Environment name="domibus.module.ebms3.whitelist" value="@domibus.module.ebms3.whitelist@"
+                 type="java.lang.Boolean"/>
     <!-- MISC CONFIGURATION END -->
+
+    <!-- Two way SSL configuration -->
+    <Environment name="domibus.ssl.truststore.path" value="@domibus.ssl.truststore.path@"
+                 type="java.lang.String"/>
+
+    <Environment name="domibus.ssl.truststore.password" value="@domibus.ssl.truststore.password@"
+                 type="java.lang.String"/>
+
+    <Environment name="domibus.ssl.keystore.path" value="@domibus.ssl.keystore.path@"
+                 type="java.lang.String"/>
+
+    <Environment name="domibus.ssl.keystore.password" value="@domibus.ssl.keystore.password@"
+                 type="java.lang.String"/>
+
+    <!-- backend interafce configuration -->
+    <Environment name="domibus.module.submission.webserviceFolder"
+                 value="@domibus.module.submission.webserviceFolder@"
+                 type="java.lang.String"/>
+
+    <Environment name="domibus.module.spring.context.folder"
+                 value="@domibus.module.spring.context.folder@"
+                 type="java.lang.String"/>
 </Context>
 

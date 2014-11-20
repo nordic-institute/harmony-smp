@@ -59,8 +59,8 @@ public class Securities {
      * {@link Security }
      */
     public List<Security> getSecurity() {
-        if (security == null) {
-            security = new ArrayList<Security>();
+        if (this.security == null) {
+            this.security = new ArrayList<Security>();
         }
         return this.security;
     }

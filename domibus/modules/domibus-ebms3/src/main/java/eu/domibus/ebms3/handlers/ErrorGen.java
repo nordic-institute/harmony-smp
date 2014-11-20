@@ -1,10 +1,6 @@
 package eu.domibus.ebms3.handlers;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axis2.AxisFault;
-import org.apache.axis2.context.MessageContext;
-import org.apache.axis2.handlers.AbstractHandler;
-import org.apache.axis2.util.MessageContextBuilder;
+import eu.domibus.common.exceptions.EbMS3Exception;
 import eu.domibus.common.soap.Element;
 import eu.domibus.common.util.XMLUtil;
 import eu.domibus.ebms3.config.ErrorAtReceiver;
@@ -16,6 +12,11 @@ import eu.domibus.ebms3.packaging.Error;
 import eu.domibus.ebms3.packaging.MessageInfo;
 import eu.domibus.ebms3.packaging.Messaging;
 import eu.domibus.ebms3.packaging.SignalMessage;
+import org.apache.axiom.om.OMElement;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.handlers.AbstractHandler;
+import org.apache.axis2.util.MessageContextBuilder;
 
 /**
  * Generate EBMS3 error messages if there is any error on the inflow of a user message.
@@ -40,18 +41,21 @@ public class ErrorGen extends AbstractHandler {
         // Generate the eb:Error element
         final String refToMessageId = msgCtx.getRelatesTo().getValue();
 
-        if (!isNotifyProducer(refToMessageId)) {
+        /*if (!this.isNotifyProducer(refToMessageId)) {
             return InvocationResponse.CONTINUE;
+        } */
+
+        Error ebms3ErrorMessage = null;
+
+        final Exception failureReason = msgCtx.getOperationContext().getMessageContext("In").getFailureReason();
+        if (failureReason != null && failureReason instanceof EbMS3Exception) {
+            // if, and only if, a ebms3 exception occured the error element will be enriched with error details.
+            ebms3ErrorMessage = new Error((EbMS3Exception) failureReason, refToMessageId);
+        } else {
+            ebms3ErrorMessage = Error.getOtherError(refToMessageId);
         }
 
-        // TODO: Find out what exactly kind of EBMS3 or security error occured
-        final Error error = Error.getOtherError(refToMessageId);
-        final Exception failureReason = msgCtx.getFailureReason();
-        if (failureReason != null) {
-            final Element errorDetailElement = error.addElement("ErrorDetail", Constants.PREFIX);
-            errorDetailElement.setText(failureReason.getMessage());
-        }
-        addErrorToMessage(error, msgCtx);
+        this.addErrorToMessage(ebms3ErrorMessage, msgCtx);
 
         return InvocationResponse.CONTINUE;
     }
@@ -100,6 +104,7 @@ public class ErrorGen extends AbstractHandler {
         }
 
     }
+
 
     /**
      * Find out if the producer of the incoming message shall receive an EBMS3 error

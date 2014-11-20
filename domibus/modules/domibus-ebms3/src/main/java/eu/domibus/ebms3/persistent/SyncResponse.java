@@ -1,13 +1,14 @@
 package eu.domibus.ebms3.persistent;
 
-import org.apache.log4j.Logger;
+import eu.domibus.common.persistent.TempStore;
 import eu.domibus.ebms3.module.Configuration;
 import eu.domibus.ebms3.module.Constants;
 import eu.domibus.ebms3.submit.MsgInfoSet;
+import org.apache.log4j.Logger;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.io.File;
+import java.util.Collection;
 
 /**
  * This class represents messages that should be sent in the back channel
@@ -25,17 +26,17 @@ public class SyncResponse extends MessageToSend {
         this.setStorageFolder(Constants.getSubmitFolder());
     }
 
-    public SyncResponse(final File folder, final MsgInfoSet mis) {
-        super(folder, mis);
-        setStorageFolder(Constants.getSubmitFolder());
+    public SyncResponse(final String tempGroup, final MsgInfoSet mis, final Collection<TempStore> attachmentData) {
+        super(tempGroup, mis, attachmentData);
+        this.setStorageFolder(Constants.getSubmitFolder());
     }
 
     public String getMpc() {
-        return Configuration.getMpc(getMsgInfoSet().getPmode(), getMsgInfoSet().getLegNumber());
+        return Configuration.getMpc(this.getMsgInfoSet().getPmode(), this.getMsgInfoSet().getLegNumber());
     }
 
     public boolean isSent() {
-        return sent;
+        return this.sent;
     }
 
     public void setSent(final boolean sent) {

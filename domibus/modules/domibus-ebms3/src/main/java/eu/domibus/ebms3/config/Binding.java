@@ -4,11 +4,13 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
+import java.io.Serializable;
+
 /**
  * @author Hamid Ben Malek
  */
 @Root(name = "Binding", strict = false)
-public class Binding implements java.io.Serializable {
+public class Binding implements Serializable {
     private static final long serialVersionUID = -5593316501928370737L;
 
     @Attribute
@@ -26,7 +28,7 @@ public class Binding implements java.io.Serializable {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(final String name) {
@@ -34,7 +36,7 @@ public class Binding implements java.io.Serializable {
     }
 
     public MEP getMep() {
-        return mep;
+        return this.mep;
     }
 
     public void setMep(final MEP mep) {
@@ -45,8 +47,8 @@ public class Binding implements java.io.Serializable {
         if (pmode == null) {
             return;
         }
-        if (mep != null) {
-            mep.setPmode(pmode);
+        if (this.mep != null) {
+            this.mep.setPmode(pmode);
         }
     }
 }

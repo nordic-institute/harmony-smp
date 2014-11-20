@@ -4,6 +4,7 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Root;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
  * @author Hamid Ben Malek
  */
 @Root(name = "PMode")
-public class PMode implements java.io.Serializable {
+public class PMode implements Serializable {
     private static final long serialVersionUID = -5593318273642220737L;
 
     @Attribute
@@ -35,7 +36,7 @@ public class PMode implements java.io.Serializable {
     /* This is not to be serialized in XML */
     protected Binding binding;
     protected PModePool pool;
-    protected boolean initialized = false;
+    protected boolean initialized;
 
     public PMode() {
     }
@@ -50,15 +51,15 @@ public class PMode implements java.io.Serializable {
         if (binding == null) {
             return;
         }
-        if (bindings == null) {
-            bindings = new ArrayList<Binding>();
+        if (this.bindings == null) {
+            this.bindings = new ArrayList<Binding>();
         }
-        bindings.add(binding);
-        bindingName = binding.getName();
+        this.bindings.add(binding);
+        this.bindingName = binding.getName();
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(final String name) {
@@ -66,7 +67,7 @@ public class PMode implements java.io.Serializable {
     }
 
     public boolean getExplicit() {
-        return explicit;
+        return this.explicit;
     }
 
     public void setExplicit(final boolean explicit) {
@@ -74,14 +75,14 @@ public class PMode implements java.io.Serializable {
     }
 
     public String getBindingName() {
-        if (bindingName != null && !bindingName.trim().equals("")) {
-            return bindingName;
+        if ((this.bindingName != null) && !"".equals(this.bindingName.trim())) {
+            return this.bindingName;
         }
-        if (bindings == null || bindings.size() == 0) {
+        if ((this.bindings == null) || this.bindings.isEmpty()) {
             return null;
         }
-        bindingName = bindings.get(0).getName();
-        return bindingName;
+        this.bindingName = this.bindings.get(0).getName();
+        return this.bindingName;
     }
 
     public void setBindingName(final String bindingName) {
@@ -89,7 +90,7 @@ public class PMode implements java.io.Serializable {
     }
 
     public List<Producer> getProducers() {
-        return producers;
+        return this.producers;
     }
 
     public void setProducers(final List<Producer> producers) {
@@ -97,7 +98,7 @@ public class PMode implements java.io.Serializable {
     }
 
     public List<UserService> getUserServices() {
-        return userServices;
+        return this.userServices;
     }
 
     public void setUserServices(final List<UserService> userServices) {
@@ -105,7 +106,7 @@ public class PMode implements java.io.Serializable {
     }
 
     public List<Binding> getBindings() {
-        return bindings;
+        return this.bindings;
     }
 
     public void setBindings(final List<Binding> bindings) {
@@ -113,30 +114,30 @@ public class PMode implements java.io.Serializable {
     }
 
     public Binding getBinding() {
-        if (binding != null) {
-            return binding;
+        if (this.binding != null) {
+            return this.binding;
         }
-        if (bindings != null && bindings.size() > 0) {
-            if (getBindingName() == null || getBindingName().trim().equals("")) {
-                if (!initialized) {
-                    setBinding(bindings.get(0));
+        if ((this.bindings != null) && !this.bindings.isEmpty()) {
+            if ((this.getBindingName() == null) || "".equals(getBindingName().trim())) {
+                if (!this.initialized) {
+                    this.setBinding(this.bindings.get(0));
                 }
-                return bindings.get(0);
+                return this.bindings.get(0);
             } else {
-                for (final Binding b : bindings) {
-                    if (b.getName().equalsIgnoreCase(bindingName)) {
-                        if (!initialized) {
-                            setBinding(b);
+                for (final Binding b : this.bindings) {
+                    if (b.getName().equalsIgnoreCase(this.bindingName)) {
+                        if (!this.initialized) {
+                            this.setBinding(b);
                         }
                         return b;
                     }
                 }
             }
         }
-        if (pool != null) {
-            final Binding b = pool.getBinding(getBindingName());
-            if (b != null && !initialized) {
-                setBinding(b);
+        if (this.pool != null) {
+            final Binding b = this.pool.getBinding(this.getBindingName());
+            if ((b != null) && !this.initialized) {
+                this.setBinding(b);
             }
             return b;
         }
@@ -146,33 +147,33 @@ public class PMode implements java.io.Serializable {
     public void setBinding(final Binding binding) {
         this.binding = binding;
         if (binding != null) {
-            bindingName = binding.getName();
+            this.bindingName = binding.getName();
             this.binding.setPmode(this);
-            initialized = true;
+            this.initialized = true;
         }
     }
 
     public PModePool getPool() {
-        return pool;
+        return this.pool;
     }
 
     public void setPool(final PModePool pool) {
         this.pool = pool;
-        getBinding();
+        this.getBinding();
     }
 
     /* Utility method */
     public Producer getProducer(final String producerName) {
-        if (producers != null && producers.size() > 0) {
-            for (final Producer p : producers) {
+        if ((this.producers != null) && !this.producers.isEmpty()) {
+            for (final Producer p : this.producers) {
                 if (p.getName().equalsIgnoreCase(producerName)) {
                     return p;
                 }
             }
         }
-        if (pool != null && pool.getProducers() != null &&
-            pool.getProducers().size() > 0) {
-            for (final Producer p : pool.getProducers()) {
+        if ((this.pool != null) && (this.pool.getProducers() != null) &&
+            !this.pool.getProducers().isEmpty()) {
+            for (final Producer p : this.pool.getProducers()) {
                 if (p.getName().equalsIgnoreCase(producerName)) {
                     return p;
                 }
@@ -182,16 +183,16 @@ public class PMode implements java.io.Serializable {
     }
 
     public UserService getUserService(final String userServiceName) {
-        if (userServices != null && userServices.size() > 0) {
-            for (final UserService us : userServices) {
+        if ((this.userServices != null) && !this.userServices.isEmpty()) {
+            for (final UserService us : this.userServices) {
                 if (us.getName().equalsIgnoreCase(userServiceName)) {
                     return us;
                 }
             }
         }
-        if (pool != null && pool.getUserServices() != null &&
-            pool.getUserServices().size() > 0) {
-            for (final UserService us : pool.getUserServices()) {
+        if ((this.pool != null) && (this.pool.getUserServices() != null) &&
+            !this.pool.getUserServices().isEmpty()) {
+            for (final UserService us : this.pool.getUserServices()) {
                 if (us.getName().equalsIgnoreCase(userServiceName)) {
                     return us;
                 }
@@ -201,26 +202,26 @@ public class PMode implements java.io.Serializable {
     }
 
     public Leg getLeg(final String mep, final String mpc, final String address) {
-        if (getBinding() == null) {
+        if (this.getBinding() == null) {
             return null;
         }
-        final MEP m = getBinding().getMep();
+        final MEP m = this.getBinding().getMep();
         if (m == null) {
             return null;
         }
         final List<Leg> legs = m.getLegs();
-        if (legs == null || legs.size() == 0) {
+        if ((legs == null) || legs.isEmpty()) {
             return null;
         }
         for (final Leg leg : legs) {
             if (leg.getEndpoint() == null) {
-                if (same(leg.getMpc(), mpc) &&
-                    same(mep, m.getName()) &&
-                    (address == null || address.trim().equals(""))) {
+                if (this.same(leg.getMpc(), mpc) &&
+                    this.same(mep, m.getName()) &&
+                    ((address == null) || "".equals(address.trim()))) {
                     return leg;
                 }
-            } else if (same(leg.getMpc(), mpc) && same(mep, m.getName()) &&
-                       same(address, leg.getEndpoint().getAddress())) {
+            } else if (this.same(leg.getMpc(), mpc) && this.same(mep, m.getName()) &&
+                       this.same(address, leg.getEndpoint().getAddress())) {
                 return leg;
             }
         }
@@ -228,19 +229,19 @@ public class PMode implements java.io.Serializable {
     }
 
     public Leg getLeg(final String mep, final String mpc) {
-        if (getBinding() == null) {
+        if (this.getBinding() == null) {
             return null;
         }
-        final MEP m = getBinding().getMep();
+        final MEP m = this.getBinding().getMep();
         if (m == null) {
             return null;
         }
         final List<Leg> legs = m.getLegs();
-        if (legs == null || legs.size() == 0) {
+        if ((legs == null) || legs.isEmpty()) {
             return null;
         }
         for (final Leg leg : legs) {
-            if (same(leg.getMpc(), mpc) && same(mep, m.getName())) {
+            if (this.same(leg.getMpc(), mpc) && this.same(mep, m.getName())) {
                 return leg;
             }
         }
@@ -248,20 +249,20 @@ public class PMode implements java.io.Serializable {
     }
 
     public Leg getLeg(final int legNumber, final String mep, final String mpc) {
-        if (getBinding() == null) {
+        if (this.getBinding() == null) {
             return null;
         }
-        final MEP m = getBinding().getMep();
+        final MEP m = this.getBinding().getMep();
         if (m == null) {
             return null;
         }
         final List<Leg> legs = m.getLegs();
-        if (legs == null || legs.size() == 0) {
+        if ((legs == null) || legs.isEmpty()) {
             return null;
         }
         for (final Leg leg : legs) {
-            if (leg.getNumber() == legNumber && same(leg.getMpc(), mpc) &&
-                same(mep, m.getName())) {
+            if ((leg.getNumber() == legNumber) && this.same(leg.getMpc(), mpc) &&
+                this.same(mep, m.getName())) {
                 return leg;
             }
         }
@@ -269,10 +270,10 @@ public class PMode implements java.io.Serializable {
     }
 
     public String getMep() {
-        if (getBinding() == null) {
+        if (this.getBinding() == null) {
             return null;
         }
-        final MEP mep = getBinding().getMep();
+        final MEP mep = this.getBinding().getMep();
         if (mep == null) {
             return null;
         }
@@ -285,12 +286,12 @@ public class PMode implements java.io.Serializable {
      *
      * @param legNumber The number of the leg to get the configuration of
      * @return The Leg configuration of the given leg if it exists
-     *         null otherwise
+     * null otherwise
      */
     public Leg getLeg(final int legNumber) {
-        final Leg[] legs = getBinding().getMep().getLegsArray();
+        final Leg[] legs = this.getBinding().getMep().getLegsArray();
 
-        if (legNumber <= 0 || legNumber > legs.length) {
+        if ((legNumber <= 0) || (legNumber > legs.length)) {
             return null;
         }
 
@@ -301,7 +302,7 @@ public class PMode implements java.io.Serializable {
         if (v1 != null) {
             return v1.equals(v2);
         }
-        return v2 == null || v2.equals(v1);
+        return (v2 == null) || v2.equals(v1);
     }
 
   /* To serialize objects to Flex UI, add below array getter/setter methods */

@@ -2,9 +2,11 @@ package eu.domibus.ebms3.config;
 
 import org.apache.log4j.Logger;
 import org.simpleframework.xml.*;
+import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Persister;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +15,7 @@ import java.util.List;
  */
 @Root(name = "PModes")
 @Namespace(reference = "http://www.e-codex.eu/domibus/pmodes/0.1")
-public class PModePool implements java.io.Serializable {
+public class PModePool implements Serializable {
     private static final long serialVersionUID = -5593318201928374737L;
 
     private static final Logger log = Logger.getLogger(PModePool.class);
@@ -33,11 +35,8 @@ public class PModePool implements java.io.Serializable {
     @ElementList(entry = "PMode", inline = true, required = false)
     protected List<PMode> pmodes = new ArrayList<PMode>();
 
-    public PModePool() {
-    }
-
     public List<Producer> getProducers() {
-        return producers;
+        return this.producers;
     }
 
     public void setProducers(final List<Producer> producers) {
@@ -45,7 +44,7 @@ public class PModePool implements java.io.Serializable {
     }
 
     public List<UserService> getUserServices() {
-        return userServices;
+        return this.userServices;
     }
 
     public void setUserServices(final List<UserService> userServices) {
@@ -53,7 +52,7 @@ public class PModePool implements java.io.Serializable {
     }
 
     public List<Binding> getBindings() {
-        return bindings;
+        return this.bindings;
     }
 
     public void setBindings(final List<Binding> bindings) {
@@ -61,7 +60,7 @@ public class PModePool implements java.io.Serializable {
     }
 
     public List<PMode> getPmodes() {
-        return pmodes;
+        return this.pmodes;
     }
 
     public void setPmodes(final List<PMode> pmodes) {
@@ -70,10 +69,10 @@ public class PModePool implements java.io.Serializable {
 
     /* Utility method */
     public Binding getBinding(final String bindingName) {
-        if (bindings == null || bindings.size() == 0) {
+        if ((this.bindings == null) || this.bindings.isEmpty()) {
             return null;
         }
-        for (final Binding b : bindings) {
+        for (final Binding b : this.bindings) {
             if (b.getName().equalsIgnoreCase(bindingName)) {
                 return b;
             }
@@ -82,51 +81,51 @@ public class PModePool implements java.io.Serializable {
     }
 
     public static PModePool load(final String pmodesFileName) {
-        if (pmodesFileName == null || pmodesFileName.trim().equals("")) {
+        if ((pmodesFileName == null) || "".equals(pmodesFileName.trim())) {
             return null;
         }
-        return load(new File(pmodesFileName));
+        return PModePool.load(new File(pmodesFileName));
     }
 
     public static PModePool load(final File source) {
-        if (source == null || !source.exists()) {
+        if ((source == null) || !source.exists()) {
             return null;
         }
         PModePool pool = null;
         try {
-            final Serializer serializer = new Persister();
+            final Serializer serializer = new Persister(new AnnotationStrategy());
             pool = serializer.read(PModePool.class, source);
             if (pool != null) {
                 pool.init();
             }
         } catch (Exception ex) {
-            log.error("Error during serilization of PModeFile on load", ex);
+            PModePool.log.error("Error during serilization of PModeFile on load", ex);
         }
         return pool;
     }
 
     protected void init() {
-        if (pmodes != null && pmodes.size() > 0) {
-            for (final PMode pm : pmodes) {
+        if ((this.pmodes != null) && !this.pmodes.isEmpty()) {
+            for (final PMode pm : this.pmodes) {
                 pm.setPool(this);
             }
         }
     }
 
     public void reload(final File source) {
-        if (source == null || !source.exists()) {
+        if ((source == null) || !source.exists()) {
             return;
         }
         final PModePool pool;
         try {
-            final Serializer serializer = new Persister();
+            final Serializer serializer = new Persister(new AnnotationStrategy());
             pool = serializer.read(PModePool.class, source);
             if (pool != null) {
                 pool.init();
-                setPmodes(pool.getPmodes());
+                this.setPmodes(pool.getPmodes());
             }
         } catch (Exception ex) {
-            log.error("Error during serilization of PModeFile on reload", ex);
+            PModePool.log.error("Error during serilization of PModeFile on reload", ex);
         }
     }
 }

@@ -1,11 +1,5 @@
 package eu.domibus.ebms3.module;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.soap.SOAPEnvelope;
-import org.apache.axiom.soap.SOAPHeader;
-import org.apache.axis2.context.ConfigurationContext;
-import org.apache.axis2.context.MessageContext;
-import org.apache.log4j.Logger;
 import eu.domibus.common.exceptions.ConfigurationException;
 import eu.domibus.common.util.WSUtil;
 import eu.domibus.common.util.XMLUtil;
@@ -14,6 +8,13 @@ import eu.domibus.ebms3.persistent.MsgInfo;
 import eu.domibus.ebms3.persistent.PartInfo;
 import eu.domibus.ebms3.persistent.ReceivedUserMsg;
 import eu.domibus.ebms3.persistent.ReceivedUserMsgDAO;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axiom.soap.SOAPHeader;
+import org.apache.axiom.util.UIDGenerator;
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.context.MessageContext;
+import org.apache.log4j.Logger;
 
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -80,7 +81,7 @@ public class EbUtil {
             throw new NullPointerException(
                     "This thread does not have a MessageContext attached. Please use the createMsgInfo(MessageContext msgCtx) method.");
         }
-        return getMsgInfo(ctx);
+        return EbUtil.getMsgInfo(ctx);
     }
 
     public static synchronized MsgInfo getMsgInfo(final MessageContext ctx) {
@@ -106,7 +107,7 @@ public class EbUtil {
      *
      * @param msgCtx The current {@link MessageContext}
      * @return MsgInfo     The meta-data read from the messsage or <code>null</code>
-     *         when no data could be read
+     * when no data could be read
      */
     private static MsgInfo createMsgInfo(final MessageContext msgCtx) {
         if (msgCtx == null) {
@@ -141,18 +142,15 @@ public class EbUtil {
             //
             final OMElement from = XMLUtil.getGrandChildNameNS(userMessage, Constants.FROM, Constants.NS);
 
-            for (final Iterator it = from.getChildElements(); it != null && it.hasNext(); ) {
+            for (final Iterator it = from.getChildElements(); (it != null) && it.hasNext(); ) {
                 final OMElement e = (OMElement) it.next();
                 if (e.getLocalName().equals(Constants.PARTY_ID)) {
-                    String partyTmp = e.getText();
-                    msgInfo.addFromParty(XMLUtil.getAttributeValue(e, Constants.PARTY_ID_TYPE), ((partyTmp != null &&
+                    final String partyTmp = e.getText();
+                    msgInfo.addFromParty(XMLUtil.getAttributeValue(e, Constants.PARTY_ID_TYPE), (((partyTmp != null) &&
                                                                                                   partyTmp.startsWith(
                                                                                                           eu.domibus.ebms3.module.Constants.ECODEX_PARTY_ID_URI_VALUE)) ?
                                                                                                  partyTmp.substring(
-                                                                                                         eu.domibus.ebms3
-                                                                                                                 .module
-                                                                                                                 .Constants
-                                                                                                                 .ECODEX_PARTY_ID_URI_VALUE
+                                                                                                         eu.domibus.ebms3.module.Constants.ECODEX_PARTY_ID_URI_VALUE
                                                                                                                  .length()) :
                                                                                                  partyTmp));
                 } else if (e.getLocalName().equals(Constants.ROLE)) {
@@ -162,18 +160,15 @@ public class EbUtil {
             // PartyInfo/To element
             //
             final OMElement to = XMLUtil.getGrandChildNameNS(userMessage, Constants.TO, Constants.NS);
-            for (final Iterator it = to.getChildElements(); it != null && it.hasNext(); ) {
+            for (final Iterator it = to.getChildElements(); (it != null) && it.hasNext(); ) {
                 final OMElement e = (OMElement) it.next();
                 if (e.getLocalName().equals(Constants.PARTY_ID)) {
-                    String partyTmp = e.getText();
-                    msgInfo.addToParty(XMLUtil.getAttributeValue(e, Constants.PARTY_ID_TYPE), ((partyTmp != null &&
+                    final String partyTmp = e.getText();
+                    msgInfo.addToParty(XMLUtil.getAttributeValue(e, Constants.PARTY_ID_TYPE), (((partyTmp != null) &&
                                                                                                 partyTmp.startsWith(
                                                                                                         eu.domibus.ebms3.module.Constants.ECODEX_PARTY_ID_URI_VALUE)) ?
                                                                                                partyTmp.substring(
-                                                                                                       eu.domibus.ebms3
-                                                                                                               .module
-                                                                                                               .Constants
-                                                                                                               .ECODEX_PARTY_ID_URI_VALUE
+                                                                                                       eu.domibus.ebms3.module.Constants.ECODEX_PARTY_ID_URI_VALUE
                                                                                                                .length()) :
                                                                                                partyTmp));
                 } else if (e.getLocalName().equals(Constants.ROLE)) {
@@ -212,7 +207,7 @@ public class EbUtil {
             final OMElement msgProps =
                     XMLUtil.getGrandChildNameNS(userMessage, Constants.MESSAGE_PROPERTIES, Constants.NS);
             if (msgProps != null) {
-                for (final Iterator it = msgProps.getChildElements(); it != null && it.hasNext(); ) {
+                for (final Iterator it = msgProps.getChildElements(); (it != null) && it.hasNext(); ) {
                     final OMElement e = (OMElement) it.next();
                     msgInfo.addMessageProperty(XMLUtil.getAttributeValue(e, Constants.PROPERTY_NAME), e.getText());
                 }
@@ -222,7 +217,7 @@ public class EbUtil {
             final OMElement payloadInfo =
                     XMLUtil.getGrandChildNameNS(userMessage, Constants.PAYLOAD_INFO, Constants.NS);
             if (payloadInfo != null) {
-                for (final Iterator it = payloadInfo.getChildElements(); it != null && it.hasNext(); ) {
+                for (final Iterator it = payloadInfo.getChildElements(); (it != null) && it.hasNext(); ) {
                     final OMElement e = (OMElement) it.next();
                     final String href = XMLUtil.getAttributeValue(e, Constants.PART_INFO_HREF);
                     // Schema element
@@ -236,14 +231,14 @@ public class EbUtil {
                     //
                     // @todo: Support all types of part properties
                     final List<OMElement> props = XMLUtil.getGrandChildrenName(e, Constants.PROPERTY);
-                    if (props != null && props.size() > 0) {
+                    if ((props != null) && !props.isEmpty()) {
                         for (final OMElement p : props) {
-                            if (XMLUtil.getAttributeValue(p, Constants.PROPERTY_NAME) != null &&
-                                XMLUtil.getAttributeValue(p, "name").equals("MimeType")) {
+                            if ((XMLUtil.getAttributeValue(p, Constants.PROPERTY_NAME) != null) &&
+                                "MimeType".equals(XMLUtil.getAttributeValue(p, "name"))) {
                                 pi.setMimeType(p.getText());
-                            } else if (XMLUtil.getAttributeValue(p, Constants.PROPERTY_NAME) != null &&
-                                       XMLUtil.getAttributeValue(p, "name").equals("Compressed")) {
-                                //                              pi.setCompressed(true);
+                            } else if ((XMLUtil.getAttributeValue(p, Constants.PROPERTY_NAME) != null) &&
+                                       "Compressed".equals(XMLUtil.getAttributeValue(p, "name"))) {
+                                //@todo: Compress
                             } else {
                                 pi.addProperty(XMLUtil.getAttributeValue(p, "name"), p.getText());
                             }
@@ -267,7 +262,7 @@ public class EbUtil {
 
     public static String[] parseModules(final String modules) {
         final String[] mod;
-        if (modules != null && !modules.trim().equals("")) {
+        if ((modules != null) && !"".equals(modules.trim())) {
             final StringTokenizer st = new StringTokenizer(modules, ",");
             mod = new String[st.countTokens()];
             int i = 0;
@@ -286,27 +281,28 @@ public class EbUtil {
             return false;
         }
         String host = null;
-        log.debug("mshURL=" + mshURL);
+        EbUtil.log.debug("mshURL=" + mshURL);
         if (mshURL.startsWith("http")) {
             try {
                 //                host = mshURL.substring(8, mshURL.indexOf("/"));
                 final URL url = new URL(mshURL);
                 host = url.getHost();
-                log.debug("========= host is: " + host);
+                EbUtil.log.debug("========= host is: " + host);
             } catch (MalformedURLException mue) {
-                log.error("Problem while parsing msh URL: " + mshURL + "Maybe an unknown protocol was used", mue);
+                EbUtil.log
+                        .error("Problem while parsing msh URL: " + mshURL + "Maybe an unknown protocol was used", mue);
             }
         } else if (mshURL.indexOf("@") > 0) {
             host = mshURL.substring(mshURL.indexOf("@") + 1);
         }
-        if (host != null && host.equals("localhost")) {
+        if ((host != null) && "localhost".equals(host)) {
             return true;
         }
 
         try {
             final InetAddress addr = InetAddress.getLocalHost();
             final String hostname = addr.getHostName();
-            if (host != null && host.equalsIgnoreCase(hostname)) {
+            if ((host != null) && host.equalsIgnoreCase(hostname)) {
                 return true;
             }
             final byte[] ipAddr = addr.getAddress();
@@ -317,12 +313,12 @@ public class EbUtil {
                 }
                 ipAddrStr += ipAddr[i] & 0xFF;
             }
-            if (host != null && host.equals(ipAddrStr)) {
+            if ((host != null) && host.equals(ipAddrStr)) {
                 return true;
             }
 
         } catch (final UnknownHostException e) {
-            log.error("Cannot get localhost address", e);
+            EbUtil.log.error("Cannot get localhost address", e);
         }
         if (configCtx == null) {
             return false;
@@ -334,7 +330,7 @@ public class EbUtil {
                 final StringTokenizer st = new StringTokenizer(localNames, ",");
                 while (st.hasMoreTokens()) {
                     final String token = st.nextToken().trim();
-                    if (host != null && host.equalsIgnoreCase(token)) {
+                    if ((host != null) && host.equalsIgnoreCase(token)) {
                         return true;
                     }
 
@@ -367,8 +363,8 @@ public class EbUtil {
         }
 
         // Find the eb:Messaging header as a child element of the soapenv:Header element.
-        final OMElement messaging = XMLUtil.getFirstChildWithNameNS(header, Constants.MESSAGING, Constants.NS);
-        return messaging;
+        return XMLUtil.getFirstChildWithNameNS(header, Constants.MESSAGING, Constants.NS);
+
     }
 
     /**
@@ -379,14 +375,13 @@ public class EbUtil {
      * @return the UserMessage element or {@code null} if there is none.
      */
     public static OMElement getUserMessage(final MessageContext msgCtx) {
-        final OMElement messaging = getMessaging(msgCtx);
+        final OMElement messaging = EbUtil.getMessaging(msgCtx);
         if (messaging == null) {
             return null;
         }
 
         // Find the eb:UserMessage header as a child element of the eb:Messaging element.
-        final OMElement userMessage = XMLUtil.getFirstChildWithNameNS(messaging, Constants.USER_MESSAGE, Constants.NS);
-        return userMessage;
+        return XMLUtil.getFirstChildWithNameNS(messaging, Constants.USER_MESSAGE, Constants.NS);
     }
 
     /**
@@ -397,15 +392,13 @@ public class EbUtil {
      * @return the SignalMessage element or {@code null} if there is none.
      */
     public static OMElement getSignalMessage(final MessageContext msgCtx) {
-        final OMElement messaging = getMessaging(msgCtx);
+        final OMElement messaging = EbUtil.getMessaging(msgCtx);
         if (messaging == null) {
             return null;
         }
 
         // Find the eb:SignalMessage header as a child element of the eb:Messaging element.
-        final OMElement signalMessage =
-                XMLUtil.getFirstChildWithNameNS(messaging, Constants.SIGNAL_MESSAGE, Constants.NS);
-        return signalMessage;
+        return XMLUtil.getFirstChildWithNameNS(messaging, Constants.SIGNAL_MESSAGE, Constants.NS);
     }
 
     /**
@@ -418,10 +411,10 @@ public class EbUtil {
      *
      * @param msgCtx The message context of the processed message
      * @return true when this message is an ebMS UserMessage
-     *         false otherwise
+     * false otherwise
      */
     public static boolean isUserMessage(final MessageContext msgCtx) {
-        return getUserMessage(msgCtx) != null;
+        return EbUtil.getUserMessage(msgCtx) != null;
     }
 
     /**
@@ -431,7 +424,7 @@ public class EbUtil {
      * @return the ID of the UserMessage or {@code null} if the message does not contain a UserMessage.
      */
     public static String getUserMessageId(final MessageContext msgCtx) {
-        final OMElement userMessage = getUserMessage(msgCtx);
+        final OMElement userMessage = EbUtil.getUserMessage(msgCtx);
         if (userMessage == null) {
             return null;
         }
@@ -457,8 +450,8 @@ public class EbUtil {
      * @return PMode for the message or {@code null} if there is none.
      */
     public static PMode getPModeForReceivedMessage(final String messageId) {
-        final List<ReceivedUserMsg> messages = rum.findByMessageId(messageId);
-        ReceivedUserMsg message = messages.get(0);
+        final List<ReceivedUserMsg> messages = EbUtil.rum.findByMessageId(messageId);
+        final ReceivedUserMsg message = messages.get(0);
         return Configuration.getPModeO(message.getAction(), message.getService(), message.getFromParty(), null,
                                        message.getToParty(), null);
     }
@@ -582,5 +575,19 @@ public class EbUtil {
         }
 
         return null;  // no error, just did not find any perfect match
+    }
+
+    /**
+     * Generates MessageID conformant to RFC2822
+     *
+     * @return the RFC2822 conformant message id
+     */
+    public static String generateMessageID() {
+        // 48 symbols for uid and 11 for prefix
+        StringBuilder buffer = new StringBuilder(59);
+        buffer.append(UIDGenerator.generateUID());
+        buffer.append(Constants.MESSAGE_ID_PREFIX);
+
+        return buffer.toString();
     }
 }

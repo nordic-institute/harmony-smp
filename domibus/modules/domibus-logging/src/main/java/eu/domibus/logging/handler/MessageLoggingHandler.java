@@ -12,7 +12,7 @@ public class MessageLoggingHandler extends AbstractHandler {
     @Override
     public InvocationResponse invoke(final MessageContext msgCtx) throws AxisFault {
 
-        LOG.info(msgCtx.getEnvelope().toString());
+        MessageLoggingHandler.LOG.info(msgCtx.getEnvelope().toString());
 
         return InvocationResponse.CONTINUE;
     }

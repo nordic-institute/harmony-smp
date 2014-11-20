@@ -1,12 +1,14 @@
 package eu.domibus.ebms3.persistent;
 
-import org.apache.axiom.util.UIDGenerator;
+import eu.domibus.common.persistent.TempStore;
 import eu.domibus.ebms3.module.Configuration;
+import eu.domibus.ebms3.module.EbUtil;
 import eu.domibus.ebms3.submit.EbMessage;
 import eu.domibus.ebms3.submit.MsgInfoSet;
+import org.apache.axiom.util.UIDGenerator;
 
 import javax.persistence.*;
-import java.io.File;
+import java.util.Collection;
 
 /**
  * Created with IntelliJ IDEA.
@@ -15,6 +17,9 @@ import java.io.File;
  * Time: 16:02
  * To change this template use File | Settings | File Templates.
  */
+
+@NamedQueries({@NamedQuery(name = "MessageToSend.findFilePathByMessageID",
+                           query = "SELECT m.msgInfoSet.payloads.bodyPayload.fileName FROM MessageToSend m WHERE m.msgInfoSet.messageId = :MESSAGE_ID")})
 
 @Entity
 @Table(name = "TB_MESSAGE_TO_SEND")
@@ -26,8 +31,8 @@ public abstract class MessageToSend extends EbMessage {
     @Column(name = "SENT")
     protected boolean sent;
 
-    public MessageToSend(final File folder, final MsgInfoSet mis) {
-        super(folder, mis);
+    public MessageToSend(final String tempGroup, final MsgInfoSet mis, final Collection<TempStore> attachmentData) {
+        super(tempGroup, mis, attachmentData);
         this.setMsgInfoSet(mis);
     }
 
@@ -35,14 +40,15 @@ public abstract class MessageToSend extends EbMessage {
         super();
     }
 
+
     public final MsgInfoSet getMsgInfoSet() {
         return this.msgInfoSet;
     }
 
 
-    protected final void setMsgInfoSet(MsgInfoSet mis) {
+    protected final void setMsgInfoSet(final MsgInfoSet mis) {
         if (mis.getMessageId() == null) {
-            mis.setMessageId(UIDGenerator.generateURNString());
+            mis.setMessageId(EbUtil.generateMessageID());
         }
         if (mis.getConversationId() == null) {
             mis.setConversationId(UIDGenerator.generateURNString());
@@ -55,30 +61,30 @@ public abstract class MessageToSend extends EbMessage {
     }
 
     public final String getToURL() {
-        return Configuration.getAddress(getMsgInfoSet().getPmode(), getMsgInfoSet().getLegNumber());
+        return Configuration.getAddress(this.getMsgInfoSet().getPmode(), this.getMsgInfoSet().getLegNumber());
     }
 
     public final String getMep() {
-        return Configuration.getMep(getMsgInfoSet().getPmode());
+        return Configuration.getMep(this.getMsgInfoSet().getPmode());
     }
 
     public final String getPmode() {
-        return getMsgInfoSet().getPmode();
+        return this.getMsgInfoSet().getPmode();
     }
 
     public final String getCallbackClass() {
-        return getMsgInfoSet().getCallbackClass();
+        return this.getMsgInfoSet().getCallbackClass();
     }
 
     public final long getTimeInMillis() {
-        return getMsgInfoSet().getTimeInMillis();
+        return this.getMsgInfoSet().getTimeInMillis();
     }
 
     public final int getLegNumber() {
-        return getMsgInfoSet().getLegNumber();
+        return this.getMsgInfoSet().getLegNumber();
     }
 
     public final String getMessageId() {
-        return getMsgInfoSet().getMessageId();
+        return this.getMsgInfoSet().getMessageId();
     }
 }

@@ -1,8 +1,8 @@
 package eu.domibus.ebms3.module;
 
-import org.apache.log4j.Logger;
 import eu.domibus.common.exceptions.ConfigurationException;
 import eu.domibus.ebms3.config.PModePool;
+import org.apache.log4j.Logger;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
@@ -23,7 +23,8 @@ public class CallbackReceiptTest {
     //Map<Search Parameter, Expected PMode>
     private final static Map<String, String> SEARCH_RESULT_MAP = new HashMap<String, String>();
 
-    private final static String SINGLE_PMODE_WITH_NO_CORRESPONDING_PMODE = "TESTGW1_TESTGW2_TEST_GW2GW_unreliable_maxPayloadMin";
+    private final static String SINGLE_PMODE_WITH_NO_CORRESPONDING_PMODE =
+            "TESTGW1_TESTGW2_TEST_GW2GW_unreliable_maxPayloadMin";
 
     @Rule
     public ExpectedException correspondingPModeNotFoundException = ExpectedException.none();
@@ -35,8 +36,10 @@ public class CallbackReceiptTest {
 
             //URL testPModeURL_1 = CallbackReceiptTest.class.getResource("/test_pmodes/TESTGW1toTESTGW2.pmode.xml");
             //URL testPModeURL_2 = CallbackReceiptTest.class.getResource("/test_pmodes/TESTGW2toTESTGW1.pmode.xml");
-            URL testPModeURL_1 = Thread.currentThread().getContextClassLoader().getResource("test_pmodes/TESTGW1toTESTGW2.pmode.xml");
-            URL testPModeURL_2 = Thread.currentThread().getContextClassLoader().getResource("test_pmodes/TESTGW2toTESTGW1.pmode.xml");
+            URL testPModeURL_1 = Thread.currentThread().getContextClassLoader()
+                                       .getResource("test_pmodes/TESTGW1toTESTGW2.pmode.xml");
+            URL testPModeURL_2 = Thread.currentThread().getContextClassLoader()
+                                       .getResource("test_pmodes/TESTGW2toTESTGW1.pmode.xml");
             assertNotNull(testPModeURL_1);
             LOG.info("1st PMode File used for this test: " + testPModeURL_1.getFile());
             assertNotNull(testPModeURL_2);
@@ -48,13 +51,16 @@ public class CallbackReceiptTest {
             Configuration.addPModePool(pmodePool_1);
             Configuration.addPModePool(pmodePool_2);
 
-            URL testSecurityConfigURL = Thread.currentThread().getContextClassLoader().getResource("test_security-config/security-config.xml");
+            URL testSecurityConfigURL = Thread.currentThread().getContextClassLoader()
+                                              .getResource("test_security-config/security-config.xml");
             assertNotNull(testSecurityConfigURL);
 
             URL testPolicyURL = Thread.currentThread().getContextClassLoader().getResource("test_policies");
             assertNotNull(testPolicyURL);
 
-            eu.domibus.security.module.Configuration.loadSecurityConfigFileIfModified(new File(testSecurityConfigURL.getFile()), testPolicyURL.getFile());
+            eu.domibus.security.module.Configuration
+                    .loadSecurityConfigFileIfModified(new File(testSecurityConfigURL.getFile()),
+                                                      testPolicyURL.getFile());
 
             assertNotNull(Constants.pmodes);
 
@@ -62,9 +68,12 @@ public class CallbackReceiptTest {
             LOG.error("Exception while loading testressources", e);
         }
 
-        SEARCH_RESULT_MAP.put("TESTGW1_TESTGW2_TEST_GW2GW_unreliable_sign_encrypt", "TESTGW2_TESTGW1_TEST_GW2GW_unreliable_sign_encrypt");
-        SEARCH_RESULT_MAP.put("TESTGW1_TESTGW2_TEST_GW2GW_as4_response_sign_encrypt", "TESTGW2_TESTGW1_TEST_GW2GW_as4_response_sign_encrypt");
-        SEARCH_RESULT_MAP.put("TESTGW1_TESTGW2_TEST_GW2GW_as4_callback_sign_encrypt", "TESTGW2_TESTGW1_TEST_GW2GW_as4_callback_sign_encrypt");
+        SEARCH_RESULT_MAP.put("TESTGW1_TESTGW2_TEST_GW2GW_unreliable_sign_encrypt",
+                              "TESTGW2_TESTGW1_TEST_GW2GW_unreliable_sign_encrypt");
+        SEARCH_RESULT_MAP.put("TESTGW1_TESTGW2_TEST_GW2GW_as4_response_sign_encrypt",
+                              "TESTGW2_TESTGW1_TEST_GW2GW_as4_response_sign_encrypt");
+        SEARCH_RESULT_MAP.put("TESTGW1_TESTGW2_TEST_GW2GW_as4_callback_sign_encrypt",
+                              "TESTGW2_TESTGW1_TEST_GW2GW_as4_callback_sign_encrypt");
         SEARCH_RESULT_MAP.put("TESTGW1_TESTGW2_TEST_GW2GW_unreliable", "TESTGW2_TESTGW1_TEST_GW2GW_unreliable");
         SEARCH_RESULT_MAP.put("TESTGW1_TESTGW2_TEST_GW2GW_as4_response", "TESTGW2_TESTGW1_TEST_GW2GW_as4_response");
         SEARCH_RESULT_MAP.put("TESTGW1_TESTGW2_TEST_GW2GW_as4_callback", "TESTGW2_TESTGW1_TEST_GW2GW_as4_callback");
@@ -100,8 +109,9 @@ public class CallbackReceiptTest {
     @Test
     public void testGetCorrespondingReplyPModeSinglePmode_Negative() throws Exception {
 
-        correspondingPModeNotFoundException.expect(ConfigurationException.class);
-        correspondingPModeNotFoundException.expectMessage("No corresponding PMode for " + SINGLE_PMODE_WITH_NO_CORRESPONDING_PMODE + " found.");
+        this.correspondingPModeNotFoundException.expect(ConfigurationException.class);
+        this.correspondingPModeNotFoundException
+                .expectMessage("No corresponding PMode for " + SINGLE_PMODE_WITH_NO_CORRESPONDING_PMODE + " found.");
 
         Configuration.getCorrespondingReplyPMode(SINGLE_PMODE_WITH_NO_CORRESPONDING_PMODE);
     }

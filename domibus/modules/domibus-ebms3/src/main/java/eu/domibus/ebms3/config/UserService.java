@@ -4,11 +4,13 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
+import java.io.Serializable;
+
 /**
  * @author Hamid Ben Malek
  */
 @Root(name = "UserService", strict = false)
-public class UserService implements java.io.Serializable {
+public class UserService implements Serializable {
     private static final long serialVersionUID = -5593316570192830737L;
 
     @Attribute(required = false)
@@ -41,7 +43,7 @@ public class UserService implements java.io.Serializable {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(final String name) {
@@ -49,7 +51,7 @@ public class UserService implements java.io.Serializable {
     }
 
     public ToParty getToParty() {
-        return toParty;
+        return this.toParty;
     }
 
     public void setToParty(final ToParty toParty) {
@@ -57,7 +59,7 @@ public class UserService implements java.io.Serializable {
     }
 
     public CollaborationInfo getCollaborationInfo() {
-        return collaborationInfo;
+        return this.collaborationInfo;
     }
 
     public void setCollaborationInfo(final CollaborationInfo collaborationInfo) {
@@ -65,7 +67,7 @@ public class UserService implements java.io.Serializable {
     }
 
     public MessageProperties getMessageProperties() {
-        return messageProperties;
+        return this.messageProperties;
     }
 
     public void setMessageProperties(final MessageProperties messageProperties) {
@@ -73,7 +75,7 @@ public class UserService implements java.io.Serializable {
     }
 
     public PayloadInfo getPayloadInfo() {
-        return payloadInfo;
+        return this.payloadInfo;
     }
 
     public void setPayloadInfo(final PayloadInfo payloadInfo) {
@@ -84,14 +86,14 @@ public class UserService implements java.io.Serializable {
         if (party == null) {
             return;
         }
-        if (toParty == null) {
-            toParty = new ToParty();
+        if (this.toParty == null) {
+            this.toParty = new ToParty();
         }
-        toParty.addParty(party);
+        this.toParty.addParty(party);
     }
 
     public int getPayloadsSize() {
-        return maxPayloadsSize;
+        return this.maxPayloadsSize;
     }
 
     public void setPayloadsSize(final int maxPayloadsSize) {

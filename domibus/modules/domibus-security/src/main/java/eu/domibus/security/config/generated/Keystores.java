@@ -43,10 +43,10 @@ public class Keystores {
      * Gets the value of the privateKeystore property.
      *
      * @return possible object is
-     *         {@link PrivateKeystore }
+     * {@link PrivateKeystore }
      */
     public PrivateKeystore getPrivateKeystore() {
-        return privateKeystore;
+        return this.privateKeystore;
     }
 
     /**
@@ -63,10 +63,10 @@ public class Keystores {
      * Gets the value of the publicKeystore property.
      *
      * @return possible object is
-     *         {@link PublicKeystore }
+     * {@link PublicKeystore }
      */
     public PublicKeystore getPublicKeystore() {
-        return publicKeystore;
+        return this.publicKeystore;
     }
 
     /**

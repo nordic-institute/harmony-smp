@@ -179,9 +179,6 @@
                 <tns:Endpoint
                         address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
                         soapVersion="1.2"/>
-                <tns:As4Receipt nonRepudiation="false" method="response">
-                    <tns:As4Reliability duplicateElimination="true"/>
-                </tns:As4Receipt>
             </tns:Leg>
         </tns:MEP>
     </tns:Binding>
@@ -192,11 +189,8 @@
                      userService="EPO_Unreliable_GW2_GW"
                      security="sign-body-header_GW1_GW2">
                 <tns:Endpoint
-                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        address="@domibus.testing.MSH.protocol@://@domibus.testing.MSH.host@:@domibus.testing.MSH.pt@/@domibus.testing.MSH.contextPath@"
                         soapVersion="1.2"/>
-                <tns:As4Receipt nonRepudiation="false" method="response">
-                    <tns:As4Reliability duplicateElimination="true"/>
-                </tns:As4Receipt>
             </tns:Leg>
         </tns:MEP>
     </tns:Binding>
@@ -222,7 +216,7 @@
                      userService="EPO_As4_response_GW2_GW"
                      security="sign-body-header_GW1_GW2">
                 <tns:Endpoint
-                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        address="@domibus.testing.MSH.protocol@://@domibus.testing.MSH.host@:@domibus.testing.MSH.pt@/@domibus.testing.MSH.contextPath@"
                         soapVersion="1.2"/>
                 <tns:As4Receipt nonRepudiation="false" method="response">
                     <tns:As4Reliability duplicateElimination="true"/>
@@ -252,7 +246,7 @@
                      userService="EPO_As4_callback_GW2_GW"
                      security="sign-body-header_GW1_GW2">
                 <tns:Endpoint
-                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        address="@domibus.testing.MSH.protocol@://@domibus.testing.MSH.host@:@domibus.testing.MSH.pt@/@domibus.testing.MSH.contextPath@"
                         soapVersion="1.2"/>
                 <tns:As4Receipt nonRepudiation="false" method="response">
                     <tns:As4Reliability duplicateElimination="true"/>
@@ -282,7 +276,7 @@
                      userService="EPO_Invalid_endpoint_GW2_GW"
                      security="sign-body-header_GW1_GW2">
                 <tns:Endpoint
-                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        address="@domibus.testing.MSH.protocol@://@domibus.testing.MSH.host@:@domibus.testing.MSH.pt@/@domibus.testing.MSH.contextPath@"
                         soapVersion="1.2"/>
                 <tns:As4Receipt nonRepudiation="false" method="response">
                     <tns:As4Reliability duplicateElimination="true"/>
@@ -312,7 +306,7 @@
                      userService="EPO_As4_invalid_endpoint_GW2_GW"
                      security="sign-body-header_GW1_GW2">
                 <tns:Endpoint
-                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        address="@domibus.testing.MSH.protocol@://@domibus.testing.MSH.host@:@domibus.testing.MSH.pt@/@domibus.testing.MSH.contextPath@"
                         soapVersion="1.2"/>
                 <tns:As4Receipt nonRepudiation="false" method="response">
                     <tns:As4Reliability duplicateElimination="true"/>
@@ -342,7 +336,7 @@
                      userService="EPO_Unreliable_maxPayloadMin_GW2_GW"
                      security="sign-body-header_GW1_GW2">
                 <tns:Endpoint
-                        address="@domibus.module.ebms3.MSH.protocol@://@domibus.module.ebms3.MSH.host@:@domibus.module.ebms3.MSH.pt@/@domibus.module.ebms3.MSH.contextPath@"
+                        address="@domibus.testing.MSH.protocol@://@domibus.testing.MSH.host@:@domibus.testing.MSH.pt@/@domibus.testing.MSH.contextPath@"
                         soapVersion="1.2"/>
                 <tns:As4Receipt nonRepudiation="false" method="response">
                     <tns:As4Reliability duplicateElimination="true"/>

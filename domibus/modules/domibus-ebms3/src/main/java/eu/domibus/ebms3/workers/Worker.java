@@ -1,7 +1,7 @@
 package eu.domibus.ebms3.workers;
 
-import org.apache.log4j.Logger;
 import eu.domibus.common.util.ClassUtil;
+import org.apache.log4j.Logger;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementMap;
 import org.simpleframework.xml.Root;
@@ -21,7 +21,7 @@ public class Worker implements Runnable {
     protected String name;
 
     @Attribute(required = false)
-    protected boolean activate = false;
+    protected boolean activate;
 
     @Attribute(required = false)
     protected long interval = 30000;
@@ -30,48 +30,48 @@ public class Worker implements Runnable {
     protected int total = -1;
 
     @Attribute(required = false)
-    protected int groupSize = 0;
+    protected int groupSize;
 
     @Attribute(required = false)
-    protected long pause = interval;
+    protected long pause = this.interval;
 
     @Attribute(required = false)
-    protected String workerClass = null;
+    protected String workerClass;
 
     @ElementMap(entry = "parameter", key = "name", attribute = true, inline = true, required = false)
     protected Map<String, String> parameters;
 
-    protected int counter = 0;
-    protected Timer timer = null;
+    protected int counter;
+    protected Timer timer;
     //protected Task task = null;
-    protected Runnable task = null;
+    protected Runnable task;
 
     protected String state = Worker.VIRGIN;
     protected static final String VIRGIN = "virgin";
     protected static final String RUNNING = "running";
     protected static final String CANCELLED = "cancelled";
-    protected TimerTask timerTask = null;
+    protected TimerTask timerTask;
 
     public void start() {
-        start(true);
+        this.start(true);
     }
 
     public void start(final boolean cycle) {
-        if (state.equals(Worker.RUNNING) || !activate) {
+        if (this.state.equals(Worker.RUNNING) || !this.activate) {
             return;
         }
-        getTask();
+        this.getTask();
         try {
-            if (timer == null) {
-                timer = new Timer();
+            if (this.timer == null) {
+                this.timer = new Timer();
             }
-            if (cycle && total > 0 && counter >= total) {
-                counter = 0;
+            if (cycle && (this.total > 0) && (this.counter >= this.total)) {
+                this.counter = 0;
             }
-            timer.schedule(getTimerTask(), interval, interval);
-            state = Worker.RUNNING;
+            this.timer.schedule(this.getTimerTask(), this.interval, this.interval);
+            this.state = Worker.RUNNING;
         } catch (Exception e) {
-            log.error("Error occured during thread execution", e);
+            Worker.log.error("Error occured during thread execution", e);
         }
     }
 
@@ -82,44 +82,44 @@ public class Worker implements Runnable {
     }
 
     public final void run() {
-        if (!activate) {
+        if (!this.activate) {
             return;
         }
-        if (total == 0 || (total > 0 && counter >= total)) {
-            terminate();
+        if ((this.total == 0) || ((this.total > 0) && (this.counter >= this.total))) {
+            this.terminate();
             return;
         }
         try {
-            if (counter > 0 && groupSize > 0 &&
-                (counter % groupSize) == 0 && pause > 0 &&
-                pause - interval > 0) {
-                Thread.sleep(pause - interval);
+            if ((this.counter > 0) && (this.groupSize > 0) &&
+                ((this.counter % this.groupSize) == 0) && (this.pause > 0) &&
+                ((this.pause - this.interval) > 0)) {
+                Thread.sleep(this.pause - this.interval);
             }
         } catch (Exception e) {
-            log.error("Error occured during thread execution", e);
+            Worker.log.error("Error occured during thread execution", e);
         }
-        counter++;
+        this.counter++;
 
         try {
-            if (getTask() != null) {
-                task.run();
+            if (this.getTask() != null) {
+                this.task.run();
             } else {
-                task();
+                this.task();
             }
         } catch (Exception ex) {
-            log.error("Error occured in ControllerPeriodicWorker", ex);
-            terminate();
-            start(false);
+            Worker.log.error("Error occured in ControllerPeriodicWorker", ex);
+            this.terminate();
+            this.start(false);
         }
     }
 
     public void terminate() {
-        if (!state.equals(Worker.RUNNING) || state.equals(Worker.VIRGIN)) {
+        if (!this.state.equals(Worker.RUNNING) || this.state.equals(Worker.VIRGIN)) {
             return;
         }
-        timerTask.cancel();
-        timer.purge();
-        state = Worker.CANCELLED;
+        this.timerTask.cancel();
+        this.timer.purge();
+        this.state = Worker.CANCELLED;
     }
 
     public void update(final Worker worker) {
@@ -132,19 +132,19 @@ public class Worker implements Runnable {
         this.pause = worker.getPause();
         this.workerClass = worker.getWorkerClass();
         this.parameters = worker.getParameters();
-        if (activate && !worker.isActivate()) {
+        if (this.activate && !worker.isActivate()) {
             this.activate = worker.isActivate();
-            terminate();
-        } else if (!activate && worker.isActivate()) {
+            this.terminate();
+        } else if (!this.activate && worker.isActivate()) {
             this.activate = worker.isActivate();
-            start();
+            this.start();
         } else {
             this.activate = worker.isActivate();
         }
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setName(final String name) {
@@ -152,7 +152,7 @@ public class Worker implements Runnable {
     }
 
     public boolean isActivate() {
-        return activate;
+        return this.activate;
     }
 
     public void setActivate(final boolean activate) {
@@ -160,7 +160,7 @@ public class Worker implements Runnable {
     }
 
     public long getInterval() {
-        return interval;
+        return this.interval;
     }
 
     public void setInterval(final long interval) {
@@ -168,7 +168,7 @@ public class Worker implements Runnable {
     }
 
     public int getTotal() {
-        return total;
+        return this.total;
     }
 
     public void setTotal(final int total) {
@@ -176,7 +176,7 @@ public class Worker implements Runnable {
     }
 
     public int getGroupSize() {
-        return groupSize;
+        return this.groupSize;
     }
 
     public void setGroupSize(final int groupSize) {
@@ -184,7 +184,7 @@ public class Worker implements Runnable {
     }
 
     public long getPause() {
-        return pause;
+        return this.pause;
     }
 
     public void setPause(final long pause) {
@@ -192,7 +192,7 @@ public class Worker implements Runnable {
     }
 
     public String getWorkerClass() {
-        return workerClass;
+        return this.workerClass;
     }
 
     public void setWorkerClass(final String workerClass) {
@@ -204,32 +204,32 @@ public class Worker implements Runnable {
     }
 
     public Map<String, String> getParameters() {
-        return parameters;
+        return this.parameters;
     }
 
     public Runnable getTask() {
-        if (task != null) {
-            return task;
+        if (this.task != null) {
+            return this.task;
         }
-        if (workerClass == null || workerClass.trim().equals("")) {
+        if ((this.workerClass == null) || "".equals(this.workerClass.trim())) {
             return null;
         }
         try {
-            task = (Runnable) ClassUtil.createInstance(workerClass);
-            if (task instanceof Task) {
-                ((Task) task).setParameters(parameters);
+            this.task = (Runnable) ClassUtil.createInstance(this.workerClass);
+            if (this.task instanceof Task) {
+                ((Task) this.task).setParameters(this.parameters);
             }
         } catch (Exception ex) {
-            log.debug(ex.getMessage());
+            Worker.log.debug(ex.getMessage());
         }
-        return task;
+        return this.task;
     }
 
     public TimerTask getTimerTask() {
-        if (timerTask != null && !state.equals(Worker.CANCELLED)) {
-            return timerTask;
+        if ((this.timerTask != null) && !this.state.equals(Worker.CANCELLED)) {
+            return this.timerTask;
         }
-        timerTask = new TimerTaskWrapper(this);
-        return timerTask;
+        this.timerTask = new TimerTaskWrapper(this);
+        return this.timerTask;
     }
 }

@@ -1,8 +1,8 @@
 package eu.domibus.ebms3.persistent;
 
-import org.apache.log4j.Logger;
 import eu.domibus.common.persistent.AbstractDAO;
 import eu.domibus.common.persistent.JpaUtil;
+import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
@@ -107,7 +107,7 @@ public class ReceiptTrackingDAO extends AbstractDAO<ReceiptTracking> {
         try {
             return (ReceiptTracking) q.getSingleResult();
         } catch (NoResultException e) {
-            LOG.debug("no ReceiptTracker found for message with id: " + mesageId);
+            ReceiptTrackingDAO.LOG.debug("no ReceiptTracker found for message with id: " + mesageId);
             return null;
         } finally {
             em.close();

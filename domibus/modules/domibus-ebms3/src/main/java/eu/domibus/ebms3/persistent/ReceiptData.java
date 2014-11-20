@@ -1,6 +1,5 @@
 package eu.domibus.ebms3.persistent;
 
-import org.apache.axiom.om.OMElement;
 import eu.domibus.common.persistent.AbstractBaseEntity;
 import eu.domibus.common.soap.Element;
 import eu.domibus.common.util.XMLUtil;
@@ -8,6 +7,7 @@ import eu.domibus.ebms3.module.Constants;
 import eu.domibus.ebms3.packaging.PackagingFactory;
 import eu.domibus.ebms3.packaging.Receipt;
 import eu.domibus.ebms3.packaging.SignalMessage;
+import org.apache.axiom.om.OMElement;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -54,24 +54,24 @@ public class ReceiptData extends AbstractBaseEntity implements Serializable {
     @Column(name = "TO_URL")
     protected String toURL;
     @Column(name = "SENT")
-    protected boolean sent = false;
+    protected boolean sent;
 
     public boolean isFailed() {
-        return failed;
+        return this.failed;
     }
 
-    public void setFailed(boolean failed) {
+    public void setFailed(final boolean failed) {
         this.failed = failed;
     }
 
     @Column(name = "FAILED")
-    protected boolean failed = false;
+    protected boolean failed;
     @Transient
     protected OMElement content;
 
 
     public ReceiptData() {
-        timestamp = new Date();
+        this.timestamp = new Date();
     }
 
 
@@ -93,13 +93,15 @@ public class ReceiptData extends AbstractBaseEntity implements Serializable {
      */
     public ReceiptData(final String refToMessageId, final List<OMElement> signatureReferenceElements) {
         this(refToMessageId);
-        content = new Element(Constants.NON_REPUDIATION_INFORMATION, Constants.ebbpNS, Constants.ebbp_PREFIX).getElement();
+        this.content = new Element(Constants.NON_REPUDIATION_INFORMATION, Constants.ebbpNS, Constants.ebbp_PREFIX)
+                .getElement();
         for (final OMElement signatureReferenceElement : signatureReferenceElements) {
-            final Element messagePartNRInformation = new Element(Constants.MESSAGE_PART_NR_INFORMATION, Constants.ebbpNS, Constants.ebbp_PREFIX);
+            final Element messagePartNRInformation =
+                    new Element(Constants.MESSAGE_PART_NR_INFORMATION, Constants.ebbpNS, Constants.ebbp_PREFIX);
             messagePartNRInformation.addChild(signatureReferenceElement.cloneOMElement());
-            content.addChild(messagePartNRInformation.getElement());
+            this.content.addChild(messagePartNRInformation.getElement());
         }
-        receiptContent = XMLUtil.toString(content);
+        this.receiptContent = XMLUtil.toString(this.content);
     }
 
 
@@ -115,12 +117,12 @@ public class ReceiptData extends AbstractBaseEntity implements Serializable {
      */
     public ReceiptData(final String refToMessageId, final OMElement userMessage) {
         this(refToMessageId);
-        content = userMessage.cloneOMElement();
-        receiptContent = XMLUtil.toString(content);
+        this.content = userMessage.cloneOMElement();
+        this.receiptContent = XMLUtil.toString(this.content);
     }
 
     public String getRefToMessageId() {
-        return refToMessageId;
+        return this.refToMessageId;
     }
 
     public void setRefToMessageId(final String refToMessageId) {
@@ -128,7 +130,7 @@ public class ReceiptData extends AbstractBaseEntity implements Serializable {
     }
 
     public String getToURL() {
-        return toURL;
+        return this.toURL;
     }
 
     public void setToURL(final String toURL) {
@@ -136,7 +138,7 @@ public class ReceiptData extends AbstractBaseEntity implements Serializable {
     }
 
     public boolean isSent() {
-        return sent;
+        return this.sent;
     }
 
     public void setSent(final boolean sent) {
@@ -144,26 +146,26 @@ public class ReceiptData extends AbstractBaseEntity implements Serializable {
     }
 
     public SignalMessage getSignalMessage() {
-        return PackagingFactory.createReceipt(timestamp, refToMessageId, getReceiptContent());
+        return PackagingFactory.createReceipt(this.timestamp, this.refToMessageId, this.getReceiptContent());
     }
 
     public Receipt getReceipt() {
-        return new Receipt(getReceiptContent());
+        return new Receipt(this.getReceiptContent());
     }
 
     public OMElement getReceiptContent() {
-        if (content != null) {
-            return content;
+        if (this.content != null) {
+            return this.content;
         }
-        if (receiptContent == null || receiptContent.trim().equals("")) {
+        if ((this.receiptContent == null) || "".equals(this.receiptContent.trim())) {
             return null;
         }
-        content = XMLUtil.toOMElement(receiptContent);
-        return content;
+        this.content = XMLUtil.toOMElement(this.receiptContent);
+        return this.content;
     }
 
     public String getPmode() {
-        return pmode;
+        return this.pmode;
     }
 
     public void setPmode(final String pmode) {
@@ -180,12 +182,12 @@ public class ReceiptData extends AbstractBaseEntity implements Serializable {
 
     @Transient
     public boolean isReplyPatternResponse() {
-        return replyPattern != null && replyPattern.equalsIgnoreCase(Constants.RESPONSE_REPLY_PATTERN_NAME);
+        return (this.replyPattern != null) && this.replyPattern.equalsIgnoreCase(Constants.RESPONSE_REPLY_PATTERN_NAME);
     }
 
     @Transient
     public boolean isReplyPatternCallback() {
-        return replyPattern != null && replyPattern.equalsIgnoreCase(Constants.CALLBACK_REPLY_PATTERN_NAME);
+        return (this.replyPattern != null) && this.replyPattern.equalsIgnoreCase(Constants.CALLBACK_REPLY_PATTERN_NAME);
     }
 
     @Transient

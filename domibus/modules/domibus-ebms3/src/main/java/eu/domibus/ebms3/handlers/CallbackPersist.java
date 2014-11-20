@@ -1,10 +1,5 @@
 package eu.domibus.ebms3.handlers;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axis2.AxisFault;
-import org.apache.axis2.context.MessageContext;
-import org.apache.axis2.handlers.AbstractHandler;
-import org.apache.log4j.Logger;
 import eu.domibus.common.util.WSUtil;
 import eu.domibus.common.util.XMLUtil;
 import eu.domibus.ebms3.module.Configuration;
@@ -13,6 +8,11 @@ import eu.domibus.ebms3.module.EbUtil;
 import eu.domibus.ebms3.persistent.MsgIdCallback;
 import eu.domibus.ebms3.persistent.MsgIdCallbackDAO;
 import eu.domibus.ebms3.submit.MsgInfoSet;
+import org.apache.axiom.om.OMElement;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.handlers.AbstractHandler;
+import org.apache.log4j.Logger;
 
 /**
  * This handler writes a MsgIdCallback object to the database when the outgoing
@@ -24,7 +24,7 @@ import eu.domibus.ebms3.submit.MsgInfoSet;
  */
 public class CallbackPersist extends AbstractHandler {
 
-    private static final Logger log = Logger.getLogger(CallbackPersist.class);
+    private static final Logger LOG = Logger.getLogger(CallbackPersist.class);
     private final MsgIdCallbackDAO mid = new MsgIdCallbackDAO();
 
     private String logPrefix = "";
@@ -42,9 +42,9 @@ public class CallbackPersist extends AbstractHandler {
             return InvocationResponse.CONTINUE;
         }
         final String callbackClass = mis.getCallbackClass();
-        if (callbackClass == null || callbackClass.trim().equals("")) {
-            log.info(logPrefix +
-                     "Outgoing message has no callback, therefore MsgIdCallback will not be saved to database");
+        if ((callbackClass == null) || "".equals(callbackClass.trim())) {
+            CallbackPersist.LOG.debug(this.logPrefix +
+                                      "Outgoing message has no callback, therefore MsgIdCallback will not be saved to database");
             return InvocationResponse.CONTINUE;
         }
         final String pmode = mis.getPmode();
@@ -55,8 +55,8 @@ public class CallbackPersist extends AbstractHandler {
 
         final String mep = Configuration.getMep(mis.getPmode());
 
-        if ((!mep.equalsIgnoreCase(Constants.TWO_WAY_PUSH_AND_PUSH) || legNumber != 1) &&
-            (!mep.equalsIgnoreCase(Constants.TWO_WAY_PUSH_AND_PULL) || legNumber != 1)) {
+        if ((!mep.equalsIgnoreCase(Constants.TWO_WAY_PUSH_AND_PUSH) || (legNumber != 1)) &&
+            (!mep.equalsIgnoreCase(Constants.TWO_WAY_PUSH_AND_PULL) || (legNumber != 1))) {
             return InvocationResponse.CONTINUE;
         }
 
@@ -65,18 +65,18 @@ public class CallbackPersist extends AbstractHandler {
             return InvocationResponse.CONTINUE;
         }
 
-        if (log.isDebugEnabled()) {
-            logPrefix = WSUtil.logPrefix(msgCtx);
+        if (CallbackPersist.LOG.isDebugEnabled()) {
+            this.logPrefix = WSUtil.logPrefix(msgCtx);
         }
 
         final String messageId = XMLUtil.getGrandChildValue(userMessage, Constants.MESSAGE_ID);
-        if (messageId == null || messageId.trim().equals("")) {
+        if ((messageId == null) || "".equals(messageId.trim())) {
             return InvocationResponse.CONTINUE;
         }
 
         final MsgIdCallback micb = new MsgIdCallback(messageId, pmode, legNumber, callbackClass);
-        mid.persist(micb);
-        log.info(logPrefix + " saved MsgIdCallback in database");
+        this.mid.persist(micb);
+        CallbackPersist.LOG.debug(this.logPrefix + " saved MsgIdCallback in database");
         return InvocationResponse.CONTINUE;
     }
 }

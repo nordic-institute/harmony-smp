@@ -19,10 +19,10 @@ public class MsgIdCallback extends AbstractBaseEntity implements Serializable {
     private static final long serialVersionUID = 1352148385354239611L;
 
     @Column(name = "MESSAGE_ID")
-    protected String messageId = null;
+    protected String messageId;
 
     @Column(name = "PMODE")
-    protected String pmode = null;
+    protected String pmode;
 
     @Column(name = "LEG_NUMBER")
     protected int legNumber = 1;
@@ -46,7 +46,7 @@ public class MsgIdCallback extends AbstractBaseEntity implements Serializable {
     }
 
     public String getMessageId() {
-        return messageId;
+        return this.messageId;
     }
 
     public void setMessageId(final String messageId) {
@@ -54,7 +54,7 @@ public class MsgIdCallback extends AbstractBaseEntity implements Serializable {
     }
 
     public String getPmode() {
-        return pmode;
+        return this.pmode;
     }
 
     public void setPmode(final String pmode) {
@@ -62,7 +62,7 @@ public class MsgIdCallback extends AbstractBaseEntity implements Serializable {
     }
 
     public int getLegNumber() {
-        return legNumber;
+        return this.legNumber;
     }
 
     public void setLegNumber(final int legNumber) {
@@ -70,7 +70,7 @@ public class MsgIdCallback extends AbstractBaseEntity implements Serializable {
     }
 
     public String getCallbackClass() {
-        return callbackClass;
+        return this.callbackClass;
     }
 
     public void setCallbackClass(final String callbackClass) {

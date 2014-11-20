@@ -1,12 +1,14 @@
 package eu.domibus.logging.persistent;
 
 
+import java.io.Serializable;
+
 /**
  * @author Stefan Mueller
  * @author Tim Nowosadtko
  */
 
-public class MessageInfo implements java.io.Serializable {
+public class MessageInfo implements Serializable {
     private static final long serialVersionUID = 1200796957717630663L;
 
     protected String messageId;
@@ -41,7 +43,7 @@ public class MessageInfo implements java.io.Serializable {
 
 
     public String getPmode() {
-        return pmode;
+        return this.pmode;
     }
 
 
@@ -51,7 +53,7 @@ public class MessageInfo implements java.io.Serializable {
 
 
     public String getMessageId() {
-        return messageId;
+        return this.messageId;
     }
 
     public void setMessageId(final String messageId) {
@@ -59,7 +61,7 @@ public class MessageInfo implements java.io.Serializable {
     }
 
     public String getSender() {
-        return sender;
+        return this.sender;
     }
 
     public void setSender(final String sender) {
@@ -67,7 +69,7 @@ public class MessageInfo implements java.io.Serializable {
     }
 
     public String getFromRole() {
-        return fromRole;
+        return this.fromRole;
     }
 
     public void setFromRole(final String fromRole) {
@@ -75,7 +77,7 @@ public class MessageInfo implements java.io.Serializable {
     }
 
     public String getRecipient() {
-        return recipient;
+        return this.recipient;
     }
 
     public void setRecipient(final String recipient) {
@@ -83,7 +85,7 @@ public class MessageInfo implements java.io.Serializable {
     }
 
     public String getToRole() {
-        return toRole;
+        return this.toRole;
     }
 
     public void setToRole(final String toRole) {
@@ -91,7 +93,7 @@ public class MessageInfo implements java.io.Serializable {
     }
 
     public String getService() {
-        return service;
+        return this.service;
     }
 
     public void setService(final String service) {
@@ -99,7 +101,7 @@ public class MessageInfo implements java.io.Serializable {
     }
 
     public String getAction() {
-        return action;
+        return this.action;
     }
 
     public void setAction(final String action) {
@@ -107,7 +109,7 @@ public class MessageInfo implements java.io.Serializable {
     }
 
     public String getConversationId() {
-        return conversationId;
+        return this.conversationId;
     }
 
     public void setConversationId(final String conversationId) {
@@ -115,7 +117,7 @@ public class MessageInfo implements java.io.Serializable {
     }
 
     public String getStatus() {
-        return status;
+        return this.status;
     }
 
     public void setStatus(final String status) {

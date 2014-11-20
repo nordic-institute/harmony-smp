@@ -1,7 +1,7 @@
 package eu.domibus.ebms3.consumers;
 
-import org.apache.log4j.Logger;
 import eu.domibus.common.util.ClassUtil;
+import org.apache.log4j.Logger;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementMap;
 import org.simpleframework.xml.Root;
@@ -24,7 +24,7 @@ public class ConsumerInfo {
     protected Map<String, String> parameters;
 
     public String getClassName() {
-        return className;
+        return this.className;
     }
 
     public void setClassName(final String className) {
@@ -32,7 +32,7 @@ public class ConsumerInfo {
     }
 
     public Map<String, String> getParameters() {
-        return parameters;
+        return this.parameters;
     }
 
     public void setParameters(final Map<String, String> parameters) {
@@ -40,30 +40,30 @@ public class ConsumerInfo {
     }
 
     public void addParameter(final String name, final String value) {
-        if (parameters == null) {
-            parameters = new HashMap<String, String>();
+        if (this.parameters == null) {
+            this.parameters = new HashMap<String, String>();
         }
-        parameters.put(name, value);
+        this.parameters.put(name, value);
     }
 
     public EbConsumer createInstance() {
-        if (className == null || className.trim().equals("")) {
+        if ((this.className == null) || "".equals(this.className.trim())) {
             return null;
         }
 
         EbConsumer instance = null;
 
-        Object classByClassName = ClassUtil.createInstance(className);
+        final Object classByClassName = ClassUtil.createInstance(this.className);
 
-        if(classByClassName instanceof EbConsumer) {
-            instance = (EbConsumer)classByClassName;
+        if (classByClassName instanceof EbConsumer) {
+            instance = (EbConsumer) classByClassName;
         } else {
-            log.error("Class " + className + " is not instance of EbConsumer");
+            ConsumerInfo.log.error("Class " + this.className + " is not instance of EbConsumer");
             throw new ClassCastException();
         }
 
         if (instance != null) {
-            instance.setParameters(parameters);
+            instance.setParameters(this.parameters);
         }
         return instance;
     }

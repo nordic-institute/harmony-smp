@@ -1,10 +1,5 @@
 package eu.domibus.ebms3.handlers;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axis2.AxisFault;
-import org.apache.axis2.context.MessageContext;
-import org.apache.axis2.handlers.AbstractHandler;
-import org.apache.log4j.Logger;
 import eu.domibus.common.util.WSUtil;
 import eu.domibus.common.util.XMLUtil;
 import eu.domibus.ebms3.config.As4Receipt;
@@ -15,6 +10,11 @@ import eu.domibus.ebms3.persistent.MsgInfo;
 import eu.domibus.ebms3.persistent.ReceiptData;
 import eu.domibus.ebms3.persistent.ReceiptDataDAO;
 import eu.domibus.ebms3.workers.impl.ReceiptSender;
+import org.apache.axiom.om.OMElement;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.handlers.AbstractHandler;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,8 +41,52 @@ import java.util.List;
  */
 public class ReceiptGen extends AbstractHandler {
 
-    private static final Logger log = Logger.getLogger(ReceiptGen.class.getName());
+    private static final Logger LOG = Logger.getLogger(ReceiptGen.class.getName());
     private final ReceiptDataDAO rdd = new ReceiptDataDAO();
+
+    private static ReceiptData generateReceiptData(final String messageId, final OMElement header,
+                                                   final boolean nrrMode) {
+        // The receipt contains a list of references to the received message (see class doc)
+
+        final List<OMElement> signatures = XMLUtil.getGrandChildrenNameNS(header, "Signature", Constants.dsigNS);
+
+        final boolean prepareNRinformation = nrrMode && (signatures != null);
+
+        if (prepareNRinformation) {
+            // Prepare a receipt of type "non-repudiation of receipt":
+            // The receipt must contain a copy of all ds:Reference elements of all ds:Signature elements
+            // from the user message to acknowledge.
+            final List<OMElement> allSignatureReferenceElements = new ArrayList<OMElement>();
+            for (final OMElement signatureElement : signatures) {
+                final List<OMElement> signatureReferenceElements =
+                        XMLUtil.getGrandChildrenNameNS(signatureElement, "Reference", Constants.dsigNS);
+                if (signatureReferenceElements != null) {
+                    for (final OMElement signatureReferenceElement : signatureReferenceElements) {
+                        allSignatureReferenceElements.add(signatureReferenceElement);
+                    }
+                }
+            }
+            if (ReceiptGen.LOG.isDebugEnabled()) {
+                ReceiptGen.LOG.debug("Generated NRR receipt for signed message; MessageId=" + messageId +
+                                     " containing " + allSignatureReferenceElements.size() +
+                                     " Signature/Reference elements");
+            }
+            return new ReceiptData(messageId, allSignatureReferenceElements);
+        } else {
+            // Prepare a receipt of type "reception awareness":
+            // The receipt must contain a copy of the eb:UserMessage element
+            // from the message to acknowledge (see section 5.1.8 of the AS4 profile).
+            final OMElement userMessage = XMLUtil.getGrandChildNameNS(header, Constants.USER_MESSAGE, Constants.NS);
+
+            if (!signatures.isEmpty()) {
+                ReceiptGen.LOG.debug("Generated RA receipt for signed message; MessageId=" + messageId);
+            } else {
+                ReceiptGen.LOG.debug("Generated RA receipt for unsigned message; MessageId=" + messageId);
+
+            }
+            return new ReceiptData(messageId, userMessage);
+        }
+    }
 
     /**
      * Create receipt data and prepare to send a receipt depending on the reply pattern.
@@ -68,7 +112,7 @@ public class ReceiptGen extends AbstractHandler {
 
         // Receipt will only be generated for ebMS UserMessages
         final Boolean isUserMessage = (Boolean) msgCtx.getProperty(Constants.IS_USERMESSAGE);
-        if (isUserMessage == null || !isUserMessage.booleanValue()) {
+        if ((isUserMessage == null) || !isUserMessage.booleanValue()) {
             return InvocationResponse.CONTINUE;
         }
 
@@ -82,55 +126,13 @@ public class ReceiptGen extends AbstractHandler {
 
         // Save and send a receipt for each incoming user message, no matter if it is a duplicate.
         final String refToMessageId = ((MsgInfo) msgCtx.getProperty(Constants.MESSAGE_INFO)).getMessageId();
-        final ReceiptData receiptData = generateReceiptData(refToMessageId, msgCtx.getEnvelope().getHeader(), as4Receipt.isNonRepudiation());
+        final ReceiptData receiptData = ReceiptGen
+                .generateReceiptData(refToMessageId, msgCtx.getEnvelope().getHeader(), as4Receipt.isNonRepudiation());
         receiptData.setPmode(pmode.getName());
-        saveReceiptData(msgCtx, refToMessageId, receiptData, as4Receipt.getReceiptTo());
+        this.saveReceiptData(msgCtx, refToMessageId, receiptData, as4Receipt.getReceiptTo());
 
         return InvocationResponse.CONTINUE;
     }
-
-
-    private static ReceiptData generateReceiptData(final String messageId, final OMElement header, final boolean nrrMode) {
-        // The receipt contains a list of references to the received message (see class doc)
-
-        final List<OMElement> signatures = XMLUtil.getGrandChildrenNameNS(header, "Signature", Constants.dsigNS);
-
-        final boolean prepareNRinformation = nrrMode && signatures != null;
-
-        if (prepareNRinformation) {
-            // Prepare a receipt of type "non-repudiation of receipt":
-            // The receipt must contain a copy of all ds:Reference elements of all ds:Signature elements
-            // from the user message to acknowledge.
-            final List<OMElement> allSignatureReferenceElements = new ArrayList<OMElement>();
-            for (final OMElement signatureElement : signatures) {
-                final List<OMElement> signatureReferenceElements = XMLUtil.getGrandChildrenNameNS(signatureElement, "Reference", Constants.dsigNS);
-                if (signatureReferenceElements != null) {
-                    for (final OMElement signatureReferenceElement : signatureReferenceElements) {
-                        allSignatureReferenceElements.add(signatureReferenceElement);
-                    }
-                }
-            }
-            if (log.isInfoEnabled()) {
-                log.info("Generated NRR receipt for signed message; MessageId=" + messageId +
-                         " containing " + allSignatureReferenceElements.size() + " Signature/Reference elements");
-            }
-            return new ReceiptData(messageId, allSignatureReferenceElements);
-        } else {
-            // Prepare a receipt of type "reception awareness":
-            // The receipt must contain a copy of the eb:UserMessage element
-            // from the message to acknowledge (see section 5.1.8 of the AS4 profile).
-            final OMElement userMessage = XMLUtil.getGrandChildNameNS(header, Constants.USER_MESSAGE, Constants.NS);
-            if (log.isInfoEnabled()) {
-                if (signatures.size() > 0) {
-                    log.warn("Generated RA receipt for signed message; MessageId=" + messageId);
-                } else {
-                    log.info("Generated RA receipt for unsigned message; MessageId=" + messageId);
-                }
-            }
-            return new ReceiptData(messageId, userMessage);
-        }
-    }
-
 
     /**
      * Save the receipt data to the database.
@@ -141,27 +143,28 @@ public class ReceiptGen extends AbstractHandler {
      * @param refToMessageId ID of the incoming user message
      * @param receiptData    receipt data to save
      */
-    private void saveReceiptData(final MessageContext msgCtx, final String refToMessageId, final ReceiptData receiptData, final String sendReceiptToURL) {
-        final String logPrefix = log.isDebugEnabled() ? WSUtil.logPrefix(msgCtx) : "";
+    private void saveReceiptData(final MessageContext msgCtx, final String refToMessageId,
+                                 final ReceiptData receiptData, final String sendReceiptToURL) {
+        final String logPrefix = LOG.isDebugEnabled() ? WSUtil.logPrefix(msgCtx) : "";
         final Boolean responseReplyPattern = (Boolean) msgCtx.getProperty(eu.domibus.common.Constants.EXPECT_RECEIPT);
         if (responseReplyPattern == null || responseReplyPattern.booleanValue()) {
 
             // Prepare a response reply for the ReceiptAppender handler.
-            log.debug("Generating Response receipt data for " + refToMessageId);
+            ReceiptGen.LOG.debug("Generating Response receipt data for " + refToMessageId);
             receiptData.setReplyPatternResponse();
             msgCtx.setProperty(Constants.RECEIPT, receiptData);
-            log.info(logPrefix +
-                     "A response receipt was created and placed in the message context" +
-                     " so that it will be included on the back channel");
+            ReceiptGen.LOG.debug(logPrefix +
+                                 "A response receipt was created and placed in the message context" +
+                                 " so that it will be included on the back channel");
         } else {
 
             // Prepare a callback reply for the ReceiptSender worker.
             receiptData.setReplyPatternCallback();
             receiptData.setToURL(sendReceiptToURL);
         }
-        rdd.persist(receiptData);
-        log.info(logPrefix +
-                 "A " + receiptData.getReplyPattern() + " receipt was generated and stored in database");
+        this.rdd.persist(receiptData);
+        ReceiptGen.LOG.debug(logPrefix +
+                             "A " + receiptData.getReplyPattern() + " receipt was generated and stored in database");
     }
 
 }

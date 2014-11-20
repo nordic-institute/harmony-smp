@@ -1,10 +1,5 @@
 package eu.domibus.ebms3.handlers;
 
-import org.apache.axiom.om.OMElement;
-import org.apache.axis2.AxisFault;
-import org.apache.axis2.context.MessageContext;
-import org.apache.axis2.handlers.AbstractHandler;
-import org.apache.log4j.Logger;
 import eu.domibus.common.soap.Element;
 import eu.domibus.common.util.WSUtil;
 import eu.domibus.common.util.XMLUtil;
@@ -14,6 +9,11 @@ import eu.domibus.ebms3.packaging.Messaging;
 import eu.domibus.ebms3.persistent.ReceiptData;
 import eu.domibus.ebms3.persistent.ReceiptDataDAO;
 import eu.domibus.ebms3.submit.MsgInfoSet;
+import org.apache.axiom.om.OMElement;
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.context.MessageContext;
+import org.apache.axis2.handlers.AbstractHandler;
+import org.apache.log4j.Logger;
 
 /**
  * This handler runs only on the server side during the OUT_FLOW, and its
@@ -27,7 +27,7 @@ import eu.domibus.ebms3.submit.MsgInfoSet;
 public class ReceiptAppender extends AbstractHandler {
 
     private final ReceiptDataDAO rdd = new ReceiptDataDAO();
-    private static final Logger log = Logger.getLogger(ReceiptAppender.class.getName());
+    private static final Logger LOG = Logger.getLogger(ReceiptAppender.class.getName());
     private String logPrefix = "";
 
     public InvocationResponse invoke(final MessageContext msgCtx) throws AxisFault {
@@ -35,17 +35,16 @@ public class ReceiptAppender extends AbstractHandler {
             return InvocationResponse.CONTINUE;
         }
 
-        if (log.isDebugEnabled()) {
-            logPrefix = WSUtil.logPrefix(msgCtx);
+        if (ReceiptAppender.LOG.isDebugEnabled()) {
+            this.logPrefix = WSUtil.logPrefix(msgCtx);
         }
 
-        final ReceiptData receipt = getReceiptData(msgCtx);
+        final ReceiptData receipt = this.getReceiptData(msgCtx);
         if (receipt == null) {
-            log.info(logPrefix + " No ReceiptData found");
+            ReceiptAppender.LOG.info(this.logPrefix + " No ReceiptData found");
             return InvocationResponse.CONTINUE;
-        } else {
-            log.info(logPrefix + " ReceiptData found");
         }
+        ReceiptAppender.LOG.info(this.logPrefix + " ReceiptData found");
 
         // Now add the Receipt Signal to the message
         OMElement messaging = EbUtil.getMessaging(msgCtx);
@@ -76,8 +75,8 @@ public class ReceiptAppender extends AbstractHandler {
 
         }
         //signalMsg.addChild( receiptData.getReceipt() );
-        log.info(logPrefix + " receipt appended to outgoing message on the back channel: ");
-        XMLUtil.debug(log, logPrefix, msgCtx.getEnvelope().getHeader());
+        ReceiptAppender.LOG.debug(this.logPrefix + " receipt appended to outgoing message on the back channel: ");
+        XMLUtil.debug(ReceiptAppender.LOG, this.logPrefix, msgCtx.getEnvelope().getHeader());
 
         return InvocationResponse.CONTINUE;
     }
@@ -93,10 +92,10 @@ public class ReceiptAppender extends AbstractHandler {
     private ReceiptData getReceiptData(final MessageContext msgCtx) {
         if (msgCtx.isServerSide()) {
             final ReceiptData receipt = (ReceiptData) WSUtil.getPropertyFromInMsgCtx(msgCtx, Constants.RECEIPT);
-            return receipt != null && receipt.isReplyPatternResponse() ? receipt : null;
+            return ((receipt != null) && receipt.isReplyPatternResponse()) ? receipt : null;
         } else {
             final MsgInfoSet mis = (MsgInfoSet) msgCtx.getProperty(Constants.MESSAGE_INFO_SET);
-            return rdd.getNextReceiptForPMode(mis.getPmode());
+            return this.rdd.getNextReceiptForPMode(mis.getPmode());
         }
     }
 
@@ -113,22 +112,22 @@ public class ReceiptAppender extends AbstractHandler {
             return;
         }
         if (msgCtx.getFailureReason() == null) {
-            final ReceiptData receipt = getReceiptData(msgCtx);
+            final ReceiptData receipt = this.getReceiptData(msgCtx);
             if (receipt == null) {
                 return;
             }
 
-            final ReceiptData storedReceipt = rdd.findByMessageId(receipt.getRefToMessageId());
+            final ReceiptData storedReceipt = this.rdd.findByMessageId(receipt.getRefToMessageId());
             if (storedReceipt == null) {
                 return;
             }
 
             receipt.setSent(true);
             storedReceipt.setSent(true);
-            rdd.update(storedReceipt);
+            this.rdd.update(storedReceipt);
 
-            log.info("Completed sending " + receipt.getReplyPattern() +
-                     " receipt for messageId=" + receipt.getRefToMessageId());
+            ReceiptAppender.LOG.debug("Completed sending " + receipt.getReplyPattern() +
+                                      " receipt for messageId=" + receipt.getRefToMessageId());
         }
     }
 

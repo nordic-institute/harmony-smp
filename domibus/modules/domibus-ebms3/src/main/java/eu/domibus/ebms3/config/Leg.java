@@ -4,11 +4,13 @@ import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.Root;
 
+import java.io.Serializable;
+
 /**
  * @author Hamid Ben Malek
  */
 @Root(name = "Leg")
-public class Leg implements java.io.Serializable {
+public class Leg implements Serializable {
     private static final long serialVersionUID = -5592938470192830737L;
 
     @Attribute
@@ -62,6 +64,9 @@ public class Leg implements java.io.Serializable {
     @Element(name = "As4Receipt", required = false)
     protected As4Receipt as4Receipt;
 
+    @Element(name = "PayloadService", required = false)
+    protected PayloadService payloadService;
+
     /* This is not to be serialized */
     protected PMode pmode;
 
@@ -77,7 +82,7 @@ public class Leg implements java.io.Serializable {
     }
 
     public int getNumber() {
-        return number;
+        return this.number;
     }
 
     public void setNumber(final int number) {
@@ -85,7 +90,7 @@ public class Leg implements java.io.Serializable {
     }
 
     public String getUserServiceName() {
-        return userServiceName;
+        return this.userServiceName;
     }
 
     public void setUserServiceName(final String userService) {
@@ -93,16 +98,16 @@ public class Leg implements java.io.Serializable {
     }
 
     public UserService getUserService() {
-        if (userService != null) {
-            return userService;
+        if (this.userService != null) {
+            return this.userService;
         }
-        if (userServiceName == null || userServiceName.trim().equals("")) {
+        if ((this.userServiceName == null) || "".equals(this.userServiceName.trim())) {
             return null;
         }
-        if (pmode == null) {
+        if (this.pmode == null) {
             return null;
         }
-        return pmode.getUserService(userServiceName);
+        return this.pmode.getUserService(this.userServiceName);
     }
 
     public void setUserService(final UserService userService) {
@@ -110,7 +115,7 @@ public class Leg implements java.io.Serializable {
     }
 
     public String getMessageLabel() {
-        return messageLabel;
+        return this.messageLabel;
     }
 
     public void setMessageLabel(final String messageLabel) {
@@ -118,7 +123,7 @@ public class Leg implements java.io.Serializable {
     }
 
     public String getMpc() {
-        return mpc;
+        return this.mpc;
     }
 
     public void setMpc(final String mpc) {
@@ -126,7 +131,7 @@ public class Leg implements java.io.Serializable {
     }
 
     public String getProducerName() {
-        return producerName;
+        return this.producerName;
     }
 
     public void setProducerName(final String producer) {
@@ -134,16 +139,16 @@ public class Leg implements java.io.Serializable {
     }
 
     public Producer getProducer() {
-        if (producer != null) {
-            return producer;
+        if (this.producer != null) {
+            return this.producer;
         }
-        if (producerName == null || producerName.trim().equals("")) {
+        if ((this.producerName == null) || "".equals(this.producerName.trim())) {
             return null;
         }
-        if (pmode == null) {
+        if (this.pmode == null) {
             return null;
         }
-        return pmode.getProducer(producerName);
+        return this.pmode.getProducer(this.producerName);
     }
 
     public void setProducer(final Producer producer) {
@@ -151,7 +156,7 @@ public class Leg implements java.io.Serializable {
     }
 
     public String getSoapAction() {
-        return soapAction;
+        return this.soapAction;
     }
 
     public void setSoapAction(final String soapAtion) {
@@ -159,7 +164,7 @@ public class Leg implements java.io.Serializable {
     }
 
     public String getWsaAction() {
-        return wsaAction;
+        return this.wsaAction;
     }
 
     public void setWsaAction(final String wsaAction) {
@@ -167,7 +172,7 @@ public class Leg implements java.io.Serializable {
     }
 
     public String getBinding() {
-        return binding;
+        return this.binding;
     }
 
     public void setBinding(final String binding) {
@@ -175,7 +180,7 @@ public class Leg implements java.io.Serializable {
     }
 
     public Endpoint getEndpoint() {
-        return endpoint;
+        return this.endpoint;
     }
 
     public void setEndpoint(final Endpoint endpoint) {
@@ -183,7 +188,7 @@ public class Leg implements java.io.Serializable {
     }
 
     public ErrorAtSender getErrorAtSender() {
-        return errorAtSender;
+        return this.errorAtSender;
     }
 
     public void setErrorAtSender(final ErrorAtSender errorAtSender) {
@@ -191,7 +196,7 @@ public class Leg implements java.io.Serializable {
     }
 
     public ErrorAtReceiver getErrorAtReceiver() {
-        return errorAtReceiver;
+        return this.errorAtReceiver;
     }
 
     public void setErrorAtReceiver(final ErrorAtReceiver errorAtReceiver) {
@@ -199,7 +204,7 @@ public class Leg implements java.io.Serializable {
     }
 
     public Authorization getAuthorization() {
-        return authorization;
+        return this.authorization;
     }
 
     public void setAuthorization(final Authorization authorization) {
@@ -207,15 +212,23 @@ public class Leg implements java.io.Serializable {
     }
 
     public As4Receipt getAs4Receipt() {
-        return as4Receipt;
+        return this.as4Receipt;
     }
 
     public void setAs4Receipt(final As4Receipt as4Receipt) {
         this.as4Receipt = as4Receipt;
     }
 
+    public PayloadService getPayloadService() {
+        return payloadService;
+    }
+
+    public void setPayloadService(PayloadService payloadService) {
+        this.payloadService = payloadService;
+    }
+
     public String getReliability() {
-        return reliability;
+        return this.reliability;
     }
 
     public void setReliability(final String reliability) {
@@ -223,7 +236,7 @@ public class Leg implements java.io.Serializable {
     }
 
     public String getSecurity() {
-        return security;
+        return this.security;
     }
 
     public void setSecurity(final String security) {
@@ -231,7 +244,7 @@ public class Leg implements java.io.Serializable {
     }
 
     public PMode getPmode() {
-        return pmode;
+        return this.pmode;
     }
 
     public void setPmode(final PMode pmode) {
@@ -239,35 +252,39 @@ public class Leg implements java.io.Serializable {
     }
 
     public String getSoapVersion() {
-        if (endpoint == null) {
+        if (this.endpoint == null) {
             return "1.1";
         }
-        return endpoint.getSoapVersion();
+        return this.endpoint.getSoapVersion();
     }
 
     // convenient methods...
     public String getReceiptTo() {
-        if (as4Receipt == null) {
+        if (this.as4Receipt == null) {
             return null;
         }
-        return as4Receipt.getReceiptTo();
+        return this.as4Receipt.getReceiptTo();
     }
 
     public String getReceiptReply() {
-        if (as4Receipt == null) {
+        if (this.as4Receipt == null) {
             return null;
         }
-        return as4Receipt.getValue();
+        return this.as4Receipt.getValue();
     }
 
     @Override
     public String toString() {
-        return "Leg [number=" + number + ", userServiceName=" + userServiceName + ", userService=" + userService +
-               ", messageLabel=" + messageLabel + ", mpc=" + mpc + ", producerName=" + producerName + ", producer=" +
-               producer + ", soapAction=" + soapAction + ", wsaAction=" + wsaAction + ", binding=" + binding +
-               ", reliability=" + reliability + ", security=" + security + ", endpoint=" + endpoint +
-               ", errorAtSender=" + errorAtSender + ", errorAtReceiver=" + errorAtReceiver + ", authorization=" +
-               authorization + ", as4Receipt=" + as4Receipt + ", pmode=" + pmode + "]";
+        return "Leg [number=" + this.number + ", userServiceName=" + this.userServiceName + ", userService=" +
+               this.userService +
+               ", messageLabel=" + this.messageLabel + ", mpc=" + this.mpc + ", producerName=" + this.producerName +
+               ", producer=" +
+               this.producer + ", soapAction=" + this.soapAction + ", wsaAction=" + this.wsaAction + ", binding=" +
+               this.binding +
+               ", reliability=" + this.reliability + ", security=" + this.security + ", endpoint=" + this.endpoint +
+               ", errorAtSender=" + this.errorAtSender + ", errorAtReceiver=" + this.errorAtReceiver +
+               ", authorization=" +
+               this.authorization + ", as4Receipt=" + this.as4Receipt + ", pmode=" + this.pmode + "]";
     }
 
 

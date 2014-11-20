@@ -13,8 +13,8 @@ public class TimerTaskWrapper extends TimerTask {
     }
 
     public void run() {
-        if (task != null) {
-            task.run();
+        if (this.task != null) {
+            this.task.run();
         }
     }
 }

@@ -7,6 +7,7 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
  * @author Hamid Ben Malek
  */
 @Root(name = "Workers")
-public class WorkerPool extends FileWatcher implements java.io.Serializable {
+public class WorkerPool extends FileWatcher implements Serializable {
     private static final long serialVersionUID = -5593318201928374737L;
 
     private static final Logger log = Logger.getLogger(WorkerPool.class);
@@ -22,11 +23,8 @@ public class WorkerPool extends FileWatcher implements java.io.Serializable {
     @ElementList(entry = "Worker", inline = true, required = false)
     protected List<Worker> workers = new ArrayList<Worker>();
 
-    public WorkerPool() {
-    }
-
     public List<Worker> getWorkers() {
-        return workers;
+        return this.workers;
     }
 
     public void setWorkers(final List<Worker> workers) {
@@ -34,16 +32,16 @@ public class WorkerPool extends FileWatcher implements java.io.Serializable {
     }
 
     public void addWorker(final String name, final String workerClass, final boolean activate) {
-        if (name == null || workerClass == null) {
+        if ((name == null) || (workerClass == null)) {
             return;
         }
-        Worker w = getWorker(name);
+        Worker w = this.getWorker(name);
         if (w == null) {
             w = new Worker();
             w.setName(name);
             w.setWorkerClass(workerClass);
             w.setActivate(activate);
-            workers.add(w);
+            this.workers.add(w);
             if (activate) {
                 w.start();
             }
@@ -58,10 +56,10 @@ public class WorkerPool extends FileWatcher implements java.io.Serializable {
     }
 
     public Worker getWorker(final String name) {
-        if (name == null || name.trim().equals("")) {
+        if ((name == null) || "".equals(name.trim())) {
             return null;
         }
-        for (final Worker w : workers) {
+        for (final Worker w : this.workers) {
             if (w.getName().equals(name)) {
                 return w;
             }
@@ -70,9 +68,9 @@ public class WorkerPool extends FileWatcher implements java.io.Serializable {
     }
 
     public static WorkerPool load(final File sourceFile) {
-        if (sourceFile == null || !sourceFile.exists()) {
-            log.debug("Could not load file " + sourceFile +
-                      "  because it is either null or does not exists");
+        if ((sourceFile == null) || !sourceFile.exists()) {
+            WorkerPool.log.debug("Could not load file " + sourceFile +
+                                 "  because it is either null or does not exists");
             return null;
         }
         WorkerPool pool = null;
@@ -82,17 +80,17 @@ public class WorkerPool extends FileWatcher implements java.io.Serializable {
             pool.setSource(sourceFile);
             //log.debug("loaded workers from file " + sourceFile);
         } catch (Exception ex) {
-            log.error("Error while loading WorkerPool", ex);
+            WorkerPool.log.error("Error while loading WorkerPool", ex);
         }
         return pool;
     }
 
     public void start() {
-        if (workers != null && workers.size() > 0) {
-            for (final Worker w : workers) {
+        if ((this.workers != null) && !this.workers.isEmpty()) {
+            for (final Worker w : this.workers) {
                 if (w.isActivate()) {
                     w.start();
-                    log.debug("started worker " + w.getName());
+                    WorkerPool.log.debug("started worker " + w.getName());
                 }
             }
         }
@@ -104,11 +102,11 @@ public class WorkerPool extends FileWatcher implements java.io.Serializable {
             return;
         }
         for (final Worker w : pool.getWorkers()) {
-            final Worker worker = getWorker(w.getName());
+            final Worker worker = this.getWorker(w.getName());
             if (worker != null) {
                 worker.update(w);
             } else {
-                workers.add(w);
+                this.workers.add(w);
                 if (w.isActivate()) {
                     w.start();
                 }
@@ -118,6 +116,6 @@ public class WorkerPool extends FileWatcher implements java.io.Serializable {
 
     public void onChange(final File s) {
         //log.debug("workers file " + s + "  has changed. Reloading it...");
-        reload(s);
+        this.reload(s);
     }
 }

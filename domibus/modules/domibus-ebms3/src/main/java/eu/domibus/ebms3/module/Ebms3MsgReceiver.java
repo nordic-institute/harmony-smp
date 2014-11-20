@@ -1,5 +1,8 @@
 package eu.domibus.ebms3.module;
 
+import eu.domibus.ebms3.config.PMode;
+import eu.domibus.ebms3.consumers.EbConsumer;
+import eu.domibus.ebms3.persistent.MsgInfo;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axis2.AxisFault;
@@ -8,9 +11,6 @@ import org.apache.axis2.engine.AxisEngine;
 import org.apache.axis2.receivers.AbstractMessageReceiver;
 import org.apache.axis2.util.MessageContextBuilder;
 import org.apache.log4j.Logger;
-import eu.domibus.ebms3.config.PMode;
-import eu.domibus.ebms3.consumers.EbConsumer;
-import eu.domibus.ebms3.persistent.MsgInfo;
 
 
 /**
@@ -33,27 +33,27 @@ public class Ebms3MsgReceiver extends AbstractMessageReceiver {
             msgContext.getEnvelope().getHeader().addChild(ebMess);
         }
 
-        final ThreadContextDescriptor tc = setThreadContext(msgContext);
+        final ThreadContextDescriptor tc = this.setThreadContext(msgContext);
         boolean sendOut = false;
         try {
             final PMode pmode = (PMode) msgContext.getProperty(Constants.IN_PMODE);
             if (pmode == null) {
-                log.debug("Received message does not have a corresponding PMode");
+                Ebms3MsgReceiver.log.debug("Received message does not have a corresponding PMode");
                 return;
             }
             final Boolean ignoreThisMessage = (Boolean) msgContext.getProperty(Constants.DO_NOT_DELIVER);
-            final boolean doInvokeBusiness = ignoreThisMessage == null || !ignoreThisMessage.booleanValue();
+            final boolean doInvokeBusiness = (ignoreThisMessage == null) || !ignoreThisMessage.booleanValue();
             final String mep = pmode.getMep(); // getMep(msgContext);
-            sendOut = handle(msgContext, outMsgContext, mep, doInvokeBusiness);
+            sendOut = this.handle(msgContext, outMsgContext, mep, doInvokeBusiness);
         } finally {
-            restoreThreadContext(tc);
+            this.restoreThreadContext(tc);
         }
 
         if (sendOut) {
             // AxisEngine engine = new
             // AxisEngine(msgContext.getConfigurationContext());
             // engine.send(outMsgContext);
-            replicateState(msgContext);
+            this.replicateState(msgContext);
             AxisEngine.send(outMsgContext);
         }
     }
@@ -62,13 +62,15 @@ public class Ebms3MsgReceiver extends AbstractMessageReceiver {
      * private String getMep(MessageContext msgCtx) { return
      * EbUtil.getMep(msgCtx); }
      */
-    private boolean handle(final MessageContext msgCtx, final MessageContext outMsgContext, final String mep, final boolean doInvokeBusiness) throws AxisFault {
-        log.debug("Ebms3MsgReceiver::handle() is called");
+    private boolean handle(final MessageContext msgCtx, final MessageContext outMsgContext, final String mep,
+                           final boolean doInvokeBusiness) throws AxisFault {
+        Ebms3MsgReceiver.log.debug("Ebms3MsgReceiver::handle() is called");
 
-        final Object outObject = getTheImplementationObject(outMsgContext);
+        final Object outObject = this.getTheImplementationObject(outMsgContext);
         if (!(outObject instanceof EbConsumer)) {
-            throw new AxisFault("The service class " + outObject + " does not implement the " + EbConsumer.class.getName() +
-                                " interface");
+            throw new AxisFault(
+                    "The service class " + outObject + " does not implement the " + EbConsumer.class.getName() +
+                    " interface");
         }
         final EbConsumer consumer = (EbConsumer) outObject;
 
@@ -77,7 +79,7 @@ public class Ebms3MsgReceiver extends AbstractMessageReceiver {
         if (msgInfo == null) {
             msgInfo = EbUtil.getMsgInfo();
         }
-        log.debug("Ebms3MsgReceiver::handle(): mep is " + mep);
+        Ebms3MsgReceiver.log.debug("Ebms3MsgReceiver::handle(): mep is " + mep);
 
         // check if need to send receipt or ack on back channel
         final boolean expectReceipt = Constants.getProperty(msgCtx, eu.domibus.common.Constants.EXPECT_RECEIPT, false);
@@ -88,7 +90,8 @@ public class Ebms3MsgReceiver extends AbstractMessageReceiver {
                 consumer.pull();
             }
             return true;
-        } else if (mep.equals(Constants.ONE_WAY_PUSH)) {
+        }
+        if (mep.equals(Constants.ONE_WAY_PUSH)) {
             if (doInvokeBusiness) {
                 consumer.push();
             }

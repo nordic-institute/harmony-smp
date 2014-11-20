@@ -1,8 +1,8 @@
 package eu.domibus.ebms3.packaging;
 
-import org.apache.axiom.om.OMElement;
 import eu.domibus.common.soap.Element;
 import eu.domibus.ebms3.module.Constants;
+import org.apache.axiom.om.OMElement;
 
 /**
  * @author Hamid Ben Malek
@@ -15,13 +15,13 @@ public class Receipt extends Element {
     }
 
     public Receipt(final OMElement[] references) {
-        setReferences(references);
+        this.setReferences(references);
     }
 
     public Receipt(final OMElement nonRepudiationInformation) {
         this();
         if (nonRepudiationInformation != null) {
-            addChild(nonRepudiationInformation);
+            this.addChild(nonRepudiationInformation);
         }
     }
 
@@ -33,6 +33,6 @@ public class Receipt extends Element {
             mpn.addChild(ref);
             nri.addChild(mpn);
         }
-        addChild(nri);
+        this.addChild(nri);
     }
 }

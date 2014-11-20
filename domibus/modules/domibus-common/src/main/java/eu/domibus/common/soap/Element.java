@@ -12,32 +12,32 @@ import java.util.Iterator;
 /**
  * @author Hamid Ben Malek
  */
-public class Element implements java.io.Serializable {
+public class Element implements Serializable {
     public static final long serialVersionUID = 7825985226389871436L;
 
     private static final Logger log = Logger.getLogger(Element.class);
 
-    protected OMElement element = null;
-    protected String localName = null;
-    protected OMNamespace namespace = null;
-    protected String text = null;
+    protected OMElement element;
+    protected String localName;
+    protected OMNamespace namespace;
+    protected String text;
 
     public Element() {
     }
 
     public Element(final String name) {
         final OMFactory factory = OMAbstractFactory.getOMFactory();
-        element = factory.createOMElement(name, null);
+        this.element = factory.createOMElement(name, null);
     }
 
     public Element(final String localName, final String uri, final String prefix) {
         final OMFactory factory = OMAbstractFactory.getOMFactory();
         final OMNamespace ns = factory.createOMNamespace(uri, prefix);
-        element = factory.createOMElement(localName, ns);
+        this.element = factory.createOMElement(localName, ns);
     }
 
     public Element(final OMElement omElement) {
-        fromOMElement(omElement);
+        this.fromOMElement(omElement);
     }
 
     public Element(final File xmlFile) {
@@ -48,64 +48,64 @@ public class Element implements java.io.Serializable {
             final XMLStreamReader parser =
                     XMLInputFactory.newInstance().createXMLStreamReader(new FileInputStream(xmlFile));
             final StAXOMBuilder builder = new StAXOMBuilder(parser);
-            element = builder.getDocumentElement();
+            this.element = builder.getDocumentElement();
         } catch (FactoryConfigurationError ex) {
-            log.error("Problem while getting instance of XMLInputFactory", ex);
+            Element.log.error("Problem while getting instance of XMLInputFactory", ex);
         } catch (FileNotFoundException e) {
-            log.error("XMLFile not found", e);
+            Element.log.error("XMLFile not found", e);
         } catch (XMLStreamException e) {
-            log.error("An unexpected error during the xml processing occured", e);
+            Element.log.error("An unexpected error during the xml processing occured", e);
         }
     }
 
     public OMElement getElement() {
-        if (element != null) {
-            return element;
+        if (this.element != null) {
+            return this.element;
         }
-        element = getOMFactory().createOMElement(localName, namespace);
-        if (text != null) {
-            element.setText(text);
+        this.element = this.getOMFactory().createOMElement(this.localName, this.namespace);
+        if (this.text != null) {
+            this.element.setText(this.text);
         }
-        return element;
+        return this.element;
     }
 
     public String getLocalName() {
-        return localName;
+        return this.localName;
     }
 
     public void setLocalName(final String localName) {
         this.localName = localName;
-        if (element != null) {
-            element.setLocalName(localName);
+        if (this.element != null) {
+            this.element.setLocalName(localName);
         } else {
-            element = getOMFactory().createOMElement(localName, namespace);
+            this.element = this.getOMFactory().createOMElement(localName, this.namespace);
         }
     }
 
     public OMNamespace getNamespace() {
-        return namespace;
+        return this.namespace;
     }
 
     public void setNamespace(final OMNamespace namespace) {
         this.namespace = namespace;
-        if (element != null) {
-            element.setNamespace(namespace);
+        if (this.element != null) {
+            this.element.setNamespace(namespace);
         } else {
-            element = getOMFactory().createOMElement(localName, namespace);
+            this.element = this.getOMFactory().createOMElement(this.localName, namespace);
         }
     }
 
     public String getText() {
-        return text;
+        return this.text;
     }
 
     public void setText(final String text) {
         this.text = text;
-        if (element != null) {
-            element.setText(text);
+        if (this.element != null) {
+            this.element.setText(text);
         } else {
-            element = getOMFactory().createOMElement(localName, namespace);
-            element.setText(text);
+            this.element = this.getOMFactory().createOMElement(this.localName, this.namespace);
+            this.element.setText(text);
         }
     }
 
@@ -113,75 +113,75 @@ public class Element implements java.io.Serializable {
         if (omElement == null) {
             return;
         }
-        element = omElement.cloneOMElement();
-        text = element.getText();
-        localName = element.getLocalName();
-        namespace = element.getNamespace();
+        this.element = omElement.cloneOMElement();
+        this.text = this.element.getText();
+        this.localName = this.element.getLocalName();
+        this.namespace = this.element.getNamespace();
     }
 
     public String getAttributeValue(final String name, final String uri, final String prefix) {
         final QName qname = new QName(uri, name, prefix);
-        return getElement().getAttributeValue(qname);
+        return this.getElement().getAttributeValue(qname);
     }
 
     public void addAttribute(final String name, final String uri, final String prefix, final String value) {
         OMNamespace ns = null;
-        if ((uri != null && !uri.trim().equals("")) || (prefix != null && !prefix.trim().equals(""))) {
-            ns = getOMFactory().createOMNamespace(uri, prefix);
+        if (((uri != null) && !"".equals(uri.trim())) || ((prefix != null) && !"".equals(prefix.trim()))) {
+            ns = this.getOMFactory().createOMNamespace(uri, prefix);
         }
-        final OMAttribute att = getOMFactory().createOMAttribute(name, ns, value);
-        getElement().addAttribute(att);
+        final OMAttribute att = this.getOMFactory().createOMAttribute(name, ns, value);
+        this.getElement().addAttribute(att);
     }
 
     public void addAttribute(final String name, final String value) {
-        final OMAttribute att = getOMFactory().createOMAttribute(name, null, value);
-        getElement().addAttribute(att);
+        final OMAttribute att = this.getOMFactory().createOMAttribute(name, null, value);
+        this.getElement().addAttribute(att);
     }
 
     public void setAttribute(final String attLocalName, final String value) {
-        if (attLocalName == null || attLocalName.trim().equals("")) {
+        if ((attLocalName == null) || "".equals(attLocalName.trim())) {
             return;
         }
-        final OMAttribute att = getAttribute(attLocalName);
+        final OMAttribute att = this.getAttribute(attLocalName);
         if (att != null) {
             att.setAttributeValue(value);
         } else {
-            addAttribute(attLocalName, value);
+            this.addAttribute(attLocalName, value);
         }
     }
 
     public void setAttribute(final String attLocalName, final String prefix, final String value) {
-        if (attLocalName == null || attLocalName.trim().equals("")) {
+        if ((attLocalName == null) || "".equals(attLocalName.trim())) {
             return;
         }
-        if (prefix == null || prefix.trim().equals("")) {
-            setAttribute(attLocalName, value);
+        if ((prefix == null) || "".equals(prefix.trim())) {
+            this.setAttribute(attLocalName, value);
         } else {
-            final OMNamespace ns = getElement().findNamespaceURI(prefix);
+            final OMNamespace ns = this.getElement().findNamespaceURI(prefix);
             OMAttribute att;
             if (ns != null) {
-                att = getAttribute(ns.getNamespaceURI(), attLocalName, prefix);
+                att = this.getAttribute(ns.getNamespaceURI(), attLocalName, prefix);
                 if (att != null) {
                     att.setAttributeValue(value);
                 } else {
-                    att = getOMFactory().createOMAttribute(attLocalName, ns, value);
-                    getElement().addAttribute(att);
+                    att = this.getOMFactory().createOMAttribute(attLocalName, ns, value);
+                    this.getElement().addAttribute(att);
                 }
             } else {
-                getOMFactory().createOMAttribute(attLocalName, ns, value);
+                this.getOMFactory().createOMAttribute(attLocalName, ns, value);
             }
         }
     }
 
     public OMAttribute getAttribute(final String attLocalName) {
-        if (attLocalName == null || attLocalName.trim().equals("")) {
+        if ((attLocalName == null) || "".equals(attLocalName.trim())) {
             return null;
         }
-        final Iterator it = getElement().getAllAttributes();
+        final Iterator it = this.getElement().getAllAttributes();
         OMAttribute att;
-        while (it != null && it.hasNext()) {
+        while ((it != null) && it.hasNext()) {
             att = (OMAttribute) it.next();
-            if (att != null && att.getLocalName().equals(attLocalName)) {
+            if ((att != null) && att.getLocalName().equals(attLocalName)) {
                 return att;
             }
         }
@@ -190,19 +190,19 @@ public class Element implements java.io.Serializable {
 
     public OMAttribute getAttribute(final String uri, final String name, final String prefix) {
         OMAttribute att = null;
-        if (uri != null && prefix != null) {
+        if ((uri != null) && (prefix != null)) {
             final QName qname = new QName(uri, name, prefix);
-            att = getElement().getAttribute(qname);
+            att = this.getElement().getAttribute(qname);
         }
         if (att != null) {
             return att;
         } else {
-            return getAttribute(name);
+            return this.getAttribute(name);
         }
     }
 
     public String getAttributeValue(final String attLocalName) {
-        final OMAttribute att = getAttribute(attLocalName);
+        final OMAttribute att = this.getAttribute(attLocalName);
         if (att != null) {
             return att.getAttributeValue();
         } else {
@@ -211,29 +211,29 @@ public class Element implements java.io.Serializable {
     }
 
     public Element addElement(final String localName, final String prefix) {
-        if (localName == null || localName.trim().equals("")) {
+        if ((localName == null) || "".equals(localName.trim())) {
             return null;
         }
         OMNamespace ns = null;
-        if (prefix != null && !prefix.trim().equals("")) {
-            ns = getElement().findNamespaceURI(prefix);
+        if ((prefix != null) && !"".equals(prefix.trim())) {
+            ns = this.getElement().findNamespaceURI(prefix);
         }
         final Element child = new Element();
         child.setLocalName(localName);
         child.setNamespace(ns);
-        getElement().addChild(child.getElement());
+        this.getElement().addChild(child.getElement());
         return child;
     }
 
     public OMElement getChild(final String localName, final String prefix) {
-        if (localName == null || localName.trim().equals("")) {
+        if ((localName == null) || "".equals(localName.trim())) {
             return null;
         }
-        final Iterator it = getElement().getChildElements();
-        while (it != null && it.hasNext()) {
+        final Iterator it = this.getElement().getChildElements();
+        while ((it != null) && it.hasNext()) {
             final OMElement e = (OMElement) it.next();
-            if (e != null && e.getLocalName().equals(localName) &&
-                e.getNamespace() != null && e.getNamespace().getPrefix() != null &&
+            if ((e != null) && e.getLocalName().equals(localName) &&
+                (e.getNamespace() != null) && (e.getNamespace().getPrefix() != null) &&
                 e.getNamespace().getPrefix().equals(prefix)) {
                 return e;
             }
@@ -242,11 +242,11 @@ public class Element implements java.io.Serializable {
     }
 
     public OMElement getFirstGrandChildWithName(final String _localName) {
-        return getFirstGrandChildWithName(element, _localName);
+        return this.getFirstGrandChildWithName(this.element, _localName);
     }
 
     public String getGrandChildValue(final String _localName) {
-        final OMElement gc = getFirstGrandChildWithName(_localName);
+        final OMElement gc = this.getFirstGrandChildWithName(_localName);
         if (gc != null) {
             return gc.getText();
         } else {
@@ -255,7 +255,7 @@ public class Element implements java.io.Serializable {
     }
 
     private OMElement getFirstGrandChildWithName(final OMElement root, final String _localName) {
-        if (_localName == null || _localName.trim().equals("") || root == null) {
+        if ((_localName == null) || "".equals(_localName.trim()) || (root == null)) {
             return null;
         }
         if (root.getLocalName().equals(_localName)) {
@@ -267,17 +267,17 @@ public class Element implements java.io.Serializable {
             if (om.getLocalName().equals(_localName)) {
                 return om;
             }
-            OMElement temp = getFirstGrandChildWithName(om, _localName);
+            OMElement temp = this.getFirstGrandChildWithName(om, _localName);
             if (temp != null) {
                 return temp;
             }
 
             for (OMElement tmp = (OMElement) om.getNextOMSibling(); tmp != null; ) {
-                temp = getFirstGrandChildWithName(tmp, _localName);
+                temp = this.getFirstGrandChildWithName(tmp, _localName);
                 if (temp != null) {
                     return temp;
                 }
-                tmp = (OMElement) tmp.getNextOMSibling();
+                tmp = (OMElement) tmp.getNextOMSibling();     //FIXME: assignment to for-loop parameter
             }
         }
         return null;
@@ -287,20 +287,20 @@ public class Element implements java.io.Serializable {
         try {
             final XMLOutputFactory xof = XMLOutputFactory.newInstance();
             final XMLStreamWriter w = xof.createXMLStreamWriter(writer);
-            getElement().serialize(w);
+            this.getElement().serialize(w);
             writer.flush();
         } catch (FactoryConfigurationError ex) {
-            log.error("Problem while getting instance of XMLInputFactory", ex);
+            Element.log.error("Problem while getting instance of XMLInputFactory", ex);
         } catch (IOException e) {
-            log.error("I/O exception occured during flush()", e);
+            Element.log.error("I/O exception occured during flush()", e);
         } catch (XMLStreamException e) {
-            log.error("An unexpected error during the xml processing occured", e);
+            Element.log.error("An unexpected error during the xml processing occured", e);
         }
     }
 
     public String toXML() {
         final StringWriter sw = new StringWriter();
-        writeTo(sw);
+        this.writeTo(sw);
         return sw.toString();
     }
 
@@ -308,18 +308,18 @@ public class Element implements java.io.Serializable {
         if (omNode == null) {
             return;
         }
-        getElement().addChild(omNode);
+        this.getElement().addChild(omNode);
     }
 
     public void addChild(final Element node) {
         if (node == null) {
             return;
         }
-        getElement().addChild(node.getElement());
+        this.getElement().addChild(node.getElement());
     }
 
     public Iterator getChildElements() {
-        return getElement().getChildElements();
+        return this.getElement().getChildElements();
     }
 
     private OMFactory getOMFactory() {

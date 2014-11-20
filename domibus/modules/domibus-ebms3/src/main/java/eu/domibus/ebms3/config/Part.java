@@ -3,11 +3,13 @@ package eu.domibus.ebms3.config;
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.Root;
 
+import java.io.Serializable;
+
 /**
  * @author Hamid Ben Malek
  */
 @Root(name = "Part", strict = false)
-public class Part implements java.io.Serializable {
+public class Part implements Serializable {
     private static final long serialVersionUID = 989385474049852009L;
 
     @Attribute
@@ -33,7 +35,7 @@ public class Part implements java.io.Serializable {
     }
 
     public String getCid() {
-        return cid;
+        return this.cid;
     }
 
     public void setCid(final String cid) {
@@ -41,7 +43,7 @@ public class Part implements java.io.Serializable {
     }
 
     public String getMimeType() {
-        return mimeType;
+        return this.mimeType;
     }
 
     public void setMimeType(final String mimeType) {
@@ -49,7 +51,7 @@ public class Part implements java.io.Serializable {
     }
 
     public String getSchemaLocation() {
-        return schemaLocation;
+        return this.schemaLocation;
     }
 
     public void setSchemaLocation(final String schemaLocation) {
@@ -57,7 +59,7 @@ public class Part implements java.io.Serializable {
     }
 
     public String getDescription() {
-        return description;
+        return this.description;
     }
 
     public void setDescription(final String description) {
