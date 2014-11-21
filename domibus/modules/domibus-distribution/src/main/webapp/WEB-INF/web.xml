@@ -50,7 +50,7 @@
         <!--</init-param> -->
         <load-on-startup>1</load-on-startup>
     </servlet>
-     <servlet>
+    <servlet>
         <servlet-name>ReloadPModeServlet</servlet-name>
         <servlet-class>eu.domibus.ebms3.util.ReloadPModeServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
