@@ -28,13 +28,14 @@ pre-integration-test 	-read build.properties from domibus-config/build.propertie
 						-copy filtered domibus-config to tatget/domibus-integration/config
 						-database scripts are generated using hibernate3-maven-plugin. The persistence.xml located in 
 							src/test/resources/META-INF is used for this.
-						-derby database is started using derby-maven-plugin
+						-2 derby databases are started using derby-maven-plugin
 						-the generated derby script is imported into the database using sql-maven-plugin
-						-tomcat is set up using integration-test-config, packaged and started
+						-2 instances of tomcat are set up using integration-test-config, packaged and started
 						
 						
-integration-test 		-unit tests matching *IntegrationTest.java are executed
-post-integration-test 	-tomcat is shut down
+integration-test 		-soap ui integration tests are executed
+post-integration-test 	-tomcats are shut down
+                        -derby databases are shut down
 verify 					-if the jenkins profile is activated all configured assemblies are built, using the properties set in domibus.properties
 install 	
 deploy 					-deployment is made to ecodex-nexus, deployer credentials are required
@@ -43,18 +44,15 @@ deploy 					-deployment is made to ecodex-nexus, deployer credentials are requir
 
 profiles:
 
-jenkins:
+integration-tests-and-package:
 The build server profile. Generates assemblies
 
-debug:
-starts the server in debug mode, listening for a debugger on port 8000. Server is stopped with ctrl-c. To suspend the server until a debugger is 
-connected start the build with -Ddebug.suspend=y parameter
+options:
+ -DskipIntegrationTestingAndPackaging : disable the packaging and testing, only build the war
 
-debug_both: 
-starts two tomcat servers in debug mode, listening for a debugger on port 8000 and 9000(integration-test-server). Servers are stopped with ctrl-c.
-To suspend the server until a debugger is connected start the build with -Ddebug.suspend=y parameter 
+!!!! WARNING !!! To avoid a OutOfMemoryError, it's best to set '-Xmx512m -XX:MaxPermSize=256m' as VM args
 
-weblogic: like a normal build without profile but instead of tomcats servers two weblogic 11g servers were used for integration tests
+
  -->
 
 
@@ -752,14 +750,8 @@ weblogic: like a normal build without profile but instead of tomcats servers two
                                     <printReport>true</printReport>
                                     <projectFile>${project.basedir}/src/test/resources/soapui_testsuites/e-CODEXBackendServiceTestSuite.xml</projectFile>
                                     <projectProperties>
-                                        <value>ServiceEndpoint_sending=${domibus.module.ebms3.MSH.host}:${domibus.module.ebms3.MSH.pt}/domibus/services/BackendService_1_1</value>
-                                        <value>ServiceEndpoint_receiving=${domibus.testing.MSH.host}:${domibus.testing.MSH.pt}/domibus/services/BackendService_1_1</value>
-                                        <value>GatewayEndpoint_sending=${domibus.module.ebms3.MSH.host}:${domibus.module.ebms3.MSH.pt}/${domibus.module.ebms3.MSH.contextPath}</value>
-                                        <value>GatewayEndpoint_receiving=${domibus.testing.MSH.host}:${domibus.testing.MSH.pt}/${domibus.testing.MSH.contextPath}</value>
-                                        <value>GatewayEndpoint_sending.jdbc.driver=${domibus.persistence.driverClassName}</value>
-                                        <value>GatewayEndpoint_sending.jdbc.url=${domibus.persistence.url};user&#61;${domibus.persistence.user};password&#61;${domibus.persistence.password}</value>
-                                        <value>GatewayEndpoint_receiving.jdbc.driver=${domibus.persistence.driverClassName}</value>
-                                        <value>GatewayEndpoint_receiving.jdbc.url=${domibus.persistence.testing.url};user&#61;${domibus.persistence.user};password&#61;${domibus.persistence.password}</value>
+                                        <value>ServiceEndpoint_1_1_sending=${domibus.module.ebms3.MSH.host}:${domibus.module.ebms3.MSH.pt}/domibus/services/BackendService_1_1</value>
+                                        <value>ServiceEndpoint_1_1_receiving=${domibus.testing.MSH.host}:${domibus.testing.MSH.pt}/domibus/services/BackendService_1_1</value>
                                     </projectProperties>
                                 </configuration>
                             </execution>
