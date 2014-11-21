@@ -1,13 +1,12 @@
 1.4.x-FINAL - 2.0-FINAL
-- Holodeck has been renamed to Domibus,
-  therefore the context path has changed from /holodeck to /domibus, please update your proxy server config accordingly
+- THIS RELEASE IS NO LONGER COMPATIBLE WITH GATEWAY 1.3 AND EARLIER
+- Holodeck has been renamed to Domibus, therefore the context path has changed from /holodeck to /domibus.
+  Please update your proxy server config and connector endpoint config accordingly
 - conf/Catalina/localhost/holodeck.xml has been renamed to domibus.xml
-- conf/domibus/gateway.xml has changed
-- some configuration parameters in domibus.xml have been changed, please refer to changelog.txt and installation manual
+- the name of some configuration parameters in domibus.xml have been changed, please refer to the installation manual
 - some configuration file locations have been changed, please refer to changelog.txt and installation manual
 - before upgrading make sure that there are no pending/unsent messages or messages waiting for a receipt
 - Database update scripts can be found in sql-scripts/delta-scripts and need to be applied to the database
-
 
 
 1.3-FINAL - 1.4-FINAL

@@ -1,0 +1,5 @@
+- Change RESOURCE_LOCAL transactions to JTA
+- split backend/ebms3 into jar, mar aar
+- externalize strings
+- externalize configs
+- map everything to one persistence unit

@@ -92,6 +92,7 @@ public class Ebms3Module implements Module {
                                               new AuthSSLProtocolSocketFactory(keystore, KEYSTORE_PASSWORD, truststore,
                                                                                TRUSTSTORE_PASSWORD), 443);
 
+
             Protocol.registerProtocol("https", authhttps);
         } catch (GeneralSecurityException e) {
             log.error("Security error occurred", e);

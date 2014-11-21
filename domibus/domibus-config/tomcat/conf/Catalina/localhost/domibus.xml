@@ -100,13 +100,16 @@
                  type="java.lang.Boolean"/>
     <!-- MISC CONFIGURATION END -->
 
-    <!-- Two way SSL configuration -->
+    <!-- SSL configuration -->
+    <!-- Trusted Servers configuration -->
     <Environment name="domibus.ssl.truststore.path" value="@domibus.ssl.truststore.path@"
                  type="java.lang.String"/>
 
     <Environment name="domibus.ssl.truststore.password" value="@domibus.ssl.truststore.password@"
                  type="java.lang.String"/>
 
+    <!-- Client certificate configuration -->
+    <!-- If you do not have a dedicated client certificate you can use your private gateway signature key -->
     <Environment name="domibus.ssl.keystore.path" value="@domibus.ssl.keystore.path@"
                  type="java.lang.String"/>
 

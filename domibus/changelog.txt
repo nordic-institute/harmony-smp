@@ -1,3 +1,11 @@
+2.0-FINAL
+- support for 2-way SSL
+- rename to Domibus
+- all attachments are now stored in the database
+- support for wildcard ssl certificates
+- misc. bugfixes
+- updated installation manual
+
 1.4-FINAL
 - minor bugfixes
 
