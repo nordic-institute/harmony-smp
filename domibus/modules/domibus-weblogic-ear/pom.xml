@@ -281,7 +281,7 @@
                             </outputDirectory>
                             <resources>
                                 <resource>
-                                    <directory>../domibus-backend/src/main/modules</directory>
+                                    <directory>../domibus-submission/src/main/modules</directory>
                                     <includes>
                                         <include>**/*</include>
                                     </includes>
