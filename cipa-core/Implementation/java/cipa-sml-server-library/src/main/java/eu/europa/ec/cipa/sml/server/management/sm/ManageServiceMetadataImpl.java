@@ -74,7 +74,11 @@ import eu.europa.ec.cipa.sml.server.web.WebRequestClientIdentifier;
 // We can't use this on outbound messages, since the XMLDSIG isn't set until in
 // the handlers.
 // @SchemaValidation (outbound = false)
-@WebService(serviceName = "ManageServiceMetadataService", portName = "ManageServiceMetadataServicePort", endpointInterface = "org.busdox.servicemetadata.manageservicemetadataservice._1.ManageServiceMetadataServiceSoap", targetNamespace = "http://busdox.org/serviceMetadata/ManageServiceMetadataService/1.0/", wsdlLocation = "WEB-INF/wsdl/ManageServiceMetadataService-1.0.wsdl")
+@WebService(serviceName = "ManageServiceMetadataService", portName = "ManageServiceMetadataServicePort", 
+endpointInterface = "org.busdox.servicemetadata.manageservicemetadataservice._1.ManageServiceMetadataServiceSoap", 
+targetNamespace = "http://busdox.org/serviceMetadata/ManageServiceMetadataService/1.0/", 
+wsdlLocation = "WEB-INF/wsdl/ManageServiceMetadataService-1.0.wsdl")
+
 @BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING)
 @HandlerChain(file = "handlers.xml")
 public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSoap {
