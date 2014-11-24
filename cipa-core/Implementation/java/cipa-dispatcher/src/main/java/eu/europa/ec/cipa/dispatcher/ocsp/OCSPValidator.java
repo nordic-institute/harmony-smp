@@ -41,6 +41,7 @@ import java.net.UnknownHostException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
+import java.security.Security;
 import java.security.cert.CertPath;
 import java.security.cert.CertPathValidator;
 import java.security.cert.CertPathValidatorException;
@@ -147,8 +148,7 @@ public class OCSPValidator
   {
 
     try
-    {
-
+    {  	
       // Instantiate a CertificateFactory for X.509
       final CertificateFactory cf = CertificateFactory.getInstance ("X.509");
 
@@ -163,6 +163,7 @@ public class OCSPValidator
 
       // Set the PKIX parameters
       final PKIXParameters aParams = new PKIXParameters (ContainerHelper.newSet (aTrustAnchor));
+      Security.setProperty("ocsp.enable", "true");
       aParams.setRevocationEnabled (true);
 
       // Validate and obtain results
