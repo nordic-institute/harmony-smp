@@ -287,4 +287,40 @@ public final class FuncTestDocumentValidationSuccess {
       }
     }
   }
+
+  @Test
+  public void testReadCreditNotesATSuccess () {
+    final Locale aCountry = CountryCache.getInstance ().getCountry ("AT");
+    // For all available invoices
+    for (final IReadableResource aTestFile : TestFiles.getSuccessFiles (ETestFileType.CREDITNOTE, aCountry)) {
+      // Ensure the UBL file validates against the scheme
+      final CreditNoteType aUBLCreditNote = UBL20Reader.readCreditNote (aTestFile);
+      assertNotNull (aUBLCreditNote);
+
+      // Test the country-independent invoice layers
+      for (final EValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
+                                                                                              EValidationDocumentType.CREDIT_NOTE,
+                                                                                              aCountry)) {
+        // Get the XSLT for transaction T10
+        final IReadableResource aXSLT = eArtefact.getValidationXSLTResource (ValidationTransaction.createUBLTransaction (ETransaction.T14));
+
+        // And now run the main "Schematron" validation
+        final SchematronOutputType aSVRL = SchematronHelper.applySchematron (new SchematronResourceXSLT (aXSLT),
+                                                                             aTestFile);
+        assertNotNull (aSVRL);
+
+        if (false) {
+          // For debugging purposes: print the SVRL
+          s_aLogger.info (XMLWriter.getXMLString (SVRLWriter.createXML (aSVRL)));
+        }
+
+        // Check that all failed assertions are only warnings
+        for (final SVRLFailedAssert aFailedAssert : SVRLUtils.getAllFailedAssertions (aSVRL)) {
+          assertEquals (aTestFile.toString () + " " + aFailedAssert.toString (),
+                        EErrorLevel.WARN,
+                        aFailedAssert.getFlag ());
+        }
+      }
+    }
+  }
 }
