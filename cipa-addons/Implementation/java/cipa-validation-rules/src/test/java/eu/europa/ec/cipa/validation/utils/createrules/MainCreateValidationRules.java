@@ -59,8 +59,8 @@ public final class MainCreateValidationRules {
 
     // Add all base directories
     final List <RuleSourceItem> aRuleSourceItems = new ArrayList <RuleSourceItem> ();
-    aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "atgov").addBussinessRule ("businessrules/atgov-T10-BusinessRules-v02.ods")
-                                                                                .addBussinessRule ("businessrules/atgov-T14-BusinessRules-v02.ods"));
+    aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "atgov").addBussinessRule ("businessrules/atgov-T10-BusinessRules-v03.ods")
+                                                                                .addBussinessRule ("businessrules/atgov-T14-BusinessRules-v03.ods"));
     aRuleSourceItems.add (new RuleSourceItem (aRuleSource, aRuleTarget, "atnat").addBussinessRule ("businessrules/atnat-T10-BusinessRules-v02.ods")
                                                                                 .addBussinessRule ("businessrules/atnat-T14-BusinessRules-v02.ods"));
     {
