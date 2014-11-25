@@ -321,6 +321,34 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
+
+		<!--ASSERT -->
+<xsl:choose>
+      <xsl:when test="($Prerequisite1 and count(//cac:PayeeFinancialAccount/cbc:ID) >= 1) or not ($Prerequisite1)" />
+      <xsl:otherwise>
+        <svrl:failed-assert test="($Prerequisite1 and count(//cac:PayeeFinancialAccount/cbc:ID) >= 1) or not ($Prerequisite1)">
+          <xsl:attribute name="flag">fatal</xsl:attribute>
+          <xsl:attribute name="location">
+            <xsl:apply-templates mode="schematron-select-full-path" select="." />
+          </xsl:attribute>
+          <svrl:text>[ATGOV-T14-R017]-At least 1 beneficiary account must be present.</svrl:text>
+        </svrl:failed-assert>
+      </xsl:otherwise>
+    </xsl:choose>
+
+		<!--ASSERT -->
+<xsl:choose>
+      <xsl:when test="($Prerequisite1 and (cac:InvoicePeriod/cbc:StartDate or cac:Delivery/cbc:ActualDeliveryDate)) or not ($Prerequisite1)" />
+      <xsl:otherwise>
+        <svrl:failed-assert test="($Prerequisite1 and (cac:InvoicePeriod/cbc:StartDate or cac:Delivery/cbc:ActualDeliveryDate)) or not ($Prerequisite1)">
+          <xsl:attribute name="flag">fatal</xsl:attribute>
+          <xsl:attribute name="location">
+            <xsl:apply-templates mode="schematron-select-full-path" select="." />
+          </xsl:attribute>
+          <svrl:text>[ATGOV-T14-R100]-A delivery date or an invoicing period must be provided</svrl:text>
+        </svrl:failed-assert>
+      </xsl:otherwise>
+    </xsl:choose>
     <xsl:apply-templates mode="M10" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
@@ -425,7 +453,7 @@
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
           </xsl:attribute>
-          <svrl:text>[ATGOV-T14-R007]-Only BIC and IBAN are allowed as beneficiary account information.</svrl:text>
+          <svrl:text>[ATGOV-T14-R007]-Only valid BICs and IBANs are allowed as beneficiary account information.</svrl:text>
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>

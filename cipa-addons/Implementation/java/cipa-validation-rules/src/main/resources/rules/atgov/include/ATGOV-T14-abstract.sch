@@ -49,6 +49,8 @@
     <assert flag="fatal" test="$ATGOV-T14-R013">[ATGOV-T14-R013]-A maximum of 200 attachments are allowed within a single document.</assert>
     <assert flag="fatal" test="$ATGOV-T14-R014">[ATGOV-T14-R014]-The maximum size of all attachments after Base64 decoding must not exceed 15 Megabytes.</assert>
     <assert flag="fatal" test="$ATGOV-T14-R016">[ATGOV-T14-R016]-The payable amount of an invoice must be smaller or equal than 999999999.99.</assert>
+    <assert flag="fatal" test="$ATGOV-T14-R017">[ATGOV-T14-R017]-At least 1 beneficiary account must be present.</assert>
+    <assert flag="fatal" test="$ATGOV-T14-R100">[ATGOV-T14-R100]-A delivery date or an invoicing period must be provided</assert>
   </rule>
   <rule context="$Supplier">
     <assert flag="fatal" test="$ATGOV-T14-R001">[ATGOV-T14-R001]-The email address of the biller is mandatory.</assert>
@@ -62,7 +64,7 @@
     <assert flag="fatal" test="$ATGOV-T14-R012">[ATGOV-T14-R012]-Attachments included within the invoice must be of one of the following file formats: XLS (application/vnd.ms-excel), XLSX (application/vnd.openxmlformats-officedocument.spreadsheetml.sheet), PDF (application/pdf), PNG (image/png) or XML (application/xml or text/xml).</assert>
   </rule>
   <rule context="$Payment_Means">
-    <assert flag="fatal" test="$ATGOV-T14-R007">[ATGOV-T14-R007]-Only BIC and IBAN are allowed as beneficiary account information.</assert>
+    <assert flag="fatal" test="$ATGOV-T14-R007">[ATGOV-T14-R007]-Only valid BICs and IBANs are allowed as beneficiary account information.</assert>
   </rule>
   <rule context="$Payment_Terms">
     <assert flag="warning" test="$ATGOV-T14-R004">[ATGOV-T14-R004]-A credit note should not specify only textual payment terms.</assert>

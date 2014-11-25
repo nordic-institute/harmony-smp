@@ -57,6 +57,8 @@
   <param name="ATGOV-T14-R014" value="($Prerequisite1 and string-length(string-join(//cac:AdditionalDocumentReference/cac:Attachment/cbc:EmbeddedDocumentBinaryObject/text(),'')) * 3 div 4 &lt;= 15728640) or not ($Prerequisite1)" />
   <param name="ATGOV-T14-R015" value="($Prerequisite1 and (number(cbc:LineExtensionAmount) >= -999999999999.99 and number(cbc:LineExtensionAmount) &lt;= 999999999999.99)) or not ($Prerequisite1)" />
   <param name="ATGOV-T14-R016" value="($Prerequisite1 and number(cac:LegalMonetaryTotal/cbc:PayableAmount) &lt;= 999999999.99) or not ($Prerequisite1)" />
+  <param name="ATGOV-T14-R017" value="($Prerequisite1 and count(//cac:PayeeFinancialAccount/cbc:ID) >= 1) or not ($Prerequisite1)" />
+  <param name="ATGOV-T14-R100" value="($Prerequisite1 and (cac:InvoicePeriod/cbc:StartDate or cac:Delivery/cbc:ActualDeliveryDate)) or not ($Prerequisite1)" />
   <param name="CreditNote" value="/ubl:CreditNote" />
   <param name="Payment_Means" value="/ubl:CreditNote/cac:PaymentMeans" />
   <param name="Supplier" value="/ubl:CreditNote/cac:AccountingSupplierParty/cac:Party" />

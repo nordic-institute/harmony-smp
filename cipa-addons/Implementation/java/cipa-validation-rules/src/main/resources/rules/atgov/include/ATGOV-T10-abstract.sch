@@ -52,13 +52,14 @@
     <assert flag="fatal" test="$ATGOV-T10-R013">[ATGOV-T10-R013]-A maximum of 200 attachments are allowed within a single document.</assert>
     <assert flag="fatal" test="$ATGOV-T10-R014">[ATGOV-T10-R014]-The maximum size of all attachments after Base64 decoding must not exceed 15 Megabytes.</assert>
     <assert flag="fatal" test="$ATGOV-T10-R016">[ATGOV-T10-R016]-The payable amount of an invoice must be smaller or equal than 999999999.99.</assert>
+    <assert flag="fatal" test="$ATGOV-T10-R017">[ATGOV-T10-R017]-At least 1 beneficiary account must be present.</assert>
   </rule>
   <rule context="$Attachments">
     <assert flag="fatal" test="$ATGOV-T10-R011">[ATGOV-T10-R011]-Attachments to the invoice must be included into the invoice document and may not be referenced from external sources.</assert>
     <assert flag="fatal" test="$ATGOV-T10-R012">[ATGOV-T10-R012]-Attachments included within the invoice must be of one of the following file formats: XLS (application/vnd.ms-excel), XLSX (application/vnd.openxmlformats-officedocument.spreadsheetml.sheet), PDF (application/pdf), PNG (image/png) or XML (application/xml or text/xml).</assert>
   </rule>
   <rule context="$Payment_Means">
-    <assert flag="fatal" test="$ATGOV-T10-R007">[ATGOV-T10-R007]-Only BIC and IBAN are allowed as beneficiary account information.</assert>
+    <assert flag="fatal" test="$ATGOV-T10-R007">[ATGOV-T10-R007]-Only valid BICs and IBANs are allowed as beneficiary account information.</assert>
   </rule>
   <rule context="$Invoice_Line">
     <assert flag="fatal" test="$ATGOV-T10-R008">[ATGOV-T10-R008]-The order position number (per line item) must be present when the OrderID is a PO number (10 digit numeric).</assert>
