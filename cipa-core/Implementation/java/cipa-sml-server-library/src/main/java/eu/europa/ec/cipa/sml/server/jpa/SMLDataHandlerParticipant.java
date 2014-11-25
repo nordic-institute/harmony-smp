@@ -232,9 +232,11 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager implement
 
 				// alternative solution: first we delete the row with similar
 				// Participant (in case that exists)
+				// EDELIVERY - 289 Fix  the query needs to be executed with the UnifiedParticipantDBValue (LoweCase US.locale)
+				
 				Query query = getEntityManager().createNativeQuery("DELETE FROM migrate WHERE scheme = ?1 AND rec_value = ?2");
-				query.setParameter(1, aMigrationRecord.getParticipantIdentifier().getScheme());
-				query.setParameter(2, aMigrationRecord.getParticipantIdentifier().getValue());
+				query.setParameter(1, IdentifierUtils.getUnifiedParticipantDBValue(aMigrationRecord.getParticipantIdentifier().getScheme()));
+				query.setParameter(2, IdentifierUtils.getUnifiedParticipantDBValue(aMigrationRecord.getParticipantIdentifier().getValue()));
 				query.executeUpdate();
 				// and now we make the actual insert
 				final DBMigrate aMigrate = new DBMigrate(new DBMigrateID(aMigrationRecord));
