@@ -70,7 +70,9 @@ public final class TestFiles {
   private static final String [] CALLFORTENDERS_SUCCESS = new String [] { "Catalogue pre award_Call for Tender_RDO MEPA_BIS 12a.xml" };
   private static final String [] CATALOGUES_SUCCESS = new String [] { "Consip_Catalogo_UBL.xml" };
   private static final String [] CREDITNOTES_SUCCESS = new String [] { "BII05 TRDM014 example is.xml" };
-  private static final String [] CREDITNOTES_AT_SUCCESS = new String [] { "atgov_BIS5aCreditNote.xml" };
+  private static final String [] CREDITNOTES_AT_SUCCESS = new String [] { "atgov_BIS5aCreditNote.xml",
+                                                                         "atgov-t14-BIS5A-valid.xml",
+                                                                         "atgov-t14-BIS5A-with-all-elements.xml" };
   private static final String [] INVOICES_SUCCESS = new String [] { "BII04 minimal invoice example 03.xml",
                                                                    "BII04 minimal invoice wo addr id.xml",
                                                                    "BII04 minimal VAT invoice example 02.xml",
@@ -87,9 +89,11 @@ public final class TestFiles {
                                                                    "TC10.4.TS1.xml",
                                                                    "TC10.15.TS1.xml",
                                                                    "test-invoice.xml" };
-  private static final String [] INVOICES_AT_SUCCESS = new String [] { "atgov-ubl-42-8.xml",
-                                                                      "atgov_BIS4aInvoice.xml",
-                                                                      "atgov_BIS5aInvoice.xml" };
+  private static final String [] INVOICES_AT_SUCCESS = new String [] { "atgov_BIS4aInvoice.xml",
+                                                                      "atgov_BIS5aInvoice.xml",
+                                                                      "atgov-t10-BIS4A-valid.xml",
+                                                                      "atgov-t10-BIS5A-valid.xml",
+                                                                      "atgov-ubl-42-8.xml" };
   private static final String [] ORDERS_SUCCESS = new String [] { "ADVORD_03_03_00_Order_v2p2.xml",
                                                                  "BII03 Order example 01.xml",
                                                                  "PEPPOL BIS-3a-FULL.xml",
