@@ -41,19 +41,19 @@
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron tests for binding ubl and transaction T10-->
 <pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T10" id="UBL-T10">
-  <param name="NOGOV-T10-R005" value="($Prerequisite1 and (cac:ContractDocumentReference/cbc:ID != '')) or not ($Prerequisite1)" />
-  <param name="NOGOV-T10-R007" value="($Prerequisite1 and (cac:Contact/cbc:ID != '')) or not ($Prerequisite1)" />
-  <param name="NOGOV-T10-R006" value="($Prerequisite1 and (cac:PartyIdentification/cbc:ID != '')) or not ($Prerequisite1)" />
-  <param name="NOGOV-T10-R001" value="($Prerequisite1 and (cac:Contact/cbc:ID != '')) or not ($Prerequisite1)" />
-  <param name="NOGOV-T10-R002" value="($Prerequisite1 and (cac:SellersItemIdentification/cbc:ID != '')) or not ($Prerequisite1)" />
-  <param name="NOGOV-T10-R003" value="($Prerequisite1 and (cbc:AccountingCost)) or not ($Prerequisite1)" />
-  <param name="NOGOV-T10-R004" value="($Prerequisite1 and (cac:OrderLineReference/cbc:LineID != '')) or not ($Prerequisite1)" />
-  <param name="NOGOV-T10-R008" value="($Prerequisite1 and (number(cac:ClassifiedTaxCategory/cbc:Percent) >=0)) or not ($Prerequisite1)" />
-  <param name="NOGOV-T10-R009" value="($Prerequisite1 and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ($Prerequisite1)" />
-  <param name="NOGOV-T10-R010" value="($Prerequisite1 and (child::cbc:InvoicedQuantity/@unitCode != '')) or not ($Prerequisite1)" />
-  <param name="NOGOV-T10-R011" value="($Prerequisite1 and (cac:PayeeFinancialAccount/cbc:ID != '')) or not ($Prerequisite1)" />
-  <param name="NOGOV-T10-R012" value="($Prerequisite1 and (cbc:PaymentID != '')) or not ($Prerequisite1)" />
-  <param name="NOGOV-T10-R013" value="($Prerequisite1 and (child::cbc:ID != '')) or not ($Prerequisite1)" />
+  <param name="NOGOV-T10-R005" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') and (cac:ContractDocumentReference/cbc:ID != '')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
+  <param name="NOGOV-T10-R007" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') and (cac:Contact/cbc:ID != '')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
+  <param name="NOGOV-T10-R006" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') and (cac:PartyIdentification/cbc:ID != '')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
+  <param name="NOGOV-T10-R001" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') and (cac:Contact/cbc:ID != '')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
+  <param name="NOGOV-T10-R002" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') and (cac:SellersItemIdentification/cbc:ID != '')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
+  <param name="NOGOV-T10-R003" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') and (cbc:AccountingCost)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
+  <param name="NOGOV-T10-R004" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') and (cac:OrderLineReference/cbc:LineID != '')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
+  <param name="NOGOV-T10-R008" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') and (number(cac:ClassifiedTaxCategory/cbc:Percent) >=0)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
+  <param name="NOGOV-T10-R009" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
+  <param name="NOGOV-T10-R010" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') and (child::cbc:InvoicedQuantity/@unitCode != '')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
+  <param name="NOGOV-T10-R011" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') and (cac:PayeeFinancialAccount/cbc:ID != '')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
+  <param name="NOGOV-T10-R012" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') and (cbc:PaymentID != '')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
+  <param name="NOGOV-T10-R013" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') and (child::cbc:ID != '')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
   <param name="NOGOV-T10-R014" value="(cac:PostalAddress/cac:Country/cbc:IdentificationCode != '')" />
   <param name="Customer_Party" value="/ubl:Invoice/cac:AccountingCustomerParty/cac:Party" />
   <param name="Invoice_Line" value="//cac:InvoiceLine" />

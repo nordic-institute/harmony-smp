@@ -205,19 +205,18 @@
         <xsl:attribute name="name">UBL-T14</xsl:attribute>
         <xsl:apply-templates />
       </svrl:active-pattern>
-      <xsl:apply-templates mode="M6" select="/" />
+      <xsl:apply-templates mode="M5" select="/" />
     </svrl:schematron-output>
   </xsl:template>
 
 <!--SCHEMATRON PATTERNS-->
 <svrl:text>BIICORE T14 bound to UBL</svrl:text>
-  <xsl:param name="Prerequisite1" select="contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0')" />
 
 <!--PATTERN UBL-T14-->
 
 
 	<!--RULE -->
-<xsl:template match="/ubl:CreditNote" mode="M6" priority="1000">
+<xsl:template match="/ubl:CreditNote" mode="M5" priority="1000">
     <svrl:fired-rule context="/ubl:CreditNote" />
 
 		<!--ASSERT -->
@@ -250,9 +249,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cbc:CopyIndicator) ) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:CopyIndicator) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cbc:CopyIndicator) ) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:CopyIndicator) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -264,9 +263,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cbc:UUID) ) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:UUID) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cbc:UUID) ) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:UUID) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -278,9 +277,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cbc:IssueTime) ) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:IssueTime) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cbc:IssueTime) ) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:IssueTime) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -292,9 +291,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cbc:TaxPointDate)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:TaxPointDate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cbc:TaxPointDate)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:TaxPointDate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -306,9 +305,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cbc:PricingCurrencyCode) ) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:PricingCurrencyCode) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cbc:PricingCurrencyCode) ) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:PricingCurrencyCode) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -320,9 +319,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cbc:PaymentCurrencyCode) ) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:PaymentCurrencyCode) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cbc:PaymentCurrencyCode) ) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:PaymentCurrencyCode) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -334,9 +333,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cbc:PaymentAlternativeCurrencyCode) ) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:PaymentAlternativeCurrencyCode) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cbc:PaymentAlternativeCurrencyCode) ) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:PaymentAlternativeCurrencyCode) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -348,9 +347,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cbc:AccountingCostCode) ) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:AccountingCostCode) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cbc:AccountingCostCode) ) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:AccountingCostCode) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -362,9 +361,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cbc:LineCountNumeric)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:LineCountNumeric)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cbc:LineCountNumeric)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cbc:LineCountNumeric)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -376,9 +375,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:BillingReference/cac:SelfBilledInvoiceDocumentReference) or not(cac:BillingReference/cac:DebitNoteDocumentReference) or not(cac:BillingReference/cac:ReminderDocumentReference) or not(AdditionalDocumentReference) or not(BillingReferenceLine) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:CopyIndicator) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:UUID) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:IssueDate) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:DocumentTypeCode) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:DocumentType) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:XPath) or not(cac:BillingReference/cac:InvoiceDocumentReference/cac:Attachment) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:CopyIndicator) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:UUID) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:IssueDate) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:DocumentTypeCode) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:DocumentType) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:XPath) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cac:Attachment) ) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:BillingReference/cac:SelfBilledInvoiceDocumentReference) or not(cac:BillingReference/cac:DebitNoteDocumentReference) or not(cac:BillingReference/cac:ReminderDocumentReference) or not(AdditionalDocumentReference) or not(BillingReferenceLine) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:CopyIndicator) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:UUID) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:IssueDate) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:DocumentTypeCode) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:DocumentType) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:XPath) or not(cac:BillingReference/cac:InvoiceDocumentReference/cac:Attachment) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:CopyIndicator) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:UUID) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:IssueDate) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:DocumentTypeCode) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:DocumentType) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:XPath) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cac:Attachment) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:BillingReference/cac:SelfBilledInvoiceDocumentReference) or not(cac:BillingReference/cac:DebitNoteDocumentReference) or not(cac:BillingReference/cac:ReminderDocumentReference) or not(AdditionalDocumentReference) or not(BillingReferenceLine) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:CopyIndicator) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:UUID) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:IssueDate) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:DocumentTypeCode) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:DocumentType) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:XPath) or not(cac:BillingReference/cac:InvoiceDocumentReference/cac:Attachment) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:CopyIndicator) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:UUID) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:IssueDate) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:DocumentTypeCode) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:DocumentType) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:XPath) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cac:Attachment) ) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:BillingReference/cac:SelfBilledInvoiceDocumentReference) or not(cac:BillingReference/cac:DebitNoteDocumentReference) or not(cac:BillingReference/cac:ReminderDocumentReference) or not(AdditionalDocumentReference) or not(BillingReferenceLine) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:CopyIndicator) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:UUID) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:IssueDate) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:DocumentTypeCode) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:DocumentType) or not(cac:BillingReference/cac:InvoiceDocumentReference/cbc:XPath) or not(cac:BillingReference/cac:InvoiceDocumentReference/cac:Attachment) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:CopyIndicator) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:UUID) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:IssueDate) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:DocumentTypeCode) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:DocumentType) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cbc:XPath) or not(cac:BillingReference/cac:CreditNoteDocumentReference/cac:Attachment) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -390,9 +389,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:DespatchDocumentReference) ) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:DespatchDocumentReference) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:DespatchDocumentReference) ) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:DespatchDocumentReference) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -404,9 +403,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:ReceiptDocumentReference)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:ReceiptDocumentReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:ReceiptDocumentReference)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:ReceiptDocumentReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -418,9 +417,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:OriginatorDocumentReference)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:OriginatorDocumentReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:OriginatorDocumentReference)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:OriginatorDocumentReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -432,9 +431,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Signature)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Signature)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Signature)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Signature)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -446,9 +445,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:BuyerCustomerParty)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:BuyerCustomerParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:BuyerCustomerParty)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:BuyerCustomerParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -460,9 +459,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:SellerSupplierParty)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:SellerSupplierParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:SellerSupplierParty)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:SellerSupplierParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -474,9 +473,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxRepresentativeParty)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxRepresentativeParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxRepresentativeParty)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxRepresentativeParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -488,9 +487,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:DeliveryTerms)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:DeliveryTerms)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:DeliveryTerms)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:DeliveryTerms)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -502,9 +501,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PrepaidPayment)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PrepaidPayment)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PrepaidPayment)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PrepaidPayment)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -516,9 +515,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxExchangeRate)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxExchangeRate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxExchangeRate)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxExchangeRate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -530,9 +529,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PricingExchangeRate)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PricingExchangeRate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PricingExchangeRate)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PricingExchangeRate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -544,9 +543,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentExchangeRate)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentExchangeRate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentExchangeRate)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentExchangeRate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -558,9 +557,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentAlternativeExchangeRate)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentAlternativeExchangeRate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentAlternativeExchangeRate)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentAlternativeExchangeRate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -572,9 +571,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNotePeriod/cbc:StartTime)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNotePeriod/cbc:StartTime)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNotePeriod/cbc:StartTime)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNotePeriod/cbc:StartTime)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -586,9 +585,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNotePeriod/cbc:EndTime)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNotePeriod/cbc:EndTime)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNotePeriod/cbc:EndTime)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNotePeriod/cbc:EndTime)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -600,9 +599,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNotePeriod/cbc:DurationMeasure)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNotePeriod/cbc:DurationMeasure)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNotePeriod/cbc:DurationMeasure)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNotePeriod/cbc:DurationMeasure)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -614,9 +613,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNotePeriod/cbc:Description)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNotePeriod/cbc:Description)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNotePeriod/cbc:Description)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNotePeriod/cbc:Description)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -628,9 +627,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNotePeriod/cbc:DescriptionCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNotePeriod/cbc:DescriptionCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNotePeriod/cbc:DescriptionCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNotePeriod/cbc:DescriptionCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -642,9 +641,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:OrderReference/cbc:SalesOrderID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:OrderReference/cbc:SalesOrderID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:OrderReference/cbc:SalesOrderID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:OrderReference/cbc:SalesOrderID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -656,9 +655,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:OrderReference/cbc:CopyIndicator) ) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:OrderReference/cbc:CopyIndicator) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:OrderReference/cbc:CopyIndicator) ) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:OrderReference/cbc:CopyIndicator) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -670,9 +669,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:OrderReference/cbc:UUID) ) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:OrderReference/cbc:UUID) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:OrderReference/cbc:UUID) ) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:OrderReference/cbc:UUID) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -684,9 +683,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:OrderReference/cbc:IssueDate) ) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:OrderReference/cbc:IssueDate) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:OrderReference/cbc:IssueDate) ) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:OrderReference/cbc:IssueDate) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -698,9 +697,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:OrderReference/cbc:IssueTime) ) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:OrderReference/cbc:IssueTime) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:OrderReference/cbc:IssueTime) ) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:OrderReference/cbc:IssueTime) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -712,9 +711,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:OrderReference/cbc:CustomerReference)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:OrderReference/cbc:CustomerReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:OrderReference/cbc:CustomerReference)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:OrderReference/cbc:CustomerReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -726,9 +725,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:OrderReference/cac:DocumentReference)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:OrderReference/cac:DocumentReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:OrderReference/cac:DocumentReference)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:OrderReference/cac:DocumentReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -740,9 +739,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:ContractDocumentReference/cbc:CopyIndicator)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:ContractDocumentReference/cbc:CopyIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:ContractDocumentReference/cbc:CopyIndicator)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:ContractDocumentReference/cbc:CopyIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -754,9 +753,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:ContractDocumentReference/cbc:UUID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:ContractDocumentReference/cbc:UUID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:ContractDocumentReference/cbc:UUID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:ContractDocumentReference/cbc:UUID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -768,9 +767,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:ContractDocumentReference/cbc:IssueDate)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:ContractDocumentReference/cbc:IssueDate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:ContractDocumentReference/cbc:IssueDate)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:ContractDocumentReference/cbc:IssueDate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -782,9 +781,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:ContractDocumentReference/cbc:DocumentTypeCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:ContractDocumentReference/cbc:DocumentTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:ContractDocumentReference/cbc:DocumentTypeCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:ContractDocumentReference/cbc:DocumentTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -796,9 +795,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:ContractDocumentReference/cbc:XPath)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:ContractDocumentReference/cbc:XPath)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:ContractDocumentReference/cbc:XPath)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:ContractDocumentReference/cbc:XPath)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -810,9 +809,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:ContractDocumentReference/cac:Attachment)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:ContractDocumentReference/cac:Attachment)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:ContractDocumentReference/cac:Attachment)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:ContractDocumentReference/cac:Attachment)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -824,9 +823,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AdditionalDocumentReference/cbc:CooyIndicator)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AdditionalDocumentReference/cbc:CooyIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AdditionalDocumentReference/cbc:CooyIndicator)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AdditionalDocumentReference/cbc:CooyIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -838,9 +837,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AdditionalDocumentReference/cbc:UUID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AdditionalDocumentReference/cbc:UUID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AdditionalDocumentReference/cbc:UUID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AdditionalDocumentReference/cbc:UUID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -852,9 +851,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AdditionalDocumentReference/cbc:IssueDate)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AdditionalDocumentReference/cbc:IssueDate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AdditionalDocumentReference/cbc:IssueDate)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AdditionalDocumentReference/cbc:IssueDate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -866,9 +865,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AdditionalDocumentReference/cbc:DocumentTypeCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AdditionalDocumentReference/cbc:DocumentTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AdditionalDocumentReference/cbc:DocumentTypeCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AdditionalDocumentReference/cbc:DocumentTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -880,9 +879,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AdditionalDocumentReference/cbc:XPath)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AdditionalDocumentReference/cbc:XPath)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AdditionalDocumentReference/cbc:XPath)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AdditionalDocumentReference/cbc:XPath)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -894,9 +893,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AdditionalDocumentReference/cac:Attachment/cac:ExternalReference/cbc:DocumentHash)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AdditionalDocumentReference/cac:Attachment/cac:ExternalReference/cbc:DocumentHash)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AdditionalDocumentReference/cac:Attachment/cac:ExternalReference/cbc:DocumentHash)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AdditionalDocumentReference/cac:Attachment/cac:ExternalReference/cbc:DocumentHash)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -908,9 +907,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AdditionalDocumentReference/cac:Attachment/cac:ExternalReference/cbc:ExpiryDate)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AdditionalDocumentReference/cac:Attachment/cac:ExternalReference/cbc:ExpiryDate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AdditionalDocumentReference/cac:Attachment/cac:ExternalReference/cbc:ExpiryDate)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AdditionalDocumentReference/cac:Attachment/cac:ExternalReference/cbc:ExpiryDate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -922,9 +921,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AdditionalDocumentReference/cac:Attachment/cac:ExternalReference/cbc:ExpiryTime)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AdditionalDocumentReference/cac:Attachment/cac:ExternalReference/cbc:ExpiryTime)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AdditionalDocumentReference/cac:Attachment/cac:ExternalReference/cbc:ExpiryTime)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AdditionalDocumentReference/cac:Attachment/cac:ExternalReference/cbc:ExpiryTime)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -936,9 +935,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cbc:CustomerAssignedAccountID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cbc:CustomerAssignedAccountID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cbc:CustomerAssignedAccountID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cbc:CustomerAssignedAccountID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -950,9 +949,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cbc:AdditionalAccountID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cbc:AdditionalAccountID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cbc:AdditionalAccountID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cbc:AdditionalAccountID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -964,9 +963,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cbc:DataSendingCapability)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cbc:DataSendingCapability)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cbc:DataSendingCapability)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cbc:DataSendingCapability)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -978,9 +977,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:DespatchContact)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:DespatchContact)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:DespatchContact)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:DespatchContact)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -992,9 +991,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:AccountingContact)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:AccountingContact)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:AccountingContact)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:AccountingContact)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1006,9 +1005,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:SellerContact)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:SellerContact)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:SellerContact)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:SellerContact)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1020,9 +1019,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cbc:MarkCareIndicator)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cbc:MarkCareIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cbc:MarkCareIndicator)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cbc:MarkCareIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1034,9 +1033,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cbc:MarkAttentionIndicator)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cbc:MarkAttentionIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cbc:MarkAttentionIndicator)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cbc:MarkAttentionIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1048,9 +1047,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cbc:WebsiteURI)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cbc:WebsiteURI)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cbc:WebsiteURI)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cbc:WebsiteURI)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1062,9 +1061,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cbc:LogoReferenceID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cbc:LogoReferenceID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cbc:LogoReferenceID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cbc:LogoReferenceID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1076,9 +1075,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:Language)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:Language)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:Language)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:Language)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1090,9 +1089,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:AddressTypeCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:AddressTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:AddressTypeCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:AddressTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1104,9 +1103,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:AddressFormatCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:AddressFormatCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:AddressFormatCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:AddressFormatCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1118,9 +1117,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:Floor)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:Floor)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:Floor)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:Floor)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1132,9 +1131,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:Room)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:Room)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:Room)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:Room)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1146,9 +1145,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:BlockName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:BlockName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:BlockName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:BlockName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1160,9 +1159,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:BuildingName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:BuildingName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:BuildingName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:BuildingName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1174,9 +1173,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:InhouseMail)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:InhouseMail)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:InhouseMail)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:InhouseMail)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1188,9 +1187,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:MarkAttention)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:MarkAttention)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:MarkAttention)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:MarkAttention)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1202,9 +1201,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:MarkCare)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:MarkCare)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:MarkCare)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:MarkCare)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1216,9 +1215,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:PlotIdentification)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:PlotIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:PlotIdentification)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:PlotIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1230,9 +1229,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CitySubdivisionName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CitySubdivisionName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CitySubdivisionName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:CitySubdivisionName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1244,9 +1243,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:Region)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:Region)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:Region)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:Region)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1258,9 +1257,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:District)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:District)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:District)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:District)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1272,9 +1271,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:TimezoneOffset)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:TimezoneOffset)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:TimezoneOffset)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cbc:TimezoneOffset)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1286,9 +1285,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:AddressLine)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:AddressLine)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:AddressLine)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:AddressLine)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1300,9 +1299,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:Name)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:Name)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1314,9 +1313,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:LocationCoordinate)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:LocationCoordinate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:LocationCoordinate)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:LocationCoordinate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1328,9 +1327,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PhysicalLocation)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PhysicalLocation)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PhysicalLocation)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PhysicalLocation)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1342,9 +1341,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:RegistrationName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:RegistrationName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:RegistrationName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:RegistrationName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1356,9 +1355,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:TaxLevelCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:TaxLevelCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:TaxLevelCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:TaxLevelCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1370,9 +1369,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReasonCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReasonCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReasonCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReasonCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1384,9 +1383,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReason)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReason)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReason)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReason)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1398,9 +1397,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:RegistrationAddress)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:RegistrationAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:RegistrationAddress)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:RegistrationAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1412,9 +1411,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:Name)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:Name)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1426,9 +1425,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:TaxTypeCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:TaxTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:TaxTypeCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:TaxTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1440,9 +1439,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:CurrencyCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:CurrencyCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:CurrencyCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:CurrencyCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1454,9 +1453,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cac:JurisdictionRegionAddress)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cac:JurisdictionRegionAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cac:JurisdictionRegionAddress)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cac:JurisdictionRegionAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1468,9 +1467,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressTypeCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressTypeCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1482,9 +1481,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressFormatCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressFormatCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressFormatCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressFormatCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1496,9 +1495,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Postbox)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Postbox)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Postbox)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Postbox)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1510,9 +1509,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Floor)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Floor)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Floor)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Floor)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1524,9 +1523,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Room)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Room)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Room)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Room)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1538,9 +1537,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:StreetName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:StreetName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:StreetName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:StreetName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1552,9 +1551,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AdditionalStreetName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AdditionalStreetName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AdditionalStreetName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AdditionalStreetName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1566,9 +1565,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BlockName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BlockName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BlockName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BlockName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1580,9 +1579,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BuildingName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BuildingName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BuildingName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BuildingName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1594,9 +1593,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BuildingNumber)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BuildingNumber)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BuildingNumber)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BuildingNumber)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1608,9 +1607,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:InhouseMail)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:InhouseMail)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:InhouseMail)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:InhouseMail)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1622,9 +1621,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Department)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Department)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Department)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Department)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1636,9 +1635,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:MarkAttention)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:MarkAttention)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:MarkAttention)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:MarkAttention)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1650,9 +1649,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:MarkCare)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:MarkCare)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:MarkCare)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:MarkCare)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1664,9 +1663,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:PlotIdentification)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:PlotIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:PlotIdentification)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:PlotIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1678,9 +1677,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CitySubdivisionName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CitySubdivisionName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CitySubdivisionName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CitySubdivisionName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1692,9 +1691,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:PostalZone)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:PostalZone)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:PostalZone)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:PostalZone)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1706,9 +1705,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CountrySubentityCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CountrySubentityCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CountrySubentityCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CountrySubentityCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1720,9 +1719,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Region)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Region)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Region)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Region)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1734,9 +1733,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:District)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:District)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:District)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:District)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1748,9 +1747,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:TimezoneOffset)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:TimezoneOffset)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:TimezoneOffset)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:TimezoneOffset)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1762,9 +1761,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:AddressLine)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:AddressLine)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:AddressLine)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:AddressLine)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1776,9 +1775,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:Country/cbc:Name)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:Country/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:Country/cbc:Name)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:Country/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1790,9 +1789,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:LocationCoordinate)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:LocationCoordinate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:LocationCoordinate)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:LocationCoordinate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1804,9 +1803,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1818,9 +1817,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:ID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:ID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:ID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:ID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1832,9 +1831,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:Name)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:Name)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1846,9 +1845,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:Note)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:Note)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:Note)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:Contact/cbc:Note)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1860,9 +1859,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:Contact/cac:OtherCommunication)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:Contact/cac:OtherCommunication)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:Contact/cac:OtherCommunication)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:Contact/cac:OtherCommunication)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1874,9 +1873,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:Person/cbc:Title)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:Person/cbc:Title)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:Person/cbc:Title)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:Person/cbc:Title)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1888,9 +1887,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:Person/cbc:NameSuffix)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:Person/cbc:NameSuffix)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:Person/cbc:NameSuffix)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:Person/cbc:NameSuffix)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1902,9 +1901,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:Person/cbc:OrganizationDepartment)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:Person/cbc:OrganizationDepartment)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:Person/cbc:OrganizationDepartment)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:Person/cbc:OrganizationDepartment)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1916,9 +1915,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:AgentParty)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:AgentParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingSupplierParty/cac:Party/cac:AgentParty)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingSupplierParty/cac:Party/cac:AgentParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1930,9 +1929,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cbc:SupplierAssignedAccountID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cbc:SupplierAssignedAccountID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cbc:SupplierAssignedAccountID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cbc:SupplierAssignedAccountID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1944,9 +1943,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cbc:CustomerAssignedAccountID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cbc:CustomerAssignedAccountID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cbc:CustomerAssignedAccountID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cbc:CustomerAssignedAccountID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1958,9 +1957,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cbc:AdditionalAccountID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cbc:AdditionalAccountID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cbc:AdditionalAccountID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cbc:AdditionalAccountID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1972,9 +1971,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:DeliveryContact)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:DeliveryContact)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:DeliveryContact)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:DeliveryContact)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -1986,9 +1985,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:AccountingContact)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:AccountingContact)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:AccountingContact)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:AccountingContact)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2000,9 +1999,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:BuyerContact)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:BuyerContact)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:BuyerContact)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:BuyerContact)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2014,9 +2013,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cbc:MarkCareIndicator)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cbc:MarkCareIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cbc:MarkCareIndicator)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cbc:MarkCareIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2028,9 +2027,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cbc:MarkAttentionIndicator)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cbc:MarkAttentionIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cbc:MarkAttentionIndicator)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cbc:MarkAttentionIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2042,9 +2041,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cbc:WebsiteURI)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cbc:WebsiteURI)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cbc:WebsiteURI)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cbc:WebsiteURI)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2056,9 +2055,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cbc:LogoReferenceID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cbc:LogoReferenceID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cbc:LogoReferenceID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cbc:LogoReferenceID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2070,9 +2069,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:Language)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:Language)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:Language)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:Language)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2084,9 +2083,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:AddressTypeCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:AddressTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:AddressTypeCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:AddressTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2098,9 +2097,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:AddressFormatCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:AddressFormatCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:AddressFormatCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:AddressFormatCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2112,9 +2111,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:Floor)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:Floor)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:Floor)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:Floor)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2126,9 +2125,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:Room)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:Room)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:Room)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:Room)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2140,9 +2139,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:BlockName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:BlockName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:BlockName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:BlockName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2154,9 +2153,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:BuildingName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:BuildingName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:BuildingName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:BuildingName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2168,9 +2167,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:InhouseMail)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:InhouseMail)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:InhouseMail)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:InhouseMail)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2182,9 +2181,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:MarkAttention)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:MarkAttention)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:MarkAttention)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:MarkAttention)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2196,9 +2195,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:MarkCare)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:MarkCare)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:MarkCare)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:MarkCare)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2210,9 +2209,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:PlotIdentification)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:PlotIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:PlotIdentification)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:PlotIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2224,9 +2223,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:CitySubdivisionName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:CitySubdivisionName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:CitySubdivisionName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:CitySubdivisionName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2238,9 +2237,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:Region)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:Region)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:Region)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:Region)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2252,9 +2251,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:District)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:District)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:District)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:District)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2266,9 +2265,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:TimezoneOffset)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:TimezoneOffset)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:TimezoneOffset)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cbc:TimezoneOffset)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2280,9 +2279,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:AddressLine)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:AddressLine)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:AddressLine)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:AddressLine)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2294,9 +2293,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:Name)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:Name)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2308,9 +2307,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:LocationCoordinate)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:LocationCoordinate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:LocationCoordinate)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:LocationCoordinate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2322,9 +2321,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PhysicalLocation)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PhysicalLocation)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PhysicalLocation)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PhysicalLocation)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2336,9 +2335,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:RegistrationName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:RegistrationName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:RegistrationName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:RegistrationName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2350,9 +2349,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:TaxLevelCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:TaxLevelCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:TaxLevelCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:TaxLevelCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2364,9 +2363,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReasonCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReasonCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReasonCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReasonCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2378,9 +2377,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReason)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReason)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReason)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:ExemptionReason)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2392,9 +2391,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:RegistrationAddress)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:RegistrationAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:RegistrationAddress)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:RegistrationAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2406,9 +2405,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:Name)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:Name)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2420,9 +2419,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:TaxTypeCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:TaxTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:TaxTypeCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:TaxTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2434,9 +2433,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:CurrencyCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:CurrencyCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:CurrencyCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cbc:CurrencyCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2448,9 +2447,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cac:JurisdictionRegionAddress)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cac:JurisdictionRegionAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cac:JurisdictionRegionAddress)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cac:TaxScheme/cac:JurisdictionRegionAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2462,9 +2461,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressTypeCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressTypeCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2476,9 +2475,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressFormatCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressFormatCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressFormatCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AddressFormatCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2490,9 +2489,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Postbox)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Postbox)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Postbox)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Postbox)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2504,9 +2503,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Floor)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Floor)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Floor)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Floor)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2518,9 +2517,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Room)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Room)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Room)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Room)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2532,9 +2531,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:StreetName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:StreetName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:StreetName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:StreetName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2546,9 +2545,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AdditionalStreetName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AdditionalStreetName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AdditionalStreetName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:AdditionalStreetName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2560,9 +2559,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BlockName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BlockName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BlockName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BlockName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2574,9 +2573,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BuildingName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BuildingName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BuildingName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BuildingName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2588,9 +2587,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BuildingNumber)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BuildingNumber)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BuildingNumber)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:BuildingNumber)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2602,9 +2601,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:InhouseMail)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:InhouseMail)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:InhouseMail)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:InhouseMail)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2616,9 +2615,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Department)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Department)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Department)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Department)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2630,9 +2629,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:MarkAttention)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:MarkAttention)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:MarkAttention)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:MarkAttention)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2644,9 +2643,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:MarkCare)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:MarkCare)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:MarkCare)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:MarkCare)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2658,9 +2657,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:PlotIdentification)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:PlotIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:PlotIdentification)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:PlotIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2672,9 +2671,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CitySubdivisionName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CitySubdivisionName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CitySubdivisionName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CitySubdivisionName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2686,9 +2685,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:PostalZone)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:PostalZone)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:PostalZone)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:PostalZone)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2700,9 +2699,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CountrySubentityCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CountrySubentityCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CountrySubentityCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:CountrySubentityCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2714,9 +2713,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Region)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Region)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Region)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:Region)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2728,9 +2727,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:District)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:District)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:District)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:District)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2742,9 +2741,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:TimezoneOffset)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:TimezoneOffset)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:TimezoneOffset)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cbc:TimezoneOffset)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2756,9 +2755,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:AddressLine)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:AddressLine)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:AddressLine)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:AddressLine)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2770,9 +2769,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:Country/cbc:Name)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:Country/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:Country/cbc:Name)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:Country/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2784,9 +2783,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:LocationCoordinate)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:LocationCoordinate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:LocationCoordinate)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:RegistrationAddress/cac:LocationCoordinate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2798,9 +2797,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:PartyLegalEntity/cac:CorporateRegistrationScheme)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2812,9 +2811,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:ID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:ID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:ID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:ID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2826,9 +2825,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:Name)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:Name)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2840,9 +2839,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:Note)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:Note)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:Note)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:Contact/cbc:Note)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2854,9 +2853,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:Contact/cac:OtherCommunication)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:Contact/cac:OtherCommunication)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:Contact/cac:OtherCommunication)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:Contact/cac:OtherCommunication)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2868,9 +2867,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:Title)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:Title)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:Title)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:Title)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2882,9 +2881,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:NameSuffix)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:NameSuffix)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:NameSuffix)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:NameSuffix)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2896,9 +2895,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:OrganizationDepartment)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:OrganizationDepartment)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:OrganizationDepartment)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:Person/cbc:OrganizationDepartment)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2910,9 +2909,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:AgentParty)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:AgentParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AccountingCustomerParty/cac:Party/cac:AgentParty)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AccountingCustomerParty/cac:Party/cac:AgentParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2924,9 +2923,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PayeeParty/cbc:MarkCareIndicator)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cbc:MarkCareIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PayeeParty/cbc:MarkCareIndicator)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cbc:MarkCareIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2938,9 +2937,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PayeeParty/cbc:MarkAttentionIndicator)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cbc:MarkAttentionIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PayeeParty/cbc:MarkAttentionIndicator)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cbc:MarkAttentionIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2952,9 +2951,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PayeeParty/cbc:WebsiteURI)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cbc:WebsiteURI)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PayeeParty/cbc:WebsiteURI)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cbc:WebsiteURI)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2966,9 +2965,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PayeeParty/cbc:LogoReferenceID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cbc:LogoReferenceID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PayeeParty/cbc:LogoReferenceID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cbc:LogoReferenceID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2980,9 +2979,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PayeeParty/cac:Language)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:Language)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PayeeParty/cac:Language)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:Language)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -2994,9 +2993,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PayeeParty/cac:PostalAddress)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:PostalAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PayeeParty/cac:PostalAddress)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:PostalAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3008,9 +3007,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PayeeParty/cac:PhysicalLocation)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:PhysicalLocation)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PayeeParty/cac:PhysicalLocation)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:PhysicalLocation)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3022,9 +3021,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PayeeParty/cac:PartyTaxScheme)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:PartyTaxScheme)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PayeeParty/cac:PartyTaxScheme)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:PartyTaxScheme)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3036,9 +3035,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PayeeParty/cac:PartyLegalEntity/cbc:RegistrationName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:PartyLegalEntity/cbc:RegistrationName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PayeeParty/cac:PartyLegalEntity/cbc:RegistrationName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:PartyLegalEntity/cbc:RegistrationName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3050,9 +3049,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PayeeParty/cac:PartyLegalEntity/cac:RegistrationAddress)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:PartyLegalEntity/cac:RegistrationAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PayeeParty/cac:PartyLegalEntity/cac:RegistrationAddress)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:PartyLegalEntity/cac:RegistrationAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3064,9 +3063,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PayeeParty/cac:PartyLegalEntity/cac:CorporateRegistrationScheme)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:PartyLegalEntity/cac:CorporateRegistrationScheme)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PayeeParty/cac:PartyLegalEntity/cac:CorporateRegistrationScheme)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:PartyLegalEntity/cac:CorporateRegistrationScheme)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3078,9 +3077,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PayeeParty/cac:Contact)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:Contact)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PayeeParty/cac:Contact)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:Contact)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3092,9 +3091,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PayeeParty/cac:Person)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:Person)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PayeeParty/cac:Person)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:Person)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3106,9 +3105,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PayeeParty/cac:AgentParty)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:AgentParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PayeeParty/cac:AgentParty)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PayeeParty/cac:AgentParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3120,9 +3119,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cbc:ID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cbc:ID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cbc:ID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cbc:ID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3134,9 +3133,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cbc:Quantity)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cbc:Quantity)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cbc:Quantity)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cbc:Quantity)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3148,9 +3147,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cbc:MinimumQuantity)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cbc:MinimumQuantity)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cbc:MinimumQuantity)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cbc:MinimumQuantity)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3162,9 +3161,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cbc:MaximumQuantity)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cbc:MaximumQuantity)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cbc:MaximumQuantity)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cbc:MaximumQuantity)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3176,9 +3175,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cbc:ActualDeliveryTime)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cbc:ActualDeliveryTime)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cbc:ActualDeliveryTime)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cbc:ActualDeliveryTime)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3190,9 +3189,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cbc:LatestDeliveryDate)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cbc:LatestDeliveryDate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cbc:LatestDeliveryDate)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cbc:LatestDeliveryDate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3204,9 +3203,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cbc:LatestDeliveryTime)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cbc:LatestDeliveryTime)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cbc:LatestDeliveryTime)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cbc:LatestDeliveryTime)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3218,9 +3217,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cbc:TrackingID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cbc:TrackingID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cbc:TrackingID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cbc:TrackingID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3232,9 +3231,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryAddress)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryAddress)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3246,9 +3245,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cbc:Description)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cbc:Description)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cbc:Description)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cbc:Description)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3260,9 +3259,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cbc:Conditions)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cbc:Conditions)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cbc:Conditions)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cbc:Conditions)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3274,9 +3273,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cbc:CountrySubentity)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cbc:CountrySubentity)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cbc:CountrySubentity)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cbc:CountrySubentity)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3288,9 +3287,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cbc:CountrySubentityCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cbc:CountrySubentityCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cbc:CountrySubentityCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cbc:CountrySubentityCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3302,9 +3301,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:ValidityPeriod)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:ValidityPeriod)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:ValidityPeriod)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:ValidityPeriod)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3316,9 +3315,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:AddressTypeCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:AddressTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:AddressTypeCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:AddressTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3330,9 +3329,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:AddressFormatCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:AddressFormatCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:AddressFormatCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:AddressFormatCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3344,9 +3343,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:Floor)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:Floor)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:Floor)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:Floor)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3358,9 +3357,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:Room)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:Room)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:Room)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:Room)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3372,9 +3371,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:BlockName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:BlockName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:BlockName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:BlockName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3386,9 +3385,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:BuildingName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:BuildingName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:BuildingName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:BuildingName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3400,9 +3399,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:InhouseMail)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:InhouseMail)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:InhouseMail)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:InhouseMail)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3414,9 +3413,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:Department)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:Department)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:Department)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:Department)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3428,9 +3427,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:MarkAttention)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:MarkAttention)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:MarkAttention)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:MarkAttention)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3442,9 +3441,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:MarkCare)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:MarkCare)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:MarkCare)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:MarkCare)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3456,9 +3455,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:PlotIdentification)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:PlotIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:PlotIdentification)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:PlotIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3470,9 +3469,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CitySubdivisionName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CitySubdivisionName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CitySubdivisionName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CitySubdivisionName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3484,9 +3483,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CountrySubentityCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CountrySubentityCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CountrySubentityCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:CountrySubentityCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3498,9 +3497,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:Region)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:Region)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:Region)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:Region)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3512,9 +3511,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:District)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:District)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:District)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:District)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3526,9 +3525,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:TimezoneOffset)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:TimezoneOffset)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:TimezoneOffset)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cbc:TimezoneOffset)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3540,9 +3539,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cac:AddressLine)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cac:AddressLine)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cac:AddressLine)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cac:AddressLine)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3554,9 +3553,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cac:Country/cbc:Name)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cac:Country/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cac:Country/cbc:Name)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cac:Country/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3568,9 +3567,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cac:LocationCoordinate)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cac:LocationCoordinate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cac:LocationCoordinate)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Address/cac:LocationCoordinate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3582,9 +3581,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:RequestedDeliveryPeriod)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:RequestedDeliveryPeriod)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:RequestedDeliveryPeriod)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:RequestedDeliveryPeriod)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3596,9 +3595,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:PromisedDeliveryPeriod)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:PromisedDeliveryPeriod)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:PromisedDeliveryPeriod)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:PromisedDeliveryPeriod)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3610,9 +3609,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:EstimatedDeliveryPeriod)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:EstimatedDeliveryPeriod)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:EstimatedDeliveryPeriod)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:EstimatedDeliveryPeriod)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3624,9 +3623,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:DeliveryParty)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:DeliveryParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:DeliveryParty)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:DeliveryParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3638,9 +3637,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Despatch)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Despatch)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:Delivery/cac:DeliveryLocation/cac:Despatch)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:Delivery/cac:DeliveryLocation/cac:Despatch)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3652,9 +3651,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentMeans/cbc:ID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cbc:ID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentMeans/cbc:ID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cbc:ID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3666,9 +3665,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentMeans/cbc:InstructionID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cbc:InstructionID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentMeans/cbc:InstructionID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cbc:InstructionID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3680,9 +3679,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentMeans/cbc:InstructionNote)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cbc:InstructionNote)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentMeans/cbc:InstructionNote)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cbc:InstructionNote)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3694,9 +3693,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentMeans/cac:CardAccount)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:CardAccount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentMeans/cac:CardAccount)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:CardAccount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3708,9 +3707,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayerFinancialAccount)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayerFinancialAccount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayerFinancialAccount)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayerFinancialAccount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3722,9 +3721,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentMeans/cac:CreditAccount)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:CreditAccount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentMeans/cac:CreditAccount)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:CreditAccount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3736,9 +3735,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:Name)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:Name)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3750,9 +3749,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:AccountTypeCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:AccountTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:AccountTypeCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:AccountTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3764,9 +3763,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:CurrencyCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:CurrencyCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:CurrencyCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cbc:CurrencyCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3778,9 +3777,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:Country)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:Country)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:Country)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:Country)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3792,9 +3791,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cbc:Name)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cbc:Name)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3806,9 +3805,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:Address)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:Address)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:Address)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:Address)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3820,9 +3819,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:Name)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:Name)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3834,9 +3833,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cac:Address)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cac:Address)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cac:Address)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentMeans/cac:PayeeFinancialAccount/cac:FinancialInstitutionBranch/cac:FinancialInstitution/cac:Address)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3848,9 +3847,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentTerms/cbc:ID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cbc:ID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentTerms/cbc:ID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cbc:ID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3862,9 +3861,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentTerms/cbc:PaymentMeansID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cbc:PaymentMeansID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentTerms/cbc:PaymentMeansID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cbc:PaymentMeansID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3876,9 +3875,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentTerms/cbc:PrepaidPaymentReferenceID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cbc:PrepaidPaymentReferenceID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentTerms/cbc:PrepaidPaymentReferenceID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cbc:PrepaidPaymentReferenceID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3890,9 +3889,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentTerms/cbc:ReferenceEventCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cbc:ReferenceEventCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentTerms/cbc:ReferenceEventCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cbc:ReferenceEventCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3904,9 +3903,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentTerms/cbc:SettlementDiscountPercent)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cbc:SettlementDiscountPercent)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentTerms/cbc:SettlementDiscountPercent)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cbc:SettlementDiscountPercent)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3918,9 +3917,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentTerms/cbc:PenaltySurchargePercent)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cbc:PenaltySurchargePercent)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentTerms/cbc:PenaltySurchargePercent)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cbc:PenaltySurchargePercent)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3932,9 +3931,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentTerms/cbc:Amount)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cbc:Amount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentTerms/cbc:Amount)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cbc:Amount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3946,9 +3945,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentTerms/cac:SettlementPeriod)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cac:SettlementPeriod)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentTerms/cac:SettlementPeriod)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cac:SettlementPeriod)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3960,9 +3959,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PaymentTerms/cac:PenaltyPeriod)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cac:PenaltyPeriod)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PaymentTerms/cac:PenaltyPeriod)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:PaymentTerms/cac:PenaltyPeriod)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3974,9 +3973,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AllowanceCharge/cbc:ID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cbc:ID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AllowanceCharge/cbc:ID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cbc:ID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -3988,9 +3987,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AllowanceCharge/cbc:AllowanceChargeReasonCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cbc:AllowanceChargeReasonCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AllowanceCharge/cbc:AllowanceChargeReasonCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cbc:AllowanceChargeReasonCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4002,9 +4001,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AllowanceCharge/cbc:MultiplierFactorNumeric)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cbc:MultiplierFactorNumeric)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AllowanceCharge/cbc:MultiplierFactorNumeric)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cbc:MultiplierFactorNumeric)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4016,9 +4015,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AllowanceCharge/cbc:PrepaidIndicator)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cbc:PrepaidIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AllowanceCharge/cbc:PrepaidIndicator)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cbc:PrepaidIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4030,9 +4029,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AllowanceCharge/cbc:SequenceNumeric)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cbc:SequenceNumeric)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AllowanceCharge/cbc:SequenceNumeric)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cbc:SequenceNumeric)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4044,9 +4043,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AllowanceCharge/cbc:BaseAmount)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cbc:BaseAmount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AllowanceCharge/cbc:BaseAmount)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cbc:BaseAmount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4058,9 +4057,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AllowanceCharge/cbc:AccountingCostCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cbc:AccountingCostCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AllowanceCharge/cbc:AccountingCostCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cbc:AccountingCostCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4072,9 +4071,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AllowanceCharge/cac:TaxCategory/cbc:Name) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:Percent) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:BaseUnitMeasure) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:PerUnitAmount) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:TaxExemptionReasonCode) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:TaxExemptionReason) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:TierRange) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:TierRatePercent) or not(cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:Name) or not(cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode) or not(cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:CurrencyCode) or not(cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cac:JurisdictionRegionAddress)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cac:TaxCategory/cbc:Name) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:Percent) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:BaseUnitMeasure) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:PerUnitAmount) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:TaxExemptionReasonCode) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:TaxExemptionReason) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:TierRange) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:TierRatePercent) or not(cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:Name) or not(cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode) or not(cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:CurrencyCode) or not(cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cac:JurisdictionRegionAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AllowanceCharge/cac:TaxCategory/cbc:Name) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:Percent) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:BaseUnitMeasure) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:PerUnitAmount) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:TaxExemptionReasonCode) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:TaxExemptionReason) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:TierRange) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:TierRatePercent) or not(cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:Name) or not(cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode) or not(cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:CurrencyCode) or not(cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cac:JurisdictionRegionAddress)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cac:TaxCategory/cbc:Name) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:Percent) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:BaseUnitMeasure) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:PerUnitAmount) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:TaxExemptionReasonCode) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:TaxExemptionReason) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:TierRange) or not(cac:AllowanceCharge/cac:TaxCategory/cbc:TierRatePercent) or not(cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:Name) or not(cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode) or not(cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:CurrencyCode) or not(cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cac:JurisdictionRegionAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4086,9 +4085,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AllowanceCharge/cac:TaxTotal)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cac:TaxTotal)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AllowanceCharge/cac:TaxTotal)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cac:TaxTotal)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4100,9 +4099,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:AllowanceCharge/cac:PaymentMeans)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cac:PaymentMeans)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:AllowanceCharge/cac:PaymentMeans)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:AllowanceCharge/cac:PaymentMeans)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4114,9 +4113,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cbc:RoundingAmount)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cbc:RoundingAmount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cbc:RoundingAmount)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cbc:RoundingAmount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4128,9 +4127,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cbc:TaxEvidenceIndicator)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cbc:TaxEvidenceIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cbc:TaxEvidenceIndicator)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cbc:TaxEvidenceIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4142,9 +4141,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cbc:CalculationSequenceNumeric)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cbc:CalculationSequenceNumeric)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cbc:CalculationSequenceNumeric)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cbc:CalculationSequenceNumeric)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4156,9 +4155,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cbc:TransactionCurrencyTaxAmount)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cbc:TransactionCurrencyTaxAmount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cbc:TransactionCurrencyTaxAmount)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cbc:TransactionCurrencyTaxAmount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4170,9 +4169,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cbc:Percent)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cbc:Percent)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cbc:Percent)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cbc:Percent)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4184,9 +4183,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cbc:BaseUnitMeasure)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cbc:BaseUnitMeasure)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cbc:BaseUnitMeasure)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cbc:BaseUnitMeasure)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4198,9 +4197,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cbc:PerUnitAmount)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cbc:PerUnitAmount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cbc:PerUnitAmount)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cbc:PerUnitAmount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4212,9 +4211,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cbc:TierRange)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cbc:TierRange)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cbc:TierRange)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cbc:TierRange)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4226,9 +4225,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cbc:TierRatePercent)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cbc:TierRatePercent)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cbc:TierRatePercent)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cbc:TierRatePercent)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4240,9 +4239,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:Name)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:Name)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4254,9 +4253,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:BaseUnitMeasure)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:BaseUnitMeasure)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:BaseUnitMeasure)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:BaseUnitMeasure)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4268,9 +4267,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:PerUnitAmount)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:PerUnitAmount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:PerUnitAmount)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:PerUnitAmount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4282,9 +4281,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:TierRange)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:TierRange)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:TierRange)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:TierRange)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4296,9 +4295,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:TierRatePercent)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:TierRatePercent)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:TierRatePercent)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cbc:TierRatePercent)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4310,9 +4309,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:Name)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:Name)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4324,9 +4323,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4338,9 +4337,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:CurrencyCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:CurrencyCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:CurrencyCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:CurrencyCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4352,9 +4351,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cac:JurisdictionRegionAddress)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cac:JurisdictionRegionAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cac:JurisdictionRegionAddress)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:TaxTotal/cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cac:JurisdictionRegionAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4366,9 +4365,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cbc:UUID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cbc:UUID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cbc:UUID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cbc:UUID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4380,9 +4379,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cbc:TaxPointDate)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cbc:TaxPointDate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cbc:TaxPointDate)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cbc:TaxPointDate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4394,9 +4393,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cbc:AccountingCostCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cbc:AccountingCostCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cbc:AccountingCostCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cbc:AccountingCostCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4408,9 +4407,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cbc:FreeOfChargeIndicator)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cbc:FreeOfChargeIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cbc:FreeOfChargeIndicator)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cbc:FreeOfChargeIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4422,9 +4421,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:OrderLineReference/cbc:SalesOrderLineID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:OrderLineReference/cbc:SalesOrderLineID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:OrderLineReference/cbc:SalesOrderLineID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:OrderLineReference/cbc:SalesOrderLineID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4436,9 +4435,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:DespatchLineReference)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:DespatchLineReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:DespatchLineReference)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:DespatchLineReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4450,9 +4449,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:ReceiptLineReference)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:ReceiptLineReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:ReceiptLineReference)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:ReceiptLineReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4464,9 +4463,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:BillingReference)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:BillingReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:BillingReference)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:BillingReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4478,9 +4477,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:DocumentReference)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:DocumentReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:DocumentReference)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:DocumentReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4492,9 +4491,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:PricingReference)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:PricingReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:PricingReference)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:PricingReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4506,9 +4505,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:OriginatorParty)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:OriginatorParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:OriginatorParty)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:OriginatorParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4520,9 +4519,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Delivery)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Delivery)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Delivery)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Delivery)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4534,9 +4533,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:PaymentTerms)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:PaymentTerms)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:PaymentTerms)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:PaymentTerms)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4548,9 +4547,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:AllowanceCharge)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:AllowanceCharge)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:AllowanceCharge)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:AllowanceCharge)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4562,9 +4561,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:TaxTotal/cbc:RoundingAmount)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:TaxTotal/cbc:RoundingAmount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:TaxTotal/cbc:RoundingAmount)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:TaxTotal/cbc:RoundingAmount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4576,9 +4575,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:TaxTotal/cbc:TaxEvidenceIndicator)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:TaxTotal/cbc:TaxEvidenceIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:TaxTotal/cbc:TaxEvidenceIndicator)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:TaxTotal/cbc:TaxEvidenceIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4590,9 +4589,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:TaxTotal/cac:TaxSubtotal)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:TaxTotal/cac:TaxSubtotal)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:TaxTotal/cac:TaxSubtotal)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:TaxTotal/cac:TaxSubtotal)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4604,9 +4603,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cbc:PackQuantity)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cbc:PackQuantity)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cbc:PackQuantity)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cbc:PackQuantity)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4618,9 +4617,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cbc:PackSizeNumeric)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cbc:PackSizeNumeric)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cbc:PackSizeNumeric)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cbc:PackSizeNumeric)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4632,9 +4631,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cbc:CatalogueIndicator)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cbc:CatalogueIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cbc:CatalogueIndicator)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cbc:CatalogueIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4646,9 +4645,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cbc:HazardousRiskIndicator)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cbc:HazardousRiskIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cbc:HazardousRiskIndicator)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cbc:HazardousRiskIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4660,9 +4659,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cbc:AdditionalInformation)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cbc:AdditionalInformation)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cbc:AdditionalInformation)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cbc:AdditionalInformation)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4674,9 +4673,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cbc:Keyword)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cbc:Keyword)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cbc:Keyword)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cbc:Keyword)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4688,9 +4687,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cbc:BrandName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cbc:BrandName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cbc:BrandName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cbc:BrandName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4702,9 +4701,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cbc:ModelName)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cbc:ModelName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cbc:ModelName)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cbc:ModelName)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4716,9 +4715,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification/cbc:ExtendedID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification/cbc:ExtendedID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification/cbc:ExtendedID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification/cbc:ExtendedID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4730,9 +4729,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification/cbc:PhysycalAttribute)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification/cbc:PhysycalAttribute)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification/cbc:PhysycalAttribute)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification/cbc:PhysycalAttribute)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4744,9 +4743,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification/cbc:MeasurementDimension)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification/cbc:MeasurementDimension)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification/cbc:MeasurementDimension)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification/cbc:MeasurementDimension)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4758,9 +4757,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification/cbc:IssuerParty)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification/cbc:IssuerParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification/cbc:IssuerParty)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:SellersItemIdentification/cbc:IssuerParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4772,9 +4771,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:ExtendedID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:ExtendedID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:ExtendedID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:ExtendedID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4786,9 +4785,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:PhysycalAttribute)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:PhysycalAttribute)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:PhysycalAttribute)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:PhysycalAttribute)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4800,9 +4799,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:MeasurementDimension)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:MeasurementDimension)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:MeasurementDimension)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:MeasurementDimension)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4814,9 +4813,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:IssuerParty)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:IssuerParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:IssuerParty)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:StandardItemIdentification/cbc:IssuerParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4828,9 +4827,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:BuyersItemIdentification)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:BuyersItemIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:BuyersItemIdentification)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:BuyersItemIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4842,9 +4841,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:CommodityClassification/cbc:NatureCargo)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:CommodityClassification/cbc:NatureCargo)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:CommodityClassification/cbc:NatureCargo)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:CommodityClassification/cbc:NatureCargo)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4856,9 +4855,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:CommodityClassification/cbc:CargoTypeCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:CommodityClassification/cbc:CargoTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:CommodityClassification/cbc:CargoTypeCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:CommodityClassification/cbc:CargoTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4870,9 +4869,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:CommodityClassification/cbc:CommodityCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:CommodityClassification/cbc:CommodityCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:CommodityClassification/cbc:CommodityCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:CommodityClassification/cbc:CommodityCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4884,9 +4883,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:ManufacturersItemIdentification)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:ManufacturersItemIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:ManufacturersItemIdentification)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:ManufacturersItemIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4898,9 +4897,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:CatalogueItemIdentification)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:CatalogueItemIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:CatalogueItemIdentification)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:CatalogueItemIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4912,9 +4911,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:AdditionalItemIdentification)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:AdditionalItemIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:AdditionalItemIdentification)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:AdditionalItemIdentification)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4926,9 +4925,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:CatalogueDocumentReference)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:CatalogueDocumentReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:CatalogueDocumentReference)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:CatalogueDocumentReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4940,9 +4939,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:ItemSpecificationDocumentReference)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:ItemSpecificationDocumentReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:ItemSpecificationDocumentReference)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:ItemSpecificationDocumentReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4954,9 +4953,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:OriginCountry)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:OriginCountry)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:OriginCountry)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:OriginCountry)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4968,9 +4967,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TransactionConditions)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TransactionConditions)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TransactionConditions)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TransactionConditions)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4982,9 +4981,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:HazardousItem)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:HazardousItem)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:HazardousItem)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:HazardousItem)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -4996,9 +4995,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:ManufacturerParty)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:ManufacturerParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:ManufacturerParty)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:ManufacturerParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5010,9 +5009,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:InformationContentProviderParty)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:InformationContentProviderParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:InformationContentProviderParty)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:InformationContentProviderParty)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5024,9 +5023,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:OriginAddress)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:OriginAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:OriginAddress)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:OriginAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5038,9 +5037,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:ItemInstance)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:ItemInstance)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:ItemInstance)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:ItemInstance)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5052,9 +5051,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:Name)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:Name)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5066,9 +5065,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:BaseUnitMeasure)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:BaseUnitMeasure)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:BaseUnitMeasure)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:BaseUnitMeasure)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5080,9 +5079,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbcPerUnitAmount)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbcPerUnitAmount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbcPerUnitAmount)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbcPerUnitAmount)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5094,9 +5093,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:TaxExemptionReasonCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:TaxExemptionReasonCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:TaxExemptionReasonCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:TaxExemptionReasonCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5108,9 +5107,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:TaxExemptionReason)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:TaxExemptionReason)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:TaxExemptionReason)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:TaxExemptionReason)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5122,9 +5121,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:TierRange)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:TierRange)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:TierRange)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:TierRange)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5136,9 +5135,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:TierRatePercent)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:TierRatePercent)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:TierRatePercent)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cbc:TierRatePercent)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5150,9 +5149,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:TaxScheme/cbc:Name)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:TaxScheme/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:TaxScheme/cbc:Name)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:TaxScheme/cbc:Name)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5164,9 +5163,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5178,9 +5177,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:TaxScheme/cbc:CurrencyCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:TaxScheme/cbc:CurrencyCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:TaxScheme/cbc:CurrencyCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:TaxScheme/cbc:CurrencyCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5192,9 +5191,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:TaxScheme/cac:JurisdictionAddress)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:TaxScheme/cac:JurisdictionAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:TaxScheme/cac:JurisdictionAddress)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:TaxScheme/cac:JurisdictionAddress)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5206,9 +5205,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:AdditionalProperty/cac:UsabilityPeriod)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:AdditionalProperty/cac:UsabilityPeriod)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:AdditionalProperty/cac:UsabilityPeriod)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:AdditionalProperty/cac:UsabilityPeriod)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5220,9 +5219,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:AdditionalProperty/cac:ItemPropertyGroup)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:AdditionalProperty/cac:ItemPropertyGroup)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:AdditionalProperty/cac:ItemPropertyGroup)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Item/cac:TaxCategory/cac:AdditionalProperty/cac:ItemPropertyGroup)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5234,9 +5233,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cbc:PriceChangeReason)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cbc:PriceChangeReason)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cbc:PriceChangeReason)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cbc:PriceChangeReason)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5248,9 +5247,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cbc:PriceTypeCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cbc:PriceTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cbc:PriceTypeCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cbc:PriceTypeCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5262,9 +5261,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cbc:PriceType)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cbc:PriceType)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cbc:PriceType)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cbc:PriceType)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5276,9 +5275,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cbc:OrderableUnitFactorRate)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cbc:OrderableUnitFactorRate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cbc:OrderableUnitFactorRate)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cbc:OrderableUnitFactorRate)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5290,9 +5289,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:ValidityPeriod)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:ValidityPeriod)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:ValidityPeriod)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:ValidityPeriod)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5304,9 +5303,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:PriceList)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:PriceList)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:PriceList)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:PriceList)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5318,9 +5317,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:ID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:ID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:ID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:ID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5332,9 +5331,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:AllowanceChargeReasonCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:AllowanceChargeReasonCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:AllowanceChargeReasonCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:AllowanceChargeReasonCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5346,9 +5345,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:PrepaidIndicator)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:PrepaidIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:PrepaidIndicator)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:PrepaidIndicator)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5360,9 +5359,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:SequenceNumeric)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:SequenceNumeric)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:SequenceNumeric)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:SequenceNumeric)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5374,9 +5373,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:AccountingCostCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:AccountingCostCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:AccountingCostCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:AccountingCostCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5388,9 +5387,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:AccountingCost)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:AccountingCost)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:AccountingCost)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cbc:AccountingCost)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5402,9 +5401,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:Name) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:Percent) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:BaseUnitMeasure) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:PerUnitAmount) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:TaxExemptionReasonCode) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:TaxExemptionReason) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:TierRange) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:TierRatePercent) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:Name) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:CurrencyCode) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cac:JurisdictionRegionAddress)&#10;) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:Name) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:Percent) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:BaseUnitMeasure) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:PerUnitAmount) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:TaxExemptionReasonCode) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:TaxExemptionReason) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:TierRange) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:TierRatePercent) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:Name) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:CurrencyCode) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cac:JurisdictionRegionAddress)&#10;) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:Name) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:Percent) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:BaseUnitMeasure) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:PerUnitAmount) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:TaxExemptionReasonCode) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:TaxExemptionReason) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:TierRange) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:TierRatePercent) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:Name) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:CurrencyCode) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cac:JurisdictionRegionAddress) ) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:Name) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:Percent) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:BaseUnitMeasure) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:PerUnitAmount) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:TaxExemptionReasonCode) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:TaxExemptionReason) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:TierRange) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cbc:TierRatePercent) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:Name) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:TaxTypeCode) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cbc:CurrencyCode) or not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxCategory/cac:TaxScheme/cac:JurisdictionRegionAddress) ) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5416,9 +5415,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxTotal)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxTotal)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxTotal)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:TaxTotal)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5430,9 +5429,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:PaymentMeans)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:PaymentMeans)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:PaymentMeans)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:Price/cac:AllowanceCharge/cac:PaymentMeans)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5444,9 +5443,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:OrderLineReference/cbc:UUID)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:OrderLineReference/cbc:UUID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:OrderLineReference/cbc:UUID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:OrderLineReference/cbc:UUID)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5458,9 +5457,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:OrderLineReference/cbc:LineStatusCode)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:OrderLineReference/cbc:LineStatusCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:OrderLineReference/cbc:LineStatusCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:OrderLineReference/cbc:LineStatusCode)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5472,9 +5471,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:CreditNoteLine/cac:OrderLineReference/cac:OrderReference)) or not ($Prerequisite1)" />
+      <xsl:when test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:OrderLineReference/cac:OrderReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:CreditNoteLine/cac:OrderLineReference/cac:OrderReference)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0') and not(cac:CreditNoteLine/cac:OrderLineReference/cac:OrderReference)) or not (contains(cbc:CustomizationID, 'urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0'))">
           <xsl:attribute name="flag">warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -5483,10 +5482,10 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M5" select="*|comment()|processing-instruction()" />
   </xsl:template>
-  <xsl:template match="text()" mode="M6" priority="-1" />
-  <xsl:template match="@*|node()" mode="M6" priority="-2">
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+  <xsl:template match="text()" mode="M5" priority="-1" />
+  <xsl:template match="@*|node()" mode="M5" priority="-2">
+    <xsl:apply-templates mode="M5" select="*|comment()|processing-instruction()" />
   </xsl:template>
 </xsl:stylesheet>

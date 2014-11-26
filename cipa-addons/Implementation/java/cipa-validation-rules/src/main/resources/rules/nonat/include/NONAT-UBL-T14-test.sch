@@ -41,10 +41,10 @@
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron tests for binding UBL and transaction T14-->
 <pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T14" id="UBL-T14">
-  <param name="NONAT-T14-R001" value="($Prerequisite1 and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ($Prerequisite1)" />
-  <param name="NONAT-T14-R002" value="($Prerequisite1 and cbc:CreditedQuantity) or not ($Prerequisite1)" />
-  <param name="NONAT-T14-R003" value="($Prerequisite1 and (cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
-  <param name="NONAT-T14-R004" value="($Prerequisite1 and (cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
+  <param name="NONAT-T14-R001" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
+  <param name="NONAT-T14-R002" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') and cbc:CreditedQuantity) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
+  <param name="NONAT-T14-R003" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') and (cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
+  <param name="NONAT-T14-R004" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO') and (cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'NO'))" />
   <param name="Supplier_Party" value="//cac:AccountingSupplierParty/cac:Party" />
   <param name="Credit_Note_Line" value="//cac:CreditNoteLine" />
   <param name="Customer_Party" value="//cac:AccountingCustomerParty/cac:Party" />

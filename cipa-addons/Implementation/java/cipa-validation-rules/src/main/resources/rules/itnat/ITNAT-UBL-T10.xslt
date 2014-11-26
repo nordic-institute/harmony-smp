@@ -205,26 +205,25 @@
         <xsl:attribute name="name">UBL-T10</xsl:attribute>
         <xsl:apply-templates />
       </svrl:active-pattern>
-      <xsl:apply-templates mode="M6" select="/" />
+      <xsl:apply-templates mode="M5" select="/" />
     </svrl:schematron-output>
   </xsl:template>
 
 <!--SCHEMATRON PATTERNS-->
 <svrl:text>ITNAT T10 bound to UBL</svrl:text>
-  <xsl:param name="Prerequisite1" select="(//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT')" />
 
 <!--PATTERN UBL-T10-->
 
 
 	<!--RULE -->
-<xsl:template match="//cac:DocumentReference" mode="M6" priority="1007">
+<xsl:template match="//cac:DocumentReference" mode="M5" priority="1007">
     <svrl:fired-rule context="//cac:DocumentReference" />
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and (cbc:ID and cbc:IssueDate and cbc:DocumentType)) or not ($Prerequisite1)" />
+      <xsl:when test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and (cbc:ID and cbc:IssueDate and cbc:DocumentType)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (cbc:ID and cbc:IssueDate and cbc:DocumentType)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and (cbc:ID and cbc:IssueDate and cbc:DocumentType)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))">
           <xsl:attribute name="flag">Fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -233,18 +232,18 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M5" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:TaxRepresentativeParty" mode="M6" priority="1006">
+<xsl:template match="//cac:TaxRepresentativeParty" mode="M5" priority="1006">
     <svrl:fired-rule context="//cac:TaxRepresentativeParty" />
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and (cac:PartyTaxScheme/cbc:CompanyID[@schemeID = 'IT:VAT'] and cac:PartyName/cbc:Name)) or not ($Prerequisite1)" />
+      <xsl:when test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and (cac:PartyTaxScheme/cbc:CompanyID[@schemeID = 'IT:VAT'] and cac:PartyName/cbc:Name)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (cac:PartyTaxScheme/cbc:CompanyID[@schemeID = 'IT:VAT'] and cac:PartyName/cbc:Name)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and (cac:PartyTaxScheme/cbc:CompanyID[@schemeID = 'IT:VAT'] and cac:PartyName/cbc:Name)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))">
           <xsl:attribute name="flag">Warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -253,18 +252,18 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M5" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:AccountingSupplierParty/cac:Party" mode="M6" priority="1005">
+<xsl:template match="//cac:AccountingSupplierParty/cac:Party" mode="M5" priority="1005">
     <svrl:fired-rule context="//cac:AccountingSupplierParty/cac:Party" />
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and not(cac:PartyLegalEntity/cbc:CompanyID[@schemeID = 'IT:CC']) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentity) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentityCode)) or not ($Prerequisite1)" />
+      <xsl:when test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and not(cac:PartyLegalEntity/cbc:CompanyID[@schemeID = 'IT:CC']) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentity) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentityCode)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and not(cac:PartyLegalEntity/cbc:CompanyID[@schemeID = 'IT:CC']) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentity) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentityCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and not(cac:PartyLegalEntity/cbc:CompanyID[@schemeID = 'IT:CC']) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentity) or (cac:PartyLegalEntity[cbc:CompanyID/@schemeID = 'IT:CC']/cac:CorporateRegistrationScheme/cac:JurisdictionRegionAddress/cbc:CountrySubentityCode)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))">
           <xsl:attribute name="flag">Warning</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -273,18 +272,18 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M5" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress" mode="M6" priority="1004">
+<xsl:template match="//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress" mode="M5" priority="1004">
     <svrl:fired-rule context="//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress" />
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and (cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
+      <xsl:when test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and (cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and (cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))">
           <xsl:attribute name="flag">Fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -293,18 +292,18 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M5" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="/ubl:Invoice" mode="M6" priority="1003">
+<xsl:template match="/ubl:Invoice" mode="M5" priority="1003">
     <svrl:fired-rule context="/ubl:Invoice" />
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and cbc:InvoiceTypeCode) or not ($Prerequisite1)" />
+      <xsl:when test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and cbc:InvoiceTypeCode) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and cbc:InvoiceTypeCode) or not ($Prerequisite1)">
+        <svrl:failed-assert test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and cbc:InvoiceTypeCode) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))">
           <xsl:attribute name="flag">Fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -313,18 +312,18 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M5" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:DespatchDocumentReference" mode="M6" priority="1002">
+<xsl:template match="//cac:DespatchDocumentReference" mode="M5" priority="1002">
     <svrl:fired-rule context="//cac:DespatchDocumentReference" />
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and (cbc:ID and cbc:IssueDate and cbc:DocumentType)) or not ($Prerequisite1)" />
+      <xsl:when test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and (cbc:ID and cbc:IssueDate and cbc:DocumentType)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (cbc:ID and cbc:IssueDate and cbc:DocumentType)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and (cbc:ID and cbc:IssueDate and cbc:DocumentType)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))">
           <xsl:attribute name="flag">Fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -333,18 +332,18 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M5" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:InvoiceLine" mode="M6" priority="1001">
+<xsl:template match="//cac:InvoiceLine" mode="M5" priority="1001">
     <svrl:fired-rule context="//cac:InvoiceLine" />
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and (cbc:InvoicedQuantity) and (cbc:InvoicedQuantity/@unitCode)) or not ($Prerequisite1)" />
+      <xsl:when test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and (cbc:InvoicedQuantity) and (cbc:InvoicedQuantity/@unitCode)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (cbc:InvoicedQuantity) and (cbc:InvoicedQuantity/@unitCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and (cbc:InvoicedQuantity) and (cbc:InvoicedQuantity/@unitCode)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))">
           <xsl:attribute name="flag">Fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -356,9 +355,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and (cac:Price/cbc:PriceAmount)) or not ($Prerequisite1)" />
+      <xsl:when test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and (cac:Price/cbc:PriceAmount)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (cac:Price/cbc:PriceAmount)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and (cac:Price/cbc:PriceAmount)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))">
           <xsl:attribute name="flag">Fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -367,18 +366,18 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M5" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress" mode="M6" priority="1000">
+<xsl:template match="//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress" mode="M5" priority="1000">
     <svrl:fired-rule context="//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress" />
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and (cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
+      <xsl:when test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and (cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT') and (cbc:StreetName and cbc:CityName and cbc:PostalZone and cbc:CountrySubentity and cac:Country/cbc:IdentificationCode)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'IT'))">
           <xsl:attribute name="flag">Fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -387,10 +386,10 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M5" select="*|comment()|processing-instruction()" />
   </xsl:template>
-  <xsl:template match="text()" mode="M6" priority="-1" />
-  <xsl:template match="@*|node()" mode="M6" priority="-2">
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+  <xsl:template match="text()" mode="M5" priority="-1" />
+  <xsl:template match="@*|node()" mode="M5" priority="-2">
+    <xsl:apply-templates mode="M5" select="*|comment()|processing-instruction()" />
   </xsl:template>
 </xsl:stylesheet>

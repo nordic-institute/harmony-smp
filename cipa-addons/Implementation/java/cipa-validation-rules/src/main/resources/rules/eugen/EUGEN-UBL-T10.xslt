@@ -205,7 +205,7 @@
         <xsl:attribute name="name">Codes-T10</xsl:attribute>
         <xsl:apply-templates />
       </svrl:active-pattern>
-      <xsl:apply-templates mode="M7" select="/" />
+      <xsl:apply-templates mode="M6" select="/" />
       <svrl:active-pattern>
         <xsl:attribute name="document">
           <xsl:value-of select="document-uri(/)" />
@@ -214,19 +214,18 @@
         <xsl:attribute name="name">UBL-T10</xsl:attribute>
         <xsl:apply-templates />
       </svrl:active-pattern>
-      <xsl:apply-templates mode="M8" select="/" />
+      <xsl:apply-templates mode="M7" select="/" />
     </svrl:schematron-output>
   </xsl:template>
 
 <!--SCHEMATRON PATTERNS-->
 <svrl:text>EUGEN T10 bound to UBL</svrl:text>
-  <xsl:param name="Prerequisite1" select="(//cac:TaxCategory/cbc:ID) = 'AE'" />
 
 <!--PATTERN Codes-T10-->
 
 
 	<!--RULE -->
-<xsl:template match="cac:FinancialInstitution/cbc:ID/@schemeID" mode="M7" priority="1007">
+<xsl:template match="cac:FinancialInstitution/cbc:ID/@schemeID" mode="M6" priority="1007">
     <svrl:fired-rule context="cac:FinancialInstitution/cbc:ID/@schemeID" />
 
 		<!--ASSERT -->
@@ -242,11 +241,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="cac:PostalAddress/cbc:ID/@schemeID" mode="M7" priority="1006">
+<xsl:template match="cac:PostalAddress/cbc:ID/@schemeID" mode="M6" priority="1006">
     <svrl:fired-rule context="cac:PostalAddress/cbc:ID/@schemeID" />
 
 		<!--ASSERT -->
@@ -262,11 +261,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="cac:Delivery/cac:DeliveryLocation/cbc:ID/@schemeID" mode="M7" priority="1005">
+<xsl:template match="cac:Delivery/cac:DeliveryLocation/cbc:ID/@schemeID" mode="M6" priority="1005">
     <svrl:fired-rule context="cac:Delivery/cac:DeliveryLocation/cbc:ID/@schemeID" />
 
 		<!--ASSERT -->
@@ -282,11 +281,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="cac:Item/cac:StandardItemIdentification/cbc:ID/@schemeID" mode="M7" priority="1004">
+<xsl:template match="cac:Item/cac:StandardItemIdentification/cbc:ID/@schemeID" mode="M6" priority="1004">
     <svrl:fired-rule context="cac:Item/cac:StandardItemIdentification/cbc:ID/@schemeID" />
 
 		<!--ASSERT -->
@@ -302,11 +301,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode/@listID" mode="M7" priority="1003">
+<xsl:template match="cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode/@listID" mode="M6" priority="1003">
     <svrl:fired-rule context="cac:Item/cac:CommodityClassification/cbc:ItemClassificationCode/@listID" />
 
 		<!--ASSERT -->
@@ -322,11 +321,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="cbc:TaxExemptionReasonCode" mode="M7" priority="1002">
+<xsl:template match="cbc:TaxExemptionReasonCode" mode="M6" priority="1002">
     <svrl:fired-rule context="cbc:TaxExemptionReasonCode" />
 
 		<!--ASSERT -->
@@ -342,11 +341,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="cac:PartyIdentification/cbc:ID/@schemeID" mode="M7" priority="1001">
+<xsl:template match="cac:PartyIdentification/cbc:ID/@schemeID" mode="M6" priority="1001">
     <svrl:fired-rule context="cac:PartyIdentification/cbc:ID/@schemeID" />
 
 		<!--ASSERT -->
@@ -362,11 +361,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="cbc:EndpointID/@schemeID" mode="M7" priority="1000">
+<xsl:template match="cbc:EndpointID/@schemeID" mode="M6" priority="1000">
     <svrl:fired-rule context="cbc:EndpointID/@schemeID" />
 
 		<!--ASSERT -->
@@ -382,18 +381,18 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
   </xsl:template>
-  <xsl:template match="text()" mode="M7" priority="-1" />
-  <xsl:template match="@*|node()" mode="M7" priority="-2">
-    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
+  <xsl:template match="text()" mode="M6" priority="-1" />
+  <xsl:template match="@*|node()" mode="M6" priority="-2">
+    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 <!--PATTERN UBL-T10-->
 
 
 	<!--RULE -->
-<xsl:template match="//cac:TaxCategory" mode="M8" priority="1011">
+<xsl:template match="//cac:TaxCategory" mode="M7" priority="1011">
     <svrl:fired-rule context="//cac:TaxCategory" />
 
 		<!--ASSERT -->
@@ -409,11 +408,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M8" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:AllowanceCharge" mode="M8" priority="1010">
+<xsl:template match="//cac:AllowanceCharge" mode="M7" priority="1010">
     <svrl:fired-rule context="//cac:AllowanceCharge" />
 
 		<!--ASSERT -->
@@ -485,11 +484,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M8" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:AccountingCustomerParty/cac:Party" mode="M8" priority="1009">
+<xsl:template match="//cac:AccountingCustomerParty/cac:Party" mode="M7" priority="1009">
     <svrl:fired-rule context="//cac:AccountingCustomerParty/cac:Party" />
 
 		<!--ASSERT -->
@@ -505,11 +504,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M8" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:LegalMonetaryTotal" mode="M8" priority="1008">
+<xsl:template match="//cac:LegalMonetaryTotal" mode="M7" priority="1008">
     <svrl:fired-rule context="//cac:LegalMonetaryTotal" />
 
 		<!--ASSERT -->
@@ -525,11 +524,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M8" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:Delivery/cac:DeliveryLocation/cac:Address" mode="M8" priority="1007">
+<xsl:template match="//cac:Delivery/cac:DeliveryLocation/cac:Address" mode="M7" priority="1007">
     <svrl:fired-rule context="//cac:Delivery/cac:DeliveryLocation/cac:Address" />
 
 		<!--ASSERT -->
@@ -545,11 +544,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M8" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:AccountingSupplierParty/cac:Party" mode="M8" priority="1006">
+<xsl:template match="//cac:AccountingSupplierParty/cac:Party" mode="M7" priority="1006">
     <svrl:fired-rule context="//cac:AccountingSupplierParty/cac:Party" />
 
 		<!--ASSERT -->
@@ -565,11 +564,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M8" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="/ubl:Invoice" mode="M8" priority="1005">
+<xsl:template match="/ubl:Invoice" mode="M7" priority="1005">
     <svrl:fired-rule context="/ubl:Invoice" />
 
 		<!--ASSERT -->
@@ -602,9 +601,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and starts-with(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID,//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
+      <xsl:when test="((//cac:TaxCategory/cbc:ID) = 'AE' and starts-with(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID,//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ((//cac:TaxCategory/cbc:ID) = 'AE')" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and starts-with(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID,//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="((//cac:TaxCategory/cbc:ID) = 'AE' and starts-with(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID,//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ((//cac:TaxCategory/cbc:ID) = 'AE')">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -630,9 +629,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and (//cbc:TaxExclusiveAmount = //cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cbc:ID='AE']/cbc:TaxableAmount)) or not ($Prerequisite1)" />
+      <xsl:when test="((//cac:TaxCategory/cbc:ID) = 'AE' and (//cbc:TaxExclusiveAmount = //cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cbc:ID='AE']/cbc:TaxableAmount)) or not ((//cac:TaxCategory/cbc:ID) = 'AE')" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and (//cbc:TaxExclusiveAmount = //cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cbc:ID='AE']/cbc:TaxableAmount)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="((//cac:TaxCategory/cbc:ID) = 'AE' and (//cbc:TaxExclusiveAmount = //cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cbc:ID='AE']/cbc:TaxableAmount)) or not ((//cac:TaxCategory/cbc:ID) = 'AE')">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -644,9 +643,9 @@
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and //cac:TaxTotal/cbc:TaxAmount = 0) or not ($Prerequisite1)" />
+      <xsl:when test="((//cac:TaxCategory/cbc:ID) = 'AE' and //cac:TaxTotal/cbc:TaxAmount = 0) or not ((//cac:TaxCategory/cbc:ID) = 'AE')" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and //cac:TaxTotal/cbc:TaxAmount = 0) or not ($Prerequisite1)">
+        <svrl:failed-assert test="((//cac:TaxCategory/cbc:ID) = 'AE' and //cac:TaxTotal/cbc:TaxAmount = 0) or not ((//cac:TaxCategory/cbc:ID) = 'AE')">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -669,11 +668,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M8" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:InvoicePeriod" mode="M8" priority="1004">
+<xsl:template match="//cac:InvoicePeriod" mode="M7" priority="1004">
     <svrl:fired-rule context="//cac:InvoicePeriod" />
 
 		<!--ASSERT -->
@@ -703,11 +702,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M8" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:PaymentMeans" mode="M8" priority="1003">
+<xsl:template match="//cac:PaymentMeans" mode="M7" priority="1003">
     <svrl:fired-rule context="//cac:PaymentMeans" />
 
 		<!--ASSERT -->
@@ -723,11 +722,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M8" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:Item/cac:ClassifiedTaxCategory" mode="M8" priority="1002">
+<xsl:template match="//cac:Item/cac:ClassifiedTaxCategory" mode="M7" priority="1002">
     <svrl:fired-rule context="//cac:Item/cac:ClassifiedTaxCategory" />
 
 		<!--ASSERT -->
@@ -743,11 +742,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M8" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:InvoiceLine" mode="M8" priority="1001">
+<xsl:template match="//cac:InvoiceLine" mode="M7" priority="1001">
     <svrl:fired-rule context="//cac:InvoiceLine" />
 
 		<!--ASSERT -->
@@ -763,11 +762,11 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M8" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="//cac:TaxSubtotal" mode="M8" priority="1000">
+<xsl:template match="//cac:TaxSubtotal" mode="M7" priority="1000">
     <svrl:fired-rule context="//cac:TaxSubtotal" />
 
 		<!--ASSERT -->
@@ -783,10 +782,10 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M8" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
   </xsl:template>
-  <xsl:template match="text()" mode="M8" priority="-1" />
-  <xsl:template match="@*|node()" mode="M8" priority="-2">
-    <xsl:apply-templates mode="M8" select="*|comment()|processing-instruction()" />
+  <xsl:template match="text()" mode="M7" priority="-1" />
+  <xsl:template match="@*|node()" mode="M7" priority="-2">
+    <xsl:apply-templates mode="M7" select="*|comment()|processing-instruction()" />
   </xsl:template>
 </xsl:stylesheet>

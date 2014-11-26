@@ -48,6 +48,7 @@ import java.util.TreeSet;
 
 import javax.annotation.Nonnull;
 
+import oasis.names.specification.ubl.schema.xsd.creditnote_2.CreditNoteType;
 import oasis.names.specification.ubl.schema.xsd.invoice_2.InvoiceType;
 import oasis.names.specification.ubl.schema.xsd.order_2.OrderType;
 
@@ -117,6 +118,7 @@ public final class FuncTestDocumentValidationError {
       // Get the UBL XML file
       final IReadableResource aTestFile = aTestDoc.getResource ();
       final Document aTestFileDoc = DOMReader.readXMLDOM (aTestFile);
+      assertNotNull (aTestFile.getPath () + " is not XML", aTestFileDoc);
 
       // Ensure the UBL file validates against the scheme
       final OrderType aUBLOrder = UBL20Reader.readOrder (aTestFileDoc);
@@ -164,6 +166,7 @@ public final class FuncTestDocumentValidationError {
       // Get the UBL XML file
       final IReadableResource aTestFile = aTestDoc.getResource ();
       final Document aTestFileDoc = DOMReader.readXMLDOM (aTestFile);
+      assertNotNull (aTestFile.getPath () + " is not XML", aTestFileDoc);
 
       // Ensure the UBL file validates against the scheme
       final InvoiceType aUBLInvoice = UBL20Reader.readInvoice (aTestFileDoc);
@@ -208,6 +211,7 @@ public final class FuncTestDocumentValidationError {
       // Get the UBL XML file
       final IReadableResource aTestFile = aTestDoc.getResource ();
       final Document aTestFileDoc = DOMReader.readXMLDOM (aTestFile);
+      assertNotNull (aTestFile.getPath () + " is not XML", aTestFileDoc);
 
       if (true)
         s_aLogger.info (aTestFile.getPath ());
@@ -248,6 +252,60 @@ public final class FuncTestDocumentValidationError {
       catch (final OutOfMemoryError ex) {
         // Continue with next. May happen with
         // /test-invoices/error/atgov-t10-fail-r014.xml
+        s_aLogger.warn ("OufOfMemoryError for " + aTestFile.getPath () + " - continuing with next file!");
+      }
+    }
+  }
+
+  @Test
+  public void testReadCreditNotesErrorAT () throws SAXException {
+    final IValidationTransaction aVT = ValidationTransaction.createUBLTransaction (ETransaction.T14);
+    // For all available orders
+    final Locale aCountry = CountryCache.getInstance ().getCountry ("AT");
+    for (final TestResource aTestDoc : TestFiles.getErrorFiles (ETestFileType.CREDITNOTE, aCountry)) {
+      // Get the UBL XML file
+      final IReadableResource aTestFile = aTestDoc.getResource ();
+      final Document aTestFileDoc = DOMReader.readXMLDOM (aTestFile);
+      assertNotNull (aTestFile.getPath () + " is not XML", aTestFileDoc);
+
+      if (true)
+        s_aLogger.info (aTestFile.getPath ());
+
+      // Ensure the UBL file validates against the scheme
+      try {
+        final CreditNoteType aUBLCreditNote = UBL20Reader.readCreditNote (aTestFileDoc);
+        assertNotNull (aUBLCreditNote);
+
+        final Set <AbstractErrorDefinition> aErrCodes = new HashSet <AbstractErrorDefinition> ();
+
+        // Test the country-dependent invoice layers
+        for (final IValidationArtefact eArtefact : EValidationArtefact.getAllMatchingArtefacts (null,
+                                                                                                EValidationDocumentType.CREDIT_NOTE,
+                                                                                                aCountry)) {
+          SchematronOutputType aSVRL;
+          aSVRL = SchematronHelper.applySchematron (new SchematronResourcePure (eArtefact.getValidationSchematronResource (aVT)),
+                                                    aTestFileDoc);
+          assertNotNull (aSVRL);
+
+          if (true) {
+            // For debugging purposes: print the SVRL
+            s_aLogger.info (SVRLWriter.createXMLString (aSVRL));
+          }
+
+          aErrCodes.addAll (_getAllFailedAssertionErrorCode (aSVRL));
+        }
+        final Set <AbstractErrorDefinition> aCopy = new TreeSet <AbstractErrorDefinition> (aErrCodes);
+        for (final AbstractErrorDefinition aExpectedErrCode : aTestDoc.getAllExpectedErrors ())
+          assertTrue (aTestDoc.getFilename () +
+                          " expected " +
+                          aExpectedErrCode.toString () +
+                          " but having " +
+                          aCopy.toString (),
+                      aCopy.remove (aExpectedErrCode));
+        assertTrue (aTestDoc.getFilename () + " also indicated: " + aCopy, aCopy.isEmpty ());
+      }
+      catch (final OutOfMemoryError ex) {
+        // Continue with next.
         s_aLogger.warn ("OufOfMemoryError for " + aTestFile.getPath () + " - continuing with next file!");
       }
     }

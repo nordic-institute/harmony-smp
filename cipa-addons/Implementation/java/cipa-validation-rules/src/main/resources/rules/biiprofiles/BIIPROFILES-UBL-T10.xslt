@@ -205,19 +205,18 @@
         <xsl:attribute name="name">UBL-T10</xsl:attribute>
         <xsl:apply-templates />
       </svrl:active-pattern>
-      <xsl:apply-templates mode="M6" select="/" />
+      <xsl:apply-templates mode="M5" select="/" />
     </svrl:schematron-output>
   </xsl:template>
 
 <!--SCHEMATRON PATTERNS-->
 <svrl:text>BIIPROFILES T10 bound to UBL</svrl:text>
-  <xsl:param name="Prerequisite1" select="//cbc:ProfileID = 'urn:www.cenbii.eu:profile:bii06:ver1.0'" />
 
 <!--PATTERN UBL-T10-->
 
 
 	<!--RULE -->
-<xsl:template match="//cbc:ProfileID" mode="M6" priority="1001">
+<xsl:template match="//cbc:ProfileID" mode="M5" priority="1001">
     <svrl:fired-rule context="//cbc:ProfileID" />
 
 		<!--ASSERT -->
@@ -233,18 +232,18 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M5" select="*|comment()|processing-instruction()" />
   </xsl:template>
 
 	<!--RULE -->
-<xsl:template match="/ubl:Invoice" mode="M6" priority="1000">
+<xsl:template match="/ubl:Invoice" mode="M5" priority="1000">
     <svrl:fired-rule context="/ubl:Invoice" />
 
 		<!--ASSERT -->
 <xsl:choose>
-      <xsl:when test="($Prerequisite1 and local-name(/*) = 'Invoice' and (//cac:OrderReference/cbc:ID)) or not ($Prerequisite1)" />
+      <xsl:when test="(//cbc:ProfileID = 'urn:www.cenbii.eu:profile:bii06:ver1.0' and local-name(/*) = 'Invoice' and (//cac:OrderReference/cbc:ID)) or not (//cbc:ProfileID = 'urn:www.cenbii.eu:profile:bii06:ver1.0')" />
       <xsl:otherwise>
-        <svrl:failed-assert test="($Prerequisite1 and local-name(/*) = 'Invoice' and (//cac:OrderReference/cbc:ID)) or not ($Prerequisite1)">
+        <svrl:failed-assert test="(//cbc:ProfileID = 'urn:www.cenbii.eu:profile:bii06:ver1.0' and local-name(/*) = 'Invoice' and (//cac:OrderReference/cbc:ID)) or not (//cbc:ProfileID = 'urn:www.cenbii.eu:profile:bii06:ver1.0')">
           <xsl:attribute name="flag">fatal</xsl:attribute>
           <xsl:attribute name="location">
             <xsl:apply-templates mode="schematron-select-full-path" select="." />
@@ -253,10 +252,10 @@
         </svrl:failed-assert>
       </xsl:otherwise>
     </xsl:choose>
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+    <xsl:apply-templates mode="M5" select="*|comment()|processing-instruction()" />
   </xsl:template>
-  <xsl:template match="text()" mode="M6" priority="-1" />
-  <xsl:template match="@*|node()" mode="M6" priority="-2">
-    <xsl:apply-templates mode="M6" select="*|comment()|processing-instruction()" />
+  <xsl:template match="text()" mode="M5" priority="-1" />
+  <xsl:template match="@*|node()" mode="M5" priority="-2">
+    <xsl:apply-templates mode="M5" select="*|comment()|processing-instruction()" />
   </xsl:template>
 </xsl:stylesheet>

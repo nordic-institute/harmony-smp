@@ -41,9 +41,9 @@
 <!--This file is generated automatically! Do NOT edit!-->
 <!--Schematron tests for binding UBL and transaction T10-->
 <pattern xmlns="http://purl.oclc.org/dsdl/schematron" is-a="T10" id="UBL-T10">
-  <param name="DKNAT-T10-R001" value="($Prerequisite1 and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ($Prerequisite1)" />
-  <param name="DKNAT-T10-R002" value="($Prerequisite1 and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ($Prerequisite1)" />
-  <param name="DKNAT-T10-R003" value="($Prerequisite1 and (cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
+  <param name="DKNAT-T10-R001" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'DK') and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'DK'))" />
+  <param name="DKNAT-T10-R002" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'DK') and (cac:PartyLegalEntity/cbc:CompanyID != '')) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'DK'))" />
+  <param name="DKNAT-T10-R003" value="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'DK') and (cac:PostalAddress/cbc:StreetName and cac:PostalAddress/cbc:CityName and cac:PostalAddress/cbc:PostalZone and cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'DK'))" />
   <param name="Supplier_Party" value="//cac:AccountingSupplierParty/cac:Party" />
   <param name="Customer_Party" value="//cac:AccountingCustomerParty/cac:Party" />
 </pattern>

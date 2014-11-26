@@ -45,7 +45,6 @@
   <ns prefix="cbc" uri="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" />
   <ns prefix="cac" uri="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" />
   <ns prefix="ubl" uri="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" />
-  <let name="Prerequisite1" value="//cbc:ProfileID = 'urn:www.cenbii.eu:profile:bii06:ver1.0'" />
   <phase id="BIIPROFILES_T10_phase">
     <active pattern="UBL-T10" />
   </phase>

@@ -108,7 +108,7 @@ public final class SchematronCreator {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SchematronCreator.class);
 
   private static final String NS_SCHEMATRON = CSchematron.NAMESPACE_SCHEMATRON;
-  private static final boolean USE_LETS = true;
+  private static final boolean USE_LETS = false;
 
   private final PrerequesiteCache m_aPrereqCache = new PrerequesiteCache ();
 
@@ -274,9 +274,9 @@ public final class SchematronCreator {
         final IMicroElement eParam = ePattern.appendElement (NS_SCHEMATRON, "param");
         eParam.setAttribute ("name", aRuleParam.getRuleID ());
         if (USE_LETS)
-          eParam.setAttribute ("value", aRuleParam.getTestWithPrequisiteParameter ());
+          eParam.setAttribute ("value", aRuleParam.getTestWithPrerequisiteParameter ());
         else
-          eParam.setAttribute ("value", aRuleParam.getTestWithPrequisiteInline ());
+          eParam.setAttribute ("value", aRuleParam.getTestWithPrerequisiteInline ());
       }
       if (SimpleFileIO.writeFile (aSCHFile, MicroWriter.getXMLString (aDoc), XMLWriterSettings.DEFAULT_XML_CHARSET_OBJ)
                       .isFailure ())

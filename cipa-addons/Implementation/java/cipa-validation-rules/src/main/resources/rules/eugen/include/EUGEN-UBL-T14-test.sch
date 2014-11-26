@@ -48,10 +48,10 @@
   <param name="EUGEN-T14-R007" value="((cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT']/cbc:TaxAmount) and (cac:AccountingSupplierParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID) or not((cac:TaxTotal[cac:TaxSubtotal/cac:TaxCategory/cac:TaxScheme/cbc:ID = 'VAT'])))" />
   <param name="EUGEN-T14-R012" value="(parent::cac:AllowanceCharge) or (cbc:ID and cbc:Percent) or (cbc:ID = 'AE')" />
   <param name="EUGEN-T14-R013" value="(number(cac:TaxCategory/cbc:Percent) = 0 and (cac:TaxCategory/cbc:TaxExemptionReason or cac:TaxCategory/cbc:TaxExemptionReasonCode)) or  (number(cac:TaxCategory/cbc:Percent) !=0)" />
-  <param name="EUGEN-T14-R015" value="($Prerequisite1 and starts-with(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID,//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ($Prerequisite1)" />
+  <param name="EUGEN-T14-R015" value="((//cac:TaxCategory/cbc:ID) = 'AE'  and starts-with(//cac:AccountingCustomerParty/cac:Party/cac:PartyTaxScheme/cbc:CompanyID,//cac:AccountingCustomerParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode)) or not ((//cac:TaxCategory/cbc:ID) = 'AE' )" />
   <param name="EUGEN-T14-R016" value="(((//cac:TaxCategory/cbc:ID) = 'AE')  and not((//cac:TaxCategory/cbc:ID) != 'AE' )) or not((//cac:TaxCategory/cbc:ID) = 'AE') or not(//cac:TaxCategory)" />
-  <param name="EUGEN-T14-R017" value="($Prerequisite1 and (//cbc:TaxExclusiveAmount = //cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cbc:ID='AE']/cbc:TaxableAmount)) or not ($Prerequisite1)" />
-  <param name="EUGEN-T14-R018" value="($Prerequisite1 and //cac:TaxTotal/cbc:TaxAmount = 0) or not ($Prerequisite1)" />
+  <param name="EUGEN-T14-R017" value="((//cac:TaxCategory/cbc:ID) = 'AE'  and (//cbc:TaxExclusiveAmount = //cac:TaxTotal/cac:TaxSubtotal[cac:TaxCategory/cbc:ID='AE']/cbc:TaxableAmount)) or not ((//cac:TaxCategory/cbc:ID) = 'AE' )" />
+  <param name="EUGEN-T14-R018" value="((//cac:TaxCategory/cbc:ID) = 'AE'  and //cac:TaxTotal/cbc:TaxAmount = 0) or not ((//cac:TaxCategory/cbc:ID) = 'AE' )" />
   <param name="EUGEN-T14-R019" value="number(cbc:PayableAmount) >= 0" />
   <param name="EUGEN-T14-R020" value="(cbc:StartDate)" />
   <param name="EUGEN-T14-R021" value="(cbc:EndDate)" />
