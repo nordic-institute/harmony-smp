@@ -10,6 +10,7 @@
   <version>2.2.4-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>cipa-test-files</name>
+  <description>UBL 2.0 test files for BIS V1</description>
 
   <scm>
     <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-test-files</connection>
