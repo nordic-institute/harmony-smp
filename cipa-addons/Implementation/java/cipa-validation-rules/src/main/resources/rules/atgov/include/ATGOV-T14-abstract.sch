@@ -49,7 +49,6 @@
     <assert flag="fatal" test="$ATGOV-T14-R013">[ATGOV-T14-R013]-A maximum of 200 attachments are allowed within a single document.</assert>
     <assert flag="fatal" test="$ATGOV-T14-R014">[ATGOV-T14-R014]-The maximum size of all attachments after Base64 decoding must not exceed 15 Megabytes.</assert>
     <assert flag="fatal" test="$ATGOV-T14-R016">[ATGOV-T14-R016]-The payable amount of an invoice must be smaller or equal than 999999999.99.</assert>
-    <assert flag="fatal" test="$ATGOV-T14-R100">[ATGOV-T14-R100]-A delivery date or an invoicing period must be provided</assert>
   </rule>
   <rule context="$Supplier">
     <assert flag="fatal" test="$ATGOV-T14-R001">[ATGOV-T14-R001]-The email address of the biller is mandatory.</assert>
