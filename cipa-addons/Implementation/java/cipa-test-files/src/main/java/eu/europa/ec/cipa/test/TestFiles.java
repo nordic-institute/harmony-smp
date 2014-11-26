@@ -380,6 +380,154 @@ public final class TestFiles {
                                                                                                   new Warning ("BIICORE-T10-R266"),
                                                                                                   new Warning ("BIICORE-T10-R323"),
                                                                                                   new Warning ("EUGEN-T10-R003")) };
+  private static final TestDocument [] CREDITNOTES_AT_ERROR = new TestDocument [] { new TestDocument ("atnat-t14-fail-r001.xml",
+                                                                                                      new FatalError ("ATNAT-T14-R001"),
+                                                                                                      new Warning ("BIICORE-T14-R051"),
+                                                                                                      new Warning ("ATGOV-T14-R005")),
+                                                                                   new TestDocument ("atnat-t14-fail-r002.xml",
+                                                                                                     new FatalError ("ATNAT-T14-R002"),
+                                                                                                     new Warning ("BIICORE-T14-R051"),
+                                                                                                     new Warning ("ATGOV-T14-R005")),
+                                                                                   new TestDocument ("atnat-t14-fail-r003.xml",
+                                                                                                     new FatalError ("ATNAT-T14-R003"),
+                                                                                                     new Warning ("BIICORE-T14-R051"),
+                                                                                                     new Warning ("ATGOV-T14-R005")),
+                                                                                   new TestDocument ("atnat-t14-fail-r004.xml",
+                                                                                                     new FatalError ("ATNAT-T14-R001"),
+                                                                                                     new FatalError ("ATNAT-T14-R004"),
+                                                                                                     new Warning ("BIICORE-T14-R051"),
+                                                                                                     new FatalError ("EUGEN-T14-R015"),
+                                                                                                     new FatalError ("EUGEN-T14-R016"),
+                                                                                                     new FatalError ("EUGEN-T14-R017"),
+                                                                                                     new FatalError ("EUGEN-T14-R018"),
+                                                                                                     new Warning ("ATGOV-T14-R005")),
+                                                                                   new TestDocument ("atnat-t14-fail-r005.xml",
+                                                                                                     new FatalError ("ATNAT-T14-R005"),
+                                                                                                     new Warning ("BIICORE-T14-R051"),
+                                                                                                     new FatalError ("EUGEN-T14-R007"),
+                                                                                                     new Warning ("ATGOV-T14-R005")),
+                                                                                   new TestDocument ("atnat-t14-fail-r006.xml",
+                                                                                                     new FatalError ("ATNAT-T14-R006"),
+                                                                                                     new Warning ("BIICORE-T14-R051"),
+                                                                                                     new FatalError ("EUGEN-T14-R016"),
+                                                                                                     new FatalError ("EUGEN-T14-R017"),
+                                                                                                     new FatalError ("EUGEN-T14-R018"),
+                                                                                                     new Warning ("ATGOV-T14-R005")),
+                                                                                   new TestDocument ("atgov-t14-fail-r001.xml",
+                                                                                                     new FatalError ("ATGOV-T14-R001"),
+                                                                                                     new Warning ("BIICORE-T14-R051"),
+                                                                                                     new Warning ("ATGOV-T14-R005")),
+                                                                                   new TestDocument ("atgov-t14-fail-r002.xml",
+                                                                                                     new FatalError ("ATGOV-T14-R002"),
+                                                                                                     new Warning ("BIICORE-T14-R051"),
+                                                                                                     new Warning ("ATGOV-T14-R005")),
+                                                                                   new TestDocument ("atgov-t14-fail-r003.xml",
+                                                                                                     new FatalError ("ATGOV-T14-R003"),
+                                                                                                     new Warning ("BIICORE-T14-R051"),
+                                                                                                     new Warning ("ATGOV-T14-R005")),
+                                                                                   // new
+                                                                                   // TestDocument
+                                                                                   // ("atgov-t14-fail-r004.xml",
+                                                                                   // new
+                                                                                   // Warning
+                                                                                   // ("ATGOV-T14-R004"),
+                                                                                   // new
+                                                                                   // Warning
+                                                                                   // ("BIICORE-T14-R051"),
+                                                                                   // new
+                                                                                   // Warning
+                                                                                   // ("ATGOV-T14-R005")),
+                                                                                   new TestDocument ("atgov-t14-fail-r005.xml",
+                                                                                                     new Warning ("ATGOV-T14-R005"),
+                                                                                                     new Warning ("BIICORE-T14-R051")),
+                                                                                   // new
+                                                                                   // TestDocument
+                                                                                   // ("atgov-t14-fail-r007a.xml",
+                                                                                   // new
+                                                                                   // FatalError
+                                                                                   // ("ATGOV-T14-R007"),
+                                                                                   // new
+                                                                                   // Warning
+                                                                                   // ("BIICORE-T14-R051"),
+                                                                                   // new
+                                                                                   // Warning
+                                                                                   // ("ATGOV-T14-R005")),
+                                                                                   // new
+                                                                                   // TestDocument
+                                                                                   // ("atgov-t14-fail-r007b.xml",
+                                                                                   // new
+                                                                                   // FatalError
+                                                                                   // ("ATGOV-T14-R007"),
+                                                                                   // new
+                                                                                   // Warning
+                                                                                   // ("BIICORE-T14-R051"),
+                                                                                   // new
+                                                                                   // Warning
+                                                                                   // ("ATGOV-T14-R005")),
+                                                                                   new TestDocument ("atgov-t14-fail-r008.xml",
+                                                                                                     new FatalError ("ATGOV-T14-R008"),
+                                                                                                     new Warning ("BIICORE-T14-R051"),
+                                                                                                     new Warning ("ATGOV-T14-R005")),
+                                                                                   // new
+                                                                                   // TestDocument
+                                                                                   // ("atgov-t14-fail-r009.xml",
+                                                                                   // new
+                                                                                   // FatalError
+                                                                                   // ("ATGOV-T14-R009"),
+                                                                                   // new
+                                                                                   // Warning
+                                                                                   // ("BIICORE-T14-R051"),
+                                                                                   // new
+                                                                                   // Warning
+                                                                                   // ("ATGOV-T14-R005")),
+                                                                                   // new
+                                                                                   // TestDocument
+                                                                                   // ("atgov-t14-fail-r010a.xml",
+                                                                                   // new
+                                                                                   // FatalError
+                                                                                   // ("ATGOV-T14-R010"),
+                                                                                   // new
+                                                                                   // Warning
+                                                                                   // ("BIICORE-T14-R051"),
+                                                                                   // new
+                                                                                   // Warning
+                                                                                   // ("ATGOV-T14-R005")),
+                                                                                   // new
+                                                                                   // TestDocument
+                                                                                   // ("atgov-t14-fail-r010b.xml",
+                                                                                   // new
+                                                                                   // FatalError
+                                                                                   // ("ATGOV-T14-R010"),
+                                                                                   // new
+                                                                                   // Warning
+                                                                                   // ("BIICORE-T14-R051"),
+                                                                                   // new
+                                                                                   // Warning
+                                                                                   // ("ATGOV-T14-R005")),
+                                                                                   new TestDocument ("atgov-t14-fail-r011.xml",
+                                                                                                     new FatalError ("ATGOV-T14-R011"),
+                                                                                                     new Warning ("BIICORE-T14-R051"),
+                                                                                                     new Warning ("ATGOV-T14-R005")),
+                                                                                   new TestDocument ("atgov-t14-fail-r012.xml",
+                                                                                                     new FatalError ("ATGOV-T14-R012"),
+                                                                                                     new Warning ("BIICORE-T14-R051"),
+                                                                                                     new Warning ("ATGOV-T14-R005")),
+                                                                                   new TestDocument ("atgov-t14-fail-r013.xml",
+                                                                                                     new FatalError ("ATGOV-T14-R013"),
+                                                                                                     new Warning ("BIICORE-T14-R051"),
+                                                                                                     new Warning ("ATGOV-T14-R005")),
+                                                                                   new TestDocument ("atgov-t14-fail-r014.xml",
+                                                                                                     new FatalError ("ATGOV-T14-R014"),
+                                                                                                     new Warning ("BIICORE-T14-R051"),
+                                                                                                     new Warning ("ATGOV-T14-R005")),
+                                                                                   new TestDocument ("atgov-t14-fail-r015.xml",
+                                                                                                     new FatalError ("ATGOV-T14-R015"),
+                                                                                                     new Warning ("BIICORE-T14-R051"),
+                                                                                                     new Warning ("ATGOV-T14-R005")),
+                                                                                   new TestDocument ("atgov-t14-fail-r016.xml",
+                                                                                                     new FatalError ("ATGOV-T14-R016"),
+                                                                                                     new Warning ("BIICORE-T14-R051"),
+                                                                                                     new Warning ("ATGOV-T14-R005")) };
 
   /**
    * TC01.4.TS1.xml, TC01.5.TS1.xml, TC01.10.TS1.xml, TC01.39.TS1.xml,
@@ -563,6 +711,14 @@ public final class TestFiles {
 
     TestDocument [] aFilenames;
     switch (eFileType) {
+      case CREDITNOTE:
+        if ("AT".equals (sCountry))
+          aFilenames = CREDITNOTES_AT_ERROR;
+        else {
+          s_aLogger.warn ("No error test files present for type " + eFileType);
+          aFilenames = new TestDocument [0];
+        }
+        break;
       case INVOICE:
         if ("AT".equals (sCountry))
           aFilenames = INVOICES_AT_ERROR;

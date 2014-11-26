@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <?vaxTimestamp 2014-10-17T13:57:11?>
 <CreditNote xmlns="urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:ccts="urn:oasis:names:specification:ubl:schema:xsd:CoreComponentParameters-2" xmlns:sdt="urn:oasis:names:specification:ubl:schema:xsd:SpecializedDatatypes-2" xmlns:udt="urn:un:unece:uncefact:data:specification:UnqualifiedDataTypesSchemaModule:2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2 UBL-CreditNote-2.0.xsd">
-	<cbc:UBLVersionID>2.1</cbc:UBLVersionID>
+	<cbc:UBLVersionID>2.0</cbc:UBLVersionID>
 	<cbc:CustomizationID schemeID="PEPPOL">urn:www.cenbii.eu:transaction:biicoretrdm014:ver1.0:#urn:www.peppol.eu:bis:peppol5a:ver1.0</cbc:CustomizationID>
 	<cbc:ProfileID>urn:www.cenbii.eu:profile:bii05:ver1.0</cbc:ProfileID>
 	<cbc:ID>0001_TEST_DoNotCredit</cbc:ID>
@@ -9,6 +9,10 @@
 	<cbc:UUID>342a3860-bc41-4dac-8436-7b41bd637661</cbc:UUID>
 	<cbc:IssueDate>2014-07-07</cbc:IssueDate>
 	<cbc:DocumentCurrencyCode listID="ISO4217">NOK</cbc:DocumentCurrencyCode>
+  <cac:InvoicePeriod>
+    <cbc:StartDate>2014-08-01</cbc:StartDate>
+    <cbc:EndDate>2014-08-02</cbc:EndDate>
+  </cac:InvoicePeriod>
 	<cac:OrderReference>
 		<cbc:ID>Z01</cbc:ID>
 	</cac:OrderReference>

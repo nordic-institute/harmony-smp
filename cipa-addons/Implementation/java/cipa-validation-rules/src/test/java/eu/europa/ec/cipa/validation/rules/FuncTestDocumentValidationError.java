@@ -287,7 +287,7 @@ public final class FuncTestDocumentValidationError {
                                                     aTestFileDoc);
           assertNotNull (aSVRL);
 
-          if (true) {
+          if (false) {
             // For debugging purposes: print the SVRL
             s_aLogger.info (SVRLWriter.createXMLString (aSVRL));
           }
