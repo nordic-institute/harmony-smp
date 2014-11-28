@@ -14,9 +14,9 @@ public class DeleteExpiredMessagesWorker implements Runnable {
     private static final Logger LOG = Logger.getLogger(DeleteExpiredMessagesWorker.class);
 
     private final ReceivedUserMsgStatusDAO rumsd = new ReceivedUserMsgStatusDAO();
-    private final int ttl = (Integer) JNDIUtil.getEnvironmentParameter(Constants.MESSAGES_TIME_TO_LIVE_PROPERTY_KEY);
+    private final int ttl = JNDIUtil.getIntegerEnvironmentParameter(Constants.MESSAGES_TIME_TO_LIVE_PROPERTY_KEY);
     private final int downloadedTtl =
-            (Integer) JNDIUtil.getEnvironmentParameter(Constants.DOMIBUS_SUBMISSION_DOWNLOADED_MESSAGES_TIME_TO_LIVE);
+            JNDIUtil.getIntegerEnvironmentParameter(Constants.DOMIBUS_SUBMISSION_DOWNLOADED_MESSAGES_TIME_TO_LIVE);
 
     @Override
     public void run() {

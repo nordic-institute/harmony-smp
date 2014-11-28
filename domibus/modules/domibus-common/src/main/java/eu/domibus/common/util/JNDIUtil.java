@@ -41,8 +41,31 @@ public class JNDIUtil {
      * @param parameter the name of jndi property to get
      * @return the boolean value associated to the parameter
      */
+    /**
+     * Gives access to jndi values defined in environment as an integer
+     *
+     * @param parameter the name of jndi property to get
+     * @return the value associated to the parameter as an integer
+     */
     public static Boolean getBooleanEnvironmentParameter(final String parameter) {
-        return (Boolean) JNDIUtil.getEnvironmentParameter(parameter);
+        Boolean result = null;
+        Object value = getEnvironmentParameter(parameter);
+        if (value != null) {
+            if (value instanceof String) {
+                try {
+                    result = Boolean.valueOf((String) value);
+                } catch (NumberFormatException nfe) {
+                    log.error("The parameter " + parameter + " is not a boolean");
+                }
+            } else if (value instanceof Boolean) {
+                result = (Boolean) value;
+            } else {
+                log.warn("The parameter " + parameter + " is not a boolean");
+            }
+        } else {
+            log.info("There is no value for parameter: " + parameter);
+        }
+        return result;
     }
 
     /**
@@ -76,5 +99,32 @@ public class JNDIUtil {
         } catch (IOException e) {
             throw new ConfigurationException("Parameter " + parameter + " can not be found in the Init properties", e);
         }
+    }
+
+    /**
+     * Gives access to jndi values defined in environment as an integer
+     *
+     * @param parameter the name of jndi property to get
+     * @return the value associated to the parameter as an integer
+     */
+    public static Integer getIntegerEnvironmentParameter(final String parameter) {
+        Integer result = null;
+        Object value = getEnvironmentParameter(parameter);
+        if (value != null) {
+            if (value instanceof String) {
+                try {
+                    result = Integer.valueOf((String) value);
+                } catch (NumberFormatException nfe) {
+                    log.error("The parameter " + parameter + " is not an integer");
+                }
+            } else if (value instanceof Integer) {
+                result = (Integer) value;
+            } else {
+                log.warn("The parameter " + parameter + " is not a number");
+            }
+        } else {
+            log.info("There is no value for parameter: " + parameter);
+        }
+        return result;
     }
 }

@@ -119,9 +119,9 @@ public class LoggingModuleTest {
         ic.createSubcontext("java:/comp/env");
 
         final String ds = "logging";
-        //		set the appropriate extra properties in file "domibus.properties". Those properties override the one get through the peristence.xml file.
+        //		set the appropriate extra properties in file "domibus.default.properties". Those properties override the one get through the peristence.xml file.
         //		If the persistence unit name is not found or does not match the Persistence Provider, null is returned This method is used in a non managed environment
-        final String ds1 = getClass().getResource("/META-INF/domibus.properties").getPath();
+        final String ds1 = getClass().getResource("/META-INF/domibus.default.properties").getPath();
 
         ic.bind("java:/comp/env/domibus.persistence.unit", ds);
         ic.bind("java:/comp/env/domibus.persistence.properties", ds1);

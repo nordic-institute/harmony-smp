@@ -55,6 +55,7 @@
                 <exclude>conf/domibus/**/*</exclude>
                 <exclude>common/**/*</exclude>
                 <exclude>shared/**/*</exclude>
+                <exclude>**/weblogic.*</exclude>
             </excludes>
             <includes>
                 <include>lib/**/*</include>

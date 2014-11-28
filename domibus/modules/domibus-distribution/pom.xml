@@ -2,7 +2,7 @@
 
 
 validate 	
-initialize 				-Read domibus.properties from domibus-config/domibus.properties using properties-maven-plugin.
+initialize 				-Read domibus.default.properties from domibus-config/domibus.default.properties using properties-maven-plugin.
 							Those values will be filtered later into the server configuration. 
 generate-sources 	
 process-sources 	
@@ -24,7 +24,7 @@ test 					-unit tests not matching *IntegrationTest.java are executed
 prepare-package 	
 package 	
 pre-integration-test 	-read build.properties from domibus-config/build.properties using properties-maven-plugin.
-							Values defined here are overriding values defined in domibus.properties for the purpose of integration testing.
+							Values defined here are overriding values defined in domibus.default.properties for the purpose of integration testing.
 						-copy filtered domibus-config to tatget/domibus-integration/config
 						-database scripts are generated using hibernate3-maven-plugin. The persistence.xml located in 
 							src/test/resources/META-INF is used for this.
@@ -36,7 +36,7 @@ pre-integration-test 	-read build.properties from domibus-config/build.propertie
 integration-test 		-soap ui integration tests are executed
 post-integration-test 	-tomcats are shut down
                         -derby databases are shut down
-verify 					-if the jenkins profile is activated all configured assemblies are built, using the properties set in domibus.properties
+verify 					-if the jenkins profile is activated all configured assemblies are built, using the properties set in domibus.default.properties
 install 	
 deploy 					-deployment is made to ecodex-nexus, deployer credentials are required
 
@@ -70,24 +70,29 @@ options:
     <name>domibus Distribution</name>
     <packaging>war</packaging>
     <properties>
-        <prefix.jndi>java:comp/env/</prefix.jndi>
         <gateway.server.db.initial>${project.build.directory}/sql/hibernate3/domibus_derby_initial.sql</gateway.server.db.initial>
-        <domibus.testing.default.config.file>${project.parent.basedir}/domibus-config/domibus.properties</domibus.testing.default.config.file>
         <gateway.server.sending.db.port>1527</gateway.server.sending.db.port>
         <gateway.server.receiving.db.port>1529</gateway.server.receiving.db.port>
         <derby.version>10.10.1.1</derby.version>
+        <context.root>domibus</context.root>
+        <configFile>${project.parent.basedir}/domibus-config/domibus.default.properties</configFile>
+        <!-- uncomment for DEV environment -->
+        <!--<configFile>project.parent.basedir}/domibus-config/domibus.dev.properties</configFile>-->
+        <!-- uncomment for TEST environment -->
+        <!--<configFile>project.parent.basedir}/domibus-config/domibus.test.properties</configFile>-->
     </properties>
     <dependencies>
         <dependency>
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-spring</artifactId>
             <version>1.6.2</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
-        <!--<dependency>-->
-            <!--<groupId>net.timewalker</groupId>-->
-            <!--<artifactId>ffmq</artifactId>-->
-            <!--<version>3.0.5</version>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-jms</artifactId>
@@ -118,6 +123,31 @@ options:
             <groupId>org.apache.axis2</groupId>
             <artifactId>axis2-jaxws</artifactId>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>xalan</artifactId>
+                    <groupId>xalan</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>stax-api</artifactId>
+                    <groupId>javax.xml.stream</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <version>2.7.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>xml-apis</artifactId>
+                    <groupId>xml-apis</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.axis2</groupId>
@@ -204,6 +234,12 @@ options:
             <groupId>org.apache.neethi</groupId>
             <artifactId>neethi</artifactId>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.stream</groupId>
+                    <artifactId>stax-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.rampart</groupId>
@@ -236,14 +272,15 @@ options:
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.eclipse.persistence</groupId>
-            <artifactId>javax.persistence</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>org.apache.ws.commons.axiom</groupId>
             <artifactId>axiom-api</artifactId>
             <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>commons-io</groupId>
@@ -290,25 +327,147 @@ options:
             <artifactId>derbyclient</artifactId>
             <version>${derby.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
             <version>4.2.4</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.0-api</artifactId>
+            <version>1.0.1.Final</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>
-            <id>integration-tests-and-package</id>
-            <activation>
-                <property>
-                    <!-- use this option to disable integration testing and packaging -->
-                    <name>!skipIntegrationTestingAndPackaging</name>
-                </property>
-            </activation>
+            <id>weblogic</id>
+            <properties>
+                <prefix.jndi>jdbc/</prefix.jndi>
+                <finalName>domibus-weblogic</finalName>
+                <exclude.application.server.specific>**/config*.properties</exclude.application.server.specific>
+            </properties>
+        </profile>
+        <profile>
+            <id>distribute</id>
+            <properties>
+                <prefix.jndi>java:comp/env/</prefix.jndi>
+                <finalName>domibus</finalName>
+                <exclude.application.server.specific>**/weblogic*,**/config*.properties</exclude.application.server.specific>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>javax.xml.stream</groupId>
+                    <artifactId>stax-api</artifactId>
+                    <version>1.0-2</version>
+                </dependency>
+                <dependency>
+                    <artifactId>geronimo-stax-api_1.0_spec</artifactId>
+                    <groupId>org.apache.geronimo.specs</groupId>
+                    <version>1.0.1</version>
+                </dependency>
+            </dependencies>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>hibernate3-maven-plugin</artifactId>
+                        <version>3.0</version>
+                        <configuration>
+                            <hibernatetool>
+                                <classpath>
+                                    <path location="${project.build.directory}/test-classes/"/>
+                                </classpath>
+                            </hibernatetool>
+                        </configuration>
+                        <dependencies>
+                            <!--We are using the hibernate3 plugin and thus need the old hibernate3-->
+                            <!--dependencies-->
+                            <dependency>
+                                <groupId>org.hibernate.javax.persistence</groupId>
+                                <artifactId>hibernate-jpa-2.0-api</artifactId>
+                                <version>1.0.0.Final</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.hibernate</groupId>
+                                <artifactId>hibernate-tools</artifactId>
+                                <version>3.2.4.GA</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.hibernate</groupId>
+                                <artifactId>hibernate-entitymanager</artifactId>
+                                <version>3.6.10.Final</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.hibernate</groupId>
+                                <artifactId>hibernate-core</artifactId>
+                                <version>3.6.10.Final</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>log4j</groupId>
+                                <artifactId>log4j</artifactId>
+                                <version>1.2.14</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>commons-logging</groupId>
+                                <artifactId>commons-logging</artifactId>
+                                <version>1.1.1</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.apache.derby</groupId>
+                                <artifactId>derbyclient</artifactId>
+                                <version>${derby.version}</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>generate-derby-sql</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <hibernatetool>
+                                        <jpaconfiguration persistenceunit="generateDerbyPU"/>
+                                        <hbm2ddl create="true" export="false" drop="false"
+                                                 outputfilename="domibus_derby_initial.sql" format="true"
+                                                 console="false"/>
+                                    </hibernatetool>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>generate-mysql-sql</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <hibernatetool>
+                                        <jpaconfiguration persistenceunit="generateMySqlPU"/>
+                                        <hbm2ddl create="true" export="false" drop="false"
+                                                 outputfilename="domibus_mysql_initial.sql" format="true"
+                                                 console="false"/>
+                                    </hibernatetool>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>generate-oracle-sql</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <hibernatetool>
+                                        <jpaconfiguration persistenceunit="generateOraclePU"/>
+                                        <hbm2ddl create="true" export="false" drop="false"
+                                                 outputfilename="domibus_oracle_initial.sql" format="true"
+                                                 console="false"/>
+                                    </hibernatetool>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <!-- this plugin launches two instances derby database on two differente ports (one for receiving and sending) -->
                     <plugin>
                         <groupId>org.carlspring.maven</groupId>
@@ -610,47 +769,6 @@ options:
                         </configuration>
                         <executions>
                             <execution>
-                                <id>copy-modules</id>
-                                <phase>generate-resources</phase>
-                                <goals>
-                                    <goal>copy-resources</goal>
-                                </goals>
-                                <configuration>
-                                    <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/modules
-                                    </outputDirectory>
-                                    <resources>
-                                        <resource>
-                                            <directory>../domibus-submission/src/main/modules</directory>
-                                            <includes>
-                                                <include>**/*</include>
-                                            </includes>
-                                            <filtering>true</filtering>
-                                        </resource>
-                                        <resource>
-                                            <directory>../domibus-ebms3/src/main/modules</directory>
-                                            <includes>
-                                                <include>**/*</include>
-                                            </includes>
-                                            <filtering>true</filtering>
-                                        </resource>
-                                        <resource>
-                                            <directory>../domibus-security/src/main/modules</directory>
-                                            <includes>
-                                                <include>**/*</include>
-                                            </includes>
-                                            <filtering>true</filtering>
-                                        </resource>
-                                        <resource>
-                                            <directory>../domibus-logging/src/main/modules</directory>
-                                            <includes>
-                                                <include>**/*</include>
-                                            </includes>
-                                            <filtering>true</filtering>
-                                        </resource>
-                                    </resources>
-                                </configuration>
-                            </execution>
-                            <execution>
                                 <id>copy-resources-sending-domibus-tomcat</id>
                                 <phase>pre-integration-test</phase>
                                 <goals>
@@ -812,7 +930,7 @@ options:
         </profile>
     </profiles>
     <build>
-        <finalName>domibus</finalName>
+        <finalName>${finalName}</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -827,6 +945,67 @@ options:
         </testResources>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <useDefaultDelimiters>false</useDefaultDelimiters>
+                    <delimiters>
+                        <delimiter>@*@</delimiter>
+                    </delimiters>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtensions>jks</nonFilteredFileExtensions>
+                        <nonFilteredFileExtensions>mar</nonFilteredFileExtensions>
+                        <nonFilteredFileExtensions>aar</nonFilteredFileExtensions>
+                        <nonFilteredFileExtensions>sql</nonFilteredFileExtensions>
+                        <nonFilteredFileExtensions>ddl</nonFilteredFileExtensions>
+                    </nonFilteredFileExtensions>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>copy-modules</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/modules
+                            </outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>../domibus-submission/src/main/modules</directory>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>../domibus-ebms3/src/main/modules</directory>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>../domibus-security/src/main/modules</directory>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                                <resource>
+                                    <directory>../domibus-logging/src/main/modules</directory>
+                                    <includes>
+                                        <include>**/*</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>properties-maven-plugin</artifactId>
                 <version>1.0-alpha-2</version>
@@ -839,7 +1018,7 @@ options:
                         </goals>
                         <configuration>
                             <files>
-                                <file>${project.parent.basedir}/domibus-config/domibus.properties</file>
+                                <file>${configFile}</file>
                             </files>
                         </configuration>
                     </execution>
@@ -850,6 +1029,7 @@ options:
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.3</version>
                 <configuration>
+                    <packagingExcludes>${exclude.application.server.specific}</packagingExcludes>
                     <nonFilteredFileExtensions>
                         <nonFilteredFileExtension>mar</nonFilteredFileExtension>
                         <nonFilteredFileExtension>aar</nonFilteredFileExtension>
@@ -862,102 +1042,6 @@ options:
                         </resource>
                     </webResources>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>hibernate3-maven-plugin</artifactId>
-                <version>3.0</version>
-                <configuration>
-                    <hibernatetool>
-                        <classpath>
-                            <path location="${project.build.directory}/test-classes/"/>
-                        </classpath>
-                        <jpaconfiguration persistenceunit="generatePU"/>
-                        <hbm2ddl create="true" export="false" drop="true"
-                                 outputfilename="configuration.sql" format="true" console="true"/>
-                    </hibernatetool>
-                </configuration>
-                <dependencies>
-                    <!--We are using the hibernate3 plugin and thus need the old hibernate3-->
-                    <!--dependencies-->
-                    <dependency>
-                        <groupId>org.hibernate.javax.persistence</groupId>
-                        <artifactId>hibernate-jpa-2.0-api</artifactId>
-                        <version>1.0.0.Final</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.hibernate</groupId>
-                        <artifactId>hibernate-tools</artifactId>
-                        <version>3.2.4.GA</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.hibernate</groupId>
-                        <artifactId>hibernate-entitymanager</artifactId>
-                        <version>3.6.10.Final</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.hibernate</groupId>
-                        <artifactId>hibernate-core</artifactId>
-                        <version>3.6.10.Final</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>log4j</groupId>
-                        <artifactId>log4j</artifactId>
-                        <version>1.2.14</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>commons-logging</groupId>
-                        <artifactId>commons-logging</artifactId>
-                        <version>1.1.1</version>
-                    </dependency>
-                </dependencies>
-                <executions>
-                    <execution>
-                        <id>generate-derby-sql</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <hibernatetool>
-                                <jpaconfiguration persistenceunit="generateDerbyPU"/>
-                                <hbm2ddl create="true" export="false" drop="false"
-                                         outputfilename="domibus_derby_initial.sql" format="true"
-                                         console="false"/>
-                            </hibernatetool>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>generate-mysql-sql</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <hibernatetool>
-                                <jpaconfiguration persistenceunit="generateMySqlPU"/>
-                                <hbm2ddl create="true" export="false" drop="false"
-                                         outputfilename="domibus_mysql_initial.sql" format="true"
-                                         console="false"/>
-                            </hibernatetool>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>generate-oracle-sql</id>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <hibernatetool>
-                                <jpaconfiguration persistenceunit="generateOraclePU"/>
-                                <hbm2ddl create="true" export="false" drop="false"
-                                         outputfilename="domibus_oracle_initial.sql" format="true"
-                                         console="false"/>
-                            </hibernatetool>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
