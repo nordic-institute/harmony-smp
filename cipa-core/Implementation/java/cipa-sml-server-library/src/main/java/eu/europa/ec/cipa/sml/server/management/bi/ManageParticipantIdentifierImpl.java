@@ -84,7 +84,10 @@ import eu.europa.ec.cipa.sml.server.web.WebRequestClientIdentifier;
  */
 // FIXME to be re-enabled after 1.1.0 because backward incompatible
 // @SchemaValidation
-@WebService(serviceName = "ManageBusinessIdentifierService", portName = "ManageBusinessIdentifierServicePort", endpointInterface = "org.busdox.servicemetadata.managebusinessidentifierservice._1.ManageBusinessIdentifierServiceSoap", targetNamespace = "http://busdox.org/serviceMetadata/ManageBusinessIdentifierService/1.0/", wsdlLocation = "WEB-INF/wsdl/ManageBusinessIdentifierService-1.0.wsdl")
+@WebService(serviceName = "ManageBusinessIdentifierService", portName = "ManageBusinessIdentifierServicePort", 
+endpointInterface = "org.busdox.servicemetadata.managebusinessidentifierservice._1.ManageBusinessIdentifierServiceSoap", 
+targetNamespace = "http://busdox.org/serviceMetadata/ManageBusinessIdentifierService/1.0/", 
+wsdlLocation = "WEB-INF/wsdl/ManageBusinessIdentifierService-1.0.wsdl")
 @BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING)
 @HandlerChain(file = "handlers.xml")
 public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifierServiceSoap {

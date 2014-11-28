@@ -173,7 +173,7 @@ public class SMLDNSClientImpl extends DNSClientImpl implements ISMLDNSClient {
 
 		s_aLogger.info("Delete Identifier " + aParticipantIdentifier.toString());
 
-		final String sPIDNSName = getDNSNameOfParticipant(aParticipantIdentifier);
+		final String sPIDNSName = getDNSNameOfParticipant(aParticipantIdentifier)+".";
 		_deleteZoneRecord(sPIDNSName);
 	}
 
