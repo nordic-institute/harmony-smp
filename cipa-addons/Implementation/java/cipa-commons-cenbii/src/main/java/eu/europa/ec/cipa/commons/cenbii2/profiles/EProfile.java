@@ -55,7 +55,8 @@ import com.helger.commons.name.IHasDisplayText;
 
 /**
  * Defines the predefined CEN BII2 profiles. Each profile consists of a set of
- * transactions ({@link ETransaction}) and belongs to a group {@link EGroup}.
+ * transactions ({@link ETransaction}) and belongs to a group {@link EGroup}
+ * (derived from the transactions).
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
