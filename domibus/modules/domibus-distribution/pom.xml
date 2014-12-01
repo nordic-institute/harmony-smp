@@ -866,6 +866,12 @@ options:
                                     <outputFolder>${project.build.directory}/soapui-reports</outputFolder>
                                     <junitReport>true</junitReport>
                                     <printReport>true</printReport>
+                                    <soapuiProperties>
+                                        <property>
+                                            <name>soapui.logroot</name>
+                                            <value>${project.build.directory}/soapui/logs/</value>
+                                        </property>
+                                    </soapuiProperties>
                                     <projectFile>${project.basedir}/src/test/resources/soapui_testsuites/e-CODEXBackendServiceTestSuite.xml</projectFile>
                                     <projectProperties>
                                         <value>ServiceEndpoint_1_1_sending=${domibus.module.ebms3.MSH.host}:${domibus.module.ebms3.MSH.pt}/domibus/services/BackendService_1_1</value>

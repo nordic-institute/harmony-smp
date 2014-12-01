@@ -48,15 +48,11 @@ public class JNDIUtil {
      * @return the value associated to the parameter as an integer
      */
     public static Boolean getBooleanEnvironmentParameter(final String parameter) {
-        Boolean result = null;
+        Boolean result = Boolean.FALSE;
         Object value = getEnvironmentParameter(parameter);
         if (value != null) {
             if (value instanceof String) {
-                try {
-                    result = Boolean.valueOf((String) value);
-                } catch (NumberFormatException nfe) {
-                    log.error("The parameter " + parameter + " is not a boolean");
-                }
+                result = Boolean.valueOf((String) value);
             } else if (value instanceof Boolean) {
                 result = (Boolean) value;
             } else {
