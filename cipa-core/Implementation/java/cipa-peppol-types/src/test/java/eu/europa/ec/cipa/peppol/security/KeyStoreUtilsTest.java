@@ -134,7 +134,7 @@ public final class KeyStoreUtilsTest {
       KeyStoreUtils.loadKeyStore ("keystores/keystore-pw-peppol.jks", "wrongpw");
       fail ();
     }
-    catch (final IOException ex) {}
+    catch (final IllegalStateException ex) {}
   }
 
   @Test

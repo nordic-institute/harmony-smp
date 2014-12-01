@@ -53,6 +53,12 @@
 	</repositories>
 
 	<dependencies>
+		<!-- <dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.49</version>
+			<scope>provided</scope>
+		</dependency> -->
 		<dependency>
 			<groupId>eu.europa.ec.cipa</groupId>
 			<artifactId>cipa-commons-busdox</artifactId>
@@ -96,7 +102,7 @@
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcprov-jdk15on</artifactId>
 			<version>1.51</version>
-			<scope>test</scope>
+			<!-- <scope>test</scope> -->
 		</dependency>
 	</dependencies>
 
