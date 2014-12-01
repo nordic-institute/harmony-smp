@@ -40,17 +40,18 @@ verify 					-if the jenkins profile is activated all configured assemblies are b
 install 	
 deploy 					-deployment is made to ecodex-nexus, deployer credentials are required
 
+PROFILES:
+
+ - weblogic
+ - distribute
+
+USAGE:
+clean package -DconfigFile=${project.parent.basedir}/domibus-config/domibus.test.properties -Pweblogic -> create a war for weblogic on TEST environment
+clean package -DconfigFile=${project.parent.basedir}/domibus-config/domibus.dev.properties -Pweblogic -> create a war for weblogic on DEV environment
+clean install -Pdistribute -> create a distribution packaged with tomcat
 
 
-profiles:
-
-integration-tests-and-package:
-The build server profile. Generates assemblies
-
-options:
- -DskipIntegrationTestingAndPackaging : disable the packaging and testing, only build the war
-
-!!!! WARNING !!! To avoid a OutOfMemoryError, it's best to set '-Xmx512m -XX:MaxPermSize=256m' as VM args
+!!!! WARNING !!! If you get zn OutOfMemoryError, then also add VM args '-Xmx512m -XX:MaxPermSize=256m'
 
 
  -->
