@@ -355,6 +355,9 @@ clean install -Pdistribute -> create a distribution packaged with tomcat
         </profile>
         <profile>
             <id>distribute</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
                 <prefix.jndi>java:comp/env/</prefix.jndi>
                 <finalName>domibus</finalName>
@@ -874,6 +877,10 @@ clean install -Pdistribute -> create a distribution packaged with tomcat
                                         <property>
                                             <name>soapui.logroot</name>
                                             <value>${project.build.directory}/soapui/logs/</value>
+                                        </property>
+                                        <property>
+                                            <name>http.nonProxyHosts</name>
+                                            <value>localhost|127.*|[::1]</value>
                                         </property>
                                     </soapuiProperties>
                                     <projectFile>${project.basedir}/src/test/resources/soapui_testsuites/e-CODEXBackendServiceTestSuite.xml</projectFile>
