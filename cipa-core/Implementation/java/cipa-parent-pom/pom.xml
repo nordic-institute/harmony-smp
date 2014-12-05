@@ -72,6 +72,16 @@
   </developers>
   
   <!-- Where are we looking for JARs? -->
+  <pluginRepositories>
+        <pluginRepository>
+            <id>smartbear-sweden-plugin-repository</id>
+            <url>http://www.soapui.org/repository/maven2/</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>plugin.joinup</id>
+            <url>https://joinup.ec.europa.eu/nexus/content/groups/public/</url>
+        </pluginRepository>
+  </pluginRepositories>
   <repositories>
     <repository>
       <id>eclipselink</id>

@@ -39,19 +39,6 @@
 		<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-peppol-types</developerConnection>
 	</scm>
 
-	<repositories>
-		<repository>
-			<id>joinup.nexus</id>
-			<url>https://joinup.ec.europa.eu/nexus/content/groups/public/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
 	<dependencies>
 		<!-- <dependency>
 			<groupId>org.bouncycastle</groupId>

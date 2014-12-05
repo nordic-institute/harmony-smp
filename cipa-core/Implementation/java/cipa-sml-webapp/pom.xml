@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>eu.europa.ec.cipa</groupId>
 		<artifactId>cipa-parent-pom</artifactId>
-		<version>1.4</version>
+		<version>1.5-SNAPSHOT</version>
 		<relativePath>../cipa-parent-pom/pom.xml</relativePath>
 	</parent>
 	<artifactId>cipa-sml-webapp</artifactId>
@@ -19,29 +19,6 @@
 		<connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-sml-webapp</connection>
 		<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-sml-webapp</developerConnection>
 	</scm>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>smartbear-sweden-plugin-repository</id>
-            <url>http://www.soapui.org/repository/maven2/</url>
-        </pluginRepository>
-        <pluginRepository>
-            <id>plugin.joinup</id>
-            <url>https://joinup.ec.europa.eu/nexus/content/groups/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
-	<repositories>
-		<repository>
-			<id>joinup.nexus</id>
-			<url>https://joinup.ec.europa.eu/nexus/content/groups/public/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 
 	<dependencies>
 		<dependency>

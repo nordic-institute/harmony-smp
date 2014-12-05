@@ -15,20 +15,6 @@
 	<packaging>war</packaging>
 	<name>cipa-dispatcher</name>
 
-	
-	<repositories>
-		<repository>
-			<id>joinup.nexus</id>
-			<url>https://joinup.ec.europa.eu/nexus/content/groups/public/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
 	<properties>
 		<display_version>v${project.version}</display_version>
 		<m2e.jaxrs.activation>false</m2e.jaxrs.activation>

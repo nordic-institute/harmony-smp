@@ -5,7 +5,7 @@
   <parent>
     <groupId>eu.europa.ec.cipa</groupId>
     <artifactId>cipa-parent-pom</artifactId>
-    <version>1.4</version>
+    <version>1.5-SNAPSHOT</version>
     <relativePath>../../../../cipa-core/Implementation/java/cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-sml-webapp-standalone</artifactId>
@@ -25,20 +25,6 @@
         <ftp.remotedir>/ec/test/server/weblogic/u010/home/digciedt/data/CIPA-EDEL_DEV/autodeploy</ftp.remotedir>
     </properties>
 
-  
-  <repositories>
-    <repository>
-      <id>joinup.nexus</id>
-      <url>https://joinup.ec.europa.eu/nexus/content/groups/public/</url>
-      <releases>
-        <enabled>true</enabled>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-  
   <dependencies>
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>

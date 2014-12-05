@@ -11,19 +11,6 @@
 	<version>0.0.1</version>
 	<name>cipa-sml-migration</name>
 
-	<repositories>
-		<repository>
-			<id>joinup.nexus</id>
-			<url>https://joinup.ec.europa.eu/nexus/content/groups/public/</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
 	<dependencies>
 		<dependency>
 			<groupId>eu.europa.ec.cipa</groupId>
