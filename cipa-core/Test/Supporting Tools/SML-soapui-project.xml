@@ -1025,6 +1025,7 @@ sql.close()</script></con:config></con:testStep><con:properties/><con:reportPara
 def sql = Sql.newInstance(context.expand( '${#Project#jdbc.url}'), context.expand( '${#Project#jdbc.driver}'))
 sql.execute "DELETE from recipient_part_identifier where smp_id = 'testSMLMigrate'"
 sql.execute "DELETE FROM SERVICE_METADATA_PUBLISHER WHERE smp_id = 'testSMLMigrate'"
+sql.execute "DELETE FROM SERVICE_METADATA_PUBLISHER WHERE smp_id = 'testOldSMPMigrate'"
 sql.execute "DELETE from migrate where rec_value = '0088:5798000000005'"
 sql.execute "insert into SERVICE_METADATA_PUBLISHER(smp_id, physical_address, logical_address, username) values ('testSMLMigrate', '10.0.0.1', 'test.eu', 'debug-insecure-client-http-only')"
 sql.execute "insert into SERVICE_METADATA_PUBLISHER(smp_id, physical_address, logical_address, username) values ('testOldSMPMigrate', '10.0.0.2', 'test2.eu', 'debug-insecure-client-http-only')"
@@ -1128,7 +1129,7 @@ testStep.run(testRunner, testStepContext);</con:tearDownScript></con:loadTest><c
 // Indeed, it is not possible to use the same syntax to perform multiple statements execution.
 
 def sql = Sql.newInstance(context.expand( '${#Project#jdbc.url}'), context.expand( '${#Project#jdbc.driver}'))
-sql.execute "DELETE from recipient_part_identifier where smp_id like 'testSMLRead%'"
+sql.execute "DELETE from SERVICE_METADATA_PUBLISHER where smp_id like 'testSMLRead%'"
 sql.execute "insert into SERVICE_METADATA_PUBLISHER(smp_id, physical_address, logical_address, username) values ('testSMLRead', '10.0.0.1', 'test.eu', 'debug-insecure-client-http-only')"
 sql.close()</script></con:config></con:testStep><con:testStep type="request" name="Read"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>ManageServiceMetadataServiceSoap</con:interface><con:operation>Read</con:operation><con:request name="Read"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>${#Project#url}/manageservicemetadata</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns="http://busdox.org/serviceMetadata/locator/1.0/">
    <soapenv:Header/>
