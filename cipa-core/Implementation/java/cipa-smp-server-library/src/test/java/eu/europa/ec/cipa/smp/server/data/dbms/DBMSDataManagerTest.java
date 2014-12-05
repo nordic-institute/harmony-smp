@@ -150,7 +150,7 @@ public class DBMSDataManagerTest {
     try {
       s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, CREDENTIALS);
     }
-    catch (final NotFoundException ex) {}
+    catch (final Exception ex) {}
 
     // Create a new one
     s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
