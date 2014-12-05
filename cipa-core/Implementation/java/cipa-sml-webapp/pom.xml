@@ -150,8 +150,18 @@
                     <outputFolder>${project.build.directory}/surefire-reports</outputFolder>
                     <junitReport>true</junitReport>
                     <printReport>true</printReport>
+                    <soapuiProperties>
+                        <property>
+                            <name>soapui.logroot</name>
+                            <value>${project.build.directory}/soapui/logs/</value>
+                        </property>
+                        <property>
+                            <name>http.nonProxyHosts</name>
+                            <value>localhost|127.*|[::1]</value>
+                        </property>
+                    </soapuiProperties>
                     <testFailIgnore>false</testFailIgnore>
-                    <projectFile>../../../Test/Supporting Tools/SML-soapui-project.xml</projectFile>
+                    <projectFile>${project.basedir}/../../../Test/Supporting Tools/SML-soapui-project.xml</projectFile>
                     <projectProperties>
                         <value>url=${url}</value>
                         <value>jdbc.driver=${jdbc.driver}</value>
