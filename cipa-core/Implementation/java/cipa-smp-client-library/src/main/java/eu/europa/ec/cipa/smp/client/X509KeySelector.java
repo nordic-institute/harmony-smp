@@ -62,6 +62,7 @@ import javax.xml.crypto.dsig.keyinfo.X509Data;
 
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Finds and returns a key using the data contained in a {@link KeyInfo} object
@@ -85,7 +86,17 @@ public final class X509KeySelector extends KeySelector {
     }
   }
 
-  private static final ConfigFile s_aConfigFile = ConfigFile.getInstance ();
+  private static ConfigFile s_aConfigFile;
+
+  static {
+       /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
+        in the classpath (like smp.config.properties or sml.config.properties).
+        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
+        Needs to be properly refactored */
+      ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
+      s_aConfigFile = (ConfigFile) context.getBean("configFile");
+  }
+
   private static final String TRUSTSTORE_LOCATION = s_aConfigFile.getString ("truststore.location",
                                                                              KeyStoreUtils.TRUSTSTORE_CLASSPATH);
   private static final String TRUSTSTORE_PASSWORD = s_aConfigFile.getString ("truststore.password",

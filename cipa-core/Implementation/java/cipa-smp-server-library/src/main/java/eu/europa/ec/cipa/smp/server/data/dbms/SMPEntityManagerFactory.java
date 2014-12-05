@@ -49,6 +49,7 @@ import com.helger.commons.annotations.UsedViaReflection;
 import com.helger.db.jpa.AbstractGlobalEntityManagerFactory;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Specific SMP JPA entity manager factory
@@ -56,23 +57,32 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class SMPEntityManagerFactory extends AbstractGlobalEntityManagerFactory {
+
+    private static ConfigFile configFile;
+
+    static {
+        /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
+        in the classpath (like smp.config.properties or sml.config.properties).
+        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
+        Needs to be properly refactored */
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"classpath:applicationContext.xml"});
+        configFile = (ConfigFile) context.getBean("configFile");
+    }
+
   @Nonnull
   @ReturnsMutableCopy
   private static Map <String, Object> _createPropertiesMap () {
-    // Standard configuration file
-    final ConfigFile aCF = ConfigFile.getInstance ();
-
     final Map <String, Object> ret = new HashMap <String, Object> ();
     // Read all properties from the standard configuration file
     // Connection pooling
     ret.put (PersistenceUnitProperties.CONNECTION_POOL_MAX,
-             aCF.getString (SMPJPAConfiguration.CONFIG_JDBC_READ_CONNECTIONS_MAX));
+            configFile.getString (SMPJPAConfiguration.CONFIG_JDBC_READ_CONNECTIONS_MAX));
 
     // EclipseLink should create the database schema automatically
     // Values: Values: none/create-tables/drop-and-create-tables
     ret.put (PersistenceUnitProperties.DDL_GENERATION, PersistenceUnitProperties.DROP_AND_CREATE);
     ret.put (PersistenceUnitProperties.DDL_GENERATION_MODE,
-             aCF.getString (SMPJPAConfiguration.CONFIG_DDL_GENERATION_MODE,
+            configFile.getString (SMPJPAConfiguration.CONFIG_DDL_GENERATION_MODE,
                             SMPJPAConfiguration.getDefaultDDLGenerationMode ()));
     ret.put (PersistenceUnitProperties.CREATE_JDBC_DDL_FILE, "db-create-smp.sql");
     ret.put (PersistenceUnitProperties.DROP_JDBC_DDL_FILE, "db-drop-smp.sql");
@@ -87,11 +97,11 @@ public final class SMPEntityManagerFactory extends AbstractGlobalEntityManagerFa
   @Deprecated
   @UsedViaReflection
   public SMPEntityManagerFactory () {
-    super (ConfigFile.getInstance ().getString (SMPJPAConfiguration.CONFIG_JDBC_DRIVER),
-           ConfigFile.getInstance ().getString (SMPJPAConfiguration.CONFIG_JDBC_URL),
-           ConfigFile.getInstance ().getString (SMPJPAConfiguration.CONFIG_JDBC_USER),
-           ConfigFile.getInstance ().getString (SMPJPAConfiguration.CONFIG_JDBC_PASSWORD),
-           ConfigFile.getInstance ().getString (SMPJPAConfiguration.CONFIG_TARGET_DATABASE),
+    super (configFile.getString (SMPJPAConfiguration.CONFIG_JDBC_DRIVER),
+           configFile.getString (SMPJPAConfiguration.CONFIG_JDBC_URL),
+           configFile.getString (SMPJPAConfiguration.CONFIG_JDBC_USER),
+           configFile.getString (SMPJPAConfiguration.CONFIG_JDBC_PASSWORD),
+           configFile.getString (SMPJPAConfiguration.CONFIG_TARGET_DATABASE),
            "peppol-smp",
            _createPropertiesMap ());
   }

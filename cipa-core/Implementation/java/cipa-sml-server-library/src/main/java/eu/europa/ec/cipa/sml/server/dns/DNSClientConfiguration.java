@@ -41,6 +41,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Get configuration for DNSClient.<br>
@@ -59,8 +60,17 @@ public final class DNSClientConfiguration {
   private static final String CONFIG_SIG0 = "dnsClient.SIG0Enabled";
   private static final String CONFIG_SIG0PublicKeyName = "dnsClient.SIG0PublicKeyName";
 
-  // The config file instance to be used for reading
-  private static final ConfigFile s_aConfigFile = ConfigFile.getInstance ();
+
+  private static ConfigFile s_aConfigFile;
+
+    static {
+        /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
+        in the classpath (like smp.config.properties or sml.config.properties).
+        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
+        Needs to be properly refactored */
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"classpath:applicationContext.xml"});
+        s_aConfigFile = (ConfigFile) context.getBean("configFile");
+    }
 
   private DNSClientConfiguration () {}
 

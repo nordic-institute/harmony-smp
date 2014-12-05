@@ -63,7 +63,7 @@ public final class ConfiguredDNSMapperTest {
    */
   @Test
   public void testMapInternalInetAddress () throws UnknownHostException {
-    final ConfiguredDNSMapper dnsMapper = new ConfiguredDNSMapper (ConfigFile.getInstance ());
+    final ConfiguredDNSMapper dnsMapper = new ConfiguredDNSMapper ();
     final InetAddress _2222 = InetAddress.getByName ("2.2.2.2");
     final InetAddress _4444 = InetAddress.getByName ("4.4.4.4");
     MappedDNSHost res = dnsMapper.getMappedDNSHost (_2222);

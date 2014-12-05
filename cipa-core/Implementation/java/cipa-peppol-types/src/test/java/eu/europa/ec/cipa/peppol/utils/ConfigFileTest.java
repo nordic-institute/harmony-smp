@@ -76,7 +76,7 @@ public final class ConfigFileTest {
 
   @Test
   public void testNonExisting () {
-    final ConfigFile aCF = new ConfigFile ("non-existent-file.xml");
+    final ConfigFile aCF = new ConfigFile (new String[] {"non-existent-file.xml"});
     assertFalse (aCF.isRead ());
     assertNull (aCF.getString ("any"));
     assertEquals (0, aCF.getAllKeys ().size ());

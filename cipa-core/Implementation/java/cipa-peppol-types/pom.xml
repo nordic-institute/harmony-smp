@@ -26,7 +26,7 @@
 	<parent>
 		<groupId>eu.europa.ec.cipa</groupId>
 		<artifactId>cipa-parent-pom</artifactId>
-		<version>1.4</version>
+		<version>1.5-SNAPSHOT</version>
 		<relativePath>../cipa-parent-pom/pom.xml</relativePath>
 	</parent>
 	<artifactId>cipa-peppol-types</artifactId>
@@ -62,7 +62,7 @@
 		<dependency>
 			<groupId>eu.europa.ec.cipa</groupId>
 			<artifactId>cipa-commons-busdox</artifactId>
-			<version>2.2.3</version>
+			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.helger</groupId>
@@ -104,6 +104,23 @@
 			<version>1.51</version>
 			<!-- <scope>test</scope> -->
 		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 
 	<build>

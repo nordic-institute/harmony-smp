@@ -53,6 +53,11 @@ import eu.europa.ec.cipa.sml.server.IParticipantDataHandler;
 import eu.europa.ec.cipa.sml.server.IParticipantDataHandlerCallback;
 import eu.europa.ec.cipa.sml.server.ISMPDataHandler;
 import eu.europa.ec.cipa.sml.server.ISMPDataHandlerCallback;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.FileSystemXmlApplicationContext;
+
+import java.net.URL;
 
 /**
  * A factory used for constructing new instances of the
@@ -76,7 +81,12 @@ public final class DataHandlerFactory {
     static final IGenericDataHandler s_aGenericInstance;
 
     static {
-      final ConfigFile aConfig = ConfigFile.getInstance ();
+        /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
+        in the classpath (like smp.config.properties or sml.config.properties).
+        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
+        Needs to be properly refactored */
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"classpath:applicationContext.xml"});
+        final ConfigFile aConfig = (ConfigFile) context.getBean("configFile");
 
       // SMP stuff
       {

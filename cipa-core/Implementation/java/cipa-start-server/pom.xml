@@ -53,18 +53,18 @@
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-start-client</artifactId>
-      <version>2.2.3</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-smp-client-library</artifactId>
-      <version>2.2.3</version>
+      <version>${project.version}</version>
     </dependency>
     <!-- Dummy, so that any receiver is present :)  Comment out if you use the receiver externalisation mechanism see config server.properties-->
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-start-filereceiver</artifactId>
-      <version>2.2.3</version>
+      <version>${project.version}</version>
     </dependency>
     <!-- Alternatively you may use the JMS base receiver.
          Locations: https://github.com/phax/cipa-start-jmsreceiver-api
@@ -169,7 +169,7 @@
           </supportedProjectTypes>
           <instructions>
             <Bundle-SymbolicName>${bundle.symbolicName}</Bundle-SymbolicName>
-            <Bundle-Version>${pom.version}</Bundle-Version>
+            <Bundle-Version>${project.version}</Bundle-Version>
             <!--
             <Export-Package>!${bundle.namespace}.internal.*,${bundle.namespace}.*;version="${pom.version}"</Export-Package>
             <Private-Package>${bundle.namespace}.internal.*</Private-Package>

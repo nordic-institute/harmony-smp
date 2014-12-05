@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.lang.GenericReflection;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
@@ -54,6 +55,17 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 public final class RegistrationHookFactory {
   private static final Logger s_aLogger = LoggerFactory.getLogger (RegistrationHookFactory.class);
   private static final String CONFIG_REGISTRATION_HOOK_CLASS = "registrationHook.class";
+
+  private static ConfigFile configFile;
+
+  static {
+      /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
+        in the classpath (like smp.config.properties or sml.config.properties).
+        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
+        Needs to be properly refactored */
+      ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
+      configFile = (ConfigFile) context.getBean("configFile");
+  }
 
   private RegistrationHookFactory () {}
 
@@ -67,7 +79,7 @@ public final class RegistrationHookFactory {
    */
   @Nonnull
   public static IRegistrationHook createInstance () {
-    final String sRegHookName = ConfigFile.getInstance ().getString (CONFIG_REGISTRATION_HOOK_CLASS);
+    final String sRegHookName = configFile.getString (CONFIG_REGISTRATION_HOOK_CLASS);
     final IRegistrationHook aHook = GenericReflection.newInstance (sRegHookName, IRegistrationHook.class);
     if (aHook == null)
       throw new IllegalStateException ("Failed to create registration hook instance from class '" + sRegHookName + "'");

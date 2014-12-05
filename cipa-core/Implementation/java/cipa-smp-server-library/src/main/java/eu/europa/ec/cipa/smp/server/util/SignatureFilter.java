@@ -55,6 +55,9 @@ import com.sun.jersey.spi.container.ContainerResponseFilter;
 
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Component;
 
 /**
  * This class adds a XML DSIG to successful GET's for SignedServiceMetadata
@@ -73,14 +76,24 @@ public final class SignatureFilter implements ContainerResponseFilter {
   private KeyStore.PrivateKeyEntry m_aKeyEntry;
   private X509Certificate m_aCert;
 
+  private static ConfigFile configFile;
+
+  static {
+      /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
+        in the classpath (like smp.config.properties or sml.config.properties).
+        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
+        Needs to be properly refactored */
+      ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
+      configFile = (ConfigFile) context.getBean("configFile");
+  }
+
   public SignatureFilter () {
     // Load the KeyStore and get the signing key and certificate.
     try {
-      final ConfigFile aConfigFile = ConfigFile.getInstance ();
-      final String sKeyStoreClassPath = aConfigFile.getString (CONFIG_XMLDSIG_KEYSTORE_CLASSPATH);
-      final String sKeyStorePassword = aConfigFile.getString (CONFIG_XMLDSIG_KEYSTORE_PASSWORD);
-      final String sKeyStoreKeyAlias = aConfigFile.getString (CONFIG_XMLDSIG_KEYSTORE_KEY_ALIAS);
-      final char [] aKeyStoreKeyPassword = aConfigFile.getCharArray (CONFIG_XMLDSIG_KEYSTORE_KEY_PASSWORD);
+      final String sKeyStoreClassPath = configFile.getString (CONFIG_XMLDSIG_KEYSTORE_CLASSPATH);
+      final String sKeyStorePassword = configFile.getString (CONFIG_XMLDSIG_KEYSTORE_PASSWORD);
+      final String sKeyStoreKeyAlias = configFile.getString (CONFIG_XMLDSIG_KEYSTORE_KEY_ALIAS);
+      final char [] aKeyStoreKeyPassword = configFile.getCharArray (CONFIG_XMLDSIG_KEYSTORE_KEY_PASSWORD);
 
       final KeyStore aKeyStore = KeyStoreUtils.loadKeyStore (sKeyStoreClassPath, sKeyStorePassword);
       final KeyStore.Entry aEntry = aKeyStore.getEntry (sKeyStoreKeyAlias,

@@ -51,6 +51,7 @@ import com.helger.commons.exceptions.InitializationException;
 
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * This class has the sole purpose of delivering the PEPPOL root certificate in
@@ -71,8 +72,13 @@ public final class PeppolRootCertificateProvider {
 	private static X509Certificate s_aOpenPeppolSMPRootCert;
 
 	static {
-		// Get data from config file
-		final ConfigFile aConfigFile = ConfigFile.getInstance();
+        /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
+        in the classpath (like smp.config.properties or sml.config.properties).
+        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
+        Needs to be properly refactored */
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
+        // Get data from config file
+        final ConfigFile aConfigFile = (ConfigFile) context.getBean("configFile");
 		final String sTrustStorePath = aConfigFile.getString(CONFIG_SML_TRUSTSTORE_PATH, KeyStoreUtils.TRUSTSTORE_CLASSPATH);
 		final String sTrustStorePassword = aConfigFile.getString(CONFIG_SML_TRUSTSTORE_PASSWORD, KeyStoreUtils.TRUSTSTORE_PASSWORD);
 

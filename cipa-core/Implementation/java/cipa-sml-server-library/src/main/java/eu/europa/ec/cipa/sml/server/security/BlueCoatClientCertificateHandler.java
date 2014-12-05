@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * This Class is used to validate the client certificate if the 2 way ssl
@@ -43,6 +44,17 @@ public final class BlueCoatClientCertificateHandler {
 	private static String serial = null;
 	private static Date validFrom = null;
 	private static Date validTo = null;
+
+    private static ConfigFile configFile;
+
+    static {
+        /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
+        in the classpath (like smp.config.properties or sml.config.properties).
+        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
+        Needs to be properly refactored */
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
+        configFile = (ConfigFile) context.getBean("configFile");
+    }
 
 	private static void parseClientCertHeader(String clientCertHeaderDecoded) {
 
@@ -99,12 +111,12 @@ public final class BlueCoatClientCertificateHandler {
 						.warn("No Client Cert header found in the request's header");
 				return false;
 			}
-			 final String sIssuerToSearch = ConfigFile.getInstance ().getString (CONFIG_SML_CLIENT_CERTISSUER);
+			 final String sIssuerToSearch = configFile.getString (CONFIG_SML_CLIENT_CERTISSUER);
 			 if (sIssuerToSearch == null || sIssuerToSearch.isEmpty())
 			        throw new IllegalStateException ("The configuration file is missing the entry '" +
 			                                         CONFIG_SML_CLIENT_CERTISSUER +
 			                                         "'");
-		     final String sAlternativeIssuerToSearch = ConfigFile.getInstance ().getString (CONFIG_SML_CLIENT_CERTISSUER_NEW);
+		     final String sAlternativeIssuerToSearch = configFile.getString (CONFIG_SML_CLIENT_CERTISSUER_NEW);
 		     if (sAlternativeIssuerToSearch == null || sAlternativeIssuerToSearch.isEmpty())
 			        throw new IllegalStateException ("The configuration file is missing the entry '" +
 			        									CONFIG_SML_CLIENT_CERTISSUER_NEW +

@@ -62,6 +62,7 @@ import eu.europa.ec.cipa.peppol.security.HostnameVerifierAlwaysTrue;
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 import eu.europa.ec.cipa.sml.client.ManageParticipantIdentifierServiceCaller;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * An implementation of the RegistrationHook that informs the SML of updates to
@@ -82,11 +83,18 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
   private static final URL s_aSMLEndpointURL;
   private static final String s_sSMPID;
 
+  private static ConfigFile configFile;
+
   static {
-    final ConfigFile aConfigFile = ConfigFile.getInstance ();
+    /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
+        in the classpath (like smp.config.properties or sml.config.properties).
+        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
+        Needs to be properly refactored */
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"classpath:applicationContext.xml"});
+    configFile = (ConfigFile) context.getBean("configFile");
 
     // SML endpoint (incl. the service name)
-    final String sURL = aConfigFile.getString (CONFIG_HOOK_REG_LOCATOR_URL);
+    final String sURL = configFile.getString (CONFIG_HOOK_REG_LOCATOR_URL);
     try {
       s_aSMLEndpointURL = new URL (sURL);
     }
@@ -95,7 +103,7 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     }
 
     // SMP ID
-    s_sSMPID = aConfigFile.getString (CONFIG_HOOK_ID);
+    s_sSMPID = configFile.getString (CONFIG_HOOK_ID);
 
     s_aLogger.info ("Using the following SML address: " + s_aSMLEndpointURL);
     s_aLogger.info ("This SMP has the ID: " + s_sSMPID);
@@ -116,10 +124,9 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
   private static void _setupSSLSocketFactory () {
     // Keystore for SML access:
     try {
-      final ConfigFile aConfigFile = ConfigFile.getInstance ();
-      final String sKeystorePath = aConfigFile.getString (CONFIG_HOOK_KEYSTORE_CLASSPATH);
-      final String sKeystorePassword = aConfigFile.getString (CONFIG_HOOK_KEYSTORE_PASSWORD);
-      final String sRegLocatorUrl = aConfigFile.getString (CONFIG_HOOK_REG_LOCATOR_URL);
+      final String sKeystorePath = configFile.getString (CONFIG_HOOK_KEYSTORE_CLASSPATH);
+      final String sKeystorePassword = configFile.getString (CONFIG_HOOK_KEYSTORE_PASSWORD);
+      final String sRegLocatorUrl = configFile.getString (CONFIG_HOOK_REG_LOCATOR_URL);
 
       // Main key storage
       final KeyStore aKeyStore = KeyStoreUtils.loadKeyStore (sKeystorePath, sKeystorePassword);

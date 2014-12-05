@@ -47,6 +47,7 @@ import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.lang.GenericReflection;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Factory for creating new DataManagers. This implementation retrieves the name
@@ -62,7 +63,14 @@ public final class DataManagerFactory {
   private static final IDataManager s_aInstance;
 
   static {
-    s_sDataManagerClassName = ConfigFile.getInstance ().getString (CONFIG_DATA_MANAGER_CLASS);
+       /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
+        in the classpath (like smp.config.properties or sml.config.properties).
+        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
+        Needs to be properly refactored */
+      ConfigFile configFile = null;
+      ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
+      configFile = (ConfigFile) context.getBean("configFile");
+    s_sDataManagerClassName = configFile.getString (CONFIG_DATA_MANAGER_CLASS);
     final IDataManager ret = GenericReflection.newInstance (s_sDataManagerClassName, IDataManager.class);
     if (ret == null)
       throw new IllegalStateException ("Failed to instantiate IDataManager class '" + s_sDataManagerClassName + "'");

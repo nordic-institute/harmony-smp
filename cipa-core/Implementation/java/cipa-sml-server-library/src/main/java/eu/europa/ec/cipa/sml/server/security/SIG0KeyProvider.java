@@ -18,6 +18,7 @@ import javax.annotation.Nonnull;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.xbill.DNS.utils.base64;
 
 import com.helger.commons.exceptions.InitializationException;
@@ -38,7 +39,12 @@ public class SIG0KeyProvider {
                                                        "Public_value(y)" };
 
   static {
-    final ConfigFile aConfigFile = ConfigFile.getInstance ();
+       /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
+        in the classpath (like smp.config.properties or sml.config.properties).
+        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
+        Needs to be properly refactored */
+      ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
+      final ConfigFile aConfigFile = (ConfigFile) context.getBean("configFile");
     try {
       sKeyFile = aConfigFile.getString (CONFIG_SIG0_FILE, "SIG0");
     }

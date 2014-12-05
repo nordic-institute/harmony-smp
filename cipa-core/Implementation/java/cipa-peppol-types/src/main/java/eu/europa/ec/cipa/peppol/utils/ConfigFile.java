@@ -122,6 +122,10 @@ public class ConfigFile {
     m_bRead = bRead;
   }
 
+    public ConfigFile (final String configFilePath) {
+        this (configFilePath, DEFAULT_PRIVATE_CONFIG_PROPERTIES, DEFAULT_CONFIG_PROPERTIES);
+    }
+
   @Nonnull
   private ESuccess _readConfigFile (@Nonnull final String sPath) {
     // Try to get the input stream for the passed property file name

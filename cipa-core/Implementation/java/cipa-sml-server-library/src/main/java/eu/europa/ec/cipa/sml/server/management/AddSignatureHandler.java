@@ -69,6 +69,9 @@ import javax.xml.ws.handler.MessageContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -92,12 +95,15 @@ public class AddSignatureHandler implements LogicalHandler <LogicalMessageContex
   public static final String CONFIG_SML_SIGN_RESPONSE = "sml.response.sign";
   private static final Logger s_aLogger = LoggerFactory.getLogger (AddSignatureHandler.class);
 
-  /**
-   * @return The configuration file object to be used for reading
-   */
-  @Nonnull
-  private final ConfigFile _getConfigFile () {
-    return ConfigFile.getInstance ();
+  private static ConfigFile configFile;
+
+  static {
+      /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
+        in the classpath (like smp.config.properties or sml.config.properties).
+        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
+        Needs to be properly refactored */
+      ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"classpath:applicationContext.xml"});
+      configFile = (ConfigFile) context.getBean("configFile");
   }
 
   public void close (final MessageContext context) {}
@@ -119,7 +125,7 @@ public class AddSignatureHandler implements LogicalHandler <LogicalMessageContex
     if (Boolean.FALSE.equals (aIsOutbound))
       return true;
 
-    final boolean bSignResponse = _getConfigFile ().getBoolean (CONFIG_SML_SIGN_RESPONSE, false);
+    final boolean bSignResponse = configFile.getBoolean (CONFIG_SML_SIGN_RESPONSE, false);
     if (!bSignResponse)
       return true;
 
@@ -184,9 +190,9 @@ public class AddSignatureHandler implements LogicalHandler <LogicalMessageContex
                                                                     Collections.singletonList (aReference));
 
     // Load the KeyStore and get the signing key and certificate.
-    final String sKeyStorePath = _getConfigFile ().getString (CONFIG_SML_KEYSTORE_PATH);
-    final String sKeyStorePW = _getConfigFile ().getString (CONFIG_SML_KEYSTORE_PASSWORD);
-    final String sKeyStoreAlias = _getConfigFile ().getString (CONFIG_SML_KEYSTORE_ALIAS);
+    final String sKeyStorePath = configFile.getString (CONFIG_SML_KEYSTORE_PATH);
+    final String sKeyStorePW = configFile.getString (CONFIG_SML_KEYSTORE_PASSWORD);
+    final String sKeyStoreAlias = configFile.getString (CONFIG_SML_KEYSTORE_ALIAS);
     final KeyStore aKeyStore = KeyStoreUtils.loadKeyStore (sKeyStorePath, sKeyStorePW);
     final KeyStore.PrivateKeyEntry aKeyEntry = (KeyStore.PrivateKeyEntry) aKeyStore.getEntry (sKeyStoreAlias,
                                                                                               new KeyStore.PasswordProtection (sKeyStorePW.toCharArray ()));

@@ -33,7 +33,7 @@
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-transport-api</artifactId>
-      <version>2.2.3</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.metro</groupId>
@@ -44,7 +44,7 @@
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-smp-client-library</artifactId>
-      <version>2.2.3</version>
+      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>

@@ -124,7 +124,7 @@ public class DBMSDataManagerTest {
       super.before ();
       if (s_aDataMgr == null) {
         // Do it only once :)
-        SMPEntityManagerFactory.getInstance ();
+        // SMPEntityManagerFactory.getInstance ();
         s_aDataMgr = new DBMSDataManager (new DoNothingRegistrationHook ());
       }
     }

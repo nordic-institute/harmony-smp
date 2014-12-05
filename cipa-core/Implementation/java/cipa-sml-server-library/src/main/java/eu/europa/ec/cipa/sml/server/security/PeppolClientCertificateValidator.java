@@ -58,6 +58,7 @@ import com.helger.commons.collections.ArrayHelper;
 import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Extract certificates from HTTP requests. These are the client certificates
@@ -70,6 +71,17 @@ public final class PeppolClientCertificateValidator {
   public static final String CONFIG_SML_CLIENT_CERTISSUER = "sml.client.certissuer";
   public static final String CONFIG_SML_CLIENT_CERTISSUER_NEW = "sml.client.certissuer.new";
   private static final Logger s_aLogger = LoggerFactory.getLogger (PeppolClientCertificateValidator.class);
+
+  private static ConfigFile configFile;
+
+  static {
+      /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
+        in the classpath (like smp.config.properties or sml.config.properties).
+        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
+        Needs to be properly refactored */
+      ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
+      configFile = (ConfigFile) context.getBean("configFile");
+  }
 
   @PresentForCodeCoverage
   @SuppressWarnings ("unused")
@@ -176,7 +188,7 @@ public final class PeppolClientCertificateValidator {
     final List <X500Principal> aSearchIssuers = new ArrayList <X500Principal> ();
     {
       // Find the certificate that is issued by
-      final String sIssuerToSearch = ConfigFile.getInstance ().getString (CONFIG_SML_CLIENT_CERTISSUER);
+      final String sIssuerToSearch = configFile.getString (CONFIG_SML_CLIENT_CERTISSUER);
       if (StringHelper.hasNoText (sIssuerToSearch))
         throw new IllegalStateException ("The configuration file is missing the entry '" +
                                          CONFIG_SML_CLIENT_CERTISSUER +
@@ -185,7 +197,7 @@ public final class PeppolClientCertificateValidator {
       aSearchIssuers.add (new X500Principal (sIssuerToSearch));
 
       // Alternative (optional)
-      final String sAlternativeIssuerToSearch = ConfigFile.getInstance ().getString (CONFIG_SML_CLIENT_CERTISSUER_NEW);
+      final String sAlternativeIssuerToSearch = configFile.getString (CONFIG_SML_CLIENT_CERTISSUER_NEW);
       if (StringHelper.hasText (sAlternativeIssuerToSearch)) {
         // Throws a runtime exception on syntax error anyway :)
         aSearchIssuers.add (new X500Principal (sAlternativeIssuerToSearch));

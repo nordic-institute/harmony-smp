@@ -108,7 +108,7 @@ public class SMPServiceCallerReadonly {
 
   // Members - free to change from here on
   @Deprecated
-  private static final ConfiguredDNSMapper s_aDNSMapper = new ConfiguredDNSMapper (ConfigFile.getInstance ());
+  private static final ConfiguredDNSMapper s_aDNSMapper = new ConfiguredDNSMapper ();
 
   private final URI m_aSMPHost;
   private final WebResource m_aWebResource;
