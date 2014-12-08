@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Properties;
 
@@ -73,13 +77,19 @@ public class AS4PModeService {
 		properties = PropertiesUtil.getProperties(null);
 		if (pmodePool == null) {
 			String pmodeFilePath = properties.getProperty(PropertiesUtil.AS4_PMODE_FILEPATH);
-			pmodeFile = new File(pmodeFilePath);
+            try {
+                pmodeFile = new File(this.getClass().getResource(pmodeFilePath).toURI());
+            } catch (Exception exc) {
+                s_aLogger.warn("Unable to locate pmode file: " + pmodeFilePath + ". Gonna try to create it");
+                pmodeFile = new File(pmodeFilePath);
+            }
 			if (!pmodeFile.exists()) {
-				try {
+                try {
 					if (!pmodeFile.createNewFile()) {
 						s_aLogger.error("Unable to create pmode file");
 						throw new DispatcherConfigurationException("Unable to create pmode file");
 					}
+                    Files.write(Paths.get(pmodeFile.toURI()), "<?xml version=\"1.0\" encoding=\"utf-8\"?><PModes></PModes>".getBytes("utf-8"), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 				} catch (IOException e) {
 					s_aLogger.error("Unable to create pmode file");
 					throw new DispatcherConfigurationException("Unable to create pmode file");

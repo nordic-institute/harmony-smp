@@ -122,7 +122,35 @@
 			<artifactId>mendelson</artifactId>
 			<version>1.1.b41</version>
 		</dependency>
-	</dependencies>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <version>1.6.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-test-mockito-junit4</artifactId>
+            <version>1.6.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-mockito</artifactId>
+            <version>1.6.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>1.10.8</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 	<build>
 		<plugins>
 
@@ -161,7 +189,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
-				<version>2.0.2</version>
 				<configuration>
 					<warName>cipa-dispatcher</warName>
 					<archive>
@@ -265,9 +292,6 @@
 						<version>2.10.0</version>
 					</dependency>
 				</dependencies>
-			</plugin>
-			<plugin>
-				<artifactId>maven-war-plugin</artifactId>
 			</plugin>
 		</plugins>
 		<pluginManagement>
