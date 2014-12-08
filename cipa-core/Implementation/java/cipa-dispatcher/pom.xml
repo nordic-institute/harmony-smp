@@ -23,6 +23,9 @@
 		<org.apache.cxf.version>2.2.3</org.apache.cxf.version>
         <cipa.version>2.2.4-SNAPSHOT</cipa.version>
         <domibus.version>2.1-SNAPSHOT</domibus.version>
+        <ftp.host>wltdgt02.cc.cec.eu.int</ftp.host>
+        <ftp.port>2059</ftp.port>
+        <ftp.remotedir>/ec/test/server/weblogic/u010/home/digciedt/data/CIPA-EDEL_DEV/autodeploy</ftp.remotedir>
 	</properties>
 
 	<dependencies>
@@ -152,8 +155,22 @@
         </dependency>
     </dependencies>
 	<build>
-		<plugins>
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <targetPath>${project.build.directory}/classes</targetPath>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/test/resources</directory>
+                <targetPath>${project.build.directory}/test-classes</targetPath>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/webapp</directory>
+                <targetPath>${project.build.directory}/webapp-classes</targetPath>
+            </resource>
+        </resources>
 
+		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
@@ -322,6 +339,73 @@
 						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <configuration>
+                        <target>
+                            <ftp server="${ftp.host}"
+                                 port="${ftp.port}"
+                                 passive="yes"
+                                 remotedir="${ftp.remotedir}"
+                                 userid="${ftp.user}"
+                                 password="${ftp.password}">
+                                <fileset dir="${project.build.directory}">
+                                    <include name="${project.artifactId}.${project.packaging}"/>
+                                </fileset>
+                            </ftp>
+                        </target>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>ant</groupId>
+                            <artifactId>ant-commons-net</artifactId>
+                            <version>1.6.5</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>commons-net</groupId>
+                            <artifactId>commons-net</artifactId>
+                            <version>1.4.1</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
+                <plugin>
+                    <groupId>com.smartbear.soapui</groupId>
+                    <artifactId>soapui-maven-plugin</artifactId>
+                    <version>5.0.0</version>
+                    <configuration>
+                        <outputFolder>${project.build.directory}/surefire-reports</outputFolder>
+                        <junitReport>true</junitReport>
+                        <printReport>true</printReport>
+                        <soapuiProperties>
+                            <property>
+                                <name>soapui.logroot</name>
+                                <value>${project.build.directory}/soapui/logs/</value>
+                            </property>
+                            <property>
+                                <name>http.nonProxyHosts</name>
+                                <value>localhost|127.*|[::1]</value>
+                            </property>
+                        </soapuiProperties>
+                        <testFailIgnore>false</testFailIgnore>
+                        <projectFile>${project.basedir}/../../../Test/Supporting Tools/AP-soapui-project.xml</projectFile>
+                        <projectProperties>
+                            <value>url=${url}</value>
+                        </projectProperties>
+                    </configuration>
+                    <dependencies>
+                        <dependency>
+                            <groupId>mysql</groupId>
+                            <artifactId>mysql-connector-java</artifactId>
+                            <version>5.1.33</version>
+                        </dependency>
+                        <dependency>
+                            <groupId>com.oracle</groupId>
+                            <artifactId>ojdbc6</artifactId>
+                            <version>11.2.0.1.0</version>
+                        </dependency>
+                    </dependencies>
+                </plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
