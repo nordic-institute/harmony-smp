@@ -3,6 +3,10 @@ package eu.europa.ec.cipa.dispatcher.endpoint_interface.as2;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.net.InetSocketAddress;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.HashMap;
@@ -120,20 +124,21 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 			
 			//put the file on the right folder for Mendelson to send it
 			path += "/" + documentName;
-		    File tempFile = new File(documentFilePath);
-		    File mendelsonFile = new File(path);
 		    SignalObject signalObject = new SignalObject();
 		    
 		    synchronized(synchronizedObject) //giving the file for Mendelson to send and populating waitingMessages form an atomic operation
 		    {
-			    boolean success = tempFile.renameTo(mendelsonFile);
-			    if (!success){
-			    	s_aLogger.error("Error: Couldn't move the temp file " + documentFilePath + " into Mendelson folder " + path + " to be sent.");
-			    	return "Error: Couldn't move the temp file " + documentFilePath + " into Mendelson folder " + path + " to be sent.";
-			    }else
-			    	waitingMessages.put(documentName, signalObject);
+			 //   boolean success = tempFile.renameTo(mendelsonFile);
+			    Path source =  Paths.get(documentFilePath);
+			    Path target = Paths.get(path);
+			    Files.move(source, target, StandardCopyOption.REPLACE_EXISTING );
+//			    if (!success){
+//			    	
+//			    }else
+//			    s_aLogger.error("Error: Couldn't move the temp file " + documentFilePath + " into Mendelson folder " + path + " to be sent.");
+//			    	return "Error: Couldn't move the temp file " + documentFilePath + " into Mendelson folder " + path + " to be sent.";
+			    waitingMessages.put(documentName, signalObject);
 		    }
-		    
 		    synchronized(signalObject)
 		    {
 		    	while(signalObject.getResponseValue()==0)
