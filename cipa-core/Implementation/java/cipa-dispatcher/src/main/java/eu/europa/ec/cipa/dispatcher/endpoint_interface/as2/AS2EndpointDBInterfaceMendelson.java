@@ -46,7 +46,7 @@ public class AS2EndpointDBInterfaceMendelson implements IAS2EndpointDBInterface
 		runtimeDataSource.setUrl(url + "runtime");
 		runtimeDataSource.setUsername(properties.getProperty(PropertiesUtil.DB_USER));
 		runtimeDataSource.setPassword(properties.getProperty(PropertiesUtil.DB_PASS));
-		runtimeDataSource.setDefaultAutoCommit(false);
+		runtimeDataSource.setDefaultAutoCommit(true);
 		runtimeDataSource.setDefaultReadOnly(false);
 		runtimeDataSource.setPoolPreparedStatements(false);
 		runtimeDataSource.setMaxActive(5);
@@ -57,7 +57,7 @@ public class AS2EndpointDBInterfaceMendelson implements IAS2EndpointDBInterface
 		configDataSource.setUrl(url + "config");
 		configDataSource.setUsername(properties.getProperty(PropertiesUtil.DB_USER));
 		configDataSource.setPassword(properties.getProperty(PropertiesUtil.DB_PASS));
-		configDataSource.setDefaultAutoCommit(false);
+		configDataSource.setDefaultAutoCommit(true);
 		configDataSource.setDefaultReadOnly(false);
 		configDataSource.setPoolPreparedStatements(false);
 		configDataSource.setMaxActive(5);
