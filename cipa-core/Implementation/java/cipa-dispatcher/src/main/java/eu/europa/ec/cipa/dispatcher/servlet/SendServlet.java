@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.prefs.Preferences;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -49,6 +50,7 @@ import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.UserMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+ 
 
 import backend.ecodex.org._1_1.BackendInterface;
 import backend.ecodex.org._1_1.BackendService11;
@@ -59,6 +61,8 @@ import backend.ecodex.org._1_1.SendResponse;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
+import de.mendelson.comm.as2.AS2ServerVersion;
+import de.mendelson.comm.as2.preferences.PreferencesAS2;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointDBInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointInitAndDestroyInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointSendInterface;
@@ -77,8 +81,8 @@ import eu.europa.ec.cipa.transport.start.client.AccessPointClientSendResult;
 
 public class SendServlet extends HttpServlet {
 
-	private static final Logger s_aLogger = LoggerFactory.getLogger(SendServlet.class);
-
+	private static final Logger s_aLogger = LoggerFactory.getLogger (SendServlet.class);
+	
 	Properties properties = PropertiesUtil.getProperties(null);
 	BackendService11 holodeck_service = null;
 	// created as object variable to avoid loading the holodeck
@@ -118,7 +122,7 @@ public class SendServlet extends HttpServlet {
 				initAS2Interface.destroy();
 			}
 		} catch (Throwable e) {
-			s_aLogger.error(e.getMessage(), e);
+			s_aLogger.error(e.getMessage(),e );
 		}
 	}
 
@@ -200,7 +204,7 @@ public class SendServlet extends HttpServlet {
 					endpoint = partnerInterface.getPartnerData(receiverIdentifier);
 				}
 
-				if (endpoint == null || endpoint.getEndpointReference() == null) {
+				if (endpoint == null || endpoint.getEndpointReference() == null){
 					s_aLogger.error("Couldn't successfully retrieve the receiver's metadata");
 					throw new Exception("Couldn't successfully retrieve the receiver's metadata");
 				}
@@ -420,7 +424,7 @@ public class SendServlet extends HttpServlet {
 		Property prop = new Property();
 		prop.setName("MimeType");
 		prop.setValue("application/xml");
-
+		
 		PartProperties pProp = new PartProperties();
 		pProp.getProperty().add(prop);
 
