@@ -17,10 +17,6 @@ public class ProxyAuthenticator extends Authenticator
 
     protected PasswordAuthentication getPasswordAuthentication()
     {
-        String requestingHost = getRequestingHost();
-        if (requestingHost.equals("158.169.9.13"))
-            return new PasswordAuthentication(user, password.toCharArray());
-        else
-            return null;
+       return new PasswordAuthentication(user, password.toCharArray());
     }
 }
