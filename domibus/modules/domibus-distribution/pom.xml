@@ -46,12 +46,11 @@ PROFILES:
  - distribute
 
 USAGE:
-clean package -DconfigFile=${project.parent.basedir}/domibus-config/domibus.test.properties -Pweblogic -> create a war for weblogic on TEST environment
-clean package -DconfigFile=${project.parent.basedir}/domibus-config/domibus.dev.properties -Pweblogic -Dprefix.jndi= -> create a war for weblogic on DEV environment
+clean package -Pweblogic -> create a war for weblogic on TEST environment
 clean install -Pdistribute -> create a distribution packaged with tomcat
 
 
-!!!! WARNING !!! If you get zn OutOfMemoryError, then also add VM args '-Xmx512m -XX:MaxPermSize=256m'
+!!!! WARNING !!! If you get an OutOfMemoryError, then also add VM args '-Xmx512m -XX:MaxPermSize=256m'
 
 
  -->
@@ -77,10 +76,6 @@ clean install -Pdistribute -> create a distribution packaged with tomcat
         <derby.version>10.10.1.1</derby.version>
         <context.root>domibus</context.root>
         <configFile>${project.parent.basedir}/domibus-config/domibus.default.properties</configFile>
-        <!-- uncomment for DEV environment -->
-        <!--<configFile>project.parent.basedir}/domibus-config/domibus.dev.properties</configFile>-->
-        <!-- uncomment for TEST environment -->
-        <!--<configFile>project.parent.basedir}/domibus-config/domibus.test.properties</configFile>-->
         <ftp.host>wltdgt02.cc.cec.eu.int</ftp.host>
         <ftp.port>2059</ftp.port>
         <ftp.remotedir>/ec/test/server/weblogic/u010/home/digciedt/data/CIPA-EDEL_DEV/autodeploy</ftp.remotedir>

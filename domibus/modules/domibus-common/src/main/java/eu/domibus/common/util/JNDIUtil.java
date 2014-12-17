@@ -79,12 +79,7 @@ public class JNDIUtil {
             // Weblogic does not allow to define configuration variable in the
             // JNDI so we must load from a file
             if ((initCtxProvider != null) && initCtxProvider.contains("weblogic")) {
-                if (JNDIUtil.props == null) {
-                    JNDIUtil.props = new Properties();
-                    JNDIUtil.props.load(JNDIUtil.class.getClassLoader().getResourceAsStream("weblogic.properties"));
-                }
-                return JNDIUtil.props.getProperty(parameter);
-
+                return PropertiesUtil.getProperties().getProperty(parameter);
             }
             // assume application was deployed in tomcat
             prefix = JNDIUtil.JNDI_ENV_PREFIX;
@@ -92,8 +87,6 @@ public class JNDIUtil {
             return (JNDIUtil.ctx.lookup(prefix + parameter));
         } catch (NamingException e) {
             throw new ConfigurationException("Parameter " + parameter + " can not be found in the JNDI context", e);
-        } catch (IOException e) {
-            throw new ConfigurationException("Parameter " + parameter + " can not be found in the Init properties", e);
         }
     }
 

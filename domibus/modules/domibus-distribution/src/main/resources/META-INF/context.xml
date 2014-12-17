@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context>
+    <ResourceLink global="jdbc/@domibus.persistence.jndi.name@" name="jdbc/@domibus.persistence.jndi.name@" type="javax.sql.DataSource"/>
+</Context>
+
