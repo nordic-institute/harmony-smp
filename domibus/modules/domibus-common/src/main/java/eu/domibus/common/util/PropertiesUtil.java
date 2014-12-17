@@ -32,7 +32,7 @@ public class PropertiesUtil {
 
                 }
                 if (properties == null) {
-                    logger.warn("No configuration file " + ALT_CONFIG_CLASS_PATH + " found");
+                    logger.error("No configuration file found. Default values will be used. Be warned that the application may not behave correctly if you don't configure the " + CONFIG_CLASS_PATH + " and put it in the classpath");
                 }
             } catch (Exception e) {
                 properties = null;
