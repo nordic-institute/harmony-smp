@@ -1,16 +1,13 @@
 package eu.domibus.common.util;
 
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.apache.log4j.Logger;
 import java.io.InputStream;
 import java.util.Properties;
 
 
 public class PropertiesUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(PropertiesUtil.class);
+    private static final Logger logger = Logger.getLogger(PropertiesUtil.class);
 
     private static Properties properties = null;
 
