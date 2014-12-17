@@ -49,6 +49,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.PresentForCodeCoverage;
 import com.helger.commons.io.resource.ClassPathResource;
@@ -57,166 +59,168 @@ import com.helger.commons.io.streams.StreamUtils;
 
 /**
  * Helper methods to access Java key stores of type JKS (Java KeyStore).
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
 public final class KeyStoreUtils {
-	/** The classpath entry referencing the global truststore with all entries */
-	public static final String TRUSTSTORE_CLASSPATH = "truststore/global-truststore.jks";
+  /** The classpath entry referencing the global truststore with all entries */
+  public static final String TRUSTSTORE_CLASSPATH = "truststore/global-truststore.jks";
 
-	/** The classpath entry referencing the global PEPPOL truststore */
-	public static final String TRUSTSTORE_CLASSPATH_PEPPOL = "truststore/global-truststore-peppol.jks";
+  /** The classpath entry referencing the global OpenPEPPOL truststore */
+  public static final String TRUSTSTORE_CLASSPATH_OPENPEPPOL = "truststore/global-truststore-openpeppol.jks";
 
-	/** The classpath entry referencing the global OpenPEPPOL truststore */
-	public static final String TRUSTSTORE_CLASSPATH_OPENPEPPOL = "truststore/global-truststore-openpeppol.jks";
+  /** The password used to access the truststores */
+  public static final String TRUSTSTORE_PASSWORD = "peppol";
 
-	/** The password used to access the truststores */
-	public static final String TRUSTSTORE_PASSWORD = "peppol";
+  /** The truststore alias for the OpenPEPPOL root certificate */
+  public static final String TRUSTSTORE_ALIAS_ROOT_OPENPEPPOL = "peppol root ca";
 
-	/** The truststore alias for the PEPPOL root certificate */
-	public static final String TRUSTSTORE_ALIAS_ROOT_PEPPOL = "peppol root test ca";
+  /** The truststore alias for the OpenPEPPOL AP certificate */
+  public static final String TRUSTSTORE_ALIAS_AP_OPENPEPPOL = "peppol access point ca (peppol root ca)";
 
-	/** The truststore alias for the OpenPEPPOL root certificate */
-	public static final String TRUSTSTORE_ALIAS_ROOT_OPENPEPPOL = "peppol root ca";
+  /** The truststore alias for the OpenPEPPOL SMP certificate */
+  public static final String TRUSTSTORE_ALIAS_SMP_OPENPEPPOL = "peppol service metadata publisher ca (peppol root ca)";
 
-	/** The truststore alias for the PEPPOL AP certificate */
-	public static final String TRUSTSTORE_ALIAS_AP_PEPPOL = "peppol access point test ca (peppol root test ca)";
+  public static final String KEYSTORE_TYPE_JKS = "JKS";
+  public static final String KEYSTORE_TYPE_JCEKS = "JCEKS";
+  public static final String KEYSTORE_TYPE_PKCS12 = "PKCS12";
 
-	/** The truststore alias for the OpenPEPPOL AP certificate */
-	public static final String TRUSTSTORE_ALIAS_AP_OPENPEPPOL = "peppol access point ca (peppol root ca)";
+  private static final String [] keystoreTypes = { KEYSTORE_TYPE_PKCS12, KEYSTORE_TYPE_JKS, KEYSTORE_TYPE_JCEKS };
 
-	@Deprecated
-	public static final String TRUSTSTORE_ALIAS_AP = TRUSTSTORE_ALIAS_AP_PEPPOL;
+  @PresentForCodeCoverage
+  @SuppressWarnings ("unused")
+  private static final KeyStoreUtils s_aInstance = new KeyStoreUtils ();
 
-	/** The truststore alias for the PEPPOL SMP certificate */
-	public static final String TRUSTSTORE_ALIAS_SMP_PEPPOL = "peppol service metadata publisher test ca (peppol root test ca)";
+  private KeyStoreUtils () {}
 
-	/** The truststore alias for the OpenPEPPOL SMP certificate */
-	public static final String TRUSTSTORE_ALIAS_SMP_OPENPEPPOL = "peppol service metadata publisher ca (peppol root ca)";
+  /**
+   * Load a key store from a resource.
+   *
+   * @param sKeyStorePath
+   *        The path pointing to the key store. May not be <code>null</code>.
+   * @param sKeyStorePassword
+   *        The key store password. May be <code>null</code> to indicate that no
+   *        password is required.
+   * @return The Java key-store object.
+   * @see KeyStore#load(InputStream, char[])
+   * @throws GeneralSecurityException
+   *         In case of a key store error
+   * @throws IOException
+   *         In case key store loading fails
+   */
+  @Nonnull
+  public static KeyStore loadKeyStore (@Nonnull final String sKeyStorePath, @Nullable final String sKeyStorePassword) throws GeneralSecurityException,
+                                                                                                                     IOException {
+    return loadKeyStore (sKeyStorePath, sKeyStorePassword == null ? null : sKeyStorePassword.toCharArray ());
+  }
 
-	@Deprecated
-	public static final String TRUSTSTORE_ALIAS_SMP = TRUSTSTORE_ALIAS_SMP_PEPPOL;
+  /**
+   * Load a key store from a resource.
+   *
+   * @param sKeyStorePath
+   *        The path pointing to the key store. May not be <code>null</code>.
+   * @param aKeyStorePassword
+   *        The key store password. May be <code>null</code> to indicate that no
+   *        password is required.
+   * @return The Java key-store object.
+   * @see KeyStore#load(InputStream, char[])
+   * @throws GeneralSecurityException
+   *         In case of a key store error
+   * @throws IOException
+   *         In case key store loading fails
+   */
+  @Nonnull
+  public static KeyStore loadKeyStore (@Nonnull final String sKeyStorePath, @Nullable final char [] aKeyStorePassword) throws GeneralSecurityException,
+                                                                                                                      IOException {
 
-	public static final String KEYSTORE_TYPE_JKS = "JKS";
-	public static final String KEYSTORE_TYPE_JCEKS = "JCEKS";
-	public static final String KEYSTORE_TYPE_PKCS12 = "PKCS12";
+    Security.addProvider (new org.bouncycastle.jce.provider.BouncyCastleProvider ());
 
-	private static final String[] keystoreTypes = { KEYSTORE_TYPE_PKCS12, KEYSTORE_TYPE_JKS, KEYSTORE_TYPE_JCEKS };
+    // Open the resource stream
+    InputStream aIS = ClassPathResource.getInputStream (sKeyStorePath);
+    if (aIS == null) {
+      // Fallback to file system - maybe this helps...
+      aIS = new FileSystemResource (sKeyStorePath).getInputStream ();
+    }
+    if (aIS == null)
+      throw new IllegalArgumentException ("Failed to open key store '" + sKeyStorePath + "'");
+    try {
+      KeyStore aKeyStore = null;
+      for (final String keystoreType : keystoreTypes) {
+        if (keystoreType.equals ("PKCS12") && aKeyStorePassword != null) {
+          // BouncyCastle implementation of a keystore allows for the PKCS12
+          // keystore to accept trusted certificates. The default Java provider
+          // doesn't.
+          aKeyStore = KeyStore.getInstance (keystoreType, BouncyCastleProvider.PROVIDER_NAME);
+        }
+        else {
+          // but BouncyCastle doesn't have an implementation for jks! so we try
+          // with the default implementation
+          aKeyStore = KeyStore.getInstance (keystoreType);
+        }
+        try {
+          aKeyStore.load (aIS, aKeyStorePassword);
+          return aKeyStore;
+        }
+        catch (final IOException e) {
+          StreamUtils.close (aIS);
+          aIS = ClassPathResource.getInputStream (sKeyStorePath);
+          if (aIS == null) {
+            // Fallback to file system - maybe this helps...
+            aIS = new FileSystemResource (sKeyStorePath).getInputStream ();
+          }
+        }
 
-	@PresentForCodeCoverage
-	@SuppressWarnings("unused")
-	private static final KeyStoreUtils s_aInstance = new KeyStoreUtils();
+        // } catch (final KeyStoreException ex) {
+        // throw new
+        // IllegalStateException("No provider can handle JKS key stores! Very weird!",
+        // ex);
+        // }
+      }
+      throw new IllegalStateException ("No provider can handle JKS key stores! Very weird!");
+    }
+    finally {
+      StreamUtils.close (aIS);
+    }
 
-	private KeyStoreUtils() {
-	}
+  }
 
-	/**
-	 * Load a key store from a resource.
-	 * 
-	 * @param sKeyStorePath
-	 *            The path pointing to the key store. May not be <code>null</code>.
-	 * @param sKeyStorePassword
-	 *            The key store password. May be <code>null</code> to indicate that no password is required.
-	 * @return The Java key-store object.
-	 * @see KeyStore#load(InputStream, char[])
-	 * @throws GeneralSecurityException
-	 *             In case of a key store error
-	 * @throws IOException
-	 *             In case key store loading fails
-	 */
-	@Nonnull
-	public static KeyStore loadKeyStore(@Nonnull final String sKeyStorePath, @Nullable final String sKeyStorePassword) throws GeneralSecurityException, IOException {
-		return loadKeyStore(sKeyStorePath, sKeyStorePassword == null ? null : sKeyStorePassword.toCharArray());
-	}
+  /**
+   * Create a new key store based on an existing key store
+   *
+   * @param aBaseKeyStore
+   *        The source key store. May not be <code>null</code>
+   * @param sAliasToCopy
+   *        The name of the alias in the source key store that should be put in
+   *        the new key store
+   * @param aAliasPassword
+   *        The optional password to access the alias in the source key store.
+   *        If it is not <code>null</code> the same password will be used in the
+   *        created key store
+   * @return The created in-memory key store
+   * @throws GeneralSecurityException
+   *         In case of a key store error
+   * @throws IOException
+   *         In case key store loading fails
+   */
+  @Nonnull
+  public static KeyStore createKeyStoreWithOnlyOneItem (@Nonnull final KeyStore aBaseKeyStore,
+                                                        @Nonnull final String sAliasToCopy,
+                                                        @Nullable final char [] aAliasPassword) throws GeneralSecurityException,
+                                                                                               IOException {
+    ValueEnforcer.notNull (aBaseKeyStore, "BaseKeyStore");
+    ValueEnforcer.notNull (sAliasToCopy, "AliasToCopy");
 
-	/**
-	 * Load a key store from a resource.
-	 * 
-	 * @param sKeyStorePath
-	 *            The path pointing to the key store. May not be <code>null</code>.
-	 * @param aKeyStorePassword
-	 *            The key store password. May be <code>null</code> to indicate that no password is required.
-	 * @return The Java key-store object.
-	 * @see KeyStore#load(InputStream, char[])
-	 * @throws GeneralSecurityException
-	 *             In case of a key store error
-	 * @throws IOException
-	 *             In case key store loading fails
-	 */
-	@Nonnull
-	public static KeyStore loadKeyStore(@Nonnull final String sKeyStorePath, @Nullable final char[] aKeyStorePassword) throws GeneralSecurityException, IOException {
+    final KeyStore aKeyStore = KeyStore.getInstance (aBaseKeyStore.getType (), aBaseKeyStore.getProvider ());
+    // null stream means: create new key store
+    aKeyStore.load (null, null);
 
-		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+    // Do we need a password?
+    ProtectionParameter aPP = null;
+    if (aAliasPassword != null)
+      aPP = new PasswordProtection (aAliasPassword);
 
-		// Open the resource stream
-		InputStream aIS = ClassPathResource.getInputStream(sKeyStorePath);
-		if (aIS == null) {
-			// Fallback to file system - maybe this helps...
-			aIS = new FileSystemResource(sKeyStorePath).getInputStream();
-		}
-		if (aIS == null)
-			throw new IllegalArgumentException("Failed to open key store '" + sKeyStorePath + "'");
-		try {
-			KeyStore aKeyStore = null;
-			for (int i = 0; i < keystoreTypes.length; i++) {
-				if (keystoreTypes[i].equals("PKCS12") && aKeyStorePassword != null)
-					aKeyStore = KeyStore.getInstance(keystoreTypes[i], "BC"); // BouncyCastle implementation of a keystore allows for the PKCS12 keystore to accept trusted certificates. The default Java provider doesn't.
-				else
-					aKeyStore = KeyStore.getInstance(keystoreTypes[i]); // but BouncyCastle doesn't have an implementation for jks! so we try with the default implementation
-				try {
-					aKeyStore.load(aIS, aKeyStorePassword);
-					return aKeyStore;
-				} catch (IOException e) {
-					StreamUtils.close(aIS);
-					aIS = ClassPathResource.getInputStream(sKeyStorePath);
-					if (aIS == null) {
-						// Fallback to file system - maybe this helps...
-						aIS = new FileSystemResource(sKeyStorePath).getInputStream();
-					}
-				}
-
-				// } catch (final KeyStoreException ex) {
-				// throw new IllegalStateException("No provider can handle JKS key stores! Very weird!", ex);
-				// }
-			}
-			 throw new IllegalStateException ("No provider can handle JKS key stores! Very weird!");
-		} finally {
-			StreamUtils.close(aIS);
-		}
-
-	}
-
-	/**
-	 * Create a new key store based on an existing key store
-	 * 
-	 * @param aBaseKeyStore
-	 *            The source key store. May not be <code>null</code>
-	 * @param sAliasToCopy
-	 *            The name of the alias in the source key store that should be put in the new key store
-	 * @param aAliasPassword
-	 *            The optional password to access the alias in the source key store. If it is not <code>null</code> the same password will be used in the created key store
-	 * @return The created in-memory key store
-	 * @throws GeneralSecurityException
-	 *             In case of a key store error
-	 * @throws IOException
-	 *             In case key store loading fails
-	 */
-	@Nonnull
-	public static KeyStore createKeyStoreWithOnlyOneItem(@Nonnull final KeyStore aBaseKeyStore, @Nonnull final String sAliasToCopy, @Nullable final char[] aAliasPassword) throws GeneralSecurityException, IOException {
-		ValueEnforcer.notNull(aBaseKeyStore, "BaseKeyStore");
-		ValueEnforcer.notNull(sAliasToCopy, "AliasToCopy");
-
-		final KeyStore aKeyStore = KeyStore.getInstance(aBaseKeyStore.getType(), aBaseKeyStore.getProvider());
-		// null stream means: create new key store
-		aKeyStore.load(null, null);
-
-		// Do we need a password?
-		ProtectionParameter aPP = null;
-		if (aAliasPassword != null)
-			aPP = new PasswordProtection(aAliasPassword);
-
-		aKeyStore.setEntry(sAliasToCopy, aBaseKeyStore.getEntry(sAliasToCopy, aPP), aPP);
-		return aKeyStore;
-	}
+    aKeyStore.setEntry (sAliasToCopy, aBaseKeyStore.getEntry (sAliasToCopy, aPP), aPP);
+    return aKeyStore;
+  }
 }

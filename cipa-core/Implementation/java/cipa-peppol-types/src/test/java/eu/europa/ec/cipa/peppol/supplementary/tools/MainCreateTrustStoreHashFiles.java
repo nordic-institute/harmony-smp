@@ -56,7 +56,7 @@ import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
 /**
  * Utility class to create hash codes of the global trust store to verify if it
  * is valid or not.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class MainCreateTrustStoreHashFiles {
@@ -81,7 +81,6 @@ public final class MainCreateTrustStoreHashFiles {
 
   public static void main (final String [] args) {
     _create (KeyStoreUtils.TRUSTSTORE_CLASSPATH);
-    _create (KeyStoreUtils.TRUSTSTORE_CLASSPATH_PEPPOL);
     _create (KeyStoreUtils.TRUSTSTORE_CLASSPATH_OPENPEPPOL);
   }
 }

@@ -44,8 +44,6 @@ import java.net.UnknownHostException;
 
 import org.junit.Test;
 
-import eu.europa.ec.cipa.peppol.utils.ConfigFile;
-
 /**
  * Test class for class {@link ConfiguredDNSMapperTest}.
  *

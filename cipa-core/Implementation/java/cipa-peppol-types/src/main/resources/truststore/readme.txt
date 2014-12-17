@@ -40,14 +40,6 @@ global-truststore.jks
   Is the global trust store for PEPPOL and OpenPEPPOL. It works for SML, SMP and AP.
   It is the merged version of the separate truststores.
 
-global-truststore-peppol.jks
-  Is the global trust store for PEPPOL and works for SML, SMP and AP
-  The contained aliases are:
-  * peppol root test ca
-  * peppol access point test ca (peppol root test ca)
-  * peppol security token service test ca (peppol root test ca)
-  * peppol service metadata publisher test ca (peppol root test ca)
-
 global-truststore-openpeppol.jks 
   Is the global trust store for OpenPEPPOL and works as well for SML, SMP and AP 
   The contained aliases are:
