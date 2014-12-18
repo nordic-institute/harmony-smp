@@ -344,6 +344,7 @@ clean install -Pdistribute -> create a distribution packaged with tomcat
             <id>weblogic</id>
             <properties>
                 <prefix.jndi>jdbc/</prefix.jndi>
+                <domibus.persistence.unit>cipaeDeliveryDs</domibus.persistence.unit>
                 <finalName>domibus-weblogic</finalName>
                 <exclude.application.server.specific>**/config*.properties</exclude.application.server.specific>
             </properties>
@@ -356,6 +357,7 @@ clean install -Pdistribute -> create a distribution packaged with tomcat
             <properties>
                 <prefix.jndi>java:comp/env/</prefix.jndi>
                 <finalName>domibus</finalName>
+                <domibus.persistence.unit>domibusPU</domibus.persistence.unit>
                 <exclude.application.server.specific>**/weblogic*,**/config*.properties</exclude.application.server.specific>
             </properties>
             <dependencies>

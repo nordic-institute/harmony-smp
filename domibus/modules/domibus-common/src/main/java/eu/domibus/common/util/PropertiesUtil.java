@@ -62,6 +62,7 @@ public class PropertiesUtil {
                     result = new Properties();
                     result.load(stream);
                     stream.close();
+
                 } catch (Exception exc2) {
                     logger.debug("Couldn't load properties: " + configFile);
                 }

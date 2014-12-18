@@ -104,7 +104,7 @@
 
     <resource-ref>
         <description>Domibus datasource</description>
-        <res-ref-name>${domibus.persistence.unit}</res-ref-name>
+        <res-ref-name>domibusPU</res-ref-name>
         <res-type>javax.sql.DataSource</res-type>
         <res-auth>Container</res-auth>
     </resource-ref>

@@ -3,7 +3,7 @@
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
 
-    <persistence-unit name="@domibus.persistence.unit@" transaction-type="RESOURCE_LOCAL">
+    <persistence-unit name="domibusPU" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.ejb.HibernatePersistence</provider>
         <!-- this will be replaced at buildtime with the classes defined in domibus.default.properties -->
         <!-- @domibus.mapped.entities@ -->
