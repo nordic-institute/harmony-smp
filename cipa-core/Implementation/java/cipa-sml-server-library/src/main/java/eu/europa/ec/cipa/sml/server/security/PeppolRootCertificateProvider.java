@@ -45,81 +45,97 @@ import javax.annotation.concurrent.Immutable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.helger.commons.annotations.PresentForCodeCoverage;
 import com.helger.commons.exceptions.InitializationException;
 
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * This class has the sole purpose of delivering the PEPPOL root certificate in
  * an efficient manner!
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
 public final class PeppolRootCertificateProvider {
-	private static final Logger s_aLogger = LoggerFactory.getLogger (PeppolRootCertificateProvider.class);
-	
-	public static final String CONFIG_SML_TRUSTSTORE_PATH = "sml.truststore.path";
-	public static final String CONFIG_SML_TRUSTSTORE_PASSWORD = "sml.truststore.password";
-	public static final String CONFIG_SML_TRUSTSTORE_ALIAS = "sml.truststore.alias";
-	public static final String CONFIG_SML_TRUSTSTORE_ALIAS_NEW = "sml.truststore.alias.new";
+  private static final Logger s_aLogger = LoggerFactory.getLogger (PeppolRootCertificateProvider.class);
 
-	private static X509Certificate s_aPeppolSMPRootCert;
-	private static X509Certificate s_aOpenPeppolSMPRootCert;
+  public static final String CONFIG_SML_TRUSTSTORE_PATH = "sml.truststore.path";
+  public static final String CONFIG_SML_TRUSTSTORE_PASSWORD = "sml.truststore.password";
+  public static final String CONFIG_SML_TRUSTSTORE_ALIAS = "sml.truststore.alias";
+  public static final String CONFIG_SML_TRUSTSTORE_ALIAS_NEW = "sml.truststore.alias.new";
 
-	static {
-        /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
-        in the classpath (like smp.config.properties or sml.config.properties).
-        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
-        Needs to be properly refactored */
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
-        // Get data from config file
-        final ConfigFile aConfigFile = (ConfigFile) context.getBean("configFile");
-		final String sTrustStorePath = aConfigFile.getString(CONFIG_SML_TRUSTSTORE_PATH, KeyStoreUtils.TRUSTSTORE_CLASSPATH);
-		final String sTrustStorePassword = aConfigFile.getString(CONFIG_SML_TRUSTSTORE_PASSWORD, KeyStoreUtils.TRUSTSTORE_PASSWORD);
+  private static X509Certificate s_aPeppolSMPRootCert;
+  private static X509Certificate s_aOpenPeppolSMPRootCert;
 
-		final String sTrustStoreAlias = aConfigFile.getString(CONFIG_SML_TRUSTSTORE_ALIAS, KeyStoreUtils.TRUSTSTORE_ALIAS_SMP_PEPPOL);
-		final String sTrustStoreAliasNew = aConfigFile.getString(CONFIG_SML_TRUSTSTORE_ALIAS_NEW, KeyStoreUtils.TRUSTSTORE_ALIAS_SMP_OPENPEPPOL);
+  static {
+    /*
+     * TODO : This is a quick and dirty hack to allow the use of a configuration
+     * file with an other name if it's in the classpath (like
+     * smp.config.properties or sml.config.properties). If the configuration
+     * file defined in applicationContext.xml couldn't be found, then the
+     * config.properties inside the war is used as a fallback. Needs to be
+     * properly refactored
+     */
+    final ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext (new String [] { "classpath:applicationContext.xml" });
+    // Get data from config file
+    final ConfigFile aConfigFile = (ConfigFile) context.getBean ("configFile");
+    final String sTrustStorePath = aConfigFile.getString (CONFIG_SML_TRUSTSTORE_PATH,
+                                                          KeyStoreUtils.TRUSTSTORE_CLASSPATH);
+    final String sTrustStorePassword = aConfigFile.getString (CONFIG_SML_TRUSTSTORE_PASSWORD,
+                                                              KeyStoreUtils.TRUSTSTORE_PASSWORD);
 
-		// Load keystores
-		try {
-			final KeyStore aKS = KeyStoreUtils.loadKeyStore(sTrustStorePath, sTrustStorePassword);
-			s_aPeppolSMPRootCert = (X509Certificate) aKS.getCertificate(sTrustStoreAlias);
-			s_aOpenPeppolSMPRootCert = (X509Certificate) aKS.getCertificate(sTrustStoreAliasNew);
-		} catch (final Throwable t) {
-			final String sErrorMsg = "Failed to read SML trust store from '" + sTrustStorePath + "'";
-			s_aLogger.error(sErrorMsg);
-			throw new InitializationException(sErrorMsg, t);
-		}
+    final String sTrustStoreAlias = aConfigFile.getString (CONFIG_SML_TRUSTSTORE_ALIAS,
+                                                           KeyStoreUtils.TRUSTSTORE_ALIAS_SMP_OPENPEPPOL);
+    final String sTrustStoreAliasNew = aConfigFile.getString (CONFIG_SML_TRUSTSTORE_ALIAS_NEW,
+                                                              KeyStoreUtils.TRUSTSTORE_ALIAS_SMP_OPENPEPPOL);
 
-		// Check if both root certificates could be loaded
-		if (s_aPeppolSMPRootCert == null)
-			throw new InitializationException("Failed to resolve alias1 '" + sTrustStoreAlias + "' in trust store!");
-		s_aLogger.info("PEPPOL root certificate loaded successfully from trust store '" + sTrustStorePath + "' with alias '" + sTrustStoreAlias + "'");
+    // Load keystores
+    try {
+      final KeyStore aKS = KeyStoreUtils.loadKeyStore (sTrustStorePath, sTrustStorePassword);
+      s_aPeppolSMPRootCert = (X509Certificate) aKS.getCertificate (sTrustStoreAlias);
+      s_aOpenPeppolSMPRootCert = (X509Certificate) aKS.getCertificate (sTrustStoreAliasNew);
+    }
+    catch (final Throwable t) {
+      final String sErrorMsg = "Failed to read SML trust store from '" + sTrustStorePath + "'";
+      s_aLogger.error (sErrorMsg);
+      throw new InitializationException (sErrorMsg, t);
+    }
 
-		if (s_aOpenPeppolSMPRootCert == null)
-			throw new InitializationException("Failed to resolve alias2 '" + sTrustStoreAliasNew + "' in trust store!");
-		s_aLogger.info("OpenPEPPOL root certificate loaded successfully from trust store '" + sTrustStorePath + "' with alias '" + sTrustStoreAliasNew + "'");
-	}
+    // Check if both root certificates could be loaded
+    if (s_aPeppolSMPRootCert == null)
+      throw new InitializationException ("Failed to resolve alias1 '" + sTrustStoreAlias + "' in trust store!");
+    s_aLogger.info ("PEPPOL root certificate loaded successfully from trust store '" +
+                    sTrustStorePath +
+                    "' with alias '" +
+                    sTrustStoreAlias +
+                    "'");
 
-	@PresentForCodeCoverage
-	@SuppressWarnings("unused")
-	private static final PeppolRootCertificateProvider s_aInstance = new PeppolRootCertificateProvider();
+    if (s_aOpenPeppolSMPRootCert == null)
+      throw new InitializationException ("Failed to resolve alias2 '" + sTrustStoreAliasNew + "' in trust store!");
+    s_aLogger.info ("OpenPEPPOL root certificate loaded successfully from trust store '" +
+                    sTrustStorePath +
+                    "' with alias '" +
+                    sTrustStoreAliasNew +
+                    "'");
+  }
 
-	private PeppolRootCertificateProvider() {
-	}
+  @PresentForCodeCoverage
+  @SuppressWarnings ("unused")
+  private static final PeppolRootCertificateProvider s_aInstance = new PeppolRootCertificateProvider ();
 
-	@Nonnull
-	public static X509Certificate getPeppolSMPRootCertificate() {
-		return s_aPeppolSMPRootCert;
-	}
+  private PeppolRootCertificateProvider () {}
 
-	@Nonnull
-	public static X509Certificate getOpenPeppolSMPRootCertificate() {
-		return s_aOpenPeppolSMPRootCert;
-	}
+  @Nonnull
+  public static X509Certificate getPeppolSMPRootCertificate () {
+    return s_aPeppolSMPRootCert;
+  }
+
+  @Nonnull
+  public static X509Certificate getOpenPeppolSMPRootCertificate () {
+    return s_aOpenPeppolSMPRootCert;
+  }
 }
