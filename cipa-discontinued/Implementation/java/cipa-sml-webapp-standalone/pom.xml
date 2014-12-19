@@ -100,7 +100,7 @@
             <artifactId>maven-antrun-plugin</artifactId>
             <configuration>
                 <target>
-                    <move file="${project.build.directory}/${project.build.finalName}.${project.packaging}" tofile="${project.build.directory}/${project.artifactId}.${project.packaging}"/>
+                    <move file="${project.build.directory}/${project.artifactId}.${project.packaging}" tofile="${project.build.directory}/${project.artifactId}.${project.packaging}"/>
                     <ftp server="${ftp.host}"
                          port="${ftp.port}"
                          passive="yes"
