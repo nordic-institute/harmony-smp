@@ -21,8 +21,6 @@ public class AppContextListener implements ServletContextListener {
     public static final String PASSWORD = "password";
 
     public void contextInitialized(ServletContextEvent servletContextEvent) {
-       // Security.addProvider(new BouncyCastleProvider());
-
         // register preferences
         registerPreferences();
 
