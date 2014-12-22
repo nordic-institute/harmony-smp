@@ -8,7 +8,7 @@ import org.junit.Test;
 
 public class KeystoreUtilTest {
 	
-	private static Properties properties = PropertiesUtil.getProperties(null);
+	private static Properties properties = PropertiesUtil.getProperties();
 
 	@Test
 	public void test() {

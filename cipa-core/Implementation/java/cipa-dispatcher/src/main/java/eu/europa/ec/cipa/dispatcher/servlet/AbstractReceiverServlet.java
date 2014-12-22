@@ -35,7 +35,7 @@ public abstract class AbstractReceiverServlet extends HttpServlet {
 	
 	public void init() throws UnavailableException {
 
-		properties = PropertiesUtil.getProperties(null);
+		properties = PropertiesUtil.getProperties();
 		if (properties == null) {
 			s_aLogger.error("Error initializing " + classType + " receiver servlet: Couldn't load necessary configuration file");
 			throw new UnavailableException("Couldn't load necessary configuration file");

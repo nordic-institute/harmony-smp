@@ -10,7 +10,7 @@
             <package-name>org.apache.*</package-name>
             <package-name>org.opensaml.*</package-name>
             <package-name>javax.wsdl.*</package-name>
-            <package-name>javax.wsdl.xml.*</package-name>
+            <package-name>org.hibernate.*</package-name>
         </prefer-application-packages>
         <allow-all-roles>true</allow-all-roles>
     </container-descriptor>

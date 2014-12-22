@@ -74,7 +74,7 @@ public class AS4PModeService {
 	}
 
 	public void initPModePool() throws DispatcherConfigurationException {
-		properties = PropertiesUtil.getProperties(null);
+		properties = PropertiesUtil.getProperties();
 		if (pmodePool == null) {
 			String pmodeFilePath = properties.getProperty(PropertiesUtil.AS4_PMODE_FILEPATH);
             try {

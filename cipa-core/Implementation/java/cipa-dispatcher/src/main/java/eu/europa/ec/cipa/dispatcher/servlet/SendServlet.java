@@ -64,7 +64,6 @@ import com.google.common.cache.CacheBuilder;
 import de.mendelson.comm.as2.AS2ServerVersion;
 import de.mendelson.comm.as2.preferences.PreferencesAS2;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointDBInterface;
-import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointInitAndDestroyInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointSendInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.as4.AS4GatewayInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.as4.service.AS4PModeService;
@@ -75,23 +74,19 @@ import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.peppol.sml.ESML;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
-import eu.europa.ec.cipa.transport.MessageMetadata;
-import eu.europa.ec.cipa.transport.start.client.AccessPointClient;
-import eu.europa.ec.cipa.transport.start.client.AccessPointClientSendResult;
 
 public class SendServlet extends HttpServlet {
 
 	private static final Logger s_aLogger = LoggerFactory.getLogger (SendServlet.class);
 	
-	Properties properties = PropertiesUtil.getProperties(null);
-	BackendService11 holodeck_service = null;
-	// created as object variable to avoid loading the holodeck
+	Properties properties = PropertiesUtil.getProperties();
+	BackendService11 domibusService = null;
+	// created as object variable to avoid loading the domibus
 	// service WSDL everytime we call it.
 
 	private static String defaultDocumentTypeScheme = "busdox-docid-qns";
 	private static final String defaultProcessTypeScheme = "cenbii-procid-ubl";
 	// TODO: is this the default value, or "cenbiimeta-procid-ubl" ?
-	private static String PROTOCOL_START = "busdox-transport-start";
 	private static String PROTOCOL_AS2 = "busdox-transport-as2-ver1p0";
 	private static String PROTOCOL_EBMS = "ebms3-as4";
 
@@ -102,28 +97,9 @@ public class SendServlet extends HttpServlet {
 	}
 
 	public void init() {
-
-		try {
-			if (!properties.getProperty(PropertiesUtil.AS2_ENDPOINT_PREFERENCE_ORDER).equals("0")) {
-				String className = properties.getProperty(PropertiesUtil.INIT_INTERFACE_IMPLEMENTATION_CLASS);
-				IAS2EndpointInitAndDestroyInterface initAS2Interface = (IAS2EndpointInitAndDestroyInterface) Class.forName(className).newInstance();
-				initAS2Interface.init();
-			}
-		} catch (Exception e) {
-			s_aLogger.error("AS2 server couldn't be initialized: ", e);
-		}
 	}
 
 	public void destroy() {
-		try {
-			if (!properties.getProperty(PropertiesUtil.AS2_ENDPOINT_PREFERENCE_ORDER).equals("0")) {
-				String className = properties.getProperty(PropertiesUtil.INIT_INTERFACE_IMPLEMENTATION_CLASS);
-				IAS2EndpointInitAndDestroyInterface initAS2Interface = (IAS2EndpointInitAndDestroyInterface) Class.forName(className).newInstance();
-				initAS2Interface.destroy();
-			}
-		} catch (Throwable e) {
-			s_aLogger.error(e.getMessage(),e );
-		}
 	}
 
 	public void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
@@ -233,35 +209,6 @@ public class SendServlet extends HttpServlet {
 				String auxiliaryMessageName = resultMap.get("tempFilePath");
 				auxiliaryMessageName = auxiliaryMessageName.substring(auxiliaryMessageName.lastIndexOf('/') + 1, auxiliaryMessageName.length());
 				result = sendInterface.send(AS2From, AS2To, auxiliaryMessageName, resultMap.get("tempFilePath"), endpoint);
-			} else if (protocol.equals(PROTOCOL_START) && !properties.getProperty(PropertiesUtil.START_ENDPOINT_PREFERENCE_ORDER).equals("0")) {
-				ParticipantIdentifierType sender = new ParticipantIdentifierType();
-				sender.setScheme(senderScheme);
-				sender.setValue(senderIdentifier);
-				ParticipantIdentifierType receiver = new ParticipantIdentifierType();
-				receiver.setScheme(receiverScheme);
-				receiver.setValue(receiverIdentifier);
-				DocumentIdentifierType documentType = new DocumentIdentifierType();
-				documentType.setScheme(defaultDocumentTypeScheme);
-				documentType.setValue(documentId);
-				ProcessIdentifierType processType = new ProcessIdentifierType();
-				processType.setScheme(defaultProcessTypeScheme);
-				processType.setValue(processId);
-				MessageMetadata metadata = new MessageMetadata("uuid:" + UUID.randomUUID().toString(), "peppol-channel", sender, receiver, documentType, processType);
-				DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-				docBuilderFactory.setNamespaceAware(true);
-				DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-				Document doc = docBuilder.parse(new File(resultMap.get("tempFilePath" + "")));
-				AccessPointClientSendResult apResult = AccessPointClient.send(W3CEndpointReferenceUtils.getAddress(endpoint.getEndpointReference()), metadata, doc);
-				if (apResult.isFailure()) {
-					if (apResult.getErrorMessageCount() > 0)
-						result = apResult.getAllErrorMessages().get(0);
-					else {
-						s_aLogger.error("An error occured while communicating with the receiver access point.");
-						result = "An error occured while communicating with the receiver access point.";
-					}
-
-				} else
-					result = "";
 			} else if (protocol.equals(PROTOCOL_EBMS) && !properties.getProperty(PropertiesUtil.EBMS_ENDPOINT_PREFERENCE_ORDER).equals("0")) {
 				X509Certificate receiverCert = getReceiverCertificate(endpoint);
 				KeystoreUtil util = new KeystoreUtil();
@@ -270,27 +217,27 @@ public class SendServlet extends HttpServlet {
 				String senderGW = properties.getProperty(PropertiesUtil.KEYSTORE_AP_ALIAS);
 				String receiverGW = KeystoreUtil.extractCN(receiverCert);
 				service.createPartner(senderGW, receiverGW, processId, documentId, W3CEndpointReferenceUtils.getAddress(endpoint.getEndpointReference()));
-				if (holodeck_service == null)
+				if (domibusService == null)
 					try {
-						holodeck_service = new BackendService11(new URL(properties.getProperty(PropertiesUtil.EBMS_WSDL_PATH)));
+						domibusService = new BackendService11(new URL(properties.getProperty(PropertiesUtil.EBMS_WSDL_PATH)));
 					} catch (Exception e) {
 						s_aLogger.error("ERROR - Unable to integrate with Domibus endpoint: ", e);
 						prepareResponse(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "text/plain", "Unable to integrate with AS4 endpoint: " + e.getMessage());
-						holodeck_service = null;
+						domibusService = null;
 						return;
 					}
 
-				BackendInterface holodeck_interface = holodeck_service.getBackendPort();
+				BackendInterface domibusInterface = domibusService.getBackendPort();
 
 				Messaging ebMSHeaderInfo = buildEBMSHeaderInfo(receiverGW, senderGW, processId, documentId, correlationId, endpoint, senderIdentifier, receiverIdentifier);
 				SendRequest request = buildRequest(resultMap.get("tempFile2Path"));
 
 				SendResponse response = null;
 				try {
-					response = holodeck_interface.sendMessage(request, ebMSHeaderInfo);
+					response = domibusInterface.sendMessage(request, ebMSHeaderInfo);
 				} catch (Exception e) {
-					s_aLogger.error("Unable to send message through Holodeck: " + e.getMessage(), e);
-					result = "Unable to send message through Holodeck: " + e.getMessage() != null && !e.getMessage().isEmpty() ? e.getMessage() : e.getCause().getMessage();
+					s_aLogger.error("Unable to send message through Domibus: " + e.getMessage(), e);
+					result = "Unable to send message through Domibus: " + e.getMessage() != null && !e.getMessage().isEmpty() ? e.getMessage() : e.getCause().getMessage();
 					;
 					throw new Exception(result);
 				}
@@ -500,44 +447,27 @@ public class SendServlet extends HttpServlet {
 			try {
 				int orderAS2 = Integer.parseInt(properties.getProperty(PropertiesUtil.AS2_ENDPOINT_PREFERENCE_ORDER));
 				int orderEBMS = Integer.parseInt(properties.getProperty(PropertiesUtil.EBMS_ENDPOINT_PREFERENCE_ORDER));
-				int orderSTART = Integer.parseInt(properties.getProperty(PropertiesUtil.START_ENDPOINT_PREFERENCE_ORDER));
-
-				if (orderAS2 != 0 && orderAS2 > orderEBMS && orderAS2 > orderSTART) {
-					orderedProtocols.add(PROTOCOL_AS2);
-					if (orderEBMS != 0 && orderEBMS > orderSTART) {
-						orderedProtocols.add(PROTOCOL_EBMS);
-						if (orderSTART != 0)
-							orderedProtocols.add(PROTOCOL_START);
-					} else if (orderSTART != 0 && orderSTART > orderEBMS) {
-						orderedProtocols.add(PROTOCOL_START);
-						if (orderEBMS != 0)
-							orderedProtocols.add(PROTOCOL_EBMS);
-					}
-				} else if (orderEBMS != 0 && orderEBMS > orderAS2 && orderEBMS > orderSTART) {
-					orderedProtocols.add(PROTOCOL_EBMS);
-					if (orderAS2 != 0 && orderAS2 > orderSTART) {
-						orderedProtocols.add(PROTOCOL_AS2);
-						if (orderSTART != 0)
-							orderedProtocols.add(PROTOCOL_START);
-					} else if (orderSTART != 0 && orderSTART > orderAS2) {
-						orderedProtocols.add(PROTOCOL_START);
-						if (orderAS2 != 0)
+				if (orderAS2 != 0) {
+					if (orderEBMS != 0) {
+						if (orderAS2 > orderEBMS){
 							orderedProtocols.add(PROTOCOL_AS2);
-					}
-				} else if (orderSTART != 0) {
-					orderedProtocols.add(PROTOCOL_START);
-					if (orderEBMS != 0 && orderEBMS > orderAS2) {
-						orderedProtocols.add(PROTOCOL_EBMS);
-						if (orderAS2 != 0)
-							orderedProtocols.add(PROTOCOL_AS2);
-					} else if (orderAS2 != 0 && orderAS2 > orderEBMS) {
-						orderedProtocols.add(PROTOCOL_AS2);
-						if (orderEBMS != 0)
 							orderedProtocols.add(PROTOCOL_EBMS);
+						} else {
+							orderedProtocols.add(PROTOCOL_EBMS);
+							orderedProtocols.add(PROTOCOL_AS2);
+						}
+					} else {
+						orderedProtocols.add(PROTOCOL_AS2);
+					}
+				} else {
+					if (orderEBMS != 0) {
+						orderedProtocols.add(PROTOCOL_EBMS);
+					} else {
+						s_aLogger.error("There is an error in dispatcher config - Endpoint preference order not defined");
 					}
 				}
 			} catch (NumberFormatException e) {
-				s_aLogger.error("There is an error in dispatcher confoig - Endpoint preference order doesn't contain only numbers");
+				s_aLogger.error("There is an error in dispatcher config - Endpoint preference order doesn't contain only numbers");
 				return null;
 			}
 

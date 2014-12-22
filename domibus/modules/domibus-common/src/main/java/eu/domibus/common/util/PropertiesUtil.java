@@ -13,10 +13,10 @@ public class PropertiesUtil {
 
     public static final String CONFIG_CLASS_PATH = "domibus.properties";
 
-    public static final String ALT_CONFIG_CLASS_PATH = "domibus.default.properties";
+    public static final String CONFIG_ALT_PATH = "domibus.default.properties";
 
     /**
-     * If properties haven't been loaded yet, loads it from context passed as parameter or default file location in case context==null.
+     * If properties haven't been loaded yet, load them from the configuration file and use the default file location as fallback.
      *
      * @return the loaded properties or null if there was any problem loading the properties file.
      */
@@ -27,8 +27,8 @@ public class PropertiesUtil {
                 properties = load(CONFIG_CLASS_PATH);
                 if (properties == null) {
                     logger.warn("No configuration file " + CONFIG_CLASS_PATH + " found");
-                    logger.debug("Loading properties from " + CONFIG_CLASS_PATH + "...");
-                    properties = load(ALT_CONFIG_CLASS_PATH);
+                    logger.debug("Loading properties from " + CONFIG_ALT_PATH + "...");
+                    properties = load(CONFIG_ALT_PATH);
 
                 }
                 if (properties == null) {
@@ -43,26 +43,27 @@ public class PropertiesUtil {
 
     }
 
-    private static Properties load(String configFile) {
-        Properties result = null;
+    private static Properties load(String configFile) {Properties result = null;
         try {
             InputStream stream = PropertiesUtil.class.getResourceAsStream(configFile);
-            result = new Properties();
-            result.load(stream);
+            Properties props = new Properties();
+            props.load(stream);
             stream.close();
+            result = props;
         } catch (Exception exc) {
             try {
                 InputStream stream = ClassLoader.getSystemClassLoader().getResourceAsStream(configFile);
-                result = new Properties();
-                result.load(stream);
+                Properties props = new Properties();
+                props.load(stream);
                 stream.close();
+                result = props;
             } catch (Exception exc1) {
                 try {
                     InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream(configFile);
-                    result = new Properties();
-                    result.load(stream);
+                    Properties props = new Properties();
+                    props.load(stream);
                     stream.close();
-
+                    result = props;
                 } catch (Exception exc2) {
                     logger.debug("Couldn't load properties: " + configFile);
                 }
@@ -72,7 +73,6 @@ public class PropertiesUtil {
         if (result != null) {
             logger.debug("Properties loaded from " + configFile);
         }
-
         return result;
     }
 }

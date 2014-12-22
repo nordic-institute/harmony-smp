@@ -36,7 +36,7 @@ public class AS2EndpointDBInterfaceMendelson implements IAS2EndpointDBInterface
 	
 	public AS2EndpointDBInterfaceMendelson()
 	{
-		properties = PropertiesUtil.getProperties(null);
+		properties = PropertiesUtil.getProperties();
 		String url = properties.getProperty(PropertiesUtil.DB_URL);
 		if (!url.endsWith("/"))
 			url += "/";

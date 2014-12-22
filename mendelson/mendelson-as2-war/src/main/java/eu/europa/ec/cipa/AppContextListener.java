@@ -13,6 +13,9 @@ import javax.servlet.ServletContextListener;
 import java.sql.Connection;
 import java.util.Properties;
 
+/**
+ * This class is triggered at the application startup/shutdown. At startup, it overwrites the default values for the preferences with the values defined in the configuration file "mendelson.properties".
+ */
 public class AppContextListener implements ServletContextListener {
 
     private static final Logger logger = LoggerFactory.getLogger(AppContextListener.class);
@@ -28,6 +31,9 @@ public class AppContextListener implements ServletContextListener {
         startAS2Server();
     }
 
+    /**
+     * Overwrite the default Mendelson preferences values with the values defined in the mendelson.properties file
+     */
     private void registerPreferences() {
         Properties properties = PropertiesUtil.getProperties();
         PreferencesAS2 preferencesAS2 = new PreferencesAS2();
@@ -36,6 +42,9 @@ public class AppContextListener implements ServletContextListener {
         }
     }
 
+    /**
+     * Actually starts the Mendelson server
+     */
     private void startAS2Server() {
         //start server
         try {
@@ -52,6 +61,11 @@ public class AppContextListener implements ServletContextListener {
         }
     }
 
+    /**
+     * Try to force the shutdown of the derby database when the application shutdowns.
+     *
+     * @param servletContextEvent
+     */
     public void contextDestroyed(ServletContextEvent servletContextEvent) {
         try {
             DBDriverManager.shutdownConnectionPool();

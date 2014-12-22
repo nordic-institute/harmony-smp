@@ -34,7 +34,7 @@ public class AS4GatewayInterfaceTest {
     }
 
     private static void clean() {
-        String pmodeFilePath = PropertiesUtil.getProperties(null).getProperty(PropertiesUtil.AS4_PMODE_FILEPATH);
+        String pmodeFilePath = PropertiesUtil.getProperties().getProperty(PropertiesUtil.AS4_PMODE_FILEPATH);
         FileUtils.deleteQuietly(new File(pmodeFilePath));
     }
 

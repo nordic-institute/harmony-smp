@@ -73,7 +73,7 @@ public class OCSPValidator
    */
   private static final Logger s_aLogger = LoggerFactory.getLogger (OCSPValidator.class);
 
-  private static Properties properties = PropertiesUtil.getProperties (null);
+  private static Properties properties = PropertiesUtil.getProperties ();
 
   /**
    * This method validates the X.509 Certificate.

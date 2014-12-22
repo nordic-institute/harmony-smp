@@ -42,10 +42,14 @@
 			<!-- <scope>provided</scope> -->
 		</dependency>
 		<dependency>
-			<groupId>com.sun.mail</groupId>
-			<artifactId>javax.mail</artifactId>
-			<version>1.5.2</version>
-			<scope>provided</scope>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.4</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.activation</groupId>
+			<artifactId>activation</artifactId>
+			<version>1.1</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -85,12 +89,7 @@
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-			<version>15.0</version>
-		</dependency>
-		<dependency>
-			<groupId>eu.europa.ec.cipa</groupId>
-			<artifactId>cipa-start-client</artifactId>
-			<version>${cipa.version}</version>
+			<version>18.0</version>
 		</dependency>
 		<dependency>
 			<groupId>eu.domibus</groupId>
@@ -123,13 +122,18 @@
 		<dependency>
 			<groupId>eu.europa.ec.cipa</groupId>
 			<artifactId>mendelson</artifactId>
-			<version>1.1.b41</version>
+			<version>1.1.b45</version>
 		</dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
         </dependency>
-        <dependency>
+	<dependency>
+           <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>2.3.2</version>
+       	</dependency>
+	<dependency>
             <groupId>org.powermock</groupId>
             <artifactId>powermock-module-junit4</artifactId>
             <version>1.6.0</version>

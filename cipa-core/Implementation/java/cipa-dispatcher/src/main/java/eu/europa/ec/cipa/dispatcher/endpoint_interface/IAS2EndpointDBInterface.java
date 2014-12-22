@@ -1,6 +1,7 @@
 package eu.europa.ec.cipa.dispatcher.endpoint_interface;
 
 import java.security.cert.X509Certificate;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 import org.busdox.servicemetadata.publishing._1.EndpointType;
@@ -38,4 +39,8 @@ public interface IAS2EndpointDBInterface
 	/** Checks there's a local station configured in the Mendelson DB, and in negative case, configures a default one taking the certificate from the keystore specified on the config file.
 	 */
 	public abstract void configureLocalStationIfNeeded() throws Exception;
+
+	public Connection getRuntimeConnection() throws SQLException;
+
+	public Connection getConfigConnection() throws SQLException;
 }

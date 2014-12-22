@@ -35,7 +35,7 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 	
 	private static Object synchronizedObject = new Object();
 	private static Map<String,SignalObject> waitingMessages = new HashMap<String,SignalObject>();
-	private static Properties properties = PropertiesUtil.getProperties(null); 
+	private static Properties properties = PropertiesUtil.getProperties();
 	private static MySessionHandlerCallback callback;
 	static
 	{

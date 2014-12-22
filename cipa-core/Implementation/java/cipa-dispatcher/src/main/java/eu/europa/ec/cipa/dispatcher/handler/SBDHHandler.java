@@ -47,7 +47,7 @@ public class SBDHHandler extends DefaultHandler {
 		try {
 			int randomInt = 100000000 + (int) (Math.random() * 900000000);
 			// Min + (int)(Math.random() * ((Max - Min) + 1)) , Min = 100000000, Max = 999999999
-			Properties properties = PropertiesUtil.getProperties(null);
+			Properties properties = PropertiesUtil.getProperties();
 			String tempFilePath = properties.getProperty(PropertiesUtil.TEMP_FOLDER_PATH);
 			if (!tempFilePath.endsWith("/") && !tempFilePath.endsWith("\\"))
 				tempFilePath += "/";

@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 public class KeystoreUtil
 {
 	private static final Logger s_aLogger = LoggerFactory.getLogger (KeystoreUtil.class);
-	private static Properties properties = PropertiesUtil.getProperties(null);
+	private static Properties properties = PropertiesUtil.getProperties();
 	private KeyStore keyStore = null;
 	private String keystorePath;
 	private String keystorePwd;
