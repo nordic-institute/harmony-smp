@@ -10,7 +10,6 @@
   <modules>
     <module>cipa-sml-client-console</module>
     <module>cipa-sml-client-swing</module>
-    <module>cipa-sml-webapp-standalone</module>
     <module>cipa-smp-client-console</module>
     <module>cipa-start-client-console</module>
     <module>cipa-commons-cenbii</module>
