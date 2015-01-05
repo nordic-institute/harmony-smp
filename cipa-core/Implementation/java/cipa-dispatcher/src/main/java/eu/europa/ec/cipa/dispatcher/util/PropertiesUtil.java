@@ -53,6 +53,7 @@ public class PropertiesUtil {
 	public static final String HTTP_PROXY_PORT = "http.proxyPort";
 	public static final String HTTPS_PROXY_HOST = "https.proxyHost";
 	public static final String HTTPS_PROXY_PORT = "	https.proxyPort";
+	public static final String DNS_ZONE = "sml.dns.zone";
 
 
     /**

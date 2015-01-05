@@ -170,7 +170,14 @@ public class SendServlet extends HttpServlet {
 					aSMPClient = new SMPServiceCaller(new URI(properties.getProperty(PropertiesUtil.SMP_URL)));
 					endpoint = getEndpoint(aSMPClient, recipient, documentIdentifier, process);
 				} else if ("PRODUCTION".equalsIgnoreCase(properties.getProperty(PropertiesUtil.SMP_MODE))) {
-					aSMPClient = new SMPServiceCaller(recipient, ESML.PRODUCTION);
+					if (properties.getProperty(PropertiesUtil.DNS_ZONE) != null && !properties.getProperty(PropertiesUtil.DNS_ZONE).isEmpty())
+					{
+						aSMPClient = new SMPServiceCaller(recipient, properties.getProperty(PropertiesUtil.DNS_ZONE));
+					}
+					else
+					{
+						aSMPClient = new SMPServiceCaller(recipient, ESML.PRODUCTION);
+					}
 					endpoint = getEndpoint(aSMPClient, recipient, documentIdentifier, process);
 
 				} else // NO_SMP mode
