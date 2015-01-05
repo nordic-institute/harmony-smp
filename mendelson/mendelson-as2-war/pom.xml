@@ -7,6 +7,13 @@
     <packaging>war</packaging>
     <name>mendelson</name>
 
+    <properties>
+        <!-- Default properties to copy the artifact on the DEV platform -->
+        <ftp.host>wltdgt02.cc.cec.eu.int</ftp.host>
+        <ftp.port>2059</ftp.port>
+        <ftp.remotedir>/ec/test/server/weblogic/u010/home/digciedt/data/CIPA-EDEL_DEV/autodeploy</ftp.remotedir>
+    </properties>
+
     <scm>
         <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/mendelson/mendelson-as2-war</connection>
         <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/mendelson/mendelson-as2-war
@@ -222,6 +229,36 @@
                         </manifest>
                     </archive>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <configuration>
+                    <target>
+                        <ftp server="${ftp.host}"
+                             port="${ftp.port}"
+                             passive="yes"
+                             remotedir="${ftp.remotedir}"
+                             userid="${ftp.user}"
+                             password="${ftp.password}">
+                            <fileset dir="${project.build.directory}">
+                                <include name="${project.artifactId}.${project.packaging}"/>
+                            </fileset>
+                        </ftp>
+                    </target>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant-commons-net</artifactId>
+                        <version>1.6.5</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>commons-net</groupId>
+                        <artifactId>commons-net</artifactId>
+                        <version>1.4.1</version>
+                    </dependency>
+                </dependencies>
             </plugin>
         </plugins>
     </build>
