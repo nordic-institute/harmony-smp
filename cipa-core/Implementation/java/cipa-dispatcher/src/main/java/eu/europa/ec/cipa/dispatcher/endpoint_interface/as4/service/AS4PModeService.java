@@ -76,9 +76,10 @@ public class AS4PModeService {
 	public void initPModePool() throws DispatcherConfigurationException {
 		properties = PropertiesUtil.getProperties();
 		if (pmodePool == null) {
+			
 			String pmodeFilePath = properties.getProperty(PropertiesUtil.AS4_PMODE_FILEPATH);
             try {
-                pmodeFile = new File(this.getClass().getResource(pmodeFilePath).toURI());
+                pmodeFile = new File(pmodeFilePath);
             } catch (Exception exc) {
                 s_aLogger.warn("Unable to locate pmode file: " + pmodeFilePath + ". Gonna try to create it");
                 pmodeFile = new File(pmodeFilePath);
