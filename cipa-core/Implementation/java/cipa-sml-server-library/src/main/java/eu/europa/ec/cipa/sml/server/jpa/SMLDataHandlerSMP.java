@@ -64,6 +64,8 @@ import eu.europa.ec.cipa.sml.server.datamodel.DBUser;
 import eu.europa.ec.cipa.sml.server.exceptions.BadRequestException;
 import eu.europa.ec.cipa.sml.server.exceptions.NotFoundException;
 import eu.europa.ec.cipa.sml.server.exceptions.UnauthorizedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A JPA implementation of the {@link ISMPDataHandler} interface.
@@ -73,6 +75,7 @@ import eu.europa.ec.cipa.sml.server.exceptions.UnauthorizedException;
 public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDataHandler {
   private final ObjectFactory m_aObjFactory = new ObjectFactory ();
   private ISMPDataHandlerCallback m_aCallback;
+  private static final Logger logger = LoggerFactory.getLogger(SMLDataHandlerSMP.class);
 
   public SMLDataHandlerSMP () {
     super (new IEntityManagerProvider () {
@@ -195,6 +198,7 @@ public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDa
 
   public void deleteSMPData (final String sSMPID, final String sClientUniqueID) throws Throwable {
     JPAExecutionResult <?> ret;
+    logger.info("Delete SMP data: sSMPID=" + sSMPID + ", sClientUniqueID=" + sClientUniqueID);
     ret = doInTransaction (new IThrowingRunnable () {
       public void run () throws Exception {
         // Then make sure that the smp exist.
@@ -211,7 +215,8 @@ public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDa
                                            "'");
 
         // Delete the SMP.
-        getEntityManager ().remove (aSMP);
+        logger.info("Delete SMP data: perform CRUD operation");
+        getEntityManager ().remove(aSMP);
 
         // Delete in DNS
         if (m_aCallback != null) {
@@ -222,7 +227,11 @@ public final class SMLDataHandlerSMP extends JPAEnabledManager implements ISMPDa
         }
       }
     });
-    if (ret.hasThrowable ())
-      throw ret.getThrowable ();
+    if (ret.hasThrowable ()) {
+      logger.info("There was an exception when trying to remove SMP data");
+      throw ret.getThrowable();
+    } else {
+      logger.info("The removal was successfully performed");
+    }
   }
 }

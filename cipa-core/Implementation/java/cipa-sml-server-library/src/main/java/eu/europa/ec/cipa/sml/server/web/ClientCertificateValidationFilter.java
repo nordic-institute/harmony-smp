@@ -95,7 +95,7 @@ public final class ClientCertificateValidationFilter implements Filter {
 			if (!BlueCoatClientCertificateHandler.isClientCertificateValid(aHttpRequest))
 				throw new ServletException("Invalid client certificate passed!");
 			sClientUniqueID = BlueCoatClientCertificateHandler.getClientUniqueID(aHttpRequest);
-			 s_aLogger.info("Clieant Unique Identifier : " +sClientUniqueID ); 
+			 s_aLogger.info("Client Unique Identifier : " +sClientUniqueID );
 			if (sClientUniqueID == null)
 				throw new ServletException("Error in unique ID from certficate extraction!");
 		}else {
