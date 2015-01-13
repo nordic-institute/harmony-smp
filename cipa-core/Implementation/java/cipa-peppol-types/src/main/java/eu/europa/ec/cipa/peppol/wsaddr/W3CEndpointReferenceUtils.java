@@ -56,6 +56,8 @@ import com.helger.commons.collections.ContainerHelper;
 import com.helger.commons.xml.ChildElementIterator;
 import com.helger.commons.xml.XMLFactory;
 import com.helger.commons.xml.XMLHelper;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  * As the default WS-Addressing binding since JAXB 2.1 uses the
@@ -143,9 +145,41 @@ public final class W3CEndpointReferenceUtils {
   public static String getAddress (@Nonnull final W3CEndpointReference aEndpointReference) {
     ValueEnforcer.notNull (aEndpointReference, "EndpointReference");
 
-    final Element eAddress = XMLHelper.getFirstChildElementOfName (_convertReferenceToXML (aEndpointReference),
-                                                                   "Address");
+    final Element eAddress = getFirstChildElementOfName(_convertReferenceToXML(aEndpointReference),
+            "Address");
     return eAddress == null ? null : eAddress.getTextContent ();
+  }
+
+  /**
+   * Search all child nodes of the given for the first element that has the
+   * specified tag name.
+   *
+   * @param aStartNode
+   *        The parent element to be searched. May not be <code>null</code>.
+   * @param sName
+   *        The tag name to search.
+   * @return <code>null</code> if the parent element has no such child element.
+   */
+  @Nullable
+  public static Element getFirstChildElementOfName (@Nonnull final Node aStartNode, @Nullable final String sName)
+  {
+    final NodeList aNodeList = aStartNode.getChildNodes ();
+    final int nLen = aNodeList.getLength ();
+    for (int i = 0; i < nLen; ++i)
+    {
+      final Node aNode = aNodeList.item (i);
+      if (aNode.getNodeType () == Node.ELEMENT_NODE)
+      {
+        final Element aElement = (Element) aNode;
+        if (aElement.getTagName ().equals (sName)) {
+          return aElement;
+        } else if (aElement.getLocalName ().equals (sName)) {
+          return aElement;
+        }
+
+      }
+    }
+    return null;
   }
 
   /**
