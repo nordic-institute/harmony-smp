@@ -79,15 +79,14 @@ public class OCSPValidator
    * This method validates the X.509 Certificate.
    *
    * @param aCert
-   * @param sTrustStorePath
    * @return {@link EValidity}
    */
   @Nonnull
   public static boolean certificateValidate (final X509Certificate aCert)
   {
 
-    final String trustStorePassword = properties.getProperty (PropertiesUtil.KEYSTORE_PASS);
-    final String truststorePath = properties.getProperty (PropertiesUtil.KEYSTORE_PATH);
+    final String trustStorePassword = properties.getProperty (PropertiesUtil.AP_TRUSTSTORE_PASSWORD);
+    final String truststorePath = properties.getProperty (PropertiesUtil.AP_TRUSTSTORE_PATH);
 
     try
     {
@@ -95,7 +94,7 @@ public class OCSPValidator
       final KeyStore trustStore = KeyStoreUtils.loadKeyStore (truststorePath, trustStorePassword);
 
       // Get certificate by alias;
-      final String truststoreAlias = properties.getProperty (PropertiesUtil.KEYSTORE_AP_CA_ALIAS);
+      final String truststoreAlias = properties.getProperty (PropertiesUtil.AP_CA_ALIAS);
       final X509Certificate aRootCert = (X509Certificate) trustStore.getCertificate (truststoreAlias);
 
       if (aRootCert == null)

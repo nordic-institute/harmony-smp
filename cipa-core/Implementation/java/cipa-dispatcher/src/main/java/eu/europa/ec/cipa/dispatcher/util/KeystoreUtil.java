@@ -8,6 +8,7 @@ import java.security.KeyStore;
 import java.security.Principal;
 import java.security.Security;
 import java.security.cert.X509Certificate;
+import java.util.Arrays;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -22,16 +23,12 @@ public class KeystoreUtil
 	private String keystorePwd;
 	
 	
-	public KeystoreUtil() throws Exception
-	{
-		
-		this(properties.getProperty(PropertiesUtil.KEYSTORE_PATH), properties.getProperty(PropertiesUtil.KEYSTORE_PASS));
-	}
-	
 	public KeystoreUtil(String keystorePath, String keystorePwd) throws Exception{
 		Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 		this.keystorePath = keystorePath;
 		this.keystorePwd= keystorePwd;
+
+		s_aLogger.info("The keystore file is " + keystorePath);
 		
 		String[] keystoreTypes = {"pkcs12", "jks", "jceks"};
         
@@ -56,15 +53,18 @@ public class KeystoreUtil
             		}
             		catch (IOException e)
             		{
-            			s_aLogger.error("Unable to load Keystore ", e);
+            			s_aLogger.info("Unable to load the keystore using type " + keystoreTypes[i] + ". Trying another one...");
             			success = false;
             			inStream.close();
             			inStream = new FileInputStream(inFile);  //we close and reopen the stream so it can be read again
             		}
-            		if (success) break;
+            		if (success) {
+						s_aLogger.info("The keystore has been loaded with the type " + keystoreTypes[i]);
+						break;
+					}
         		}
         		if (!success){
-        			s_aLogger.error("Unable to load Keystore ");        			
+        			s_aLogger.error("Unable to load Keystore because the type is not compatible with any of the following: " + Arrays.asList(keystoreTypes).toString());
         			throw new Exception("Couldn't load the keystore");
         		}
         		
@@ -96,7 +96,7 @@ public class KeystoreUtil
 	 */
 	public X509Certificate getApCaCertificate() throws Exception
 	{
-		return (X509Certificate) keyStore.getCertificate(properties.getProperty(PropertiesUtil.KEYSTORE_AP_CA_ALIAS));
+		return (X509Certificate) keyStore.getCertificate(properties.getProperty(PropertiesUtil.AP_CA_ALIAS));
 	}
 	
 	
@@ -104,7 +104,7 @@ public class KeystoreUtil
 	 */
 	public X509Certificate getApCertificate() throws Exception
 	{
-		return (X509Certificate) keyStore.getCertificate(properties.getProperty(PropertiesUtil.KEYSTORE_AP_ALIAS));
+		return (X509Certificate) keyStore.getCertificate(properties.getProperty(PropertiesUtil.AP_ALIAS));
 	}
 	
 	

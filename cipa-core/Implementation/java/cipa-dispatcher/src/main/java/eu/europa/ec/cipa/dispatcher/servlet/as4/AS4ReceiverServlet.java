@@ -11,6 +11,7 @@ import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.mail.Part;
 import javax.mail.internet.MimeMultipart;
@@ -100,7 +101,10 @@ public class AS4ReceiverServlet extends AbstractReceiverServlet
 			X509Certificate cert = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(new ByteArrayInputStream(binaryCert));
 			if (!validateCertificate(resp, cert)) return;
 
-			KeystoreUtil util = new KeystoreUtil();
+			Properties properties = PropertiesUtil.getProperties();
+			String as4KeystorePath = properties.getProperty(PropertiesUtil.AS4_KEYSTORE_PATH);
+			String as4KeystorePassword = properties.getProperty(PropertiesUtil.AS4_KEYSTORE_PASSWORD);
+			KeystoreUtil util = new KeystoreUtil(as4KeystorePath, as4KeystorePassword);
 			//
 
 			// find the certificate's CN

@@ -156,7 +156,9 @@ public class AS2EndpointDBInterfaceMendelson implements IAS2EndpointDBInterface
         	try
         	{
         	String url = result.getString("url");
-        	KeystoreUtil keystore = new KeystoreUtil();
+			String as2KeystorePath = properties.getProperty(PropertiesUtil.AS2_KEYSTORE_PATH);
+			String as2KeystorePassword = properties.getProperty(PropertiesUtil.AS2_KEYSTORE_PASSWORD);
+			KeystoreUtil keystore = new KeystoreUtil(as2KeystorePath, as2KeystorePassword);
         	X509Certificate cert = keystore.getCertificateByAlias(CN);
         	if (url==null || url.isEmpty() || cert==null)
         		return null;
@@ -206,8 +208,10 @@ public class AS2EndpointDBInterfaceMendelson implements IAS2EndpointDBInterface
 		//if demanded, we insert the partner's certificate in the AS2Endpoint keystore
 		if(cert != null)
 		{
-			KeystoreUtil keyStoreAccess = new KeystoreUtil();
-			keyStoreAccess.installNewPartnerCertificate(cert, as2Id);
+			String as2KeystorePath = properties.getProperty(PropertiesUtil.AS2_KEYSTORE_PATH);
+			String as2KeystorePassword = properties.getProperty(PropertiesUtil.AS2_KEYSTORE_PASSWORD);
+			KeystoreUtil keystoreAccess = new KeystoreUtil(as2KeystorePath, as2KeystorePassword);
+			keystoreAccess.installNewPartnerCertificate(cert, as2Id);
 		}
 		
 		//then we create the partner in the DB
@@ -312,7 +316,9 @@ public class AS2EndpointDBInterfaceMendelson implements IAS2EndpointDBInterface
 	public void configureLocalStationIfNeeded() throws Exception
 	{
 		//a local station needs to have NAME and AS2IDENT with the CommonName value of the AP certificate specified in the config file, and it must be linked to a certificate on the CERTIFICATES table.
-		KeystoreUtil keystore = new KeystoreUtil();
+		String as2KeystorePath = properties.getProperty(PropertiesUtil.AS2_KEYSTORE_PATH);
+		String as2KeystorePassword = properties.getProperty(PropertiesUtil.AS2_KEYSTORE_PASSWORD);
+		KeystoreUtil keystore = new KeystoreUtil(as2KeystorePath, as2KeystorePassword);
 		X509Certificate apCert = keystore.getApCertificate();
 		String CN = KeystoreUtil.extractCN(apCert);
 		String fingerprint = calculateHash(apCert);

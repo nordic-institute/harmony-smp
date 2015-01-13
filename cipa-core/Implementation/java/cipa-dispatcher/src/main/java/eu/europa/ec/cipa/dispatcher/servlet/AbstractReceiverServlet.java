@@ -52,7 +52,9 @@ public abstract class AbstractReceiverServlet extends HttpServlet {
 	 * @return an error message if the certificate is expired or not trusted, null if everything is ok. Throws exception if there was a problem loading the necessary keystore.
 	 */
 	protected String checkSignatureTrust(X509Certificate userCert) throws Exception {
-		KeystoreUtil keystoreAccess = new KeystoreUtil();
+		String truststorePath = properties.getProperty(PropertiesUtil.AP_TRUSTSTORE_PATH);
+		String truststorePassword = properties.getProperty(PropertiesUtil.AP_TRUSTSTORE_PASSWORD);
+		KeystoreUtil keystoreAccess = new KeystoreUtil(truststorePath, truststorePassword);
 		X509Certificate caCert = keystoreAccess.getApCaCertificate();
 
 		// Verify the current certificate using the issuer certificate

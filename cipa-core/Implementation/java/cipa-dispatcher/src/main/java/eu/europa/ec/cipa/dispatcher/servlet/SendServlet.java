@@ -206,7 +206,9 @@ public class SendServlet extends HttpServlet {
 				// certificates
 				X509Certificate receiverCert = getReceiverCertificate(endpoint);
 				String AS2To = KeystoreUtil.extractCN(receiverCert);
-				KeystoreUtil keystoreAccess = new KeystoreUtil();
+				String as2KeystorePath = properties.getProperty(PropertiesUtil.AS2_KEYSTORE_PATH);
+				String as2KeystorePassword = properties.getProperty(PropertiesUtil.AS2_KEYSTORE_PASSWORD);
+				KeystoreUtil keystoreAccess = new KeystoreUtil(as2KeystorePath, as2KeystorePassword);
 				X509Certificate ourCert = keystoreAccess.getApCertificate();
 				String AS2From = KeystoreUtil.extractCN(ourCert);
 
@@ -218,10 +220,12 @@ public class SendServlet extends HttpServlet {
 				result = sendInterface.send(AS2From, AS2To, auxiliaryMessageName, resultMap.get("tempFilePath"), endpoint);
 			} else if (protocol.equals(PROTOCOL_EBMS) && !properties.getProperty(PropertiesUtil.EBMS_ENDPOINT_PREFERENCE_ORDER).equals("0")) {
 				X509Certificate receiverCert = getReceiverCertificate(endpoint);
-				KeystoreUtil util = new KeystoreUtil();
+				String as4KeystorePath = properties.getProperty(PropertiesUtil.AS4_KEYSTORE_PATH);
+				String as4KeystorePassword = properties.getProperty(PropertiesUtil.AS4_KEYSTORE_PASSWORD);
+				KeystoreUtil util = new KeystoreUtil(as4KeystorePath, as4KeystorePassword);
 				util.installNewPartnerCertificate(receiverCert, KeystoreUtil.extractCN(receiverCert));
 				AS4PModeService service = new AS4PModeService();
-				String senderGW = properties.getProperty(PropertiesUtil.KEYSTORE_AP_ALIAS);
+				String senderGW = properties.getProperty(PropertiesUtil.AP_ALIAS);
 				String receiverGW = KeystoreUtil.extractCN(receiverCert);
 				service.createPartner(senderGW, receiverGW, processId, documentId, W3CEndpointReferenceUtils.getAddress(endpoint.getEndpointReference()));
 				if (domibusService == null)
