@@ -30,7 +30,7 @@ public class KeystoreUtil
 
 		s_aLogger.info("The keystore file is " + keystorePath);
 		
-		String[] keystoreTypes = {"pkcs12", "jks", "jceks"};
+		String[] keystoreTypes = {"pkcs12", "CaseExactJKS", "jceks"};
         
         File inFile = new File(keystorePath);
         FileInputStream inStream = null;
@@ -96,7 +96,7 @@ public class KeystoreUtil
 	 */
 	public X509Certificate getApCaCertificate() throws Exception
 	{
-		return (X509Certificate) keyStore.getCertificate(properties.getProperty(PropertiesUtil.AP_CA_ALIAS));
+		return (X509Certificate) keyStore.getCertificate(properties.getProperty(PropertiesUtil.DISPATCHER_CA_ALIAS));
 	}
 	
 	
@@ -104,7 +104,7 @@ public class KeystoreUtil
 	 */
 	public X509Certificate getApCertificate() throws Exception
 	{
-		return (X509Certificate) keyStore.getCertificate(properties.getProperty(PropertiesUtil.AP_ALIAS));
+		return (X509Certificate) keyStore.getCertificate(properties.getProperty(PropertiesUtil.DISPATCHER_ALIAS));
 	}
 	
 	
@@ -143,5 +143,8 @@ public class KeystoreUtil
 		
 		return commonName.trim();
 	}
-    
+
+	public KeyStore getKeyStore() {
+		return keyStore;
+	}
 }

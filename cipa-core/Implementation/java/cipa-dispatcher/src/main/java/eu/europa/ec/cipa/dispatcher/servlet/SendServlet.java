@@ -206,8 +206,8 @@ public class SendServlet extends HttpServlet {
 				// certificates
 				X509Certificate receiverCert = getReceiverCertificate(endpoint);
 				String AS2To = KeystoreUtil.extractCN(receiverCert);
-				String as2KeystorePath = properties.getProperty(PropertiesUtil.AS2_KEYSTORE_PATH);
-				String as2KeystorePassword = properties.getProperty(PropertiesUtil.AS2_KEYSTORE_PASSWORD);
+				String as2KeystorePath = properties.getProperty(PropertiesUtil.AS2_TRUSTSTORE_PATH);
+				String as2KeystorePassword = properties.getProperty(PropertiesUtil.AS2_TRUSTSTORE_PASSWORD);
 				KeystoreUtil keystoreAccess = new KeystoreUtil(as2KeystorePath, as2KeystorePassword);
 				X509Certificate ourCert = keystoreAccess.getApCertificate();
 				String AS2From = KeystoreUtil.extractCN(ourCert);
@@ -220,13 +220,21 @@ public class SendServlet extends HttpServlet {
 				result = sendInterface.send(AS2From, AS2To, auxiliaryMessageName, resultMap.get("tempFilePath"), endpoint);
 			} else if (protocol.equals(PROTOCOL_EBMS) && !properties.getProperty(PropertiesUtil.EBMS_ENDPOINT_PREFERENCE_ORDER).equals("0")) {
 				X509Certificate receiverCert = getReceiverCertificate(endpoint);
-				String as4KeystorePath = properties.getProperty(PropertiesUtil.AS4_KEYSTORE_PATH);
-				String as4KeystorePassword = properties.getProperty(PropertiesUtil.AS4_KEYSTORE_PASSWORD);
-				KeystoreUtil util = new KeystoreUtil(as4KeystorePath, as4KeystorePassword);
-				util.installNewPartnerCertificate(receiverCert, KeystoreUtil.extractCN(receiverCert));
-				AS4PModeService service = new AS4PModeService();
-				String senderGW = properties.getProperty(PropertiesUtil.AP_ALIAS);
+
+				// updates the AS4 truststore with the receiver certificate
+				String as4TruststorePath = properties.getProperty(PropertiesUtil.AS4_TRUSTSTORE_PATH);
+				String as4TruststorePassword = properties.getProperty(PropertiesUtil.AS4_TRUSTSTORE_PASSWORD);
+				KeystoreUtil as4Truststore = new KeystoreUtil(as4TruststorePath, as4TruststorePassword);
 				String receiverGW = KeystoreUtil.extractCN(receiverCert);
+				as4Truststore.installNewPartnerCertificate(receiverCert, receiverGW);
+
+				// retrieve the CN from the dispatcher (sender)
+				String dispatcherKeystorePath = properties.getProperty(PropertiesUtil.DISPATCHER_KEYSTORE_PATH);
+				String dispatcherKeystorePassword = properties.getProperty(PropertiesUtil.DISPATCHER_KEYSTORE_PASSWORD);
+				KeystoreUtil dispatcherKeystore = new KeystoreUtil(dispatcherKeystorePath, dispatcherKeystorePassword);
+				String senderGW = KeystoreUtil.extractCN(dispatcherKeystore.getApCertificate());
+
+				AS4PModeService service = new AS4PModeService();
 				service.createPartner(senderGW, receiverGW, processId, documentId, W3CEndpointReferenceUtils.getAddress(endpoint.getEndpointReference()));
 				if (domibusService == null)
 					try {
@@ -249,7 +257,6 @@ public class SendServlet extends HttpServlet {
 				} catch (Exception e) {
 					s_aLogger.error("Unable to send message through Domibus: " + e.getMessage(), e);
 					result = "Unable to send message through Domibus: " + e.getMessage() != null && !e.getMessage().isEmpty() ? e.getMessage() : e.getCause().getMessage();
-					;
 					throw new Exception(result);
 				}
 

@@ -52,14 +52,17 @@ public abstract class AbstractReceiverServlet extends HttpServlet {
 	 * @return an error message if the certificate is expired or not trusted, null if everything is ok. Throws exception if there was a problem loading the necessary keystore.
 	 */
 	protected String checkSignatureTrust(X509Certificate userCert) throws Exception {
-		String truststorePath = properties.getProperty(PropertiesUtil.AP_TRUSTSTORE_PATH);
-		String truststorePassword = properties.getProperty(PropertiesUtil.AP_TRUSTSTORE_PASSWORD);
-		KeystoreUtil keystoreAccess = new KeystoreUtil(truststorePath, truststorePassword);
-		X509Certificate caCert = keystoreAccess.getApCaCertificate();
+		String truststorePath = properties.getProperty(PropertiesUtil.DISPATCHER_TRUSTSTORE_PATH);
+		String truststorePassword = properties.getProperty(PropertiesUtil.DISPATCHER_TRUSTSTORE_PASSWORD);
+		KeystoreUtil truststoreAccess = new KeystoreUtil(truststorePath, truststorePassword);
+		X509Certificate rootCert = truststoreAccess.getApCaCertificate();
 
 		// Verify the current certificate using the issuer certificate
 		try {
-			userCert.verify(caCert.getPublicKey());
+			boolean valid = CertificateCheck.validateKeyChain(userCert, truststoreAccess.getKeyStore(), rootCert);
+			if (!valid){
+				return "The current certificate " + userCert.getIssuerDN() + " is not trusted in the truststore " + properties.getProperty(PropertiesUtil.DISPATCHER_TRUSTSTORE_PATH);
+			}
 		} catch (final Exception e) {
 			return e.getMessage();
 		}

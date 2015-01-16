@@ -39,63 +39,85 @@
 
 -->
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
-  xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-  id="SMP_WebApp" version="2.5">
-  <display-name>PEPPOL SMP REST service (read &amp; write)</display-name>
+         xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         id="SMP_WebApp" version="2.5">
+    <display-name>PEPPOL SMP REST service (read &amp; write)</display-name>
 
-  <listener>
-    <listener-class>eu.europa.ec.cipa.smp.server.util.LogStartupListener</listener-class>
-  </listener>
-  <listener>
-    <listener-class>eu.europa.ec.cipa.smp.server.util.TimeZoneCorrectorListener</listener-class>
-  </listener>
+    <listener>
+        <listener-class>eu.europa.ec.cipa.smp.server.util.LogStartupListener</listener-class>
+    </listener>
+    <listener>
+        <listener-class>eu.europa.ec.cipa.smp.server.util.TimeZoneCorrectorListener</listener-class>
+    </listener>
 
-  <!-- Scope handling: listener + filter must be first -->
-  <listener>
-    <listener-class>com.helger.webscopes.servlet.WebScopeListener</listener-class>
-  </listener>
-  <filter>
-    <filter-name>ScopeFilter</filter-name>
-    <filter-class>com.helger.webscopes.servlet.DefaultScopeAwareFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>ScopeFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
+    <!-- Scope handling: listener + filter must be first -->
+    <listener>
+        <listener-class>com.helger.webscopes.servlet.WebScopeListener</listener-class>
+    </listener>
+    <filter>
+        <filter-name>ScopeFilter</filter-name>
+        <filter-class>com.helger.webscopes.servlet.DefaultScopeAwareFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ScopeFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
-  <!-- SML handling: filter -->
-  <filter>
-    <filter-name>registrationhook</filter-name>
-    <filter-class>eu.europa.ec.cipa.smp.server.hook.PostRegistrationFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>registrationhook</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
+    <!-- SML handling: filter -->
+    <filter>
+        <filter-name>registrationhook</filter-name>
+        <filter-class>eu.europa.ec.cipa.smp.server.hook.PostRegistrationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>registrationhook</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
-  <filter>
-    <filter-name>RestFilter</filter-name>
-    <filter-class>com.sun.jersey.spi.container.servlet.ServletContainer</filter-class>
-    <init-param>
-      <param-name>com.sun.jersey.config.property.resourceConfigClass</param-name>
-      <param-value>com.sun.jersey.api.core.PackagesResourceConfig</param-value>
-    </init-param>
-    <init-param>
-      <param-name>com.sun.jersey.config.property.packages</param-name>
-      <param-value>eu.europa.ec.cipa.smp.server.services.common;eu.europa.ec.cipa.smp.server.services.readwrite</param-value>
-    </init-param>
-    <init-param>
-      <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-      <param-value>eu.europa.ec.cipa.smp.server.util.SignatureFilter</param-value>
-    </init-param>
-    <init-param>
-      <param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
-      <param-value>/(images|js|styles|web)/.*</param-value>
-    </init-param>
-  </filter>
+    <filter>
+        <filter-name>RestFilter</filter-name>
+        <filter-class>com.sun.jersey.spi.container.servlet.ServletContainer</filter-class>
+        <init-param>
+            <param-name>com.sun.jersey.config.property.resourceConfigClass</param-name>
+            <param-value>com.sun.jersey.api.core.PackagesResourceConfig</param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.config.property.packages</param-name>
+            <param-value>eu.europa.ec.cipa.smp.server.services.common;eu.europa.ec.cipa.smp.server.services.readwrite
+            </param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+            <param-value>eu.europa.ec.cipa.smp.server.util.SignatureFilter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
+            <param-value>/(images|js|styles|web)/.*</param-value>
+        </init-param>
+    </filter>
 
-  <filter-mapping>
-    <filter-name>RestFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
+    <filter-mapping>
+        <filter-name>RestFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <security-constraint>
+        <web-resource-collection>
+            <web-resource-name>cipa-smp-full-webapp</web-resource-name>
+            <url-pattern>/*</url-pattern>
+            <http-method>POST</http-method>
+            <http-method>DELETE</http-method>
+            <http-method>PUT</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>DIGIT_CIPA_ADM</role-name>
+        </auth-constraint>
+    </security-constraint>
+    <security-role>
+        <role-name>DIGIT_CIPA_ADM</role-name>
+    </security-role>
+    <login-config>
+        <auth-method>BASIC</auth-method>
+        <realm-name>myrealm</realm-name>
+    </login-config>
 </web-app>

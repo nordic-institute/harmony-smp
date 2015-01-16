@@ -85,8 +85,8 @@ public class OCSPValidator
   public static boolean certificateValidate (final X509Certificate aCert)
   {
 
-    final String trustStorePassword = properties.getProperty (PropertiesUtil.AP_TRUSTSTORE_PASSWORD);
-    final String truststorePath = properties.getProperty (PropertiesUtil.AP_TRUSTSTORE_PATH);
+    final String trustStorePassword = properties.getProperty (PropertiesUtil.DISPATCHER_TRUSTSTORE_PASSWORD);
+    final String truststorePath = properties.getProperty (PropertiesUtil.DISPATCHER_TRUSTSTORE_PATH);
 
     try
     {
@@ -94,7 +94,7 @@ public class OCSPValidator
       final KeyStore trustStore = KeyStoreUtils.loadKeyStore (truststorePath, trustStorePassword);
 
       // Get certificate by alias;
-      final String truststoreAlias = properties.getProperty (PropertiesUtil.AP_CA_ALIAS);
+      final String truststoreAlias = properties.getProperty (PropertiesUtil.DISPATCHER_CA_ALIAS);
       final X509Certificate aRootCert = (X509Certificate) trustStore.getCertificate (truststoreAlias);
 
       if (aRootCert == null)
