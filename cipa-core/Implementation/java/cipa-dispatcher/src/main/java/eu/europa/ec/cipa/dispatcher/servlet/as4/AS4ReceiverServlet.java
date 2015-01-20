@@ -13,7 +13,6 @@ import java.util.Enumeration;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.mail.MessagingException;
 import javax.mail.Part;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
@@ -21,7 +20,6 @@ import javax.net.ssl.HostnameVerifier;
 import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
@@ -35,21 +33,19 @@ import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
+import org.apache.log4j.Logger;
 import org.bouncycastle.util.encoders.Base64;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.as4.service.AS4PModeService;
 import eu.europa.ec.cipa.dispatcher.handler.AS4Handler;
 import eu.europa.ec.cipa.dispatcher.servlet.AbstractReceiverServlet;
 import eu.europa.ec.cipa.dispatcher.util.KeystoreUtil;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
-import org.xml.sax.SAXException;
 
 public class AS4ReceiverServlet extends AbstractReceiverServlet
 
 {
-    public static final Logger s_aLogger = LoggerFactory.getLogger(AS4ReceiverServlet.class);
+    public static final Logger s_aLogger = Logger.getLogger(AS4ReceiverServlet.class);
 
     public void init() throws UnavailableException {
         classType = "AS4";
@@ -84,7 +80,7 @@ public class AS4ReceiverServlet extends AbstractReceiverServlet
 
         try {
             // we wrap the inputstream into a ByteArrayInputStream so we can
-            // read it multiple times (the AS2 endpoint will need to read it
+            // read it multiple times (the AS4 endpoint will need to read it
             // later)
             ByteArrayOutputStream buffer = copyToMarkableBuffer(req.getInputStream());
             ByteArrayInputStream input = new ByteArrayInputStream(buffer.toByteArray());

@@ -12,7 +12,7 @@ public interface IAS2EndpointDBInterface
 	/** Checks if the partner passed as parameter is registered in our endpoint DB
 	 * @return true if our endpoint knows about the partner
 	 */
-	public abstract boolean isPartnerKown (String CN) throws SQLException;
+	public abstract boolean isPartnerKnown (String CN) throws SQLException;
 	
 	
 	/** Retrieves the partner's url, or null if it doesn't exist

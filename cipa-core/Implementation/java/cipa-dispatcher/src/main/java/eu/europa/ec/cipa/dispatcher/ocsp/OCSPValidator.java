@@ -55,9 +55,6 @@ import java.util.Properties;
 
 import javax.annotation.Nonnull;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.helger.commons.GlobalDebug;
 import com.helger.commons.collections.ContainerHelper;
 import com.helger.commons.state.EValidity;
@@ -65,13 +62,14 @@ import com.helger.commons.string.StringHelper;
 
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
+import org.apache.log4j.Logger;
 
 public class OCSPValidator
 {
   /**
    * Logger to follow this class behavior.
    */
-  private static final Logger s_aLogger = LoggerFactory.getLogger (OCSPValidator.class);
+  private static final Logger s_aLogger = Logger.getLogger (OCSPValidator.class);
 
   private static Properties properties = PropertiesUtil.getProperties ();
 

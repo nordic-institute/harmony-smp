@@ -16,16 +16,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
-import java.util.prefs.Preferences;
-
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.apache.log4j.Logger;
 import org.busdox.servicemetadata.publishing._1.EndpointType;
 import org.busdox.servicemetadata.publishing._1.ProcessType;
 import org.busdox.servicemetadata.publishing._1.SignedServiceMetadataType;
@@ -47,10 +44,7 @@ import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Property;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.Service;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.To;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.UserMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
- 
+
 
 import backend.ecodex.org._1_1.BackendInterface;
 import backend.ecodex.org._1_1.BackendService11;
@@ -61,8 +55,6 @@ import backend.ecodex.org._1_1.SendResponse;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
-import de.mendelson.comm.as2.AS2ServerVersion;
-import de.mendelson.comm.as2.preferences.PreferencesAS2;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointDBInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointSendInterface;
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.as4.AS4GatewayInterface;
@@ -77,10 +69,11 @@ import eu.europa.ec.cipa.smp.client.SMPServiceCaller;
 
 public class SendServlet extends HttpServlet {
 
-	private static final Logger s_aLogger = LoggerFactory.getLogger (SendServlet.class);
+	private static final Logger s_aLogger = Logger.getLogger (SendServlet.class);
 	
 	Properties properties = PropertiesUtil.getProperties();
 	BackendService11 domibusService = null;
+	IAS2EndpointDBInterface partnerInterface;
 	// created as object variable to avoid loading the domibus
 	// service WSDL everytime we call it.
 
@@ -183,7 +176,7 @@ public class SendServlet extends HttpServlet {
 				} else // NO_SMP mode
 				{
 					String className = properties.getProperty(PropertiesUtil.PARTNER_INTERFACE_IMPLEMENTATION_CLASS);
-					IAS2EndpointDBInterface partnerInterface = (IAS2EndpointDBInterface) Class.forName(className).newInstance();
+					partnerInterface = (IAS2EndpointDBInterface) Class.forName(className).newInstance();
 					endpoint = partnerInterface.getPartnerData(receiverIdentifier);
 				}
 
@@ -214,7 +207,10 @@ public class SendServlet extends HttpServlet {
 
 				String className = properties.getProperty(PropertiesUtil.SEND_INTERFACE_IMPLEMENTATION_CLASS);
 				IAS2EndpointSendInterface sendInterface = (IAS2EndpointSendInterface) Class.forName(className).newInstance();
-
+				if (partnerInterface == null) {
+					partnerInterface = (IAS2EndpointDBInterface) Class.forName(properties.getProperty(PropertiesUtil.PARTNER_INTERFACE_IMPLEMENTATION_CLASS)).newInstance();
+				}
+				partnerInterface.configureLocalStationIfNeeded();
 				String auxiliaryMessageName = resultMap.get("tempFilePath");
 				auxiliaryMessageName = auxiliaryMessageName.substring(auxiliaryMessageName.lastIndexOf('/') + 1, auxiliaryMessageName.length());
 				result = sendInterface.send(AS2From, AS2To, auxiliaryMessageName, resultMap.get("tempFilePath"), endpoint);

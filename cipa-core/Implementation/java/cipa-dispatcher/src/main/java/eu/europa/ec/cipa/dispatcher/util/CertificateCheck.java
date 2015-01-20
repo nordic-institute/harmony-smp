@@ -2,8 +2,7 @@ package eu.europa.ec.cipa.dispatcher.util;
 
 import eu.europa.ec.cipa.dispatcher.exception.CertRevokedException;
 import eu.europa.ec.cipa.dispatcher.ocsp.OCSPValidator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletResponse;
 import java.security.*;
@@ -12,7 +11,7 @@ import java.util.*;
 
 public abstract class CertificateCheck {
 
-    static final Logger s_aLogger = LoggerFactory.getLogger(CertificateCheck.class);
+    static final Logger s_aLogger = Logger.getLogger(CertificateCheck.class);
 
     public static void doCheck(X509Certificate cert, boolean ocps) throws CertificateNotYetValidException, CertificateExpiredException, CertRevokedException {
         // check the certificate is not expired
@@ -93,7 +92,7 @@ public abstract class CertificateCheck {
             anchors = Collections.singleton(anchor);
             params = new PKIXParameters(anchors);
             params.setRevocationEnabled(false);
-            if (client.getIssuerDN().equals(trustedCerts[i].getSubjectDN())) {
+            if (client.getIssuerX500Principal().equals(trustedCerts[i].getSubjectX500Principal())) {
                 if (isSelfSigned(trustedCerts[i]) && rootCert.equals(trustedCerts[i])) {
                     // found root ca
                     found = true;
@@ -103,6 +102,8 @@ public abstract class CertificateCheck {
                     s_aLogger.info("validating via: " + trustedCerts[i].getSubjectX500Principal().getName());
                     found = validateKeyChain(trustedCerts[i], rootCert, trustedCerts);
                 }
+            } else {
+                s_aLogger.debug("Comparing client.getIssuerX500Principal(): " + client.getIssuerX500Principal() + " with trustedCerts[i].getSubjectX500Principal(): " + trustedCerts[i].getSubjectDN() + ". Not equals");
             }
         }
         return found;

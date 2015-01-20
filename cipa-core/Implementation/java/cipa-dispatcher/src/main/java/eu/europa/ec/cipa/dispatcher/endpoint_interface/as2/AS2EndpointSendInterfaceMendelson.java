@@ -13,9 +13,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.busdox.servicemetadata.publishing._1.EndpointType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import de.mendelson.comm.as2.clientserver.message.PartnerConfigurationChanged;
 import de.mendelson.util.clientserver.messages.ClientServerResponse;
@@ -27,7 +26,7 @@ import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterface
 {
 	
-	private static final Logger s_aLogger = LoggerFactory.getLogger (AS2EndpointSendInterfaceMendelson.class);
+	private static final Logger s_aLogger = Logger.getLogger (AS2EndpointSendInterfaceMendelson.class);
 	
 	public static final String MENDELSON_INSTALLATION_PATH = "mendelson_installation_path";
 	public static final String MENDELSON_MESSAGE_SERVER_HOST = "mendelson_message_server_host";
@@ -37,13 +36,13 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 	private static Map<String,SignalObject> waitingMessages = new HashMap<String,SignalObject>();
 	private static Properties properties = PropertiesUtil.getProperties();
 	private static MySessionHandlerCallback callback;
-	static
-	{
+
+	public AS2EndpointSendInterfaceMendelson() {
 		//connect to Mendelson message server, it'll keep us updated on the transmission state
 		callback = new MySessionHandlerCallback(waitingMessages);
 		callback.connect(new InetSocketAddress(properties.getProperty(MENDELSON_MESSAGE_SERVER_HOST), Integer.parseInt(properties.getProperty(MENDELSON_MESSAGE_SERVER_PORT))), 5000);
 		if (!callback.isconnected()){
-			s_aLogger.error("Couldn't connect to Mendelson message server");			
+			s_aLogger.error("Couldn't connect to Mendelson message server");
 			throw (new RuntimeException("Couldn't connect to Mendelson message server"));
 		}
 	}
@@ -131,6 +130,15 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 			 //   boolean success = tempFile.renameTo(mendelsonFile);
 			    Path source =  Paths.get(documentFilePath);
 			    Path target = Paths.get(path);
+
+				File targetFolder = new File(path).getParentFile();
+				if (!targetFolder.exists()) {
+					boolean result = targetFolder.mkdirs();
+					if (!result) {
+						s_aLogger.error("Error: Couldn't create the folder " + targetFolder.getAbsolutePath() + ". This is highly likely to create problems to send messages with Mendelson");
+					}
+				}
+
 			    Files.move(source, target, StandardCopyOption.REPLACE_EXISTING );
 //			    if (!success){
 //			    	

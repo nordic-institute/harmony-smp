@@ -1,8 +1,7 @@
 package eu.europa.ec.cipa.dispatcher.util;
 
 import com.google.common.base.Strings;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -11,7 +10,7 @@ import java.util.Properties;
 
 public class ConfigurationListener implements ServletContextListener {
 
-    private static final Logger logger = LoggerFactory.getLogger(ConfigurationListener.class);
+    private static final Logger logger = Logger.getLogger(ConfigurationListener.class);
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {

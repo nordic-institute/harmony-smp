@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
-import java.security.cert.CertificateRevokedException;
 import java.security.cert.X509Certificate;
 import java.util.Properties;
 
@@ -13,21 +12,19 @@ import javax.servlet.UnavailableException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.cipa.dispatcher.exception.CertRevokedException;
-import eu.europa.ec.cipa.dispatcher.servlet.as4.AS4ReceiverServlet;
 import eu.europa.ec.cipa.dispatcher.util.CertificateCheck;
 import eu.europa.ec.cipa.dispatcher.util.KeystoreUtil;
 import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
+import org.apache.log4j.Logger;
 
 public abstract class AbstractReceiverServlet extends HttpServlet {
 
 	protected String classType;
 	private Properties properties;
 	private boolean debug = false;
-	static final Logger s_aLogger = LoggerFactory.getLogger(AbstractReceiverServlet.class);
+	static final Logger s_aLogger = Logger.getLogger(AbstractReceiverServlet.class);
 
 	public AbstractReceiverServlet() {
 		super();

@@ -6,8 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -16,7 +15,7 @@ import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 
 public class SBDHHandler extends DefaultHandler {
 
-	private static final Logger s_aLogger = LoggerFactory.getLogger(SBDHHandler.class);
+	private static final Logger s_aLogger = Logger.getLogger(SBDHHandler.class);
 
 	private FileOutputStream file; // whole SBDH document sent by the client
 	private FileOutputStream file2; // only the payload without the SBDH

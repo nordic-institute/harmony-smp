@@ -31,10 +31,8 @@ import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreConnectionPNames;
+import org.apache.log4j.Logger;
 import org.bouncycastle.cms.CMSSignedData;
-import org.bouncycastle.jce.provider.X509CertificateObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointDBInterface;
 import eu.europa.ec.cipa.dispatcher.servlet.AbstractReceiverServlet;
@@ -45,7 +43,7 @@ import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 public class AS2ReceiverServlet extends AbstractReceiverServlet
 {
 
-	private static final Logger s_aLogger = LoggerFactory.getLogger (AS2ReceiverServlet.class);
+	private static final Logger s_aLogger = Logger.getLogger (AS2ReceiverServlet.class);
 	
 	public void init() throws UnavailableException {
 		classType = "AS2";
@@ -92,7 +90,7 @@ public class AS2ReceiverServlet extends AbstractReceiverServlet
 			ByteArrayInputStream input = new ByteArrayInputStream(buffer.toByteArray());
 			
 	        //extract the certificate from the request
-	        X509CertificateObject cert = retrieveCertificate(input, resp);
+			X509Certificate cert = retrieveCertificate(input, resp);
 	        if (!validateCertificate(resp, cert)) return;
 			
 			
@@ -108,12 +106,15 @@ public class AS2ReceiverServlet extends AbstractReceiverServlet
 			//make the request's inputstream available to be read again
 			input.reset();
 
-			
 			//check that the AS2 endpoint knows the sender, if not, create a new Partner
 			String className = getProperties().getProperty(PropertiesUtil.PARTNER_INTERFACE_IMPLEMENTATION_CLASS);
 			IAS2EndpointDBInterface partnerInterface = (IAS2EndpointDBInterface) Class.forName(className).newInstance();
-			if (!partnerInterface.isPartnerKown(commonName))
-				partnerInterface.createNewPartner(commonName, commonName, "", mdnURL, (X509Certificate)cert); //we dont know the partner's endpointUrl at this point, so we can't provide it.	
+
+			// configure the local station if needed
+			partnerInterface.configureLocalStationIfNeeded();
+
+			if (!partnerInterface.isPartnerKnown(commonName))
+				partnerInterface.createNewPartner(commonName, commonName, "", mdnURL, cert); //we dont know the partner's endpointUrl at this point, so we can't provide it.
 
 			//now we finally redirect the request to the AS2 endpoint
 			forwardToAS2Endpoint(req, resp, buffer);
@@ -123,18 +124,20 @@ public class AS2ReceiverServlet extends AbstractReceiverServlet
 		{
 			try
 			{
-				s_aLogger.error( "Internal server Error occured",e);
+				s_aLogger.error( "Internal server Error occured", e);
 				resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 			}
 			catch (IOException ioE)
-			{}
+			{
+				s_aLogger.error( "Internal server Error occured", e);
+			}
 		}
 	}
 	
 	
 
 
-	private X509CertificateObject retrieveCertificate(ByteArrayInputStream input, HttpServletResponse resp)
+	private X509Certificate retrieveCertificate(ByteArrayInputStream input, HttpServletResponse resp)
 	{
 		Object cert = null;
 		
@@ -177,7 +180,7 @@ public class AS2ReceiverServlet extends AbstractReceiverServlet
 			return null;
 		}
 		
-		return (X509CertificateObject) cert;
+		return (X509Certificate) cert;
 	}
 	
 	private void forwardToAS2Endpoint(HttpServletRequest req, HttpServletResponse resp, ByteArrayOutputStream buffer)

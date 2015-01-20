@@ -17,10 +17,9 @@ import javax.xml.bind.DatatypeConverter;
 import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.apache.log4j.Logger;
 import org.bouncycastle.openssl.PEMWriter;
 import org.busdox.servicemetadata.publishing._1.EndpointType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import eu.europa.ec.cipa.dispatcher.endpoint_interface.IAS2EndpointDBInterface;
 import eu.europa.ec.cipa.dispatcher.util.KeystoreUtil;
@@ -28,7 +27,7 @@ import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
 
 public class AS2EndpointDBInterfaceMendelson implements IAS2EndpointDBInterface
 {
-	private static final Logger s_aLogger = LoggerFactory.getLogger (AS2EndpointDBInterfaceMendelson.class);
+	private static final Logger s_aLogger = Logger.getLogger (AS2EndpointDBInterfaceMendelson.class);
 	
 	private BasicDataSource runtimeDataSource;
 	private BasicDataSource configDataSource;
@@ -97,7 +96,7 @@ public class AS2EndpointDBInterfaceMendelson implements IAS2EndpointDBInterface
 	}
 	
 
-	public boolean isPartnerKown(String CN) throws SQLException
+	public boolean isPartnerKnown(String CN) throws SQLException
 	{
 		if (CN == null || CN.isEmpty())
 			return false;

@@ -1,5 +1,7 @@
 package eu.europa.ec.cipa.dispatcher.util;
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -11,12 +13,9 @@ import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class KeystoreUtil
 {
-	private static final Logger s_aLogger = LoggerFactory.getLogger (KeystoreUtil.class);
+	private static final Logger s_aLogger = Logger.getLogger(KeystoreUtil.class);
 	private static Properties properties = PropertiesUtil.getProperties();
 	private KeyStore keyStore = null;
 	private String keystorePath;
