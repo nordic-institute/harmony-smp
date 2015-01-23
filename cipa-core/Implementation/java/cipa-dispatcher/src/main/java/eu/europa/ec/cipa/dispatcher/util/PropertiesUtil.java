@@ -31,8 +31,8 @@ public class PropertiesUtil {
     public static final String AS4_KEYSTORE_PASSWORD = "as4.keystore_password";
     public static final String AS4_TRUSTSTORE_PATH = "as4.truststore_path";
     public static final String AS4_TRUSTSTORE_PASSWORD = "as4.truststore_password";
-    public static final String DISPATCHER_TRUSTSTORE_PATH = "dispatcher.truststore_path";
-    public static final String DISPATCHER_TRUSTSTORE_PASSWORD = "dispatcher.truststore_password";
+    public static final String DISPATCHER_TRUSTSTORE_PATH = "truststore.location";
+    public static final String DISPATCHER_TRUSTSTORE_PASSWORD = "truststore.password";
     public static final String DISPATCHER_KEYSTORE_PATH = "dispatcher.keystore_path";
     public static final String DISPATCHER_KEYSTORE_PASSWORD = "dispatcher.keystore_password";
     public static final String DISPATCHER_CA_ALIAS = "dispatcher.ca_alias";
