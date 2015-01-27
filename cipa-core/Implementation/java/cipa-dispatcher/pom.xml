@@ -11,7 +11,7 @@
 	</parent>
 
 	<artifactId>cipa-dispatcher</artifactId>
-	<version>1.1.0</version>
+	<version>1.3.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>cipa-dispatcher</name>
 
@@ -21,8 +21,8 @@
 		<m2e.jpa.activation>false</m2e.jpa.activation>
 		<m2e.jsf.activation>false</m2e.jsf.activation>
 		<org.apache.cxf.version>2.2.3</org.apache.cxf.version>
-        <cipa.version>2.2.4-SNAPSHOT</cipa.version>
-        <domibus.version>2.1-SNAPSHOT</domibus.version>
+        <cipa.version>2.2.5-SNAPSHOT</cipa.version>
+        <domibus.version>2.2.0-SNAPSHOT</domibus.version>
         <ftp.host>wltdgt02.cc.cec.eu.int</ftp.host>
         <ftp.port>2059</ftp.port>
         <ftp.remotedir>/ec/test/server/weblogic/u010/home/digciedt/data/CIPA-EDEL_DEV/autodeploy</ftp.remotedir>
