@@ -5,10 +5,26 @@
   <artifactId>cipa-builder</artifactId>
   <packaging>pom</packaging>
   <name>CIPA Builder POM</name>
-  <version>1.0-SNAPSHOT</version>
+  <version>1.2.0-SNAPSHOT</version>
 
   <modules>
-    <module>cipa-core/Implementation/java</module>
-    <module>cipa-addons/Implementation/java</module>
+	<module>cipa-core/Implementation/java/cipa-parent-pom</module>
+    <module>cipa-core/Implementation/java/cipa-dispatcher</module>
+    <module>cipa-core/Implementation/java/cipa-commons-busdox</module>
+    <module>cipa-core/Implementation/java/cipa-peppol-types</module>
+    <module>cipa-core/Implementation/java/cipa-sml-client-library</module>
+    <module>cipa-core/Implementation/java/cipa-sml-server-library</module>
+    <module>cipa-core/Implementation/java/cipa-sml-webapp</module>
+    <module>cipa-core/Implementation/java/cipa-smp-client-library</module>
+    <module>cipa-core/Implementation/java/cipa-smp-server-library</module>
+    <module>cipa-core/Implementation/java/cipa-smp-readonly-webapp</module>
+    <module>cipa-core/Implementation/java/cipa-smp-full-webapp</module>
+	<module>domibus/modules/domibus-common</module>
+    <module>domibus/modules/domibus-logging</module>
+    <module>domibus/modules/domibus-security</module>
+    <module>domibus/modules/domibus-ebms3</module>
+    <module>domibus/modules/domibus-distribution</module>
+    <module>domibus/modules/domibus-submission</module>
+	<module>mendelson/mendelson-as2-war</module>
   </modules>
 </project>
