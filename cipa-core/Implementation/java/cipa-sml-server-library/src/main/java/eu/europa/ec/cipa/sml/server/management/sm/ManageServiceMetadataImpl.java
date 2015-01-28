@@ -76,9 +76,7 @@ import eu.europa.ec.cipa.sml.server.web.WebRequestClientIdentifier;
 // @SchemaValidation (outbound = false)
 @WebService(serviceName = "ManageServiceMetadataService", portName = "ManageServiceMetadataServicePort", 
 endpointInterface = "org.busdox.servicemetadata.manageservicemetadataservice._1.ManageServiceMetadataServiceSoap", 
-targetNamespace = "http://busdox.org/serviceMetadata/ManageServiceMetadataService/1.0/", 
-wsdlLocation = "WEB-INF/wsdl/ManageServiceMetadataService-1.0.wsdl")
-
+targetNamespace = "http://busdox.org/serviceMetadata/ManageServiceMetadataService/1.0/")
 @BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING)
 @HandlerChain(file = "handlers.xml")
 public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSoap {
@@ -100,27 +98,27 @@ public class ManageServiceMetadataImpl implements ManageServiceMetadataServiceSo
 		if (e instanceof NotFoundException) {
 			final FaultType faultInfo = m_aObjFactory.createFaultType();
 			faultInfo.setFaultMessage(e.getMessage());
-			throw new NotFoundFault(e.getMessage(), faultInfo, e);
+			throw new NotFoundFault("" /*e.getMessage()*/, faultInfo, e);
 		}
 		if (e instanceof UnauthorizedException) {
 			final FaultType faultInfo = m_aObjFactory.createFaultType();
 			faultInfo.setFaultMessage(e.getMessage());
-			throw new UnauthorizedFault(e.getMessage(), faultInfo, e);
+			throw new UnauthorizedFault("" /*e.getMessage()*/, faultInfo, e);
 		}
 		if (e instanceof UnknownUserException) {
 			final FaultType faultInfo = m_aObjFactory.createFaultType();
 			faultInfo.setFaultMessage(e.getMessage());
-			throw new UnauthorizedFault(e.getMessage(), faultInfo, e);
+			throw new UnauthorizedFault("" /*e.getMessage()*/, faultInfo, e);
 		}
 		if (e instanceof BadRequestException) {
 			final FaultType faultInfo = m_aObjFactory.createFaultType();
 			faultInfo.setFaultMessage(e.getMessage());
-			throw new BadRequestFault(e.getMessage(), faultInfo, e);
+			throw new BadRequestFault("" /*e.getMessage()*/, faultInfo, e);
 		}
 		// All others as internal errors
 		final FaultType faultInfo = m_aObjFactory.createFaultType();
 		faultInfo.setFaultMessage(e.getMessage());
-		throw new InternalErrorFault(e.getMessage(), faultInfo, e);
+		throw new InternalErrorFault("" /*e.getMessage()*/, faultInfo, e);
 	}
 
 	public void create(final ServiceMetadataPublisherServiceType aSMPData) throws BadRequestFault, InternalErrorFault, UnauthorizedFault {

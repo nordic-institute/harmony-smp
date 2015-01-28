@@ -86,8 +86,7 @@ import eu.europa.ec.cipa.sml.server.web.WebRequestClientIdentifier;
 // @SchemaValidation
 @WebService(serviceName = "ManageBusinessIdentifierService", portName = "ManageBusinessIdentifierServicePort", 
 endpointInterface = "org.busdox.servicemetadata.managebusinessidentifierservice._1.ManageBusinessIdentifierServiceSoap", 
-targetNamespace = "http://busdox.org/serviceMetadata/ManageBusinessIdentifierService/1.0/", 
-wsdlLocation = "WEB-INF/wsdl/ManageBusinessIdentifierService-1.0.wsdl")
+targetNamespace = "http://busdox.org/serviceMetadata/ManageBusinessIdentifierService/1.0/")
 @BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING)
 @HandlerChain(file = "handlers.xml")
 public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifierServiceSoap {
@@ -109,32 +108,32 @@ public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifier
 		if (e instanceof NotFoundException) {
 			final FaultType faultInfo = m_aObjFactory.createFaultType();
 			faultInfo.setFaultMessage(e.getMessage());
-			throw new NotFoundFault(e.getMessage(), faultInfo, e);
+			throw new NotFoundFault("" /*e.getMessage()*/, faultInfo, e);
 		}
 		if (e instanceof UnauthorizedException) {
 			final FaultType faultInfo = m_aObjFactory.createFaultType();
 			faultInfo.setFaultMessage(e.getMessage());
-			throw new UnauthorizedFault(e.getMessage(), faultInfo, e);
+			throw new UnauthorizedFault("" /*e.getMessage()*/, faultInfo, e);
 		}
 		if (e instanceof UnknownUserException) {
 			final FaultType faultInfo = m_aObjFactory.createFaultType();
 			faultInfo.setFaultMessage(e.getMessage());
-			throw new UnauthorizedFault(e.getMessage(), faultInfo, e);
+			throw new UnauthorizedFault("" /*e.getMessage()*/, faultInfo, e);
 		}
 		if (e instanceof BadRequestException) {
 			final FaultType faultInfo = m_aObjFactory.createFaultType();
 			faultInfo.setFaultMessage(e.getMessage());
-			throw new BadRequestFault(e.getMessage(), faultInfo, e);
+			throw new BadRequestFault("" /*e.getMessage()*/, faultInfo, e);
 		}
 		if (e instanceof RollbackException) {
 			final FaultType faultInfo = m_aObjFactory.createFaultType();
 			faultInfo.setFaultMessage(e.getMessage());
-			throw new BadRequestFault(e.getMessage(), faultInfo, e);
+			throw new BadRequestFault("" /*e.getMessage()*/, faultInfo, e);
 		}
 		// All others as internal errors
 		final FaultType faultInfo = m_aObjFactory.createFaultType();
 		faultInfo.setFaultMessage(e.getMessage());
-		throw new InternalErrorFault(e.getMessage(), faultInfo, e);
+		throw new InternalErrorFault("" /*e.getMessage()*/, faultInfo, e);
 	}
 
 	public void createList(final ParticipantIdentifierPageType createListIn) throws NotFoundFault, UnauthorizedFault, BadRequestFault, InternalErrorFault {
