@@ -40,12 +40,11 @@
 	</scm>
 
 	<dependencies>
-		<!-- <dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcprov-jdk15on</artifactId>
-			<version>1.49</version>
-			<scope>provided</scope>
-		</dependency> -->
+    <dependency>
+      <groupId>org.bouncycastle</groupId>
+      <artifactId>bcprov-jdk15on</artifactId>
+      <version>1.51</version>
+    </dependency>
 		<dependency>
 			<groupId>eu.europa.ec.cipa</groupId>
 			<artifactId>cipa-commons-busdox</artifactId>
@@ -85,29 +84,6 @@
 			<version>2.7.7</version>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcprov-jdk15on</artifactId>
-			<version>1.51</version>
-			<!-- <scope>test</scope> -->
-		</dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-beans</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-context</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-test</artifactId>
-            <scope>test</scope>
-        </dependency>
 	</dependencies>
 
 	<build>
