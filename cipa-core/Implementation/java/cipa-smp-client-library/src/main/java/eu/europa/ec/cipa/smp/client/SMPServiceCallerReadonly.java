@@ -37,9 +37,7 @@
  */
 package eu.europa.ec.cipa.smp.client;
 
-import java.net.InetAddress;
 import java.net.URI;
-import java.net.UnknownHostException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -76,8 +74,6 @@ import eu.europa.ec.cipa.busdox.identifier.IReadonlyDocumentTypeIdentifier;
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyProcessIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.ipmapper.ConfiguredDNSMapper;
-import eu.europa.ec.cipa.peppol.ipmapper.MappedDNSHost;
 import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 import eu.europa.ec.cipa.peppol.uri.BusdoxURLUtils;
 import eu.europa.ec.cipa.peppol.utils.CertificateUtils;
@@ -106,8 +102,6 @@ public class SMPServiceCallerReadonly {
   private static final GenericType <JAXBElement <SignedServiceMetadataType>> TYPE_SIGNEDSERVICEMETADATA = new GenericType <JAXBElement <SignedServiceMetadataType>> () {};
 
   // Members - free to change from here on
-  @Deprecated
-  private static final ConfiguredDNSMapper s_aDNSMapper = new ConfiguredDNSMapper ();
 
   private final URI m_aSMPHost;
   private final WebResource m_aWebResource;
@@ -184,36 +178,7 @@ public class SMPServiceCallerReadonly {
     if (aSMPHost.getPort () != 80 && aSMPHost.getPort () != -1)
       s_aLogger.warn ("SMP URI " + aSMPHost + " is not running on port 80!");
 
-    if (s_aDNSMapper.containsAnyMapping ()) {
-      s_aLogger.warn ("The DNSMapper originally integrated by BRZ is no longer needed and will be removed in upcoming versions! If you still need the DNSMapper please drop a note to Philip Helger or Sandro from DIGIT");
-      // The DNS mapper contains at least one mapping, so try to resolve it
-      try {
-        final String sOriginalHost = aSMPHost.getHost ();
-        final InetAddress aInetAddr = InetAddress.getByName (sOriginalHost);
-        final MappedDNSHost aRealHostToUse = s_aDNSMapper.getMappedDNSHost (aInetAddr);
-        if (!sOriginalHost.equals (aRealHostToUse.getHost ())) {
-          final int nPortToUse = aRealHostToUse.getPort () != null ? aRealHostToUse.getPort ().intValue ()
-                                                                  : aSMPHost.getPort ();
-          m_aSMPHost = URI.create (aSMPHost.getScheme () +
-                                   "://" +
-                                   aRealHostToUse.getHost () +
-                                   (nPortToUse <= 0 ? "" : ":" + nPortToUse));
-          s_aLogger.info ("Changed the SMP host from " + aSMPHost + " to " + m_aSMPHost);
-        }
-        else
-          m_aSMPHost = aSMPHost;
-      }
-      catch (final UnknownHostException ex) {
-        // Should never occur, as the SML hosts
-        throw new IllegalStateException ("Failed to resolve host from " + aSMPHost, ex);
-      }
-    }
-    else {
-      // Avoid the above code as it may lead to problems in DMZs where no DNS
-      // server is available (happened with IBM Denmark)
-      m_aSMPHost = aSMPHost;
-    }
-
+    m_aSMPHost = aSMPHost;
     m_aWebResource = getResourceWithoutSignatureCheck (m_aSMPHost);
     m_aWebResourceWithSignatureCheck = getResourceWithSignatureCheck (m_aSMPHost);
   }
