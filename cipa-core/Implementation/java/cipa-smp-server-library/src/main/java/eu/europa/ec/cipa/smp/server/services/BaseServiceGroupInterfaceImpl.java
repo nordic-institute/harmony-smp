@@ -52,11 +52,13 @@ import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.sun.jersey.api.NotFoundException;
 
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
+import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 
@@ -69,6 +71,21 @@ import eu.europa.ec.cipa.smp.server.data.IDataManager;
  */
 public final class BaseServiceGroupInterfaceImpl {
   private static final Logger s_aLogger = LoggerFactory.getLogger (BaseServiceGroupInterfaceImpl.class);
+  
+  private static ConfigFile configFile;
+
+  static {
+    /*
+     * TODO : This is a quick and dirty hack to allow the use of a configuration
+     * file with an other name if it's in the classpath (like
+     * smp.config.properties or sml.config.properties). If the configuration
+     * file defined in applicationContext.xml couldn't be found, then the
+     * config.properties inside the war is used as a fallback. Needs to be
+     * properly refactored
+     */
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext (new String [] { "classpath:applicationContext.xml" });
+    configFile = (ConfigFile) context.getBean ("configFile");
+  }
 
   private BaseServiceGroupInterfaceImpl () {}
 
@@ -99,7 +116,7 @@ public final class BaseServiceGroupInterfaceImpl {
     try {
       final ObjectFactory aObjFactory = new ObjectFactory ();
 
-      // Retrieve the service group
+      // Retrieve the service group   
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
       final ServiceGroupType aServiceGroup = aDataManager.getServiceGroup (aServiceGroupID);
       if (aServiceGroup == null) {
@@ -114,11 +131,21 @@ public final class BaseServiceGroupInterfaceImpl {
       final List <DocumentIdentifierType> aDocTypeIds = aDataManager.getDocumentTypes (aServiceGroupID);
       for (final DocumentIdentifierType aDocTypeId : aDocTypeIds) {
         final ServiceMetadataReferenceType aMetadataReference = aObjFactory.createServiceMetadataReferenceType ();
-        aMetadataReference.setHref (aUriInfo.getBaseUriBuilder ()
-                                            .path (aServiceMetadataInterface)
-                                            .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID),
-                                                               IdentifierUtils.getIdentifierURIPercentEncoded (aDocTypeId))
-                                            .toString ());
+        if (configFile.getString ("contextPath.output").equals ("true")) {
+          aMetadataReference.setHref (aUriInfo.getBaseUriBuilder ()
+                                              .path (aServiceMetadataInterface)
+                                              .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID),
+                                                                 IdentifierUtils.getIdentifierURIPercentEncoded (aDocTypeId))
+                                              .toString ());
+        }
+        else {
+          aMetadataReference.setHref (aUriInfo.getBaseUriBuilder ()
+                                              .replacePath ("")
+                                              .path (aServiceMetadataInterface)
+                                              .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID),
+                                                                 IdentifierUtils.getIdentifierURIPercentEncoded (aDocTypeId))
+                                              .toString ());
+        }
         aMetadataReferences.add (aMetadataReference);
       }
       aServiceGroup.setServiceMetadataReferenceCollection (aCollectionType);
