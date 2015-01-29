@@ -82,14 +82,23 @@ public final class ServiceGroupInterface {
 
   @GET
   @Produces (MediaType.TEXT_XML)
-  public JAXBElement <ServiceGroupType> getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId) throws Throwable {
+  public Response getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId){
     // Delegate to common implementation
-    return BaseServiceGroupInterfaceImpl.getServiceGroup (uriInfo, sServiceGroupId, ServiceMetadataInterface.class);
+    try{
+      return Response.ok(BaseServiceGroupInterfaceImpl.getServiceGroup (uriInfo, sServiceGroupId, ServiceMetadataInterface.class)).build ();  
+    }
+    catch(Throwable ex)
+    {
+      s_aLogger.error ("Error getting service group " + sServiceGroupId, ex); 
+      //throw new Exception ("Internal error occurred while getting a ServiceGroup");
+      
+      return Response.serverError().build ();
+    }
   }
 
   @PUT
   public Response saveServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupID,
-                                    final ServiceGroupType aServiceGroup) throws Throwable {
+                                    final ServiceGroupType aServiceGroup) {
     s_aLogger.info ("PUT /" + sServiceGroupID + " ==> " + aServiceGroup);
 
     final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
@@ -114,7 +123,7 @@ public final class ServiceGroupInterface {
     }
     catch (final Throwable ex) {
       s_aLogger.error ("Error saving service group " + aServiceGroupID, ex);
-      throw ex;
+      return Response.serverError ().build ();
     }
   }
 
@@ -139,7 +148,7 @@ public final class ServiceGroupInterface {
     }
     catch (final Throwable ex) {
       s_aLogger.error ("Error deleting service group " + aServiceGroupID, ex);
-      throw ex;
+      return Response.serverError ().build ();
     }
   }
 }
