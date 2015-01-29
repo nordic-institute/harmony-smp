@@ -89,7 +89,6 @@ import eu.europa.ec.cipa.smp.client.exception.UnknownException;
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-@SuppressWarnings ("deprecation")
 public class SMPServiceCallerReadonly {
   private static final Logger s_aLogger = LoggerFactory.getLogger (SMPServiceCallerReadonly.class);
 
