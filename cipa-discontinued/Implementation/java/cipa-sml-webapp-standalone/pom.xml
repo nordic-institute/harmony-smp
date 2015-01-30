@@ -5,7 +5,7 @@
   <parent>
     <groupId>eu.europa.ec.cipa</groupId>
     <artifactId>cipa-parent-pom</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.4</version>
     <relativePath>../../../../cipa-core/Implementation/java/cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-sml-webapp-standalone</artifactId>
@@ -14,8 +14,8 @@
   <name>cipa-sml-webapp-standalone</name>
   
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-sml-webapp-standalone</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-sml-webapp-standalone</developerConnection>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-discontinued/Implementation/java/cipa-sml-webapp-standalone</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-discontinued/Implementation/java/cipa-sml-webapp-standalone</developerConnection>
   </scm>
 
     <!-- Default properties to copy the artifact on the DEV platform -->
@@ -29,7 +29,7 @@
     <dependency>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>cipa-sml-server-library</artifactId>
-      <version>${project.version}</version>
+      <version>2.2.0-RC1</version>
     </dependency>
     <dependency>
       <groupId>mysql</groupId>

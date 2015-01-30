@@ -38,6 +38,7 @@
 package eu.europa.ec.cipa.transport.lime.server.storage;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
@@ -144,7 +145,7 @@ public final class LimeStorage {
   public String [] getMessageIDs (@Nonnull final String sChannelID) {
     final File aChannnelDir = _getChannelInboxDir (sChannelID);
     final List <File> aPayloadFiles = FileUtils.getDirectoryContent (aChannnelDir,
-                                                                     new FilenameFilterEndsWith (EXT_PAYLOAD));
+                                                                     (FileFilter) new FilenameFilterEndsWith (EXT_PAYLOAD));
 
     final String [] aMessageIDs = new String [aPayloadFiles.size ()];
     int nMsgIdx = 0;

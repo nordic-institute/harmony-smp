@@ -3,7 +3,7 @@
   <parent>
     <groupId>eu.europa.ec.cipa</groupId>
     <artifactId>cipa-parent-pom</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.4</version>
     <relativePath>../cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-start-filereceiver</artifactId>
@@ -11,8 +11,8 @@
   <name>cipa-start-filereceiver</name>
 
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-start-filereceiver</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-start-filereceiver</developerConnection>
+    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-discontinued/Implementation/java/cipa-start-filereceiver</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-discontinued/Implementation/java/cipa-start-filereceiver</developerConnection>
   </scm>
 
   <dependencies>
