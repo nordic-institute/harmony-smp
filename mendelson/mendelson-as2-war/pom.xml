@@ -19,6 +19,18 @@
         <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/mendelson/mendelson-as2-war
         </developerConnection>
     </scm>
+	
+	<!-- Where to deploy binaries -->
+    <distributionManagement>
+      <repository>
+        <id>joinup-releases</id>
+        <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
+      </repository>
+      <snapshotRepository>
+        <id>joinup-snapshots</id>
+        <url>https://joinup.ec.europa.eu/nexus/content/repositories/snapshots/</url>
+      </snapshotRepository>
+    </distributionManagement>
 
     <!-- Where are we looking for JARs? -->
     <pluginRepositories>
