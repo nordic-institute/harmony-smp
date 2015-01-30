@@ -1040,7 +1040,7 @@ clean install -Pdistribute -> create a distribution packaged with tomcat
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>1.7</version>
+                <version>1.8</version>
                 <dependencies>
                     <dependency>
                         <groupId>ant</groupId>
@@ -1052,6 +1052,11 @@ clean install -Pdistribute -> create a distribution packaged with tomcat
                         <artifactId>commons-net</artifactId>
                         <version>1.4.1</version>
                     </dependency>
+                    <dependency>
+                        <groupId>org.tigris.antelope</groupId>
+                        <artifactId>antelopetasks</artifactId>
+                        <version>3.2.10</version>
+                    </dependency>
                 </dependencies>
                 <executions>
                     <execution>
@@ -1059,11 +1064,19 @@ clean install -Pdistribute -> create a distribution packaged with tomcat
                         <phase>verify</phase>
                         <configuration>
                             <target>
-                                <echo>Replacing autoDeploy="true" with autoDeploy="false" in tomcat configuration file: ${project.build.directory}/artifacts/tomcat/conf/server.xml</echo>
-                                <replace
-                                        file="${project.build.directory}/artifacts/tomcat/conf/server.xml"
-                                        token='Host appBase="webapps" autoDeploy="true" name="localhost"'
-                                        value='Host appBase="webapps" autoDeploy="false" name="localhost"' />
+                                <taskdef name="if" classname="ise.antelope.tasks.IfTask"/>
+                                <taskdef name="fileutil" classname="ise.antelope.tasks.FileUtilTask"/>
+                                <fileutil file="${project.build.directory}/artifacts/tomcat/conf/server.xml" property="file_exist">
+                                    <isfile/>
+                                </fileutil>
+                                <if name="file_exist" value="true">
+                                    <echo>Replacing autoDeploy="true" with autoDeploy="false" in tomcat configuration file: ${project.build.directory}/artifacts/tomcat/conf/server.xml</echo>
+                                    <replace
+                                            file="${project.build.directory}/artifacts/tomcat/conf/server.xml"
+                                            token='Host appBase="webapps" autoDeploy="true" name="localhost"'
+                                            value='Host appBase="webapps" autoDeploy="false" name="localhost"' />
+                                    <break/>
+                                </if>
                             </target>
                         </configuration>
                         <goals>
