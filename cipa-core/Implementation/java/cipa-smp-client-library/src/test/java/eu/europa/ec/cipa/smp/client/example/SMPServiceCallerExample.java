@@ -61,7 +61,7 @@ public final class SMPServiceCallerExample {
     final String sEndpointAddress = new SMPServiceCaller (PI_alfa1lab, ESML.PRODUCTION).getEndpointAddress (PI_alfa1lab,
                                                                                                             DOCUMENT_INVOICE,
                                                                                                             PROCESS_BII04,
-                                                                                                            ESMPTransportProfile.TRANSPORT_PROFILE_START);
+                                                                                                            ESMPTransportProfile.TRANSPORT_PROFILE_AS2);
     System.out.println ("The Alfa1lab START AP that handles invoices in BIS4A is located at: " + sEndpointAddress);
   }
 }

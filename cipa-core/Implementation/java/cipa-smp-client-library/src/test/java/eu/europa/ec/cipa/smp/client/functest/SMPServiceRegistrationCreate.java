@@ -108,7 +108,7 @@ public final class SMPServiceRegistrationCreate {
             {
               final EndpointType aEndpoint = s_aOF.createEndpointType ();
               aEndpoint.setEndpointReference (START_AP_ENDPOINTREF);
-              aEndpoint.setTransportProfile (ESMPTransportProfile.TRANSPORT_PROFILE_START.getID ());
+              aEndpoint.setTransportProfile (ESMPTransportProfile.TRANSPORT_PROFILE_AS2.getID ());
               aEndpoint.setCertificate (AP_CERT_STRING);
               aEndpoint.setServiceActivationDate (_createDate (2011, Calendar.JANUARY, 1));
               aEndpoint.setServiceExpirationDate (_createDate (2020, Calendar.DECEMBER, 31));

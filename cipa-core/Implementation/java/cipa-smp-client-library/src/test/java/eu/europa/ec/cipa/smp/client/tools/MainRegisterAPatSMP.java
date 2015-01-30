@@ -157,7 +157,7 @@ public final class MainRegisterAPatSMP {
               {
                 final EndpointType aEndpoint = aObjFactory.createEndpointType ();
                 aEndpoint.setEndpointReference (new W3CEndpointReferenceBuilder ().address (AP_ENDPOINTREF).build ());
-                aEndpoint.setTransportProfile (ESMPTransportProfile.TRANSPORT_PROFILE_START.getID ());
+                aEndpoint.setTransportProfile (ESMPTransportProfile.TRANSPORT_PROFILE_AS2.getID ());
                 aEndpoint.setCertificate (AP_CERT_STRING);
                 aEndpoint.setServiceActivationDate (aStartDate);
                 aEndpoint.setServiceExpirationDate (aEndDate);
