@@ -40,12 +40,12 @@
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-commons</artifactId>
-            <version>5.2.0</version>
+            <version>5.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-datetime</artifactId>
-            <version>3.2.1</version>
+            <version>3.2.2</version>
         </dependency>
         <dependency>
             <groupId>com.helger</groupId>
@@ -65,7 +65,7 @@
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-web</artifactId>
-            <version>6.0.2</version>
+            <version>6.0.4</version>
         </dependency>
         <dependency>
             <groupId>com.helger</groupId>
@@ -75,11 +75,6 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.metro</groupId>
-            <artifactId>webservices-rt</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
