@@ -21,7 +21,7 @@
     <dependency>
       <groupId>com.helger</groupId>
       <artifactId>ph-commons</artifactId>
-      <version>5.2.0</version>
+      <version>5.3.0</version>
     </dependency>
     <dependency>
       <groupId>org.glassfish.metro</groupId>
@@ -92,20 +92,6 @@
               <staleFile>${project.build.directory}/stale/.stale-wsimport2</staleFile>
             </configuration>
           </execution>
-          <execution>
-            <id>wsimport3</id>
-            <goals>
-              <goal>wsimport</goal>
-            </goals>
-            <configuration>
-              <wsdlFiles>
-                <wsdlFile>peppol-start-2.0.wsdl</wsdlFile>
-              </wsdlFiles>
-              <wsdlLocation>/WEB-INF/wsdl/peppol-start-2.0.wsdl</wsdlLocation>
-              <staleFile>${project.build.directory}/stale/.stale-wsimport3</staleFile>
-              <extension>true</extension>
-            </configuration>
-          </execution>
         </executions>
         <configuration>
           <wsdlDirectory>src/main/resources/WEB-INF/wsdl</wsdlDirectory>
@@ -160,9 +146,6 @@
           <specVersion>2.2</specVersion>
           <schemaDirectory>src/main/resources/WEB-INF/wsdl</schemaDirectory>
           <schemaIncludes>
-            <schemaInclude>oasis-200401-wss-wssecurity-utility-1.0.xsd</schemaInclude>
-            <schemaInclude>LIME-Types-1.0.xsd</schemaInclude>
-            <schemaInclude>START-Types-1.0.xsd</schemaInclude>
             <schemaInclude>ServiceGroupReferenceList.xsd</schemaInclude>
           </schemaIncludes>
           <bindingDirectory>src/main/jaxb</bindingDirectory>
@@ -221,7 +204,6 @@
         <artifactId>license-maven-plugin</artifactId>
         <configuration>
           <excludes>
-            <exclude>src/main/resources/WEB-INF/wsdl/oasis-200401-wss-wssecurity-utility-1.0.xsd</exclude>
             <exclude>src/main/resources/WEB-INF/wsdl/ws-addr.xsd</exclude>
             <exclude>src/main/resources/WEB-INF/wsdl/xmldsig-core-schema.xsd</exclude>
           </excludes>

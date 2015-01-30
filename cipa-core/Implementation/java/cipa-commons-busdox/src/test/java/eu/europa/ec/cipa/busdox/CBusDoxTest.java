@@ -37,30 +37,16 @@
  */
 package eu.europa.ec.cipa.busdox;
 
-import static org.junit.Assert.assertNotNull;
-
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.junit.Test;
 
 import com.helger.commons.annotations.PresentForCodeCoverage;
-import com.helger.commons.io.resource.ClassPathResource;
 
 /**
  * Test class for class {@link CBusDox}.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class CBusDoxTest {
-  @Test
-  public void testConstants () throws IOException {
-    // Ensure that the WSDL path is correct
-    final InputStream aIS = ClassPathResource.getInputStream (CBusDox.START_WSDL_RESOURCE);
-    assertNotNull ("WSDL file " + CBusDox.START_WSDL_RESOURCE + " does not exist!", aIS);
-    aIS.close ();
-  }
-
   @Test
   @PresentForCodeCoverage
   public void testDebuggingOnOff () {

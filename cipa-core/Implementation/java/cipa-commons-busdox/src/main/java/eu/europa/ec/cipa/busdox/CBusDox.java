@@ -37,15 +37,9 @@
  */
 package eu.europa.ec.cipa.busdox;
 
-import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
-import javax.xml.ws.WebServiceClient;
 
-import org.w3._2009._02.ws_tra.AccessPointService;
-
-import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.annotations.PresentForCodeCoverage;
-import com.helger.commons.exceptions.InitializationException;
 
 /**
  * Constants for this BusDox implementation.
@@ -54,29 +48,6 @@ import com.helger.commons.exceptions.InitializationException;
  */
 @Immutable
 public final class CBusDox {
-  /**
-   * The path to the START WSDL file within the class path. Must be a constant
-   * String and cannot be determined from {@link AccessPointService} class
-   * because only constant strings can be used as annotation parameter values.
-   */
-  @Nonnull
-  @Nonempty
-  public static final String START_WSDL_PATH = "WEB-INF/wsdl/peppol-start-2.0.wsdl";
-
-  @Nonnull
-  @Nonempty
-  public static final String START_WSDL_RESOURCE = "/" + START_WSDL_PATH;
-
-  static {
-    // Sanity check
-    final String sFoundPath = AccessPointService.class.getAnnotation (WebServiceClient.class).wsdlLocation ();
-    if (!START_WSDL_RESOURCE.equals (sFoundPath))
-      throw new InitializationException ("START WSDL path is incorrect! Expected " +
-                                         START_WSDL_RESOURCE +
-                                         " but found " +
-                                         sFoundPath);
-  }
-
   @SuppressWarnings ("unused")
   @PresentForCodeCoverage
   private static final CBusDox s_aInstance = new CBusDox ();
