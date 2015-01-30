@@ -23,11 +23,6 @@
       <artifactId>cipa-peppol-types</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.glassfish.metro</groupId>
-      <artifactId>webservices-rt</artifactId>
-      <scope>provided</scope>
-    </dependency>
 
     <dependency>
       <groupId>dnsjava</groupId>
