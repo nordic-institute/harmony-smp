@@ -127,7 +127,7 @@ public final class FuncTestSMPServiceCallerPredefined {
     }
     catch (final ClientHandlerException ex) {
       // Happens when being offline!
-      assertTrue (ex.getCause () instanceof UnknownHostException);
+      assertTrue (String.valueOf (ex.getCause ()), ex.getCause () instanceof UnknownHostException);
     }
   }
 }
