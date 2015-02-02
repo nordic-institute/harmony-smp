@@ -161,6 +161,7 @@ public class OCSPValidator
       // Set the PKIX parameters
       final PKIXParameters aParams = new PKIXParameters (ContainerHelper.newSet (aTrustAnchor));
       Security.setProperty("ocsp.enable", "true");
+      aParams.setSigProvider("BC");
       aParams.setRevocationEnabled (true);
 
       // Validate and obtain results
