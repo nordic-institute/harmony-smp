@@ -57,66 +57,72 @@ import eu.europa.ec.cipa.sml.server.security.PeppolClientCertificateValidator;
 
 /**
  * This servlet filter checks each request for a valid client certificate.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class ClientCertificateValidationFilter implements Filter {
-	private static final Logger s_aLogger = LoggerFactory.getLogger(ClientCertificateValidationFilter.class);
-	private static final String CLIENT_CERT_HEADER_KEY = "sml.cert.header";
+  private static final Logger s_aLogger = LoggerFactory.getLogger (ClientCertificateValidationFilter.class);
 
-	public void init(final FilterConfig aFilterConfig) throws ServletException {
-	}
+  public void init (final FilterConfig aFilterConfig) throws ServletException {}
 
-	public void doFilter(final ServletRequest aRequest, final ServletResponse aResponse, final FilterChain aFilterChain) throws IOException, ServletException {
-		final HttpServletRequest aHttpRequest = (HttpServletRequest) aRequest;
-		
-		
-		String certHeaderValue = aHttpRequest.getHeader(BlueCoatClientCertificateHandler.CLIENT_CERT_HEADER_KEY);
-		
-		String sClientUniqueID;
-		
-		Enumeration headerNames = aHttpRequest.getHeaderNames();
-		while (headerNames.hasMoreElements()) {
-			String key = (String) headerNames.nextElement();
-			String value = aHttpRequest.getHeader(key);
-			s_aLogger.debug("header Key :" + key +" Header Value :" +value);
-		}
-		
-		if ("https".equalsIgnoreCase(aHttpRequest.getScheme())) {
-			// Check the client certificate
-			if (!PeppolClientCertificateValidator.isClientCertificateValid(aHttpRequest))
-				throw new ServletException("Invalid client certificate passed!");
-			// Extract the client unique ID and set it into the request
-			sClientUniqueID = ClientUniqueIDProvider.getClientUniqueID(aHttpRequest);
-			 s_aLogger.info("Clieant Unique Identifier : " +sClientUniqueID ); 
-			if (sClientUniqueID == null)
-				throw new ServletException("Error in unique ID from certficate extraction!");
-		}  else if (certHeaderValue != null){
-			if (!BlueCoatClientCertificateHandler.isClientCertificateValid(aHttpRequest))
-				throw new ServletException("Invalid client certificate passed!");
-			sClientUniqueID = BlueCoatClientCertificateHandler.getClientUniqueID(aHttpRequest);
-			 s_aLogger.info("Client Unique Identifier : " +sClientUniqueID );
-			if (sClientUniqueID == null)
-				throw new ServletException("Error in unique ID from certficate extraction!");
-		}else {
-			// Can only occur when using the http version in the BRZ internal
-			// LAN (or
-			// the standalone version)
-			s_aLogger.info("Insecure http access from " + aHttpRequest.getRemoteAddr() + ":" + aHttpRequest.getRemotePort() + " ("
-					+ aHttpRequest.getRemoteHost() + ")");
-			sClientUniqueID = "debug-insecure-client-http-only";
-			 s_aLogger.info("Clieant Unique Identifier : " +sClientUniqueID ); 
-		}
+  public void doFilter (final ServletRequest aRequest, final ServletResponse aResponse, final FilterChain aFilterChain) throws IOException,
+                                                                                                                       ServletException {
+    final HttpServletRequest aHttpRequest = (HttpServletRequest) aRequest;
 
-		// Set in request
-		WebRequestClientIdentifier.setClientUniqueID(aHttpRequest, sClientUniqueID);
-		if (s_aLogger.isDebugEnabled())
-			s_aLogger.debug("Client with ID '" + sClientUniqueID + "' acknowledged");
+    final String certHeaderValue = aHttpRequest.getHeader (BlueCoatClientCertificateHandler.CLIENT_CERT_HEADER_KEY);
 
-		// Next filter
-		aFilterChain.doFilter(aRequest, aResponse);
-	}
+    String sClientUniqueID;
 
-	public void destroy() {
-	}
+    if (s_aLogger.isDebugEnabled ()) {
+      final Enumeration <?> headerNames = aHttpRequest.getHeaderNames ();
+      while (headerNames.hasMoreElements ()) {
+        final String key = (String) headerNames.nextElement ();
+        final String value = aHttpRequest.getHeader (key);
+        s_aLogger.debug ("header Key :" + key + " Header Value :" + value);
+      }
+    }
+
+    if ("https".equalsIgnoreCase (aHttpRequest.getScheme ())) {
+      // Check the client certificate
+      if (!PeppolClientCertificateValidator.isClientCertificateValid (aHttpRequest))
+        throw new ServletException ("Invalid client certificate passed!");
+      // Extract the client unique ID and set it into the request
+      sClientUniqueID = ClientUniqueIDProvider.getClientUniqueID (aHttpRequest);
+      s_aLogger.info ("Clieant Unique Identifier : " + sClientUniqueID);
+      if (sClientUniqueID == null)
+        throw new ServletException ("Error in unique ID from certficate extraction!");
+    }
+    else
+      if (certHeaderValue != null) {
+        if (!BlueCoatClientCertificateHandler.isClientCertificateValid (aHttpRequest))
+          throw new ServletException ("Invalid client certificate passed!");
+        sClientUniqueID = BlueCoatClientCertificateHandler.getClientUniqueID (aHttpRequest);
+        s_aLogger.info ("Client Unique Identifier : " + sClientUniqueID);
+        if (sClientUniqueID == null)
+          throw new ServletException ("Error in unique ID from certficate extraction!");
+      }
+      else {
+        // Can only occur when using the http version in the BRZ internal
+        // LAN (or the standalone version)
+        s_aLogger.info ("Insecure http access from " +
+                        aHttpRequest.getRemoteAddr () +
+                        ":" +
+                        aHttpRequest.getRemotePort () +
+                        " (" +
+                        aHttpRequest.getRemoteHost () +
+                        ")");
+        sClientUniqueID = "debug-insecure-client-http-only";
+        s_aLogger.info ("Clieant Unique Identifier : " + sClientUniqueID);
+      }
+
+    // Set in request
+    WebRequestClientIdentifier.setClientUniqueID (aHttpRequest, sClientUniqueID);
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Client with ID '" + sClientUniqueID + "' acknowledged");
+
+    // Next filter
+    aFilterChain.doFilter (aRequest, aResponse);
+  }
+
+  public void destroy () {}
 }
