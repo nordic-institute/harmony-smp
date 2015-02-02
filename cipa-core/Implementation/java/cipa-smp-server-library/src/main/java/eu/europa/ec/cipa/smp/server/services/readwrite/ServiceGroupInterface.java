@@ -49,7 +49,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
 
 import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;

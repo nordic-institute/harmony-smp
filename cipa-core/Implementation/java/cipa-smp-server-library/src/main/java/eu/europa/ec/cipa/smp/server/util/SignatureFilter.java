@@ -45,6 +45,7 @@ import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.exceptions.InitializationException;
@@ -55,9 +56,6 @@ import com.sun.jersey.spi.container.ContainerResponseFilter;
 
 import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.stereotype.Component;
 
 /**
  * This class adds a XML DSIG to successful GET's for SignedServiceMetadata
