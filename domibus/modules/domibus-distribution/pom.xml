@@ -348,6 +348,36 @@ clean install -Pdistribute -> create a distribution packaged with tomcat
                 <finalName>domibus-weblogic</finalName>
                 <exclude.application.server.specific>**/config*.properties</exclude.application.server.specific>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <version>2.8.2</version>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>deploy-weblogic</id>
+                                <goals>
+                                    <goal>deploy-file</goal>
+                                </goals>
+                                <phase>deploy</phase>
+                                <configuration>
+                                    <repositoryId>${project.distributionManagementArtifactRepository.id}</repositoryId>
+                                    <file>${project.build.directory}/${project.build.finalName}.${project.packaging}</file>
+                                    <url>${project.distributionManagementArtifactRepository.url}</url>
+                                    <artifactId>${project.artifactId}-weblogic</artifactId>
+                                    <groupId>${project.groupId}</groupId>
+                                    <version>${project.version}</version>
+                                    <packaging>${project.packaging}</packaging>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
         <profile>
             <id>distribute</id>
