@@ -49,6 +49,8 @@ import org.busdox.servicemetadata.locator._1.ObjectFactory;
 import org.busdox.servicemetadata.locator._1.PublisherEndpointType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.helger.commons.callback.DoNothingExceptionHandler;
 import com.helger.commons.callback.IThrowingRunnable;
@@ -64,8 +66,6 @@ import eu.europa.ec.cipa.sml.server.datamodel.DBUser;
 import eu.europa.ec.cipa.sml.server.exceptions.BadRequestException;
 import eu.europa.ec.cipa.sml.server.exceptions.NotFoundException;
 import eu.europa.ec.cipa.sml.server.exceptions.UnauthorizedException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * A JPA implementation of the {@link ISMPDataHandler} interface.

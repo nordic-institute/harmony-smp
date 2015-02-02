@@ -43,13 +43,13 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 import org.eclipse.persistence.config.PersistenceUnitProperties;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.annotations.UsedViaReflection;
 import com.helger.db.jpa.AbstractGlobalEntityManagerFactory;
 
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 /**
  * Specific SML JPA entity manager

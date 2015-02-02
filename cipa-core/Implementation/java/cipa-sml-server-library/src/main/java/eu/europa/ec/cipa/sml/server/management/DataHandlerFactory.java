@@ -42,6 +42,7 @@ import javax.annotation.concurrent.Immutable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.helger.commons.annotations.PresentForCodeCoverage;
 import com.helger.commons.lang.GenericReflection;
@@ -53,11 +54,6 @@ import eu.europa.ec.cipa.sml.server.IParticipantDataHandler;
 import eu.europa.ec.cipa.sml.server.IParticipantDataHandlerCallback;
 import eu.europa.ec.cipa.sml.server.ISMPDataHandler;
 import eu.europa.ec.cipa.sml.server.ISMPDataHandlerCallback;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.context.support.FileSystemXmlApplicationContext;
-
-import java.net.URL;
 
 /**
  * A factory used for constructing new instances of the
