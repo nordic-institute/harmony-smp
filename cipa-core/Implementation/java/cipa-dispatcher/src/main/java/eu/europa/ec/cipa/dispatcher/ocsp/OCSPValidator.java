@@ -37,166 +37,137 @@
  */
 package eu.europa.ec.cipa.dispatcher.ocsp;
 
+import com.helger.commons.GlobalDebug;
+import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.state.EValidity;
+import com.helger.commons.string.StringHelper;
+import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
+import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
+import org.apache.log4j.Logger;
+
+import javax.annotation.Nonnull;
 import java.net.UnknownHostException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
-import java.security.cert.CertPath;
-import java.security.cert.CertPathValidator;
-import java.security.cert.CertPathValidatorException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.PKIXCertPathValidatorResult;
-import java.security.cert.PKIXParameters;
-import java.security.cert.TrustAnchor;
-import java.security.cert.X509Certificate;
+import java.security.cert.*;
 import java.util.Properties;
 
-import javax.annotation.Nonnull;
+public class OCSPValidator {
+    /**
+     * Logger to follow this class behavior.
+     */
+    private static final Logger s_aLogger = Logger.getLogger(OCSPValidator.class);
 
-import com.helger.commons.GlobalDebug;
-import com.helger.commons.collections.ContainerHelper;
-import com.helger.commons.state.EValidity;
-import com.helger.commons.string.StringHelper;
+    private static Properties properties = PropertiesUtil.getProperties();
 
-import eu.europa.ec.cipa.dispatcher.util.PropertiesUtil;
-import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
-import org.apache.log4j.Logger;
+    /**
+     * This method validates the X.509 Certificate.
+     *
+     * @param aCert
+     * @return {@link EValidity}
+     */
+    @Nonnull
+    public static boolean certificateValidate(final X509Certificate aCert) {
 
-public class OCSPValidator
-{
-  /**
-   * Logger to follow this class behavior.
-   */
-  private static final Logger s_aLogger = Logger.getLogger (OCSPValidator.class);
+        final String trustStorePassword = properties.getProperty(PropertiesUtil.DISPATCHER_TRUSTSTORE_PASSWORD);
+        final String truststorePath = properties.getProperty(PropertiesUtil.DISPATCHER_TRUSTSTORE_PATH);
 
-  private static Properties properties = PropertiesUtil.getProperties ();
+        try {
+            // Load keystore
+            final KeyStore trustStore = KeyStoreUtils.loadKeyStore(truststorePath, trustStorePassword);
 
-  /**
-   * This method validates the X.509 Certificate.
-   *
-   * @param aCert
-   * @return {@link EValidity}
-   */
-  @Nonnull
-  public static boolean certificateValidate (final X509Certificate aCert)
-  {
+            // Get certificate by alias;
+            final String truststoreAlias = properties.getProperty(PropertiesUtil.DISPATCHER_CA_ALIAS);
+            final X509Certificate aRootCert = (X509Certificate) trustStore.getCertificate(truststoreAlias);
 
-    final String trustStorePassword = properties.getProperty (PropertiesUtil.DISPATCHER_TRUSTSTORE_PASSWORD);
-    final String truststorePath = properties.getProperty (PropertiesUtil.DISPATCHER_TRUSTSTORE_PATH);
-
-    try
-    {
-      // Load keystore
-      final KeyStore trustStore = KeyStoreUtils.loadKeyStore (truststorePath, trustStorePassword);
-
-      // Get certificate by alias;
-      final String truststoreAlias = properties.getProperty (PropertiesUtil.DISPATCHER_CA_ALIAS);
-      final X509Certificate aRootCert = (X509Certificate) trustStore.getCertificate (truststoreAlias);
-
-      if (aRootCert == null)
-      {
-        s_aLogger.error ("Failed to resolve trust store alias '" + truststoreAlias + "'");
-      }
-      else
-      {
-        // Get the responder URL from the configuration
-        final String DEFAULT_RESPONDER_URL_NEW = "http://pki-ocsp.symauth.com:80";
-        final String responderURL = properties.getProperty (PropertiesUtil.OCSP_RESPONDER_URL);
-        if (StringHelper.hasNoText (responderURL))
-        {
-          // Error
-          s_aLogger.error ("No OCSP responder URL configured (property '" + PropertiesUtil.OCSP_RESPONDER_URL + "')");
+            if (aRootCert == null) {
+                s_aLogger.error("Failed to resolve trust store alias '" + truststoreAlias + "'");
+            } else {
+                // Get the responder URL from the configuration
+                final String responderURL = properties.getProperty(PropertiesUtil.OCSP_RESPONDER_URL);
+                if (StringHelper.hasNoText(responderURL)) {
+                    // Error
+                    s_aLogger.error("No OCSP responder URL configured (property '" + PropertiesUtil.OCSP_RESPONDER_URL + "')");
+                } else {
+                    // Start the actual OCSP check
+                    boolean result = false;
+                    if (aRootCert != null)
+                        result = OCSPValidator.check(aCert, aRootCert, responderURL);
+                    return result;
+                }
+            }
+        } catch (final Exception ex) {
+            s_aLogger.error("Error validating certificate in trust store '" + truststorePath + "'", ex);
         }
-        else
-        {
-          // Start the actual OCSP check
-          boolean result = false;
-          if (aRootCert != null)
-            result = OCSPValidator.check (aCert, aRootCert, responderURL);
-          return result;
+
+        return false;
+    }
+
+    /**
+     * Compares a thing to another thing.
+     *
+     * @param aCertificate  Certificate to check.
+     * @param aTrustedCert  Trusted Certificate.
+     * @param sResponderUrl URL which responses.
+     * @return {@link EValidity}
+     */
+    @Nonnull
+    public static boolean check(@Nonnull final X509Certificate aCertificate,
+                                @Nonnull final X509Certificate aTrustedCert,
+                                final String sResponderUrl) {
+        boolean result = false;
+        try {
+            // Instantiate a CertificateFactory for X.509
+            final CertificateFactory cf = CertificateFactory.getInstance("X.509");
+
+            // Extract the certification path from the List of Certificates
+            final CertPath cp = cf.generateCertPath(ContainerHelper.newList(aCertificate));
+
+            // Create CertPathValidator that implements the "PKIX" algorithm
+            final CertPathValidator cpv = CertPathValidator.getInstance("PKIX");
+
+            // Set the Trust anchor
+            final TrustAnchor aTrustAnchor = new TrustAnchor(aTrustedCert, null);
+
+            // Set the PKIX parameters
+            final PKIXParameters aParams = new PKIXParameters(ContainerHelper.newSet(aTrustAnchor));
+            Security.setProperty("ocsp.enable", "true");
+            aParams.setSigProvider("BC");
+            Security.setProperty("ocsp.responderURL", sResponderUrl);
+            aParams.setRevocationEnabled(true);
+
+
+            // Validate and obtain results
+            final PKIXCertPathValidatorResult certPathValidatorResult = (PKIXCertPathValidatorResult) cpv.validate(cp, aParams);
+            X509Certificate trustedCert = certPathValidatorResult.getTrustAnchor().getTrustedCert();
+            if (trustedCert == null) {
+                s_aLogger.debug("Trusted Cert = NULL");
+            } else {
+                s_aLogger.debug("Certificate " + aCertificate.getSerialNumber() + " is OCSP valid");
+                result = true;
+            }
+        } catch (final NoSuchAlgorithmException e) {
+            s_aLogger.error("Internal error", e);
+        } catch (final InvalidAlgorithmParameterException ex) {
+            s_aLogger.error("Internal error", ex);
+        } catch (final CertificateException ex) {
+            s_aLogger.error("Certificate error", ex);
+        } catch (final CertPathValidatorException cpve) {
+            if (cpve.getCause() instanceof UnknownHostException) {
+                // Happens when we're offline
+                if (GlobalDebug.isDebugMode()) {
+                    s_aLogger.warn("OCSP not checked, because we're offline. Since we're in debug mode this is OK...");
+                    result = true;
+                } else {
+                    s_aLogger.error("Validation failure, cert[" + cpve.getIndex() + "]: " + cpve.getMessage(), cpve);
+                }
+            } else {
+                s_aLogger.error("Validation failure, cert[" + cpve.getIndex() + "]: " + cpve.getMessage(), cpve);
+            }
+
         }
-      }
+        return result;
     }
-    catch (final Exception ex)
-    {
-      s_aLogger.error ("Error validating certificate in trust store '" + truststorePath + "'", ex);
-    }
-
-    return false;
-  }
-
-  /**
-   * Compares a thing to another thing.
-   *
-   * @param aCertificate
-   *        Certificate to check.
-   * @param aTrustedCert
-   *        Trusted Certificate.
-   * @param sResponderUrl
-   *        URL which responses.
-   * @return {@link EValidity}
-   */
-  @Nonnull
-  public static boolean check (@Nonnull final X509Certificate aCertificate,
-                               @Nonnull final X509Certificate aTrustedCert,
-                               final String sResponderUrl)
-  {
-
-    try
-    {  	
-      // Instantiate a CertificateFactory for X.509
-      final CertificateFactory cf = CertificateFactory.getInstance ("X.509");
-
-      // Extract the certification path from the List of Certificates
-      final CertPath cp = cf.generateCertPath (ContainerHelper.newList (aCertificate));
-
-      // Create CertPathValidator that implements the "PKIX" algorithm
-      final CertPathValidator cpv = CertPathValidator.getInstance ("PKIX");
-
-      // Set the Trust anchor
-      final TrustAnchor aTrustAnchor = new TrustAnchor (aTrustedCert, null);
-
-      // Set the PKIX parameters
-      final PKIXParameters aParams = new PKIXParameters (ContainerHelper.newSet (aTrustAnchor));
-      Security.setProperty("ocsp.enable", "true");
-      aParams.setSigProvider("BC");
-      aParams.setRevocationEnabled (true);
-
-      // Validate and obtain results
-      final PKIXCertPathValidatorResult result = (PKIXCertPathValidatorResult) cpv.validate (cp, aParams);
-      result.getPolicyTree ();
-      result.getPublicKey ();
-      if (s_aLogger.isDebugEnabled ())
-        s_aLogger.debug ("Certificate " + aCertificate.getSerialNumber () + " is OCSP valid");
-      return true;
-    }
-    catch (final NoSuchAlgorithmException e)
-    {
-      s_aLogger.error ("Internal error", e);
-    }
-    catch (final InvalidAlgorithmParameterException ex)
-    {
-      s_aLogger.error ("Internal error", ex);
-    }
-    catch (final CertificateException ex)
-    {
-      s_aLogger.error ("Certificate error", ex);
-    }
-    catch (final CertPathValidatorException cpve)
-    {
-      if (cpve.getCause () instanceof UnknownHostException)
-      {
-        // Happens when we're offline
-        if (GlobalDebug.isDebugMode ())
-        {
-          s_aLogger.warn ("OCSP not checked, because we're offline. Since we're in debug mode this is OK...");
-          return true;
-        }
-      }
-      s_aLogger.error ("Validation failure, cert[" + cpve.getIndex () + "]: " + cpve.getMessage (), cpve);
-    }
-    return false;
-  }
 }

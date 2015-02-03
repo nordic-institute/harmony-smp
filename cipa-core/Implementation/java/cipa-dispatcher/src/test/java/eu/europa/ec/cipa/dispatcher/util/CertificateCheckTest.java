@@ -22,8 +22,8 @@ public class CertificateCheckTest {
     public void testValidateKeyChain() throws Exception {
         KeyStore keyStore = KeyStore.getInstance("JKS");
         keyStore.load(this.getClass().getResourceAsStream("/keystore.jks"), "keystore".toCharArray());
-        X509Certificate caCert = (X509Certificate) keyStore.getCertificate("clientint21int2");
-        X509Certificate rootCert = (X509Certificate) keyStore.getCertificate("rootca1");
+        X509Certificate caCert = (X509Certificate) keyStore.getCertificate("cipa");
+        X509Certificate rootCert = (X509Certificate) keyStore.getCertificate("root");
 
         // Verify the current certificate using the right root cert
         Assert.assertTrue(CertificateCheck.validateKeyChain(caCert, keyStore, rootCert));
