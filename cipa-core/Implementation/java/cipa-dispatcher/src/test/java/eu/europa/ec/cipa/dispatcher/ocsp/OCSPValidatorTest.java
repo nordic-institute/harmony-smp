@@ -21,7 +21,6 @@ public class OCSPValidatorTest {
     @BeforeClass
     public static void beforeClass() {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-        new ConfigurationListener().contextInitialized(null);
     }
 
     /**
