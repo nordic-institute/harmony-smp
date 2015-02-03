@@ -683,7 +683,9 @@ public final class TestFiles {
         aFilenames = TENDERINGCATALOGUES_SUCCESS;
         break;
       default:
-        s_aLogger.warn ("No success test files present for type " + eFileType);
+        s_aLogger.warn ("No success test files present for type " +
+                        eFileType +
+                        (sCountry == null ? "" : " and country " + sCountry));
         aFilenames = new String [0];
         break;
     }
@@ -729,7 +731,9 @@ public final class TestFiles {
         aFilenames = ORDERS_ERROR;
         break;
       default:
-        s_aLogger.warn ("No error test files present for type " + eFileType);
+        s_aLogger.warn ("No error test files present for type " +
+                        eFileType +
+                        (sCountry == null ? "" : " and country " + sCountry));
         aFilenames = new TestDocument [0];
         break;
     }
