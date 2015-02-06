@@ -71,7 +71,6 @@ public final class BusdoxURLUtils {
   public static final Charset URL_CHARSET = CCharset.CHARSET_UTF_8_OBJ;
   public static final Locale URL_LOCALE = Locale.US;
 
-  @SuppressWarnings ("unused")
   @PresentForCodeCoverage
   private static final BusdoxURLUtils s_aInstance = new BusdoxURLUtils ();
 

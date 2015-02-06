@@ -71,7 +71,6 @@ public final class ExtensionConverter {
   private static final ObjectFactory s_aOF = new ObjectFactory ();
 
   @PresentForCodeCoverage
-  @SuppressWarnings ("unused")
   private static final ExtensionConverter s_aInstance = new ExtensionConverter ();
 
   private ExtensionConverter () {}

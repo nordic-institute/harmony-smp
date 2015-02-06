@@ -47,7 +47,7 @@ import com.helger.commons.annotations.PresentForCodeCoverage;
 
 /**
  * Default JPA configuration file properties
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -61,7 +61,6 @@ public final class SMPJPAConfiguration {
   public static final String CONFIG_DDL_GENERATION_MODE = PersistenceUnitProperties.DDL_GENERATION_MODE;
 
   @PresentForCodeCoverage
-  @SuppressWarnings ("unused")
   private static final SMPJPAConfiguration s_aInstance = new SMPJPAConfiguration ();
 
   private SMPJPAConfiguration () {}

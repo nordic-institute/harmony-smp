@@ -54,7 +54,7 @@ import eu.europa.ec.cipa.peppol.identifier.participant.IPeppolParticipantIdentif
 
 /**
  * A wrapper around the custom identifier validator implementations.
- * 
+ *
  * @author philip
  */
 @Immutable
@@ -70,7 +70,6 @@ public final class IdentifierValidator {
                       " SPI implementations of IParticipantIdentifierValidatorSPI");
   }
 
-  @SuppressWarnings ("unused")
   @PresentForCodeCoverage
   private static final IdentifierValidator s_aInstance = new IdentifierValidator ();
 
@@ -83,7 +82,7 @@ public final class IdentifierValidator {
    * we don't know the details of the other schemes.<br>
    * This method can be used to generically check the consistency of certain
    * numbering schemes.
-   * 
+   *
    * @param aParticipantID
    *        The participant ID to validate. May not be <code>null</code>.
    * @return <code>true</code> if a) the identifier is not the default scheme,

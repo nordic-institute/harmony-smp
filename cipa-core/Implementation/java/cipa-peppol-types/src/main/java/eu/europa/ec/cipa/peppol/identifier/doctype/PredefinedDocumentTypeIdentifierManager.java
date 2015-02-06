@@ -59,7 +59,7 @@ import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
  * This class provides sanity methods around
  * {@link EPredefinedDocumentTypeIdentifier} which would be to bogus to generate
  * them.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -73,7 +73,6 @@ public final class PredefinedDocumentTypeIdentifierManager {
   }
 
   @PresentForCodeCoverage
-  @SuppressWarnings ("unused")
   private static final PredefinedDocumentTypeIdentifierManager s_aInstance = new PredefinedDocumentTypeIdentifierManager ();
 
   private PredefinedDocumentTypeIdentifierManager () {}
@@ -101,7 +100,7 @@ public final class PredefinedDocumentTypeIdentifierManager {
   /**
    * Find the document identifier with the given ID. This search is done case
    * insensitive.
-   * 
+   *
    * @param sDocTypeIDValue
    *        The value to search. Without any identifier scheme! May be
    *        <code>null</code>.
@@ -120,7 +119,7 @@ public final class PredefinedDocumentTypeIdentifierManager {
 
   /**
    * Check if a document identifier with the given ID exists.
-   * 
+   *
    * @param sDocTypeIDValue
    *        The value to search. Without any identifier scheme! May be
    *        <code>null</code>.

@@ -49,6 +49,8 @@ import javax.xml.ws.wsaddressing.W3CEndpointReferenceBuilder;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.PresentForCodeCoverage;
@@ -56,8 +58,6 @@ import com.helger.commons.collections.ContainerHelper;
 import com.helger.commons.xml.ChildElementIterator;
 import com.helger.commons.xml.XMLFactory;
 import com.helger.commons.xml.XMLHelper;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 /**
  * As the default WS-Addressing binding since JAXB 2.1 uses the
@@ -71,12 +71,11 @@ import org.w3c.dom.NodeList;
  * {@link W3CEndpointReference}. In case the serialization tag names of
  * {@link W3CEndpointReference} change, this implementation has to be adopted!<br>
  * The JIRA issue JAX_WS-1132 was filed to help dealing with this issue.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
 public final class W3CEndpointReferenceUtils {
-  @SuppressWarnings ("unused")
   @PresentForCodeCoverage
   private static final W3CEndpointReferenceUtils s_aInstance = new W3CEndpointReferenceUtils ();
 
@@ -85,7 +84,7 @@ public final class W3CEndpointReferenceUtils {
   /**
    * Create a new endpoint reference for the given address without reference
    * parameters.
-   * 
+   *
    * @param sAddress
    *        The address to use. May not be <code>null</code>.
    * @return The non-<code>null</code> endpoint reference for the given address
@@ -98,7 +97,7 @@ public final class W3CEndpointReferenceUtils {
   /**
    * Create a new endpoint reference for the given address, using the specified
    * reference parameters.
-   * 
+   *
    * @param sAddress
    *        The address to use. May not be <code>null</code>.
    * @param aReferenceParameters
@@ -120,7 +119,7 @@ public final class W3CEndpointReferenceUtils {
    * document element.<br>
    * This is necessary, as {@link W3CEndpointReference} does not provide read
    * access methods.
-   * 
+   *
    * @param aEndpointReference
    *        The endpoint to be marshaled. May not be <code>null</code>.
    * @return The document element called "EndpointReference"
@@ -135,7 +134,7 @@ public final class W3CEndpointReferenceUtils {
 
   /**
    * Get the address contained in the passed endpoint reference.
-   * 
+   *
    * @param aEndpointReference
    *        The endpoint reference to retrieve the address from. May not be
    *        <code>null</code>.
@@ -145,8 +144,7 @@ public final class W3CEndpointReferenceUtils {
   public static String getAddress (@Nonnull final W3CEndpointReference aEndpointReference) {
     ValueEnforcer.notNull (aEndpointReference, "EndpointReference");
 
-    final Element eAddress = getFirstChildElementOfName(_convertReferenceToXML(aEndpointReference),
-            "Address");
+    final Element eAddress = getFirstChildElementOfName (_convertReferenceToXML (aEndpointReference), "Address");
     return eAddress == null ? null : eAddress.getTextContent ();
   }
 
@@ -161,21 +159,20 @@ public final class W3CEndpointReferenceUtils {
    * @return <code>null</code> if the parent element has no such child element.
    */
   @Nullable
-  public static Element getFirstChildElementOfName (@Nonnull final Node aStartNode, @Nullable final String sName)
-  {
+  public static Element getFirstChildElementOfName (@Nonnull final Node aStartNode, @Nullable final String sName) {
     final NodeList aNodeList = aStartNode.getChildNodes ();
     final int nLen = aNodeList.getLength ();
-    for (int i = 0; i < nLen; ++i)
-    {
+    for (int i = 0; i < nLen; ++i) {
       final Node aNode = aNodeList.item (i);
-      if (aNode.getNodeType () == Node.ELEMENT_NODE)
-      {
+      if (aNode.getNodeType () == Node.ELEMENT_NODE) {
         final Element aElement = (Element) aNode;
         if (aElement.getTagName ().equals (sName)) {
           return aElement;
-        } else if (aElement.getLocalName ().equals (sName)) {
-          return aElement;
         }
+        else
+          if (aElement.getLocalName ().equals (sName)) {
+            return aElement;
+          }
 
       }
     }
@@ -185,7 +182,7 @@ public final class W3CEndpointReferenceUtils {
   /**
    * Get a list of all reference parameters contained in the passed endpoint
    * reference.
-   * 
+   *
    * @param aEndpointReference
    *        The endpoint reference to retrieve the reference parameters. May not
    *        be <code>null</code>.
@@ -205,7 +202,7 @@ public final class W3CEndpointReferenceUtils {
 
   /**
    * Get the reference parameter at the given index
-   * 
+   *
    * @param aEndpointReference
    *        The object to retrieve the reference parameter from. May not be
    *        <code>null</code>.

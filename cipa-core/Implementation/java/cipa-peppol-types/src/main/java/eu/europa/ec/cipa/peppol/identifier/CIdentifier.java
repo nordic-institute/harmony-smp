@@ -44,7 +44,7 @@ import com.helger.commons.annotations.PresentForCodeCoverage;
 
 /**
  * Constants on BUSDOX identifiers used in PEPPOL.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -88,7 +88,7 @@ public final class CIdentifier {
    * within the code-list.<br>
    * Please note that this is a change to the PEPPOL Common definitions chapter
    * 3.4!
-   * 
+   *
    * @see eu.europa.ec.cipa.peppol.identifier.issuingagency.IdentifierIssuingAgencyManager
    */
   public static final String DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME = "iso6523-actorid-upis";
@@ -117,7 +117,6 @@ public final class CIdentifier {
    */
   public static final String URL_SCHEME_VALUE_SEPARATOR = "::";
 
-  @SuppressWarnings ("unused")
   @PresentForCodeCoverage
   private static final CIdentifier s_aInstance = new CIdentifier ();
 

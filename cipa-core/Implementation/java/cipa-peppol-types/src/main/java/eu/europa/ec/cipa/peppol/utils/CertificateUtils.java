@@ -52,7 +52,7 @@ import com.helger.commons.string.StringHelper;
 
 /**
  * Some utility methods handling certificates.
- * 
+ *
  * @author Philip Helger
  */
 @Immutable
@@ -60,7 +60,6 @@ public final class CertificateUtils {
   public static final String BEGIN_CERTIFICATE = "-----BEGIN CERTIFICATE-----";
   public static final String END_CERTIFICATE = "-----END CERTIFICATE-----";
 
-  @SuppressWarnings ("unused")
   @PresentForCodeCoverage
   private static final CertificateUtils s_aInstance = new CertificateUtils ();
 
@@ -80,7 +79,7 @@ public final class CertificateUtils {
 
   /**
    * Convert the passed String to an X.509 certificate.
-   * 
+   *
    * @param sCertString
    *        The original text string. May be <code>null</code> or empty. The
    *        String must be ISO-8859-1 encoded for the binary certificate to be

@@ -68,7 +68,7 @@ import eu.europa.ec.cipa.peppol.uri.BusdoxURLUtils;
 
 /**
  * This class contains several identifier related utility methods.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -111,7 +111,6 @@ public final class IdentifierUtils {
                                          "' is not valid!");
   }
 
-  @SuppressWarnings ("unused")
   @PresentForCodeCoverage
   private static final IdentifierUtils s_aInstance = new IdentifierUtils ();
 
@@ -131,7 +130,7 @@ public final class IdentifierUtils {
    * enabled and check if a participant, document type and process identifier
    * value can be encoded in US-ASCII (participant) or ISO-8859-1 (document type
    * and process).
-   * 
+   *
    * @param bDisable
    *        if <code>true</code> all charset checks are disabled. If
    *        <code>false</code> charset checks are enabled
@@ -145,7 +144,7 @@ public final class IdentifierUtils {
    * character and at last 25 characters. This method applies to all identifier
    * schemes, but there is a special version for participant identifier schemes,
    * as they are used in DNS names!
-   * 
+   *
    * @param sScheme
    *        The scheme to check.
    * @return <code>true</code> if the passed scheme is a valid identifier
@@ -167,7 +166,7 @@ public final class IdentifierUtils {
    * insensitive!<br>
    * This limitation is important, because the participant identifier scheme is
    * directly encoded into the SML DNS name record.
-   * 
+   *
    * @param sScheme
    *        The scheme to check.
    * @return <code>true</code> if the passed scheme is a valid participant
@@ -186,7 +185,7 @@ public final class IdentifierUtils {
    * identifier must have at least 1 character and at last
    * {@link CIdentifier#MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH} characters.
    * Also it must be ISO-8859-1 encoded.
-   * 
+   *
    * @param sValue
    *        The document type identifier value to be checked (without the
    *        scheme). May be <code>null</code>.
@@ -208,7 +207,7 @@ public final class IdentifierUtils {
    * {@link CIdentifier#MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH} characters.
    * Also it must be US ASCII encoded. This check method considers only the
    * value and not the identifier scheme!
-   * 
+   *
    * @param sValue
    *        The participant identifier value to be checked (without the scheme).
    *        May be <code>null</code>.
@@ -229,7 +228,7 @@ public final class IdentifierUtils {
    * must have at least 1 character and at last
    * {@link CIdentifier#MAX_PROCESS_IDENTIFIER_VALUE_LENGTH} characters. Also it
    * must be ISO-8859-1 encoded.
-   * 
+   *
    * @param sValue
    *        The process identifier value to be checked (without the scheme). May
    *        be <code>null</code>.
@@ -248,7 +247,7 @@ public final class IdentifierUtils {
   /**
    * Check if the passed document type identifier is valid. This method checks
    * for the existence of the scheme and the value and validates both.
-   * 
+   *
    * @param sValue
    *        The document type identifier to be checked (including the scheme).
    *        May be <code>null</code>.
@@ -267,7 +266,7 @@ public final class IdentifierUtils {
   /**
    * Check if the passed participant identifier is valid. This method checks for
    * the existence of the scheme and the value and validates both.
-   * 
+   *
    * @param sValue
    *        The participant identifier to be checked (including the scheme). May
    *        be <code>null</code>.
@@ -286,7 +285,7 @@ public final class IdentifierUtils {
   /**
    * Check if the passed process identifier is valid. This method checks for the
    * existence of the scheme and the value and validates both.
-   * 
+   *
    * @param sValue
    *        The process identifier to be checked (including the scheme). May be
    *        <code>null</code>.
@@ -303,7 +302,7 @@ public final class IdentifierUtils {
   /**
    * According to the specification, two participant identifiers are equal if
    * their parts are equal case insensitive.
-   * 
+   *
    * @param sIdentifierValue1
    *        First identifier value to compare. May be <code>null</code>.
    * @param sIdentifierValue2
@@ -321,7 +320,7 @@ public final class IdentifierUtils {
   /**
    * According to the specification, two document identifiers are equal if their
    * parts are equal case sensitive.
-   * 
+   *
    * @param sIdentifierValue1
    *        First identifier value to compare. May be <code>null</code>.
    * @param sIdentifierValue2
@@ -339,7 +338,7 @@ public final class IdentifierUtils {
   /**
    * According to the specification, two process identifiers are equal if their
    * parts are equal case sensitive.
-   * 
+   *
    * @param sIdentifierValue1
    *        First identifier value to compare. May be <code>null</code>.
    * @param sIdentifierValue2
@@ -357,7 +356,7 @@ public final class IdentifierUtils {
   /**
    * According to the specification, two participant identifiers are equal if
    * their parts are equal case insensitive.
-   * 
+   *
    * @param aIdentifier1
    *        First identifier to compare. May not be null.
    * @param aIdentifier2
@@ -378,7 +377,7 @@ public final class IdentifierUtils {
   /**
    * According to the specification, two document identifiers are equal if their
    * parts are equal case sensitive.
-   * 
+   *
    * @param aIdentifier1
    *        First identifier to compare. May not be null.
    * @param aIdentifier2
@@ -399,7 +398,7 @@ public final class IdentifierUtils {
   /**
    * According to the specification, two process identifiers are equal if their
    * parts are equal case sensitive.
-   * 
+   *
    * @param aIdentifier1
    *        First identifier to compare. May not be null.
    * @param aIdentifier2
@@ -419,7 +418,7 @@ public final class IdentifierUtils {
 
   /**
    * Check if the passed participant identifier is using the default scheme.
-   * 
+   *
    * @param aIdentifier
    *        The identifier to be checked. May not be <code>null</code>.
    * @return <code>true</code> if the passed identifier uses the default scheme,
@@ -433,7 +432,7 @@ public final class IdentifierUtils {
 
   /**
    * Check if the passed participant identifier is using the default scheme.
-   * 
+   *
    * @param sIdentifier
    *        The identifier to be checked. May be <code>null</code>.
    * @return <code>true</code> if the passed identifier uses the default scheme,
@@ -445,7 +444,7 @@ public final class IdentifierUtils {
 
   /**
    * Check if the passed document type identifier is using the default scheme.
-   * 
+   *
    * @param aIdentifier
    *        The identifier to be checked. May not be <code>null</code>.
    * @return <code>true</code> if the passed identifier uses the default scheme,
@@ -459,7 +458,7 @@ public final class IdentifierUtils {
 
   /**
    * Check if the passed document type identifier is using the default scheme.
-   * 
+   *
    * @param sIdentifier
    *        The identifier to be checked. May be <code>null</code>.
    * @return <code>true</code> if the passed identifier uses the default scheme,
@@ -471,7 +470,7 @@ public final class IdentifierUtils {
 
   /**
    * Check if the passed process identifier is using the default scheme.
-   * 
+   *
    * @param aIdentifier
    *        The identifier to be checked. May not be <code>null</code>.
    * @return <code>true</code> if the passed identifier uses the default scheme,
@@ -485,7 +484,7 @@ public final class IdentifierUtils {
 
   /**
    * Check if the passed process identifier is using the default scheme.
-   * 
+   *
    * @param sIdentifier
    *        The identifier to be checked. May be <code>null</code>.
    * @return <code>true</code> if the passed identifier uses the default scheme,
@@ -497,7 +496,7 @@ public final class IdentifierUtils {
 
   /**
    * Get the identifier suitable for an URI but NOT percent encoded.
-   * 
+   *
    * @param aIdentifier
    *        The identifier to be encoded. May not be <code>null</code>.
    * @return The URI encoded participant identifier (scheme::value). Never
@@ -523,7 +522,7 @@ public final class IdentifierUtils {
 
   /**
    * Get the identifier suitable for an URI and percent encoded.
-   * 
+   *
    * @param aIdentifier
    *        The identifier to be encoded. May not be <code>null</code>.
    * @return Never <code>null</code>.
@@ -537,7 +536,7 @@ public final class IdentifierUtils {
   /**
    * Take the passed URI part and try to convert it back to a document
    * identifier. The URI part must have the layout <code>scheme::value</code>
-   * 
+   *
    * @param sURIPart
    *        The URI part to be scanned. May not be <code>null</code> if a
    *        correct result is expected.
@@ -566,7 +565,7 @@ public final class IdentifierUtils {
   /**
    * Take the passed URI part and try to convert it back to a document
    * identifier. The URI part must have the layout <code>scheme::value</code>
-   * 
+   *
    * @param sURIPart
    *        The URI part to be scanned. May not be <code>null</code> if a
    *        correct result is expected.
@@ -590,7 +589,7 @@ public final class IdentifierUtils {
   /**
    * Take the passed URI part and try to convert it back to a participant
    * identifier. The URI part must have the layout <code>scheme::value</code>
-   * 
+   *
    * @param sURIPart
    *        The URI part to be scanned. May not be <code>null</code> if a
    *        correct result is expected.
@@ -619,7 +618,7 @@ public final class IdentifierUtils {
   /**
    * Take the passed URI part and try to convert it back to a participant
    * identifier. The URI part must have the layout <code>scheme::value</code>
-   * 
+   *
    * @param sURIPart
    *        The URI part to be scanned. May not be <code>null</code> if a
    *        correct result is expected.
@@ -643,7 +642,7 @@ public final class IdentifierUtils {
   /**
    * Take the passed URI part and try to convert it back to a process
    * identifier. The URI part must have the layout <code>scheme::value</code>
-   * 
+   *
    * @param sURIPart
    *        The URI part to be scanned. May not be <code>null</code> if a
    *        correct result is expected.
@@ -672,7 +671,7 @@ public final class IdentifierUtils {
   /**
    * Take the passed URI part and try to convert it back to a process
    * identifier. The URI part must have the layout <code>scheme::value</code>
-   * 
+   *
    * @param sURIPart
    *        The URI part to be scanned. May not be <code>null</code> if a
    *        correct result is expected.
@@ -698,7 +697,7 @@ public final class IdentifierUtils {
    * DB, as participant identifier values need to be handled case-insensitive.
    * This method can be applied both to participant identifier schemes and
    * business identifier values.
-   * 
+   *
    * @param sValue
    *        The DB identifier value to unify. May be <code>null</code>.
    * @return <code>null</code> if the passed value is <code>null</code>
@@ -715,7 +714,7 @@ public final class IdentifierUtils {
    * Note: this only works for participant identifiers that are using the
    * default scheme (iso6523-actorid-upis) because for the other schemes, I just
    * can't tell!
-   * 
+   *
    * @param aIdentifier
    *        The participant identifier to extract the value from.
    * @return <code>null</code> if the identifier is not of default scheme or if
@@ -740,7 +739,7 @@ public final class IdentifierUtils {
    * Note: this only works for participant identifiers that are using the
    * default scheme (iso6523-actorid-upis) because for the other schemes, I just
    * can't tell!
-   * 
+   *
    * @param aIdentifier
    *        The participant identifier to extract the value from.
    * @return <code>null</code> if the identifier is not of default scheme or if
