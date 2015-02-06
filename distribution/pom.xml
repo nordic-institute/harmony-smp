@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This project can be used to build a release version of the eDelivery components -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>eu.europa.ec.cipa</groupId>
+    <artifactId>cipa-edelivery-distribution</artifactId>
+    <packaging>pom</packaging>
+    <name>cipa-edelivery-distribution</name>
+    <version>2.2.4-SNAPSHOT</version>
+
+    <!-- Some properties are preset for setting up a sender and a receiver. The configuration is set with the "type" property -->
+    <properties>
+        <tomcat.version>8.0.15</tomcat.version>
+        <!-- can be either "receiver" or "sender" -->
+        <type>receiver</type>
+    </properties>
+
+    <modules>
+        <module>../cipa-core/Implementation/java/cipa-dispatcher</module>
+        <module>../cipa-core/Implementation/java/cipa-smp-full-webapp</module>
+        <module>../mendelson/mendelson-as2-war</module>
+        <module>../domibus</module>
+    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.34</version>
+        </dependency>
+    </dependencies>
+    <build>
+        <filters>
+            <filter>src/main/filters/${type}.properties</filter>
+        </filters>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.cargo</groupId>
+                <artifactId>cargo-maven2-plugin</artifactId>
+                <version>1.4.10</version>
+                <executions>
+                    <execution>
+                        <id>download-tomcat</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>install</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <container>
+                        <containerId>tomcat8x</containerId>
+                        <zipUrlInstaller>
+                            <url>
+                                https://joinup.ec.europa.eu/nexus/content/groups/public/org/apache/tomcat/tomcat/${tomcat.version}/tomcat-${tomcat.version}.zip
+                            </url>
+                        </zipUrlInstaller>
+                    </container>
+                    <packager>
+                        <outputLocation>${project.build.directory}/artifacts/tomcat</outputLocation>
+                    </packager>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>1.8</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>ant</groupId>
+                        <artifactId>ant-commons-net</artifactId>
+                        <version>1.6.5</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>commons-net</groupId>
+                        <artifactId>commons-net</artifactId>
+                        <version>1.4.1</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>mergeSql</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <echo>Merging sql files</echo>
+                                <concat destfile="${project.build.directory}/sql-scripts/create-mysql.sql" append="true">
+                                    <filelist dir="${project.basedir}/../domibus/modules/domibus-distribution/target/sql/hibernate3" files="domibus_mysql_initial.sql"/>
+                                    <filelist dir="${project.basedir}/../cipa-core/Implementation/java/cipa-smp-server-library/database" files="create-Mysql.sql"/>
+                                    <filelist dir="${project.basedir}/src/main/resources/sql/" files="data-${type}.sql"/>
+                                </concat>
+                                <concat destfile="${project.build.directory}/sql-scripts/create-oracle.sql" append="true">
+                                    <filelist dir="${project.basedir}/../domibus/modules/domibus-distribution/target/sql/hibernate3" files="domibus_oracle_initial.sql"/>
+                                    <filelist dir="${project.basedir}/../cipa-core/Implementation/java/cipa-smp-server-library/database" files="create-Oracle.sql"/>
+                                    <filelist dir="${project.basedir}/src/main/resources/sql/" files="data-${type}.sql"/>
+                                </concat>
+                                <echo>Configuring the shared configuration folder in ${project.build.directory}/cargo/installs/tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/conf/catalina.properties</echo>
+                                <replace
+                                        file="${project.build.directory}/cargo/installs/tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/conf/catalina.properties"
+                                        token='shared.loader='
+                                        value='shared.loader=${catalina.base}/conf' />
+                                <echo>Changing the default jvm options in ${project.build.directory}/cargo/installs/tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/bin/catalina.bat</echo>
+                                <replace
+                                        file="${project.build.directory}/cargo/installs/tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/bin/catalina.bat"
+                                        token='setlocal'
+                                        value='setlocal${line.separator}set CATALINA_OPTS=%CATALINA_OPTS% -Xms256m -Xmx1024m -XX:PermSize=64m -XX:MaxPermSize=256m' />
+                                <echo>Changing the default jvm options in ${project.build.directory}/cargo/installs/tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/bin/catalina.sh</echo>
+                                <replace
+                                        file="${project.build.directory}/cargo/installs/tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/bin/catalina.sh"
+                                        token='cygwin=false'
+                                        value='export CATALINA_OPTS="$CATALINA_OPTS -Xms256m -Xmx1024m -XX:PermSize=64m -XX:MaxPermSize=256m"${line.separator}cygwin=false' />
+                                <echo>Solve correct break lines (windows/linux environments)</echo>
+                                <fixcrlf srcdir="${project.build.directory}/cargo/installs/tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/bin/" includes="**/*.sh" eol="lf" />
+                                <fixcrlf srcdir="${project.build.directory}/cargo/installs/tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/bin/"
+                                         includes="**/*.bat" eol="crlf" />
+                                <echo>Modifying the file ${project.build.directory}/cargo/installs/tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/conf/server.xml to allow external access</echo>
+                                <replace
+                                        file="${project.build.directory}/cargo/installs/tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/conf/server.xml"
+                                        token='Connector port="8080" protocol="HTTP/1.1"'
+                                        value='Connector port="8080" protocol="HTTP/1.1" useIPVHosts="true"' />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/tomcat-full.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

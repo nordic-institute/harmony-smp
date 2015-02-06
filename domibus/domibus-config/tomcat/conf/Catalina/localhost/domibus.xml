@@ -40,7 +40,7 @@
 
     <!-- Password for the private key used by the gateway -->
     <Environment name="domibus.module.security.config.privatekey.password"
-                 value="apache" type="java.lang.String"/>
+                 value="@domibus.module.security.config.keystore.password@" type="java.lang.String"/>
     <!-- SECURITY CONFIGURATION END -->
 
     <!-- FILE SYSTEM CONFIGURATION START -->

@@ -45,6 +45,14 @@
             <tns:remoteAlias>service_GW2</tns:remoteAlias>
             <tns:policyFile>policy-sign-body-header.xml</tns:policyFile>
         </tns:security>
+        <tns:security name="sign_body_header-encrypt_body">
+            <tns:remoteAlias>service_testgw1</tns:remoteAlias>
+            <tns:policyFile>policy-sign_body_header-encrypt_body.xml</tns:policyFile>
+        </tns:security>
+        <tns:security name="policy-sign-body-header">
+            <tns:remoteAlias>service_GW1</tns:remoteAlias>
+            <tns:policyFile>policy-sign-body-header.xml</tns:policyFile>
+        </tns:security>
 
     </tns:securities>
 </tns:security-config>
