@@ -31,6 +31,10 @@
                 <exclude>webapps/**/*</exclude>
                 <exclude>conf/Catalina/**/*</exclude>
                 <exclude>common/**/*</exclude>
+                <exclude>LICENSE</exclude>
+                <exclude>NOTICE</exclude>
+                <exclude>RELEASE-NOTES</exclude>
+                <exclude>RUNNING.txt</exclude>
             </excludes>
             <outputDirectory>/</outputDirectory>
             <fileMode>0444</fileMode>
@@ -122,6 +126,11 @@
         <file>
             <source>src/main/resources/index.jsp</source>
             <outputDirectory>webapps/browser</outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>src/main/doc/Quick start guide.pdf</source>
+            <outputDirectory>/</outputDirectory>
             <filtered>false</filtered>
         </file>
     </files>

@@ -16,12 +16,12 @@
         <type>receiver</type>
     </properties>
 
-    <modules>
-        <module>../cipa-core/Implementation/java/cipa-dispatcher</module>
-        <module>../cipa-core/Implementation/java/cipa-smp-full-webapp</module>
-        <module>../mendelson/mendelson-as2-war</module>
-        <module>../domibus</module>
-    </modules>
+    <!--<modules>-->
+        <!--<module>../cipa-core/Implementation/java/cipa-dispatcher</module>-->
+        <!--<module>../cipa-core/Implementation/java/cipa-smp-full-webapp</module>-->
+        <!--<module>../mendelson/mendelson-as2-war</module>-->
+        <!--<module>../domibus</module>-->
+    <!--</modules>-->
     <dependencies>
         <dependency>
             <groupId>mysql</groupId>
@@ -109,7 +109,7 @@
                                         file="${project.build.directory}/cargo/installs/tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/bin/catalina.sh"
                                         token='cygwin=false'
                                         value='export CATALINA_OPTS="$CATALINA_OPTS -Xms256m -Xmx1024m -XX:PermSize=64m -XX:MaxPermSize=256m"${line.separator}cygwin=false' />
-                                <echo>Solve correct break lines (windows/linux environments)</echo>
+                                <echo>Fixing potential break lines problem (windows/linux environments)</echo>
                                 <fixcrlf srcdir="${project.build.directory}/cargo/installs/tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/bin/" includes="**/*.sh" eol="lf" />
                                 <fixcrlf srcdir="${project.build.directory}/cargo/installs/tomcat-${tomcat.version}/apache-tomcat-${tomcat.version}/bin/"
                                          includes="**/*.bat" eol="crlf" />
