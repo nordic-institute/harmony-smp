@@ -13,7 +13,7 @@
     <properties>
         <tomcat.version>8.0.15</tomcat.version>
         <!-- can be either "receiver" or "sender" -->
-        <type>receiver</type>
+        <type>sender</type>
     </properties>
 
     <modules>
