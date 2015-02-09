@@ -10693,7 +10693,34 @@ To configure the AS2 Wrapper and send a message to a receiver on another machine
 		</cac:Price>
 	</cac:InvoiceLine>
 </Invoice>
-</StandardBusinessDocument>]]></con:request><con:originalUri>http://localhost/cipa-dispatcher/send</con:originalUri><con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes"><con:configuration><codes>201</codes></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:restRequest></con:config></con:testStep><con:testStep type="delay" name="15000"><con:settings/><con:config><delay>15000</delay></con:config></con:testStep><con:testStep type="request" name="List of pending AS4 messages (receiver)"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>eCODEX</con:interface><con:operation>listPendingMessages</con:operation><con:request name="List of pending AS4 messages (receiver)"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.10.11:8080/domibus/services/BackendService_1_1/</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:_1="http://org.ecodex.backend/1_1/">
+</StandardBusinessDocument>]]></con:request><con:originalUri>http://localhost/cipa-dispatcher/send</con:originalUri><con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes"><con:configuration><codes>201</codes></con:configuration></con:assertion><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:restRequest></con:config></con:testStep><con:testStep type="delay" name="wait"><con:settings/><con:config><delay>1000</delay></con:config></con:testStep><con:testStep type="request" name="check available messages"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>eCODEX</con:interface><con:operation>listPendingMessages</con:operation><con:request name="check available messages"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.10.11:8080/domibus/services/BackendService_1_1/</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:_1="http://org.ecodex.backend/1_1/">
+   <soap:Header/>
+   <soap:Body>
+      <_1:listPendingMessagesRequest></_1:listPendingMessagesRequest>
+   </soap:Body>
+</soap:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:testStep type="goto" name="wait_until_message_arrived">
+                <con:settings/>
+                <con:config xsi:type="con:GotoStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+                    <con:condition>
+                        <con:name>if_message_arrived</con:name>
+                        <con:type>XPATH</con:type>
+                        <con:expression>declare namespace soapenv='http://www.w3.org/2003/05/soap-envelope';
+declare namespace ns1='http://org.ecodex.backend/1_1/';
+
+boolean(//messageID[1][string-length(text()) > 0])</con:expression>
+                        <con:targetStep>List of pending AS4 messages (receiver)</con:targetStep>
+                    </con:condition>
+                    <con:condition>
+                        <con:name>else</con:name>
+                        <con:type>XPATH</con:type>
+                        <con:expression>declare namespace soapenv='http://www.w3.org/2003/05/soap-envelope';
+declare namespace ns1='http://org.ecodex.backend/1_1/';
+
+boolean(//messageID[1] == null)</con:expression>
+                        <con:targetStep>wait</con:targetStep>
+                    </con:condition>
+                </con:config>
+            </con:testStep><con:testStep type="request" name="List of pending AS4 messages (receiver)"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>eCODEX</con:interface><con:operation>listPendingMessages</con:operation><con:request name="List of pending AS4 messages (receiver)"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://192.168.10.11:8080/domibus/services/BackendService_1_1/</con:endpoint><con:request><![CDATA[<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:_1="http://org.ecodex.backend/1_1/">
    <soap:Header/>
    <soap:Body>
       <_1:listPendingMessagesRequest></_1:listPendingMessagesRequest>
