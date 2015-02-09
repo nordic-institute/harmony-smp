@@ -16,12 +16,12 @@
         <type>receiver</type>
     </properties>
 
-    <!--<modules>-->
-        <!--<module>../cipa-core/Implementation/java/cipa-dispatcher</module>-->
-        <!--<module>../cipa-core/Implementation/java/cipa-smp-full-webapp</module>-->
-        <!--<module>../mendelson/mendelson-as2-war</module>-->
-        <!--<module>../domibus</module>-->
-    <!--</modules>-->
+    <modules>
+        <module>../cipa-core/Implementation/java/cipa-dispatcher</module>
+        <module>../cipa-core/Implementation/java/cipa-smp-full-webapp</module>
+        <module>../mendelson/mendelson-as2-war</module>
+        <module>../domibus</module>
+    </modules>
     <dependencies>
         <dependency>
             <groupId>mysql</groupId>
