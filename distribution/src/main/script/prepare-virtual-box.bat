@@ -2,7 +2,7 @@ rem This script is designed for windows
 rem It can be used to prepare a virtual box from the empty "edelivery virtual box template"
 
 rem Instructions:
-rem 1 - Download the file virtual-box-empty.ova at :
+rem 1 - Download the file virtual-box-empty.ova at : https://joinup.ec.europa.eu/nexus/service/local/repositories/releases/content/eu/europa/ec/cipa/virtualbox-template/1.0.0/virtualbox-template-1.0.0.ova
 rem 2 - Start the virtual box
 rem 3 - Run this script
 rem 4 - Stop the virtual box and export it as an .OVA
@@ -14,6 +14,9 @@ rem Mysql and Maven binaries must be in the PATH environment variable
 
 SET DISTRIBUTION_DIR=../../../
 SET MAVEN_OPTS=-Xmx512m -XX:MaxPermSize=256m
+
+rem clean up
+call rd /s /q C:\feriaad\workspace\CIPA\distribution\target
 
 rem Build the distribution zip with with the "receiver" profile
 cd %DISTRIBUTION_DIR%
