@@ -18,6 +18,8 @@
 
     <modules>
         <module>../cipa-core/Implementation/java/cipa-dispatcher</module>
+        <module>../cipa-core/Implementation/java/cipa-smp-client-library</module>
+        <module>../cipa-core/Implementation/java/cipa-smp-server-library</module>
         <module>../cipa-core/Implementation/java/cipa-smp-full-webapp</module>
         <module>../mendelson/mendelson-as2-war</module>
         <module>../domibus</module>

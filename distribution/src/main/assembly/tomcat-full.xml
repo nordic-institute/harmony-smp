@@ -133,5 +133,10 @@
             <outputDirectory>/</outputDirectory>
             <filtered>false</filtered>
         </file>
+        <file>
+            <source>src/main/doc/release notes_2.2.4.pdf</source>
+            <outputDirectory>/</outputDirectory>
+            <filtered>false</filtered>
+        </file>
     </files>
 </assembly>
