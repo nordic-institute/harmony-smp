@@ -216,6 +216,26 @@
 
 
 	<!--RULE -->
+<xsl:template match="/ubl:CreditNote/cac:AllowanceCharge" mode="M5" priority="1002">
+    <svrl:fired-rule context="/ubl:CreditNote/cac:AllowanceCharge" />
+
+		<!--ASSERT -->
+<xsl:choose>
+      <xsl:when test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT') and (cac:TaxCategory) and (cac:TaxCategory/cbc:Percent)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT'))" />
+      <xsl:otherwise>
+        <svrl:failed-assert test="((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT') and (cac:TaxCategory) and (cac:TaxCategory/cbc:Percent)) or not ((//cac:AccountingSupplierParty/cac:Party/cac:PostalAddress/cac:Country/cbc:IdentificationCode = 'AT'))">
+          <xsl:attribute name="flag">fatal</xsl:attribute>
+          <xsl:attribute name="location">
+            <xsl:apply-templates mode="schematron-select-full-path" select="." />
+          </xsl:attribute>
+          <svrl:text>[ATNAT-T14-R007]-Allowances and charges on header level need a VAT rate.</svrl:text>
+        </svrl:failed-assert>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:apply-templates mode="M5" select="*|comment()|processing-instruction()" />
+  </xsl:template>
+
+	<!--RULE -->
 <xsl:template match="/ubl:CreditNote" mode="M5" priority="1001">
     <svrl:fired-rule context="/ubl:CreditNote" />
 
