@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- This project can be used to build a release version of the eDelivery components -->
+<!-- This project can be used to build a release version of the eDelivery components.
+ To deploy the "sender" artifact, execute the following command :
+  - mvn clean deploy
+ To deploy the "receiver" artifact, it is required to have the "vboxmanage" tool in the system environment path. Then execute the following commands :
+  - mvn clean install -Dtype=receiver
+  - mvn antrun:run
+  - mvn deploy:deploy-file -DgroupId=eu.europa.ec.cipa -DartifactId=edelivery-virtualbox -Dversion=X.Y.Z -Dpackaging=ova -Dfile=target/edelivery-virtualbox.ova -DrepositoryId=joinup-releases -Durl=https://joinup.ec.europa.eu/nexus/content/repositories/releases/
+
+  Of course, you need to replace the version and the repository in the above command with appropriate values.
+ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
@@ -12,13 +21,18 @@
     <!-- Some properties are preset for setting up a sender and a receiver. The configuration is set with the "type" property -->
     <properties>
         <tomcat.version>8.0.15</tomcat.version>
+        <virtualbox-template.version>1.0.0</virtualbox-template.version>
         <!-- can be either "receiver" or "sender" -->
         <type>sender</type>
     </properties>
 
     <modules>
+        <module>../cipa-core/Implementation/java/cipa-parent-pom</module>
+        <module>../cipa-core/Implementation/java/cipa-commons-busdox</module>
+        <module>../cipa-core/Implementation/java/cipa-peppol-types</module>
         <module>../cipa-core/Implementation/java/cipa-dispatcher</module>
         <module>../cipa-core/Implementation/java/cipa-smp-client-library</module>
+        <module>../cipa-core/Implementation/java/cipa-sml-client-library</module>
         <module>../cipa-core/Implementation/java/cipa-smp-server-library</module>
         <module>../cipa-core/Implementation/java/cipa-smp-full-webapp</module>
         <module>../mendelson/mendelson-as2-war</module>
@@ -78,6 +92,21 @@
                         <artifactId>commons-net</artifactId>
                         <version>1.4.1</version>
                     </dependency>
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>5.1.34</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.jcraft</groupId>
+                        <artifactId>jsch</artifactId>
+                        <version>0.1.51</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.apache.ant</groupId>
+                        <artifactId>ant-jsch</artifactId>
+                        <version>1.8.1</version>
+                    </dependency>
                 </dependencies>
                 <executions>
                     <execution>
@@ -125,6 +154,111 @@
                         <goals>
                             <goal>run</goal>
                         </goals>
+                    </execution>
+                    <execution>
+                        <id>default-cli</id>
+                        <phase>none</phase>
+                        <configuration>
+                            <target>
+                                <!-- Download the virtual box -->
+                                <echo>Downloading the virtual box...</echo>
+                                <get src="https://joinup.ec.europa.eu/nexus/service/local/repositories/releases/content/eu/europa/ec/cipa/edelivery-virtualbox-template/${virtualbox-template.version}/edelivery-virtualbox-template-${virtualbox-template.version}.ova"
+                                     dest="target/edelivery-virtualbox-template-${virtualbox-template.version}.ova"
+                                     quiet="true"
+                                     usetimestamp="true"/>
+                                <!-- If there is a previous installations, then delete it -->
+                                <echo>Removing a previous instance of the virtual box if any...</echo>
+                                <exec executable="VBoxManage.exe"
+                                      spawn="false">
+                                    <arg value="unregistervm"/>
+                                    <arg value="eDelivery"/>
+                                    <arg value="--delete"/>
+                                </exec>
+                                <!-- Import the virtual box -->
+                                <echo>Importing the virtual box...</echo>
+                                <exec executable="VBoxManage.exe"
+                                      spawn="false">
+                                    <arg value="import"/>
+                                    <arg value="target/edelivery-virtualbox-template-${virtualbox-template.version}.ova"/>
+                                    <arg value="--vsys"/>
+                                    <arg value="0"/>
+                                    <arg value="--vmname"/>
+                                    <arg value="eDelivery"/>
+                                    <arg value="--options"/>
+                                    <arg value="keepallmacs"/>
+                                </exec>
+
+                                <!-- Start the virtual box -->
+                                <echo>Starting the virtual box...</echo>
+                                <exec executable="VBoxManage.exe"
+                                      spawn="false">
+                                    <arg value="startvm"/>
+                                    <arg value="eDelivery"/>
+                                </exec>
+
+                                <echo>Waiting for the VM to start up properly...</echo>
+                                <waitfor maxwait="2" maxwaitunit="minute" checkevery="200">
+                                    <socket server="192.168.56.11" port="3306"/>
+                                </waitfor>
+                                <!-- Execute MySQL installation script -->
+                                <echo>Executing MySQL installation script...</echo>
+                                <sql driver="com.mysql.jdbc.Driver" url="jdbc:mysql://192.168.56.11:3306/edelivery" userid="root" password="adminuser">
+                                    <![CDATA[
+                                drop SCHEMA if exists edelivery;
+                                create SCHEMA edelivery;
+                             ]]>
+                                </sql>
+                                <sql driver="com.mysql.jdbc.Driver" url="jdbc:mysql://192.168.56.11:3306/edelivery" userid="root" password="adminuser" src="target/sql-scripts/create-mysql.sql">
+                                </sql>
+                                <!--Sending the artifact to the virtual box -->
+                                <echo>Sending the artifact to the virtual box...</echo>
+                                <scp trust="true" file="target/cipa-edelivery-distribution-${project.version}-tomcat-full.zip" port="22" todir="adminuser:adminuser@192.168.56.11:"/>
+
+                                <!-- Extracting zip on the virtual box -->
+                                <echo>Extracting zip on the virtual box...</echo>
+                                <echo file="target/script.sh" append="false">
+                                    mv ~/cipa-edelivery-distribution-${project.version}-tomcat-full.zip ~/cipa-edelivery-distribution.zip
+                                    unzip cipa-edelivery-distribution.zip -d ~/cipa-edelivery-distribution
+                                    chmod 755 -R ~/cipa-edelivery-distribution
+                                    rm ~/cipa-edelivery-distribution.zip
+                                </echo>
+                                <sshexec host="192.168.56.11" trust="true" username="adminuser" password="adminuser" commandResource="target/script.sh"/>
+
+                                <!-- Stop the virtual box -->
+                                <echo>Stopping the virtual box...</echo>
+                                <exec executable="VBoxManage.exe"
+                                      spawn="false">
+                                    <arg value="controlvm"/>
+                                    <arg value="eDelivery"/>
+                                    <arg value="acpipowerbutton"/>
+                                </exec>
+
+                                <echo>Waiting 60 seconds for the VM to shutdown properly...</echo>
+                                <sleep seconds="60"/>
+
+                                <!-- Export the virtual box -->
+                                <echo>Exporting the VM...</echo>
+                                <exec executable="VBoxManage.exe"
+                                      spawn="false">
+                                    <arg value="export"/>
+                                    <arg value="eDelivery"/>
+                                    <arg value="--output"/>
+                                    <arg value="target/edelivery-virtualbox.ova"/>
+                                    <arg value="--ovf20"/>
+                                    <arg value="--vsys"/>
+                                    <arg value="0"/>
+                                </exec>
+
+                                <!-- Finally, remove the VM -->
+                                <echo>Removing the virtual box...</echo>
+                                <exec executable="VBoxManage.exe"
+                                      spawn="false">
+                                    <arg value="unregistervm"/>
+                                    <arg value="eDelivery"/>
+                                    <arg value="--delete"/>
+                                </exec>
+                            </target>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>
