@@ -62,7 +62,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 
 import com.helger.commons.annotations.DevelopersNote;
-import com.helger.scopes.mock.ScopeTestRule;
+import com.helger.commons.scopes.mock.ScopeTestRule;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.NotFoundException;
 

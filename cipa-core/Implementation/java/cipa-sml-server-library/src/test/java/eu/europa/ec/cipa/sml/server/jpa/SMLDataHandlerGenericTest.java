@@ -47,7 +47,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 
 import com.helger.commons.annotations.DevelopersNote;
-import com.helger.scopes.mock.ScopeTestRule;
+import com.helger.commons.scopes.mock.ScopeTestRule;
 
 import eu.europa.ec.cipa.sml.server.IGenericDataHandler;
 import eu.europa.ec.cipa.sml.server.exceptions.NotFoundException;

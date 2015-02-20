@@ -78,9 +78,9 @@ import com.helger.html.hc.html.HCSpan;
 import com.helger.html.hc.html.HCTable;
 import com.helger.html.hc.html.HCTextArea;
 import com.helger.html.hc.html.HCUL;
+import com.helger.web.scopes.domain.IRequestWebScopeWithoutResponse;
 import com.helger.web.servlet.response.UnifiedResponse;
-import com.helger.webscopes.domain.IRequestWebScopeWithoutResponse;
-import com.helger.webscopes.servlets.AbstractUnifiedResponseServlet;
+import com.helger.webbasics.servlet.AbstractUnifiedResponseServlet;
 
 import eu.europa.ec.cipa.commons.cenbii.profiles.ETransaction;
 import eu.europa.ec.cipa.validation.pyramid.ValidationPyramid2;

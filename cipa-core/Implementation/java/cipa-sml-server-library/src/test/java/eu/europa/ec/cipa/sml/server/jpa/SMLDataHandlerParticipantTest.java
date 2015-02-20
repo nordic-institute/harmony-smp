@@ -53,7 +53,7 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 
 import com.helger.commons.annotations.DevelopersNote;
-import com.helger.scopes.mock.ScopeTestRule;
+import com.helger.commons.scopes.mock.ScopeTestRule;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;

@@ -40,17 +40,12 @@
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-commons</artifactId>
-            <version>5.3.0</version>
+            <version>5.5.0</version>
         </dependency>
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-datetime</artifactId>
-            <version>3.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.helger</groupId>
-            <artifactId>ph-scopes</artifactId>
-            <version>6.6.0</version>
+            <version>3.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.helger</groupId>
@@ -60,17 +55,12 @@
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-db-jpa</artifactId>
-            <version>3.2.2</version>
+            <version>3.3.0</version>
         </dependency>
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-web</artifactId>
-            <version>6.0.4</version>
-        </dependency>
-        <dependency>
-            <groupId>com.helger</groupId>
-            <artifactId>ph-webscopes</artifactId>
-            <version>6.6.1</version>
+            <version>6.3.0</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
