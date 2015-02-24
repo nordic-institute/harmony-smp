@@ -12,6 +12,7 @@
         <ftp.host>wltdgt02.cc.cec.eu.int</ftp.host>
         <ftp.port>2059</ftp.port>
         <ftp.remotedir>/ec/test/server/weblogic/u010/home/digciedt/data/CIPA-EDEL_DEV/autodeploy</ftp.remotedir>
+        <warName>mendelson</warName>
     </properties>
 
     <scm>
@@ -234,7 +235,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.4</version>
                 <configuration>
-                    <warName>mendelson</warName>
+                    <warName>${warName}</warName>
                     <archive>
                         <manifest>
                             <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
@@ -255,7 +256,7 @@
                              userid="${ftp.user}"
                              password="${ftp.password}">
                             <fileset dir="${project.build.directory}">
-                                <include name="${project.artifactId}.${project.packaging}"/>
+                                <include name="${warName}.${project.packaging}"/>
                             </fileset>
                         </ftp>
                     </target>
