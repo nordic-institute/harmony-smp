@@ -1,3 +1,5 @@
+package eu.europa.ec.cipa.smp.server.services.readonly;
+
 /**
  * Version: MPL 1.1/EUPL 1.1
  *
@@ -35,7 +37,9 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.smp.server.services.readonly;
+
+import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
+import org.busdox.servicemetadata.publishing._1.SignedServiceMetadataType;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -45,10 +49,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
-
-import org.busdox.servicemetadata.publishing._1.SignedServiceMetadataType;
-
-import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
 
 /**
  * This class implements the REST interface for getting SignedServiceMetadata's.

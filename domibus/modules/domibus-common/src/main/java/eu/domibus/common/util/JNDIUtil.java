@@ -71,24 +71,23 @@ public class JNDIUtil {
      * @return the value associated to the parameter
      */
     public static Object getEnvironmentParameter(final String parameter) {
-
         try {
-            final String initCtxProvider = (String) JNDIUtil.ctx.getEnvironment().get(Context.INITIAL_CONTEXT_FACTORY);
-            String prefix = "";
-
-            // Weblogic does not allow to define configuration variable in the
-            // JNDI so we must load from a file
-            if ((initCtxProvider != null) && initCtxProvider.contains("weblogic")) {
-                return PropertiesUtil.getProperties().getProperty(parameter);
-            }
             // assume application was deployed in tomcat
-            prefix = JNDIUtil.JNDI_ENV_PREFIX;
+            String prefix = JNDIUtil.JNDI_ENV_PREFIX;
 
             return (JNDIUtil.ctx.lookup(prefix + parameter));
         } catch (NamingException e) {
-            throw new ConfigurationException("Parameter " + parameter + " can not be found in the JNDI context", e);
+            // If the configuration is not available in the JNDI, then try the properties file
+            Object result = PropertiesUtil.getProperties().getProperty(parameter);
+
+            if (result == null) {
+                throw new ConfigurationException("Parameter " + parameter + " can not be found in the JNDI context or in the properties file", e);
+            } else {
+                return result;
+            }
         }
     }
+
 
     /**
      * Gives access to jndi values defined in environment as an integer

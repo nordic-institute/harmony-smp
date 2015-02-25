@@ -100,13 +100,4 @@
         <error-code>500</error-code>
         <location>/axis2-web/Error/error500.jsp</location>
     </error-page>
-
-
-    <resource-ref>
-        <description>Domibus datasource</description>
-        <res-ref-name>domibusPU</res-ref-name>
-        <res-type>javax.sql.DataSource</res-type>
-        <res-auth>Container</res-auth>
-    </resource-ref>
-
 </web-app>

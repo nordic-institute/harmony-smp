@@ -44,6 +44,7 @@ PROFILES:
 
  - weblogic
  - distribute
+ - jboss
 
 USAGE:
 clean package -Pweblogic -> create a war for weblogic on TEST environment
@@ -369,6 +370,67 @@ clean install -Pdistribute -> create a distribution packaged with tomcat
                                     <file>${project.build.directory}/${project.build.finalName}.${project.packaging}</file>
                                     <url>${project.distributionManagementArtifactRepository.url}</url>
                                     <artifactId>${project.artifactId}-weblogic</artifactId>
+                                    <groupId>${project.groupId}</groupId>
+                                    <version>${project.version}</version>
+                                    <packaging>${project.packaging}</packaging>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>jboss</id>
+            <properties>
+                <prefix.jndi>java:/jdbc/</prefix.jndi>
+                <domibus.persistence.unit>domibusPU</domibus.persistence.unit>
+                <finalName>domibus-jboss</finalName>
+                <exclude.application.server.specific>**/config*.properties</exclude.application.server.specific>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-core</artifactId>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>dom4j</groupId>
+                            <artifactId>dom4j</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-entitymanager</artifactId>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>dom4j</groupId>
+                            <artifactId>dom4j</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <version>2.8.2</version>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>deploy-jboss</id>
+                                <goals>
+                                    <goal>deploy-file</goal>
+                                </goals>
+                                <phase>deploy</phase>
+                                <configuration>
+                                    <repositoryId>${project.distributionManagementArtifactRepository.id}</repositoryId>
+                                    <file>${project.build.directory}/${project.build.finalName}.${project.packaging}</file>
+                                    <url>${project.distributionManagementArtifactRepository.url}</url>
+                                    <artifactId>${project.artifactId}-jboss</artifactId>
                                     <groupId>${project.groupId}</groupId>
                                     <version>${project.version}</version>
                                     <packaging>${project.packaging}</packaging>

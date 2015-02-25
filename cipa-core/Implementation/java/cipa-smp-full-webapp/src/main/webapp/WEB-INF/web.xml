@@ -78,15 +78,6 @@
         <filter-name>RestFilter</filter-name>
         <filter-class>com.sun.jersey.spi.container.servlet.ServletContainer</filter-class>
         <init-param>
-            <param-name>com.sun.jersey.config.property.resourceConfigClass</param-name>
-            <param-value>com.sun.jersey.api.core.PackagesResourceConfig</param-value>
-        </init-param>
-        <init-param>
-            <param-name>com.sun.jersey.config.property.packages</param-name>
-            <param-value>eu.europa.ec.cipa.smp.server.services.common;eu.europa.ec.cipa.smp.server.services.readwrite
-            </param-value>
-        </init-param>
-        <init-param>
             <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
             <param-value>eu.europa.ec.cipa.smp.server.util.SignatureFilter</param-value>
         </init-param>
@@ -101,6 +92,21 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <!-- This is needed to ensure compatibility with JBoss/Wildfly -->
+    <context-param>
+        <param-name>resteasy.scan</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <context-param>
+        <param-name>resteasy.scan.resources</param-name>
+        <param-value>false</param-value>
+    </context-param>
+    <context-param>
+        <param-name>resteasy.scan.providers</param-name>
+        <param-value>false</param-value>
+    </context-param>
+
+    <!-- To be activated only if deployed in the EC's data centre -->
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>cipa-smp-full-webapp</web-resource-name>

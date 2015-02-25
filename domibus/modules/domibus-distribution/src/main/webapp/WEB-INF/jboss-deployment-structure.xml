@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-deployment-structure>
+    <deployment>
+        <dependencies>
+            <module name="eu.europa.ec.cipa.configuration" />
+        </dependencies>
+        <exclusions>
+            <module name="com.sun.xml" />
+            <module name="javax.xml.xquery" />
+            <module name="javax.xml.bind" />
+            <module name="javax.namespace.xml" />
+            <module name="org.apache.log4j" />
+            <module name="com.sun.xml.wss" />
+            <module name="antlr" />
+            <module name="org.springframework" />
+            <module name="org.slf4j" />
+        </exclusions>
+    </deployment>
+</jboss-deployment-structure>

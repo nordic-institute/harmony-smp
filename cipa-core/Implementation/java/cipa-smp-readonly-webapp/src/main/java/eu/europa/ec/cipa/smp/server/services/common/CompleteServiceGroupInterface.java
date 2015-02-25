@@ -37,7 +37,17 @@
  */
 package eu.europa.ec.cipa.smp.server.services.common;
 
-import java.util.List;
+import com.sun.jersey.api.NotFoundException;
+import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
+import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
+import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
+import eu.europa.ec.cipa.smp.server.data.IDataManager;
+import eu.europa.ec.cipa.smp.server.services.readonly.ServiceMetadataInterface;
+import org.busdox.servicemetadata.publishing._1.*;
+import org.busdox.transport.identifiers._1.DocumentIdentifierType;
+import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -47,25 +57,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
-
-import org.busdox.servicemetadata.publishing._1.CompleteServiceGroupType;
-import org.busdox.servicemetadata.publishing._1.ObjectFactory;
-import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataReferenceCollectionType;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataReferenceType;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
-import org.busdox.transport.identifiers._1.DocumentIdentifierType;
-import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.sun.jersey.api.NotFoundException;
-
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
-import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
-import eu.europa.ec.cipa.smp.server.data.IDataManager;
-import eu.europa.ec.cipa.smp.server.services.readonly.ServiceMetadataInterface;
+import java.util.List;
 
 /**
  * This class implements a REST frontend for getting the ServiceGroup as well as
@@ -83,7 +75,7 @@ public final class CompleteServiceGroupInterface {
   @Context
   private UriInfo m_aUriInfo;
 
-  public CompleteServiceGroupInterface () {}
+  public CompleteServiceGroupInterface() {}
 
   @GET
   @Produces (MediaType.TEXT_XML)

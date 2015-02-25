@@ -1,3 +1,5 @@
+package eu.europa.ec.cipa.smp.server.services.readonly;
+
 /**
  * Version: MPL 1.1/EUPL 1.1
  *
@@ -35,7 +37,6 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.smp.server.services.readonly;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -46,6 +47,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
+import eu.europa.ec.cipa.smp.server.services.readonly.ServiceMetadataInterface;
 import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
 
 import eu.europa.ec.cipa.smp.server.services.BaseServiceGroupInterfaceImpl;
