@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.StringUtils;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -100,7 +101,7 @@ public class SBDHHandler extends DefaultHandler {
 		if (attributes != null) {
 			String attName;
 			for (int i = 0; i < attributes.getLength(); i++) {
-				attName = attributes.getLocalName(i) != null ? attributes.getLocalName(i) : attributes.getQName(i);
+				attName = !StringUtils.isEmpty(attributes.getLocalName(i)) ? attributes.getLocalName(i) : attributes.getQName(i);
 				stream.print(' ');
 				stream.print(attName);
 				stream.print('=');
