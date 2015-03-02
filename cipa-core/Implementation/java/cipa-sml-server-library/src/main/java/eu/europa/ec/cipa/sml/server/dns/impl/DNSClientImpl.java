@@ -191,7 +191,6 @@ public class DNSClientImpl implements IDNSClient {
 			if (SIG0Enabled) {
 				SIG0KeyProvider prov = new SIG0KeyProvider();
 				SIG0.signMessage(m, getSIG0Record(), prov.getPrivateSIG0Key(), null);
-				Thread.sleep(2000);
 			}
 			return createResolver().send(m);
 		} catch (IOException e) {

@@ -9,9 +9,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.DClass;
 import org.xbill.DNS.Name;
@@ -22,10 +26,13 @@ import org.xbill.DNS.ZoneTransferException;
 
 public class RunIt {
 
+	static final org.slf4j.Logger logger = LoggerFactory.getLogger(RunIt.class);
+
 	private List<DNSEntery> lSMPHosts = new ArrayList<DNSEntery>();
 	private List<DNSEntery> lIdentifierHosts = new ArrayList<DNSEntery>();
+	private static final int MAX_RETRY = 5;
 	private String smlZoneSuffix = "";
-	private String identieferZoneSuffix = "";
+	private String identifierZoneSuffix = "";
 	private IDNSClient client = null;
 
 	private IDNSClient getDnsClient() {
@@ -42,39 +49,96 @@ public class RunIt {
 	public static void main(String[] args) {
 		RunIt run = new RunIt();
 		if (args.length < 1) {
-			System.out.println("Please provide the full path to the file with the Dns-records file");
+			logger.info("Please provide the full path to the file with the Dns-records file");
 		} else {
 			File f = new File(args[0]);
+			if (!f.exists()) {
+				URL url = RunIt.class.getClassLoader().getResource(args[0]);
+				if (url != null) {
+					try {
+						f = new File(url.toURI());
+					} catch (URISyntaxException e) {
+						logger.error("The file : " + args[0] + " couldn't be found", e);
+					}
+				} else {
+					logger.error("The file : " + args[0] + " couldn't be found");
+				}
+			}
 			List<String> l = run.getLinesOfTheFile(f);
 			run.parseLines(l);
 			run.PutRecordsInDNS();
+			run.check(l);
 		}
+	}
+
+	private void check(List<String> listEntries) {
+		logger.info("Checking that all the entries have been successfully registered. This could take few minutes. Please wait...");
+		List<String> errors = new ArrayList<>();
+		int entriesCount = 0;
+		int i = 0;
+		for (String entry : listEntries) {
+			i++;
+			String dnsName = null;
+			String[] lineArray = entry.split("\tCNAME\t");
+			if (lineArray != null && lineArray.length > 1) {
+				if (entry.contains("publisher.")) {
+					// normal host
+					dnsName = lineArray[0].trim() + "." + identifierZoneSuffix + "." + DNSClientConfiguration.getZone() + ".";
+				} else {
+					// smp host
+					dnsName = lineArray[0].trim() + "." + DNSClientConfiguration.getSMLZoneName();
+				}
+				entriesCount++;
+				try {
+					String rec = getDnsClient().lookupDNSRecord(dnsName);
+					if (rec == null) {
+						errors.add(dnsName);
+					}
+				} catch (IOException e) {
+					errors.add(dnsName);
+				}
+			}
+			if (i % 100 == 0) {
+				logger.info("Checking in progress: " + i + "/≈" + listEntries.size() + ". Please wait...");
+			}
+		}
+		logger.info("----------------------------------------------");
+		logger.info("-----------         REPORT       -------------");
+		if (!errors.isEmpty()) {
+			logger.error("There was some errors in the registration inside the DNS. Some entries coulnd't be registered:");
+			for (String error : errors) {
+				logger.error(error);
+			}
+		} else {
+			logger.info("All " + entriesCount + " entries have been successfully registered in the dns");
+		}
+		logger.info("----------------------------------------------");
 	}
 
 	private void printDNS() {
 		try {
 			List<Record> recs = getDnsClient().getAllRecords();
 			for (Record rec : recs) {
-				System.out.println(rec);
+				logger.info(rec.toString());
 			}
 		} catch (IOException | ZoneTransferException e) { // TODO Auto-generated
 															// catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 
 	private void deleteAllCNames() {
 		try {
 			List<Record> recs = getDnsClient().getAllRecords();
-			System.out.println("Number of records on the list: " + recs.size());
-			List<Record> out = new ArrayList<Record>();
+			logger.info("Number of records on the list: " + recs.size());
+			List<Record> out = new ArrayList<>();
 			int i = 0;
 			for (Record rec : recs) {
 				if (rec.getType() == Type.CNAME || rec.getName().toString().contains(DNSClientConfiguration.getSMLZoneName())) {
 					out.add(rec);
 					i++;
 					if (i == 400) {
-						getDnsClient().deleteList(out);
+						deleteRecordsWithRetry(out);
 						out.clear();
 						i = 0;
 					}
@@ -82,27 +146,17 @@ public class RunIt {
 			}
 			if (!out.isEmpty())
 			{
-				getDnsClient().deleteList(out);
+				deleteRecordsWithRetry(out);
 			}
 		} catch (IOException | ZoneTransferException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		}
 	}
 
-	private void printNumberOfRecords() {
-		try {
-			List<Record> recs = getDnsClient().getAllRecords();
-			System.out.println("Number of records on the list: " + recs.size());
-		} catch (IOException | ZoneTransferException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
-	private void addSMLHosts() {
-		List<Record> delete = new ArrayList<Record>();
-		List<Record> add = new ArrayList<Record>();
+	private void addSMPHosts() {
+		List<Record> delete = new ArrayList<>();
+		List<Record> add = new ArrayList<>();
 		for (DNSEntery ent : lSMPHosts) {
 			try {
 				Record[] rec = getDnsClient().getRecordFromName(ent.getName());
@@ -114,12 +168,54 @@ public class RunIt {
 				add.add(new CNAMERecord(Name.fromString(ent.getName() + "." + DNSClientConfiguration.getSMLZoneName()), DClass.IN, client.getTTLSecs(),
 						new Name(ent.getHost())));
 			} catch (TextParseException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 			}
 		}
 
-		getDnsClient().deleteList(delete);
-		getDnsClient().addRecords(add);
+		deleteRecordsWithRetry(delete);
+		addRecordsWithRetry(add);
+	}
+
+	private void addRecordsWithRetry(List<Record> recordList){
+		addRecordsWithRetry(recordList, 0);
+	}
+
+	private void deleteRecordsWithRetry(List<Record> recordList){
+		deleteRecordsWithRetry(recordList, 0);
+	}
+
+	private void deleteRecordsWithRetry(List<Record> recordList, int retry){
+		if (retry > 0) {
+			logger.error("Retrying for the " + retry + " time");
+		}
+		if (retry < MAX_RETRY) {
+			try {
+				getDnsClient().deleteList(recordList);
+			} catch(Throwable exc) {
+				logger.warn("An error occurred while deleting records from the DNS.", exc);
+				deleteRecordsWithRetry(recordList, retry + 1);
+			}
+		} else {
+			logger.error("FATAL: There was a fatal error. Impossible to delete the records from the DNS after " + retry + " tentatives");
+			System.exit(-1);
+		}
+	}
+
+	private void addRecordsWithRetry(List<Record> recordList, int retry){
+		if (retry > 0) {
+			logger.error("Retrying for the " + retry + " time");
+		}
+		if (retry < MAX_RETRY) {
+			try {
+				getDnsClient().addRecords(recordList);
+			} catch(Throwable exc) {
+				logger.warn("An error occurred while adding records to the DNS.", exc);
+				addRecordsWithRetry(recordList, retry + 1);
+			}
+		} else {
+			logger.error("FATAL: There was a fatal error. Impossible to add the records to the DNS after " + retry + " tentatives");
+			System.exit(-1);
+		}
 	}
 
 	private void addEndpoints() {
@@ -127,26 +223,26 @@ public class RunIt {
 		int i = 0;
 		for (DNSEntery ent : lIdentifierHosts) {
 			try {
-				Name n = Name.fromString(ent.getName(), Name.fromString(identieferZoneSuffix + "." + DNSClientConfiguration.getZone() + "."));
+				Name n = Name.fromString(ent.getName(), Name.fromString(identifierZoneSuffix + "." + DNSClientConfiguration.getZone() + "."));
 				updateList.add(new CNAMERecord(n, DClass.IN, client.getTTLSecs(), Name.fromString(ent.getHost())));
 				i++;
 				if (i == 400) {
 					i = 0;
-					getDnsClient().addRecords(updateList);
+					addRecordsWithRetry(updateList);
 					updateList.clear();
 				}
 			} catch (TextParseException e) {
-				e.printStackTrace();
+				logger.error(e.getMessage(), e);
 			}
 		}
 		if (!updateList.isEmpty()) {
-			getDnsClient().addRecords(updateList);
+			addRecordsWithRetry(updateList);
 		}
 	}
 
 	private void PutRecordsInDNS() {
 		deleteAllCNames();
-		addSMLHosts();
+		addSMPHosts();
 		addEndpoints();
 		printDNS();
 
@@ -177,9 +273,9 @@ public class RunIt {
 					}
 					if (line.contains("-actorid-")) {
 						String s[] = line.split(" ");
-						identieferZoneSuffix = s[1];
-						String t[] = identieferZoneSuffix.split("\\.");
-						identieferZoneSuffix = t[0];
+						identifierZoneSuffix = s[1];
+						String t[] = identifierZoneSuffix.split("\\.");
+						identifierZoneSuffix = t[0];
 					}
 				}
 			}
@@ -201,30 +297,33 @@ public class RunIt {
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.error(e.getMessage(), e);
 		} finally {
 			if (bf != null) {
 				try {
 					bf.close();
 				} catch (Throwable t) { /* ensure close happens */
+					logger.error(t.getMessage(), t);
 				}
 			}
 			if (r != null) {
 				try {
 					r.close();
 				} catch (Throwable t) { /* ensure close happens */
+					logger.error(t.getMessage(), t);
 				}
 			}
 			if (ins != null) {
 				try {
 					ins.close();
 				} catch (Throwable t) { /* ensure close happens */
+					logger.error(t.getMessage(), t);
 				}
 			}
 		}
