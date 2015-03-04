@@ -131,7 +131,7 @@ public final class BaseServiceGroupInterfaceImpl {
       final List <DocumentIdentifierType> aDocTypeIds = aDataManager.getDocumentTypes (aServiceGroupID);
       for (final DocumentIdentifierType aDocTypeId : aDocTypeIds) {
         final ServiceMetadataReferenceType aMetadataReference = aObjFactory.createServiceMetadataReferenceType ();
-        if (configFile.getString ("contextPath.output").equals ("true")) {
+        if (configFile.getString ("contextPath.output", "false").equals ("true")) {
           aMetadataReference.setHref (aUriInfo.getBaseUriBuilder ()
                                               .path (aServiceMetadataInterface)
                                               .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID),
