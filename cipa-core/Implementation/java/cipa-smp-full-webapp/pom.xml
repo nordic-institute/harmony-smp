@@ -130,6 +130,10 @@
                 <projectFile>${project.basedir}/../../../Test/Supporting Tools/SMP-soapui-project.xml</projectFile>
                 <projectProperties>
                     <value>url=${url}</value>
+                    <value>username=${username}</value>
+                    <value>password=${password}</value>
+                    <value>jdbc.url=${jdbc.url}</value>
+                    <value>jdbc.driver=${jdbc.driver}</value>
                 </projectProperties>
             </configuration>
             <dependencies>
