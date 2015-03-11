@@ -443,6 +443,11 @@ def documentIdentifierResponse
 def processId=null, processIdType=null,transpProf=null,endPointRef=null
 def reqBuissLevSig=null,serActvDate=null,serExpDate=null,certificate=null,serDesc=null,techContUrl=null
 def ServiceMetadata = new XmlSlurper().parseText(responseContent)
+def actDate 
+def expDate
+def tempor
+def temporr
+
 def checkRequestType=0 // Sevice Information
 def allNodes = ServiceMetadata.depthFirst().each{
 	   if(it.name()== "Redirect"){
@@ -511,17 +516,17 @@ allNodes = ServiceMetadata.depthFirst().each{
 		 }
 		 assert (marker>0), "Error:Exec: Can't find correct data for BUSINESS IDENTIFIER $ParticipantIdentifierResponse, DOCUMENT IDENTIFIER $documentIdentifierResponse."
 		 sql.eachRow("Select CERTIFICATE from SMP_ENDPOINT where BUSINESSIDENTIFIER=$ParticipantIdentifierResponse and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeResponse and DOCUMENTIDENTIFIERSCHEME=$documentIdentSchemeResponse and DOCUMENTIDENTIFIER=$documentIdentifierResponse and PROCESSIDENTIFIER=$processId and PROCESSIDENTIFIERTYPE=$processIdType and TRANSPORTPROFILE=$transpProf and ENDPOINTREFERENCE=$endPointRef and TECHNICALCONTACTURL=$techContUrl and REQUIREBUSINESSLEVELSIGNATURE=$reqBuissLevSig"){
-		 	def tempor = it.CERTIFICATE.getAsciiStream().getText()
+		 	tempor = it.CERTIFICATE.getAsciiStream().getText()
 		 	tempor=tempor.stripMargin()
 		 	assert (tempor==certificate), "Error:Exec: Wrong certificate for BUSINESS IDENTIFIER $ParticipantIdentifierResponse, DOCUMENT IDENTIFIER $documentIdentifierResponse."
 		 }
 		 sql.eachRow("Select SERVICEDESCRIPTION from SMP_ENDPOINT where BUSINESSIDENTIFIER=$ParticipantIdentifierResponse and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeResponse and DOCUMENTIDENTIFIERSCHEME=$documentIdentSchemeResponse and DOCUMENTIDENTIFIER=$documentIdentifierResponse and PROCESSIDENTIFIER=$processId and PROCESSIDENTIFIERTYPE=$processIdType and TRANSPORTPROFILE=$transpProf and ENDPOINTREFERENCE=$endPointRef and TECHNICALCONTACTURL=$techContUrl and REQUIREBUSINESSLEVELSIGNATURE=$reqBuissLevSig"){
-		 	def temporr = it.SERVICEDESCRIPTION.getAsciiStream().getText()
+		 	temporr = it.SERVICEDESCRIPTION.getAsciiStream().getText()
 		 	assert (temporr==serDesc), "Error:Exec: Wrong service information for BUSINESS IDENTIFIER $ParticipantIdentifierResponse, DOCUMENT IDENTIFIER $documentIdentifierResponse."
 		 }
 		 sql.eachRow("Select SERVICEACTIVATIONDATE,SERVICEEXPIRATIONDATE from SMP_ENDPOINT where BUSINESSIDENTIFIER=$ParticipantIdentifierResponse and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeResponse and DOCUMENTIDENTIFIERSCHEME=$documentIdentSchemeResponse and DOCUMENTIDENTIFIER=$documentIdentifierResponse and PROCESSIDENTIFIER=$processId and PROCESSIDENTIFIERTYPE=$processIdType and TRANSPORTPROFILE=$transpProf and ENDPOINTREFERENCE=$endPointRef and TECHNICALCONTACTURL=$techContUrl and REQUIREBUSINESSLEVELSIGNATURE=$reqBuissLevSig"){
-		 	def actDate = it.SERVICEACTIVATIONDATE
-		 	def expDate = it.SERVICEEXPIRATIONDATE
+		 	actDate = it.SERVICEACTIVATIONDATE
+		 	expDate = it.SERVICEEXPIRATIONDATE
 		 	assert (serActvDate==actDate), "Error:Exec: Wrong Activation date information for BUSINESS IDENTIFIER $ParticipantIdentifierResponse, DOCUMENT IDENTIFIER $documentIdentifierResponse."
 		 	assert (serExpDate==expDate), "Error:Exec: Wrong Expiration date information for BUSINESS IDENTIFIER $ParticipantIdentifierResponse, DOCUMENT IDENTIFIER $documentIdentifierResponse."
 		 }
@@ -533,6 +538,8 @@ allNodes = ServiceMetadata.depthFirst().each{
 		 techContUrl=null
 		 transpProf=null
 		 endPointRef=null
+		 tempor=null
+		 temporr=null
         }
 }
 
@@ -1384,6 +1391,12 @@ def sql = Sql.newInstance(context.expand( '${#Project#jdbc.url }' ), context.exp
 // Delete from SMP_OWNERSHIP
 sql.execute "DELETE from SMP_OWNERSHIP where USERNAME=$userNameRequest"
 sleep(50)
+sql.execute "DELETE from SMP_OWNERSHIP where BUSINESSIDENTIFIER='0088:5798000000999' and BUSINESSIDENTIFIERSCHEME='iso6523-actorid-upis'"
+sleep(50)
+sql.execute "DELETE from SMP_OWNERSHIP where BUSINESSIDENTIFIER='0088:5798000000998' and BUSINESSIDENTIFIERSCHEME='iso6523-actorid-upis'"
+sleep(50)
+sql.execute "DELETE from SMP_OWNERSHIP where BUSINESSIDENTIFIER='0088:5798000000997' and BUSINESSIDENTIFIERSCHEME='iso6523-actorid-upis'"
+sleep(50)
 
 // Delete from SMP_SERVICE_GROUP
 sql.execute "DELETE from SMP_SERVICE_GROUP where BUSINESSIDENTIFIER='0088:5798000000999' and BUSINESSIDENTIFIERSCHEME='iso6523-actorid-upis'"
@@ -1638,6 +1651,10 @@ def documentIdentSchemeResponse
 def documentIdentifierResponse
 def processId=null, processIdType=null,transpProf=null,endPointRef=null
 def reqBuissLevSig=null,serActvDate=null,serExpDate=null,certificate=null,serDesc=null,techContUrl=null
+def actDate
+def expDate
+def tempor
+def temporr
 def ServiceMetadata = new XmlSlurper().parseText(responseContent)
 
 allNodes = ServiceMetadata.depthFirst().each{
@@ -1700,17 +1717,17 @@ allNodes = ServiceMetadata.depthFirst().each{
 		 }
 		 assert (marker>0),"Error:Exec: Can't find correct data for BUSINESS IDENTIFIER $ParticipantIdentifierResponse, DOCUMENT IDENTIFIER $documentIdentifierResponse."
 		 sql.eachRow("Select CERTIFICATE from SMP_ENDPOINT where BUSINESSIDENTIFIER=$ParticipantIdentifierResponse and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeResponse and DOCUMENTIDENTIFIERSCHEME=$documentIdentSchemeResponse and DOCUMENTIDENTIFIER=$documentIdentifierResponse and PROCESSIDENTIFIER=$processId and PROCESSIDENTIFIERTYPE=$processIdType and TRANSPORTPROFILE=$transpProf and ENDPOINTREFERENCE=$endPointRef and TECHNICALCONTACTURL=$techContUrl and REQUIREBUSINESSLEVELSIGNATURE=$reqBuissLevSig"){
-		     	def tempor = it.CERTIFICATE.getAsciiStream().getText()
+		     tempor = it.CERTIFICATE.getAsciiStream().getText()
 		 	tempor=tempor.stripMargin()
 		 	assert (tempor==certificate), "Error:Exec: Wrong certificate for BUSINESS IDENTIFIER $ParticipantIdentifierResponse, DOCUMENT IDENTIFIER $documentIdentifierResponse."
 		 }
 		 sql.eachRow("Select SERVICEDESCRIPTION from SMP_ENDPOINT where BUSINESSIDENTIFIER=$ParticipantIdentifierResponse and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeResponse and DOCUMENTIDENTIFIERSCHEME=$documentIdentSchemeResponse and DOCUMENTIDENTIFIER=$documentIdentifierResponse and PROCESSIDENTIFIER=$processId and PROCESSIDENTIFIERTYPE=$processIdType and TRANSPORTPROFILE=$transpProf and ENDPOINTREFERENCE=$endPointRef and TECHNICALCONTACTURL=$techContUrl and REQUIREBUSINESSLEVELSIGNATURE=$reqBuissLevSig"){
-		 	def temporr = it.SERVICEDESCRIPTION.getAsciiStream().getText()
-		     	assert (temporr==serDesc), "Error:Exec: Wrong service information for BUSINESS IDENTIFIER $ParticipantIdentifierResponse, DOCUMENT IDENTIFIER $documentIdentifierResponse."
+		 	temporr = it.SERVICEDESCRIPTION.getAsciiStream().getText()
+		     assert (temporr==serDesc), "Error:Exec: Wrong service information for BUSINESS IDENTIFIER $ParticipantIdentifierResponse, DOCUMENT IDENTIFIER $documentIdentifierResponse."
 		 }
 		 sql.eachRow("Select SERVICEACTIVATIONDATE,SERVICEEXPIRATIONDATE from SMP_ENDPOINT where BUSINESSIDENTIFIER=$ParticipantIdentifierResponse and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeResponse and DOCUMENTIDENTIFIERSCHEME=$documentIdentSchemeResponse and DOCUMENTIDENTIFIER=$documentIdentifierResponse and PROCESSIDENTIFIER=$processId and PROCESSIDENTIFIERTYPE=$processIdType and TRANSPORTPROFILE=$transpProf and ENDPOINTREFERENCE=$endPointRef and TECHNICALCONTACTURL=$techContUrl and REQUIREBUSINESSLEVELSIGNATURE=$reqBuissLevSig"){
-		     	def actDate = it.SERVICEACTIVATIONDATE
-		     	def expDate = it.SERVICEEXPIRATIONDATE
+		     actDate = it.SERVICEACTIVATIONDATE
+		     expDate = it.SERVICEEXPIRATIONDATE
 		 	assert (serActvDate==actDate), "Error:Exec: Wrong Activation date information for BUSINESS IDENTIFIER $ParticipantIdentifierResponse, DOCUMENT IDENTIFIER $documentIdentifierResponse."
 		 	assert (serExpDate==expDate), "Error:Exec: Wrong Expiration date information for BUSINESS IDENTIFIER $ParticipantIdentifierResponse, DOCUMENT IDENTIFIER $documentIdentifierResponse."
 		 }
@@ -1722,6 +1739,8 @@ allNodes = ServiceMetadata.depthFirst().each{
 		 techContUrl=null
 		 transpProf=null
 		 endPointRef=null
+		 tempor=null
+		 temporr=null
         }
 }
 
@@ -2093,4 +2112,4 @@ def testCase = loadTestRunner.loadTest.testCase;
 def testStep = testCase.getTestStepByName( "CleanDB" );
 testRunner = new com.eviware.soapui.impl.wsdl.testcase.WsdlTestCaseRunner(testCase, null);
 testStepContext = new com.eviware.soapui.impl.wsdl.testcase.WsdlTestRunContext(testStep);
-testStep.run(testRunner, testStepContext);</con:tearDownScript><con:reportParameters/></con:loadTest><con:properties/><con:reportParameters/><con:breakPoints><con:testStepId>6c0e461c-085a-453a-9f1c-2cd9e38be5eb</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>5d2a075a-6b67-4d74-b6b8-16b4c27d1ba1</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:requirements/><con:properties><con:property><con:name>jdbc.driver </con:name><con:value>oracle.jdbc.OracleDriver</con:value></con:property><con:property><con:name>jdbc.url </con:name><con:value>jdbc:oracle:thin:user/pass@devora5.cc.cec.eu.int:1597/EX1UDIGT.cc.cec.eu.int</con:value></con:property><con:property><con:name>url</con:name><con:value>http://wltdgt02.cc.cec.eu.int:1065</con:value></con:property><con:property><con:name>username</con:name><con:value>user</con:value></con:property><con:property><con:name>password</con:name><con:value>user</con:value></con:property></con:properties><con:wssContainer/><con:databaseConnectionContainer/><con:oAuth2ProfileContainer/><con:reporting><con:xmlTemplates/><con:parameters/></con:reporting><con:sensitiveInformation/></con:soapui-project>
+testStep.run(testRunner, testStepContext);</con:tearDownScript><con:reportParameters/></con:loadTest><con:properties/><con:reportParameters/><con:breakPoints><con:testStepId>6c0e461c-085a-453a-9f1c-2cd9e38be5eb</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>5d2a075a-6b67-4d74-b6b8-16b4c27d1ba1</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:requirements/><con:properties><con:property><con:name>jdbc.driver </con:name><con:value>oracle.jdbc.OracleDriver</con:value></con:property><con:property><con:name>jdbc.url </con:name><con:value>jdbc:oracle:thin:user/pass@devora5.cc.cec.eu.int:1597/EX1UDIGD.cc.cec.eu.int</con:value></con:property><con:property><con:name>url</con:name><con:value>http://wltdgt02.cc.cec.eu.int:2061</con:value></con:property><con:property><con:name>username</con:name><con:value>user</con:value></con:property><con:property><con:name>password</con:name><con:value>user</con:value></con:property></con:properties><con:wssContainer/><con:databaseConnectionContainer/><con:oAuth2ProfileContainer/><con:reporting><con:xmlTemplates/><con:parameters/></con:reporting><con:sensitiveInformation/></con:soapui-project>
