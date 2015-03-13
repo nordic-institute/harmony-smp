@@ -56,11 +56,11 @@ import org.slf4j.LoggerFactory;
 
 import com.helger.commons.annotations.PresentForCodeCoverage;
 import com.helger.commons.collections.ArrayHelper;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 
 /**
  * Extract certificate principal from HTTP request.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -77,7 +77,7 @@ public final class ClientUniqueIDProvider {
    * Extract the client unique ID from the certificate.<br>
    * Note: this assumes that a single root certificate is present. Otherwise the
    * unique ID should also contain the subject DN and serial of the issuer!
-   * 
+   *
    * @param aHttpRequest
    *        The HTTP request to use.
    * @return <code>null</code> if some error occurred.
@@ -123,7 +123,7 @@ public final class ClientUniqueIDProvider {
                                        aNonIssuerCertList.size () +
                                        " certificates that are not issuer certificates!");
 
-    final X509Certificate aNonIssuerCert = ContainerHelper.getFirstElement (aNonIssuerCertList);
+    final X509Certificate aNonIssuerCert = CollectionHelper.getFirstElement (aNonIssuerCertList);
     return getClientUniqueID (aNonIssuerCert);
   }
 
@@ -140,9 +140,9 @@ public final class ClientUniqueIDProvider {
         aParts.put (aRdn.getType (), aRdn);
 
       // Re-order - least important item comes first (=reverse order)!
-      final String sSubjectName = new LdapName (ContainerHelper.newList (aParts.get ("C"),
-                                                                         aParts.get ("O"),
-                                                                         aParts.get ("CN"))).toString ();
+      final String sSubjectName = new LdapName (CollectionHelper.newList (aParts.get ("C"),
+                                                                          aParts.get ("O"),
+                                                                          aParts.get ("CN"))).toString ();
 
       // subject-name + ":" + serial number hexstring
       return sSubjectName + ':' + aCert.getSerialNumber ().toString (16);

@@ -43,7 +43,7 @@
     <dependency>
       <groupId>org.bouncycastle</groupId>
       <artifactId>bcprov-jdk15on</artifactId>
-      <version>1.51</version>
+      <version>1.52</version>
     </dependency>
 		<dependency>
 			<groupId>eu.europa.ec.cipa</groupId>
@@ -53,7 +53,7 @@
 		<dependency>
 			<groupId>com.helger</groupId>
 			<artifactId>ph-commons</artifactId>
-			<version>5.5.0</version>
+			<version>5.6.0</version>
 		</dependency>
 
 		<dependency>
@@ -64,13 +64,13 @@
 		<dependency>
 			<groupId>com.helger</groupId>
 			<artifactId>ph-genericode</artifactId>
-			<version>3.3.0</version>
+			<version>3.3.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.helger</groupId>
 			<artifactId>ph-poi</artifactId>
-			<version>2.9.2</version>
+			<version>2.9.3</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -93,15 +93,6 @@
 							eu.europa.ec.cipa.peppol.*
 						</Export-Package>
 					</instructions>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>com.mycila</groupId>
-				<artifactId>license-maven-plugin</artifactId>
-				<configuration>
-					<excludes>
-						<exclude>src/main/java/com/google/**</exclude>
-					</excludes>
 				</configuration>
 			</plugin>
 		</plugins>

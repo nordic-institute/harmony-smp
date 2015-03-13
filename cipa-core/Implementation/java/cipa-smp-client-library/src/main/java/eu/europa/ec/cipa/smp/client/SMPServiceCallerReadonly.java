@@ -61,7 +61,7 @@ import org.w3._2000._09.xmldsig.X509DataType;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse.Status;
@@ -784,7 +784,7 @@ public class SMPServiceCallerReadonly {
         }
 
         // Use the first endpoint or null
-        return ContainerHelper.getFirstElement (aRelevantEndpoints);
+        return CollectionHelper.getFirstElement (aRelevantEndpoints);
       }
     }
     return null;

@@ -54,7 +54,7 @@ import org.w3c.dom.NodeList;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.PresentForCodeCoverage;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.xml.ChildElementIterator;
 import com.helger.commons.xml.XMLFactory;
 import com.helger.commons.xml.XMLHelper;
@@ -197,7 +197,7 @@ public final class W3CEndpointReferenceUtils {
     if (eRefParams == null)
       return null;
 
-    return ContainerHelper.newList (new ChildElementIterator (eRefParams));
+    return CollectionHelper.newList (new ChildElementIterator (eRefParams));
   }
 
   /**
@@ -220,6 +220,6 @@ public final class W3CEndpointReferenceUtils {
     final List <Element> aReferenceParameters = getReferenceParameters (aEndpointReference);
 
     // And extract the one at the desired index.
-    return ContainerHelper.getSafe (aReferenceParameters, nIndex);
+    return CollectionHelper.getSafe (aReferenceParameters, nIndex);
   }
 }

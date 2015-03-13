@@ -57,7 +57,7 @@ import org.xbill.DNS.ARecord;
 import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.Record;
 
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.io.streams.StreamUtils;
 
 /**
@@ -146,7 +146,7 @@ public final class ServletListDNS extends HttpServlet {
             // For "address records" and "CNAME records" only the ones for the
             // current SML zone name (sml.peppolcentral.org) are displayed!
             if (aRecord.getName ().toString ().contains (sSMLZoneName))
-            	aFilteredRecords.add (aRecord);
+              aFilteredRecords.add (aRecord);
           }
         }
       }
@@ -154,7 +154,7 @@ public final class ServletListDNS extends HttpServlet {
       _writeToStream (aOS, "");
 
       // Emit all records sorted
-      for (final Record aRecord : ContainerHelper.getSortedInline (aFilteredRecords, new ComparatorDNSRecord ()))
+      for (final Record aRecord : CollectionHelper.getSortedInline (aFilteredRecords, new ComparatorDNSRecord ()))
         _writeToStreamAndLog (aOS, aRecord.toString ());
 
       if (s_aLogger.isInfoEnabled ())

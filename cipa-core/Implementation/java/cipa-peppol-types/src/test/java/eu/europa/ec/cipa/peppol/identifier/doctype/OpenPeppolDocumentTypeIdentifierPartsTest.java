@@ -43,7 +43,7 @@ import static org.junit.Assert.fail;
 
 import org.junit.Test;
 
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 
 /**
  * Test class for class {@link OpenPeppolDocumentTypeIdentifierParts}.
@@ -59,7 +59,7 @@ public final class OpenPeppolDocumentTypeIdentifierPartsTest {
     assertEquals ("local", aParts.getLocalName ());
     assertEquals ("basic:extended:subtype:extended:ext1:extended:ext2::ver1", aParts.getSubTypeIdentifier ());
     assertEquals ("basic", aParts.getTransactionID ());
-    assertEquals (ContainerHelper.newList ("subtype", "ext1", "ext2"), aParts.getExtensionIDs ());
+    assertEquals (CollectionHelper.newList ("subtype", "ext1", "ext2"), aParts.getExtensionIDs ());
     assertEquals ("ver1", aParts.getVersion ());
   }
 

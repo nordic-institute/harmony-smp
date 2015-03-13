@@ -64,7 +64,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.sml.server.IGenericDataHandler;
@@ -79,223 +79,275 @@ import eu.europa.ec.cipa.sml.server.web.WebRequestClientIdentifier;
 
 /**
  * An implementation of the Manage Participant Identifier web service.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 // FIXME to be re-enabled after 1.1.0 because backward incompatible
 // @SchemaValidation
-@WebService(serviceName = "ManageBusinessIdentifierService", portName = "ManageBusinessIdentifierServicePort", 
-endpointInterface = "org.busdox.servicemetadata.managebusinessidentifierservice._1.ManageBusinessIdentifierServiceSoap", 
-targetNamespace = "http://busdox.org/serviceMetadata/ManageBusinessIdentifierService/1.0/")
-@BindingType(value = javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING)
-@HandlerChain(file = "handlers.xml")
+@WebService (serviceName = "ManageBusinessIdentifierService",
+             portName = "ManageBusinessIdentifierServicePort",
+             endpointInterface = "org.busdox.servicemetadata.managebusinessidentifierservice._1.ManageBusinessIdentifierServiceSoap",
+             targetNamespace = "http://busdox.org/serviceMetadata/ManageBusinessIdentifierService/1.0/")
+@BindingType (value = javax.xml.ws.soap.SOAPBinding.SOAP11HTTP_BINDING)
+@HandlerChain (file = "handlers.xml")
 public class ManageParticipantIdentifierImpl implements ManageBusinessIdentifierServiceSoap {
-	private static final Logger s_aLogger = LoggerFactory.getLogger(ManageParticipantIdentifierImpl.class);
+  private static final Logger s_aLogger = LoggerFactory.getLogger (ManageParticipantIdentifierImpl.class);
 
-	@Resource
-	public WebServiceContext wsContext;
+  @Resource
+  public WebServiceContext wsContext;
 
-	private final ObjectFactory m_aObjFactory = new ObjectFactory();
-	private final IParticipantDataHandler m_aDataHandler;
-	private final IGenericDataHandler m_aReqAuthHdl;
+  private final ObjectFactory m_aObjFactory = new ObjectFactory ();
+  private final IParticipantDataHandler m_aDataHandler;
+  private final IGenericDataHandler m_aReqAuthHdl;
 
-	public ManageParticipantIdentifierImpl() {
-		m_aDataHandler = DataHandlerFactory.getParticipantDataHandler();
-		m_aReqAuthHdl = DataHandlerFactory.getGenericDataHandler();
-	}
+  public ManageParticipantIdentifierImpl () {
+    m_aDataHandler = DataHandlerFactory.getParticipantDataHandler ();
+    m_aReqAuthHdl = DataHandlerFactory.getGenericDataHandler ();
+  }
 
-	private void _handleException(@Nonnull final Throwable e) throws NotFoundFault, UnauthorizedFault, BadRequestFault, InternalErrorFault {
-		if (e instanceof NotFoundException) {
-			final FaultType faultInfo = m_aObjFactory.createFaultType();
-			faultInfo.setFaultMessage(e.getMessage());
-			throw new NotFoundFault("" /*e.getMessage()*/, faultInfo, e);
-		}
-		if (e instanceof UnauthorizedException) {
-			final FaultType faultInfo = m_aObjFactory.createFaultType();
-			faultInfo.setFaultMessage(e.getMessage());
-			throw new UnauthorizedFault("" /*e.getMessage()*/, faultInfo, e);
-		}
-		if (e instanceof UnknownUserException) {
-			final FaultType faultInfo = m_aObjFactory.createFaultType();
-			faultInfo.setFaultMessage(e.getMessage());
-			throw new UnauthorizedFault("" /*e.getMessage()*/, faultInfo, e);
-		}
-		if (e instanceof BadRequestException) {
-			final FaultType faultInfo = m_aObjFactory.createFaultType();
-			faultInfo.setFaultMessage(e.getMessage());
-			throw new BadRequestFault("" /*e.getMessage()*/, faultInfo, e);
-		}
-		if (e instanceof RollbackException) {
-			final FaultType faultInfo = m_aObjFactory.createFaultType();
-			faultInfo.setFaultMessage(e.getMessage());
-			throw new BadRequestFault("" /*e.getMessage()*/, faultInfo, e);
-		}
-		// All others as internal errors
-		final FaultType faultInfo = m_aObjFactory.createFaultType();
-		faultInfo.setFaultMessage(e.getMessage());
-		throw new InternalErrorFault("" /*e.getMessage()*/, faultInfo, e);
-	}
+  private void _handleException (@Nonnull final Throwable e) throws NotFoundFault,
+                                                            UnauthorizedFault,
+                                                            BadRequestFault,
+                                                            InternalErrorFault {
+    if (e instanceof NotFoundException) {
+      final FaultType faultInfo = m_aObjFactory.createFaultType ();
+      faultInfo.setFaultMessage (e.getMessage ());
+      throw new NotFoundFault ("" /* e.getMessage() */, faultInfo, e);
+    }
+    if (e instanceof UnauthorizedException) {
+      final FaultType faultInfo = m_aObjFactory.createFaultType ();
+      faultInfo.setFaultMessage (e.getMessage ());
+      throw new UnauthorizedFault ("" /* e.getMessage() */, faultInfo, e);
+    }
+    if (e instanceof UnknownUserException) {
+      final FaultType faultInfo = m_aObjFactory.createFaultType ();
+      faultInfo.setFaultMessage (e.getMessage ());
+      throw new UnauthorizedFault ("" /* e.getMessage() */, faultInfo, e);
+    }
+    if (e instanceof BadRequestException) {
+      final FaultType faultInfo = m_aObjFactory.createFaultType ();
+      faultInfo.setFaultMessage (e.getMessage ());
+      throw new BadRequestFault ("" /* e.getMessage() */, faultInfo, e);
+    }
+    if (e instanceof RollbackException) {
+      final FaultType faultInfo = m_aObjFactory.createFaultType ();
+      faultInfo.setFaultMessage (e.getMessage ());
+      throw new BadRequestFault ("" /* e.getMessage() */, faultInfo, e);
+    }
+    // All others as internal errors
+    final FaultType faultInfo = m_aObjFactory.createFaultType ();
+    faultInfo.setFaultMessage (e.getMessage ());
+    throw new InternalErrorFault ("" /* e.getMessage() */, faultInfo, e);
+  }
 
-	public void createList(final ParticipantIdentifierPageType createListIn) throws NotFoundFault, UnauthorizedFault, BadRequestFault, InternalErrorFault {
-		try {
-			// Validate input
-			DataValidator.validate(createListIn);
+  public void createList (final ParticipantIdentifierPageType createListIn) throws NotFoundFault,
+                                                                           UnauthorizedFault,
+                                                                           BadRequestFault,
+                                                                           InternalErrorFault {
+    try {
+      // Validate input
+      DataValidator.validate (createListIn);
 
-			// Validate client unique ID
-			final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID(wsContext);
-			m_aReqAuthHdl.verifyExistingUser(sClientUniqueID);
+      // Validate client unique ID
+      final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID (wsContext);
+      m_aReqAuthHdl.verifyExistingUser (sClientUniqueID);
 
-			// Perform action
-			m_aDataHandler.createParticipantIdentifiers(createListIn, sClientUniqueID);
+      // Perform action
+      m_aDataHandler.createParticipantIdentifiers (createListIn, sClientUniqueID);
 
-			s_aLogger.info("Created " + createListIn.getParticipantIdentifier().size() + " participants in " + createListIn.getServiceMetadataPublisherID());
-		} catch (final Throwable t) {
-			_handleException(t);
-		}
-	}
+      s_aLogger.info ("Created " +
+                      createListIn.getParticipantIdentifier ().size () +
+                      " participants in " +
+                      createListIn.getServiceMetadataPublisherID ());
+    }
+    catch (final Throwable t) {
+      _handleException (t);
+    }
+  }
 
-	public void deleteList(@Nonnull @Nonempty final ParticipantIdentifierPageType deleteListIn) throws BadRequestFault, InternalErrorFault, NotFoundFault,
-			UnauthorizedFault {
-		try {
-			if (ContainerHelper.isEmpty(deleteListIn.getParticipantIdentifier()))
-				throw new BadRequestException("At least one participant to be deleted must be provided");
+  public void deleteList (@Nonnull @Nonempty final ParticipantIdentifierPageType deleteListIn) throws BadRequestFault,
+                                                                                              InternalErrorFault,
+                                                                                              NotFoundFault,
+                                                                                              UnauthorizedFault {
+    try {
+      if (CollectionHelper.isEmpty (deleteListIn.getParticipantIdentifier ()))
+        throw new BadRequestException ("At least one participant to be deleted must be provided");
 
-			// Validate input
-			List<ParticipantIdentifierType> temp = new ArrayList<ParticipantIdentifierType>();
-			for (final ParticipantIdentifierType aParticipantIdentifier : deleteListIn.getParticipantIdentifier()) {
-				DataValidator.validate(aParticipantIdentifier);
-				
-				// Check on duplicate UGLY but should work needs refactoring of types and implement equals method!
-				for (ParticipantIdentifierType part : temp) {
-					if (part.getScheme().equals(aParticipantIdentifier.getScheme()) && part.getValue().equals(aParticipantIdentifier.getValue())) {				
-						throw new BadRequestException("You try to delete the same participantIdentifier more then once");
-					}
-				}
-				temp.add(aParticipantIdentifier);			
-			}
+      // Validate input
+      final List <ParticipantIdentifierType> temp = new ArrayList <ParticipantIdentifierType> ();
+      for (final ParticipantIdentifierType aParticipantIdentifier : deleteListIn.getParticipantIdentifier ()) {
+        DataValidator.validate (aParticipantIdentifier);
 
-			// Validate client unique ID
-			final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID(wsContext);
-			m_aReqAuthHdl.verifyExistingUser(sClientUniqueID);
+        // Check on duplicate UGLY but should work needs refactoring of types
+        // and implement equals method!
+        for (final ParticipantIdentifierType part : temp) {
+          if (part.getScheme ().equals (aParticipantIdentifier.getScheme ()) &&
+              part.getValue ().equals (aParticipantIdentifier.getValue ())) {
+            throw new BadRequestException ("You try to delete the same participantIdentifier more then once");
+          }
+        }
+        temp.add (aParticipantIdentifier);
+      }
 
-			// Perform action
-			m_aDataHandler.deleteParticipantIdentifiers(deleteListIn.getParticipantIdentifier(), sClientUniqueID);
+      // Validate client unique ID
+      final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID (wsContext);
+      m_aReqAuthHdl.verifyExistingUser (sClientUniqueID);
 
-			s_aLogger.info("Deleted " + deleteListIn.getParticipantIdentifier().size() + " participants of " + deleteListIn.getServiceMetadataPublisherID());
-		} catch (final Throwable t) {
-			_handleException(t);
-		}
-	}
+      // Perform action
+      m_aDataHandler.deleteParticipantIdentifiers (deleteListIn.getParticipantIdentifier (), sClientUniqueID);
 
-	public void migrate(final MigrationRecordType aMigrationRecord) throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
-		try {
-			// Validate input
-			DataValidator.validate(aMigrationRecord);
+      s_aLogger.info ("Deleted " +
+                      deleteListIn.getParticipantIdentifier ().size () +
+                      " participants of " +
+                      deleteListIn.getServiceMetadataPublisherID ());
+    }
+    catch (final Throwable t) {
+      _handleException (t);
+    }
+  }
 
-			// Validate client unique ID
-			final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID(wsContext);
-			m_aReqAuthHdl.verifyExistingUser(sClientUniqueID);
+  public void migrate (final MigrationRecordType aMigrationRecord) throws NotFoundFault,
+                                                                  UnauthorizedFault,
+                                                                  InternalErrorFault,
+                                                                  BadRequestFault {
+    try {
+      // Validate input
+      DataValidator.validate (aMigrationRecord);
 
-			// Perform action
-			m_aDataHandler.migrate(aMigrationRecord, sClientUniqueID);
+      // Validate client unique ID
+      final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID (wsContext);
+      m_aReqAuthHdl.verifyExistingUser (sClientUniqueID);
 
-			s_aLogger.info("Migrated participant " + IdentifierUtils.getIdentifierURIEncoded(aMigrationRecord.getParticipantIdentifier()) + " to "
-					+ aMigrationRecord.getServiceMetadataPublisherID());
-		} catch (final Throwable t) {
-			_handleException(t);
-		}
-	}
+      // Perform action
+      m_aDataHandler.migrate (aMigrationRecord, sClientUniqueID);
 
-	public void prepareToMigrate(final MigrationRecordType aMigrationRecord) throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
+      s_aLogger.info ("Migrated participant " +
+                      IdentifierUtils.getIdentifierURIEncoded (aMigrationRecord.getParticipantIdentifier ()) +
+                      " to " +
+                      aMigrationRecord.getServiceMetadataPublisherID ());
+    }
+    catch (final Throwable t) {
+      _handleException (t);
+    }
+  }
 
-		try {
-			// Validate input
-			DataValidator.validate(aMigrationRecord);
+  public void prepareToMigrate (final MigrationRecordType aMigrationRecord) throws NotFoundFault,
+                                                                           UnauthorizedFault,
+                                                                           InternalErrorFault,
+                                                                           BadRequestFault {
 
-			// Validate client unique ID
-			final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID(wsContext);
-			m_aReqAuthHdl.verifyExistingUser(sClientUniqueID);
+    try {
+      // Validate input
+      DataValidator.validate (aMigrationRecord);
 
-			// Perform action
-			m_aDataHandler.prepareToMigrate(aMigrationRecord, sClientUniqueID);
+      // Validate client unique ID
+      final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID (wsContext);
+      m_aReqAuthHdl.verifyExistingUser (sClientUniqueID);
 
-			s_aLogger.info("Prepared to migrate participant " + IdentifierUtils.getIdentifierURIEncoded(aMigrationRecord.getParticipantIdentifier()) + " from "
-					+ aMigrationRecord.getServiceMetadataPublisherID());
-		} catch (final Throwable t) {
-			_handleException(t);
-		}
-	}
+      // Perform action
+      m_aDataHandler.prepareToMigrate (aMigrationRecord, sClientUniqueID);
 
-	public void create(final ServiceMetadataPublisherServiceForParticipantType aParticipantToSMP) throws BadRequestFault, InternalErrorFault, NotFoundFault,
-			UnauthorizedFault {
-		final ParticipantIdentifierType aParticipantIdentifier = aParticipantToSMP.getParticipantIdentifier();
-		if (s_aLogger.isDebugEnabled())
-			s_aLogger.debug("Called with identifier: " + aParticipantIdentifier.getScheme() + "::" + aParticipantIdentifier.getValue());
+      s_aLogger.info ("Prepared to migrate participant " +
+                      IdentifierUtils.getIdentifierURIEncoded (aMigrationRecord.getParticipantIdentifier ()) +
+                      " from " +
+                      aMigrationRecord.getServiceMetadataPublisherID ());
+    }
+    catch (final Throwable t) {
+      _handleException (t);
+    }
+  }
 
-		try {
-			// Validate input
-			DataValidator.validate(aParticipantToSMP);
+  public void create (final ServiceMetadataPublisherServiceForParticipantType aParticipantToSMP) throws BadRequestFault,
+                                                                                                InternalErrorFault,
+                                                                                                NotFoundFault,
+                                                                                                UnauthorizedFault {
+    final ParticipantIdentifierType aParticipantIdentifier = aParticipantToSMP.getParticipantIdentifier ();
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Called with identifier: " +
+                       aParticipantIdentifier.getScheme () +
+                       "::" +
+                       aParticipantIdentifier.getValue ());
 
-			// Validate client unique ID
-			final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID(wsContext);
-			m_aReqAuthHdl.verifyExistingUser(sClientUniqueID);
+    try {
+      // Validate input
+      DataValidator.validate (aParticipantToSMP);
 
-			// Perform action
-			final ParticipantIdentifierPageType aJAXBPage = m_aObjFactory.createParticipantIdentifierPageType();
-			aJAXBPage.getParticipantIdentifier().add(aParticipantIdentifier);
-			aJAXBPage.setServiceMetadataPublisherID(aParticipantToSMP.getServiceMetadataPublisherID());
-			m_aDataHandler.createParticipantIdentifiers(aJAXBPage, sClientUniqueID);
+      // Validate client unique ID
+      final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID (wsContext);
+      m_aReqAuthHdl.verifyExistingUser (sClientUniqueID);
 
-			s_aLogger.info("Assigned participant " + IdentifierUtils.getIdentifierURIEncoded(aParticipantIdentifier) + " to "
-					+ aParticipantToSMP.getServiceMetadataPublisherID());
-		} catch (final Throwable t) {
-			t.printStackTrace();
-			_handleException(t);
-		}
-	}
+      // Perform action
+      final ParticipantIdentifierPageType aJAXBPage = m_aObjFactory.createParticipantIdentifierPageType ();
+      aJAXBPage.getParticipantIdentifier ().add (aParticipantIdentifier);
+      aJAXBPage.setServiceMetadataPublisherID (aParticipantToSMP.getServiceMetadataPublisherID ());
+      m_aDataHandler.createParticipantIdentifiers (aJAXBPage, sClientUniqueID);
 
-	public void delete(final ServiceMetadataPublisherServiceForParticipantType aParticipantToSMP) throws BadRequestFault, InternalErrorFault, NotFoundFault,
-			UnauthorizedFault {
-		final ParticipantIdentifierType aParticipantIdentifier = aParticipantToSMP.getParticipantIdentifier();
-		if (s_aLogger.isDebugEnabled())
-			s_aLogger.debug("Called with identifier: " + aParticipantIdentifier.getScheme() + "::" + aParticipantIdentifier.getValue());
+      s_aLogger.info ("Assigned participant " +
+                      IdentifierUtils.getIdentifierURIEncoded (aParticipantIdentifier) +
+                      " to " +
+                      aParticipantToSMP.getServiceMetadataPublisherID ());
+    }
+    catch (final Throwable t) {
+      t.printStackTrace ();
+      _handleException (t);
+    }
+  }
 
-		try {
-			// Validate input
-			DataValidator.validate(aParticipantIdentifier);
+  public void delete (final ServiceMetadataPublisherServiceForParticipantType aParticipantToSMP) throws BadRequestFault,
+                                                                                                InternalErrorFault,
+                                                                                                NotFoundFault,
+                                                                                                UnauthorizedFault {
+    final ParticipantIdentifierType aParticipantIdentifier = aParticipantToSMP.getParticipantIdentifier ();
+    if (s_aLogger.isDebugEnabled ())
+      s_aLogger.debug ("Called with identifier: " +
+                       aParticipantIdentifier.getScheme () +
+                       "::" +
+                       aParticipantIdentifier.getValue ());
 
-			// Validate client unique ID
-			final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID(wsContext);
-			m_aReqAuthHdl.verifyExistingUser(sClientUniqueID);
+    try {
+      // Validate input
+      DataValidator.validate (aParticipantIdentifier);
 
-			// Perform action
-			m_aDataHandler.deleteParticipantIdentifiers(ContainerHelper.newList(aParticipantIdentifier), sClientUniqueID);
+      // Validate client unique ID
+      final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID (wsContext);
+      m_aReqAuthHdl.verifyExistingUser (sClientUniqueID);
 
-			s_aLogger.info("Deleted participant " + IdentifierUtils.getIdentifierURIEncoded(aParticipantIdentifier));
-		} catch (final Throwable t) {
-			_handleException(t);
-		}
-	}
+      // Perform action
+      m_aDataHandler.deleteParticipantIdentifiers (CollectionHelper.newList (aParticipantIdentifier), sClientUniqueID);
 
-	public ParticipantIdentifierPageType list(final PageRequestType messagePart) throws BadRequestFault, InternalErrorFault, NotFoundFault, UnauthorizedFault {
+      s_aLogger.info ("Deleted participant " + IdentifierUtils.getIdentifierURIEncoded (aParticipantIdentifier));
+    }
+    catch (final Throwable t) {
+      _handleException (t);
+    }
+  }
 
-		try {
-			// Validate input
-			DataValidator.validate(messagePart);
+  public ParticipantIdentifierPageType list (final PageRequestType messagePart) throws BadRequestFault,
+                                                                               InternalErrorFault,
+                                                                               NotFoundFault,
+                                                                               UnauthorizedFault {
 
-			// Validate client unique ID
-			final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID(wsContext);
-			m_aReqAuthHdl.verifyExistingUser(sClientUniqueID);
+    try {
+      // Validate input
+      DataValidator.validate (messagePart);
 
-			// Perform action
-			final ParticipantIdentifierPageType ret = m_aDataHandler.listParticipantIdentifiers(messagePart, sClientUniqueID);
-			s_aLogger.info("Retrieved " + ret.getParticipantIdentifier().size() + " participants for " + messagePart.getServiceMetadataPublisherID());
-			return ret;
-		} catch (final Throwable t) {
-			_handleException(t);
-			// Never reached!
-			assert false;
-			return null;
-		}
-	}
+      // Validate client unique ID
+      final String sClientUniqueID = WebRequestClientIdentifier.getClientUniqueID (wsContext);
+      m_aReqAuthHdl.verifyExistingUser (sClientUniqueID);
+
+      // Perform action
+      final ParticipantIdentifierPageType ret = m_aDataHandler.listParticipantIdentifiers (messagePart, sClientUniqueID);
+      s_aLogger.info ("Retrieved " +
+                      ret.getParticipantIdentifier ().size () +
+                      " participants for " +
+                      messagePart.getServiceMetadataPublisherID ());
+      return ret;
+    }
+    catch (final Throwable t) {
+      _handleException (t);
+      // Never reached!
+      assert false;
+      return null;
+    }
+  }
 }

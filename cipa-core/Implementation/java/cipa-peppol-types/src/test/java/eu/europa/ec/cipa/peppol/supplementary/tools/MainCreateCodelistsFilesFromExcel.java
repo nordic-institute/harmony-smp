@@ -59,7 +59,7 @@ import org.w3c.dom.Document;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.charset.CCharset;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.io.IReadableResource;
 import com.helger.commons.io.file.FileUtils;
 import com.helger.commons.io.file.SimpleFileIO;
@@ -391,7 +391,7 @@ public final class MainCreateCodelistsFilesFromExcel {
         }
 
         // Assemble extensions
-        final JInvocation jExtensions = s_aCodeModel.ref (ContainerHelper.class).staticInvoke ("newList");
+        final JInvocation jExtensions = s_aCodeModel.ref (CollectionHelper.class).staticInvoke ("newList");
         for (final String sExtensionID : aDocIDParts.getExtensionIDs ())
           jExtensions.arg (JExpr.lit (sExtensionID));
 
@@ -698,7 +698,7 @@ public final class MainCreateCodelistsFilesFromExcel {
                         "getDocumentTypeIdentifiers");
       m.annotate (Nonnull.class);
       m.annotate (ReturnsMutableCopy.class);
-      m.body ()._return (s_aCodeModel.ref (ContainerHelper.class).staticInvoke ("newList").arg (fDocIDs));
+      m.body ()._return (s_aCodeModel.ref (CollectionHelper.class).staticInvoke ("newList").arg (fDocIDs));
 
       // public SimpleProcessIdentifier getAsProcessIdentifier ()
       m = jEnum.method (JMod.PUBLIC, SimpleProcessIdentifier.class, "getAsProcessIdentifier");

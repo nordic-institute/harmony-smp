@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.commons.io.resource.ClassPathResource;
 import com.helger.commons.io.resource.FileSystemResource;
 import com.helger.commons.io.streams.StreamUtils;
@@ -70,7 +70,7 @@ import com.helger.commons.string.ToStringGenerator;
  * present, the default config file (which is also in the SCM) is accessed by
  * the name<code>config.properties</code>.<br>
  * Additionally you can create a new instance with a custom file path.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -100,7 +100,7 @@ public class ConfigFile {
 
   /**
    * Constructor for explicitly specifying a file path to read.
-   * 
+   *
    * @param aConfigPaths
    *        The array of paths to the config files to be read. Must be
    *        classpath-relative. The first file that could be read will be taken
@@ -117,14 +117,14 @@ public class ConfigFile {
 
     if (!bRead) {
       // No config file found at all
-      s_aLogger.warn ("Failed to resolve config file paths: " + ContainerHelper.newList (aConfigPaths).toString ());
+      s_aLogger.warn ("Failed to resolve config file paths: " + CollectionHelper.newList (aConfigPaths).toString ());
     }
     m_bRead = bRead;
   }
 
-    public ConfigFile (final String configFilePath) {
-        this (configFilePath, DEFAULT_PRIVATE_CONFIG_PROPERTIES, DEFAULT_CONFIG_PROPERTIES);
-    }
+  public ConfigFile (final String configFilePath) {
+    this (configFilePath, DEFAULT_PRIVATE_CONFIG_PROPERTIES, DEFAULT_CONFIG_PROPERTIES);
+  }
 
   @Nonnull
   private ESuccess _readConfigFile (@Nonnull final String sPath) {
@@ -173,7 +173,7 @@ public class ConfigFile {
 
   /**
    * Get the string from the configuration files
-   * 
+   *
    * @param sKey
    *        The key to search
    * @return <code>null</code> if no such value is in the configuration file.
@@ -185,7 +185,7 @@ public class ConfigFile {
 
   /**
    * Get the string from the configuration files
-   * 
+   *
    * @param sKey
    *        The key to search
    * @param sDefault

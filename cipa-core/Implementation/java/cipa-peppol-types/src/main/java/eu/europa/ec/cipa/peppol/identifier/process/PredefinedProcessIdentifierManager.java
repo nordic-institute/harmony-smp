@@ -49,7 +49,7 @@ import javax.annotation.concurrent.Immutable;
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.annotations.PresentForCodeCoverage;
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 
@@ -83,7 +83,7 @@ public final class PredefinedProcessIdentifierManager {
   @Nonempty
   @ReturnsMutableCopy
   public static Collection <IPeppolPredefinedProcessIdentifier> getAllProcessIdentifiers () {
-    return ContainerHelper.newList (s_aCodes.values ());
+    return CollectionHelper.newList (s_aCodes.values ());
   }
 
   /**
@@ -93,7 +93,7 @@ public final class PredefinedProcessIdentifierManager {
   @Nonempty
   @ReturnsMutableCopy
   public static Set <String> getAllProcessIdentifierIDs () {
-    return ContainerHelper.newSet (s_aCodes.keySet ());
+    return CollectionHelper.newSet (s_aCodes.keySet ());
   }
 
   /**

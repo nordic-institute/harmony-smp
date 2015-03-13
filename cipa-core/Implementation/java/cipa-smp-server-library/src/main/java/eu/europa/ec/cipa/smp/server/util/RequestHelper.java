@@ -43,7 +43,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.ws.rs.core.HttpHeaders;
 
-import com.helger.commons.collections.ContainerHelper;
+import com.helger.commons.collections.CollectionHelper;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import com.helger.web.http.basicauth.HTTPBasicAuth;
 
@@ -52,7 +52,7 @@ import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
 /**
  * This class is used for retrieving the HTTP BASIC AUTH header from the HTTP
  * Authorization Header.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
@@ -62,12 +62,12 @@ public final class RequestHelper {
   @Nonnull
   public static BasicAuthClientCredentials getAuth (@Nonnull final HttpHeaders headers) throws UnauthorizedException {
     final List <String> aHeaders = headers.getRequestHeader (HttpHeaders.AUTHORIZATION);
-    if (ContainerHelper.isEmpty (aHeaders))
+    if (CollectionHelper.isEmpty (aHeaders))
       throw new UnauthorizedException ("Missing required HTTP header '" +
                                        HttpHeaders.AUTHORIZATION +
                                        "' for user authentication");
 
-    final String sAuthHeader = ContainerHelper.getFirstElement (aHeaders);
+    final String sAuthHeader = CollectionHelper.getFirstElement (aHeaders);
     return HTTPBasicAuth.getBasicAuthClientCredentials (sAuthHeader);
   }
 }
