@@ -44,7 +44,7 @@ PROFILES:
 
  - weblogic
  - distribute
- - jboss
+ - JBoss
 
 USAGE:
 clean package -Pweblogic -> create a war for weblogic on TEST environment
@@ -381,10 +381,10 @@ clean install -Pdistribute -> create a distribution packaged with tomcat
             </build>
         </profile>
         <profile>
-            <id>jboss</id>
+            <id>JBoss</id>
             <properties>
                 <prefix.jndi>java:/jdbc/</prefix.jndi>
-                <domibus.persistence.unit>domibusPU</domibus.persistence.unit>
+                <domibus.persistence.unit>cipaeDeliveryDs</domibus.persistence.unit>
                 <finalName>domibus-jboss</finalName>
                 <exclude.application.server.specific>**/config*.properties</exclude.application.server.specific>
             </properties>
@@ -412,6 +412,84 @@ clean install -Pdistribute -> create a distribution packaged with tomcat
             </dependencies>
             <build>
                 <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>hibernate3-maven-plugin</artifactId>
+                        <version>3.0</version>
+                        <configuration>
+                            <hibernatetool>
+                                <classpath>
+                                    <path location="${project.build.directory}/test-classes/"/>
+                                </classpath>
+                            </hibernatetool>
+                        </configuration>
+                        <dependencies>
+                            <!--We are using the hibernate3 plugin and thus need the old hibernate3-->
+                            <!--dependencies-->
+                            <dependency>
+                                <groupId>org.hibernate.javax.persistence</groupId>
+                                <artifactId>hibernate-jpa-2.0-api</artifactId>
+                                <version>1.0.0.Final</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.hibernate</groupId>
+                                <artifactId>hibernate-tools</artifactId>
+                                <version>3.2.4.GA</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.hibernate</groupId>
+                                <artifactId>hibernate-entitymanager</artifactId>
+                                <version>3.6.10.Final</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>org.hibernate</groupId>
+                                <artifactId>hibernate-core</artifactId>
+                                <version>3.6.10.Final</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>log4j</groupId>
+                                <artifactId>log4j</artifactId>
+                                <version>1.2.14</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>commons-logging</groupId>
+                                <artifactId>commons-logging</artifactId>
+                                <version>1.1.1</version>
+                            </dependency>
+                        </dependencies>
+                        <executions>
+                            <execution>
+                                <id>generate-mysql-sql</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <hibernatetool>
+                                        <jpaconfiguration persistenceunit="generateMySqlPU"/>
+                                        <hbm2ddl create="true" export="false" drop="false"
+                                                 outputfilename="domibus_mysql_initial.sql" format="true"
+                                                 console="false"/>
+                                    </hibernatetool>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>generate-oracle-sql</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <hibernatetool>
+                                        <jpaconfiguration persistenceunit="generateOraclePU"/>
+                                        <hbm2ddl create="true" export="false" drop="false"
+                                                 outputfilename="domibus_oracle_initial.sql" format="true"
+                                                 console="false"/>
+                                    </hibernatetool>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-deploy-plugin</artifactId>
