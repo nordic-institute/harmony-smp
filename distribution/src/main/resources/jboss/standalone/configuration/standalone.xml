@@ -145,17 +145,9 @@
         <subsystem xmlns="urn:jboss:domain:configadmin:1.0"/>
         <subsystem xmlns="urn:jboss:domain:datasources:1.0">
             <datasources>
-                <datasource jndi-name="java:jboss/datasources/ExampleDS" pool-name="ExampleDS" enabled="true" use-java-context="true">
-                    <connection-url>jdbc:h2:mem:test;DB_CLOSE_DELAY=-1</connection-url>
-                    <driver>h2</driver>
-                    <security>
-                        <user-name>sa</user-name>
-                        <password>sa</password>
-                    </security>
-                </datasource>
                 <xa-datasource jta="true" jndi-name="java:/jdbc/eTrustExDs" pool-name="eTrustExDs" enabled="true" use-ccm="false">
                     <xa-datasource-property name="URL">
-                        jdbc:mysql://localhost/edelivery
+                        jdbc:mysql://localhost/etrustex
                     </xa-datasource-property>
                     <driver>com.mysql</driver>
                     <xa-pool>
@@ -167,8 +159,8 @@
                         <wrap-xa-resource>false</wrap-xa-resource>
                     </xa-pool>
                     <security>
-                        <user-name>edelivery</user-name>
-                        <password>edelivery</password>
+                        <user-name>trustex_user</user-name>
+                        <password>trustex_passw</password>
                     </security>
                     <validation>
                         <validate-on-match>false</validate-on-match>
