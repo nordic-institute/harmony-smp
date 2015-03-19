@@ -9,6 +9,8 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -84,47 +86,59 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 		}
 		
 		String path = properties.getProperty(MENDELSON_INSTALLATION_PATH);
+
+		String fileName = new File(documentFilePath).getName();
 		
 		//first we compose the path where we are going to copy the file to
 		if (path.endsWith("/"))
 			path = path.substring(0, path.length()-1);
-		path += "/messages/" + receiverId + "/outbox/" + senderId;
-		
+
+		path += "/messages/" + receiverId;
+		/* Workaround to allow the AP to send a message to itself, ie the recipient is also the sender. Mendelson doesn't support this so we directly copy the message into the inbox folder */
+		boolean senderEqualsReceiver = senderId.equalsIgnoreCase(receiverId);
+		if (senderEqualsReceiver) {
+			path += "/inbox/";
+		} else {
+			path += "/outbox/";
+		}
+
+		path += senderId;
+
 		try
-		{			
+		{
 			if (newPartner)
 			{
-				for (int i=0 ; i<10 ; i++)   //in case we are conected but not yet loggedin, wait a maximum of 10 seconds
+				for (int i=0 ; i<10 ; i++)   //in case we are connected but not yet logged in, wait a maximum of 10 seconds
 				{
 					if (!callback.loggedIn)
 						try	{ Thread.sleep(1000); }	catch(InterruptedException e) { return "Error: thread interrumpted"; }
 					else
 						break;
 				}
-				
+
 				ClientServerResponse resp = callback.getBaseClient().sendSync(new PartnerConfigurationChanged(), 2000); //timeout 2 seconds. It always waits until the timeout limit, so we have to make these milliseconds as low as possible.
 				if (resp!=null && resp.getException()!=null)
 					return "Error communicating to Mendelson endpoint: couldn't notify the creation of a new partner. Please retry again later";
-				
+
 				File file_aux = new File(path);
 				for (int i=0 ; i<10 ; i++) //we already sent the newPartner signal but it might take a while, wait maximum 10 seconds for the folder creation
 				{
 					if (file_aux.exists())
 						break;
 					else
-						try	{ Thread.sleep(1000); 
-						}	catch(InterruptedException e) { 
+						try	{ Thread.sleep(1000);
+						}	catch(InterruptedException e) {
 							s_aLogger.error("Error: thread interrumpted while waiting for mendelson partner update",e);
-							return "Error: thread interrumpted"; 
-						
+							return "Error: thread interrumpted";
+
 						}
 				}
 			}
-			
+
 			//put the file on the right folder for Mendelson to send it
 			path += "/" + documentName;
 		    SignalObject signalObject = new SignalObject();
-		    
+
 		    synchronized(synchronizedObject) //giving the file for Mendelson to send and populating waitingMessages form an atomic operation
 		    {
 			 //   boolean success = tempFile.renameTo(mendelsonFile);
@@ -147,24 +161,49 @@ public class AS2EndpointSendInterfaceMendelson implements IAS2EndpointSendInterf
 //			    	return "Error: Couldn't move the temp file " + documentFilePath + " into Mendelson folder " + path + " to be sent.";
 			    waitingMessages.put(documentName, signalObject);
 		    }
-		    synchronized(signalObject)
-		    {
-		    	while(signalObject.getResponseValue()==0)
-		        {
-		    		try
-		    		{
-		    			signalObject.wait();
-		            }
-		    		catch(InterruptedException e)
-		    		{}
-		        }
-		    }
-		    if (signalObject.getResponseValue()==SignalObject.RETURN_SUCCESS)
-		    	return null;
-		    else{
-		    	s_aLogger.error("Mendelson AS2 endpoint wasn't able to send the message");
-		    	return "Mendelson AS2 endpoint wasn't able to send the message";}
-		    
+
+			if (!senderEqualsReceiver) {
+				synchronized (signalObject) {
+					while (signalObject.getResponseValue() == 0) {
+						try {
+							signalObject.wait();
+						} catch (InterruptedException e) {
+						}
+					}
+				}
+				if (signalObject.getResponseValue() == SignalObject.RETURN_SUCCESS)
+					return null;
+				else {
+					s_aLogger.error("Mendelson AS2 endpoint wasn't able to send the message");
+					return "Mendelson AS2 endpoint wasn't able to send the message";
+				}
+			} else {
+				// rename the file to "simulate" the mendelson genuine processing
+				String newFileName = "mendelson_opensource_AS2_" + fileName + "_0@" + senderId + "_" + receiverId;
+				File renameToFile = new File(new File(path).getParent() + File.separator + newFileName);
+
+				boolean renamed = new File(path).renameTo(renameToFile);
+				if (!renamed) {
+					s_aLogger.warn("Couldn't rename the file");
+				}
+
+				//copy to the "sent" directory
+				try {
+					Path source = Paths.get(renameToFile.toURI());
+					File sentFolderFile = new File(new File(path).getParentFile().getParentFile().getParentFile().getAbsolutePath() + File.separator + "sent" + File.separator + receiverId + File.separator + new SimpleDateFormat("yyyyMMdd").format(new Date()));
+					if (!sentFolderFile.exists()) {
+						sentFolderFile.mkdirs();
+					}
+					Path target = Paths.get(sentFolderFile.getAbsolutePath() + File.separator + newFileName + ".payload");
+					Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+				} catch(final Exception exc) {
+					s_aLogger.warn("Couldn't copy the file to the 'sent' folder");
+				}
+
+				s_aLogger.info("The sender and the receiver are from/to the same Access Point. The message has been directly moved to " + renameToFile.getAbsolutePath() + " and wasn't sent to Mendelson");
+				return null;
+			}
+
 		}
 		catch (Exception e)
 		{

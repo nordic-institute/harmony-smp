@@ -213,6 +213,7 @@ public class SendServlet extends HttpServlet {
 				partnerInterface.configureLocalStationIfNeeded();
 				String auxiliaryMessageName = resultMap.get("tempFilePath");
 				auxiliaryMessageName = auxiliaryMessageName.substring(auxiliaryMessageName.lastIndexOf('/') + 1, auxiliaryMessageName.length());
+
 				result = sendInterface.send(AS2From, AS2To, auxiliaryMessageName, resultMap.get("tempFilePath"), endpoint);
 			} else if (protocol.equals(PROTOCOL_EBMS) && !properties.getProperty(PropertiesUtil.EBMS_ENDPOINT_PREFERENCE_ORDER).equals("0")) {
 				X509Certificate receiverCert = getReceiverCertificate(endpoint);
@@ -429,13 +430,12 @@ public class SendServlet extends HttpServlet {
 		return request;
 	}
 
-	private Map<String, String> treatSBDHrequest(InputStream input) throws Exception {
+	protected Map<String, String> treatSBDHrequest(InputStream input) throws Exception {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
+		saxParser.getXMLReader().setFeature("http://xml.org/sax/features/namespaces", true);
 		SBDHHandler handler = new SBDHHandler();
-
 		saxParser.parse(input, handler);
-
 		return handler.getResultMap();
 	}
 

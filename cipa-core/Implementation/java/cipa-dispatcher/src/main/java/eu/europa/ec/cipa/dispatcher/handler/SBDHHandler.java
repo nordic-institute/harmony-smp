@@ -1,5 +1,6 @@
 package eu.europa.ec.cipa.dispatcher.handler;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.HashMap;
@@ -39,6 +40,14 @@ public class SBDHHandler extends DefaultHandler {
 	private static final String businessScopeInstanceIdentifierPosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>BusinessScope>Scope>InstanceIdentifier";
 	private static final String documentTypePosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>DocumentIdentification>Type";
 
+	/** True if the SBDH is enabled */
+	private boolean validateSBDH = true;
+
+	public SBDHHandler() {
+		super();
+		validateSBDH = Boolean.valueOf(PropertiesUtil.getProperties().getProperty("sbdh.validation.enabled", "true"));
+	}
+
 	public Map<String, String> getResultMap() {
 		return this.resultMap;
 	}
@@ -49,15 +58,20 @@ public class SBDHHandler extends DefaultHandler {
 			// Min + (int)(Math.random() * ((Max - Min) + 1)) , Min = 100000000, Max = 999999999
 			Properties properties = PropertiesUtil.getProperties();
 			String tempFilePath = properties.getProperty(PropertiesUtil.TEMP_FOLDER_PATH);
-			if (!tempFilePath.endsWith("/") && !tempFilePath.endsWith("\\"))
-				tempFilePath += "/";
-			tempFilePath += randomInt;
+
+			if (tempFilePath == null || "".equals(tempFilePath)) {
+				tempFilePath = File.createTempFile("tmp", "sbdh").getAbsolutePath();
+			} else {
+				if (!tempFilePath.endsWith("/") && !tempFilePath.endsWith("\\"))
+					tempFilePath += "/";
+				tempFilePath += randomInt;
+			}
 			file = new FileOutputStream(tempFilePath);
 			stream = new PrintStream(file);
 			file2 = new FileOutputStream(tempFilePath + "_payload");
 			stream2 = new PrintStream(file2);
 
-			resultMap = new HashMap<String, String>();
+			resultMap = new HashMap<>();
 			resultMap.put("tempFilePath", tempFilePath);
 			resultMap.put("tempFile2Path", tempFilePath + "_payload");
 		} catch (Exception e) {
@@ -86,7 +100,7 @@ public class SBDHHandler extends DefaultHandler {
 		String tag = localName != null && !localName.isEmpty() ? localName : qName;
 
 		if (inPayload) {
-			if (FirstOfPayload && !tag.equalsIgnoreCase(documentType))
+			if (FirstOfPayload && !tag.equalsIgnoreCase(documentType) && validateSBDH)
 				throw new SAXException("The document Type is not equal to the payload");
 			else
 				FirstOfPayload = false;
@@ -158,7 +172,7 @@ public class SBDHHandler extends DefaultHandler {
 				resultMap.put("processIdentifier", new String(ch, start, length));
 			if (scopeType.equalsIgnoreCase("CORRELATIONID"))
 				resultMap.put("correlationId", new String(ch, start, length));
-		} else if (position.equalsIgnoreCase(headerVersionPosition) && !new String(ch, start, length).equalsIgnoreCase("1.0")) {
+		} else if (position.equalsIgnoreCase(headerVersionPosition) && !new String(ch, start, length).equalsIgnoreCase("1.0") && validateSBDH) {
 			throw new SAXException("HeaderVersion not valid");
 		} else if (position.equalsIgnoreCase(documentTypePosition)) {
 			documentType = new String(ch, start, length);
