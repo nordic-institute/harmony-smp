@@ -87,7 +87,7 @@
             </activation>
             <properties>
                 <!-- the name of the assembly file -->
-                <name>as4-no_smp</name>
+                <assemblyName>as4-no_smp</assemblyName>
                 <!-- true if the AS2 component must not be packed -->
                 <skipAS2>true</skipAS2>
                 <!-- true if the AS4 component must not be packed -->
@@ -96,8 +96,8 @@
                 <skipSMP>true</skipSMP>
             </properties>
             <modules>
-                <!--<module>../../openetrustex/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>-->
-                <!--<module>../domibus</module>-->
+                <module>../../openetrustex/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
+                <module>../domibus</module>
             </modules>
         </profile>
         <profile>
@@ -107,7 +107,7 @@
             </activation>
             <properties>
                 <!-- the name of the assembly file -->
-                <name>complete-jboss</name>
+                <assemblyName>complete-jboss</assemblyName>
                 <!-- true if the AS2 component must not be packed -->
                 <skipAS2>false</skipAS2>
                 <!-- true if the AS4 component must not be packed -->
@@ -169,7 +169,7 @@
                 <configuration>
                     <encoding>UTF-8</encoding>
                     <descriptors>
-                        <descriptor>src/main/assembly/${name}.xml</descriptor>
+                        <descriptor>src/main/assembly/${assemblyName}.xml</descriptor>
                     </descriptors>
                 </configuration>
                 <executions>
@@ -376,13 +376,13 @@
                                 <!--Sending the artifact to the virtual box -->
                                 <echo>Sending the artifact to the virtual box...</echo>
                                 <scp trust="true"
-                                     file="target/cipa-edelivery-distribution-${project.version}-${name}.zip"
+                                     file="target/cipa-edelivery-distribution-${project.version}-${assemblyName}.zip"
                                      port="22" todir="adminuser:adminuser@192.168.56.11:"/>
 
                                 <!-- Extracting zip on the virtual box -->
                                 <echo>Extracting zip on the virtual box...</echo>
                                 <echo file="target/script.sh" append="false">
-                                    mv ~/cipa-edelivery-distribution-${project.version}-${name}.zip ~/cipa-edelivery-distribution.zip
+                                    mv ~/cipa-edelivery-distribution-${project.version}-${assemblyName}.zip ~/cipa-edelivery-distribution.zip
                                     unzip cipa-edelivery-distribution.zip -d ~/cipa-edelivery-distribution
                                     chmod 755 -R ~/cipa-edelivery-distribution
                                     rm ~/cipa-edelivery-distribution.zip
