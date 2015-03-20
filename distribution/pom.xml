@@ -1,13 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This project can be used to build a release version of the eDelivery components.
- To deploy the "sender" artifact, execute the following command :
-  - mvn clean deploy
+ To install the "sender" artifact, execute the following command :
+  - mvn clean install
  To deploy the "receiver" artifact, it is required to have the "vboxmanage" tool in the system environment path. Then execute the following commands :
   - mvn clean install -Dtype=receiver
-  - mvn antrun:run -N -P<profile>
+  - mvn antrun:run -N
   - mvn deploy:deploy-file -DgroupId=eu.europa.ec.cipa -DartifactId=edelivery-virtualbox -Dversion=X.Y.Z -Dpackaging=ova -Dfile=target/edelivery-virtualbox.ova -DrepositoryId=joinup-releases -Durl=https://joinup.ec.europa.eu/nexus/content/repositories/releases/
 
   Of course, you need to replace the version X.Y.Z and the repository in the above command with appropriate values.
+
+
+  To build a version for the BRIS project (no AS2, no SMP), run the following command lines :
+  - mvn clean install -DskipTests=true -Pas4-no_smp,LOCAL-JBOSS,JBoss,mysql,openetrustex
+  - mvn clean install -DskipTests=true -Pas4-no_smp,LOCAL-JBOSS,JBoss,mysql,openetrustex -Dtype=receiver
+  - mvn antrun:run -N -Pas4-no_smp,LOCAL-JBOSS,JBoss,mysql,openetrustex
+
  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -96,8 +103,8 @@
                 <skipSMP>true</skipSMP>
             </properties>
             <modules>
-                <module>../../openetrustex/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
-                <module>../domibus</module>
+                <!--<module>../../openetrustex/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>-->
+                <!--<module>../domibus</module>-->
             </modules>
         </profile>
         <profile>
@@ -215,6 +222,26 @@
                 </dependencies>
                 <executions>
                     <execution>
+                        <id>change heap size</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <echo>Changing default jvm options</echo>
+                                <replace
+                                        file="${project.build.directory}/cargo/installs/jboss-as-dist-${server.version}/jboss-as-${server.version}/bin/standalone.conf"
+                                        token='JAVA_OPTS="-Xms64m -Xmx512m'
+                                        value='JAVA_OPTS="-Xms128m -Xmx1024m' />
+                                <replace
+                                        file="${project.build.directory}/cargo/installs/jboss-as-dist-${server.version}/jboss-as-${server.version}/bin/standalone.conf.bat"
+                                        token='set "JAVA_OPTS=-Xms64M -Xmx512M'
+                                        value='set "JAVA_OPTS=-Xms128M -Xmx1024M' />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
                         <id>mergeSql-smp</id>
                         <phase>package</phase>
                         <configuration>
@@ -313,10 +340,10 @@
                             <target>
                                 <!-- Download the virtual box -->
                                 <echo>Downloading the virtual box...</echo>
-                                <get src="https://joinup.ec.europa.eu/nexus/service/local/repositories/releases/content/eu/europa/ec/cipa/edelivery-virtualbox-template/${virtualbox-template.version}/edelivery-virtualbox-template-${virtualbox-template.version}.ova"
-                                     dest="target/edelivery-virtualbox-template-${virtualbox-template.version}.ova"
-                                     quiet="true"
-                                     usetimestamp="true"/>
+                                <!--<get src="https://joinup.ec.europa.eu/nexus/service/local/repositories/releases/content/eu/europa/ec/cipa/edelivery-virtualbox-template/${virtualbox-template.version}/edelivery-virtualbox-template-${virtualbox-template.version}.ova"-->
+                                     <!--dest="target/edelivery-virtualbox-template-${virtualbox-template.version}.ova"-->
+                                     <!--quiet="true"-->
+                                     <!--usetimestamp="true"/>-->
                                 <!-- If there is a previous installations, then delete it -->
                                 <echo>Removing a previous instance of the virtual box if any...</echo>
                                 <exec executable="VBoxManage.exe"
@@ -354,7 +381,7 @@
 
                                 <!-- Execute MySQL installation script -->
                                 <echo>Executing MySQL installation script...</echo>
-                                <sql driver="com.mysql.jdbc.Driver" url="jdbc:mysql://192.168.56.11:3306/edelivery"
+                                <sql driver="com.mysql.jdbc.Driver" url="jdbc:mysql://192.168.56.11:3306"
                                      userid="root" password="adminuser">
                                     <![CDATA[
                                    drop SCHEMA if exists edelivery;
@@ -373,6 +400,16 @@
                                      userid="root" password="adminuser" src="target/sql-scripts/create-mysql.sql">
                                 </sql>
 
+                                <echo>Updating configuration...</echo>
+                                <sql driver="com.mysql.jdbc.Driver" url="jdbc:mysql://192.168.56.11:3306/etrustex"
+                                     userid="root" password="adminuser">
+                                    <![CDATA[
+                                      update etrustex.etr_tb_metadata set MD_VALUE='/home/adminuser/cipa-edelivery-distribution/filestores/etrustex' where MD_TYPE='FILE_STORE_PATH';
+                                      GRANT ALL PRIVILEGES ON etrustex.* TO 'trustex_user'@'%' IDENTIFIED BY 'trustex_passw';
+                                      flush privileges;
+                                    ]]>
+                                </sql>
+
                                 <!--Sending the artifact to the virtual box -->
                                 <echo>Sending the artifact to the virtual box...</echo>
                                 <scp trust="true"
@@ -389,6 +426,14 @@
                                 </echo>
                                 <sshexec host="192.168.56.11" trust="true" username="adminuser" password="adminuser"
                                          commandResource="target/script.sh"/>
+
+                                <echo>Optimizing the size of the virtual box...</echo>
+                                <echo file="target/compact.sh" append="false">
+                                    dd if=/dev/zero of=~/bigemptyfile bs=4096k
+                                    rm -rf ~/bigemptyfile
+                                </echo>
+                                <sshexec host="192.168.56.11" trust="true" username="adminuser" password="adminuser" failonerror="false"
+                                         commandResource="target/compact.sh"/>
 
                                 <!-- Stop the virtual box -->
                                 <echo>Stopping the virtual box...</echo>
