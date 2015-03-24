@@ -340,10 +340,10 @@
                             <target>
                                 <!-- Download the virtual box -->
                                 <echo>Downloading the virtual box...</echo>
-                                <!--<get src="https://joinup.ec.europa.eu/nexus/service/local/repositories/releases/content/eu/europa/ec/cipa/edelivery-virtualbox-template/${virtualbox-template.version}/edelivery-virtualbox-template-${virtualbox-template.version}.ova"-->
-                                     <!--dest="target/edelivery-virtualbox-template-${virtualbox-template.version}.ova"-->
-                                     <!--quiet="true"-->
-                                     <!--usetimestamp="true"/>-->
+                                <get src="https://joinup.ec.europa.eu/nexus/service/local/repositories/releases/content/eu/europa/ec/cipa/edelivery-virtualbox-template/${virtualbox-template.version}/edelivery-virtualbox-template-${virtualbox-template.version}.ova"
+                                     dest="target/edelivery-virtualbox-template-${virtualbox-template.version}.ova"
+                                     quiet="true"
+                                     usetimestamp="true"/>
                                 <!-- If there is a previous installations, then delete it -->
                                 <echo>Removing a previous instance of the virtual box if any...</echo>
                                 <exec executable="VBoxManage.exe"
