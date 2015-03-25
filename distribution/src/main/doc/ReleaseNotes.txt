@@ -1,0 +1,28 @@
+
+Release Notes - CIPA e-Delivery - Version e-Delivery v2.3.0
+
+
+
+
+
+** Sub-task
+    * [EDELIVERY-361] - An eDelivery access point can't send an AS2 message to itself
+    * [EDELIVERY-362] - Add a property in the dispatcher to disable the validation of the SBDH
+
+
+
+
+
+
+
+
+** Bug
+    * [EDELIVERY-339] - Performance issues with DNS link from within SML
+    * [EDELIVERY-348] - The dispatcher doesn't process namespaces in the SBDH
+    * [EDELIVERY-363] - Deleting a ServiceMetadataPublisherID with a lot of ParticipantIdentifier results in an error
+
+
+
+** Change Request
+    * [EDELIVERY-351] - Add a property in the dispatcher to disable the validation of the SBDH
+    * [EDELIVERY-353] - An eDelivery access point can't send an AS2 message to itself
