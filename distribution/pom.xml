@@ -11,9 +11,9 @@
 
 
   To build a version for the BRIS project (no AS2, no SMP), run the following command lines :
-  - mvn clean install -DskipTests=true -Pas4-no_smp,LOCAL-JBOSS,JBoss,mysql,openetrustex
-  - mvn clean install -DskipTests=true -Pas4-no_smp,LOCAL-JBOSS,JBoss,mysql,openetrustex -Dtype=receiver
-  - mvn antrun:run -N -Pas4-no_smp,LOCAL-JBOSS,JBoss,mysql,openetrustex
+  - mvn clean install -DskipTests=true -Pbris,LOCAL-JBOSS,JBoss,mysql,openetrustex
+  - mvn clean install -DskipTests=true -Pbris,LOCAL-JBOSS,JBoss,mysql,openetrustex -Dtype=receiver
+  - mvn antrun:run -N -Pbris,LOCAL-JBOSS,JBoss,mysql,openetrustex
 
  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -88,13 +88,13 @@
     <profiles>
         <profile>
             <!-- profile to be used for BRIS pilot -->
-            <id>as4-no_smp</id>
+            <id>bris</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
                 <!-- the name of the assembly file -->
-                <assemblyName>as4-no_smp</assemblyName>
+                <assemblyName>bris</assemblyName>
                 <!-- true if the AS2 component must not be packed -->
                 <skipAS2>true</skipAS2>
                 <!-- true if the AS4 component must not be packed -->
