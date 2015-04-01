@@ -124,7 +124,8 @@
                 <skipSMP>false</skipSMP>
             </properties>
             <modules>
-                <module>../../openetrustex/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
+                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
+                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web</module>
                 <module>../cipa-core/Implementation/java/cipa-parent-pom</module>
                 <module>../cipa-core/Implementation/java/cipa-commons-busdox</module>
                 <module>../cipa-core/Implementation/java/cipa-peppol-types</module>
