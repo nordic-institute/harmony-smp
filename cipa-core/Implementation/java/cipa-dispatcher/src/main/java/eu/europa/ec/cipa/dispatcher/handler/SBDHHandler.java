@@ -99,11 +99,20 @@ public class SBDHHandler extends DefaultHandler {
 	public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
 		String tag = localName != null && !localName.isEmpty() ? localName : qName;
 
+		// fix EDELIVERY-365: The dispatcher modifies the namespaces and make documents invalid XML files
+		String docTypeWithNS = documentType;
+
+		if (tag.contains(":")) {
+			docTypeWithNS = tag.split(":")[0] + ":" + documentType;
+		}
+
 		if (inPayload) {
-			if (FirstOfPayload && !tag.equalsIgnoreCase(documentType) && validateSBDH)
+			if (FirstOfPayload && !tag.equalsIgnoreCase(docTypeWithNS) && validateSBDH) {
 				throw new SAXException("The document Type is not equal to the payload");
-			else
+			}
+			else {
 				FirstOfPayload = false;
+			}
 		}
 
 		stream.print("<" + tag);

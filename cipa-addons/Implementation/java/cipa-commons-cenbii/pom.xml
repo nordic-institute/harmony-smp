@@ -4,11 +4,11 @@
   <parent>
     <groupId>eu.europa.ec.cipa</groupId>
     <artifactId>cipa-parent-pom</artifactId>
-    <version>2.3.1-SNAPSHOT</version>
+    <version>2.3.2-SNAPSHOT</version>
     <relativePath>../../../../cipa-core/Implementation/java/cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-commons-cenbii</artifactId>
-  <version>2.3.1-SNAPSHOT</version>
+  <version>2.3.2-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>cipa-commons-cenbii</name>
 
