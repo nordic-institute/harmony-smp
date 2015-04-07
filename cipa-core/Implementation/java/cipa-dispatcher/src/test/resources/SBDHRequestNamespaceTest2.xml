@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <StandardBusinessDocument xmlns="http://www.unece.org/cefact/namespaces/StandardBusinessDocumentHeader">
     <StandardBusinessDocumentHeader>
         <HeaderVersion>1.0</HeaderVersion>
@@ -21,7 +22,7 @@
             </Scope>
             <Scope>
                 <Type>PROCESSID</Type>
-                <InstanceIdentifier>urn:www.cenbii.eu:profile:bii04:ver1.0</InstanceIdentifier>
+                <InstanceIdentifier>urn:www.cenbii.eu:profile:bii46:ver1.0</InstanceIdentifier>
             </Scope>
         </BusinessScope>
     </StandardBusinessDocumentHeader>

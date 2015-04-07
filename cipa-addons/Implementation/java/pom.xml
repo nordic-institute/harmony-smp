@@ -5,7 +5,7 @@
   <artifactId>cipa-addons-builder</artifactId>
   <packaging>pom</packaging>
   <name>CIPA AddOns Builder POM</name>
-  <version>2.3.1-SNAPSHOT</version>
+  <version>2.3.1</version>
 
   <modules>
     <module>cipa-sml-client-console</module>

@@ -433,7 +433,6 @@ public class SendServlet extends HttpServlet {
 	protected Map<String, String> treatSBDHrequest(InputStream input) throws Exception {
 		SAXParserFactory factory = SAXParserFactory.newInstance();
 		SAXParser saxParser = factory.newSAXParser();
-		saxParser.getXMLReader().setFeature("http://xml.org/sax/features/namespaces", true);
 		SBDHHandler handler = new SBDHHandler();
 		saxParser.parse(input, handler);
 		return handler.getResultMap();

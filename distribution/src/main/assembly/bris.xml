@@ -258,7 +258,12 @@
             <filtered>false</filtered>
         </file>
         <file>
-            <source>../../openetrustex/004 Development/001 Implementation/e-TrustEx/etrustex-ear/target/etrustex.ear</source>
+            <source>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-ear/target/etrustex.ear</source>
+            <outputDirectory>/standalone/deployments</outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target/etrustex-admin-web.war</source>
             <outputDirectory>/standalone/deployments</outputDirectory>
             <filtered>false</filtered>
         </file>
@@ -273,7 +278,7 @@
             <filtered>false</filtered>
         </file>
         <file>
-            <source>src/main/doc/release notes_2.2.4.pdf</source>
+            <source>src/main/doc/ReleaseNotes.txt</source>
             <outputDirectory>/</outputDirectory>
             <filtered>false</filtered>
         </file>

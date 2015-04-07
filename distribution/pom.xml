@@ -23,7 +23,7 @@
     <artifactId>cipa-edelivery-distribution</artifactId>
     <packaging>pom</packaging>
     <name>cipa-edelivery-distribution</name>
-    <version>2.3.1-SNAPSHOT</version>
+    <version>2.3.1</version>
 
     <!-- Some properties are preset for setting up a sender and a receiver. The configuration is set with the "type" property -->
     <properties>
@@ -103,7 +103,8 @@
                 <skipSMP>true</skipSMP>
             </properties>
             <modules>
-                <module>../../openetrustex/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
+                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
+                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web</module>
                 <module>../domibus</module>
             </modules>
         </profile>
@@ -123,7 +124,8 @@
                 <skipSMP>false</skipSMP>
             </properties>
             <modules>
-                <module>../../openetrustex/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
+                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
+                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web</module>
                 <module>../cipa-core/Implementation/java/cipa-parent-pom</module>
                 <module>../cipa-core/Implementation/java/cipa-commons-busdox</module>
                 <module>../cipa-core/Implementation/java/cipa-peppol-types</module>
