@@ -40,6 +40,8 @@ public class SBDHHandler extends DefaultHandler {
 	private static final String businessScopeInstanceIdentifierPosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>BusinessScope>Scope>InstanceIdentifier";
 	private static final String documentTypePosition = ">StandardBusinessDocument>StandardBusinessDocumentHeader>DocumentIdentification>Type";
 
+	private String SBDH_NAMESPACE = "";
+
 	/** True if the SBDH is enabled */
 	private boolean validateSBDH = true;
 
@@ -124,6 +126,9 @@ public class SBDHHandler extends DefaultHandler {
 		if (attributes != null) {
 			String attName;
 			for (int i = 0; i < attributes.getLength(); i++) {
+				if ("http://www.unece.org/cefact/namespaces/StandardBusinessDocumentHeader".equals(attributes.getValue(i)) && attributes.getLocalName(i).contains(":")) {
+					SBDH_NAMESPACE = attributes.getLocalName(i).split(":")[1] + ":";
+				}
 				attName = !StringUtils.isEmpty(attributes.getLocalName(i)) ? attributes.getLocalName(i) : attributes.getQName(i);
 				stream.print(' ');
 				stream.print(attName);
@@ -164,26 +169,26 @@ public class SBDHHandler extends DefaultHandler {
 
 	public void characters(char ch[], int start, int length) throws SAXException {
 
-		if (position.equalsIgnoreCase(senderIdentifierPosition)) {
+		if (position.equalsIgnoreCase(getSenderIdentifierPosition())) {
 			resultMap.put("senderIdentifier", new String(ch, start, length));
 			resultMap.put("senderScheme", scheme);
-		} else if (position.equalsIgnoreCase(receiverIdentifierPosition)) {
+		} else if (position.equalsIgnoreCase(getReceiverIdentifierPosition())) {
 			resultMap.put("receiverIdentifier", new String(ch, start, length));
 			resultMap.put("receiverScheme", scheme);
-		} else if (position.equalsIgnoreCase(instanceIdentifierPosition)) {
+		} else if (position.equalsIgnoreCase(getInstanceIdentifierPosition())) {
 			resultMap.put("instanceIdentifier", new String(ch, start, length));
-		} else if (position.equalsIgnoreCase(businessScopeTypePosition)) {
+		} else if (position.equalsIgnoreCase(getBusinessScopeTypePosition())) {
 			scopeType = new String(ch, start, length);
-		} else if (position.equalsIgnoreCase(businessScopeInstanceIdentifierPosition)) {
+		} else if (position.equalsIgnoreCase(getBusinessScopeInstanceIdentifierPosition())) {
 			if (scopeType.equalsIgnoreCase("DOCUMENTID"))
 				resultMap.put("documentIdentifier", new String(ch, start, length));
 			if (scopeType.equalsIgnoreCase("PROCESSID"))
 				resultMap.put("processIdentifier", new String(ch, start, length));
 			if (scopeType.equalsIgnoreCase("CORRELATIONID"))
 				resultMap.put("correlationId", new String(ch, start, length));
-		} else if (position.equalsIgnoreCase(headerVersionPosition) && !new String(ch, start, length).equalsIgnoreCase("1.0") && validateSBDH) {
+		} else if (position.equalsIgnoreCase(getHeaderVersionPosition()) && !new String(ch, start, length).equalsIgnoreCase("1.0") && validateSBDH) {
 			throw new SAXException("HeaderVersion not valid");
-		} else if (position.equalsIgnoreCase(documentTypePosition)) {
+		} else if (position.equalsIgnoreCase(getDocumentTypePosition())) {
 			documentType = new String(ch, start, length);
 		}
 
@@ -194,6 +199,34 @@ public class SBDHHandler extends DefaultHandler {
 			if (inPayload)
 				stream2.print(ch[start + offset]);
 		}
+	}
+
+	private String getHeaderVersionPosition() {
+		return headerVersionPosition.replaceAll(">", ">" + SBDH_NAMESPACE);
+	}
+
+	private String getSenderIdentifierPosition() {
+		return senderIdentifierPosition.replaceAll(">", ">" + SBDH_NAMESPACE);
+	}
+
+	private String getReceiverIdentifierPosition() {
+		return receiverIdentifierPosition.replaceAll(">", ">" + SBDH_NAMESPACE);
+	}
+
+	private String getInstanceIdentifierPosition() {
+		return instanceIdentifierPosition.replaceAll(">", ">" + SBDH_NAMESPACE);
+	}
+
+	private String getBusinessScopeTypePosition() {
+		return businessScopeTypePosition.replaceAll(">", ">" + SBDH_NAMESPACE);
+	}
+
+	private String getBusinessScopeInstanceIdentifierPosition() {
+		return businessScopeInstanceIdentifierPosition.replaceAll(">", ">" + SBDH_NAMESPACE);
+	}
+
+	private String getDocumentTypePosition() {
+		return documentTypePosition.replaceAll(">", ">" + SBDH_NAMESPACE);
 	}
 
 }
