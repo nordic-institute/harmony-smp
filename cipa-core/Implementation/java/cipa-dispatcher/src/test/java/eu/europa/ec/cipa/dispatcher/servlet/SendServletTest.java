@@ -48,7 +48,18 @@ public class SendServletTest {
     private void testTreatSBDH(String xmlFile) throws Exception {
         InputStream input = Thread.currentThread().getContextClassLoader().getResourceAsStream(xmlFile);
         Map<String, String> map = new SendServlet().treatSBDHrequest(input);
-        Assert.assertTrue(!map.isEmpty());
+        Assert.assertTrue(map.size() > 2);
+        File tmpFolder = new File(PropertiesUtil.getProperties().getProperty(PropertiesUtil.TEMP_FOLDER_PATH));
+        String[] files = tmpFolder.list();
+        Assert.assertTrue(files.length == 2);
+
+        for (String file : files) {
+            if (!file.endsWith("payload")) {
+                File originalFile = new File(Thread.currentThread().getContextClassLoader().getResource(xmlFile).getFile());
+                File generatedFile = new File(tmpFolder + File.separator + file);
+                XMLUnit.compareXML(new FileReader(originalFile), new FileReader(generatedFile));
+            }
+        }
         File tmpFolder = new File(PropertiesUtil.getProperties().getProperty(PropertiesUtil.TEMP_FOLDER_PATH));
         String[] files = tmpFolder.list();
         Assert.assertTrue(files.length == 2);
