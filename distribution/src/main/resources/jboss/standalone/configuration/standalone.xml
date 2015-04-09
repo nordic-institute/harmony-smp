@@ -271,11 +271,11 @@
                 <initializers security="on" transactions="spec"/>
             </orb>
         </subsystem>
-        <subsystem xmlns="urn:jboss:domain:jaxrs:1.0"/>
         <subsystem xmlns="urn:jboss:domain:jaxr:1.1">
             <connection-factory jndi-name="java:jboss/jaxr/ConnectionFactory"/>
             <properties/>
         </subsystem>
+        <subsystem xmlns="urn:jboss:domain:jaxrs:1.0"/>
         <subsystem xmlns="urn:jboss:domain:jca:1.1">
             <archive-validation enabled="true" fail-on-error="true" fail-on-warn="false"/>
             <bean-validation enabled="true"/>
@@ -382,6 +382,36 @@
                         <address-full-policy>BLOCK</address-full-policy>
                         <message-counter-history-day-limit>10</message-counter-history-day-limit>
                     </address-setting>
+                    <address-setting match="jms.queue.ETRUSTEX_TO_EDELIVERY_AS4Queue">
+                        <dead-letter-address>jms.queue.errorQueue</dead-letter-address>
+                        <expiry-address>jms.queue.errorQueue</expiry-address>
+                        <redelivery-delay>30000</redelivery-delay>
+                        <max-delivery-attempts>10</max-delivery-attempts>
+                        <max-size-bytes>10485760</max-size-bytes>
+                        <address-full-policy>BLOCK</address-full-policy>
+                        <message-counter-history-day-limit>10</message-counter-history-day-limit>
+                        <redistribution-delay>1000</redistribution-delay>
+                    </address-setting>
+                    <address-setting match="jms.queue.AS4_TO_EDELIVERY_AS4Queue">
+                        <dead-letter-address>jms.queue.errorQueue</dead-letter-address>
+                        <expiry-address>jms.queue.errorQueue</expiry-address>
+                        <redelivery-delay>30000</redelivery-delay>
+                        <max-delivery-attempts>10</max-delivery-attempts>
+                        <max-size-bytes>10485760</max-size-bytes>
+                        <address-full-policy>BLOCK</address-full-policy>
+                        <message-counter-history-day-limit>10</message-counter-history-day-limit>
+                        <redistribution-delay>1000</redistribution-delay>
+                    </address-setting>
+                    <address-setting match="jms.queue.documentQueue">
+                        <dead-letter-address>jms.queue.errorQueue</dead-letter-address>
+                        <expiry-address>jms.queue.errorQueue</expiry-address>
+                        <redelivery-delay>30000</redelivery-delay>
+                        <max-delivery-attempts>10</max-delivery-attempts>
+                        <max-size-bytes>10485760</max-size-bytes>
+                        <address-full-policy>BLOCK</address-full-policy>
+                        <message-counter-history-day-limit>10</message-counter-history-day-limit>
+                        <redistribution-delay>1000</redistribution-delay>
+                    </address-setting>
                 </address-settings>
 
                 <jms-connection-factories>
@@ -444,6 +474,21 @@
                         <entry name="java:jboss/exported/jms/queue/errorQueue"/>
                         <durable>true</durable>
                     </jms-queue>
+                    <jms-queue name="ETRUSTEX_TO_EDELIVERY_AS4Queue">
+                        <entry name="queue/ETRUSTEX_TO_EDELIVERY_AS4Queue"/>
+                        <entry name="java:jboss/exported/jms/queue/ETRUSTEX_TO_EDELIVERY_AS4Queue"/>
+                        <durable>true</durable>
+                    </jms-queue>
+                    <jms-queue name="AS4_TO_EDELIVERY_AS4Queue">
+                        <entry name="queue/AS4_TO_EDELIVERY_AS4Queue"/>
+                        <entry name="java:jboss/exported/jms/queue/AS4_TO_EDELIVERY_AS4Queue"/>
+                        <durable>true</durable>
+                    </jms-queue>
+                    <jms-queue name="documentQueue">
+                        <entry name="queue/documentQueue"/>
+                        <entry name="java:jboss/exported/jms/queue/documentQueue"/>
+                        <durable>true</durable>
+                    </jms-queue>
                 </jms-destinations>
             </hornetq-server>
         </subsystem>
@@ -475,8 +520,8 @@
                     <authentication>
                         <login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule" flag="required">
                             <module-option name="dsJndiName" value="java:/jdbc/eTrustExDs"/>
-                            <module-option name="principalsQuery" value="SELECT CRED_PASSW FROM etr_tb_credentials where CRED_USER=?"/>
-                            <module-option name="rolesQuery" value="SELECT 'BUNE', 'Roles' FROM etr_tb_credentials WHERE etr_tb_credentials.CRED_USER = ?"/>
+                            <module-option name="principalsQuery" value="SELECT CRED_PASSW FROM etrustex.etr_tb_credentials where CRED_USER=?"/>
+                            <module-option name="rolesQuery" value="SELECT 'BUNE', 'Roles' FROM etrustex.etr_tb_credentials WHERE etrustex.etr_tb_credentials.CRED_USER = ?"/>
                             <module-option name="realm" value="trustexRealm"/>
                             <module-option name="password-stacking" value="useFirstPass"/>
                             <module-option name="hashAlgorithm" value="SHA-1"/>
@@ -488,7 +533,7 @@
                     <authentication>
                         <login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule" flag="required">
                             <module-option name="dsJndiName" value="java:/jdbc/eTrustExDs"/>
-                            <module-option name="principalsQuery" value="SELECT CUS_PASSW FROM cpa_tb_user where CUS_NAME=?"/>
+                            <module-option name="principalsQuery" value="SELECT CUS_PASSW FROM etrustex.cpa_tb_user where CUS_NAME=?"/>
                             <module-option name="hashAlgorithm" value="SHA-1"/>
                             <module-option name="hashEncoding" value="base64"/>
                         </login-module>
@@ -508,8 +553,8 @@
                     <authentication>
                         <login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule" flag="required">
                             <module-option name="dsJndiName" value="java:/jdbc/eTrustExDs"/>
-                            <module-option name="principalsQuery" value="SELECT CRED_PASSW FROM etr_tb_credentials where CRED_USER=?"/>
-                            <module-option name="rolesQuery" value="SELECT 'BUNE', 'Roles' FROM etr_tb_credentials WHERE etr_tb_credentials.CRED_USER = ?"/>
+                            <module-option name="principalsQuery" value="SELECT CRED_PASSW FROM etrustex.etr_tb_credentials where CRED_USER=?"/>
+                            <module-option name="rolesQuery" value="SELECT 'BUNE', 'Roles' FROM etrustex.etr_tb_credentials WHERE etrustex.etr_tb_credentials.CRED_USER = ?"/>
                             <module-option name="realm" value="trustexRealm"/>
                             <module-option name="password-stacking" value="useFirstPass"/>
                             <module-option name="hashAlgorithm" value="SHA-1"/>

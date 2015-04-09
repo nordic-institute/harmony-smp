@@ -302,13 +302,13 @@
                                 <concat destfile="${project.build.directory}/sql-scripts/create-mysql.sql"
                                         append="true" fixlastline="yes">
                                     <filelist
-                                            dir="${project.basedir}/../../openetrustex/006 Deployment/Database Scripts"
+                                            dir="${project.basedir}/../..//ETRUSTEX/001 e-TrustEx/006 Deployment/Database Scripts/001 Environment Creation/002 MySQL"
                                             files="01-CreateDBAndTables.sql,02-UsersAndPrivileges.sql,03-InsertReferenceData.sql,04-PlatformConfig.sql"/>
                                 </concat>
                                 <concat destfile="${project.build.directory}/sql-scripts/create-oracle.sql"
                                         append="true">
                                     <filelist
-                                            dir="${project.basedir}/../../openetrustex/006 Deployment/Database Scripts"
+                                            dir="${project.basedir}/../..//ETRUSTEX/001 e-TrustEx/006 Deployment/Database Scripts/001 Environment Creation/001 Oracle"
                                             files="01-CreateDBAndTables.sql,02-UsersAndPrivileges.sql,03-InsertReferenceData.sql,04-PlatformConfig.sql"/>
                                 </concat>
                             </target>
@@ -324,7 +324,7 @@
                             <target>
                                 <echo>Copying the module.zip file from the eTrustex distribution...
                                 </echo>
-                                <copy file="${project.basedir}/../../openetrustex/006 Deployment/JBoss/modules.zip"
+                                <copy file="${project.basedir}/../../ETRUSTEX/001 e-TrustEx/006 Deployment/JBoss/modules.zip"
                                       tofile="${project.build.directory}/modules.zip"/>
                                 <echo>Unzipping the module.zip...</echo>
                                 <unzip src="${project.build.directory}/modules.zip" dest="${project.build.directory}"
