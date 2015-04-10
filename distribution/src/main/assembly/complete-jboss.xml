@@ -284,6 +284,11 @@
             <filtered>false</filtered>
         </file>
         <file>
+            <source>src/main/webapp/browser.war</source>
+            <outputDirectory>/standalone/deployments</outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
             <source>src/main/resources/passwd</source>
             <outputDirectory>bin</outputDirectory>
             <filtered>false</filtered>

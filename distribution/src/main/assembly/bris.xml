@@ -268,6 +268,11 @@
             <filtered>false</filtered>
         </file>
         <file>
+            <source>src/main/webapp/browser.war</source>
+            <outputDirectory>/standalone/deployments</outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
             <source>src/test/AS2-AS4-soapui-project.xml</source>
             <outputDirectory>test</outputDirectory>
             <filtered>false</filtered>

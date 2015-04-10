@@ -305,11 +305,19 @@
                                             dir="${project.basedir}/../..//ETRUSTEX/001 e-TrustEx/006 Deployment/Database Scripts/001 Environment Creation/002 MySQL"
                                             files="01-CreateDBAndTables.sql,02-UsersAndPrivileges.sql,03-InsertReferenceData.sql,04-PlatformConfig.sql"/>
                                 </concat>
+                                <concat destfile="${project.build.directory}/sql-scripts/create-mysql.sql"
+                                        append="true" fixlastline="yes">
+                                    update etr_tb_metadata set MD_VALUE='../filestores/etrustex' where MD_TYPE='FILE_STORE_PATH';${line.separator}COMMIT;
+                                </concat>
                                 <concat destfile="${project.build.directory}/sql-scripts/create-oracle.sql"
-                                        append="true">
+                                        append="true" fixlastline="yes">
                                     <filelist
                                             dir="${project.basedir}/../..//ETRUSTEX/001 e-TrustEx/006 Deployment/Database Scripts/001 Environment Creation/001 Oracle"
                                             files="01-CreateDBAndTables.sql,02-UsersAndPrivileges.sql,03-InsertReferenceData.sql,04-PlatformConfig.sql"/>
+                                </concat>
+                                <concat destfile="${project.build.directory}/sql-scripts/create-oracle.sql"
+                                        append="true" fixlastline="yes">
+                                        update etr_tb_metadata set MD_VALUE='../filestores/etrustex' where MD_TYPE='FILE_STORE_PATH';${line.separator}COMMIT;
                                 </concat>
                             </target>
                         </configuration>
@@ -406,7 +414,6 @@
                                 <sql driver="com.mysql.jdbc.Driver" url="jdbc:mysql://192.168.56.11:3306/etrustex"
                                      userid="root" password="adminuser">
                                     <![CDATA[
-                                      update etrustex.etr_tb_metadata set MD_VALUE='/home/adminuser/cipa-edelivery-distribution/filestores/etrustex' where MD_TYPE='FILE_STORE_PATH';
                                       GRANT ALL PRIVILEGES ON etrustex.* TO 'trustex_user'@'%' IDENTIFIED BY 'trustex_passw';
                                       flush privileges;
                                     ]]>
