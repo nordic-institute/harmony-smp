@@ -131,6 +131,8 @@
             </includes>
             <excludes>
                 <exclude>modules/**</exclude>
+                <exclude>domain/configuration/mgmt-users.properties</exclude>
+                <exclude>standalone/configuration/mgmt-users.properties</exclude>
                 <exclude>standalone/configuration/standalone.xml</exclude>
             </excludes>
             <outputDirectory>/</outputDirectory>
@@ -158,6 +160,9 @@
         </fileSet>
         <fileSet>
             <directory>src/main/resources/keystore</directory>
+            <excludes>
+                <exclude>certificates.p12</exclude>
+            </excludes>
             <outputDirectory>/keystore/</outputDirectory>
             <fileMode>0444</fileMode>
             <directoryMode>0555</directoryMode>
@@ -276,7 +281,7 @@
             <filtered>false</filtered>
         </file>
         <file>
-            <source>src/main/doc/ReleaseNotes.txt</source>
+            <source>src/main/doc/ReleaseNotes-2.3.1.txt</source>
             <outputDirectory>/</outputDirectory>
             <filtered>false</filtered>
         </file>

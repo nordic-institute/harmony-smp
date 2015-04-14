@@ -103,9 +103,9 @@
                 <skipSMP>true</skipSMP>
             </properties>
             <modules>
-                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
-                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web</module>
-                <module>../domibus</module>
+                <!--<module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>-->
+                <!--<module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web</module>-->
+                <!--<module>../domibus</module>-->
             </modules>
         </profile>
         <profile>
@@ -359,25 +359,7 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
-                    <execution>
-                        <id>addJBossUser</id>
-                        <phase>package</phase>
-                        <configuration>
-                            <target>
-                                <echo>Adding a Management user for JBoss
-                                </echo>
-                                <exec executable="target/cargo/installs/jboss-as-dist-7.1.1.Final/jboss-as-7.1.1.Final/bin/add-user.bat"
-                                      spawn="false">
-                                    <arg value="--silent=true"/>
-                                    <arg value="manager"/>
-                                    <arg value="manage"/>
-                                </exec>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
+
                     <execution>
                         <id>default-cli</id>
                         <phase>none</phase>
