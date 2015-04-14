@@ -27,6 +27,11 @@
 	</mirrors>
 	<servers>
 		<server>
+			<id>webgate-digit</id>
+			<username>feriaad</username>
+			<password>{788Ld8tT0dUH+IzZMvy6SbUdFcYCnwd5nSO8yf1PFvQ=}</password>
+		</server>
+		<server>
 		  <id>joinup-releases</id>
 		  <username>feriaad</username>
 		  <password>{788Ld8tT0dUH+IzZMvy6SbUdFcYCnwd5nSO8yf1PFvQ=}</password>
