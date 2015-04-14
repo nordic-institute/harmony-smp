@@ -131,8 +131,6 @@
             </includes>
             <excludes>
                 <exclude>modules/**</exclude>
-                <exclude>domain/configuration/mgmt-users.properties</exclude>
-                <exclude>standalone/configuration/mgmt-users.properties</exclude>
                 <exclude>standalone/configuration/standalone.xml</exclude>
             </excludes>
             <outputDirectory>/</outputDirectory>
@@ -248,17 +246,12 @@
     </fileSets>
     <files>
         <file>
-            <source>src/main/resources/jboss/domain/configuration/mgmt-users.properties</source>
-            <outputDirectory>standalone/configuration</outputDirectory>
-            <filtered>false</filtered>
-        </file>
-        <file>
             <source>../domibus/modules/domibus-distribution/target/domibus-jboss.war</source>
             <outputDirectory>/standalone/deployments</outputDirectory>
             <filtered>false</filtered>
         </file>
         <file>
-            <source>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-ear/target/etrustex.ear</source>
+            <source>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/connector-ear/target/connector.ear</source>
             <outputDirectory>/standalone/deployments</outputDirectory>
             <filtered>false</filtered>
         </file>

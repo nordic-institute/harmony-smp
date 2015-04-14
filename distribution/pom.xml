@@ -27,7 +27,7 @@
 
     <!-- Some properties are preset for setting up a sender and a receiver. The configuration is set with the "type" property -->
     <properties>
-        <virtualbox-template.version>1.1.0</virtualbox-template.version>
+        <virtualbox-template.version>1.2.0</virtualbox-template.version>
         <!-- can be either "receiver" or "sender" -->
         <type>sender</type>
         <server.version>7.1.1.Final</server.version>
@@ -337,6 +337,41 @@
                                 <echo>Unzipping the module.zip...</echo>
                                 <unzip src="${project.build.directory}/modules.zip" dest="${project.build.directory}"
                                        overwrite="true"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>customizeEtrustexForEdelivery</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <echo>Modifying the context path of CIPA Admin
+                                </echo>
+                                <zip destfile="${project.basedir}/../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target/etrustex-admin-web.war" update="true">
+                                    <zipfileset dir="src/main/resources/connector-admin" includes="jboss-web.xml" fullpath="WEB-INF/jboss-web.xml"/>
+                                </zip>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>addJBossUser</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <echo>Adding a Management user for JBoss
+                                </echo>
+                                <exec executable="target/cargo/installs/jboss-as-dist-7.1.1.Final/jboss-as-7.1.1.Final/bin/add-user.bat"
+                                      spawn="false">
+                                    <arg value="--silent=true"/>
+                                    <arg value="manager"/>
+                                    <arg value="manage"/>
+                                </exec>
                             </target>
                         </configuration>
                         <goals>

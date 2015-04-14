@@ -101,34 +101,34 @@
                 <level name="ERROR"/>
             </logger>
             <logger category="org.jcp.xml">
-                <level name="TRACE"/>
+                <level name="INFO"/>
             </logger>
             <logger category="com.sun.xml.wss">
-                <level name="TRACE"/>
+                <level name="INFO"/>
             </logger>
             <logger category="org.jcp.xml.dsig.internal">
-                <level name="TRACE"/>
+                <level name="INFO"/>
             </logger>
             <logger category="org.jboss.security">
-                <level name="DEBUG"/>
+                <level name="INFO"/>
             </logger>
             <logger category="com.sun.org.apache.xml.internal.security">
-                <level name="TRACE"/>
+                <level name="INFO"/>
             </logger>
             <logger category="eu.europa.ec.cipa">
-                <level name="TRACE"/>
+                <level name="INFO"/>
                 <handlers>
                     <handler name="ETRUSTEX"/>
                 </handlers>
             </logger>
             <logger category="org.hibernate">
-                <level name="DEBUG"/>
+                <level name="INFO"/>
                 <handlers>
                     <handler name="ETRUSTEX"/>
                 </handlers>
             </logger>
             <logger category="org.springframework.integration">
-                <level name="DEBUG"/>
+                <level name="INFO"/>
                 <handlers>
                     <handler name="ETRUSTEX"/>
                 </handlers>
