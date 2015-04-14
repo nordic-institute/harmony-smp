@@ -103,9 +103,9 @@
                 <skipSMP>true</skipSMP>
             </properties>
             <modules>
-                <!--<module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>-->
-                <!--<module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web</module>-->
-                <!--<module>../domibus</module>-->
+                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
+                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web</module>
+                <module>../domibus</module>
             </modules>
         </profile>
         <profile>
