@@ -42,7 +42,7 @@
             </security-realm>
             <security-realm name="ApplicationRealm">
                 <authentication>
-                    <properties path="application-users.properties" relative-to="jboss.server.config.dir"/>
+                    <jaas name="trustexRealm"/>
                 </authentication>
             </security-realm>
         </security-realms>
@@ -312,7 +312,7 @@
         <subsystem xmlns="urn:jboss:domain:messaging:1.1">
             <hornetq-server>
                 <persistence-enabled>true</persistence-enabled>
-                <security-domain>trustexJMSRealm</security-domain>
+                <security-domain>trustexRealm</security-domain>
                 <security-enabled>true</security-enabled>
                 <journal-file-size>102400</journal-file-size>
                 <journal-min-files>2</journal-min-files>
@@ -336,10 +336,10 @@
 
                 <security-settings>
                     <security-setting match="#">
-                        <permission type="send" roles="JMSConsumer guest"/>
-                        <permission type="consume" roles="JMSConsumer guest"/>
-                        <permission type="createNonDurableQueue" roles="guest"/>
-                        <permission type="deleteNonDurableQueue" roles="guest"/>
+                        <permission type="send" roles="SUP CUST ISS BUNE BDE"/>
+                        <permission type="consume" roles="SUP CUST ISS BUNE BDE"/>
+                        <permission type="createNonDurableQueue" roles="SUP CUST ISS BUNE BDE"/>
+                        <permission type="deleteNonDurableQueue" roles="SUP CUST ISS BUNE BDE"/>
                     </security-setting>
                 </security-settings>
 
@@ -518,12 +518,10 @@
             <security-domains>
                 <security-domain name="trustexRealm" cache-type="default">
                     <authentication>
-                        <login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule" flag="required">
+                        <login-module code="Database" flag="required">
                             <module-option name="dsJndiName" value="java:/jdbc/eTrustExDs"/>
                             <module-option name="principalsQuery" value="SELECT CRED_PASSW FROM etrustex.etr_tb_credentials where CRED_USER=?"/>
-                            <module-option name="rolesQuery" value="SELECT 'BUNE', 'Roles' FROM etrustex.etr_tb_credentials WHERE etrustex.etr_tb_credentials.CRED_USER = ?"/>
-                            <module-option name="realm" value="trustexRealm"/>
-                            <module-option name="password-stacking" value="useFirstPass"/>
+                            <module-option name="rolesQuery" value="SELECT ROL_CODE, 'Roles' from ETR_TB_ROLE, ETR_TB_PARTY_ROLE,ETR_TB_PARTY, ETR_TB_CREDENTIALS WHERE ETR_TB_CREDENTIALS.CRED_ID = ETR_TB_PARTY.PTY_CRED_ID AND ETR_TB_PARTY_ROLE.PAR_PTY_ID = ETR_TB_PARTY.PTY_ID AND ETR_TB_PARTY_ROLE.PAR_ROL_ID=ETR_TB_ROLE.ROL_ID AND ETR_TB_CREDENTIALS.CRED_USER = ?"/>
                             <module-option name="hashAlgorithm" value="SHA-1"/>
                             <module-option name="hashEncoding" value="base64"/>
                         </login-module>
@@ -539,22 +537,12 @@
                         </login-module>
                     </authentication>
                 </security-domain>
-                <security-domain name="trustexJMSRealm" cache-type="default">
-                    <authentication>
-                        <login-module code="RealmUsersRoles" flag="optional">
-                            <module-option name="usersProperties" value="${jboss.server.config.dir}/jms-users.properties"/>
-                            <module-option name="rolesProperties" value="${jboss.server.config.dir}/jms-roles.properties"/>
-                            <module-option name="realm" value="trustexJMSRealm"/>
-                            <module-option name="password-stacking" value="useFirstPass"/>
-                        </login-module>
-                    </authentication>
-                </security-domain>
                 <security-domain name="other" cache-type="default">
                     <authentication>
-                        <login-module code="org.jboss.security.auth.spi.DatabaseServerLoginModule" flag="required">
+                        <login-module code="Database" flag="required">
                             <module-option name="dsJndiName" value="java:/jdbc/eTrustExDs"/>
                             <module-option name="principalsQuery" value="SELECT CRED_PASSW FROM etrustex.etr_tb_credentials where CRED_USER=?"/>
-                            <module-option name="rolesQuery" value="SELECT 'BUNE', 'Roles' FROM etrustex.etr_tb_credentials WHERE etrustex.etr_tb_credentials.CRED_USER = ?"/>
+                            <module-option name="rolesQuery" value="SELECT ROL_CODE, 'Roles' from ETR_TB_ROLE, ETR_TB_PARTY_ROLE,ETR_TB_PARTY, ETR_TB_CREDENTIALS WHERE ETR_TB_CREDENTIALS.CRED_ID = ETR_TB_PARTY.PTY_CRED_ID AND ETR_TB_PARTY_ROLE.PAR_PTY_ID = ETR_TB_PARTY.PTY_ID AND ETR_TB_PARTY_ROLE.PAR_ROL_ID=ETR_TB_ROLE.ROL_ID AND ETR_TB_CREDENTIALS.CRED_USER = ?"/>
                             <module-option name="realm" value="trustexRealm"/>
                             <module-option name="password-stacking" value="useFirstPass"/>
                             <module-option name="hashAlgorithm" value="SHA-1"/>
