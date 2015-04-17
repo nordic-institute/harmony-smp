@@ -318,7 +318,11 @@
                 <journal-min-files>2</journal-min-files>
 
                 <connectors>
-                    <netty-connector name="netty" socket-binding="messaging"/>
+                    <connector name="netty">
+                        <factory-class>org.hornetq.core.remoting.impl.netty.NettyConnectorFactory</factory-class>
+                        <param key="host" value="192.168.56.11"/>
+                        <param key="port" value="5445"/>
+                    </connector>
                     <netty-connector name="netty-throughput" socket-binding="messaging-throughput">
                         <param key="batch-delay" value="50"/>
                     </netty-connector>
@@ -336,10 +340,10 @@
 
                 <security-settings>
                     <security-setting match="#">
-                        <permission type="send" roles="SUP CUST ISS BUNE BDE"/>
-                        <permission type="consume" roles="SUP CUST ISS BUNE BDE"/>
-                        <permission type="createNonDurableQueue" roles="SUP CUST ISS BUNE BDE"/>
-                        <permission type="deleteNonDurableQueue" roles="SUP CUST ISS BUNE BDE"/>
+                        <permission type="send" roles="BUNE BDE ISS CUST SUP"/>
+                        <permission type="consume" roles="BUNE BDE ISS CUST SUP"/>
+                        <permission type="createNonDurableQueue" roles="BUNE BDE ISS CUST SUP"/>
+                        <permission type="deleteNonDurableQueue" roles="BUNE BDE ISS CUST SUP"/>
                     </security-setting>
                 </security-settings>
 
@@ -622,10 +626,14 @@
         <socket-binding name="https" port="8443"/>
         <socket-binding name="jacorb" interface="unsecure" port="3528"/>
         <socket-binding name="jacorb-ssl" interface="unsecure" port="3529"/>
-        <socket-binding name="messaging" port="5445"/>
+        <socket-binding name="messaging" port="5445">
+            <client-mapping destination-address="192.168.56.11"/>
+        </socket-binding>
         <socket-binding name="messaging-throughput" port="5455"/>
         <socket-binding name="osgi-http" interface="management" port="8090"/>
-        <socket-binding name="remoting" port="4447"/>
+        <socket-binding name="remoting" port="4447">
+            <client-mapping destination-address="192.168.56.11"/>
+        </socket-binding>
         <socket-binding name="txn-recovery-environment" port="4712"/>
         <socket-binding name="txn-status-manager" port="4713"/>
         <outbound-socket-binding name="mail-smtp">

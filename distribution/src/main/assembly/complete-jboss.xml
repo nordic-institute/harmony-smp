@@ -168,9 +168,9 @@
         <fileSet>
             <directory>src/main/resources/configuration</directory>
             <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/</outputDirectory>
-            <excludes>
-                <exclude>domibus.filter.properties</exclude>
-            </excludes>
+            <includes>
+                <include>*.properties</include>
+            </includes>
             <fileMode>0444</fileMode>
             <directoryMode>0555</directoryMode>
             <filtered>true</filtered>
@@ -306,6 +306,11 @@
         <file>
             <source>src/main/doc/ReleaseNotes-2.3.1.txt</source>
             <outputDirectory>/</outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>src/main/resources/configuration/partner.pmodes.xml</source>
+            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus/pmodes</outputDirectory>
             <filtered>false</filtered>
         </file>
     </files>

@@ -171,6 +171,9 @@
         <fileSet>
             <directory>src/main/resources/configuration</directory>
             <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/</outputDirectory>
+            <includes>
+                <include>*.properties</include>
+            </includes>
             <excludes>
                 <exclude>mendelson.properties</exclude>
                 <exclude>smp.config.properties</exclude>
@@ -198,13 +201,6 @@
             <fileMode>0444</fileMode>
             <directoryMode>0555</directoryMode>
             <filtered>false</filtered>
-        </fileSet>
-        <fileSet>
-            <directory>src/main/assembly</directory>
-            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus/pmodes</outputDirectory>
-            <excludes>
-                <exclude>*</exclude>
-            </excludes>
         </fileSet>
         <fileSet>
             <outputDirectory>/filestores/attachments</outputDirectory>
@@ -283,6 +279,11 @@
         <file>
             <source>src/main/doc/ReleaseNotes-2.3.1.txt</source>
             <outputDirectory>/</outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>src/main/resources/configuration/partner.pmodes.xml</source>
+            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus/pmodes</outputDirectory>
             <filtered>false</filtered>
         </file>
     </files>
