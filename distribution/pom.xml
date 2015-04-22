@@ -399,57 +399,6 @@
                                     <arg value="keepallmacs"/>
                                 </exec>
 
-                                <echo>Adding port forwarding rules...</echo>
-                                <exec executable="VBoxManage.exe"
-                                      spawn="false">
-                                    <arg value="modifyvm"/>
-                                    <arg value="eDelivery"/>
-                                    <arg value="--natpf1"/>
-                                    <arg value="SSH,tcp,,22,,22"/>
-                                </exec>
-                                <exec executable="VBoxManage.exe"
-                                      spawn="false">
-                                    <arg value="modifyvm"/>
-                                    <arg value="eDelivery"/>
-                                    <arg value="--natpf1"/>
-                                    <arg value="JBoss HTTP,tcp,,8888,,8080"/>
-                                </exec>
-                                <exec executable="VBoxManage.exe"
-                                      spawn="false">
-                                    <arg value="modifyvm"/>
-                                    <arg value="eDelivery"/>
-                                    <arg value="--natpf1"/>
-                                    <arg value="JBoss admin console,tcp,,9990,,9990"/>
-                                </exec>
-                                <exec executable="VBoxManage.exe"
-                                      spawn="false">
-                                    <arg value="modifyvm"/>
-                                    <arg value="eDelivery"/>
-                                    <arg value="--natpf1"/>
-                                    <arg value="JBoss messaging,tcp,,5445,,5445"/>
-                                </exec>
-                                <exec executable="VBoxManage.exe"
-                                      spawn="false">
-                                    <arg value="modifyvm"/>
-                                    <arg value="eDelivery"/>
-                                    <arg value="--natpf1"/>
-                                    <arg value="JBoss messaging-throughput,tcp,,5455,,5455"/>
-                                </exec>
-                                <exec executable="VBoxManage.exe"
-                                      spawn="false">
-                                    <arg value="modifyvm"/>
-                                    <arg value="eDelivery"/>
-                                    <arg value="--natpf1"/>
-                                    <arg value="JBoss remoting,tcp,,4447,,4447"/>
-                                </exec>
-                                <exec executable="VBoxManage.exe"
-                                      spawn="false">
-                                    <arg value="modifyvm"/>
-                                    <arg value="eDelivery"/>
-                                    <arg value="--natpf1"/>
-                                    <arg value="MySQL,tcp,,4406,,3306"/>
-                                </exec>
-
                                 <echo>Synchronizing dates...</echo>
                                 <exec executable="VBoxManage.exe"
                                       spawn="false">
