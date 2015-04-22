@@ -450,6 +450,40 @@
                                     <arg value="MySQL,tcp,,4406,,3306"/>
                                 </exec>
 
+                                <echo>Synchronizing dates...</echo>
+                                <exec executable="VBoxManage.exe"
+                                      spawn="false">
+                                    <arg value="guestproperty"/>
+                                    <arg value="set"/>
+                                    <arg value="eDelivery"/>
+                                    <arg value="/VirtualBox/GuestAdd/VBoxService/--timesync-interval"/>
+                                    <arg value="1000"/>
+                                </exec>
+                                <exec executable="VBoxManage.exe"
+                                      spawn="false">
+                                    <arg value="guestproperty"/>
+                                    <arg value="set"/>
+                                    <arg value="eDelivery"/>
+                                    <arg value="/VirtualBox/GuestAdd/VBoxService/--timesync-min-adjust"/>
+                                    <arg value="100"/>
+                                </exec>
+                                <exec executable="VBoxManage.exe"
+                                      spawn="false">
+                                    <arg value="guestproperty"/>
+                                    <arg value="set"/>
+                                    <arg value="eDelivery"/>
+                                    <arg value="/VirtualBox/GuestAdd/VBoxService/--timesync-set-on-restore"/>
+                                    <arg value="1"/>
+                                </exec>
+                                <exec executable="VBoxManage.exe"
+                                      spawn="false">
+                                    <arg value="guestproperty"/>
+                                    <arg value="set"/>
+                                    <arg value="eDelivery"/>
+                                    <arg value="/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold"/>
+                                    <arg value="1000"/>
+                                </exec>
+
                                 <!-- Start the virtual box -->
                                 <echo>Starting the virtual box...</echo>
                                 <exec executable="VBoxManage.exe"
@@ -498,6 +532,13 @@
                                 <scp trust="true"
                                      file="target/cipa-edelivery-distribution-${project.version}-${assemblyName}.zip"
                                      port="22" todir="adminuser:adminuser@192.168.56.11:"/>
+
+                                <!-- changing the timezone -->
+                                <sshexec host="192.168.56.11"
+                                         username="adminuser"
+                                         password="adminuser"
+                                         command="echo adminuser | sudo -S ln -sf /usr/share/zoneinfo/Europe/Brussels /etc/localtime"
+                                         trust="true" />
 
                                 <!-- Extracting zip on the virtual box -->
                                 <echo>Extracting zip on the virtual box...</echo>
