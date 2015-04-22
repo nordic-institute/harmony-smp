@@ -3,6 +3,7 @@
     <deployment>
         <dependencies>
             <module name="eu.europa.ec.cipa.configuration" />
+            <module name="org.jboss.xnio" />
         </dependencies>
         <exclusions>
             <module name="com.sun.xml" />
