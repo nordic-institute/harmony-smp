@@ -25,7 +25,7 @@
 
     <!-- Consume any message, other than EBMS3 test or EBMS3/AS4 service/test -->
     <consumption>
-        <consumer className="eu.eCODEX.submission.consumer.SubmissionConsumer">
+        <consumer className="eu.eCODEX.submission.consumer.EtrustexSubmissionConsumer">
         </consumer>
     </consumption>
 

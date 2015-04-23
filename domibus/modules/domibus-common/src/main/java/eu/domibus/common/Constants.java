@@ -15,4 +15,11 @@ public class Constants {
     public static final String DOMIBUS_SSL_KEYSTORE_PATH = "domibus.ssl.keystore.path";
     public static final String DOMIBUS_SSL_KEYSTORE_PASSWORD = "domibus.ssl.keystore.password";
     public static final String CONSUMER_NAME = "SUBMISSION_CONSUMER";
+    
+    public static final String ETX_SUBMISSION_CONTEXT = "domibus.etrustex.submission.context";
+    public static final String ETX_SUBMISSION_FACTORY = "domibus.etrustex.submission.factory";
+    public static final String ETX_SUBMISSION_QUEUE = "domibus.etrustex.submission.queue";
+    public static final String ETX_SUBMISSION_URL = "domibus.etrustex.submission.url";
+    public static final String ETX_SUBMISSION_PRINCIPAL = "domibus.etrustex.submission.principal";
+    public static final String ETX_SUBMISSION_PASSWORD = "domibus.etrustex.submission.password";
 }
