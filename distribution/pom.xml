@@ -244,6 +244,26 @@
                         </goals>
                     </execution>
                     <execution>
+                        <id>Enabling remote debug...</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <target>
+                                <echo>Changing default jvm options</echo>
+                                <replace
+                                        file="${project.build.directory}/cargo/installs/jboss-as-dist-${server.version}/jboss-as-${server.version}/bin/standalone.conf"
+                                        token='#JAVA_OPTS="$JAVA_OPTS -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n'
+                                        value='JAVA_OPTS="$JAVA_OPTS -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n' />
+                                <replace
+                                        file="${project.build.directory}/cargo/installs/jboss-as-dist-${server.version}/jboss-as-${server.version}/bin/standalone.conf.bat"
+                                        token='rem set "JAVA_OPTS=%JAVA_OPTS% -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n'
+                                        value='set "JAVA_OPTS=%JAVA_OPTS% -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n' />
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
                         <id>mergeSql-smp</id>
                         <phase>package</phase>
                         <configuration>
@@ -361,7 +381,7 @@
                                 <echo>Modifying the context path of CIPA Admin
                                 </echo>
                                 <zip destfile="${project.basedir}/../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target/etrustex-admin-web.war" update="true">
-                                    <zipfileset dir="src/main/resources/connector-admin" includes="jboss-web.xml" fullpath="WEB-INF/jboss-web.xml"/>
+                                    <zipfileset dir="${project.basedir}/src/main/resources/connector-admin" includes="jboss-web.xml" fullpath="WEB-INF/jboss-web.xml"/>
                                 </zip>
                             </target>
                         </configuration>
@@ -485,12 +505,24 @@
                                 <scp trust="true"
                                      file="target/cipa-edelivery-distribution-${project.version}-${assemblyName}.zip"
                                      port="22" todir="adminuser:adminuser@192.168.56.11:"/>
+                                
+                                <sshexec host="192.168.56.11"
+                                         username="adminuser"
+                                         password="adminuser"
+                                         command="echo 'Europe/Brussels' | echo adminuser | sudo -S tee /etc/timezone"
+                                         trust="true" />
 
                                 <!-- changing the timezone -->
                                 <sshexec host="192.168.56.11"
                                          username="adminuser"
                                          password="adminuser"
                                          command="echo adminuser | sudo -S ln -sf /usr/share/zoneinfo/Europe/Brussels /etc/localtime"
+                                         trust="true" />
+
+                                <sshexec host="192.168.56.11"
+                                         username="adminuser"
+                                         password="adminuser"
+                                         command="echo adminuser | sudo -S dpkg-reconfigure --frontend noninteractive tzdata"
                                          trust="true" />
 
                                 <!-- Extracting zip on the virtual box -->
