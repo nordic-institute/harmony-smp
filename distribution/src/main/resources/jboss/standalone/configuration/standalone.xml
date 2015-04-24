@@ -417,6 +417,16 @@
                         <message-counter-history-day-limit>10</message-counter-history-day-limit>
                         <redistribution-delay>1000</redistribution-delay>
                     </address-setting>
+                    <address-setting match="jms.queue.BRISQueue">
+                        <dead-letter-address>jms.queue.errorQueue</dead-letter-address>
+                        <expiry-address>jms.queue.errorQueue</expiry-address>
+                        <redelivery-delay>30000</redelivery-delay>
+                        <max-delivery-attempts>10</max-delivery-attempts>
+                        <max-size-bytes>10485760</max-size-bytes>
+                        <address-full-policy>BLOCK</address-full-policy>
+                        <message-counter-history-day-limit>10</message-counter-history-day-limit>
+                        <redistribution-delay>1000</redistribution-delay>
+                    </address-setting>
                 </address-settings>
 
                 <jms-connection-factories>
@@ -492,6 +502,11 @@
                     <jms-queue name="documentQueue">
                         <entry name="queue/documentQueue"/>
                         <entry name="java:jboss/exported/jms/queue/documentQueue"/>
+                        <durable>true</durable>
+                    </jms-queue>
+                    <jms-queue name="BRISQueue">
+                        <entry name="queue/BRISQueue"/>
+                        <entry name="java:jboss/exported/jms/queue/BRISQueue"/>
                         <durable>true</durable>
                     </jms-queue>
                 </jms-destinations>
