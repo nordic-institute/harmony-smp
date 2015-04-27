@@ -11,9 +11,9 @@
 
 
   To build a version for the BRIS project (no AS2, no SMP), run the following command lines :
-  - mvn clean install -DskipTests=true -Pbris,LOCAL-JBOSS,JBoss,mysql,openetrustex
-  - mvn clean install -DskipTests=true -Pbris,LOCAL-JBOSS,JBoss,mysql,openetrustex -Dtype=receiver
-  - mvn antrun:run -N -Pbris,LOCAL-JBOSS,JBoss,mysql,openetrustex
+  - mvn clean install -DskipTests=true -bris,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss
+  - mvn clean install -DskipTests=true -bris,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss -Dtype=receiver
+  - mvn antrun:run -N -Pbris,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss
 
  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -101,6 +101,7 @@
                 <skipAS4>false</skipAS4>
                 <!-- true if the SMP component must not be packed -->
                 <skipSMP>true</skipSMP>
+                <soapui.testFile>BRIS-Document-soapui-project.xml</soapui.testFile>
             </properties>
             <modules>
                 <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
@@ -122,6 +123,7 @@
                 <skipAS4>false</skipAS4>
                 <!-- true if the SMP component must not be packed -->
                 <skipSMP>false</skipSMP>
+                <soapui.testFile>AS2-AS4-soapui-project.xml</soapui.testFile>
             </properties>
             <modules>
                 <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>

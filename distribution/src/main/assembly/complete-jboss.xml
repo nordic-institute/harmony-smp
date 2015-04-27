@@ -289,7 +289,7 @@
             <filtered>false</filtered>
         </file>
         <file>
-            <source>src/test/AS2-AS4-soapui-project.xml</source>
+            <source>src/test/${soapui.testFile}</source>
             <outputDirectory>test</outputDirectory>
             <filtered>false</filtered>
         </file>
