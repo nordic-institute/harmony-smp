@@ -74,24 +74,20 @@
   <!-- Where are we looking for JARs? -->
   <pluginRepositories>
         <pluginRepository>
-            <id>smartbear-sweden-plugin-repository</id>
-            <url>http://www.soapui.org/repository/maven2/</url>
-        </pluginRepository>
-        <pluginRepository>
             <id>plugin.joinup</id>
             <url>https://joinup.ec.europa.eu/nexus/content/groups/public/</url>
         </pluginRepository>
   </pluginRepositories>
   <repositories>
     <repository>
-      <id>eclipselink</id>
-      <url>http://download.eclipse.org/rt/eclipselink/maven.repo</url>
+      <id>webgate-digit</id>
+      <url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/thirdparty</url>
       <releases>
         <enabled>true</enabled>
       </releases>
       <snapshots>
         <enabled>false</enabled>
-      </snapshots>        
+      </snapshots>
     </repository>
     <repository>
       <id>joinup.nexus</id>
