@@ -323,7 +323,7 @@
                     <connector name="netty">
                     <factory-class>org.hornetq.core.remoting.impl.netty.NettyConnectorFactory</factory-class>
                     <!-- If you intend to deploy the VM version of eDelivery pilot on a remote computer, please modify the following host value with the value of the physical address of the host-->
-                    <param key="host" value="127.0.0.1"/>
+                    <param key="host" value="${host}"/>
                     <param key="port" value="5445"/>
                 </connector>
                 <netty-connector name="netty-throughput" socket-binding="messaging-throughput">

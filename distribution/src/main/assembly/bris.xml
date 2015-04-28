@@ -149,7 +149,7 @@
             <outputDirectory>/</outputDirectory>
             <fileMode>0444</fileMode>
             <directoryMode>0555</directoryMode>
-            <filtered>false</filtered>
+            <filtered>true</filtered>
         </fileSet>
         <fileSet>
             <directory>${project.build.directory}/sql-scripts</directory>
