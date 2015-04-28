@@ -101,7 +101,6 @@
                 <skipAS4>false</skipAS4>
                 <!-- true if the SMP component must not be packed -->
                 <skipSMP>true</skipSMP>
-                <soapui.testFile>BRIS-Document-soapui-project.xml</soapui.testFile>
             </properties>
             <modules>
                 <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
@@ -123,7 +122,6 @@
                 <skipAS4>false</skipAS4>
                 <!-- true if the SMP component must not be packed -->
                 <skipSMP>false</skipSMP>
-                <soapui.testFile>AS2-AS4-soapui-project.xml</soapui.testFile>
             </properties>
             <modules>
                 <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
