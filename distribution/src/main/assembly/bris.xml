@@ -267,7 +267,7 @@
             <filtered>false</filtered>
         </file>
         <file>
-            <source>src/test/${assemblyName}-project.xml</source>
+            <source>src/test/${assemblyName}-soapui-project.xml</source>
             <outputDirectory>test</outputDirectory>
             <filtered>false</filtered>
         </file>
