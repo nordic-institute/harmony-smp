@@ -293,7 +293,9 @@
                     <keepalive-time time="10" unit="seconds"/>
                 </long-running-threads>
             </default-workmanager>
-            <cached-connection-manager/>
+            <!-- If we don't comment the following line, the a warning is displayed because of the use of Spring @Transactional with propagation REQUIRES_NEW in LogService.
+            A quick fix to make it disappear is to disable the cached connection manager in JBoss. You just have to comment the line -->
+            <!--<cached-connection-manager/>-->
         </subsystem>
         <subsystem xmlns="urn:jboss:domain:jdr:1.0"/>
         <subsystem xmlns="urn:jboss:domain:jmx:1.1">
