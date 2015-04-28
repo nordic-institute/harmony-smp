@@ -373,22 +373,22 @@
                             <goal>run</goal>
                         </goals>
                     </execution>
-                    <execution>
-                        <id>customizeEtrustexForEdelivery</id>
-                        <phase>package</phase>
-                        <configuration>
-                            <target>
-                                <echo>Modifying the context path of CIPA Admin
-                                </echo>
-                                <zip destfile="${project.basedir}/../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target/etrustex-admin-web.war" update="true">
-                                    <zipfileset dir="${project.basedir}/src/main/resources/connector-admin" includes="jboss-web.xml" fullpath="WEB-INF/jboss-web.xml"/>
-                                </zip>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
+                    <!--<execution>-->
+                        <!--<id>customizeEtrustexForEdelivery</id>-->
+                        <!--<phase>package</phase>-->
+                        <!--<configuration>-->
+                            <!--<target>-->
+                                <!--<echo>Modifying the context path of CIPA Admin-->
+                                <!--</echo>-->
+                                <!--<zip destfile="${project.basedir}/../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target/etrustex-admin-web.war" update="true">-->
+                                    <!--<zipfileset dir="${project.basedir}/src/main/resources/connector-admin" includes="jboss-web.xml" fullpath="WEB-INF/jboss-web.xml"/>-->
+                                <!--</zip>-->
+                            <!--</target>-->
+                        <!--</configuration>-->
+                        <!--<goals>-->
+                            <!--<goal>run</goal>-->
+                        <!--</goals>-->
+                    <!--</execution>-->
 
                     <execution>
                         <id>default-cli</id>
