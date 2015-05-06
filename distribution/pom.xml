@@ -323,7 +323,7 @@
                                         append="true" fixlastline="yes">
                                     <filelist
                                             dir="${project.basedir}/../..//ETRUSTEX/001 e-TrustEx/006 Deployment/Database Scripts/001 Environment Creation/002 MySQL"
-                                            files="01-CreateDBAndTables.sql,02-UsersAndPrivileges.sql,03-InsertReferenceData.sql,04-PlatformConfig.sql"/>
+                                            files="01-CreateDBAndTables.sql,02-UsersAndPrivileges.sql,03-InsertReferenceData-BRIS.sql,04-PlatformConfig-BRIS.sql"/>
                                     <filelist dir="src/main/resources/sql"
                                               files="data-${type}.sql"/>
                                 </concat>
@@ -335,7 +335,7 @@
                                         append="true" fixlastline="yes">
                                     <filelist
                                             dir="${project.basedir}/../..//ETRUSTEX/001 e-TrustEx/006 Deployment/Database Scripts/001 Environment Creation/001 Oracle"
-                                            files="01-CreateDBAndTables.sql,02-UsersAndPrivileges.sql,03-InsertReferenceData.sql,04-PlatformConfig.sql"/>
+                                            files="01-CreateDBAndTables.sql,02-UsersAndPrivileges.sql,03-InsertReferenceData-BRIS.sql,04-PlatformConfig-BRIS.sql"/>
                                     <filelist dir="src/main/resources/sql"
                                               files="data-${type}.sql"/>
                                 </concat>
