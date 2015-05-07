@@ -39,6 +39,7 @@ package eu.europa.ec.cipa.sml.server.datamodel;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -78,7 +79,7 @@ public class DBParticipantIdentifier implements Serializable {
     m_aID = aID;
   }
 
-  @ManyToOne (fetch = FetchType.LAZY)
+  @ManyToOne (fetch = FetchType.LAZY,  cascade = CascadeType.MERGE)
   @JoinColumn (name = "smp_id", nullable = false)
   public DBServiceMetadataPublisher getServiceMetadataPublisher () {
     return m_aServiceMetadataPublisher;

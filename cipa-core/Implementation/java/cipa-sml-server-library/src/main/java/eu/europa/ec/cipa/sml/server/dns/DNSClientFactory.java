@@ -62,9 +62,13 @@ public final class DNSClientFactory {
     static {
       if (DNSClientConfiguration.isEnabled ()) {
         // DNS enabled
+    	s_aLogger.info("Initiating the DNSClientFactory");
         final String sServer = DNSClientConfiguration.getServer ();
+        s_aLogger.info("With server : " + sServer);
         final String sZoneName = DNSClientConfiguration.getZone ();
+        s_aLogger.info("With Zone Name : " + sZoneName);
         final String sSMLZoneName = DNSClientConfiguration.getSMLZoneName ();
+        s_aLogger.info("With SML Zone Name : " + sSMLZoneName);
         final int nTTL = DNSClientConfiguration.getTTL ();
         s_aInstance = new SMLDNSClientImpl (sServer, sZoneName, sSMLZoneName, nTTL);
         s_simpleaInstance = new DNSClientImpl (sServer, sZoneName, sSMLZoneName, nTTL);

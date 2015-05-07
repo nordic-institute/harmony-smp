@@ -140,7 +140,6 @@ public class SMLDNSClientImpl extends DNSClientImpl implements ISMLDNSClient {
     aDNSUpdate.add (new CNAMERecord (aParticipantHost, DClass.IN, m_nTTLSecs, aPublisherHost));
     s_aLogger.debug ("sending Dns UPDATE :" + aDNSUpdate);
 
-    // Execute
     final Message aResponse = sendMessgeToDnsServer (aDNSUpdate);
     _validateDNSResponse (aResponse);
   }

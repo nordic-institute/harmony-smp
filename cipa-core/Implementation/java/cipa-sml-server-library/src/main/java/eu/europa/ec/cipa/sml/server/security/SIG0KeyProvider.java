@@ -29,7 +29,7 @@ public class SIG0KeyProvider {
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (SIG0KeyProvider.class);
   public static final String CONFIG_SIG0_FILE = "dnsClient.SIG0KeyFileName";
-  private static PrivateKey privateKey;
+  private PrivateKey privateKey = null;
   private static String sKeyFile = null;
 
   private static String [] lineStarts = new String [] { "Subprime(q)",
@@ -56,40 +56,17 @@ public class SIG0KeyProvider {
   }
 
   private PrivateKey getPrivateKey (final String filename) throws Exception {
-    //final URL url = this.getClass ().getResource ("/" + filename);
-    //final File f = new File (url.toURI ());
-	final InputStream in = this.getClass().getResourceAsStream("/" + filename);
-    final KeyFactory keyFactory = KeyFactory.getInstance ("DSA");
-    final KeySpec privateKeySpec = readDSAPrivateKey (in);
-    final PrivateKey key = keyFactory.generatePrivate (privateKeySpec);
-    return key;
-
-    // return readPrivateKey(f);
-    // PrivateKey pk = (PrivateKey) ks.getKey(args[0], c);
+	if (privateKey == null){
+	    synchronized(this){
+	    	InputStream in = this.getClass().getResourceAsStream("/" + filename);
+	    	KeyFactory keyFactory = KeyFactory.getInstance ("DSA");
+	    	KeySpec privateKeySpec = readDSAPrivateKey (in);
+	    	privateKey = keyFactory.generatePrivate (privateKeySpec);
+	    }
+	}
+	return privateKey;
   }
 
-  private PrivateKey readPrivateKey (final File file) {
-    ObjectInputStream keyIn;
-    PrivateKey privkey = null;
-    try {
-      keyIn = new ObjectInputStream (new FileInputStream (file));
-      privkey = (PrivateKey) keyIn.readObject ();
-      keyIn.close ();
-    }
-    catch (final FileNotFoundException e1) {
-      // TODO Auto-generated catch block
-      e1.printStackTrace ();
-    }
-    catch (final IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace ();
-    }
-    catch (final ClassNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace ();
-    }
-    return privkey;
-  }
 
   private DSAPrivateKeySpec readDSAPrivateKey (final InputStream inputs) {
     final BigInteger [] values = new BigInteger [6];
@@ -121,8 +98,6 @@ public class SIG0KeyProvider {
     }
     catch (final IOException ioe) {
       ioe.printStackTrace ();
-      // node.printout(Simnet.VC_ALWAYS, Simnet.VL_ERROR, node.id,
-      // "Could not read DSA private key for " + file);
     }
     final DSAPrivateKeySpec priv = new DSAPrivateKeySpec (values[4], values[1], values[2], values[3]);
     return priv;

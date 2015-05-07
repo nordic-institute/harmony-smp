@@ -61,9 +61,12 @@ public final class DNSParticipantDataHandlerCallback implements IParticipantData
   public void identifiersCreated (final ParticipantIdentifierPageType identifiers) throws BadRequestException,
                                                                                   InternalErrorException {
     try {
+    	long timer = System.currentTimeMillis();
+      s_aLogger.info ("Start identifier creation in DNS");
       final List <ParticipantIdentifierType> aPIs = identifiers.getParticipantIdentifier ();
       final String sSMPID = identifiers.getServiceMetadataPublisherID ();
       DNSClientFactory.getInstance ().createIdentifiers (aPIs, sSMPID);
+      s_aLogger.info ("Identifiers created in DNS" +(System.currentTimeMillis() - timer) +" ms");
       s_aLogger.info ("DNS Linked Participants " + aPIs + " to " + sSMPID);
     }
     catch (final IOException e) {

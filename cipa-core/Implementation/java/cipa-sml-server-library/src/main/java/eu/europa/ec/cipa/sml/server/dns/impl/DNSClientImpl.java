@@ -184,15 +184,24 @@ public class DNSClientImpl implements IDNSClient {
 	protected Message sendMessgeToDnsServer(Message m) {
 		boolean SIG0Enabled = false;
 		try {
-			Options.set("sig0validity", "6000");
-			if (DNSClientConfiguration.isEnabled()) {
-				SIG0Enabled = DNSClientConfiguration.getSIG0();
+			Options.set("sig0validity", "600000");
+			s_aLogger.debug("Starting signature of the DNS call");
+			long init = System.currentTimeMillis();
+			synchronized (this) {
+				if (DNSClientConfiguration.isEnabled()) {
+					SIG0Enabled = DNSClientConfiguration.getSIG0();
+				}
+				if (SIG0Enabled) {
+					SIG0KeyProvider prov = new SIG0KeyProvider();
+					SIG0.signMessage(m, getSIG0Record(), prov.getPrivateSIG0Key(), null);
+				}
 			}
-			if (SIG0Enabled) {
-				SIG0KeyProvider prov = new SIG0KeyProvider();
-				SIG0.signMessage(m, getSIG0Record(), prov.getPrivateSIG0Key(), null);
-			}
-			return createResolver().send(m);
+			s_aLogger.debug("SDNS call signature took "  +( System.currentTimeMillis() -init ));
+			init = System.currentTimeMillis();
+			s_aLogger.debug("Sendind update to DNS ");
+			Message resp = createResolver().send(m);
+			s_aLogger.debug("DNS Call took "  +( System.currentTimeMillis() -init ));
+			return resp;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
