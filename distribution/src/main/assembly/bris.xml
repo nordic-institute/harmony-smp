@@ -266,13 +266,33 @@
             <outputDirectory>/standalone/deployments</outputDirectory>
             <filtered>false</filtered>
         </file>
+<!--         <file> -->
+<!--             <source>src/test/${assemblyName}-soapui-project.xml</source> -->
+<!--             <outputDirectory>test</outputDirectory> -->
+<!--             <filtered>false</filtered> -->
+<!--         </file> -->
         <file>
-            <source>src/test/${assemblyName}-soapui-project.xml</source>
+            <source>src/test/BRIS-test-guide-soapui-project.xml</source>
             <outputDirectory>test</outputDirectory>
             <filtered>false</filtered>
         </file>
+         <file>
+            <source>src/test/jboss-client.jar</source>
+            <outputDirectory>test</outputDirectory>
+            <filtered>false</filtered>
+        </file>
+         <file>
+            <source>src/test/Test_Guide.docx</source>
+            <outputDirectory>test</outputDirectory>
+            <filtered>false</filtered>
+        </file>      
         <file>
-            <source>src/main/doc/Quick start guide BRIS.pdf</source>
+            <source>src/main/doc/Quick start guide.pdf</source>
+            <outputDirectory>/</outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>src/main/doc/Known Issues.pdf</source>
             <outputDirectory>/</outputDirectory>
             <filtered>false</filtered>
         </file>
