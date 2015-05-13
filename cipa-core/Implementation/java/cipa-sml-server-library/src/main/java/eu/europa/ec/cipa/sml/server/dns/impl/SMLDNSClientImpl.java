@@ -140,7 +140,7 @@ public class SMLDNSClientImpl extends DNSClientImpl implements ISMLDNSClient {
     aDNSUpdate.add (new CNAMERecord (aParticipantHost, DClass.IN, m_nTTLSecs, aPublisherHost));
     s_aLogger.debug ("sending Dns UPDATE :" + aDNSUpdate);
 
-    final Message aResponse = sendMessgeToDnsServer (aDNSUpdate);
+    final Message aResponse = sendMessageToDnsServer (aDNSUpdate);
     _validateDNSResponse (aResponse);
   }
 
@@ -164,7 +164,7 @@ public class SMLDNSClientImpl extends DNSClientImpl implements ISMLDNSClient {
     s_aLogger.debug ("sending Dns UPDATE :" + aDNSUpdate);
 
     // Execute
-    final Message response = sendMessgeToDnsServer (aDNSUpdate);
+    final Message response = sendMessageToDnsServer (aDNSUpdate);
     _validateDNSResponse (response);
   }
 
@@ -192,7 +192,7 @@ public class SMLDNSClientImpl extends DNSClientImpl implements ISMLDNSClient {
     }
 
     // Execute
-    final Message response = sendMessgeToDnsServer (aDNSUpdate);
+    final Message response = sendMessageToDnsServer (aDNSUpdate);
     _validateDNSResponse (response);
   }
 
@@ -260,7 +260,7 @@ public class SMLDNSClientImpl extends DNSClientImpl implements ISMLDNSClient {
     s_aLogger.info ("  Creating record: " + aRecord.toString ());
 
     // Execute
-    final Message response = sendMessgeToDnsServer (aDNSUpdate);
+    final Message response = sendMessageToDnsServer (aDNSUpdate);
     _validateDNSResponse (response);
   }
 

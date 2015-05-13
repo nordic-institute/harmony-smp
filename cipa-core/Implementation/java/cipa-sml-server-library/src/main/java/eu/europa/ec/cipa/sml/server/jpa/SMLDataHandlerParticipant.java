@@ -82,12 +82,11 @@ import eu.europa.ec.cipa.sml.server.exceptions.UnauthorizedException;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public final class SMLDataHandlerParticipant extends JPAEnabledManager
-		implements IParticipantDataHandler {
+public final class SMLDataHandlerParticipant extends JPAEnabledManager implements IParticipantDataHandler {
 	private final ObjectFactory m_aObjFactory = new ObjectFactory();
 	private IParticipantDataHandlerCallback m_aCallback;
-	private static final Logger s_aLogger = LoggerFactory.getLogger (SMLDataHandlerParticipant.class);
-	
+	private static final Logger s_aLogger = LoggerFactory.getLogger(SMLDataHandlerParticipant.class);
+
 	public SMLDataHandlerParticipant() {
 		super(new IEntityManagerProvider() {
 			// This additional indirection level is required!!!
@@ -101,98 +100,79 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager
 		setCustomExceptionHandler(new DoNothingExceptionHandler());
 	}
 
-	public void setCallback(
-			@Nullable final IParticipantDataHandlerCallback aCallback) {
+	public void setCallback(@Nullable final IParticipantDataHandlerCallback aCallback) {
 		m_aCallback = aCallback;
 	}
 
-	private void _internalCreateParticipantIdentifier(
-			@Nonnull final IReadonlyParticipantIdentifier aParticipantIdentifier,
-			@Nonnull final DBServiceMetadataPublisher aSMP,
+	private void _internalCreateParticipantIdentifier(@Nonnull final IReadonlyParticipantIdentifier aParticipantIdentifier, @Nonnull final DBServiceMetadataPublisher aSMP,
 			@Nonnull final String sClientUniqueID) throws Exception {
 		// Then make sure that the participant identifier doesn't exists.
-		final DBParticipantIdentifierID aDBIdentifierID = new DBParticipantIdentifierID(
-				aParticipantIdentifier);
-		final DBParticipantIdentifier aDBIdentifier = getEntityManager().find(
-				DBParticipantIdentifier.class, aDBIdentifierID);
+		final DBParticipantIdentifierID aDBIdentifierID = new DBParticipantIdentifierID(aParticipantIdentifier);
+		final DBParticipantIdentifier aDBIdentifier = getEntityManager().find(DBParticipantIdentifier.class, aDBIdentifierID);
 		if (aDBIdentifier != null)
-			throw new BadRequestException(
-					"The participant identifier '"
-							+ IdentifierUtils
-									.getIdentifierURIEncoded(aParticipantIdentifier)
-							+ "' does already exist.");
+			throw new BadRequestException("The participant identifier '" + IdentifierUtils.getIdentifierURIEncoded(aParticipantIdentifier) + "' does already exist.");
 
 		// Find out if this is a Wildcard scheme
-		final List<DBAllowedWildcardSchemes> aWildcardSchemes = getEntityManager()
-				.createQuery(
-						"SELECT p FROM DBAllowedWildcardSchemes p WHERE p.id.scheme=:scheme",
-						DBAllowedWildcardSchemes.class)
-				.setParameter("scheme", aParticipantIdentifier.getScheme())
-				.getResultList();
+		final List<DBAllowedWildcardSchemes> aWildcardSchemes = getEntityManager().createQuery("SELECT p FROM DBAllowedWildcardSchemes p WHERE p.id.scheme=:scheme", DBAllowedWildcardSchemes.class)
+				.setParameter("scheme", aParticipantIdentifier.getScheme()).getResultList();
 		if (!aWildcardSchemes.isEmpty()) {
 			// This is Wildcard scheme - validate user!
-			if (!sClientUniqueID.equals(aWildcardSchemes.get(0).getUser()
-					.getUsername())) {
-				throw new UnauthorizedException(
-						"The user is not allowed to register ParticipantIdentifiers for this scheme: "
-								+ aParticipantIdentifier.getScheme());
+			if (!sClientUniqueID.equals(aWildcardSchemes.get(0).getUser().getUsername())) {
+				throw new UnauthorizedException("The user is not allowed to register ParticipantIdentifiers for this scheme: " + aParticipantIdentifier.getScheme());
 			}
 			// User is allowed - verify that this is wildcard
 			if (!"*".equals(aParticipantIdentifier.getValue())) {
-				throw new BadRequestException(
-						"Only ParticipantIdentifier Wildcards can be registered for this scheme: "
-								+ aParticipantIdentifier.getScheme());
+				throw new BadRequestException("Only ParticipantIdentifier Wildcards can be registered for this scheme: " + aParticipantIdentifier.getScheme());
 			}
 		} else {
 			// Not a wild card scheme -> check that no wildcard is queried
 			if ("*".equals(aParticipantIdentifier.getValue())) {
 				// This is not wildcard scheme - wildcard not allowed
-				throw new UnauthorizedException(
-						"The user is not allowed to register Wildcard for this scheme: "
-								+ aParticipantIdentifier.getScheme());
+				throw new UnauthorizedException("The user is not allowed to register Wildcard for this scheme: " + aParticipantIdentifier.getScheme());
 			}
 		}
 
+		// insertion problem
 		// Persist participant itself
-		final DBParticipantIdentifier aDBParticipant = new DBParticipantIdentifier(
-				aDBIdentifierID, aSMP);
-		getEntityManager().persist(aDBParticipant);
+		// final DBParticipantIdentifier aDBParticipant = new
+		// DBParticipantIdentifier(aDBIdentifierID, aSMP);
+		// getEntityManager().persist(aDBParticipant);
 
+		Query query = getEntityManager().createNativeQuery("INSERT INTO RECIPIENT_PART_IDENTIFIER (REC_VALUE, SCHEME, SMP_ID) VALUES ( ?, ?, ? )");
+		query.setParameter(1, aDBIdentifierID.getRecipientParticipantIdentifierValue());
+		query.setParameter(2, aDBIdentifierID.getRecipientParticipantIdentifierScheme());
+		query.setParameter(3, aSMP.getSmpId());
+
+		query.executeUpdate();
+		getEntityManager().refresh(aSMP);
+
+		// code has performance problem:
 		// Add participant to SMP
 		// aSMP.getRecipientParticipantIdentifiers ().add (aDBParticipant);
 		// getEntityManager ().merge (aSMP);
 	}
 
-	public void createParticipantIdentifiers(
-			@Nonnull final ParticipantIdentifierPageType aJAXBPage,
-			@Nonnull final String sClientUniqueID) throws Throwable {
+	public void createParticipantIdentifiers(@Nonnull final ParticipantIdentifierPageType aJAXBPage, @Nonnull final String sClientUniqueID) throws Throwable {
 		JPAExecutionResult<?> ret;
 		ret = doInTransaction(new IThrowingRunnable() {
 			public void run() throws Exception {
-			   
+
 				final String sSMPID = aJAXBPage.getServiceMetadataPublisherID();
 				long timer = System.currentTimeMillis();
-				 s_aLogger.debug ("Start identifier creation in DB");
+				s_aLogger.debug("Start identifier creation in DB");
 				// Check that the user owns the smp
-				final DBServiceMetadataPublisher aSMP = getEntityManager()
-						.find(DBServiceMetadataPublisher.class, sSMPID);
+				final DBServiceMetadataPublisher aSMP = getEntityManager().find(DBServiceMetadataPublisher.class, sSMPID);
 				if (aSMP == null)
-					throw new NotFoundException(
-							"The service metadata publisher ID '" + sSMPID
-									+ "' does not exist.");
+					throw new NotFoundException("The service metadata publisher ID '" + sSMPID + "' does not exist.");
 
 				if (!aSMP.getUser().getUsername().equals(sClientUniqueID))
-					throw new UnauthorizedException(
-							"The current user does not own the service metadata publisher ID '"
-									+ sSMPID + "'!");
-				s_aLogger.debug ("IDB queries executed in" +(System.currentTimeMillis() - timer) +" ms");
-				
+					throw new UnauthorizedException("The current user does not own the service metadata publisher ID '" + sSMPID + "'!");
+				s_aLogger.debug("IDB queries executed in" + (System.currentTimeMillis() - timer) + " ms");
+
 				// iterate participant identifiers
-				for (final IReadonlyParticipantIdentifier aParticipantIdentifier : aJAXBPage
-						.getParticipantIdentifier())
-					_internalCreateParticipantIdentifier(
-							aParticipantIdentifier, aSMP, sClientUniqueID);
-				s_aLogger.debug ("PArtcicpants created in DB in :" +(System.currentTimeMillis() - timer) +" ms");
+				for (final IReadonlyParticipantIdentifier aParticipantIdentifier : aJAXBPage.getParticipantIdentifier())
+					_internalCreateParticipantIdentifier(aParticipantIdentifier, aSMP, sClientUniqueID);
+				s_aLogger.debug("PArtcicpants created in DB in :" + (System.currentTimeMillis() - timer) + " ms");
 				// Create identifier in DNS
 				if (m_aCallback != null)
 					m_aCallback.identifiersCreated(aJAXBPage);
@@ -202,70 +182,67 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager
 			throw ret.getThrowable();
 	}
 
-//	public void createParticipantIdentifiers(
-//			@Nonnull final ParticipantIdentifierPageType aJAXBPage,
-//			@Nonnull final String sClientUniqueID) throws Throwable {
-//		EntityManager em = getEntityManager();
-//		EntityTransaction tx = em.getTransaction();
-//			final String sSMPID = aJAXBPage.getServiceMetadataPublisherID();
-//
-//			// Check that the user owns the smp
-//			final DBServiceMetadataPublisher aSMP = getEntityManager()
-//					.find(DBServiceMetadataPublisher.class, sSMPID);
-//			if (aSMP == null)
-//				throw new NotFoundException(
-//						"The service metadata publisher ID '" + sSMPID
-//								+ "' does not exist.");
-//
-//			if (!aSMP.getUser().getUsername().equals(sClientUniqueID))
-//				throw new UnauthorizedException(
-//						"The current user does not own the service metadata publisher ID '"
-//								+ sSMPID + "'!");
-//
-//			// iterate participant identifiers
-//			for (final IReadonlyParticipantIdentifier aParticipantIdentifier : aJAXBPage
-//					.getParticipantIdentifier())
-//				_internalCreateParticipantIdentifier(
-//						aParticipantIdentifier, aSMP, sClientUniqueID);
-//
-//			// Create identifier in DNS
-//			if (m_aCallback != null)
-//				m_aCallback.identifiersCreated(aJAXBPage);
-//
-//	}
+	// public void createParticipantIdentifiers(
+	// @Nonnull final ParticipantIdentifierPageType aJAXBPage,
+	// @Nonnull final String sClientUniqueID) throws Throwable {
+	// EntityManager em = getEntityManager();
+	// EntityTransaction tx = em.getTransaction();
+	// final String sSMPID = aJAXBPage.getServiceMetadataPublisherID();
+	//
+	// // Check that the user owns the smp
+	// final DBServiceMetadataPublisher aSMP = getEntityManager()
+	// .find(DBServiceMetadataPublisher.class, sSMPID);
+	// if (aSMP == null)
+	// throw new NotFoundException(
+	// "The service metadata publisher ID '" + sSMPID
+	// + "' does not exist.");
+	//
+	// if (!aSMP.getUser().getUsername().equals(sClientUniqueID))
+	// throw new UnauthorizedException(
+	// "The current user does not own the service metadata publisher ID '"
+	// + sSMPID + "'!");
+	//
+	// // iterate participant identifiers
+	// for (final IReadonlyParticipantIdentifier aParticipantIdentifier :
+	// aJAXBPage
+	// .getParticipantIdentifier())
+	// _internalCreateParticipantIdentifier(
+	// aParticipantIdentifier, aSMP, sClientUniqueID);
+	//
+	// // Create identifier in DNS
+	// if (m_aCallback != null)
+	// m_aCallback.identifiersCreated(aJAXBPage);
+	//
+	// }
 
-	private void _internalDeleteParticipant(
-			@Nonnull final ParticipantIdentifierType aParticipantID,
-			@Nonnull final String sClientUniqueID) throws Exception {
+	private void _internalDeleteParticipant(@Nonnull final ParticipantIdentifierType aParticipantID, @Nonnull final String sClientUniqueID) throws Exception {
 		// Then make sure that the participant identifier exists.
-		final DBParticipantIdentifier aDBIdentifier = getEntityManager().find(
-				DBParticipantIdentifier.class,
-				new DBParticipantIdentifierID(aParticipantID));
+		final DBParticipantIdentifier aDBIdentifier = getEntityManager().find(DBParticipantIdentifier.class, new DBParticipantIdentifierID(aParticipantID));
 		if (aDBIdentifier == null)
-			throw new NotFoundException("The participant identifier "
-					+ aParticipantID + " does not exist.");
+			throw new NotFoundException("The participant identifier " + aParticipantID + " does not exist.");
 
 		// Check that the user owns the identifier
-		if (!aDBIdentifier.getServiceMetadataPublisher().getUser()
-				.getUsername().equals(sClientUniqueID))
-			throw new UnauthorizedException(
-					"The user does not own the identifier "
-							+ IdentifierUtils
-									.getIdentifierURIEncoded(aParticipantID));
+		if (!aDBIdentifier.getServiceMetadataPublisher().getUser().getUsername().equals(sClientUniqueID))
+			throw new UnauthorizedException("The user does not own the identifier " + IdentifierUtils.getIdentifierURIEncoded(aParticipantID));
 
+		// performance problem
 		// Remove from SMP as well
-		final DBServiceMetadataPublisher aSMP = aDBIdentifier
-				.getServiceMetadataPublisher();
-		aSMP.getRecipientParticipantIdentifiers().remove(aDBIdentifier);
-		getEntityManager().merge(aSMP);
+		final DBServiceMetadataPublisher aSMP = aDBIdentifier.getServiceMetadataPublisher();
+
+		// aSMP.getRecipientParticipantIdentifiers().remove(aDBIdentifier);
+		// getEntityManager().merge(aSMP);
 
 		// No wildcard test - as delete is allowed if user owns it...
-		getEntityManager().remove(aDBIdentifier);
+		// getEntityManager().remove(aDBIdentifier);
+
+		Query query = getEntityManager().createNativeQuery("DELETE FROM RECIPIENT_PART_IDENTIFIER WHERE REC_VALUE= ? AND SCHEME= ?");
+		query.setParameter(1, aDBIdentifier.getId().getRecipientParticipantIdentifierValue());
+		query.setParameter(2, aDBIdentifier.getId().getRecipientParticipantIdentifierScheme());
+		query.executeUpdate();
+		getEntityManager().refresh(aSMP);
 	}
 
-	public void deleteParticipantIdentifiers(
-			@Nonnull final List<ParticipantIdentifierType> aParticipantIdentifiers,
-			@Nonnull final String sClientUniqueID) throws Throwable {
+	public void deleteParticipantIdentifiers(@Nonnull final List<ParticipantIdentifierType> aParticipantIdentifiers, @Nonnull final String sClientUniqueID) throws Throwable {
 		JPAExecutionResult<?> ret;
 		ret = doInTransaction(new IThrowingRunnable() {
 			public void run() throws Exception {
@@ -283,29 +260,19 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager
 			throw ret.getThrowable();
 	}
 
-	public void prepareToMigrate(
-			@Nonnull final MigrationRecordType aMigrationRecord,
-			@Nonnull final String sClientUniqueID) throws Throwable {
+	public void prepareToMigrate(@Nonnull final MigrationRecordType aMigrationRecord, @Nonnull final String sClientUniqueID) throws Throwable {
 		JPAExecutionResult<?> ret;
 		ret = doInTransaction(new IThrowingRunnable() {
 			public void run() throws Exception {
 				// Then make sure that the participant identifier exists.
-				final ParticipantIdentifierType aParticipantID = aMigrationRecord
-						.getParticipantIdentifier();
-				final DBParticipantIdentifier aDBIdentifier = getEntityManager()
-						.find(DBParticipantIdentifier.class,
-								new DBParticipantIdentifierID(aParticipantID));
+				final ParticipantIdentifierType aParticipantID = aMigrationRecord.getParticipantIdentifier();
+				final DBParticipantIdentifier aDBIdentifier = getEntityManager().find(DBParticipantIdentifier.class, new DBParticipantIdentifierID(aParticipantID));
 				if (aDBIdentifier == null)
-					throw new NotFoundException("The participant identifier "
-							+ aParticipantID.toString() + " does not exist.");
+					throw new NotFoundException("The participant identifier " + aParticipantID.toString() + " does not exist.");
 
 				// Check that the user owns the identifier
-				if (!aDBIdentifier.getServiceMetadataPublisher().getUser()
-						.getUsername().equals(sClientUniqueID))
-					throw new UnauthorizedException(
-							"The user does not own the identifier "
-									+ IdentifierUtils
-											.getIdentifierURIEncoded(aParticipantID));
+				if (!aDBIdentifier.getServiceMetadataPublisher().getUser().getUsername().equals(sClientUniqueID))
+					throw new UnauthorizedException("The user does not own the identifier " + IdentifierUtils.getIdentifierURIEncoded(aParticipantID));
 
 				// Update entry, if already present - this solution seems to be
 				// a more
@@ -322,19 +289,12 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager
 				// EDELIVERY - 289 Fix the query needs to be executed with the
 				// UnifiedParticipantDBValue (LoweCase US.locale)
 
-				final Query query = getEntityManager()
-						.createNativeQuery(
-								"DELETE FROM migrate WHERE scheme = ?1 AND rec_value = ?2");
-				query.setParameter(1, IdentifierUtils
-						.getUnifiedParticipantDBValue(aMigrationRecord
-								.getParticipantIdentifier().getScheme()));
-				query.setParameter(2, IdentifierUtils
-						.getUnifiedParticipantDBValue(aMigrationRecord
-								.getParticipantIdentifier().getValue()));
+				final Query query = getEntityManager().createNativeQuery("DELETE FROM migrate WHERE scheme = ?1 AND rec_value = ?2");
+				query.setParameter(1, IdentifierUtils.getUnifiedParticipantDBValue(aMigrationRecord.getParticipantIdentifier().getScheme()));
+				query.setParameter(2, IdentifierUtils.getUnifiedParticipantDBValue(aMigrationRecord.getParticipantIdentifier().getValue()));
 				query.executeUpdate();
 				// and now we make the actual insert
-				final DBMigrate aMigrate = new DBMigrate(new DBMigrateID(
-						aMigrationRecord));
+				final DBMigrate aMigrate = new DBMigrate(new DBMigrateID(aMigrationRecord));
 				getEntityManager().persist(aMigrate);
 
 			}
@@ -343,54 +303,37 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager
 			throw ret.getThrowable();
 	}
 
-	public void migrate(@Nonnull final MigrationRecordType aMigrationRecord,
-			@Nonnull final String sClientUniqueID) throws Throwable {
+	public void migrate(@Nonnull final MigrationRecordType aMigrationRecord, @Nonnull final String sClientUniqueID) throws Throwable {
 		JPAExecutionResult<?> ret;
 		ret = doInTransaction(new IThrowingRunnable() {
 			public void run() throws Exception {
 				// Change the owner of the identifier
-				final ParticipantIdentifierType aParticipantID = aMigrationRecord
-						.getParticipantIdentifier();
-				final DBParticipantIdentifier aDBIdentifier = getEntityManager()
-						.find(DBParticipantIdentifier.class,
-								new DBParticipantIdentifierID(aParticipantID));
+				final ParticipantIdentifierType aParticipantID = aMigrationRecord.getParticipantIdentifier();
+				final DBParticipantIdentifier aDBIdentifier = getEntityManager().find(DBParticipantIdentifier.class, new DBParticipantIdentifierID(aParticipantID));
 				if (aDBIdentifier == null)
-					throw new NotFoundException(
-							"The participant identifier '"
-									+ IdentifierUtils
-											.getIdentifierURIEncoded(aParticipantID)
-									+ "' was not registered in the SML.");
+					throw new NotFoundException("The participant identifier '" + IdentifierUtils.getIdentifierURIEncoded(aParticipantID) + "' was not registered in the SML.");
 
 				// Get the old SMP
-				final DBServiceMetadataPublisher aOldSMP = aDBIdentifier
-						.getServiceMetadataPublisher();
+				final DBServiceMetadataPublisher aOldSMP = aDBIdentifier.getServiceMetadataPublisher();
 
 				// And the new SMP
-				final String sNewSMPID = aMigrationRecord
-						.getServiceMetadataPublisherID();
-				final DBServiceMetadataPublisher aNewSMP = getEntityManager()
-						.find(DBServiceMetadataPublisher.class, sNewSMPID);
+				final String sNewSMPID = aMigrationRecord.getServiceMetadataPublisherID();
+				final DBServiceMetadataPublisher aNewSMP = getEntityManager().find(DBServiceMetadataPublisher.class, sNewSMPID);
 				if (aNewSMP == null)
-					throw new NotFoundException("The new SMP with ID '"
-							+ sNewSMPID + "' was not found!");
+					throw new NotFoundException("The new SMP with ID '" + sNewSMPID + "' was not found!");
 
 				// Check that the user owns the smp
 				if (!aNewSMP.getUser().getUsername().equals(sClientUniqueID))
-					throw new UnauthorizedException(
-							"The user does not own the identifier.");
+					throw new UnauthorizedException("The user does not own the identifier.");
 
 				// Check that the migration code exists and is correct
-				final DBMigrate aDBMigrate = getEntityManager().find(
-						DBMigrate.class, new DBMigrateID(aMigrationRecord));
+				final DBMigrate aDBMigrate = getEntityManager().find(DBMigrate.class, new DBMigrateID(aMigrationRecord));
 				if (aDBMigrate == null)
-					throw new NotFoundException(
-							"No migration information exists for the given participant identifier plus key.");
+					throw new NotFoundException("No migration information exists for the given participant identifier plus key.");
 
 				// Remove participant from old SMP
-				if (!aOldSMP.getRecipientParticipantIdentifiers().remove(
-						aDBIdentifier))
-					throw new InternalErrorException(
-							"Failed to remove participant from old SMP");
+				if (!aOldSMP.getRecipientParticipantIdentifiers().remove(aDBIdentifier))
+					throw new InternalErrorException("Failed to remove participant from old SMP");
 				getEntityManager().merge(aOldSMP);
 
 				// Add participant to new SMP
@@ -406,16 +349,11 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager
 
 				// The database is only updated, if both DNS updates goes well.
 				if (m_aCallback != null)
-					m_aCallback.identifiersDeleted(CollectionHelper
-							.newList(aMigrationRecord
-									.getParticipantIdentifier()));
+					m_aCallback.identifiersDeleted(CollectionHelper.newList(aMigrationRecord.getParticipantIdentifier()));
 
-				final ParticipantIdentifierPageType aJAXBPage = m_aObjFactory
-						.createParticipantIdentifierPageType();
-				aJAXBPage.getParticipantIdentifier().add(
-						aMigrationRecord.getParticipantIdentifier());
-				aJAXBPage.setServiceMetadataPublisherID(aMigrationRecord
-						.getServiceMetadataPublisherID());
+				final ParticipantIdentifierPageType aJAXBPage = m_aObjFactory.createParticipantIdentifierPageType();
+				aJAXBPage.getParticipantIdentifier().add(aMigrationRecord.getParticipantIdentifier());
+				aJAXBPage.setServiceMetadataPublisherID(aMigrationRecord.getServiceMetadataPublisherID());
 
 				if (m_aCallback != null)
 					m_aCallback.identifiersCreated(aJAXBPage);
@@ -426,35 +364,25 @@ public final class SMLDataHandlerParticipant extends JPAEnabledManager
 	}
 
 	@Nonnull
-	public ParticipantIdentifierPageType listParticipantIdentifiers(
-			@Nonnull final PageRequestType aPageRequest,
-			@Nonnull final String sClientUniqueID) throws Throwable {
+	public ParticipantIdentifierPageType listParticipantIdentifiers(@Nonnull final PageRequestType aPageRequest, @Nonnull final String sClientUniqueID) throws Throwable {
 		JPAExecutionResult<ParticipantIdentifierPageType> ret;
 		ret = doSelect(new Callable<ParticipantIdentifierPageType>() {
 			@Nonnull
 			public ParticipantIdentifierPageType call() throws Exception {
 				// Check that the smp exists.
-				final String sSMPID = aPageRequest
-						.getServiceMetadataPublisherID();
-				final DBServiceMetadataPublisher aSMP = getEntityManager()
-						.find(DBServiceMetadataPublisher.class, sSMPID);
+				final String sSMPID = aPageRequest.getServiceMetadataPublisherID();
+				final DBServiceMetadataPublisher aSMP = getEntityManager().find(DBServiceMetadataPublisher.class, sSMPID);
 				if (aSMP == null)
-					throw new NotFoundException(
-							"The given service metadata publisher '" + sSMPID
-									+ "' does not exist.");
+					throw new NotFoundException("The given service metadata publisher '" + sSMPID + "' does not exist.");
 
 				// Check that the user owns the smp
 				if (!aSMP.getUser().getUsername().equals(sClientUniqueID))
-					throw new UnauthorizedException(
-							"The user does not own the identifier.");
+					throw new UnauthorizedException("The user does not own the identifier.");
 
 				// Get all participant identifiers
-				final ParticipantIdentifierPageType aJAXBPage = m_aObjFactory
-						.createParticipantIdentifierPageType();
-				for (final DBParticipantIdentifier aDBIdentifier : aSMP
-						.getRecipientParticipantIdentifiers())
-					aJAXBPage.getParticipantIdentifier().add(
-							aDBIdentifier.getId().asParticipantIdentifier());
+				final ParticipantIdentifierPageType aJAXBPage = m_aObjFactory.createParticipantIdentifierPageType();
+				for (final DBParticipantIdentifier aDBIdentifier : aSMP.getRecipientParticipantIdentifiers())
+					aJAXBPage.getParticipantIdentifier().add(aDBIdentifier.getId().asParticipantIdentifier());
 				return aJAXBPage;
 			}
 		});
