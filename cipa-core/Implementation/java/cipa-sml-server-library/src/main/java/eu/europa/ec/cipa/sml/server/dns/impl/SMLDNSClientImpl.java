@@ -50,7 +50,6 @@ import org.xbill.DNS.ARecord;
 import org.xbill.DNS.Address;
 import org.xbill.DNS.CNAMERecord;
 import org.xbill.DNS.DClass;
-import org.xbill.DNS.Message;
 import org.xbill.DNS.Name;
 import org.xbill.DNS.Record;
 import org.xbill.DNS.TextParseException;
@@ -140,8 +139,7 @@ public class SMLDNSClientImpl extends DNSClientImpl implements ISMLDNSClient {
     aDNSUpdate.add (new CNAMERecord (aParticipantHost, DClass.IN, m_nTTLSecs, aPublisherHost));
     s_aLogger.debug ("sending Dns UPDATE :" + aDNSUpdate);
 
-    final Message aResponse = sendMessageToDnsServer (aDNSUpdate);
-    _validateDNSResponse (aResponse);
+    sendAndValidateMessage(aDNSUpdate);
   }
 
   public void createIdentifiers (@Nonnull final List <ParticipantIdentifierType> aParticipantIdentifiers,
@@ -164,8 +162,7 @@ public class SMLDNSClientImpl extends DNSClientImpl implements ISMLDNSClient {
     s_aLogger.debug ("sending Dns UPDATE :" + aDNSUpdate);
 
     // Execute
-    final Message response = sendMessageToDnsServer (aDNSUpdate);
-    _validateDNSResponse (response);
+    sendAndValidateMessage(aDNSUpdate);
   }
 
   public void deleteIdentifier (@Nonnull final ParticipantIdentifierType aParticipantIdentifier) throws IllegalIdentifierSchemeException,
@@ -192,8 +189,7 @@ public class SMLDNSClientImpl extends DNSClientImpl implements ISMLDNSClient {
     }
 
     // Execute
-    final Message response = sendMessageToDnsServer (aDNSUpdate);
-    _validateDNSResponse (response);
+    sendAndValidateMessage(aDNSUpdate);
   }
 
   public void createPublisherAnchor (@Nonnull final String sSMPID, @Nonnull final String sEndpoint) throws IOException,
@@ -260,8 +256,7 @@ public class SMLDNSClientImpl extends DNSClientImpl implements ISMLDNSClient {
     s_aLogger.info ("  Creating record: " + aRecord.toString ());
 
     // Execute
-    final Message response = sendMessageToDnsServer (aDNSUpdate);
-    _validateDNSResponse (response);
+    sendAndValidateMessage(aDNSUpdate);
   }
 
   public void deletePublisherAnchor (final String sSMPID) throws IOException, IllegalHostnameException {

@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.ARecord;
 import org.xbill.DNS.CNAMERecord;
-import org.xbill.DNS.DNSSEC.DNSSECException;
 import org.xbill.DNS.KEYRecord;
 import org.xbill.DNS.Lookup;
 import org.xbill.DNS.Message;
@@ -55,6 +54,7 @@ public class DNSClientImpl implements IDNSClient {
 	private KEYRecord SIG0Rec;
 	private static String buildNumber = "${buildNumber}";
 	private static String displayVersion = "${display_version}";
+	private static final int MAX_RETRY = 5;
 	
 
 	public DNSClientImpl() {
@@ -104,8 +104,7 @@ public class DNSClientImpl implements IDNSClient {
 		Record[] t = new Record[records.size()];
 		records.toArray(t);
 		aDNSUpdate.add(t);
-		final Message response = sendMessageToDnsServer(aDNSUpdate);
-		_validateDNSResponse(response);
+		sendAndValidateMessage(aDNSUpdate);
 	}
 
 	@Override
@@ -118,8 +117,34 @@ public class DNSClientImpl implements IDNSClient {
 		Record[] t = new Record[records.size()];
 		records.toArray(t);
 		aDNSUpdate.delete(t);
-		final Message response = sendMessageToDnsServer(aDNSUpdate);
-		_validateDNSResponse(response);
+		sendAndValidateMessage(aDNSUpdate);
+	}
+
+	/**
+	 * Send a message to the DNS server and validate it. If it fails and an exception is caught, a
+	 * retry mechanism has been put in place. After X failures, an exception is thrown.
+	 * @param aDNSUpdate
+	 */
+	protected void sendAndValidateMessage(Update aDNSUpdate) {
+		sendAndValidateMessage(aDNSUpdate, 0);
+	}
+
+
+	private void sendAndValidateMessage(Update aDNSUpdate, int retry){
+		if (retry > 0) {
+			s_aLogger.info("Retrying for the " + retry + " time");
+		}
+		if (retry < MAX_RETRY) {
+			try {
+				final Message response = sendMessageToDnsServer(aDNSUpdate);
+				_validateDNSResponse(response);
+			} catch(Throwable exc) {
+				s_aLogger.warn("An error occurred while sending message to the DNS. Retrying...", exc);
+				sendAndValidateMessage(aDNSUpdate, retry + 1);
+			}
+		} else {
+			throw new DNSErrorException("ERROR: There was an error. Impossible to update the DNS server after " + retry + " retries. Message was: " + aDNSUpdate.toString());
+		}
 	}
 
 	/**
@@ -181,40 +206,26 @@ public class DNSClientImpl implements IDNSClient {
 		return SIG0Rec;
 	}
 
-	protected Message sendMessageToDnsServer(Message m) {
+	protected Message sendMessageToDnsServer(Message m) throws Exception {
 		boolean SIG0Enabled = false;
-		try {
-			Options.set("sig0validity", "600000");
-			s_aLogger.debug("Starting signature of the DNS call");
-			long init = System.currentTimeMillis();
-			synchronized (this) {
-				if (DNSClientConfiguration.isEnabled()) {
-					SIG0Enabled = DNSClientConfiguration.getSIG0();
-				}
-				if (SIG0Enabled) {
-					SIG0KeyProvider prov = new SIG0KeyProvider();
-					SIG0.signMessage(m, getSIG0Record(), prov.getPrivateSIG0Key(), null);
-				}
+		Options.set("sig0validity", "600000");
+		s_aLogger.debug("Starting signature of the DNS call");
+		long init = System.currentTimeMillis();
+		synchronized (this) {
+			if (DNSClientConfiguration.isEnabled()) {
+				SIG0Enabled = DNSClientConfiguration.getSIG0();
 			}
-			s_aLogger.debug("SDNS call signature took "  +( System.currentTimeMillis() -init ));
-			init = System.currentTimeMillis();
-			s_aLogger.debug("Sendind update to DNS ");
-			Message resp = createResolver().send(m);
-			s_aLogger.debug("DNS Call took "  +( System.currentTimeMillis() -init ));
-			return resp;
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		} catch (DNSSECException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return null;
+			if (SIG0Enabled) {
+				SIG0KeyProvider prov = new SIG0KeyProvider();
+				SIG0.signMessage(m, getSIG0Record(), prov.getPrivateSIG0Key(), null);
+			}
 		}
+		s_aLogger.debug("SDNS call signature took "  +( System.currentTimeMillis() -init ));
+		init = System.currentTimeMillis();
+		s_aLogger.debug("Sendind update to DNS ");
+		Message resp = createResolver().send(m);
+		s_aLogger.debug("DNS Call took "  +( System.currentTimeMillis() -init ));
+		return resp;
 	}
 
 	@Nonnull
@@ -321,8 +332,7 @@ public class DNSClientImpl implements IDNSClient {
 		aDNSUpdate.delete(aHost);
 
 		// Execute
-		final Message response = sendMessageToDnsServer(aDNSUpdate);
-		_validateDNSResponse(response);
+		sendAndValidateMessage(aDNSUpdate);
 	}
 
 	public boolean isHandledZone(@Nonnull final String sDnsName) {
