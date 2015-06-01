@@ -289,13 +289,8 @@
             <filtered>false</filtered>
         </file>
         <file>
-            <source>src/test/${assemblyName}-soapui-project.xml</source>
+            <source>src/test/complete-jboss-soapui-project.xml</source>
             <outputDirectory>test</outputDirectory>
-            <filtered>false</filtered>
-        </file>
-        <file>
-            <source>src/main/resources/index.jsp</source>
-            <outputDirectory>/standalone/deployments/browser</outputDirectory>
             <filtered>false</filtered>
         </file>
         <file>
