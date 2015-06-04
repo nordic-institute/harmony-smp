@@ -30,7 +30,7 @@ public class RunIt {
 
 	private List<DNSEntery> lSMPHosts = new ArrayList<DNSEntery>();
 	private List<DNSEntery> lIdentifierHosts = new ArrayList<DNSEntery>();
-	private static final int MAX_RETRY = 5;
+	private static final int MAX_RETRY = 10;
 	private String smlZoneSuffix = "";
 	private String identifierZoneSuffix = "";
 	private IDNSClient client = null;
@@ -149,7 +149,7 @@ public class RunIt {
 				deleteRecordsWithRetry(out);
 			}
 		} catch (IOException | ZoneTransferException e) {
-			// TODO Auto-generated catch block
+			// TOD!O Auto-generated catch block
 			logger.error(e.getMessage(), e);
 		}
 	}
@@ -192,6 +192,13 @@ public class RunIt {
 			try {
 				getDnsClient().deleteList(recordList);
 			} catch(Throwable exc) {
+				if (retry > 5) {
+					try {
+						wait(2000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
 				logger.warn("An error occurred while deleting records from the DNS.", exc);
 				deleteRecordsWithRetry(recordList, retry + 1);
 			}
@@ -210,6 +217,13 @@ public class RunIt {
 				getDnsClient().addRecords(recordList);
 			} catch(Throwable exc) {
 				logger.warn("An error occurred while adding records to the DNS.", exc);
+				if (retry > 5) {
+					try {
+						wait(2000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
 				addRecordsWithRetry(recordList, retry + 1);
 			}
 		} else {
