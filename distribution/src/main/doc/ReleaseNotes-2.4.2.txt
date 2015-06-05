@@ -1,0 +1,17 @@
+
+Release Notes - CIPA e-Delivery - Version e-Delivery v2.4.2
+
+
+
+
+
+
+
+
+
+
+
+
+
+** Bug
+    * [EDELIVERY-398] - Errors when registering records in the DNS
