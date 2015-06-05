@@ -1,46 +1,26 @@
 package eu.europa.ec.cipa.sml.server.dns.impl;
 
-import java.io.IOException;
-import java.net.InetAddress;
-import java.util.Arrays;
-import java.util.List;
-
-import javax.annotation.Nonnegative;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.xbill.DNS.ARecord;
-import org.xbill.DNS.CNAMERecord;
-import org.xbill.DNS.KEYRecord;
-import org.xbill.DNS.Lookup;
-import org.xbill.DNS.Message;
-import org.xbill.DNS.Name;
-import org.xbill.DNS.Options;
-import org.xbill.DNS.Rcode;
-import org.xbill.DNS.Record;
-import org.xbill.DNS.Resolver;
-import org.xbill.DNS.SIG0;
-import org.xbill.DNS.SimpleResolver;
-import org.xbill.DNS.TSIG;
-import org.xbill.DNS.TextParseException;
-import org.xbill.DNS.Type;
-import org.xbill.DNS.Update;
-import org.xbill.DNS.ZoneTransferException;
-import org.xbill.DNS.ZoneTransferIn;
-
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.annotations.OverrideOnDemand;
 import com.helger.commons.exceptions.InitializationException;
 import com.helger.commons.string.StringHelper;
 import com.helger.commons.string.ToStringGenerator;
-
 import eu.europa.ec.cipa.sml.server.dns.DNSClientConfiguration;
 import eu.europa.ec.cipa.sml.server.dns.DNSUtils;
 import eu.europa.ec.cipa.sml.server.dns.IDNSClient;
 import eu.europa.ec.cipa.sml.server.exceptions.DNSErrorException;
 import eu.europa.ec.cipa.sml.server.security.SIG0KeyProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.xbill.DNS.*;
+
+import javax.annotation.Nonnegative;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.List;
 
 public class DNSClientImpl implements IDNSClient {
 
@@ -126,21 +106,21 @@ public class DNSClientImpl implements IDNSClient {
 	 * @param aDNSUpdate
 	 */
 	protected void sendAndValidateMessage(Update aDNSUpdate) {
-		sendAndValidateMessage(aDNSUpdate, 0);
+		sendAndValidateMessage(aDNSUpdate, 0, true);
 	}
 
 
-	private void sendAndValidateMessage(Update aDNSUpdate, int retry){
+	private void sendAndValidateMessage(Update aDNSUpdate, int retry, boolean sign){
 		if (retry > 0) {
 			s_aLogger.info("Retrying for the " + retry + " time");
 		}
 		if (retry < MAX_RETRY) {
 			try {
-				final Message response = sendMessageToDnsServer(aDNSUpdate);
+				final Message response = sendMessageToDnsServer(aDNSUpdate, sign);
 				_validateDNSResponse(response);
 			} catch(Throwable exc) {
 				s_aLogger.warn("An error occurred while sending message to the DNS. Retrying...", exc);
-				sendAndValidateMessage(aDNSUpdate, retry + 1);
+				sendAndValidateMessage(aDNSUpdate, retry + 1, false);
 			}
 		} else {
 			throw new DNSErrorException("ERROR: There was an error. Impossible to update the DNS server after " + retry + " retries. Message was: " + aDNSUpdate.toString());
@@ -206,21 +186,23 @@ public class DNSClientImpl implements IDNSClient {
 		return SIG0Rec;
 	}
 
-	protected Message sendMessageToDnsServer(Message m) throws Exception {
+	protected Message sendMessageToDnsServer(Message m, boolean sign) throws Exception {
 		boolean SIG0Enabled = false;
-		Options.set("sig0validity", "600000");
 		s_aLogger.debug("Starting signature of the DNS call");
 		long init = System.currentTimeMillis();
 		synchronized (this) {
 			if (DNSClientConfiguration.isEnabled()) {
 				SIG0Enabled = DNSClientConfiguration.getSIG0();
 			}
-			if (SIG0Enabled) {
+			if (SIG0Enabled && sign) {
 				SIG0KeyProvider prov = new SIG0KeyProvider();
-				SIG0.signMessage(m, getSIG0Record(), prov.getPrivateSIG0Key(), null);
+				// To avoid any problem with the validity start date for the time of signature,
+				// we start the validity a few minutes back
+				int validityMinutesBack = 2;
+				CustomSIG0.signMessage(m, getSIG0Record(), prov.getPrivateSIG0Key(), null, validityMinutesBack);
 			}
 		}
-		s_aLogger.debug("SDNS call signature took "  +( System.currentTimeMillis() -init ));
+		s_aLogger.debug("xDNS call signature took "  +( System.currentTimeMillis() -init ));
 		init = System.currentTimeMillis();
 		s_aLogger.debug("Sendind update to DNS ");
 		Message resp = createResolver().send(m);
@@ -343,5 +325,8 @@ public class DNSClientImpl implements IDNSClient {
 	public String toString() {
 		return new ToStringGenerator(this).append("serverName", m_sServerName).append("dnsZoneName", m_sDNSZoneName).append("smlDnsZoneName", m_sPublisherZoneName).append("ttlSecs", m_nTTLSecs).toString();
 	}
+
+
+
 
 }
