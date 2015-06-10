@@ -45,7 +45,7 @@ public class CustomSIG0 {
                         timeSigned, timeExpires);
                 message.addRecord(sig, Section.ADDITIONAL);
             } catch (final Exception exc) {
-                s_aLogger.warn("There was an error when trying to sign the message, trying again. " + retry + " times. Exception was: " + exc.getMessage());
+                s_aLogger.warn("There was an error when trying to sign the message, trying again for the " + (retry + 1) + " times. Exception was: " + exc.getClass());
                 signMessage(message, key, privkey, previous, validityMinutesBack, retry + 1);
                 exception = exc;
             }
