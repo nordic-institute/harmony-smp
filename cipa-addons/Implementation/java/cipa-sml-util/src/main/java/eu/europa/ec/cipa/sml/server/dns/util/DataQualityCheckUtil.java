@@ -1,6 +1,5 @@
 package eu.europa.ec.cipa.sml.server.dns.util;
 
-import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 import eu.europa.ec.cipa.sml.server.dns.impl.DNSClientImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,10 +13,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by feriaad on 09/06/2015.
@@ -28,7 +24,7 @@ public class DataQualityCheckUtil {
 
     private static final Logger logger = LoggerFactory.getLogger(DataQualityCheckUtil.class);
 
-    private static ConfigFile configFile;
+    private static Properties properties;
 
     private static String ACCEPTANCE = "ACC";
     private static String PRODUCTION = "PROD";
@@ -49,17 +45,18 @@ public class DataQualityCheckUtil {
             if (!ACCEPTANCE.equalsIgnoreCase(args[0]) && !PRODUCTION.equalsIgnoreCase(args[0])) {
                 logger.info("syntax : 'java -jar cipa-sml-util [environment]'.  Values allowed for [environment] : ACC, PROD");
             } else {
-                configFile = new ConfigFile(args[0].toLowerCase() + ".config.properties");
+                properties = new Properties();
+                properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(args[0].toLowerCase() + ".config.properties"));
                 checkDataConsistency();
             }
         }
     }
 
     private static void checkDataConsistency() throws IOException, ZoneTransferException, ClassNotFoundException, SQLException, NoSuchAlgorithmException {
-        final String sServer = configFile.getString(CONFIG_SERVER);
-        final String sZoneName = configFile.getString(CONFIG_ZONE);
-        final String sSMLZoneName = configFile.getString(CONFIG_SML_ZONE_NAME);
-        final int nTTL = configFile.getInt(CONFIG_TTL, 60);
+        final String sServer = properties.getProperty(CONFIG_SERVER);
+        final String sZoneName = properties.getProperty(CONFIG_ZONE);
+        final String sSMLZoneName = properties.getProperty(CONFIG_SML_ZONE_NAME);
+        final int nTTL = new Integer(properties.getProperty(CONFIG_TTL));
         final DNSClientImpl aDNSClient = new DNSClientImpl(sServer, sZoneName, sSMLZoneName, nTTL);
 
         // Get all domain records
@@ -102,8 +99,8 @@ public class DataQualityCheckUtil {
 
         logger.info("Retrieving entries from the database...");
 
-        Class.forName(configFile.getString(CONFIG_JDBC_DRIVER));
-        Connection conn = DriverManager.getConnection(configFile.getString(CONFIG_JDBC_URL), configFile.getString(CONFIG_JDBC_USER), configFile.getString(CONFIG_JDBC_PASSWORD));
+        Class.forName(properties.getProperty(CONFIG_JDBC_DRIVER));
+        Connection conn = DriverManager.getConnection(properties.getProperty(CONFIG_JDBC_URL), properties.getProperty(CONFIG_JDBC_USER), properties.getProperty(CONFIG_JDBC_PASSWORD));
         Statement stmt = conn.createStatement();
         String sql = "SELECT SMP_ID FROM SERVICE_METADATA_PUBLISHER";
         ResultSet rs = stmt.executeQuery(sql);
