@@ -98,9 +98,11 @@ public class BackendServiceImpl extends BackendServiceSkeleton {
                 final File securityFile = new File(JNDIUtil.getStringEnvironmentParameter(Constants.CONFIG_FILE_PARAMETER));
                 final SecurityConfig securityConfig = (SecurityConfig) u.unmarshal(securityFile);
                 final PublicKeystore puK = securityConfig.getKeystores().getPublicKeystore();
-                KeystoreUtil util = new KeystoreUtil(puK.getFile().trim(), puK.getStorepwd().trim());
+                if (!KeystoreUtil.isInitialized()) {
+                    KeystoreUtil.init(puK.getFile().trim(), puK.getStorepwd().trim());
+                }
                 String receiverCN = KeystoreUtil.extractCN(receiverCert);
-                util.installNewPartnerCertificate(receiverCert, receiverCN);
+                KeystoreUtil.installNewPartnerCertificate(receiverCert, receiverCN);
             } catch (JAXBException e) {
                 BackendServiceImpl.LOG.error("Error while processing message", e);
                 throw new CreatePartnershipFault("Error while creating the partnership, please contact the server administrator");
@@ -110,11 +112,10 @@ public class BackendServiceImpl extends BackendServiceSkeleton {
             }
 
             // make the request's inputstream available to be read again
-            AS4PModeService service = new AS4PModeService();
             // create Pmode for receiving the message
             BackendServiceImpl.LOG.debug("creating/ updating PMODE for Sender :" + createPartnershipRequest.getSenderId() + "Receiver : " + createPartnershipRequest.getReceiverId() + "Service : " + createPartnershipRequest.getService() + "Action " + createPartnershipRequest.getAction());
 
-            service.createPartner(createPartnershipRequest.getSenderId(), createPartnershipRequest.getReceiverId(), createPartnershipRequest.getService(), createPartnershipRequest.getAction(), createPartnershipRequest.getEndpointURL());
+            AS4PModeService.createPartner(createPartnershipRequest.getSenderId(), createPartnershipRequest.getReceiverId(), createPartnershipRequest.getService(), createPartnershipRequest.getAction(), createPartnershipRequest.getEndpointURL());
 
             final CreatePartnershipResponse createPartnershipResponseResult = new CreatePartnershipResponse();
             createPartnershipResponseResult.setResult("OK");

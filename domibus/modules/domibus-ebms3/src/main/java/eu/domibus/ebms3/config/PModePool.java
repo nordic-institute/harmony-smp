@@ -80,14 +80,14 @@ public class PModePool implements Serializable {
         return null;
     }
 
-    public static PModePool load(final String pmodesFileName) {
+    public static synchronized PModePool load(final String pmodesFileName) {
         if ((pmodesFileName == null) || "".equals(pmodesFileName.trim())) {
             return null;
         }
         return PModePool.load(new File(pmodesFileName));
     }
 
-    public static PModePool load(final File source) {
+    public static synchronized PModePool load(final File source) {
         if ((source == null) || !source.exists()) {
             return null;
         }

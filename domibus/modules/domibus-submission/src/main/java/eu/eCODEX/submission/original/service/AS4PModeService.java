@@ -29,13 +29,13 @@ public class AS4PModeService {
 	
 	private static final Logger s_aLogger = Logger.getLogger (AS4PModeService.class);
 	
-	private PModePool pmodePool;
-	private File pmodeFile;
+	private volatile static PModePool pmodePool;
+	private volatile static File pmodeFile;
 
-	public AS4PModeService() {
+	private AS4PModeService() {
 	}
 
-	public Producer getProducer(String producerName) {
+	public static Producer getProducer(String producerName) {
 		List<Producer> producers = pmodePool.getProducers();
 		for (Producer producer : producers) {
 			if (producer.getName().equalsIgnoreCase(producerName)) {
@@ -45,7 +45,7 @@ public class AS4PModeService {
 		return null;
 	}
 
-	public UserService getUserService(String userServiceName) {
+	public static UserService getUserService(String userServiceName) {
 
 		List<UserService> useservices = pmodePool.getUserServices();
 
@@ -57,7 +57,7 @@ public class AS4PModeService {
 		return null;
 	}
 
-	public void initPModePool() throws ConfigurationException {
+	public synchronized static void initPModePool() throws ConfigurationException {
 		if (pmodePool == null) {
 			String directory = Configuration.getPModesDir();
 			String pmodeFilePath = directory.concat("/").concat(PMODE_PARTNER_FILE);
@@ -88,7 +88,7 @@ public class AS4PModeService {
 		}
 	}
 
-	public Binding getBinding(String bindingName) {
+	public static Binding getBinding(String bindingName) {
 
 		List<Binding> bindings = pmodePool.getBindings();
 
@@ -100,7 +100,7 @@ public class AS4PModeService {
 		return null;
 	}
 
-	public PMode getPMode(String pmodeName) {
+	public static PMode getPMode(String pmodeName) {
 
 		List<PMode> pmodes = pmodePool.getPmodes();
 
@@ -135,7 +135,7 @@ public class AS4PModeService {
 	 * @param receiverGWUlr
 	 *            TODO
 	 */
-	public void createPartner(String senderGatewayId, String receiverGatewayId, String serviceName, String action, String receiverGWUlr) throws ConfigurationException {
+	public synchronized static void createPartner(String senderGatewayId, String receiverGatewayId, String serviceName, String action, String receiverGWUlr) throws ConfigurationException {
 		initPModePool();
 
 		String producerName = senderGatewayId.concat("_").concat(PMODE_ROLE);

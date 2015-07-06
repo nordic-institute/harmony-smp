@@ -14,15 +14,18 @@ import java.util.Arrays;
 
 public class KeystoreUtil {
     private static final Logger s_aLogger = Logger.getLogger(KeystoreUtil.class);
-    private KeyStore keyStore = null;
-    private String keystorePath;
-    private String keystorePwd;
+    private volatile static KeyStore keyStore = null;
+    private volatile static String keystorePath;
+    private volatile static String keystorePwd;
+    private static volatile boolean initialized;
 
+    private KeystoreUtil() {
+    }
 
-    public KeystoreUtil(String keystorePath, String keystorePwd) throws Exception {
+    public static synchronized void init(String keystorePath, String keystorePwd) throws Exception {
         Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
-        this.keystorePath = keystorePath;
-        this.keystorePwd = keystorePwd;
+        KeystoreUtil.keystorePath = keystorePath;
+        KeystoreUtil.keystorePwd = keystorePwd;
 
         s_aLogger.info("The keystore file is " + keystorePath);
 
@@ -42,6 +45,7 @@ public class KeystoreUtil {
                         keyStore = KeyStore.getInstance(keystoreTypes[i]);      //but BouncyCastle doesn't have an implementation for jks! so we try with the default implementation
                     try {
                         keyStore.load(inStream, keystorePwd.toCharArray());
+                        initialized = true;
                     } catch (IOException e) {
                         s_aLogger.info("Unable to load the keystore using type " + keystoreTypes[i] + ". Trying another one...");
                         success = false;
@@ -63,7 +67,6 @@ public class KeystoreUtil {
             if (inStream != null)
                 inStream.close();
         }
-
     }
 
     /**
@@ -71,7 +74,7 @@ public class KeystoreUtil {
      *
      * @return
      */
-    public void installNewPartnerCertificate(X509Certificate cert, String alias) throws Exception {
+    public static void installNewPartnerCertificate(X509Certificate cert, String alias) throws Exception {
         keyStore.setCertificateEntry(alias, cert);
         FileOutputStream output = new FileOutputStream(keystorePath);
         keyStore.store(output, keystorePwd.toCharArray());
@@ -90,5 +93,9 @@ public class KeystoreUtil {
                 commonName = s.trim().substring(3);
 
         return commonName.trim();
+    }
+
+    public static synchronized boolean isInitialized() {
+        return initialized;
     }
 }
