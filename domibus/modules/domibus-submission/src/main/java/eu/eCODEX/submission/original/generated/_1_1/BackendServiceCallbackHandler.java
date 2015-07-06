@@ -3,6 +3,7 @@
  */
 package eu.eCODEX.submission.original.generated._1_1;
 
+import backend.ecodex.org._1_1.CreatePartnershipResponse;
 import backend.ecodex.org._1_1.DownloadMessageResponse;
 import backend.ecodex.org._1_1.ListPendingMessagesResponse;
 
@@ -94,10 +95,26 @@ public abstract class BackendServiceCallbackHandler {
     }
 
     /**
+     * Receive receiveResultcreatePartnership message.
+     *
+     * @param result the result
+     */
+    public void receiveResultcreatePartnership(final CreatePartnershipResponse result) {
+    }
+
+    /**
      * Receive errordownload message.
      *
      * @param e the e
      */
     public void receiveErrordownloadMessage(final Exception e) {
+    }
+
+    /**
+     * Receive errorcreatePartnership message.
+     *
+     * @param e the e
+     */
+    public void receiveErrorcreatePartnership(final Exception e) {
     }
 }

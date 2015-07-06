@@ -876,6 +876,123 @@ public class BackendServiceStub extends Stub {
     }
 
     /**
+     * Startdownload message.
+     *
+     * @param createPartnershipRequest74 the download message request74
+     * @param callback                 the callback
+     * @throws RemoteException the remote exception
+     */
+    public void startcreatePartnership(final CreatePartnershipRequest createPartnershipRequest74,
+                                       final BackendServiceCallbackHandler callback) throws RemoteException {
+        final OperationClient _operationClient = this._serviceClient.createClient(this._operations[3].getName());
+        _operationClient.getOptions().setAction("\"\"");
+        _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
+        addPropertyToOperationClient(_operationClient, WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR, "&");
+        // create SOAP envelope with that payload
+        SOAPEnvelope env = null;
+        final MessageContext _messageContext = new MessageContext();
+        //Style is Doc.
+        env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()), createPartnershipRequest74,
+                optimizeContent(new QName("http://org.ecodex.backend/1_1/", "createPartnership")));
+        // adding SOAP soap_headers
+        this._serviceClient.addHeadersToEnvelope(env);
+        // create message context with that soap envelope
+        _messageContext.setEnvelope(env);
+        // add the message context to the operation client
+        _operationClient.addMessageContext(_messageContext);
+        _operationClient.setCallback(new AxisCallback() {
+            public void onMessage(final MessageContext resultContext) {
+                try {
+                    final SOAPEnvelope resultEnv = resultContext.getEnvelope();
+                    final Object object = fromOM(resultEnv.getBody().getFirstElement(), CreatePartnershipResponse.class,
+                            getEnvelopeNamespaces(resultEnv));
+                    callback.receiveResultcreatePartnership((CreatePartnershipResponse) object);
+                } catch (AxisFault e) {
+                    callback.receiveErrorcreatePartnership(e);
+                }
+            }
+
+            public void onError(final Exception error) {
+                if (error instanceof AxisFault) {
+                    final AxisFault f = (AxisFault) error;
+                    final OMElement faultElt = f.getDetail();
+                    if (faultElt != null) {
+                        if (BackendServiceStub.this.faultExceptionNameMap.containsKey(faultElt.getQName())) {
+                            //make the fault by reflection
+                            try {
+                                final String exceptionClassName =
+                                        (String) BackendServiceStub.this.faultExceptionClassNameMap
+                                                .get(faultElt.getQName());
+                                final Class exceptionClass = Class.forName(exceptionClassName);
+                                final Exception ex = (Exception) exceptionClass.newInstance();
+                                //message class
+                                final String messageClassName =
+                                        (String) BackendServiceStub.this.faultMessageMap.get(faultElt.getQName());
+                                final Class messageClass = Class.forName(messageClassName);
+                                final Object messageObject = fromOM(faultElt, messageClass, null);
+                                final Method m = exceptionClass.getMethod("setFaultMessage", new Class[]{messageClass});
+                                m.invoke(ex, new Object[]{messageObject});
+                                if (ex instanceof CreatePartnershipFault) {
+                                    callback.receiveErrorcreatePartnership((CreatePartnershipFault) ex);
+                                    return;
+                                }
+                                callback.receiveErrorcreatePartnership(new RemoteException(ex.getMessage(), ex));
+                            } catch (ClassCastException e) {
+                                // we cannot intantiate the class - throw the original Axis fault
+                                callback.receiveErrorcreatePartnership(f);
+                            } catch (ClassNotFoundException e) {
+                                // we cannot intantiate the class - throw the original Axis fault
+                                callback.receiveErrorcreatePartnership(f);
+                            } catch (NoSuchMethodException e) {
+                                // we cannot intantiate the class - throw the original Axis fault
+                                callback.receiveErrorcreatePartnership(f);
+                            } catch (InvocationTargetException e) {
+                                // we cannot intantiate the class - throw the original Axis fault
+                                callback.receiveErrorcreatePartnership(f);
+                            } catch (IllegalAccessException e) {
+                                // we cannot intantiate the class - throw the original Axis fault
+                                callback.receiveErrorcreatePartnership(f);
+                            } catch (InstantiationException e) {
+                                // we cannot intantiate the class - throw the original Axis fault
+                                callback.receiveErrorcreatePartnership(f);
+                            } catch (AxisFault e) {
+                                // we cannot intantiate the class - throw the original Axis fault
+                                callback.receiveErrorcreatePartnership(f);
+                            }
+                        } else {
+                            callback.receiveErrorcreatePartnership(f);
+                        }
+                    } else {
+                        callback.receiveErrorcreatePartnership(f);
+                    }
+                } else {
+                    callback.receiveErrorcreatePartnership(error);
+                }
+            }
+
+            public void onFault(final MessageContext faultContext) {
+                final AxisFault fault = Utils.getInboundFaultFromMessageContext(faultContext);
+                onError(fault);
+            }
+
+            public void onComplete() {
+                try {
+                    _messageContext.getTransportOut().getSender().cleanup(_messageContext);
+                } catch (AxisFault axisFault) {
+                    callback.receiveErrorcreatePartnership(axisFault);
+                }
+            }
+        });
+        CallbackReceiver _callbackReceiver = null;
+        if (this._operations[3].getMessageReceiver() == null && _operationClient.getOptions().isUseSeparateListener()) {
+            _callbackReceiver = new CallbackReceiver();
+            this._operations[3].setMessageReceiver(_callbackReceiver);
+        }
+        //execute the operation client
+        _operationClient.execute(false);
+    }
+
+    /**
      * Gets the envelope namespaces.
      *
      * @param env the env
@@ -1020,6 +1137,22 @@ public class BackendServiceStub extends Stub {
      * @return the org.apache.axiom.om. om element
      * @throws AxisFault the axis fault
      */
+    private OMElement toOM(final CreatePartnershipRequest param, final boolean optimizeContent) throws AxisFault {
+        try {
+            return param.getOMElement(CreatePartnershipRequest.MY_QNAME, OMAbstractFactory.getOMFactory());
+        } catch (ADBException e) {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    /**
+     * To om.
+     *
+     * @param param           the param
+     * @param optimizeContent the optimize content
+     * @return the org.apache.axiom.om. om element
+     * @throws AxisFault the axis fault
+     */
     private OMElement toOM(final DownloadMessageRequest param, final boolean optimizeContent) throws AxisFault {
         try {
             return param.getOMElement(DownloadMessageRequest.MY_QNAME, OMAbstractFactory.getOMFactory());
@@ -1124,6 +1257,108 @@ public class BackendServiceStub extends Stub {
         try {
             final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
             emptyEnvelope.getBody().addChild(param.getOMElement(DownloadMessageRequest.MY_QNAME, factory));
+            return emptyEnvelope;
+        } catch (ADBException e) {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    /**
+     * Create partner.
+     *
+     */
+    public CreatePartnershipResponse createPartnership(final CreatePartnershipResponse createPartnershipResponse,
+                                                       final CreatePartnershipRequest createPartnershipRequest) throws RemoteException, CreatePartnershipFault {
+        MessageContext _messageContext = null;
+        try {
+            final OperationClient _operationClient = this._serviceClient.createClient(this._operations[3].getName());
+            _operationClient.getOptions().setAction("\"\"");
+            _operationClient.getOptions().setExceptionToBeThrownOnSOAPFault(true);
+            addPropertyToOperationClient(_operationClient, WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR, "&");
+            // create a message context
+            _messageContext = new MessageContext();
+            // create SOAP envelope with that payload
+            SOAPEnvelope env = null;
+            env = toEnvelope(getFactory(_operationClient.getOptions().getSoapVersionURI()), createPartnershipRequest,
+                    optimizeContent(new QName("http://org.ecodex.backend/1_1/", "createPartnership")));
+            //adding SOAP soap_headers
+            this._serviceClient.addHeadersToEnvelope(env);
+            // set the message context with that soap envelope
+            _messageContext.setEnvelope(env);
+            // add the message contxt to the operation client
+            _operationClient.addMessageContext(_messageContext);
+            //execute the operation client
+            _operationClient.execute(true);
+            final MessageContext _returnMessageContext =
+                    _operationClient.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
+            final SOAPEnvelope _returnEnv = _returnMessageContext.getEnvelope();
+            final Object object = fromOM(_returnEnv.getBody().getFirstElement(), CreatePartnershipResponse.class,
+                    getEnvelopeNamespaces(_returnEnv));
+            return (CreatePartnershipResponse) object;
+        } catch (AxisFault f) {
+            final OMElement faultElt = f.getDetail();
+            if (faultElt != null) {
+                if (this.faultExceptionNameMap.containsKey(faultElt.getQName())) {
+                    //make the fault by reflection
+                    try {
+                        final String exceptionClassName =
+                                (String) this.faultExceptionClassNameMap.get(faultElt.getQName());
+                        final Class exceptionClass = Class.forName(exceptionClassName);
+                        final Exception ex = (Exception) exceptionClass.newInstance();
+                        //message class
+                        final String messageClassName = (String) this.faultMessageMap.get(faultElt.getQName());
+                        final Class messageClass = Class.forName(messageClassName);
+                        final Object messageObject = fromOM(faultElt, messageClass, null);
+                        final Method m = exceptionClass.getMethod("setFaultMessage", new Class[]{messageClass});
+                        m.invoke(ex, new Object[]{messageObject});
+                        if (ex instanceof CreatePartnershipFault) {
+                            throw (CreatePartnershipFault) ex;
+                        }
+                        throw new RemoteException(ex.getMessage(), ex);
+                    } catch (ClassCastException e) {
+                        // we cannot intantiate the class - throw the original Axis fault
+                        throw f;
+                    } catch (ClassNotFoundException e) {
+                        // we cannot intantiate the class - throw the original Axis fault
+                        throw f;
+                    } catch (NoSuchMethodException e) {
+                        // we cannot intantiate the class - throw the original Axis fault
+                        throw f;
+                    } catch (InvocationTargetException e) {
+                        // we cannot intantiate the class - throw the original Axis fault
+                        throw f;
+                    } catch (IllegalAccessException e) {
+                        // we cannot intantiate the class - throw the original Axis fault
+                        throw f;
+                    } catch (InstantiationException e) {
+                        // we cannot intantiate the class - throw the original Axis fault
+                        throw f;
+                    }
+                } else {
+                    throw f;
+                }
+            } else {
+                throw f;
+            }
+        } finally {
+            _messageContext.getTransportOut().getSender().cleanup(_messageContext);
+        }
+    }
+
+    /**
+     * To envelope.
+     *
+     * @param factory         the factory
+     * @param param           the param
+     * @param optimizeContent the optimize content
+     * @return the org.apache.axiom.soap. soap envelope
+     * @throws AxisFault the axis fault
+     */
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final CreatePartnershipRequest param,
+                                    final boolean optimizeContent) throws AxisFault {
+        try {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            emptyEnvelope.getBody().addChild(param.getOMElement(CreatePartnershipRequest.MY_QNAME, factory));
             return emptyEnvelope;
         } catch (ADBException e) {
             throw AxisFault.makeFault(e);

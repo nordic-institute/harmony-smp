@@ -68,12 +68,19 @@ public class BackendServiceMessageReceiverInOut extends AbstractInOutMessageRece
 
                     final SendRequest wrappedParam =
                             (SendRequest) fromOM(msgContext.getEnvelope().getBody().getFirstElement(),
-                                                 SendRequest.class, getEnvelopeNamespaces(msgContext.getEnvelope()));
+                                    SendRequest.class, getEnvelopeNamespaces(msgContext.getEnvelope()));
                     final MessagingE messaging =
                             (MessagingE) fromOM(msgContext.getEnvelope().getHeader().getFirstElement(),
-                                                MessagingE.class, getEnvelopeNamespaces(msgContext.getEnvelope()));
+                                    MessagingE.class, getEnvelopeNamespaces(msgContext.getEnvelope()));
                     sendResponse = skel.sendMessage(messaging, wrappedParam);
                     envelope = toEnvelope(getSOAPFactory(msgContext), sendResponse, false);
+                } else if ("createPartnership".equals(methodName)) {
+                        final CreatePartnershipRequest createPartnershipRequest =
+                                (CreatePartnershipRequest) fromOM(msgContext.getEnvelope().getBody().getFirstElement(),
+                                        CreatePartnershipRequest.class, getEnvelopeNamespaces(msgContext.getEnvelope()));
+                    CreatePartnershipResponse createPartnershipResponse = new CreatePartnershipResponse();
+                    createPartnershipResponse = skel.createPartnership(createPartnershipResponse, createPartnershipRequest);
+                    envelope = toEnvelope(getSOAPFactory(msgContext), createPartnershipResponse, false);
                 } else if ("listPendingMessages".equals(methodName)) {
                     ListPendingMessagesResponse listPendingMessagesResponse10 = null;
                     final ListPendingMessagesRequest wrappedParam =
@@ -118,6 +125,13 @@ public class BackendServiceMessageReceiverInOut extends AbstractInOutMessageRece
             }
             throw f;
         } catch (DownloadMessageFault e) {
+            msgContext.setProperty(Constants.FAULT_NAME, "FaultDetail");
+            final AxisFault f = createAxisFault(e);
+            if (e.getFaultMessage() != null) {
+                f.setDetail(toOM(e.getFaultMessage(), false));
+            }
+            throw f;
+        } catch (CreatePartnershipFault e) {
             msgContext.setProperty(Constants.FAULT_NAME, "FaultDetail");
             final AxisFault f = createAxisFault(e);
             if (e.getFaultMessage() != null) {
@@ -307,6 +321,28 @@ public class BackendServiceMessageReceiverInOut extends AbstractInOutMessageRece
     }
 
     /**
+     * To envelope.
+     *
+     * @param factory         the factory
+     * @param param           the param
+     * @param optimizeContent the optimize content
+     * @return the org.apache.axiom.soap. soap envelope
+     * @throws AxisFault the axis fault
+     */
+    private SOAPEnvelope toEnvelope(final SOAPFactory factory, final CreatePartnershipResponse param,
+                                    final boolean optimizeContent) throws AxisFault {
+        try {
+            final SOAPEnvelope emptyEnvelope = factory.getDefaultEnvelope();
+            if (param != null) {
+                emptyEnvelope.getBody().addChild(param.getOMElement(ListPendingMessagesResponse.MY_QNAME, factory));
+            }
+            return emptyEnvelope;
+        } catch (ADBException e) {
+            throw AxisFault.makeFault(e);
+        }
+    }
+
+    /**
      * Wraplist pending messages.
      *
      * @return the backend.ecodex.org._1_1. list pending messages response
@@ -409,6 +445,12 @@ public class BackendServiceMessageReceiverInOut extends AbstractInOutMessageRece
             }
             if (DownloadMessageResponse.class.equals(type)) {
                 return DownloadMessageResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+            if (CreatePartnershipResponse.class.equals(type)) {
+                return CreatePartnershipResponse.Factory.parse(param.getXMLStreamReaderWithoutCaching());
+            }
+            if (CreatePartnershipRequest.class.equals(type)) {
+                return CreatePartnershipRequest.Factory.parse(param.getXMLStreamReaderWithoutCaching());
             }
             if (FaultDetail.class.equals(type)) {
                 return FaultDetail.Factory.parse(param.getXMLStreamReaderWithoutCaching());

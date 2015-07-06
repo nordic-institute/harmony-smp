@@ -13,9 +13,9 @@ Version	|	Date		|	Author			|	Description
 -->
 <wsdl:definitions xmlns:eb1="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://org.ecodex.backend/1_1/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:ns="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ns1="http://www.w3.org/2003/05/soap-envelope" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" name="eCodex" targetNamespace="http://org.ecodex.backend/1_1/">
 	<wsdl:import namespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/" location="../xsd/ebms-header-3_0-200704.xsd"/>
-<wsdl:import
-		namespace="http://www.w3.org/2005/05/xmlmime"
-		location="../xsd/xmlmime.xsd" />
+	<wsdl:import
+			namespace="http://www.w3.org/2005/05/xmlmime"
+			location="../xsd/xmlmime.xsd" />
 	<wsdl:types>
 		<xsd:schema targetNamespace="http://org.ecodex.backend/1_1/" xmlns="http://www.w3.org/2001/XMLSchema">
 			<xsd:element name="sendRequest">
@@ -81,6 +81,25 @@ Version	|	Date		|	Author			|	Description
 					</xsd:extension>
 				</xsd:simpleContent>
 			</xsd:complexType>
+			<xsd:element name="createPartnershipRequest">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="senderId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+						<xsd:element name="receiverId" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+						<xsd:element name="service" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+						<xsd:element name="action" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+						<xsd:element name="endpointURL" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+						<xsd:element name="certificate" minOccurs="1" maxOccurs="1"  type="xsd:base64Binary"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="createPartnershipResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="result" type="xsd:string" minOccurs="1" maxOccurs="1"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
 			<xsd:element name="FaultDetail">
 				<xsd:complexType>
 					<xsd:sequence>
@@ -175,6 +194,12 @@ Version	|	Date		|	Author			|	Description
 	<wsdl:message name="listPendingMessagesResponse">
 		<wsdl:part name="listPendingMessagesResponse" element="tns:listPendingMessagesResponse"/>
 	</wsdl:message>
+	<wsdl:message name="createPartnershipRequest">
+		<wsdl:part name="createPartnershipRequest" element="tns:createPartnershipRequest"/>
+	</wsdl:message>
+	<wsdl:message name="createPartnershipResponse">
+		<wsdl:part name="createPartnershipResponse" element="tns:createPartnershipResponse"/>
+	</wsdl:message>
 	<wsdl:message name="sendMessageFault">
 		<wsdl:part name="faultDetail" element="tns:FaultDetail"/>
 	</wsdl:message>
@@ -185,6 +210,9 @@ Version	|	Date		|	Author			|	Description
 		<wsdl:part name="faultDetail" element="tns:FaultDetail"/>
 	</wsdl:message>
 	<wsdl:message name="listPendingMessagesFault">
+		<wsdl:part name="faultDetail" element="tns:FaultDetail"/>
+	</wsdl:message>
+	<wsdl:message name="createPartnershipFault">
 		<wsdl:part name="faultDetail" element="tns:FaultDetail"/>
 	</wsdl:message>
 	<wsdl:portType name="BackendInterface">
@@ -207,6 +235,11 @@ Version	|	Date		|	Author			|	Description
 			<wsdl:input name="listPendingMessagesRequest" message="tns:listPendingMessagesRequest"/>
 			<wsdl:output name="listPendingMessagesResponse" message="tns:listPendingMessagesResponse"/>
 			<wsdl:fault name="fault" message="tns:listPendingMessagesFault"/>
+		</wsdl:operation>
+		<wsdl:operation name="createPartnership">
+			<wsdl:input name="createPartnershipRequest" message="tns:createPartnershipRequest"/>
+			<wsdl:output name="createPartnershipResponse" message="tns:createPartnershipResponse"/>
+			<wsdl:fault name="fault" message="tns:createPartnershipFault"/>
 		</wsdl:operation>
 	</wsdl:portType>
 	<wsdl:binding name="eCODEX" type="tns:BackendInterface">
@@ -252,6 +285,17 @@ Version	|	Date		|	Author			|	Description
 				<soap12:body use="literal"/>
 			</wsdl:input>
 			<wsdl:output name="listPendingMessagesResponse">
+				<soap12:body use="literal"/>
+			</wsdl:output>
+			<wsdl:fault name="fault">
+				<soap12:fault name="fault" use="literal"/>
+			</wsdl:fault>
+		</wsdl:operation>
+		<wsdl:operation name="createPartnership">
+			<wsdl:input name="createPartnershipRequest">
+				<soap12:body use="literal"/>
+			</wsdl:input>
+			<wsdl:output name="createPartnershipResponse">
 				<soap12:body use="literal"/>
 			</wsdl:output>
 			<wsdl:fault name="fault">

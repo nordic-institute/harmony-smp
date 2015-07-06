@@ -71,4 +71,13 @@ public class BackendServiceSkeleton {
                                       final DownloadMessageRequest downloadMessageRequest) throws DownloadMessageFault {
         throw new UnsupportedOperationException("downloadMessage");
     }
+
+    /**
+     * Create partner.
+     *
+     */
+    public CreatePartnershipResponse createPartnership(final CreatePartnershipResponse createPartnershipResponse,
+                                      final CreatePartnershipRequest createPartnershipRequest) throws CreatePartnershipFault {
+        throw new UnsupportedOperationException("createPartnership");
+    }
 }

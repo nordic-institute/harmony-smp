@@ -1,6 +1,15 @@
 package eu.eCODEX.submission.original.service;
 
 import backend.ecodex.org._1_1.*;
+import eu.domibus.backend.util.IOUtils;
+import eu.domibus.common.exceptions.ConfigurationException;
+import eu.domibus.common.util.JNDIUtil;
+import eu.domibus.security.config.generated.PublicKeystore;
+import eu.domibus.security.config.generated.Security;
+import eu.domibus.security.config.generated.SecurityConfig;
+import eu.domibus.security.config.model.RemoteSecurityConfig;
+import eu.domibus.security.module.Constants;
+import eu.domibus.security.module.KeystoreUtil;
 import eu.eCODEX.submission.handler.MessageRetriever;
 import eu.eCODEX.submission.handler.MessageSubmitter;
 import eu.eCODEX.submission.original.generated._1_1.BackendServiceSkeleton;
@@ -12,8 +21,20 @@ import eu.eCODEX.submission.validation.exception.ValidationException;
 import eu.eCODEX.transport.dto.BackendMessageIn;
 import eu.eCODEX.transport.dto.BackendMessageOut;
 import org.apache.log4j.Logger;
+import org.apache.neethi.Policy;
+import org.bouncycastle.util.encoders.Base64;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.MessagingE;
 
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.security.cert.CertificateException;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
 import java.util.Collection;
 
 
@@ -62,6 +83,48 @@ public class BackendServiceImpl extends BackendServiceSkeleton {
         final ListPendingMessagesResponse response = new ListPendingMessagesResponse();
         response.setMessageID(messageIds);
         return response;
+    }
+
+    @Override
+    public CreatePartnershipResponse createPartnership(final CreatePartnershipResponse createPartnershipResponse,
+                                      final CreatePartnershipRequest createPartnershipRequest) throws CreatePartnershipFault {
+        try {
+            BackendServiceImpl.LOG.info("Calling createPartnership");
+
+            try {
+                X509Certificate receiverCert = (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(createPartnershipRequest.getCertificate().getInputStream());
+                final JAXBContext jc = JAXBContext.newInstance("eu.domibus.security.config.generated");
+                final Unmarshaller u = jc.createUnmarshaller();
+                final File securityFile = new File(JNDIUtil.getStringEnvironmentParameter(Constants.CONFIG_FILE_PARAMETER));
+                final SecurityConfig securityConfig = (SecurityConfig) u.unmarshal(securityFile);
+                final PublicKeystore puK = securityConfig.getKeystores().getPublicKeystore();
+                KeystoreUtil util = new KeystoreUtil(puK.getFile().trim(), puK.getStorepwd().trim());
+                String receiverCN = KeystoreUtil.extractCN(receiverCert);
+                util.installNewPartnerCertificate(receiverCert, receiverCN);
+            } catch (JAXBException e) {
+                BackendServiceImpl.LOG.error("Error while processing message", e);
+                throw new CreatePartnershipFault("Error while creating the partnership, please contact the server administrator");
+            } catch (Exception e) {
+                BackendServiceImpl.LOG.error("Error while processing message", e);
+                throw new CreatePartnershipFault("Error while creating the partnership, please contact the server administrator");
+            }
+
+            // make the request's inputstream available to be read again
+            AS4PModeService service = new AS4PModeService();
+            // create Pmode for receiving the message
+            BackendServiceImpl.LOG.debug("creating/ updating PMODE for Sender :" + createPartnershipRequest.getSenderId() + "Receiver : " + createPartnershipRequest.getReceiverId() + "Service : " + createPartnershipRequest.getService() + "Action " + createPartnershipRequest.getAction());
+
+            service.createPartner(createPartnershipRequest.getSenderId(), createPartnershipRequest.getReceiverId(), createPartnershipRequest.getService(), createPartnershipRequest.getAction(), createPartnershipRequest.getEndpointURL());
+
+            final CreatePartnershipResponse createPartnershipResponseResult = new CreatePartnershipResponse();
+            createPartnershipResponseResult.setResult("OK");
+
+            return createPartnershipResponseResult;
+        } catch (RuntimeException e) {
+            BackendServiceImpl.LOG.error("Error while processing message", e);
+            //noinspection ThrowInsideCatchBlockWhichIgnoresCaughtException
+            throw new CreatePartnershipFault("Error while creating the partnership, please contact the server administrator");
+        }
     }
 
     @Override
