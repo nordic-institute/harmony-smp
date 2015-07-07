@@ -45,8 +45,8 @@ public class CallbackReceiptTest {
             assertNotNull(testPModeURL_2);
             LOG.info("2nd PMode File used for this test: " + testPModeURL_2.getFile());
 
-            PModePool pmodePool_1 = PModePool.load(new File(testPModeURL_1.getFile()));
-            PModePool pmodePool_2 = PModePool.load(new File(testPModeURL_2.getFile()));
+            PModePool pmodePool_1 = PModePool.load(testPModeURL_1.getFile());
+            PModePool pmodePool_2 = PModePool.load(testPModeURL_2.getFile());
 
             Configuration.addPModePool(pmodePool_1);
             Configuration.addPModePool(pmodePool_2);

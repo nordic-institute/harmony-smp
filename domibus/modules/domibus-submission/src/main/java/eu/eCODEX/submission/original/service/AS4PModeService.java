@@ -20,7 +20,6 @@ import java.util.List;
 
 public class AS4PModeService {
 	public final static String PMODE_ROLE = "GW";
-	public final static String PMODE_PARTNER_FILE = "partner.pmodes.xml";
 	public final static String ID_TYPE = "urn:oasis:names:tc:ebcore:partyid-type:iso3166-1";
 	public final static String MPC = "http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC";
 	public final static String MEP_NAME = "One-Way/Push";
@@ -29,13 +28,10 @@ public class AS4PModeService {
 	
 	private static final Logger s_aLogger = Logger.getLogger (AS4PModeService.class);
 	
-	private volatile static PModePool pmodePool;
-	private volatile static File pmodeFile;
+	private volatile PModePool pmodePool;
+	private volatile File pmodeFile;
 
-	private AS4PModeService() {
-	}
-
-	public static Producer getProducer(String producerName) {
+	public Producer getProducer(String producerName) {
 		List<Producer> producers = pmodePool.getProducers();
 		for (Producer producer : producers) {
 			if (producer.getName().equalsIgnoreCase(producerName)) {
@@ -45,7 +41,7 @@ public class AS4PModeService {
 		return null;
 	}
 
-	public static UserService getUserService(String userServiceName) {
+	public UserService getUserService(String userServiceName) {
 
 		List<UserService> useservices = pmodePool.getUserServices();
 
@@ -57,10 +53,10 @@ public class AS4PModeService {
 		return null;
 	}
 
-	public synchronized static void initPModePool() throws ConfigurationException {
+	public synchronized void initPModePool(final String pmodeFileName) throws ConfigurationException {
 		if (pmodePool == null) {
 			String directory = Configuration.getPModesDir();
-			String pmodeFilePath = directory.concat("/").concat(PMODE_PARTNER_FILE);
+			String pmodeFilePath = directory.concat("/").concat(pmodeFileName);
             try {
                 pmodeFile = new File(pmodeFilePath);
             } catch (Exception exc) {
@@ -79,7 +75,7 @@ public class AS4PModeService {
 					throw new ConfigurationException("Unable to create pmode file");
 				}
 			}
-			pmodePool = PModePool.load(pmodeFile);
+			pmodePool = PModePool.load(pmodeFile.getAbsolutePath());
 			if (pmodePool == null) {
 				s_aLogger.error("Unable to create pmode file");
 				throw new ConfigurationException("Unable to load PMODEFile");
@@ -88,7 +84,7 @@ public class AS4PModeService {
 		}
 	}
 
-	public static Binding getBinding(String bindingName) {
+	public Binding getBinding(String bindingName) {
 
 		List<Binding> bindings = pmodePool.getBindings();
 
@@ -100,7 +96,7 @@ public class AS4PModeService {
 		return null;
 	}
 
-	public static PMode getPMode(String pmodeName) {
+	public PMode getPMode(String pmodeName) {
 
 		List<PMode> pmodes = pmodePool.getPmodes();
 
@@ -135,8 +131,11 @@ public class AS4PModeService {
 	 * @param receiverGWUlr
 	 *            TODO
 	 */
-	public synchronized static void createPartner(String senderGatewayId, String receiverGatewayId, String serviceName, String action, String receiverGWUlr) throws ConfigurationException {
-		initPModePool();
+	public synchronized void createPartner(String senderGatewayId, String receiverGatewayId, String serviceName, String action, String receiverGWUlr) throws ConfigurationException {
+
+		String pmodeFileName = senderGatewayId + "." + receiverGatewayId + "." + serviceName + "." + action + ".xml";
+
+		initPModePool(pmodeFileName);
 
 		String producerName = senderGatewayId.concat("_").concat(PMODE_ROLE);
 
@@ -237,7 +236,7 @@ public class AS4PModeService {
 			serializer.write(pmodePool, fos);
 			fos.close();
 			String directory = Configuration.getPModesDir();
-			String pmodeFilePath = directory.concat("/").concat(PMODE_PARTNER_FILE);
+			String pmodeFilePath = directory.concat("/").concat(pmodeFileName);
 			final PModePool pool = PModePool.load(pmodeFilePath);
 			if (pool != null) {
 				Configuration.addPModePool(pool);

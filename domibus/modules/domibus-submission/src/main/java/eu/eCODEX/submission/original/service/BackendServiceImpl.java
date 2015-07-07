@@ -115,7 +115,7 @@ public class BackendServiceImpl extends BackendServiceSkeleton {
             // create Pmode for receiving the message
             BackendServiceImpl.LOG.debug("creating/ updating PMODE for Sender :" + createPartnershipRequest.getSenderId() + "Receiver : " + createPartnershipRequest.getReceiverId() + "Service : " + createPartnershipRequest.getService() + "Action " + createPartnershipRequest.getAction());
 
-            AS4PModeService.createPartner(createPartnershipRequest.getSenderId(), createPartnershipRequest.getReceiverId(), createPartnershipRequest.getService(), createPartnershipRequest.getAction(), createPartnershipRequest.getEndpointURL());
+            new AS4PModeService().createPartner(createPartnershipRequest.getSenderId(), createPartnershipRequest.getReceiverId(), createPartnershipRequest.getService(), createPartnershipRequest.getAction(), createPartnershipRequest.getEndpointURL());
 
             final CreatePartnershipResponse createPartnershipResponseResult = new CreatePartnershipResponse();
             createPartnershipResponseResult.setResult("OK");

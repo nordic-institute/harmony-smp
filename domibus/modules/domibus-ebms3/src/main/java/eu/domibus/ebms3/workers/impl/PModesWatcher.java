@@ -26,7 +26,7 @@ public class PModesWatcher extends DirWatcher implements Task {
         if ((file == null) || (action == null)) {
             return;
         }
-        final PModePool pool = PModePool.load(file);
+        final PModePool pool = PModePool.load(file.getAbsolutePath());
         if (pool != null) {
             Configuration.addPModePool(pool);
         }

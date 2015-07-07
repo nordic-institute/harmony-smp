@@ -7,6 +7,11 @@ import org.simpleframework.xml.core.Persister;
 
 import java.io.File;
 import java.io.Serializable;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,26 +85,20 @@ public class PModePool implements Serializable {
         return null;
     }
 
-    public static synchronized PModePool load(final String pmodesFileName) {
+    public static PModePool load(final String pmodesFileName) {
         if ((pmodesFileName == null) || "".equals(pmodesFileName.trim())) {
             return null;
         }
-        return PModePool.load(new File(pmodesFileName));
-    }
 
-    public static synchronized PModePool load(final File source) {
-        if ((source == null) || !source.exists()) {
-            return null;
-        }
         PModePool pool = null;
         try {
             final Serializer serializer = new Persister(new AnnotationStrategy());
-            pool = serializer.read(PModePool.class, source);
+            pool = serializer.read(PModePool.class, new File(pmodesFileName));
             if (pool != null) {
                 pool.init();
             }
         } catch (Exception ex) {
-            PModePool.log.error("Error during serilization of PModeFile on load", ex);
+            PModePool.log.error("Error during serialization of PModeFile on load", ex);
         }
         return pool;
     }
