@@ -94,7 +94,7 @@ public class AS4PModeService {
 					throw new DispatcherConfigurationException("Unable to create pmode file");
 				}
 			}
-			pmodePool = PModePool.load(pmodeFile);
+			pmodePool = PModePool.load(pmodeFile.getAbsolutePath());
 			if (pmodePool == null) {
 				s_aLogger.error("Unable to create pmode file");
 				throw new DispatcherConfigurationException("Unable to load PMODEFile");
