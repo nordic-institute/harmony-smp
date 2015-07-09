@@ -1,6 +1,7 @@
 <settings>
 	<proxies>
 		<proxy>
+			<id>httpProxy</id>
 			<active>true</active>
 			<protocol>http</protocol>
 			<host>158.169.9.13</host>
@@ -9,6 +10,7 @@
 			<password>{VtY9+xpYtF0HPwkX8WuewigB168oiHNqHaZo7DHI1y4=}</password>
 		</proxy>
 		<proxy>
+			<id>httpsProxy</id>
 			<active>true</active>
 			<protocol>https</protocol>
 			<host>158.169.9.13</host>
