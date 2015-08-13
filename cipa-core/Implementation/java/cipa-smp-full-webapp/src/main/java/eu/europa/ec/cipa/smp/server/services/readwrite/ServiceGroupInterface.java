@@ -50,6 +50,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import com.sun.jersey.api.NotFoundException;
 import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
@@ -84,14 +85,16 @@ public final class ServiceGroupInterface {
   public Response getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId){
     // Delegate to common implementation
     try{
-      return Response.ok(BaseServiceGroupInterfaceImpl.getServiceGroup (uriInfo, sServiceGroupId, ServiceMetadataInterface.class)).build ();  
+      return Response.ok(BaseServiceGroupInterfaceImpl.getServiceGroup (uriInfo, sServiceGroupId, ServiceMetadataInterface.class)).build();
     }
     catch(Throwable ex)
     {
-      s_aLogger.error ("Error getting service group " + sServiceGroupId, ex); 
-      //throw new Exception ("Internal error occurred while getting a ServiceGroup");
-      
-      return Response.serverError().build ();
+      s_aLogger.error ("Error getting service group " + sServiceGroupId, ex);
+      if (ex instanceof NotFoundException) {
+        return Response.status(Status.NOT_FOUND).build();
+      } else {
+        return Response.serverError().build();
+      }
     }
   }
 
