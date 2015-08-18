@@ -9,11 +9,16 @@
 
   Of course, you need to replace the version X.Y.Z and the repository in the above command with appropriate values.
 
+  To build a version for the BRIS project (no AS2, no SMP, Domibus3, no connector), run the following command lines :
+  - mvn clean install -DskipTests=true -Pbris
+  - mvn clean install -DskipTests=true -Pbris -Dtype=receiver
+  - mvn antrun:run -N -Pbris
 
-  To build a version for the BRIS project (no AS2, no SMP), run the following command lines :
-  - mvn clean install -DskipTests=true "-Dwar.deployment.dir=../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target" -Detrustex.localFileStorePath=../filestores/etrustex -Pcomplete-jboss,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss
-  - mvn clean install -DskipTests=true -bris,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss -Dtype=receiver "-Dwar.deployment.dir=../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target" -Detrustex.localFileStorePath=../filestores/etrustex -Pcomplete-jboss,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss
-  - mvn antrun:run -N -Pbris,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss
+
+  To build a version for the old version of the BRIS project (no AS2, no SMP, domibus 2, connector), run the following command lines :
+  - mvn clean install -DskipTests=true "-Dwar.deployment.dir=../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target" -Detrustex.localFileStorePath=../filestores/etrustex -PoldBris,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss
+  - mvn clean install -DskipTests=true -Dtype=receiver "-Dwar.deployment.dir=../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target" -Detrustex.localFileStorePath=../filestores/etrustex -PoldBris,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss
+  - mvn antrun:run -N -PoldBris,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss
 
  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -84,10 +89,15 @@
             <artifactId>org.eclipse.persistence.jpa.jpql</artifactId>
             <version>2.5.2</version>
         </dependency>
+        <dependency>
+            <groupId>org.hibernate.javax.persistence</groupId>
+            <artifactId>hibernate-jpa-2.1-api</artifactId>
+            <version>1.0.0.Final</version>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>
-            <!-- profile to be used for BRIS pilot -->
+            <!-- profile to be used for BRIS pilot with Domibus 3-->
             <id>bris</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
@@ -97,15 +107,17 @@
                 <assemblyName>bris</assemblyName>
                 <!-- true if the AS2 component must not be packed -->
                 <skipAS2>true</skipAS2>
-                <!-- true if the AS4 component must not be packed -->
-                <skipAS4>false</skipAS4>
+                <!-- true if the connector component must not be packed -->
+                <skipConnector>true</skipConnector>
+                <!-- true if the Domibus2 component must not be packed -->
+                <skipDomibus2>true</skipDomibus2>
+                <!-- true if the Domibus3 component must not be packed -->
+                <skipDomibus3>false</skipDomibus3>
                 <!-- true if the SMP component must not be packed -->
                 <skipSMP>true</skipSMP>
             </properties>
             <modules>
-                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
-                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web</module>
-                <module>../domibus</module>
+                <module>../../EDELIVERY/domibus</module>
             </modules>
         </profile>
         <profile>
@@ -118,10 +130,14 @@
                 <assemblyName>complete-jboss</assemblyName>
                 <!-- true if the AS2 component must not be packed -->
                 <skipAS2>false</skipAS2>
-                <!-- true if the AS4 component must not be packed -->
-                <skipAS4>false</skipAS4>
+                <!-- true if the Domibus2 component must not be packed -->
+                <skipDomibus2>true</skipDomibus2>
+                <!-- true if the Domibus3 component must not be packed -->
+                <skipDomibus3>false</skipDomibus3>
                 <!-- true if the SMP component must not be packed -->
                 <skipSMP>false</skipSMP>
+                <!-- true if the connector component must not be packed -->
+                <skipConnector>false</skipConnector>
             </properties>
             <modules>
                 <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
@@ -134,6 +150,32 @@
                 <module>../cipa-core/Implementation/java/cipa-smp-server-library</module>
                 <module>../cipa-core/Implementation/java/cipa-smp-full-webapp</module>
                 <module>../mendelson/mendelson-as2-war</module>
+                <module>../domibus</module>
+            </modules>
+        </profile>
+        <profile>
+            <!-- profile to be used for BRIS pilot -->
+            <id>oldBris</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <!-- the name of the assembly file -->
+                <assemblyName>bris</assemblyName>
+                <!-- true if the AS2 component must not be packed -->
+                <skipAS2>true</skipAS2>
+                <!-- true if the connector component must not be packed -->
+                <skipConnector>false</skipConnector>
+                <!-- true if the Domibus2 component must not be packed -->
+                <skipDomibus2>false</skipDomibus2>
+                <!-- true if the Domibus3 component must not be packed -->
+                <skipDomibus3>true</skipDomibus3>
+                <!-- true if the SMP component must not be packed -->
+                <skipSMP>true</skipSMP>
+            </properties>
+            <modules>
+                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
+                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web</module>
                 <module>../domibus</module>
             </modules>
         </profile>
@@ -289,12 +331,37 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>mergeSql-as4</id>
+                        <id>mergeSql-domibus3</id>
                         <phase>package</phase>
                         <configuration>
-                            <skip>${skipAS4}</skip>
+                            <skip>${skipDomibus3}</skip>
                             <target>
-                                <echo>Merging AS4 sql files</echo>
+                                <echo>Merging Domibus3 sql files</echo>
+                                <concat destfile="${project.build.directory}/sql-scripts/create-mysql.sql"
+                                        append="true" fixlastline="yes">
+                                    <filelist
+                                            dir="${project.basedir}/../../EDELIVERY/domibus/Domibus-MSH/target/sql-scripts"
+                                            files="mysql5innoDb-initial.ddl,mysql5innoDb-quartz.ddl"/>
+                                </concat>
+                                <concat destfile="${project.build.directory}/sql-scripts/create-oracle.sql"
+                                        append="true">
+                                    <filelist
+                                            dir="${project.basedir}/../../EDELIVERY/domibus/Domibus-MSH/target/sql-scripts"
+                                            files="oracle10g-initial.ddl,oracle10g-quartz.ddl"/>
+                                </concat>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>mergeSql-domibus2</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <skip>${skipDomibus2}</skip>
+                            <target>
+                                <echo>Merging Domibus2 sql files</echo>
                                 <concat destfile="${project.build.directory}/sql-scripts/create-mysql.sql"
                                         append="true" fixlastline="yes">
                                     <filelist
@@ -317,6 +384,7 @@
                         <id>mergeSql-connector</id>
                         <phase>package</phase>
                         <configuration>
+                            <skip>${skipConnector}</skip>
                             <target>
                                 <echo>Merging connector sql files</echo>
                                 <concat destfile="${project.build.directory}/sql-scripts/create-mysql.sql"
