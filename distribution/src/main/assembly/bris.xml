@@ -152,11 +152,6 @@
             <filtered>false</filtered>
         </file>
         <file>
-            <source>src/test/jboss-client.jar</source>
-            <outputDirectory>test</outputDirectory>
-            <filtered>false</filtered>
-        </file>
-        <file>
             <source>src/test/Test_Guide.docx</source>
             <outputDirectory>test</outputDirectory>
             <filtered>false</filtered>
@@ -172,17 +167,22 @@
             <filtered>false</filtered>
         </file>
         <file>
-            <source>src/main/doc/ReleaseNotes-2.4.2.txt</source>
+            <source>src/main/doc/ReleaseNotes-2.4.3.txt</source>
             <outputDirectory>/</outputDirectory>
             <filtered>false</filtered>
         </file>
         <file>
             <source>src/main/resources/configuration/domibus-configuration.xml</source>
             <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>src/main/resources/configuration/pmode-local.xml</source>
+            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
             <filtered>false</filtered>
         </file>
         <file>
-            <source>src/main/resources/configuration/pmode-domibus3.xml</source>
+            <source>src/main/resources/configuration/pmode-VM.xml</source>
             <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
             <filtered>false</filtered>
         </file>

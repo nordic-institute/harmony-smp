@@ -11,13 +11,13 @@
 
   To build a version for the BRIS project (no AS2, no SMP, Domibus3, no connector), run the following command lines :
   - mvn clean install -DskipTests=true -Pbris
-  - mvn clean install -DskipTests=true -Pbris -Dtype=receiver
+  - mvn clean install -DskipTests=true -Pbris -Dtype=VM
   - mvn antrun:run -N -Pbris
 
 
   To build a version for the old version of the BRIS project (no AS2, no SMP, domibus 2, connector), run the following command lines :
   - mvn clean install -DskipTests=true "-Dwar.deployment.dir=../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target" -Detrustex.localFileStorePath=../filestores/etrustex -PoldBris,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss
-  - mvn clean install -DskipTests=true -Dtype=receiver "-Dwar.deployment.dir=../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target" -Detrustex.localFileStorePath=../filestores/etrustex -PoldBris,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss
+  - mvn clean install -DskipTests=true -Dtype=VM "-Dwar.deployment.dir=../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target" -Detrustex.localFileStorePath=../filestores/etrustex -PoldBris,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss
   - mvn antrun:run -N -PoldBris,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss
 
  -->
@@ -33,8 +33,8 @@
     <!-- Some properties are preset for setting up a sender and a receiver. The configuration is set with the "type" property -->
     <properties>
         <virtualbox-template.version>1.2.0</virtualbox-template.version>
-        <!-- can be either "receiver" or "sender" -->
-        <type>sender</type>
+        <!-- can be either "local" or "VM" -->
+        <type>local</type>
         <server.version>7.1.1.Final</server.version>
     </properties>
 
@@ -140,8 +140,10 @@
                 <skipConnector>false</skipConnector>
             </properties>
             <modules>
-                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
-                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web</module>
+                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent
+                </module>
+                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web
+                </module>
                 <module>../cipa-core/Implementation/java/cipa-parent-pom</module>
                 <module>../cipa-core/Implementation/java/cipa-commons-busdox</module>
                 <module>../cipa-core/Implementation/java/cipa-peppol-types</module>
@@ -174,8 +176,10 @@
                 <skipSMP>true</skipSMP>
             </properties>
             <modules>
-                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent</module>
-                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web</module>
+                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent
+                </module>
+                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web
+                </module>
                 <module>../domibus</module>
             </modules>
         </profile>
@@ -263,6 +267,11 @@
                         <artifactId>ant-jsch</artifactId>
                         <version>1.8.1</version>
                     </dependency>
+                    <dependency>
+                        <groupId>ant-contrib</groupId>
+                        <artifactId>ant-contrib</artifactId>
+                        <version>20020829</version>
+                    </dependency>
                 </dependencies>
                 <executions>
                     <execution>
@@ -274,11 +283,11 @@
                                 <replace
                                         file="${project.build.directory}/cargo/installs/jboss-as-dist-${server.version}/jboss-as-${server.version}/bin/standalone.conf"
                                         token='JAVA_OPTS="-Xms64m -Xmx512m'
-                                        value='JAVA_OPTS="-Xms128m -Xmx1024m' />
+                                        value='JAVA_OPTS="-Xms128m -Xmx1024m'/>
                                 <replace
                                         file="${project.build.directory}/cargo/installs/jboss-as-dist-${server.version}/jboss-as-${server.version}/bin/standalone.conf.bat"
                                         token='set "JAVA_OPTS=-Xms64M -Xmx512M'
-                                        value='set "JAVA_OPTS=-Xms128M -Xmx1024M' />
+                                        value='set "JAVA_OPTS=-Xms128M -Xmx1024M'/>
                             </target>
                         </configuration>
                         <goals>
@@ -294,11 +303,11 @@
                                 <replace
                                         file="${project.build.directory}/cargo/installs/jboss-as-dist-${server.version}/jboss-as-${server.version}/bin/standalone.conf"
                                         token='#JAVA_OPTS="$JAVA_OPTS -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n'
-                                        value='JAVA_OPTS="$JAVA_OPTS -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n' />
+                                        value='JAVA_OPTS="$JAVA_OPTS -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n'/>
                                 <replace
                                         file="${project.build.directory}/cargo/installs/jboss-as-dist-${server.version}/jboss-as-${server.version}/bin/standalone.conf.bat"
                                         token='rem set "JAVA_OPTS=%JAVA_OPTS% -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n'
-                                        value='set "JAVA_OPTS=%JAVA_OPTS% -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n' />
+                                        value='set "JAVA_OPTS=%JAVA_OPTS% -Xrunjdwp:transport=dt_socket,address=8787,server=y,suspend=n'/>
                             </target>
                         </configuration>
                         <goals>
@@ -397,7 +406,8 @@
                                 </concat>
                                 <concat destfile="${project.build.directory}/sql-scripts/create-mysql.sql"
                                         append="true" fixlastline="yes">
-                                    update etr_tb_metadata set MD_VALUE='../filestores/etrustex' where MD_TYPE='FILE_STORE_PATH';${line.separator}COMMIT;
+                                    update etr_tb_metadata set MD_VALUE='../filestores/etrustex' where
+                                    MD_TYPE='FILE_STORE_PATH';${line.separator}COMMIT;
                                 </concat>
                                 <concat destfile="${project.build.directory}/sql-scripts/create-oracle.sql"
                                         append="true" fixlastline="yes">
@@ -409,7 +419,8 @@
                                 </concat>
                                 <concat destfile="${project.build.directory}/sql-scripts/create-oracle.sql"
                                         append="true" fixlastline="yes">
-                                        update etr_tb_metadata set MD_VALUE='../filestores/etrustex' where MD_TYPE='FILE_STORE_PATH';${line.separator}COMMIT;
+                                    update etr_tb_metadata set MD_VALUE='../filestores/etrustex' where
+                                    MD_TYPE='FILE_STORE_PATH';${line.separator}COMMIT;
                                 </concat>
                                 <replaceregexp file="${project.build.directory}/sql-scripts/create-mysql.sql"
                                                match="/etrustex/xsd"
@@ -442,20 +453,20 @@
                         </goals>
                     </execution>
                     <!--<execution>-->
-                        <!--<id>customizeEtrustexForEdelivery</id>-->
-                        <!--<phase>package</phase>-->
-                        <!--<configuration>-->
-                            <!--<target>-->
-                                <!--<echo>Modifying the context path of CIPA Admin-->
-                                <!--</echo>-->
-                                <!--<zip destfile="${project.basedir}/../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target/etrustex-admin-web.war" update="true">-->
-                                    <!--<zipfileset dir="${project.basedir}/src/main/resources/connector-admin" includes="jboss-web.xml" fullpath="WEB-INF/jboss-web.xml"/>-->
-                                <!--</zip>-->
-                            <!--</target>-->
-                        <!--</configuration>-->
-                        <!--<goals>-->
-                            <!--<goal>run</goal>-->
-                        <!--</goals>-->
+                    <!--<id>customizeEtrustexForEdelivery</id>-->
+                    <!--<phase>package</phase>-->
+                    <!--<configuration>-->
+                    <!--<target>-->
+                    <!--<echo>Modifying the context path of CIPA Admin-->
+                    <!--</echo>-->
+                    <!--<zip destfile="${project.basedir}/../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target/etrustex-admin-web.war" update="true">-->
+                    <!--<zipfileset dir="${project.basedir}/src/main/resources/connector-admin" includes="jboss-web.xml" fullpath="WEB-INF/jboss-web.xml"/>-->
+                    <!--</zip>-->
+                    <!--</target>-->
+                    <!--</configuration>-->
+                    <!--<goals>-->
+                    <!--<goal>run</goal>-->
+                    <!--</goals>-->
                     <!--</execution>-->
 
                     <execution>
@@ -463,6 +474,9 @@
                         <phase>none</phase>
                         <configuration>
                             <target>
+                                <taskdef resource="net/sf/antcontrib/antcontrib.properties"
+                                         classpathref="maven.plugin.classpath" />
+
                                 <!-- Download the virtual box -->
                                 <echo>Downloading the virtual box...</echo>
                                 <get src="https://joinup.ec.europa.eu/nexus/service/local/repositories/releases/content/eu/europa/ec/cipa/edelivery-virtualbox-template/${virtualbox-template.version}/edelivery-virtualbox-template-${virtualbox-template.version}.ova"
@@ -489,6 +503,15 @@
                                     <arg value="eDelivery"/>
                                     <arg value="--options"/>
                                     <arg value="keepallmacs"/>
+                                </exec>
+
+                                <echo>Increasing the memory size virtual box...</echo>
+                                <exec executable="VBoxManage.exe"
+                                      spawn="false">
+                                    <arg value="modifyvm"/>
+                                    <arg value="eDelivery"/>
+                                    <arg value="--memory"/>
+                                    <arg value="2048"/>
                                 </exec>
 
                                 <echo>Synchronizing dates...</echo>
@@ -559,39 +582,44 @@
                                      userid="root" password="adminuser" src="target/sql-scripts/create-mysql.sql">
                                 </sql>
 
-                                <echo>Updating configuration...</echo>
-                                <sql driver="com.mysql.jdbc.Driver" url="jdbc:mysql://192.168.56.11:3306/etrustex"
-                                     userid="root" password="adminuser">
-                                    <![CDATA[
-                                      GRANT ALL PRIVILEGES ON etrustex.* TO 'trustex_user'@'%' IDENTIFIED BY 'trustex_passw';
-                                      flush privileges;
-                                    ]]>
-                                </sql>
+                                <if>
+                                    <equals arg1="${skipConnector}" arg2="false" />
+                                    <then>
+                                        <echo>Updating configuration...</echo>
+                                        <sql driver="com.mysql.jdbc.Driver" url="jdbc:mysql://192.168.56.11:3306/etrustex"
+                                             userid="root" password="adminuser">
+                                            <![CDATA[
+                                          GRANT ALL PRIVILEGES ON etrustex.* TO 'trustex_user'@'%' IDENTIFIED BY 'trustex_passw';
+                                          flush privileges;
+                                        ]]>
+                                        </sql>
+                                    </then>
+                                </if>
 
                                 <!--Sending the artifact to the virtual box -->
                                 <echo>Sending the artifact to the virtual box...</echo>
                                 <scp trust="true"
                                      file="target/cipa-edelivery-distribution-${project.version}-${assemblyName}.zip"
                                      port="22" todir="adminuser:adminuser@192.168.56.11:"/>
-                                
+
                                 <sshexec host="192.168.56.11"
                                          username="adminuser"
                                          password="adminuser"
                                          command="echo 'Europe/Brussels' | echo adminuser | sudo -S tee /etc/timezone"
-                                         trust="true" />
+                                         trust="true"/>
 
                                 <!-- changing the timezone -->
                                 <sshexec host="192.168.56.11"
                                          username="adminuser"
                                          password="adminuser"
                                          command="echo adminuser | sudo -S ln -sf /usr/share/zoneinfo/Europe/Brussels /etc/localtime"
-                                         trust="true" />
+                                         trust="true"/>
 
                                 <sshexec host="192.168.56.11"
                                          username="adminuser"
                                          password="adminuser"
                                          command="echo adminuser | sudo -S dpkg-reconfigure --frontend noninteractive tzdata"
-                                         trust="true" />
+                                         trust="true"/>
 
                                 <!-- Extracting zip on the virtual box -->
                                 <echo>Extracting zip on the virtual box...</echo>
@@ -609,7 +637,8 @@
                                     dd if=/dev/zero of=~/bigemptyfile bs=4096k
                                     rm -rf ~/bigemptyfile
                                 </echo>
-                                <sshexec host="192.168.56.11" trust="true" username="adminuser" password="adminuser" failonerror="false"
+                                <sshexec host="192.168.56.11" trust="true" username="adminuser" password="adminuser"
+                                         failonerror="false"
                                          commandResource="target/compact.sh"/>
 
                                 <!-- Stop the virtual box -->

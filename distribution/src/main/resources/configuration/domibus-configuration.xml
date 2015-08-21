@@ -103,7 +103,7 @@
 		<!-- The password used to load the keystore -->
         <prop key="org.apache.ws.security.crypto.merlin.keystore.password">test</prop>
         <!-- The default keystore alias to use, if none is specified. -->
-        <prop key="org.apache.ws.security.crypto.merlin.keystore.alias">senderalias</prop>
+        <prop key="org.apache.ws.security.crypto.merlin.keystore.alias">${ap_alias}</prop>
         <!-- The location of the keystore -->
         <prop key="org.apache.ws.security.crypto.merlin.file">${domibus.config.location}/keystore.jks</prop>
     </util:properties>

@@ -34,7 +34,7 @@
     </extensions>
 
     <system-properties>
-        <property name="domibus.config.location" value="${jboss.server.config.dir}/../../modules/eu/europa/ec/cipa/configuration/main/domibus"/>
+        <property name="domibus.config.location" value="${domibus.config.location.path}"/>
     </system-properties>
 
     <management>
