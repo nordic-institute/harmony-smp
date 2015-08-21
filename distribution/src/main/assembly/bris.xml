@@ -142,7 +142,7 @@
     </fileSets>
     <files>
         <file>
-            <source>../../EDELIVERY/domibus/uberwar-builder/target/domibus.war</source>
+            <source>../../EDELIVERY/domibus/domibus-builder/target/domibus.war</source>
             <outputDirectory>/standalone/deployments</outputDirectory>
             <filtered>false</filtered>
         </file>
