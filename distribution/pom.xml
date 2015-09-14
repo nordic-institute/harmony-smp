@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- This project can be used to build a release version of the eDelivery components.
- To install the "sender" artifact, execute the following command :
-  - mvn clean install "-Dwar.deployment.dir=../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target" -Detrustex.localFileStorePath=../filestores/etrustex -Pcomplete-jboss,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss
- To deploy the "receiver" artifact, it is required to have the "vboxmanage" tool in the system environment path. Then execute the following commands :
-  - mvn clean install -Dtype=receiver "-Dwar.deployment.dir=../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target" -Detrustex.localFileStorePath=../filestores/etrustex -Pcomplete-jboss,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss
-  - mvn antrun:run -N
-  - mvn deploy:deploy-file -DgroupId=eu.europa.ec.cipa -DartifactId=edelivery-virtualbox -Dversion=X.Y.Z -Dpackaging=ova -Dfile=target/edelivery-virtualbox.ova -DrepositoryId=joinup-releases -Durl=https://joinup.ec.europa.eu/nexus/content/repositories/releases/
 
-  Of course, you need to replace the version X.Y.Z and the repository in the above command with appropriate values.
+  Pre-requisite: VBoxManage MUST be in the PATH
 
   To build a version for the BRIS project (no AS2, no SMP, Domibus3, no connector), run the following command lines :
   - mvn clean install -DskipTests=true -Pbris
