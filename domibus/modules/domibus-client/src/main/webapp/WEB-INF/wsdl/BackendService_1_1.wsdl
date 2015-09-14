@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions name="eCodex" targetNamespace="http://org.ecodex.backend/1_1/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:eb1="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/" xmlns:ns1="http://www.w3.org/2003/05/soap-envelope" xmlns:ns="http://schemas.xmlsoap.org/soap/envelope/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="http://org.ecodex.backend/1_1/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/">
+  <wsdl:import namespace="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/" location="ebms-header-3_0-200704.xsd">
+    </wsdl:import>
+  <wsdl:import namespace="http://www.w3.org/2005/05/xmlmime" location="xmlmime.xsd">
+    </wsdl:import>
+  <wsdl:types>
+    <xsd:schema targetNamespace="http://org.ecodex.backend/1_1/" xmlns="http://www.w3.org/2001/XMLSchema">
+			<xsd:element name="sendRequest">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="0" name="bodyload" type="tns:PayloadType" xmime:expectedContentTypes="application/octet-stream"/>
+						<xsd:element maxOccurs="unbounded" minOccurs="0" name="payload" type="tns:PayloadType" xmime:expectedContentTypes="application/octet-stream"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="sendRequestURL">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="0" name="bodyload" type="tns:PayloadURLType"/>
+						<xsd:element maxOccurs="unbounded" minOccurs="0" name="payload" type="tns:PayloadURLType"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="sendResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="unbounded" minOccurs="0" name="messageID" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<!-- downloadMessage -->
+			<xsd:element name="downloadMessageRequest">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="messageID" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="downloadMessageResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<!-- Attachments -->
+						<xsd:element maxOccurs="1" minOccurs="0" name="bodyload" type="tns:PayloadType" xmime:expectedContentTypes="application/octet-stream"/>
+						<xsd:element maxOccurs="unbounded" minOccurs="0" name="payload" type="tns:PayloadType" xmime:expectedContentTypes="application/octet-stream"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<!-- listPendingMessages -->
+			<xsd:element name="listPendingMessagesRequest"/>
+			<xsd:element name="listPendingMessagesResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="unbounded" minOccurs="0" name="messageID" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:complexType name="PayloadType">
+				<xsd:simpleContent>
+					<xsd:extension base="xmime:base64Binary">
+						<xsd:attribute name="payloadId" type="xsd:token" use="required"/>
+					</xsd:extension>
+				</xsd:simpleContent>
+			</xsd:complexType>
+			<xsd:complexType name="PayloadURLType">
+				<xsd:simpleContent>
+					<xsd:extension base="xsd:string">
+						<xsd:attribute name="payloadId" type="xsd:token" use="required"/>
+					</xsd:extension>
+				</xsd:simpleContent>
+			</xsd:complexType>
+			<xsd:element name="createPartnershipRequest">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="1" name="senderId" type="xsd:string"/>
+						<xsd:element maxOccurs="1" minOccurs="1" name="receiverId" type="xsd:string"/>
+						<xsd:element maxOccurs="1" minOccurs="1" name="service" type="xsd:string"/>
+						<xsd:element maxOccurs="1" minOccurs="1" name="action" type="xsd:string"/>
+						<xsd:element maxOccurs="1" minOccurs="1" name="endpointURL" type="xsd:string"/>
+						<xsd:element maxOccurs="1" minOccurs="1" name="certificate" type="xsd:base64Binary"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="createPartnershipResponse">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element maxOccurs="1" minOccurs="1" name="result" type="xsd:string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+			<xsd:element name="FaultDetail">
+				<xsd:complexType>
+					<xsd:sequence>
+						<xsd:element name="code" nillable="false">
+							<xsd:simpleType>
+								<xsd:restriction base="xsd:string">
+									<xsd:enumeration value="ERROR_GENERAL_001">
+										<xsd:annotation>
+											<xsd:documentation>Unknown error</xsd:documentation>
+										</xsd:annotation>
+									</xsd:enumeration>
+									<xsd:enumeration value="ERROR_GENERAL_002">
+										<xsd:annotation>
+											<xsd:documentation>SOAP Parameters incorrect</xsd:documentation>
+										</xsd:annotation>
+									</xsd:enumeration>
+									<xsd:enumeration value="ERROR_GENERAL_003">
+										<xsd:annotation>
+											<xsd:documentation>Operation Parameters incorrect</xsd:documentation>
+										</xsd:annotation>
+									</xsd:enumeration>
+									<xsd:enumeration value="ERROR_SEND_001">
+										<xsd:annotation>
+											<xsd:documentation>Cannot identify a valid PMode</xsd:documentation>
+										</xsd:annotation>
+									</xsd:enumeration>
+									<xsd:enumeration value="ERROR_SEND_002">
+										<xsd:annotation>
+											<xsd:documentation>Gateway Sending Error</xsd:documentation>
+										</xsd:annotation>
+									</xsd:enumeration>
+									<xsd:enumeration value="ERROR_SEND_003">
+										<xsd:annotation>
+											<xsd:documentation>Network error</xsd:documentation>
+										</xsd:annotation>
+									</xsd:enumeration>
+									<xsd:enumeration value="ERROR_SEND_004">
+										<xsd:annotation>
+											<xsd:documentation>Payload url invalid</xsd:documentation>
+										</xsd:annotation>
+									</xsd:enumeration>
+									<xsd:enumeration value="ERROR_SEND_005">
+										<xsd:annotation>
+											<xsd:documentation>Invalid payloads size</xsd:documentation>
+										</xsd:annotation>
+									</xsd:enumeration>
+									<xsd:enumeration value="ERROR_DOWNLOAD_001">
+										<xsd:annotation>
+											<xsd:documentation>Message ID invalid</xsd:documentation>
+										</xsd:annotation>
+									</xsd:enumeration>
+									<xsd:enumeration value="ERROR_DOWNLOAD_002">
+										<xsd:annotation>
+											<xsd:documentation>Message ID already downloaded</xsd:documentation>
+										</xsd:annotation>
+									</xsd:enumeration>
+									<xsd:enumeration value="ERROR_DOWNLOAD_003">
+										<xsd:annotation>
+											<xsd:documentation>Message Files not found</xsd:documentation>
+										</xsd:annotation>
+									</xsd:enumeration>
+								</xsd:restriction>
+							</xsd:simpleType>
+						</xsd:element>
+						<xsd:element name="message" nillable="true" type="string"/>
+					</xsd:sequence>
+				</xsd:complexType>
+			</xsd:element>
+		</xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="downloadMessageFault">
+    <wsdl:part name="faultDetail" element="tns:FaultDetail">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="downloadMessageRequest">
+    <wsdl:part name="downloadMessageRequest" element="tns:downloadMessageRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="listPendingMessagesRequest">
+    <wsdl:part name="listPendingMessagesRequest" element="tns:listPendingMessagesRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="sendResponse">
+    <wsdl:part name="sendResponse" element="tns:sendResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createPartnershipResponse">
+    <wsdl:part name="createPartnershipResponse" element="tns:createPartnershipResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="listPendingMessagesResponse">
+    <wsdl:part name="listPendingMessagesResponse" element="tns:listPendingMessagesResponse">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="downloadMessageResponse">
+    <wsdl:part name="downloadMessageResponse" element="tns:downloadMessageResponse">
+    </wsdl:part>
+    <wsdl:part name="ebMSHeaderInfo" element="eb1:Messaging">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createPartnershipFault">
+    <wsdl:part name="faultDetail" element="tns:FaultDetail">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="sendMessageFault">
+    <wsdl:part name="faultDetail" element="tns:FaultDetail">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="createPartnershipRequest">
+    <wsdl:part name="createPartnershipRequest" element="tns:createPartnershipRequest">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="sendRequestURL">
+    <wsdl:part name="sendRequestURL" element="tns:sendRequestURL">
+    </wsdl:part>
+    <wsdl:part name="ebMSHeaderInfo" element="eb1:Messaging">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="sendRequest">
+    <wsdl:part name="sendRequest" element="tns:sendRequest">
+    </wsdl:part>
+    <wsdl:part name="ebMSHeaderInfo" element="eb1:Messaging">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="sendMessageWithReferenceFault">
+    <wsdl:part name="faultDetail" element="tns:FaultDetail">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="listPendingMessagesFault">
+    <wsdl:part name="faultDetail" element="tns:FaultDetail">
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="BackendInterface">
+    <wsdl:operation name="sendMessage">
+      <wsdl:input name="sendMessageRequest" message="tns:sendRequest">
+    </wsdl:input>
+      <wsdl:output name="sendMessageResponse" message="tns:sendResponse">
+    </wsdl:output>
+      <wsdl:fault name="fault" message="tns:sendMessageFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="sendMessageWithReference">
+      <wsdl:input name="sendMessageWithReferenceRequest" message="tns:sendRequestURL">
+    </wsdl:input>
+      <wsdl:output name="sendMessageWithReferenceResponse" message="tns:sendResponse">
+    </wsdl:output>
+      <wsdl:fault name="fault" message="tns:sendMessageWithReferenceFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="downloadMessage">
+      <wsdl:input name="downloadMessageRequest" message="tns:downloadMessageRequest">
+    </wsdl:input>
+      <wsdl:output name="downloadMessageResponse" message="tns:downloadMessageResponse">
+    </wsdl:output>
+      <wsdl:fault name="fault" message="tns:downloadMessageFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="listPendingMessages">
+      <wsdl:input name="listPendingMessagesRequest" message="tns:listPendingMessagesRequest">
+    </wsdl:input>
+      <wsdl:output name="listPendingMessagesResponse" message="tns:listPendingMessagesResponse">
+    </wsdl:output>
+      <wsdl:fault name="fault" message="tns:listPendingMessagesFault">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="createPartnership">
+      <wsdl:input name="createPartnershipRequest" message="tns:createPartnershipRequest">
+    </wsdl:input>
+      <wsdl:output name="createPartnershipResponse" message="tns:createPartnershipResponse">
+    </wsdl:output>
+      <wsdl:fault name="fault" message="tns:createPartnershipFault">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="eCODEX" type="tns:BackendInterface">
+    <soap12:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="sendMessage">
+      <wsdl:input name="sendMessageRequest">
+        <soap12:body parts="sendRequest" use="literal"/>
+        <soap12:header message="tns:sendRequest" part="ebMSHeaderInfo" use="literal">
+        </soap12:header>
+      </wsdl:input>
+      <wsdl:output name="sendMessageResponse">
+        <soap12:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="fault">
+        <soap12:fault name="fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="sendMessageWithReference">
+      <wsdl:input name="sendMessageWithReferenceRequest">
+        <soap12:body parts="sendRequestURL" use="literal"/>
+        <soap12:header message="tns:sendRequestURL" part="ebMSHeaderInfo" use="literal">
+        </soap12:header>
+      </wsdl:input>
+      <wsdl:output name="sendMessageWithReferenceResponse">
+        <soap12:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="fault">
+        <soap12:fault name="fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="downloadMessage">
+      <wsdl:input name="downloadMessageRequest">
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="downloadMessageResponse">
+        <soap12:body parts="downloadMessageResponse" use="literal"/>
+        <soap12:header message="tns:downloadMessageResponse" part="ebMSHeaderInfo" use="literal">
+        </soap12:header>
+      </wsdl:output>
+      <wsdl:fault name="fault">
+        <soap12:fault name="fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="listPendingMessages">
+      <wsdl:input name="listPendingMessagesRequest">
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="listPendingMessagesResponse">
+        <soap12:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="fault">
+        <soap12:fault name="fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="createPartnership">
+      <wsdl:input name="createPartnershipRequest">
+        <soap12:body use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="createPartnershipResponse">
+        <soap12:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="fault">
+        <soap12:fault name="fault" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="BackendService_1_1">
+    <wsdl:port name="BackendPort" binding="tns:eCODEX">
+      <soap12:address location="http://wltdgt02.cc.cec.eu.int:2061/domibus/services/BackendService_1_1/"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>
