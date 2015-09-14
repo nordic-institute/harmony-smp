@@ -1,13 +1,9 @@
 package eu.eCODEX.submission.original.service;
 
 import backend.ecodex.org._1_1.*;
-import eu.domibus.backend.util.IOUtils;
-import eu.domibus.common.exceptions.ConfigurationException;
 import eu.domibus.common.util.JNDIUtil;
 import eu.domibus.security.config.generated.PublicKeystore;
-import eu.domibus.security.config.generated.Security;
 import eu.domibus.security.config.generated.SecurityConfig;
-import eu.domibus.security.config.model.RemoteSecurityConfig;
 import eu.domibus.security.module.Constants;
 import eu.domibus.security.module.KeystoreUtil;
 import eu.eCODEX.submission.handler.MessageRetriever;
@@ -20,19 +16,14 @@ import eu.eCODEX.submission.original.generated._1_1.exception.SendMessageWithRef
 import eu.eCODEX.submission.validation.exception.ValidationException;
 import eu.eCODEX.transport.dto.BackendMessageIn;
 import eu.eCODEX.transport.dto.BackendMessageOut;
+import org.apache.axis2.context.MessageContext;
 import org.apache.log4j.Logger;
-import org.apache.neethi.Policy;
-import org.bouncycastle.util.encoders.Base64;
 import org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.MessagingE;
 
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
-import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.util.Collection;
@@ -115,7 +106,9 @@ public class BackendServiceImpl extends BackendServiceSkeleton {
             // create Pmode for receiving the message
             BackendServiceImpl.LOG.debug("creating/ updating PMODE for Sender :" + createPartnershipRequest.getSenderId() + "Receiver : " + createPartnershipRequest.getReceiverId() + "Service : " + createPartnershipRequest.getService() + "Action " + createPartnershipRequest.getAction());
 
-            new AS4PModeService().createPartner(createPartnershipRequest.getSenderId(), createPartnershipRequest.getReceiverId(), createPartnershipRequest.getService(), createPartnershipRequest.getAction(), createPartnershipRequest.getEndpointURL());
+            AS4PModeService as4PModeService = new AS4PModeService();
+            as4PModeService.createPartner(createPartnershipRequest.getSenderId(), createPartnershipRequest.getReceiverId(), createPartnershipRequest.getService(), createPartnershipRequest.getAction(), createPartnershipRequest.getEndpointURL());
+            as4PModeService.createPartner(createPartnershipRequest.getReceiverId(), createPartnershipRequest.getSenderId(), createPartnershipRequest.getService(), createPartnershipRequest.getAction(), (String) MessageContext.getCurrentMessageContext().getProperty("REMOTE_ADDR"));
 
             final CreatePartnershipResponse createPartnershipResponseResult = new CreatePartnershipResponse();
             createPartnershipResponseResult.setResult("OK");
