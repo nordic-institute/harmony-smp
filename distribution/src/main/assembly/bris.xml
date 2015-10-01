@@ -142,7 +142,12 @@
     </fileSets>
     <files>
         <file>
-            <source>../../EDELIVERY/domibus/domibus-builder/target/domibus.war</source>
+            <source>../../EDELIVERY/domibus-3-submission/ref-backend-ws/target/submission.war</source>
+            <outputDirectory>/standalone/deployments</outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>../../EDELIVERY/domibus-3-submission/Domibus-MSH/target/domibus.war</source>
             <outputDirectory>/standalone/deployments</outputDirectory>
             <filtered>false</filtered>
         </file>
@@ -173,6 +178,16 @@
         </file>
         <file>
             <source>src/main/resources/configuration/domibus-configuration.xml</source>
+            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>src/main/resources/configuration/backend-common-configuration.xml</source>
+            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+	<file>
+            <source>src/main/resources/configuration/submission-config.xml</source>
             <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
             <filtered>true</filtered>
         </file>

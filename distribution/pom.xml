@@ -111,7 +111,7 @@
                 <skipSMP>true</skipSMP>
             </properties>
             <modules>
-                <module>../../EDELIVERY/domibus</module>
+                <module>../../EDELIVERY/domibus-3-submission</module>
             </modules>
         </profile>
         <profile>
