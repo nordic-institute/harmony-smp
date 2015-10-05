@@ -141,9 +141,8 @@
         </fileSet>
     </fileSets>
     <files>
-        <file>
-            <source>../../EDELIVERY/domibus-3-submission/ref-backend-ws/target/submission.war</source>
-            <outputDirectory>/standalone/deployments</outputDirectory>
+        <file><source>../../EDELIVERY/domibus-3-submission/ref-backend-ws/target/submission.war</source>
+        <outputDirectory>/standalone/deployments</outputDirectory>
             <filtered>false</filtered>
         </file>
         <file>
@@ -186,7 +185,7 @@
             <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
             <filtered>true</filtered>
         </file>
-	<file>
+        <file>
             <source>src/main/resources/configuration/submission-config.xml</source>
             <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
             <filtered>true</filtered>
@@ -198,6 +197,26 @@
         </file>
         <file>
             <source>src/main/resources/configuration/pmode-VM.xml</source>
+            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>src/main/resources/configuration/encryptAll.xml</source>
+            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>src/main/resources/configuration/signOnly.xml</source>
+            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>src/main/resources/configuration/doNothingPolicy.xml</source>
+            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>src/main/resources/configuration/ehCache.xml</source>
             <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
             <filtered>false</filtered>
         </file>
