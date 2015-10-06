@@ -48,5 +48,10 @@
 		  <username>feriaad</username>
 		  <password>{788Ld8tT0dUH+IzZMvy6SbUdFcYCnwd5nSO8yf1PFvQ=}</password>
 		</server>
+		<server>
+		  <id>nexus-releases</id>
+		  <username>ecodex</username>
+		  <password>{e93abdf9956041ba61fd5db6fc58014cb93f96f5=}</password>
+		</server>
   </servers>
 </settings>
