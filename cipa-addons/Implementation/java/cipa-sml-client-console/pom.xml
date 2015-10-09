@@ -4,11 +4,11 @@
   <parent>
     <groupId>eu.europa.ec.cipa</groupId>
     <artifactId>cipa-parent-pom</artifactId>
-    <version>2.4.3-SNAPSHOT</version>
+    <version>2.4.3</version>
     <relativePath>../../../../cipa-core/Implementation/java/cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-sml-client-console</artifactId>
-  <version>2.4.3-SNAPSHOT</version>
+  <version>2.4.3</version>
   <name>cipa-sml-client-console</name>
 
   <scm>
