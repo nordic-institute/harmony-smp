@@ -91,6 +91,8 @@ public class Constants {
     public static final String ATTACHMENT_FOLDER_PARAMETER = "domibus.module.ebms3.attachmentFolder";
     public static final String WORKERS_FILE_PARAMETER = "domibus.module.ebms3.workersFile";
     public static final String ENFORCE_1_3_COMPATIBILITY = "domibus.module.ebms3.enforce.1_3.compatibility";
+    public static final String MASTER_INSTANCE = "domibus.cluster.masterinstance.name";
+    public static final String INSTANCE_NAME_PROPERY = "domibus.cluster.instance.name.property";
     public static final String ENABLE_WHITE_LIST = "domibus.module.ebms3.whitelist";
     public static final String COMPRESSION_PROPERTY_NAME = "CompressionType";
     public static final String COMPRESSION_GZIP_MIMETYPE = "application/gzip";

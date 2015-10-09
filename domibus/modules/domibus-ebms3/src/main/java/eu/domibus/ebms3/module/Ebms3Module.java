@@ -7,6 +7,7 @@ package eu.domibus.ebms3.module;
 import eu.domibus.common.exceptions.ConfigurationException;
 import eu.domibus.common.util.JNDIUtil;
 import eu.domibus.ebms3.workers.WorkerPool;
+
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisDescription;
@@ -116,6 +117,8 @@ public class Ebms3Module implements Module {
                     JNDIUtil.getStringEnvironmentParameter(Constants.RECEIVED_MESSAGES_FOLDER_PARAMETER);
 
             final String hostnames = JNDIUtil.getStringEnvironmentParameter(Constants.HOSTNAMES_PARAMETER);
+            
+           
 
 
             final Parameter gatewayParam = new Parameter(Constants.GATEWAY_CONFIG_FILE_PARAMETER, gatewayConfigFile);
@@ -131,6 +134,8 @@ public class Ebms3Module implements Module {
 
             final Parameter localParam = new Parameter(Constants.HOSTNAMES_PARAMETER, hostnames);
             config.addParameter(localParam);
+            
+
 
         } catch (Exception e) {
             throw new ConfigurationException(e);
@@ -139,15 +144,34 @@ public class Ebms3Module implements Module {
 
     private void loadWorkers() {
         Ebms3Module.log.debug("workers file is: " + Constants.getWorkersFile());
-        final WorkerPool pool = WorkerPool.load(Constants.getWorkersFile());
-        Constants.workerPool = pool;
-        if (pool == null) {
-            Ebms3Module.log.debug("Could not load workers from file " + Constants.getWorkersFile());
-        } else {
-            pool.start();
-            pool.watch(30000);
-            Ebms3Module.log.debug("started the workers pool");
-        }
+      
+        String masterInstanceName = null;
+        String currentInstanceNameSystemProperty = null;
+        String currentInstanceName = null;
+        
+        try {
+			masterInstanceName = JNDIUtil.getStringEnvironmentParameter(Constants.MASTER_INSTANCE);
+			log.info("Domibus Master Cluster instance is "+masterInstanceName);
+			
+			currentInstanceNameSystemProperty = JNDIUtil.getStringEnvironmentParameter(Constants.INSTANCE_NAME_PROPERY);
+			currentInstanceName = System.getProperty(currentInstanceNameSystemProperty);
+			log.info("trying to start workers on "+ currentInstanceName);
+			
+		} catch (Exception e) {
+			   log.warn("Domibus not configured to run in na cluster");
+		}
+       if (masterInstanceName == null || currentInstanceName.equalsIgnoreCase(masterInstanceName)){
+    	   log.info("starting Workers "+ currentInstanceName);
+    	   final WorkerPool pool = WorkerPool.load(Constants.getWorkersFile());
+    	   Constants.workerPool = pool;
+    	   if (pool == null) {
+    		   Ebms3Module.log.debug("Could not load workers from file " + Constants.getWorkersFile());
+    	   } else {
+    		   pool.start();
+    		   pool.watch(30000);
+    		   Ebms3Module.log.debug("started the workers pool");
+    	   }
+       }
     }
 
     public void engageNotify(final AxisDescription axisDescription) throws AxisFault {
