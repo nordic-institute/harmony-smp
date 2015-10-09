@@ -3,6 +3,9 @@ package eu.domibus.common.persistent;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
+
+import org.apache.log4j.Logger;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -12,11 +15,20 @@ import java.util.List;
  * @author muell16
  */
 public class TempStoreDAO extends AbstractDAO<TempStore> {
+	private static final Logger LOG = Logger.getLogger(TempStoreDAO.class);
     @Override
     public TempStore findById(String id) {
-        final EntityManager em = JpaUtil.getEntityManager();
-        final TempStore res = em.find(TempStore.class, id);
-        em.close();
+        EntityManager em = JpaUtil.getEntityManager();
+        
+        TempStore res= null;
+		try {
+			res = em.find(TempStore.class, id);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}finally{
+			em.close();
+		}
         return res;
     }
 
@@ -48,22 +60,36 @@ public class TempStoreDAO extends AbstractDAO<TempStore> {
     }
 
     public int deleteAttachments(String messageId) {
-        final EntityManager em = JpaUtil.getEntityManager();
-        final EntityTransaction tx = em.getTransaction();
 
-        tx.begin();
+		EntityManager em = null;
+		EntityTransaction tx = null;
+		try {
+			em = JpaUtil.getEntityManager();
+			tx = em.getTransaction();
+			tx.begin();
+			final Query q = em
+					.createNamedQuery("MessageToSend.findFilePathByMessageID");
+			q.setParameter("MESSAGE_ID", messageId);
+			String groupIDAndArtifact = (String) q.getSingleResult();
 
-        final Query q = em.createNamedQuery("MessageToSend.findFilePathByMessageID");
-        q.setParameter("MESSAGE_ID", messageId);
-        String groupIDAndArtifact = (String) q.getSingleResult();
+			final Query r = em.createNamedQuery("TempStore.deleteAttachments");
+			r.setParameter("GROUP", groupIDAndArtifact.split("/")[0]);
+			int numberOfDeletedAttachments = r.executeUpdate();
+			return numberOfDeletedAttachments;
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			throw new RuntimeException(e);
+		} finally {
+			if (tx != null && tx.isActive()) {
+				tx.commit();
+			}
+			if (em != null) {
+				em.close();
+			}
+		}
+       
 
-        final Query r = em.createNamedQuery("TempStore.deleteAttachments");
-        r.setParameter("GROUP", groupIDAndArtifact.split("/")[0]);
-        int numberOfDeletedAttachments = r.executeUpdate();
 
-        tx.commit();
-        em.close();
-
-        return numberOfDeletedAttachments;
+      
     }
 }

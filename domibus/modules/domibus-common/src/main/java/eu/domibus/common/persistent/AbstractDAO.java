@@ -3,6 +3,9 @@ package eu.domibus.common.persistent;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
+import org.apache.log4j.Logger;
+
+
 /**
  * @author Christian Koch
  *         <p/>
@@ -10,7 +13,8 @@ import javax.persistence.EntityTransaction;
  *         EntityManager and basic database operations
  */
 public abstract class AbstractDAO<T extends AbstractBaseEntity> {
-
+	 
+	private static final Logger LOG = Logger.getLogger(AbstractDAO.class);
 
     /**
      * Saves an Entity to the database
@@ -18,12 +22,27 @@ public abstract class AbstractDAO<T extends AbstractBaseEntity> {
      * @param entity the entity to persist
      */
     public void persist(final T entity) {
-        final EntityManager em = JpaUtil.getEntityManager();
-        final EntityTransaction tx = em.getTransaction();
-        tx.begin();
-        em.persist(entity);
-        tx.commit();
-        em.close();
+        EntityManager em = null;
+        EntityTransaction tx = null;
+        
+        try {
+        	em = JpaUtil.getEntityManager();
+        	tx = em.getTransaction();
+			tx.begin();
+			em.persist(entity);
+			
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			throw new RuntimeException(e);
+		} finally{
+			if (tx != null && tx.isActive()){
+				tx.commit();
+			}
+			if (em != null){
+				em.close();
+			}
+		}
+		
     }
 
 
@@ -42,13 +61,27 @@ public abstract class AbstractDAO<T extends AbstractBaseEntity> {
      * @return the managed istance of the entity
      */
     public T update(final T entity) {
-        final EntityManager em = JpaUtil.getEntityManager();
-        final EntityTransaction tx = em.getTransaction();
-        tx.begin();
-        final T res = em.merge(entity);
-        tx.commit();
-        em.close();
-        return res;
+    	EntityManager em =null;
+    	EntityTransaction tx =null;
+        try {
+        	 em = JpaUtil.getEntityManager();
+        	 tx = em.getTransaction();
+
+			tx.begin();
+			final T res = em.merge(entity);
+			return res;
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new RuntimeException(e);
+		}finally{
+			if (tx != null && tx.isActive()) {
+				tx.commit();
+			}
+			if (em != null){
+				em.close();
+			}
+		}
     }
 
     /**
@@ -58,11 +91,23 @@ public abstract class AbstractDAO<T extends AbstractBaseEntity> {
      * @throws IllegalArgumentException - if the instance is not an entity
      */
     public void delete(final T entity) {
-        final EntityManager em = JpaUtil.getEntityManager();
-        final EntityTransaction tx = em.getTransaction();
-        tx.begin();
-        em.remove(em.merge(entity));
-        tx.commit();
-        em.close();
+		EntityManager em =null;
+		EntityTransaction tx = null;
+		try {
+			em = JpaUtil.getEntityManager();
+			tx = em.getTransaction();
+			tx.begin();
+			em.remove(em.merge(entity));
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			throw new RuntimeException(e);
+		} finally {
+			if (tx != null && tx.isActive()) {
+				tx.commit();
+			}
+			if (em != null) {
+				em.close();
+			}
+		}
     }
 }
