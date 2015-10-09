@@ -2,12 +2,14 @@ package eu.domibus.ebms3.persistent;
 
 import eu.domibus.common.persistent.AbstractDAO;
 import eu.domibus.common.persistent.JpaUtil;
+
 import org.apache.log4j.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
+
 import java.util.Date;
 import java.util.List;
 
@@ -56,16 +58,31 @@ public class ReceiptTrackingDAO extends AbstractDAO<ReceiptTracking> {
      */
 
     public int updateTrackingStatus(final String newStatus, final String messageId) {
-        final EntityManager em = JpaUtil.getEntityManager();
-        final Query q = em.createNamedQuery("ReceiptTracking.updateTrackingStatus");
-        q.setParameter("NEW_STATUS", newStatus);
-        q.setParameter("MESSAGE_ID", messageId);
-        final EntityTransaction tx = em.getTransaction();
-        tx.begin();
-        final int updated = q.executeUpdate();
-        tx.commit();
-        em.close();
-        return updated;
+       
+
+		EntityManager em = null;
+		EntityTransaction tx = null;
+		try {
+			em = JpaUtil.getEntityManager();
+			final Query q = em.createNamedQuery("ReceiptTracking.updateTrackingStatus");
+		    q.setParameter("NEW_STATUS", newStatus);
+		    q.setParameter("MESSAGE_ID", messageId);
+			tx = em.getTransaction();
+			tx.begin();
+			final int updated = q.executeUpdate();
+			return updated;
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			throw new RuntimeException(e);
+		} finally {
+			if (tx != null && tx.isActive()) {
+				tx.commit();
+			}
+			if (em != null) {
+				em.close();
+			}
+		}
+		
     }
 
     /**
@@ -80,17 +97,32 @@ public class ReceiptTrackingDAO extends AbstractDAO<ReceiptTracking> {
      */
     public synchronized int setReceipt(final String refToMessageId, final String receipt,
                                        final Date receivedTimestamp) {
-        final EntityManager em = JpaUtil.getEntityManager();
-        final Query q = em.createNamedQuery("ReceiptTracking.setReceipt");
-        q.setParameter("RECEIPT", receipt);
-        q.setParameter("FIRST_RECEPTION", receivedTimestamp);
-        q.setParameter("MESSAGE_ID", refToMessageId);
-        final EntityTransaction tx = em.getTransaction();
-        tx.begin();
-        final int res = q.executeUpdate();
-        tx.commit();
-        em.close();
-        return res;
+       
+       
+        
+    	EntityManager em = null;
+		EntityTransaction tx = null;
+		try {
+			em = JpaUtil.getEntityManager();
+			 final Query q = em.createNamedQuery("ReceiptTracking.setReceipt");
+		        q.setParameter("RECEIPT", receipt);
+		        q.setParameter("FIRST_RECEPTION", receivedTimestamp);
+		        q.setParameter("MESSAGE_ID", refToMessageId);
+			tx = em.getTransaction();
+			tx.begin();
+			final int res = q.executeUpdate();
+			return res;
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			throw new RuntimeException(e);
+		} finally {
+			if (tx != null && tx.isActive()) {
+				tx.commit();
+			}
+			if (em != null) {
+				em.close();
+			}
+		}
 
     }
 

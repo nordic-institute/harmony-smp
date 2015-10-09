@@ -6,6 +6,9 @@ import eu.domibus.common.persistent.JpaUtil;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
+
+import org.apache.log4j.Logger;
+
 import java.util.List;
 
 /**
@@ -15,15 +18,26 @@ import java.util.List;
  * @since 1.4
  */
 public class UserMsgToPushDAO extends AbstractDAO<UserMsgToPush> {
+	 private static final Logger LOG = Logger.getLogger(UserMsgToPushDAO.class);
     /**
      * {@inheritDoc}
      */
     @Override
     public UserMsgToPush findById(final String id) {
-        final EntityManager em = JpaUtil.getEntityManager();
-        final UserMsgToPush res = em.find(UserMsgToPush.class, id);
-        em.close();
-        return res;
+        
+    	final EntityManager em = JpaUtil.getEntityManager();
+    	UserMsgToPush res = null;
+    	try {
+    		 res = em.find(UserMsgToPush.class, id);
+			
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+		}finally {
+			if (em != null) {
+				em.close();
+			}
+		}
+    	return res;
     }
 
 
@@ -33,11 +47,21 @@ public class UserMsgToPushDAO extends AbstractDAO<UserMsgToPush> {
      * @return messages that need to be pushed
      */
     public List<UserMsgToPush> findMessagesToPush() {
-        final EntityManager em = JpaUtil.getEntityManager();
-        final Query q = em.createNamedQuery("UserMsgToPush.findMessagesToPush");
-        final List<UserMsgToPush> res = q.getResultList();
-        em.close();
-        return res;
+    	
+    	final EntityManager em = JpaUtil.getEntityManager();
+    	List<UserMsgToPush> res = null;
+    	try {
+			final Query q = em.createNamedQuery("UserMsgToPush.findMessagesToPush");
+			res = q.getResultList();
+			
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+		}finally {
+			if (em != null) {
+				em.close();
+			}
+		}
+    	return res;
     }
 
 
@@ -47,22 +71,45 @@ public class UserMsgToPushDAO extends AbstractDAO<UserMsgToPush> {
      * @param messageId The message-id of the message to retransmit
      */
     public void setRetransmit(final String messageId) {
-        final EntityManager em = JpaUtil.getEntityManager();
-        final Query q = em.createNamedQuery("UserMsgToPush.setRetransmit");
-        q.setParameter("MESSAGE_ID", messageId);
-        final EntityTransaction tx = em.getTransaction();
-        tx.begin();
-        q.executeUpdate();
-        tx.commit();
-        em.close();
+     
+      
+        EntityManager em = null;
+		EntityTransaction tx = null;
+		try {
+			em = JpaUtil.getEntityManager();
+			   final Query q = em.createNamedQuery("UserMsgToPush.setRetransmit");
+		        q.setParameter("MESSAGE_ID", messageId);
+			tx = em.getTransaction();
+			tx.begin();
+			q.executeUpdate();
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+			throw new RuntimeException(e);
+		} finally {
+			if (tx != null && tx.isActive()) {
+				tx.commit();
+			}
+			if (em != null) {
+				em.close();
+			}
+		}
+
     }
 
     public List<UserMsgToPush> findByMessageId(final String messageId) {
         final EntityManager em = JpaUtil.getEntityManager();
-        final Query q = em.createNamedQuery("UserMsgToPush.findByMessageId");
-        q.setParameter("MESSAGE_ID", messageId);
-        final List<UserMsgToPush> res = q.getResultList();
-        em.close();
+        List<UserMsgToPush> res = null;
+        try {
+        	 final Query q = em.createNamedQuery("UserMsgToPush.findByMessageId");
+             q.setParameter("MESSAGE_ID", messageId);
+            res = q.getResultList();
+		} catch (Exception e) {
+			LOG.error(e.getMessage(), e);
+		}finally {
+			if (em != null) {
+				em.close();
+			}
+		}
         return res;
     }
 }
