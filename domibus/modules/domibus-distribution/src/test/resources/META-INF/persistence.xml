@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- This file is used to generate database scripts for the different databases. While not exactly a test resource build logistics demand it being here... -->
+<persistence version="1.0"
+             xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
+
+    <persistence-unit name="generateDerbyPU"
+                      transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <!-- this will be replaced at buildtime with the classes defined in domibus.default.properties -->
+        <!-- @domibus.mapped.entities@ -->
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyDialect"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="generateOraclePU"
+                      transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <!-- this will be replaced at buildtime with the classes defined in domibus.default.properties -->
+        <!-- @domibus.mapped.entities@ -->
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle10gDialect"/>
+        </properties>
+
+    </persistence-unit>
+    <persistence-unit name="generateMySqlPU"
+                      transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.ejb.HibernatePersistence</provider>
+        <!-- this will be replaced at buildtime with the classes defined in domibus.default.properties -->
+        <!-- @domibus.mapped.entities@ -->
+        <properties>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect"/>
+        </properties>
+    </persistence-unit>
+</persistence>

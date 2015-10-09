@@ -1,0 +1,80 @@
+<module name="domibus-ebms3" class="eu.domibus.ebms3.module.Ebms3Module">
+
+
+    <parameter name="Modules">domibus-ebms3, domibus-security, rampart</parameter>
+
+
+    <InFlow>
+        <handler name="WhitelistChecker" class="eu.domibus.ebms3.handlers.WhitelistChecker">
+            <order phase="ebms3InPhase" phaseFirst="true"/>
+        </handler>
+        <handler name="PModeFinder" class="eu.domibus.ebms3.handlers.PModeFinder">
+            <order phase="ebms3InPhase" after="WhitelistChecker"/>
+        </handler>
+        <handler name="ErrorLogger" class="eu.domibus.ebms3.handlers.ErrorLogger">
+            <order phase="ebms3InPhase" after="PModeFinder"/>
+        </handler>
+        <handler name="Validation" class="eu.domibus.ebms3.handlers.Validation">
+            <order phase="ebms3InPhase" after="ErrorLogger"/>
+        </handler>
+        <handler name="ReceiptProcessor" class="eu.domibus.ebms3.handlers.ReceiptProcessor">
+            <order phase="ebms3InPhase" after="Validation"/>
+        </handler>
+        <handler name="ReceiptGen" class="eu.domibus.ebms3.handlers.ReceiptGen">
+            <order phase="ebms3InPhase" after="ReceiptProcessor"/>
+        </handler>
+        <handler name="PullProcessor" class="eu.domibus.ebms3.handlers.PullProcessor">
+            <order phase="ebms3InPhase" after="ReceiptGen"/>
+        </handler>
+        <handler name="RespPackager" class="eu.domibus.ebms3.handlers.ResponsePackager">
+            <order phase="ebms3InPhase" after="PullProcessor"/>
+        </handler>
+        <handler name="ReceivedUserMsg" class="eu.domibus.ebms3.handlers.DatabaseReceivedUserMsgHandler">
+            <order phase="ebms3InPhase" after="RespPackager"/>
+        </handler>
+        <handler name="InvokeCallback" class="eu.domibus.ebms3.handlers.InvokeCallback">
+            <order phase="ebms3InPhase" after="ReceivedUserMsg"/>
+        </handler>
+        <handler name="HeaderDetacher" class="eu.domibus.ebms3.handlers.HeaderDetacher">
+            <order phase="ebms3InPhase" after="InvokeCallback"/>
+        </handler>
+    </InFlow>
+
+    <OutFlow>
+        <handler name="Packager" class="eu.domibus.ebms3.handlers.Packager">
+            <order phase="ebms3OutPhase" phaseFirst="true"/>
+        </handler>
+        <handler name="CallbackPersist"
+                 class="eu.domibus.ebms3.handlers.CallbackPersist">
+            <order phase="ebms3OutPhase" after="Packager"/>
+        </handler>
+        <handler name="RespPackager" class="eu.domibus.ebms3.handlers.ResponsePackager">
+            <order phase="ebms3OutPhase" after="CallbackPersist"/>
+        </handler>
+        <handler name="PullProcessor" class="eu.domibus.ebms3.handlers.PullProcessor">
+            <order phase="ebms3OutPhase" after="RespPackager"/>
+        </handler>
+        <handler name="TrackReceipt" class="eu.domibus.ebms3.handlers.TrackReceipt">
+            <order phase="ebms3OutPhase" after="PullProcessor"/>
+        </handler>
+        <handler name="ReceiptAppender" class="eu.domibus.ebms3.handlers.ReceiptAppender">
+            <order phase="ebms3OutPhase" after="TrackReceipt"/>
+        </handler>
+        <handler name="SecurityShot" class="eu.domibus.ebms3.handlers.SecurityShot">
+            <order phase="ebms3OutPhase" after="ReceiptAppender"/>
+        </handler>
+    </OutFlow>
+
+    <INFaultFlow>
+        <handler name="ErrorLogger" class="eu.domibus.ebms3.handlers.ErrorLogger">
+            <order phase="ebms3InFaultPhase" phaseFirst="true"/>
+        </handler>
+    </INFaultFlow>
+
+    <OutFaultFlow>
+        <handler name="ErrorGen" class="eu.domibus.ebms3.handlers.ErrorGen">
+            <order phase="ebms3OutFaultPhase" phaseFirst="true"/>
+        </handler>
+    </OutFaultFlow>
+
+</module>
