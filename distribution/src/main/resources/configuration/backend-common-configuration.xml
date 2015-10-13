@@ -67,7 +67,10 @@
         </property>
     </bean>
 
-    <!-- database pooling provider -->    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">        <property name="jndiName" value="java:/jdbc/cipaeDeliveryDs"/>    </bean>
+    <!-- database pooling provider -->
+    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName" value="java:/jdbc/cipaeDeliveryDs"/>
+    </bean>
 
     <!-- Internal configuration provider. Do not change unless you have special requirements (i.e. dynamic
     discovery injection of PModes)-->
@@ -84,6 +87,9 @@
         <prop key="domibus.msh.sender.cron">0/5 * * * * ?</prop>
         <!-- Should unrecoverable errors should be retried or not -->
         <prop key="domibus.dispatch.ebms.error.unrecoverable.retry">true</prop>
+        <prop key="domibus.recipient.wsdl">http://localhost:8088/mockDomibusServiceWSImplServiceSoapBinding?WSDL</prop>
+        <prop key="domibus.recipient.namespaceURI">eu:europa:ec:cipa:domibus:services</prop>
+        <prop key="domibus.recipient.localPart">DomibusServiceWSImplService</prop>
     </util:properties>
 
     <!-- Mimetypes listed in this map will not be compressed (in outgoing messages)
