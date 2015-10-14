@@ -33,6 +33,14 @@
             </array>
         </constructor-arg>
     </bean>
+	
+	<bean id="backendWebservice"
+          class="eu.domibus.submission.webService.impl.BackendWebServiceImpl">
+        <constructor-arg value="backendWebservice"/>
+        <property name="discoveryClient"><null/></property>
+    </bean>
+    <jaxws:endpoint id="backendInterfaceEndpoint"
+                    implementor="#backendWebservice" address="/backend"/>
 
     <util:list id="backends" value-type="eu.domibus.submission.BackendConnector">
 		<ref bean="domibusNotification"/>
