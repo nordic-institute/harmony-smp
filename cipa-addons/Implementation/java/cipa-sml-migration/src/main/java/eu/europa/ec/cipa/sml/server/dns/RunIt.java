@@ -9,20 +9,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.xbill.DNS.CNAMERecord;
-import org.xbill.DNS.DClass;
-import org.xbill.DNS.Name;
-import org.xbill.DNS.Record;
-import org.xbill.DNS.TextParseException;
-import org.xbill.DNS.Type;
-import org.xbill.DNS.ZoneTransferException;
+import org.xbill.DNS.*;
 
 public class RunIt {
 
@@ -165,9 +158,16 @@ public class RunIt {
 						delete.add(r);
 					}
 				}
-				add.add(new CNAMERecord(Name.fromString(ent.getName() + "." + DNSClientConfiguration.getSMLZoneName()), DClass.IN, client.getTTLSecs(),
-						new Name(ent.getHost())));
+				if (ent.getHost().matches("^(?:[0-9]{1,3}\\.){3}[0-9]{1,3}$")) {
+					add.add(new ARecord(Name.fromString(ent.getName() + "." + DNSClientConfiguration.getSMLZoneName()), DClass.IN, client.getTTLSecs(),
+							InetAddress.getByName(ent.getHost())));
+				} else {
+					add.add(new CNAMERecord(Name.fromString(ent.getName() + "." + DNSClientConfiguration.getSMLZoneName()), DClass.IN, client.getTTLSecs(),
+							new Name(ent.getHost())));
+				}
 			} catch (TextParseException e) {
+				logger.error(e.getMessage(), e);
+			} catch (UnknownHostException e) {
 				logger.error(e.getMessage(), e);
 			}
 		}
@@ -265,6 +265,12 @@ public class RunIt {
 					pub.setHost(temp);
 					lIdentifierHosts.add(pub);
 				}
+			} else if (line.contains("\tA\t")) {
+				DNSEntery pub = new DNSEntery();
+				String s[] = line.split("\tA\t");
+				pub.setName(s[0]);
+				pub.setHost(s[1]);
+				lSMPHosts.add(pub);
 			} else {
 				if (line.contains("$ORIGIN")) {
 					if (line.contains("publisher.")) {
