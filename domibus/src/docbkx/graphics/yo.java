@@ -12,4 +12,9 @@ import java.util.concurrent.Future;
 public class ExampleBackendConnector extends AbstractBackendConnector<MyObjectIn, MyObjectOut>
                                      implements BackendConnector<MyObjectIn, MyObjectOut>{
 									 
+	private MessageSubmissionTransformer<MyObjectIn> messageSubmissionTransformer;
+    private MessageRetrievalTransformer<MyObjectOut> messageRetrievalTransformer;
+
+    
+
 }
