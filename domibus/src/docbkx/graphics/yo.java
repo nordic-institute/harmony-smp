@@ -15,6 +15,7 @@ public class ExampleBackendConnector extends AbstractBackendConnector<MyObjectIn
 	private MessageSubmissionTransformer<MyObjectIn> messageSubmissionTransformer;
     private MessageRetrievalTransformer<MyObjectOut> messageRetrievalTransformer;
 
+    @Override
     
 
 }
