@@ -1,0 +1,109 @@
+<!--
+  ~ Copyright 2015 e-CODEX Project
+  ~
+  ~ Licensed under the EUPL, Version 1.1 or – as soon they
+  ~ will be approved by the European Commission - subsequent
+  ~ versions of the EUPL (the "Licence");
+  ~ You may not use this work except in compliance with the
+  ~ Licence.
+  ~ You may obtain a copy of the Licence at:
+  ~ http://ec.europa.eu/idabc/eupl5
+  ~ Unless required by applicable law or agreed to in
+  ~ writing, software distributed under the Licence is
+  ~ distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~ express or implied.
+  ~ See the Licence for the specific language governing
+  ~ permissions and limitations under the Licence.
+  -->
+
+<assembly
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+        xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+    <id>distribution-war</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <baseDirectory>tomcat</baseDirectory>
+    <includeSiteDirectory>false</includeSiteDirectory>
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.directory}/sql-scripts</directory>
+            <useDefaultExcludes>true</useDefaultExcludes>
+            <outputDirectory>sql-scripts</outputDirectory>
+            <includes>
+                <include>*.ddl</include>
+            </includes>
+            <!-- excludes/-->
+            <fileMode>0444</fileMode>
+            <directoryMode>0555</directoryMode>
+            <!-- directory/-->
+            <lineEnding>unix</lineEnding>
+            <filtered>false</filtered>
+        </fileSet>
+
+    </fileSets>
+    <files>
+        <file>
+            <source>${project.build.directory}/docbkx/pdf/Domibus.pdf</source>
+            <outputDirectory>/</outputDirectory>
+            <destName>Installation_Instructions.pdf</destName>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>${project.basedir}/changelog.txt</source>
+            <outputDirectory>/</outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>${project.basedir}/upgrade-info.txt</source>
+            <outputDirectory>/</outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>${project.basedir}/src/main/conf/domibus/domibus-pmode.xsd
+            </source>
+            <outputDirectory>/config/domibus</outputDirectory>
+            <destName>domibus-pmode.xsd</destName>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>${project.basedir}/src/main/conf/domibus/clientauthentication.xml
+            </source>
+            <outputDirectory>/</outputDirectory>
+            <destName>clientauthentication.xml</destName>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>${project.basedir}/src/main/conf/domibus/ehcache.xml
+            </source>
+            <outputDirectory>/config/domibus</outputDirectory>
+            <destName>ehcache.xml</destName>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>
+                ${project.basedir}/src/main/conf/domibus/domibus-configuration.xml
+            </source>
+            <outputDirectory>/config/domibus</outputDirectory>
+            <destName>domibus-configuration.xml</destName>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>${project.build.directory}/domibus.war</source>
+            <outputDirectory>/</outputDirectory>
+            <destName>domibus.war</destName>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>
+                ${project.basedir}/src/main/conf/domibus/submission-config.xml
+            </source>
+            <outputDirectory>/config/domibus</outputDirectory>
+            <destName>submission-config.xml</destName>
+            <filtered>false</filtered>
+        </file>
+    </files>
+</assembly>
