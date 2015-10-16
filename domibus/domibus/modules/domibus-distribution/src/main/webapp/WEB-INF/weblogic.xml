@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<weblogic-web-app xmlns="http://xmlns.oracle.com/weblogic/weblogic-web-app"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  xsi:schemaLocation="http://xmlns.oracle.com/weblogic/weblogic-web-app
+                    http://xmlns.oracle.com/weblogic/weblogic-web-app/1.7/weblogic-web-app.xsd">
+    <context-root>/@context.root@</context-root>
+    <container-descriptor>
+        <index-directory-enabled>false</index-directory-enabled>
+        <prefer-application-packages>
+            <package-name>org.apache.*</package-name>
+            <package-name>org.opensaml.*</package-name>
+            <package-name>javax.wsdl.*</package-name>
+            <package-name>org.hibernate.*</package-name>
+        </prefer-application-packages>
+        <allow-all-roles>true</allow-all-roles>
+    </container-descriptor>
+</weblogic-web-app>

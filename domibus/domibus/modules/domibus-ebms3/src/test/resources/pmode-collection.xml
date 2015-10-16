@@ -1,0 +1,127 @@
+<PModes>
+
+    <UserService name="PullerApp">
+        <ToPartyInfo>
+            <PartyId>pullerParty</PartyId>
+        </ToPartyInfo>
+        <CollaborationInfo>
+            <Service>imageService</Service>
+            <Action>storeImage</Action>
+        </CollaborationInfo>
+    </UserService>
+
+    <PMode name="QuantityOnHandPulling" binding="binding1"/>
+
+    <UserService name="Supplier">
+        <ToPartyInfo>
+            <PartyId type="supplier">Supplier</PartyId>
+            <Role>Role</Role>
+        </ToPartyInfo>
+        <CollaborationInfo>
+            <Service>QuantityOnHand</Service>
+            <Action>QuantityOnHand</Action>
+        </CollaborationInfo>
+        <PayloadInfo>
+            <Message label="quantityMsg" maxSize="3000">
+                <SoapBodySchema>http://domain.com/someSchema.xsd</SoapBodySchema>
+            </Message>
+        </PayloadInfo>
+    </UserService>
+
+    <UserService name="ConsumerTest">
+        <ToPartyInfo>
+            <PartyId type="jeita-original-type">ConsumerTest</PartyId>
+            <Role>http://www.jeita.jp/roles/Buyer</Role>
+        </ToPartyInfo>
+        <CollaborationInfo>
+            <Service>UploadService</Service>
+            <Action>PutMessage</Action>
+        </CollaborationInfo>
+    </UserService>
+
+    <UserService name="ConsumerTest">
+        <ToPartyInfo>
+            <PartyId>ConsumerTest</PartyId>
+        </ToPartyInfo>
+        <CollaborationInfo>
+            <Service>UploadService</Service>
+            <Action>upload</Action>
+        </CollaborationInfo>
+    </UserService>
+
+    <UserService name="Customer">
+        <ToPartyInfo>
+            <PartyId>Customer</PartyId>
+            <Role>Consumer</Role>
+        </ToPartyInfo>
+        <CollaborationInfo>
+            <Service>SendShipment</Service>
+            <Action>SendShipment</Action>
+        </CollaborationInfo>
+        <PayloadInfo>
+            <Message label="shipMsg" maxSize="3000">
+                <SoapBodySchema/>
+            </Message>
+        </PayloadInfo>
+    </UserService>
+
+    <Producer name="Supplier">
+        <PartyId>autotech-supplier</PartyId>
+        <Role>GM</Role>
+    </Producer>
+
+
+    <Binding name="binding2">
+        <MEP name="One-Way/Push">
+            <Leg number="1" mpc="shipment" userService="Customer" producer="Supplier">
+                <Endpoint address="http://localhost:8080/domibus/services/Ebms3Customer" soapVersion="1.1"/>
+            </Leg>
+        </MEP>
+    </Binding>
+
+    <Binding name="uploadBinding2">
+        <MEP name="One-Way/Push">
+            <Leg number="1" mpc="UploadMPC" userService="ConsumerTest" soapAction="upload"
+                 reliability="CALLBACK">
+                <Endpoint address="http://localhost:8080/domibus/services/msh" soapVersion="1.1"/>
+            </Leg>
+        </MEP>
+    </Binding>
+
+    <Binding name="uploadBinding">
+        <MEP name="Two-Way/Sync">
+            <Leg number="1" mpc="box1s" userService="ConsumerTest" soapAction="PutMessage"
+                 reliability="GD">
+                <Endpoint address="http://192.240.13.76:8080/domibus/services/msh" soapVersion="1.1"/>
+            </Leg>
+            <Leg number="2" mpc="box1s"/>
+        </MEP>
+    </Binding>
+
+    <Binding name="binding1">
+        <MEP name="One-Way/Pull">
+            <Leg number="1" mpc="quantity">
+                <Endpoint address="http://localhost:8080/domibus/services/Ebms3Customer" soapVersion="1.1"/>
+            </Leg>
+            <Leg number="2" userService="Supplier" messageLabel="quantityMsg"/>
+        </MEP>
+    </Binding>
+
+    <Binding name="imagePullBinding">
+        <MEP name="One-Way/Pull">
+            <Leg number="1" mpc="mpc//:imageStore" reliability="CALLBACK">
+                <Endpoint address="http://localhost:8080/domibus/services/msh" soapVersion="1.2"/>
+                <ErrorAtSender notifiyProducer="true" notifyConsumer="false" reportTo="http://localhost/domibus"/>
+                <ErrorAtReceiver notifiyProducer="true" notifyConsumer="false"/>
+                <Authorization type="UsernameToken" username="joe" password="black"/>
+            </Leg>
+            <Leg number="2" mpc="mpc//:imageStore" userService="PullerApp"/>
+        </MEP>
+    </Binding>
+
+    <PMode name="ImagePulling" binding="imagePullBinding"/>
+    <PMode name="SC1" binding="uploadBinding"/>
+    <PMode name="UploadMode" binding="uploadBinding2"/>
+    <PMode name="SendShipment" binding="binding2"/>
+
+</PModes>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<tns:PModes xmlns:tns="http://www.e-codex.eu/domibus/pmodes/0.1"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.e-codex.eu/domibus/pmodes/0.1 pmodes.xsd">
+
+    <tns:Producer name="GW2-GW">
+        <tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">GW2</tns:PartyId>
+        <tns:Role>GW</tns:Role>
+    </tns:Producer>
+    <tns:Producer name="GW1-GW">
+        <tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">GW1</tns:PartyId>
+        <tns:Role>GW</tns:Role>
+    </tns:Producer>
+
+    <tns:UserService name="COMPRESSION_EMPTY-GW">
+        <tns:ToPartyInfo>
+            <tns:PartyId type="urn:oasis:names:tc:ebcore:partyid-type:iso3166-1">GW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>COMPRESSION</tns:Service>
+            <tns:Action>EMPTY</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+
+    <tns:Binding name="COMPRESSION_EMPTY">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1" producer="GW1-GW"
+                     mpc="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
+                     userService="COMPRESSION_EMPTY-GW"
+                     security="sign-body-header_GW2_GW1">
+                <tns:Endpoint
+                        address="http://www.e-codex.eu"
+                        soapVersion="1.2"/>
+                <tns:PayloadService>
+                    <tns:CompressionType></tns:CompressionType>
+                </tns:PayloadService>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+
+    <tns:PMode name="COMPRESSION_EMPTY" binding="COMPRESSION_EMPTY"/>
+
+
+</tns:PModes>

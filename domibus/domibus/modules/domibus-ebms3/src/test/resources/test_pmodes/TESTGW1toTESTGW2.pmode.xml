@@ -1,0 +1,330 @@
+<tns:PModes xmlns:tns="http://www.e-codex.eu/domibus/pmodes/0.1"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.e-codex.eu/domibus/pmodes/0.1 ../../xsd/pmodes.xsd">
+
+    <tns:Producer name="TESTGW1">
+        <tns:PartyId>TESTGW1</tns:PartyId>
+        <tns:Role>GW</tns:Role>
+    </tns:Producer>
+
+
+    <!-- Definition of the Buisness Process for TEST for Testgateway TESTGW1 (http://localhost:8081/domibus/services/msh) -->
+    <!-- UserServices for Sign AND Encrypt -->
+    <tns:UserService name="TEST_GW2GW_unreliable_sign_encrypt">
+        <tns:ToPartyInfo>
+            <tns:PartyId>TESTGW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>TEST</tns:Service>
+            <tns:Action>GW2GW_unreliable_sign_encrypt</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+
+    <tns:UserService name="TEST_GW2GW_as4_response_sign_encrypt">
+        <tns:ToPartyInfo>
+            <tns:PartyId>TESTGW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>TEST</tns:Service>
+            <tns:Action>GW2GW_as4_response_sign_encrypt</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+
+    <tns:UserService name="TEST_GW2GW_as4_callback_sign_encrypt">
+        <tns:ToPartyInfo>
+            <tns:PartyId>TESTGW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>TEST</tns:Service>
+            <tns:Action>GW2GW_as4_callback_sign_encrypt</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+
+
+    <!-- UserServices for Sign -->
+    <tns:UserService name="TEST_GW2GW_unreliable">
+        <tns:ToPartyInfo>
+            <tns:PartyId>TESTGW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>TEST</tns:Service>
+            <tns:Action>GW2GW_unreliable</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+
+    <tns:UserService name="TEST_GW2GW_unreliable_maxPayloadMin" maxPayloadsSize="1">
+        <tns:ToPartyInfo>
+            <tns:PartyId>TESTGW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>TEST</tns:Service>
+            <tns:Action>GW2GW_unreliable_maxPayloadMin</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+
+    <tns:UserService name="TEST_GW2GW_as4_response">
+        <tns:ToPartyInfo>
+            <tns:PartyId>TESTGW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>TEST</tns:Service>
+            <tns:Action>GW2GW_as4_response</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+
+    <tns:UserService name="TEST_GW2GW_as4_callback">
+        <tns:ToPartyInfo>
+            <tns:PartyId>TESTGW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>TEST</tns:Service>
+            <tns:Action>GW2GW_as4_callback</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+
+
+    <tns:UserService name="TEST_SubmissionAcceptance">
+        <tns:ToPartyInfo>
+            <tns:PartyId>TESTGW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>TEST</tns:Service>
+            <tns:Action>SubmissionAcceptanceRejection</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+
+    <tns:UserService name="TEST_RelayMD">
+        <tns:ToPartyInfo>
+            <tns:PartyId>TESTGW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>TEST</tns:Service>
+            <tns:Action>RelayREMMDAcceptanceRejection</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+
+    <tns:UserService name="TEST_Delivery">
+        <tns:ToPartyInfo>
+            <tns:PartyId>TESTGW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>TEST</tns:Service>
+            <tns:Action>DeliveryNonDeliveryToRecipient</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+
+    <tns:UserService name="TEST_Retrieval">
+        <tns:ToPartyInfo>
+            <tns:PartyId>TESTGW2</tns:PartyId>
+            <tns:Role>GW</tns:Role>
+        </tns:ToPartyInfo>
+        <tns:CollaborationInfo>
+            <tns:Service>TEST</tns:Service>
+            <tns:Action>RetrievalNonRetrievalToRecipient</tns:Action>
+        </tns:CollaborationInfo>
+    </tns:UserService>
+
+
+    <!--Defintion of the bindings for TEST -->
+
+    <!-- Bindings with Signature AND Encryption -->
+    <tns:Binding name="TESTGW1_TESTGW2_TEST_GW2GW_unreliable_sign_encrypt">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1"
+                     mpc="test"
+                     userService="TEST_GW2GW_unreliable_sign_encrypt"
+                     producer="TESTGW1"
+                     security="sign_body_header-encrypt_body_TESTGW1_TESTGW2">
+                <tns:Endpoint
+                        address="${domibus.testing.MSH.protocol}://${domibus.testing.MSH.host}:${domibus.testing.MSH.pt}/${domibus.testing.MSH.contextPath}"
+                        soapVersion="1.2"/>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+
+    <tns:Binding name="TESTGW1_TESTGW2_TEST_GW2GW_as4_response_sign_encrypt">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1"
+                     mpc="test"
+                     userService="TEST_GW2GW_as4_response_sign_encrypt"
+                     producer="TESTGW1"
+                     security="sign_body_header-encrypt_body_TESTGW1_TESTGW2">
+                <tns:Endpoint
+                        address="${domibus.testing.MSH.protocol}://${domibus.testing.MSH.host}:${domibus.testing.MSH.pt}/${domibus.testing.MSH.contextPath}"
+                        soapVersion="1.2"/>
+                <tns:As4Receipt
+                        method="Response"
+                        nonRepudiation="false">
+                    <tns:As4Reliability
+                            maxRetries="3"
+                            interval="5"
+                            shutdown="10"/>
+                </tns:As4Receipt>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <tns:Binding name="TESTGW1_TESTGW2_TEST_GW2GW_as4_callback_sign_encrypt">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1"
+                     mpc="test"
+                     userService="TEST_GW2GW_as4_callback_sign_encrypt"
+                     producer="TESTGW1"
+                     security="sign_body_header-encrypt_body_TESTGW1_TESTGW2">
+                <tns:Endpoint
+                        address="${domibus.testing.MSH.protocol}://${domibus.testing.MSH.host}:${domibus.testing.MSH.pt}/${domibus.testing.MSH.contextPath}"
+                        soapVersion="1.2"/>
+                <tns:As4Receipt
+                        method="Callback"
+                        nonRepudiation="false"
+                        receiptTo="${domibus.module.ebms3.MSH.protocol}://${domibus.module.ebms3.MSH.host}:${domibus.module.ebms3.MSH.pt}/${domibus.module.ebms3.MSH.contextPath}">
+                    <tns:As4Reliability
+                            maxRetries="3"
+                            interval="5"
+                            shutdown="10"/>
+                </tns:As4Receipt>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+
+    <!-- Bindings with Signature and WITHOUT Encryption -->
+    <!-- From TESTGW2 to Testgateway TESTGW1 (http://localhost:8081/domibus/services/msh) -->
+    <tns:Binding name="TESTGW1_TESTGW2_TEST_GW2GW_unreliable">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1"
+                     mpc="test"
+                     userService="TEST_GW2GW_unreliable"
+                     producer="TESTGW1"
+                     security="sign-body-header_TESTGW1_TESTGW2">
+                <tns:Endpoint
+                        address="${domibus.testing.MSH.protocol}://${domibus.testing.MSH.host}:${domibus.testing.MSH.pt}/${domibus.testing.MSH.contextPath}"
+                        soapVersion="1.2"/>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+
+    <tns:Binding name="TESTGW1_TESTGW2_TEST_GW2GW_unreliable_maxPayloadMin">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1"
+                     mpc="test"
+                     userService="TEST_GW2GW_unreliable_maxPayloadMin"
+                     producer="TESTGW1"
+                     security="sign-body-header_TESTGW1_TESTGW2">
+                <tns:Endpoint
+                        address="${domibus.testing.MSH.protocol}://${domibus.testing.MSH.host}:${domibus.testing.MSH.pt}/${domibus.testing.MSH.contextPath}"
+                        soapVersion="1.2"/>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+
+    <tns:Binding name="TESTGW1_TESTGW2_TEST_GW2GW_as4_response">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1"
+                     mpc="test"
+                     userService="TEST_GW2GW_as4_response"
+                     producer="TESTGW1"
+                     security="sign-body-header_TESTGW1_TESTGW2">
+                <tns:Endpoint
+                        address="${domibus.testing.MSH.protocol}://${domibus.testing.MSH.host}:${domibus.testing.MSH.pt}/${domibus.testing.MSH.contextPath}"
+                        soapVersion="1.2"/>
+                <tns:As4Receipt
+                        method="Response"
+                        nonRepudiation="false">
+                    <tns:As4Reliability
+                            maxRetries="3"
+                            interval="5"
+                            shutdown="10"/>
+                </tns:As4Receipt>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <tns:Binding name="TESTGW1_TESTGW2_TEST_GW2GW_as4_callback">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1"
+                     mpc="test"
+                     userService="TEST_GW2GW_as4_callback"
+                     producer="TESTGW1"
+                     security="sign-body-header_TESTGW1_TESTGW2">
+                <tns:Endpoint
+                        address="${domibus.testing.MSH.protocol}://${domibus.testing.MSH.host}:${domibus.testing.MSH.pt}/${domibus.testing.MSH.contextPath}"
+                        soapVersion="1.2"/>
+                <tns:As4Receipt
+                        method="Callback"
+                        nonRepudiation="false"
+                        receiptTo="${domibus.module.ebms3.MSH.protocol}://${domibus.module.ebms3.MSH.host}:${domibus.module.ebms3.MSH.pt}/${domibus.module.ebms3.MSH.contextPath}">
+                    <tns:As4Reliability
+                            maxRetries="3"
+                            interval="5"
+                            shutdown="10"/>
+                </tns:As4Receipt>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <tns:Binding name="TESTGW1_TESTGW2_TEST_SubmissionAcceptance">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1" mpc="test" userService="TEST_SubmissionAcceptance" producer="TESTGW1"
+                     security="sign-body-header_TESTGW1_TESTGW2">
+                <tns:Endpoint
+                        address="${domibus.testing.MSH.protocol}://${domibus.testing.MSH.host}:${domibus.testing.MSH.pt}/${domibus.testing.MSH.contextPath}"
+                        soapVersion="1.2"/>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <tns:Binding name="TESTGW1_TESTGW2_TEST_RelayMD">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1" mpc="test" userService="TEST_RelayMD" producer="TESTGW1"
+                     security="sign-body-header_TESTGW1_TESTGW2">
+                <tns:Endpoint
+                        address="${domibus.testing.MSH.protocol}://${domibus.testing.MSH.host}:${domibus.testing.MSH.pt}/${domibus.testing.MSH.contextPath}"
+                        soapVersion="1.2"/>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <tns:Binding name="TESTGW1_TESTGW2_TEST_Delivery">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1" mpc="test" userService="TEST_Delivery" producer="TESTGW1"
+                     security="sign-body-header_TESTGW1_TESTGW2">
+                <tns:Endpoint
+                        address="${domibus.testing.MSH.protocol}://${domibus.testing.MSH.host}:${domibus.testing.MSH.pt}/${domibus.testing.MSH.contextPath}"
+                        soapVersion="1.2"/>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+    <tns:Binding name="TESTGW1_TESTGW2_TEST_Retrieval">
+        <tns:MEP name="One-Way/Push">
+            <tns:Leg number="1" mpc="test" userService="TEST_Retrieval" producer="TESTGW1"
+                     security="sign-body-header_TESTGW1_TESTGW2">
+                <tns:Endpoint
+                        address="${domibus.testing.MSH.protocol}://${domibus.testing.MSH.host}:${domibus.testing.MSH.pt}/${domibus.testing.MSH.contextPath}"
+                        soapVersion="1.2"/>
+            </tns:Leg>
+        </tns:MEP>
+    </tns:Binding>
+
+    <!--Defintion of the PModes -->
+    <tns:PMode name="TESTGW1_TESTGW2_TEST_GW2GW_unreliable_sign_encrypt"
+               binding="TESTGW1_TESTGW2_TEST_GW2GW_unreliable_sign_encrypt"/>
+    <tns:PMode name="TESTGW1_TESTGW2_TEST_GW2GW_as4_response_sign_encrypt"
+               binding="TESTGW1_TESTGW2_TEST_GW2GW_as4_response_sign_encrypt"/>
+    <tns:PMode name="TESTGW1_TESTGW2_TEST_GW2GW_as4_callback_sign_encrypt"
+               binding="TESTGW1_TESTGW2_TEST_GW2GW_as4_callback_sign_encrypt"/>
+    <tns:PMode name="TESTGW1_TESTGW2_TEST_GW2GW_unreliable" binding="TESTGW1_TESTGW2_TEST_GW2GW_unreliable"/>
+    <tns:PMode name="TESTGW1_TESTGW2_TEST_GW2GW_unreliable_maxPayloadMin"
+               binding="TESTGW1_TESTGW2_TEST_GW2GW_unreliable_maxPayloadMin"/>
+    <tns:PMode name="TESTGW1_TESTGW2_TEST_GW2GW_as4_response" binding="TESTGW1_TESTGW2_TEST_GW2GW_as4_response"/>
+    <tns:PMode name="TESTGW1_TESTGW2_TEST_GW2GW_as4_callback" binding="TESTGW1_TESTGW2_TEST_GW2GW_as4_callback"/>
+    <tns:PMode name="TESTGW1_TESTGW2_TEST_SubmissionAcceptance" binding="TESTGW1_TESTGW2_TEST_SubmissionAcceptance"/>
+    <tns:PMode name="TESTGW1_TESTGW2_TEST_RelayMD" binding="TESTGW1_TESTGW2_TEST_RelayMD"/>
+    <tns:PMode name="TESTGW1_TESTGW2_TEST_Delivery" binding="TESTGW1_TESTGW2_TEST_Delivery"/>
+    <tns:PMode name="TESTGW1_TESTGW2_TEST_Retrieval" binding="TESTGW1_TESTGW2_TEST_Retrieval"/>
+
+</tns:PModes>

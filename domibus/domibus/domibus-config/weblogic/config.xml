@@ -1,0 +1,65 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<domain xmlns="http://xmlns.oracle.com/weblogic/domain" xmlns:sec="http://xmlns.oracle.com/weblogic/security"
+        xmlns:wls="http://xmlns.oracle.com/weblogic/security/wls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://xmlns.oracle.com/weblogic/domain http://xmlns.oracle.com/weblogic/1.0/domain.xsd http://xmlns.oracle.com/weblogic/security http://xmlns.oracle.com/weblogic/1.0/security.xsd http://xmlns.oracle.com/weblogic/security/wls http://xmlns.oracle.com/weblogic/security/wls/1.0/wls.xsd">
+    <name>domain</name>
+    <domain-version>10.3.0.0</domain-version>
+    <security-configuration>
+        <name>domain</name>
+        <realm>
+            <sec:authentication-provider xsi:type="wls:default-authenticatorType"></sec:authentication-provider>
+            <sec:authentication-provider xsi:type="wls:default-identity-asserterType">
+                <sec:active-type>AuthenticatedUser</sec:active-type>
+            </sec:authentication-provider>
+            <sec:role-mapper xmlns:xac="http://xmlns.oracle.com/weblogic/security/xacml"
+                             xsi:type="xac:xacml-role-mapperType"></sec:role-mapper>
+            <sec:authorizer xmlns:xac="http://xmlns.oracle.com/weblogic/security/xacml"
+                            xsi:type="xac:xacml-authorizerType"></sec:authorizer>
+            <sec:adjudicator xsi:type="wls:default-adjudicatorType"></sec:adjudicator>
+            <sec:credential-mapper xsi:type="wls:default-credential-mapperType"></sec:credential-mapper>
+            <sec:cert-path-provider xsi:type="wls:web-logic-cert-path-providerType"></sec:cert-path-provider>
+            <sec:cert-path-builder>WebLogicCertPathProvider</sec:cert-path-builder>
+            <sec:name>myrealm</sec:name>
+        </realm>
+        <default-realm>myrealm</default-realm>
+        <credential-encrypted>
+            {3DES@rSk61ZNN+yY9YDgGjIuKlDmV/tRNfliSV3hn1f3OMDRnfxf6kYvXwpnn9ZmvQNWG7IPwNVZuOGBk+5Baayp95mSFbR/KeDOs
+        </credential-encrypted>
+    </security-configuration>
+    <server>
+        <name>server</name>
+        <log>
+            <log-file-severity>Info</log-file-severity>
+            <memory-buffer-severity>Debug</memory-buffer-severity>
+            <log4j-logging-enabled>true</log4j-logging-enabled>
+        </log>
+        <listen-port>8080</listen-port>
+        <listen-address>localhost</listen-address>
+    </server>
+    <embedded-ldap>
+        <name>domain</name>
+        <credential-encrypted>{3DES@uWDxLvZc+RfyYm+Y+HJABQ3gsT0/bYvfG9LK2MPn5gQ=</credential-encrypted>
+    </embedded-ldap>
+    <configuration-version>10.3.0.0</configuration-version>
+    <app-deployment>
+        <name>domibus</name>
+        <target>server</target>
+        <source-path>D:\Daten\repository\domibus\domibus\modules\domibus-distribution\target\domibus.war
+        </source-path>
+        <security-dd-model>DDOnly</security-dd-model>
+    </app-deployment>
+    <app-deployment>
+        <name>_appsdir_cargocpc_war</name>
+        <target>server</target>
+        <module-type>war</module-type>
+        <source-path>autodeploy\cargocpc.war</source-path>
+        <security-dd-model>DDOnly</security-dd-model>
+        <staging-mode>stage</staging-mode>
+    </app-deployment>
+    <admin-server-name>server</admin-server-name>
+    <jdbc-system-resource>
+        <name>domibusDS</name>
+        <target>server</target>
+        <descriptor-file-name>jdbc/domibusDS-jdbc.xml</descriptor-file-name>
+    </jdbc-system-resource>
+</domain>
