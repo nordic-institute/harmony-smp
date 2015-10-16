@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema version="1.1"
+        xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.e-codex.eu/domibus/pmodes/0.1"
+        xmlns:tns="http://www.e-codex.eu/domibus/pmodes/0.1"
+        elementFormDefault="qualified">
+
+    <element name="PModes" type="tns:PModePoolType">
+        <key name="PModeKey">
+            <selector xpath="tns:PMode"/>
+            <field xpath="@name"/>
+        </key>
+        <key name="BindingKey">
+            <selector xpath="tns:Binding"/>
+            <field xpath="@name"/>
+        </key>
+        <key name="UserServiceKey">
+            <selector xpath="tns:UserService"/>
+            <field xpath="@name"/>
+        </key>
+        <key name="ProducerKey">
+            <selector xpath="tns:Producer"/>
+            <field xpath="@name"/>
+        </key>
+        <keyref name="PModeToBindingKeyRef" refer="tns:BindingKey">
+            <selector xpath="tns:PMode"/>
+            <field xpath="@binding"/>
+        </keyref>
+        <keyref name="LegToUserServiceKeyRef" refer="tns:UserServiceKey">
+            <selector xpath="tns:Binding/tns:MEP/tns:Leg | tns:PMode/tns:Binding/tns:MEP/tns:Leg"/>
+            <field xpath="@userService"/>
+        </keyref>
+        <keyref name="LegToProducerKeyRef" refer="tns:ProducerKey">
+            <selector xpath="tns:Binding/tns:MEP/tns:Leg | tns:PMode/tns:Binding/tns:MEP/tns:Leg"/>
+            <field xpath="@producer"/>
+        </keyref>
+    </element>
+
+    <complexType name="As4ReceiptType">
+        <sequence>
+            <element name="As4Reliability" type="tns:As4ReliabilityType" minOccurs="0"/>
+        </sequence>
+        <attribute name="receiptTo" type="anyURI"/>
+        <attribute name="deliverySemantics" default="Received">
+            <simpleType>
+                <restriction base="NMTOKEN">
+                    <enumeration value="Received"/>
+                    <enumeration value="Downloaded"/>
+                </restriction>
+            </simpleType>
+        </attribute>
+        <attribute name="method" default="Callback">
+            <simpleType>
+                <restriction base="NMTOKEN">
+                    <enumeration value="Response"/>
+                    <enumeration value="Callback"/>
+                </restriction>
+            </simpleType>
+        </attribute>
+        <attribute name="nonRepudiation" type="boolean" default="false"/>
+    </complexType>
+
+    <complexType name="As4ReliabilityType">
+        <attribute name="maxRetries" type="unsignedInt"/>
+        <attribute name="interval" type="unsignedInt"/>
+        <attribute name="shutdown" type="unsignedInt"/>
+        <attribute name="duplicateElimination" type="boolean" default="true"/>
+        <attribute name="exponentialBackoff" type="boolean" default="false"/>
+        <attribute name="randomize" type="boolean" default="false"/>
+    </complexType>
+
+    <complexType name="PayloadService">
+        <sequence>
+            <element name="CompressionType" type="tns:CompressionType" minOccurs="1" maxOccurs="1"/>
+        </sequence>
+    </complexType>
+
+    <simpleType name="CompressionType">
+        <restriction base="string">
+            <enumeration value="application/gzip"/>
+            <enumeration value=""/>
+        </restriction>
+    </simpleType>
+
+    <complexType name="AuthorizationType">
+        <attribute name="type" type="token" use="required"/>
+        <attribute name="username" type="token"/>
+        <attribute name="password" type="token"/>
+    </complexType>
+
+    <complexType name="BindingType">
+        <sequence>
+            <element name="MEP" type="tns:MEPType">
+                <unique name="LegUniqueKey">
+                    <selector xpath="tns:LegType"/>
+                    <field xpath="@number"/>
+                </unique>
+            </element>
+        </sequence>
+        <attribute name="name" type="NMTOKEN"/>
+    </complexType>
+
+    <complexType name="CollaborationInfoType">
+        <sequence>
+            <element name="Service" type="tns:ServiceType"/>
+            <element name="Action" type="string"/>
+        </sequence>
+    </complexType>
+
+    <complexType name="EndpointType">
+        <attribute name="address" type="string" use="required"/>
+        <attribute name="soapVersion">
+            <simpleType>
+                <restriction base="token">
+                    <enumeration value="1.1"/>
+                    <enumeration value="1.2"/>
+                </restriction>
+            </simpleType>
+        </attribute>
+    </complexType>
+
+    <complexType name="ErrorAtReceiverType">
+        <attribute name="notifyProducer" type="boolean" default="false"/>
+        <attribute name="notifyConsumer" type="boolean" default="false"/>
+    </complexType>
+
+    <complexType name="ErrorAtSenderType">
+        <attribute name="notifyProducer" type="boolean" default="false"/>
+        <attribute name="notifyConsumer" type="boolean" default="false"/>
+        <attribute name="reportTo" type="anyURI"/>
+    </complexType>
+
+    <complexType name="LegType">
+        <sequence>
+            <element name="Endpoint" type="tns:EndpointType" minOccurs="0"/>
+            <element name="ErrorAtSender" type="tns:ErrorAtSenderType" minOccurs="0"/>
+            <element name="ErrorAtReceiver" type="tns:ErrorAtReceiverType" minOccurs="0"/>
+            <element name="Authorization" type="tns:AuthorizationType" minOccurs="0"/>
+            <element name="As4Receipt" type="tns:As4ReceiptType" minOccurs="0"/>
+            <element name="PayloadService" type="tns:PayloadService" minOccurs="0" maxOccurs="1"/>
+        </sequence>
+        <attribute name="number">
+            <simpleType>
+                <restriction base="unsignedInt">
+                    <minInclusive value="1"/>
+                    <maxInclusive value="2"/>
+                </restriction>
+            </simpleType>
+        </attribute>
+        <attribute name="userService" type="NMTOKEN"/>
+        <attribute name="producer" type="NMTOKEN"/>
+        <attribute name="binding" type="NMTOKEN"/>
+        <attribute name="security" type="NMTOKEN"/>
+        <attribute name="reliability" type="NMTOKEN" use="prohibited"/>
+        <attribute name="messageLabel" type="string"/>
+        <attribute name="mpc" type="string"/>
+        <attribute name="soapAction" type="string"/>
+        <attribute name="wsaAction" type="string"/>
+    </complexType>
+
+    <complexType name="MEPType">
+        <sequence>
+            <element name="Leg" type="tns:LegType" maxOccurs="2"/>
+        </sequence>
+        <attribute name="name">
+            <simpleType>
+                <restriction base="string">
+                    <enumeration value="One-Way/Push"/>
+                    <enumeration value="One-Way/Pull"/>
+                    <enumeration value="Two-Way/Sync"/>
+                    <enumeration value="Two-Way/Push-and-Push"/>
+                    <enumeration value="Two-Way/Push-and-Pull"/>
+                    <enumeration value="Two-Way/Pull-and-Push"/>
+                    <enumeration value="Two-Way/Pull-and-Pull"/>
+                </restriction>
+            </simpleType>
+        </attribute>
+    </complexType>
+
+    <complexType name="MessagePayloadType">
+        <sequence>
+            <element name="SoapBodySchema" type="anyURI" minOccurs="0"/>
+            <element name="Part" type="tns:PartType" minOccurs="0" maxOccurs="unbounded"/>
+        </sequence>
+        <attribute name="label" type="NMTOKEN"/>
+        <attribute name="maxSize" type="unsignedLong"/>
+    </complexType>
+
+    <complexType name="MessagePropertiesType">
+        <sequence>
+            <element name="Property" type="tns:PropertyType" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+
+    <complexType name="PartType">
+        <attribute name="cid" type="string" use="required"/>
+        <attribute name="mimeType" type="token"/>
+        <attribute name="schemaLocation" type="anyURI"/>
+        <attribute name="description" type="string"/>
+    </complexType>
+
+    <complexType name="PartyIdType">
+        <simpleContent>
+            <extension base="string">
+                <attribute name="type" type="token"/>
+            </extension>
+        </simpleContent>
+    </complexType>
+
+    <complexType name="PayloadInfoType">
+        <sequence>
+            <element name="Message" maxOccurs="unbounded"/>
+        </sequence>
+    </complexType>
+
+    <complexType name="PModeType">
+        <choice minOccurs="0" maxOccurs="unbounded">
+            <element name="Binding" type="tns:BindingType"/>
+            <element name="UserService" type="tns:UserServiceType"/>
+            <element name="Producer" type="tns:ProducerType"/>
+        </choice>
+        <attribute name="name" type="NMTOKEN" use="required"/>
+        <attribute name="binding" type="NMTOKEN"/>
+        <attribute name="explicit" type="boolean" default="false"/>
+    </complexType>
+
+    <complexType name="PModePoolType">
+        <choice minOccurs="0" maxOccurs="unbounded">
+            <element name="PMode" type="tns:PModeType"/>
+            <element name="Binding" type="tns:BindingType"/>
+            <element name="UserService" type="tns:UserServiceType"/>
+            <element name="Producer" type="tns:ProducerType"/>
+        </choice>
+    </complexType>
+
+    <complexType name="ProducerType">
+        <sequence>
+            <element name="PartyId" type="tns:PartyIdType" maxOccurs="unbounded"/>
+            <element name="Role" type="string"/>
+        </sequence>
+        <attribute name="name" type="NMTOKEN"/>
+    </complexType>
+
+    <complexType name="PropertyType">
+        <attribute name="name" type="NMTOKEN" use="required"/>
+        <attribute name="type" type="token"/>
+        <attribute name="description" type="string"/>
+        <attribute name="required" type="boolean" default="false"/>
+    </complexType>
+
+    <complexType name="ServiceType">
+        <simpleContent>
+            <extension base="string">
+                <attribute name="type" type="token"/>
+            </extension>
+        </simpleContent>
+    </complexType>
+
+    <complexType name="ToPartyInfoType">
+        <sequence>
+            <element name="PartyId" type="tns:PartyIdType" maxOccurs="unbounded"/>
+            <element name="Role" type="string"/>
+        </sequence>
+        <attribute name="name" type="NMTOKEN"/>
+    </complexType>
+
+    <complexType name="UserServiceType">
+        <sequence>
+            <element name="ToPartyInfo" type="tns:ToPartyInfoType"/>
+            <element name="CollaborationInfo" type="tns:CollaborationInfoType"/>
+            <element name="MessageProperties" type="tns:MessagePropertiesType" minOccurs="0"/>
+            <element name="PayloadInfo" type="tns:PayloadInfoType" minOccurs="0"/>
+        </sequence>
+        <attribute name="name" type="NMTOKEN"/>
+        <attribute name="maxPayloadsSize" type="long"/>
+    </complexType>
+
+</schema>

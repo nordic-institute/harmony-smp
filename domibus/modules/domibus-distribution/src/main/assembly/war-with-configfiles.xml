@@ -1,0 +1,104 @@
+<assembly
+        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+    <id>distribution-war</id>
+    <formats>
+        <format>zip</format>
+    </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
+    <baseDirectory>tomcat</baseDirectory>
+    <includeSiteDirectory>false</includeSiteDirectory>
+    <!-- containerDescriptorHandlers> <containerDescriptorHandler> <handlerName/>
+        <configuration/> </containerDescriptorHandler> </containerDescriptorHandlers>
+        <moduleSets> <moduleSet> <useAllReactorProjects/> <includeSubModules/> <includes/>
+        <excludes/> <sources> <useDefaultExcludes/> <outputDirectory/> <includes/>
+        <excludes/> <fileMode/> <directoryMode/> <fileSets> <fileSet> <useDefaultExcludes/>
+        <outputDirectory/> <includes/> <excludes/> <fileMode/> <directoryMode/> <directory/>
+        <lineEnding/> <filtered/> </fileSet> </fileSets> <includeModuleDirectory/>
+        <excludeSubModuleDirectories/> <outputDirectoryMapping/> </sources> <binaries>
+        <outputDirectory/> <includes/> <excludes/> <fileMode/> <directoryMode/> <attachmentClassifier/>
+        <includeDependencies/> <dependencySets> <dependencySet> <outputDirectory/>
+        <includes/> <excludes/> <fileMode/> <directoryMode/> <useStrictFiltering/>
+        <outputFileNameMapping/> <unpack/> <unpackOptions> <includes/> <excludes/>
+        <filtered/> <lineEnding/> <useDefaultExcludes/> </unpackOptions> <scope/>
+        <useProjectArtifact/> <useProjectAttachments/> <useTransitiveDependencies/>
+        <useTransitiveFiltering/> </dependencySet> </dependencySets> <unpack/> <unpackOptions>
+        <includes/> <excludes/> <filtered/> <lineEnding/> <useDefaultExcludes/> </unpackOptions>
+        <outputFileNameMapping/> </binaries> </moduleSet> </moduleSets -->
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.directory}/artifacts/tomcat/conf</directory>
+            <useDefaultExcludes>true</useDefaultExcludes>
+            <outputDirectory>conf</outputDirectory>
+            <excludes>
+                <exclude>**/*.jks</exclude>
+                <exclude>domibus/pmodes/*.xml</exclude>
+                <exclude>domibus/security-config.xml</exclude>
+            </excludes>
+            <fileMode>0444</fileMode>
+            <directoryMode>0555</directoryMode>
+            <!-- directory/ -->
+            <!-- lineEnding>unix</lineEnding -->
+            <filtered>false</filtered>
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.directory}/sql/hibernate3/</directory>
+            <useDefaultExcludes>true</useDefaultExcludes>
+            <outputDirectory>sql-scripts</outputDirectory>
+            <includes>
+                <include>*.sql</include>
+            </includes>
+            <!-- excludes/ -->
+            <fileMode>0444</fileMode>
+
+            <directoryMode>0555</directoryMode>
+            <!-- directory/ -->
+            <lineEnding>unix</lineEnding>
+            <filtered>false</filtered>
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.directory}/../../../domibus-config/delta_scripts/</directory>
+            <useDefaultExcludes>true</useDefaultExcludes>
+            <outputDirectory>sql-scripts/delta_scripts</outputDirectory>
+            <!-- excludes/ -->
+            <fileMode>0444</fileMode>
+            <includes>
+                <include>**/*</include>
+            </includes>
+            <directoryMode>0555</directoryMode>
+            <!-- directory/ -->
+            <lineEnding>unix</lineEnding>
+            <filtered>false</filtered>
+        </fileSet>
+    </fileSets>
+    <files>
+        <file>
+            <source>${project.build.directory}/${project.build.finalName}.war</source>
+            <outputDirectory>/</outputDirectory>
+            <destName>${project.build.finalName}.war</destName>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>${project.build.directory}/../../../changelog.txt</source>
+            <outputDirectory></outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>${project.build.directory}/../../../known_issues.txt</source>
+            <outputDirectory></outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>${project.build.directory}/../../../upgrade_info.txt</source>
+            <outputDirectory></outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>manual/Installation_Instructions.pdf</source>
+            <outputDirectory>/</outputDirectory>
+            <destName>Installation_Instructions.pdf</destName>
+            <filtered>false</filtered>
+        </file>
+    </files>
+</assembly>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+	
+	****************************************************************************************
+	This XSD is for the Domibus security-config
+	
+	July 17, 2013
+	Initial version
+	
+	August 5, 2013
+	Changed file element type xs:NCName into xs:string because a xs:NCName does not allow the slash character.
+	Added targetNamespace http://www.e-codex.eu/domibus/securityconfig/0.1"
+	
+	© 2013 Land Nordrhein-Westfalen, Deutschland
+	
+	Licensed under the EUPL, Version 1.1 or - as soon they will be approved by the
+	European Commission - subsequent versions of the EUPL (the "Licence");
+	
+	You may not use this work except in compliance with the Licence.
+	
+	You may obtain a copy of the Licence at:
+	http://ec.europa.eu/idabc/eupl
+	
+	Unless required by applicable law or agreed to in writing, software distributed
+	under the Licence is distributed on an "AS IS" basis, 
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	
+	See the Licence for the specific language governing permissions and limitations
+	under the Licence.
+	
+	****************************************************************************************
+	
+-->
+
+<xs:schema
+        xmlns:xs="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.e-codex.eu/domibus/securityconfig/0.1"
+        xmlns="http://www.e-codex.eu/domibus/securityconfig/0.1"
+        elementFormDefault="qualified"
+        version="1.0">
+    <xs:element name="security-config">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="keystores"/>
+                <xs:element ref="securities"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="keystores">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="privateKeystore"/>
+                <xs:element ref="publicKeystore"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="privateKeystore">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="localAlias"/>
+                <xs:element ref="storepwd"/>
+                <xs:element ref="keypwd"/>
+                <xs:element ref="file"/>
+                <xs:element ref="storeType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="localAlias" type="xs:NCName"/>
+    <xs:element name="keypwd" type="xs:NCName"/>
+    <xs:element name="publicKeystore">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="storepwd"/>
+                <xs:element ref="file"/>
+                <xs:element ref="storeType"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="securities">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element maxOccurs="unbounded" ref="security"/>
+            </xs:sequence>
+        </xs:complexType>
+        <xs:unique name="unique_security_id">
+            <xs:selector xpath="security"></xs:selector>
+            <xs:field xpath="@name"></xs:field>
+        </xs:unique>
+    </xs:element>
+    <xs:element name="security">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="remoteAlias"/>
+                <xs:element ref="policyFile"/>
+            </xs:sequence>
+            <xs:attribute name="name" type="xs:NCName" use="required"/>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="remoteAlias" type="xs:NCName"/>
+    <xs:element name="policyFile" type="xs:NCName"/>
+    <xs:element name="storepwd" type="xs:NCName"/>
+    <xs:element name="file" type="xs:string"/>
+    <xs:element name="storeType" type="xs:NCName"/>
+</xs:schema>
+        <!--    © 2013 Land Nordrhein-Westfalen, Deutschland -->

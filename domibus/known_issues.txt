@@ -1,0 +1,1 @@
+(ECDX-74) Providing an unique ID for all forms (A, B,C,D) which belongs together (https://secure.e-codex.eu/jira/browse/BUG-56)
