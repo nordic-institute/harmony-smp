@@ -11,3 +11,5 @@ import java.util.concurrent.Future;
 
 public class ExampleBackendConnector extends AbstractBackendConnector<MyObjectIn, MyObjectOut>
                                      implements BackendConnector<MyObjectIn, MyObjectOut>{
+									 
+}
