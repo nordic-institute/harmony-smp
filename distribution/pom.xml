@@ -103,8 +103,6 @@
                 <skipAS2>true</skipAS2>
                 <!-- true if the connector component must not be packed -->
                 <skipConnector>true</skipConnector>
-                <!-- true if the Domibus2 component must not be packed -->
-                <skipDomibus2>true</skipDomibus2>
                 <!-- true if the Domibus3 component must not be packed -->
                 <skipDomibus3>false</skipDomibus3>
                 <!-- true if the SMP component must not be packed -->
@@ -124,8 +122,6 @@
                 <assemblyName>complete-jboss</assemblyName>
                 <!-- true if the AS2 component must not be packed -->
                 <skipAS2>false</skipAS2>
-                <!-- true if the Domibus2 component must not be packed -->
-                <skipDomibus2>true</skipDomibus2>
                 <!-- true if the Domibus3 component must not be packed -->
                 <skipDomibus3>false</skipDomibus3>
                 <!-- true if the SMP component must not be packed -->
@@ -146,7 +142,7 @@
                 <module>../cipa-core/Implementation/java/cipa-smp-server-library</module>
                 <module>../cipa-core/Implementation/java/cipa-smp-full-webapp</module>
                 <module>../mendelson/mendelson-as2-war</module>
-                <module>../domibus</module>
+                <module>../as4/Domibus-MSH</module>
             </modules>
         </profile>
         <profile>
@@ -162,8 +158,6 @@
                 <skipAS2>true</skipAS2>
                 <!-- true if the connector component must not be packed -->
                 <skipConnector>false</skipConnector>
-                <!-- true if the Domibus2 component must not be packed -->
-                <skipDomibus2>false</skipDomibus2>
                 <!-- true if the Domibus3 component must not be packed -->
                 <skipDomibus3>true</skipDomibus3>
                 <!-- true if the SMP component must not be packed -->
@@ -174,7 +168,7 @@
                 </module>
                 <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web
                 </module>
-                <module>../domibus</module>
+                <module>../as4/Domibus-MSH</module>
             </modules>
         </profile>
     </profiles>
@@ -343,39 +337,14 @@
                                 <concat destfile="${project.build.directory}/sql-scripts/create-mysql.sql"
                                         append="true" fixlastline="yes">
                                     <filelist
-                                            dir="${project.basedir}/../../EDELIVERY/domibus/Domibus-MSH/target/sql-scripts"
+                                            dir="${project.basedir}/../../EDELIVERY/domibus-3-submission/Domibus-MSH/target/sql-scripts"
                                             files="mysql5innoDb-initial.ddl,mysql5innoDb-quartz.ddl"/>
                                 </concat>
                                 <concat destfile="${project.build.directory}/sql-scripts/create-oracle.sql"
                                         append="true">
                                     <filelist
-                                            dir="${project.basedir}/../../EDELIVERY/domibus/Domibus-MSH/target/sql-scripts"
+                                            dir="${project.basedir}/../../EDELIVERY/domibus-3-submission/Domibus-MSH/target/sql-scripts"
                                             files="oracle10g-initial.ddl,oracle10g-quartz.ddl"/>
-                                </concat>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                    <execution>
-                        <id>mergeSql-domibus2</id>
-                        <phase>package</phase>
-                        <configuration>
-                            <skip>${skipDomibus2}</skip>
-                            <target>
-                                <echo>Merging Domibus2 sql files</echo>
-                                <concat destfile="${project.build.directory}/sql-scripts/create-mysql.sql"
-                                        append="true" fixlastline="yes">
-                                    <filelist
-                                            dir="${project.basedir}/../domibus/modules/domibus-distribution/target/sql/hibernate3"
-                                            files="domibus_mysql_initial.sql"/>
-                                </concat>
-                                <concat destfile="${project.build.directory}/sql-scripts/create-oracle.sql"
-                                        append="true">
-                                    <filelist
-                                            dir="${project.basedir}/../domibus/modules/domibus-distribution/target/sql/hibernate3"
-                                            files="domibus_oracle_initial.sql"/>
                                 </concat>
                             </target>
                         </configuration>
