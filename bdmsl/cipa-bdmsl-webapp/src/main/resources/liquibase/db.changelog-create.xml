@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <property name="autoIncrement" value="true" dbms="mysql,h2"/>
+    <property name="autoIncrement" value="false" dbms="oracle"/>
+
+    <changeSet author="eDelivery" id="1" logicalFilePath="path-independent">
+        <createTable tableName="bdmsl_allowed_wildcard">
+            <column name="scheme" remarks="The scheme on which the wildcard applies" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fk_certificate_id" remarks="The foreign key to the certificate" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="${now}" name="created_on" remarks="Date of creation"
+                    type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="${now}" name="last_updated_on" remarks="Date of the last update"
+                    type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="eDelivery" id="2" logicalFilePath="path-independent">
+        <createTable tableName="bdmsl_certificate">
+            <column autoIncrement="${autoIncrement}" name="id" remarks="Technical ID" type="INT">
+                <constraints primaryKey="true" primaryKeyName="PRIMARY_CER" nullable="false"/>
+            </column>
+            <column name="certificate_id"
+                    remarks="The certificate_id is a key composed of the subject and the serial number of the certificate."
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="valid_from" remarks="Start validity date of the certificate" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="valid_until" remarks="Expiry date of the certificate" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pem_encoding" remarks="PEM encoding for the certificate" type="LONGTEXT">
+            </column>
+            <column name="new_cert_change_date" remarks="The date of the change for the new certificate"
+                    type="date"/>
+            <column name="new_cert_id"
+                    remarks="The new certificate id. Links to the certificate that will be valid after the current one is expired. At the migration date, it aims to replace the existing certificate"
+                    type="INT"/>
+            <column defaultValueComputed="${now}" name="created_on" remarks="Date of creation"
+                    type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="${now}" name="last_updated_on" remarks="Date of the last update"
+                    type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="eDelivery" id="3" logicalFilePath="path-independent">
+        <createTable tableName="bdmsl_certificate_domain">
+            <column name="root_certificate_alias"
+                    remarks="Trusted root certificate. Must also be defined in the configured truststore"
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="domain" remarks="DNS domain mapped to the root certificate" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="crl_url" remarks="URL to the certificate revocation list (CRL)" type="VARCHAR(1000)">
+            </column>
+            <column defaultValueComputed="${now}" name="created_on" remarks="Date of creation"
+                    type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="${now}" name="last_updated_on" remarks="Date of the last update"
+                    type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="eDelivery" id="4" logicalFilePath="path-independent">
+        <createTable tableName="bdmsl_configuration">
+            <column name="property" remarks="Name of the property" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="value" remarks="Value of the property" type="LONGTEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" remarks="Description of the property" type="LONGTEXT">
+                <constraints nullable="true"/>
+            </column>
+            <column defaultValueComputed="${now}" name="created_on" remarks="Date of creation"
+                    type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="${now}" name="last_updated_on" remarks="Date of the last update"
+                    type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="eDelivery" id="5" logicalFilePath="path-independent">
+        <createTable tableName="bdmsl_migrate">
+            <column name="scheme" remarks="The scheme of the participant identifier to be migrated" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="participant_id" remarks="The participant identifier to be migrated" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="migration_key"
+                    remarks="The migration key. It's a code that must be passed out-of-band to the SMP which is taking over the publishing of the metadata for the participant identifier. Must contain only characters and numbers and the length is limited to 24 characters."
+                    type="VARCHAR(24)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fk_new_smp_id" remarks="The id of the SMP after the migration" type="VARCHAR(255)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="old_smp_id" remarks="The id of the old SMP (before the migration)" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="migrated" defaultValueComputed="0" remarks="True if the migration is done" type="BIT">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="${now}" name="created_on" remarks="Date of creation"
+                    type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="${now}" name="last_updated_on" remarks="Date of the last update"
+                    type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="eDelivery" id="6" logicalFilePath="path-independent">
+        <createTable tableName="bdmsl_participant_identifier">
+            <column name="participant_id" remarks="The participant identifier" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="scheme" remarks="The scheme of the participant identifier" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fk_smp_id" remarks="The foreign key to the SMP identifier" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="${now}" name="created_on" remarks="Date of creation"
+                    type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="${now}" name="last_updated_on" remarks="Date of the last update"
+                    type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="eDelivery" id="7" logicalFilePath="path-independent">
+        <createTable tableName="bdmsl_smp">
+            <column name="smp_id" remarks="The SMP identifier" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="fk_certificate_id" remarks="The foreign key to the certificate" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="endpoint_physical_address"
+                    remarks="The physical address of the endpoint. This physical address is used as the ALIAS on the CNAME DNS record."
+                    type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="endpoint_logical_address" remarks="The logical address of the endpoint" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="${now}" name="created_on" remarks="Date of creation"
+                    type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="${now}" name="last_updated_on" remarks="Date of the last update"
+                    type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="eDelivery" id="8" logicalFilePath="path-independent">
+        <addPrimaryKey columnNames="fk_certificate_id, scheme" constraintName="PRIMARY_AWS"
+                       tableName="bdmsl_allowed_wildcard"/>
+    </changeSet>
+    <changeSet author="eDelivery" id="9" logicalFilePath="path-independent">
+        <addPrimaryKey columnNames="root_certificate_alias" constraintName="PRIMARY_CDO"
+                       tableName="bdmsl_certificate_domain"/>
+    </changeSet>
+    <changeSet author="eDelivery" id="11" logicalFilePath="path-independent">
+        <addPrimaryKey columnNames="scheme, participant_id, old_smp_id" constraintName="PRIMARY_MIG"
+                       tableName="bdmsl_migrate"/>
+    </changeSet>
+    <changeSet author="eDelivery" id="12" logicalFilePath="path-independent">
+        <addPrimaryKey columnNames="participant_id, scheme" constraintName="PRIMARY_PID"
+                       tableName="bdmsl_participant_identifier"/>
+    </changeSet>
+    <changeSet author="eDelivery" id="13" logicalFilePath="path-independent">
+        <addPrimaryKey columnNames="smp_id" constraintName="PRIMARY_SMP" tableName="bdmsl_smp"/>
+    </changeSet>
+    <changeSet author="eDelivery" id="14" logicalFilePath="path-independent">
+        <addUniqueConstraint columnNames="certificate_id" constraintName="uq_certificate" deferrable="false"
+                             disabled="false" initiallyDeferred="false" tableName="bdmsl_certificate"/>
+    </changeSet>
+    <changeSet author="eDelivery" id="15" logicalFilePath="path-independent">
+        <addPrimaryKey columnNames="property" constraintName="PRIMARY_CON" tableName="bdmsl_configuration"/>
+    </changeSet>
+    <changeSet author="eDelivery" id="16" logicalFilePath="path-independent">
+        <addForeignKeyConstraint baseColumnNames="fk_certificate_id" baseTableName="bdmsl_smp"
+                                 constraintName="FK_smp_sub_subject_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="bdmsl_certificate"/>
+    </changeSet>
+    <changeSet author="eDelivery" id="17" logicalFilePath="path-independent">
+        <addForeignKeyConstraint baseColumnNames="new_cert_id" baseTableName="bdmsl_certificate"
+                                 constraintName="fk_cer_id_cer_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="bdmsl_certificate"/>
+    </changeSet>
+    <changeSet author="eDelivery" id="18" logicalFilePath="path-independent">
+        <addForeignKeyConstraint baseColumnNames="fk_smp_id" baseTableName="bdmsl_participant_identifier"
+                                 constraintName="fk_pid_smp_id_smp_smp_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="smp_id"
+                                 referencedTableName="bdmsl_smp"/>
+    </changeSet>
+    <changeSet author="eDelivery" id="19" logicalFilePath="path-independent">
+        <addForeignKeyConstraint baseColumnNames="fk_certificate_id" baseTableName="bdmsl_allowed_wildcard"
+                                 constraintName="fk_wms_sub_subject_id" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id"
+                                 referencedTableName="bdmsl_certificate"/>
+    </changeSet>
+    <changeSet author="eDelivery" id="20" logicalFilePath="path-independent">
+        <addForeignKeyConstraint baseColumnNames="fk_new_smp_id" baseTableName="bdmsl_migrate"
+                                 constraintName="fk_mig_new_smp_id_smp_smp_id" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="smp_id"
+                                 referencedTableName="bdmsl_smp"/>
+    </changeSet>
+    <changeSet author="eDelivery" id="24" logicalFilePath="path-independent">
+        <dropForeignKeyConstraint baseTableName="bdmsl_migrate" constraintName="fk_mig_new_smp_id_smp_smp_id"/>
+        <renameColumn
+                      columnDataType="VARCHAR(255)"
+                      newColumnName="new_smp_id"
+                      oldColumnName="fk_new_smp_id"
+                      remarks="The id of the SMP after the migration"
+                      tableName="bdmsl_migrate"/>
+    </changeSet>
+    <changeSet author="eDelivery" id="25" logicalFilePath="path-independent">
+        <modifyDataType columnName="migration_key"
+                        newDataType="VARCHAR(50)"
+                        tableName="bdmsl_migrate"/>
+    </changeSet>
+</databaseChangeLog>

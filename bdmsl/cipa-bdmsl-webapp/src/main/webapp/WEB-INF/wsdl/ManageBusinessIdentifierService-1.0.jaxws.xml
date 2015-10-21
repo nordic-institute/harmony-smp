@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxws:bindings wsdlLocation="ManageBusinessIdentifierService-1.0.wsdl"
+                xmlns:jaxws="http://java.sun.com/xml/ns/jaxws"
+                xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">
+
+    <jaxws:bindings node="wsdl:definitions">
+        <jaxws:package name="eu.europa.ec.cipa.bdmsl.ws.soap" />
+        <jaxws:bindings node="wsdl:portType">
+            <jaxws:class name="IManageParticipantIdentifierWS" />
+        </jaxws:bindings>
+    </jaxws:bindings>
+</jaxws:bindings>

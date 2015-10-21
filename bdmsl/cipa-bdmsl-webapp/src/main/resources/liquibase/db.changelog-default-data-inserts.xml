@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <!-- Properties -->
+    <changeSet author="eDelivery" id="21" logicalFilePath="path-independent">
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="unsecureLoginAllowed"/>
+            <column name="value" value="true"/>
+            <column name="description" value="'true' if the use of HTTPS is not required. If the value is set to 'true', then the user 'unsecure-http-client' is automatically created. Possible values: true/false"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="configurationDir"/>
+            <column name="value" value="/change/me"/>
+            <column name="description" value="The absolute path to the folder containing all the configuration files (keystore and sig0 key)"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="httpProxyHost"/>
+            <column name="value" value="158.169.9.13"/>
+            <column name="description" value="The http proxy host"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="httpProxyPort"/>
+            <column name="value" value="8012"/>
+            <column name="description" value="The http proxy port"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="httpsProxyHost"/>
+            <column name="value" value="158.169.9.13"/>
+            <column name="description" value="The https proxy host"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="httpsProxyPort"/>
+            <column name="value" value="8012"/>
+            <column name="description" value="The https proxy port"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="useProxy"/>
+            <column name="value" value="true"/>
+            <column name="description" value="'true' if a proxy is required to connect to the internet. Possible values: true/false"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="httpProxyUser"/>
+            <column name="value" value="user"/>
+            <column name="description" value="The proxy user"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="httpProxyPassword"/>
+            <column name="value" value="password"/>
+            <column name="description" value="The proxy password"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="dnsClient.enabled"/>
+            <column name="value" value="true"/>
+            <column name="description" value="'true' if registration of DNS records is required. Must be 'true' in production. Possible values: true/false"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="dnsClient.server"/>
+            <column name="value" value="ddnsext.tech.ec.europa.eu"/>
+            <column name="description" value="The DNS server"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="dnsClient.publisherPrefix"/>
+            <column name="value" value="publisher"/>
+            <column name="description" value="This is the prefix for the publishers (SMP). This is to be concatenated with the associated DNS domain in the table 'bdmsl_certificate_domain'"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="dnsClient.SIG0Enabled"/>
+            <column name="value" value="true"/>
+            <column name="description" value="'true' if the SIG0 signing is enabled. Required fr DNSSEC. Possible values: true/false"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="dnsClient.SIG0PublicKeyName"/>
+            <column name="value" value="sig0.acc.edelivery.tech.ec.europa.eu."/>
+            <column name="description" value="The public key name of the SIG0 key"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="dnsClient.SIG0KeyFileName"/>
+            <column name="value" value="SIG0.private"/>
+            <column name="description" value="The actual SIG0 key file. Should be just the filename if the file is in the classpath or in the 'configurationDir'"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="signResponse"/>
+            <column name="value" value="true"/>
+            <column name="description" value="'true' if the responses must be signed. Possible values: true/false"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="keystoreFileName"/>
+            <column name="value" value="keystore.jks"/>
+            <column name="description" value="The JKS keystore file. Should be just the filename if the file is in the classpath or in the 'configurationDir'"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="keystoreAlias"/>
+            <column name="value" value="senderalias"/>
+            <column name="description" value="The alias in the keystore."/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="keystorePassword"/>
+            <column name="value" value="test"/>
+            <column name="description" value="The password for the keystore"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="paginationListRequest"/>
+            <column name="value" value="100"/>
+            <column name="description" value="Number of participants per page for the 'list' operation of 'ManageParticipantIdentifier' service. This property is used for pagination purposes."/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="certificateChangeCronExpression"/>
+            <column name="value" value="0 0 2 ? * *"/>
+            <column name="description" value="Cron expression for the changeCertificate job. Example: 0 0 2 ? * * (everyday at 2:00 am)"/>
+        </insert>
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="projectVersion"/>
+            <column name="value" value="2.4.3-SNAPSHOT"/>
+            <column name="description" value="Project version (do not change this value)"/>
+        </insert>
+    </changeSet>
+
+    <!-- certificate/domain -->
+    <changeSet author="eDelivery" id="23" logicalFilePath="path-independent">
+        <insert tableName="bdmsl_certificate_domain">
+            <column name="root_certificate_alias" value="CN=unsecure_root,O=delete_in_production,C=only_for_testing"/>
+            <column name="domain" value="acc.edelivery.tech.ec.europa.eu"/>
+            <column name="crl_url" value="http://crl.globalsign.net/root.crl"/>
+        </insert>
+        <insert tableName="bdmsl_certificate_domain">
+            <column name="root_certificate_alias" value="EMAILADDRESS=root@test.be,CN=rootCN,OU=B4,O=DIGIT,L=Brussels,ST=BE,C=BE"/>
+            <column name="domain" value="acc.edelivery.tech.ec.europa.eu"/>
+            <column name="crl_url" value="http://crl.globalsign.net/root.crl"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

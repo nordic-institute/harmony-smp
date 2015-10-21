@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/edelivery-sml">
+    <ResourceLink name="jdbc/edelivery"
+                  global="jdbc/edelivery"
+                  type="javax.sql.DataSource"/>
+</Context>
