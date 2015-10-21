@@ -9,7 +9,7 @@
 
   <modules>
 	<module>cipa-core/Implementation/java</module>
-	<module>domibus</module>
+	<module>as4/Domibus-MSH</module>
 	<module>mendelson/mendelson-as2-war</module>
   </modules>
 </project>
