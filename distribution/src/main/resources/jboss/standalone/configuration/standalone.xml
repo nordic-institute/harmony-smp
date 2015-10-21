@@ -81,14 +81,6 @@
                 <suffix value=".yyyy-MM-dd"/>
                 <append value="true"/>
             </periodic-rotating-file-handler>
-            <periodic-rotating-file-handler name="eDelivery">
-                <formatter>
-                    <pattern-formatter pattern="%d{HH:mm:ss,SSS} %-5p [%c] (%t) %s%E%n"/>
-                </formatter>
-                <file relative-to="jboss.server.log.dir" path="eDelivery.log"/>
-                <suffix value=".yyyy-MM-dd"/>
-                <append value="true"/>
-            </periodic-rotating-file-handler>
             <logger category="com.arjuna">
                 <level name="WARN"/>
             </logger>
@@ -121,21 +113,12 @@
             </logger>
             <logger category="eu.europa.ec.cipa">
                 <level name="INFO"/>
-                <handlers>
-                    <handler name="eDelivery"/>
-                </handlers>
             </logger>
             <logger category="org.hibernate">
                 <level name="INFO"/>
-                <handlers>
-                    <handler name="eDelivery"/>
-                </handlers>
             </logger>
             <logger category="org.springframework.integration">
                 <level name="INFO"/>
-                <handlers>
-                    <handler name="eDelivery"/>
-                </handlers>
             </logger>
             <root-logger>
                 <level name="INFO"/>
@@ -174,7 +157,31 @@
                         <share-prepared-statements>false</share-prepared-statements>
                     </statement>
                 </xa-datasource>
-                 <xa-datasource jta="true" jndi-name="java:/jdbc/cipaeDeliveryDs" pool-name="cipaeDeliveryDs" enabled="true" use-ccm="false">                    <xa-datasource-property name="URL">                        jdbc:mysql://localhost:3306/domibus_cipa_sender                    </xa-datasource-property>                    <driver>com.mysql</driver>                    <xa-pool>                        <min-pool-size>0</min-pool-size>                        <max-pool-size>20</max-pool-size>                        <is-same-rm-override>false</is-same-rm-override>                        <interleaving>false</interleaving>                        <pad-xid>false</pad-xid>                        <wrap-xa-resource>false</wrap-xa-resource>                    </xa-pool>                    <security>                        <user-name>domibus</user-name>                        <password>domibus</password>                    </security>                    <validation>                        <validate-on-match>false</validate-on-match>                        <background-validation>false</background-validation>                    </validation>                    <statement>                        <share-prepared-statements>false</share-prepared-statements>                    </statement>                </xa-datasource>
+                 <xa-datasource jta="true" jndi-name="java:/jdbc/cipaeDeliveryDs" pool-name="cipaeDeliveryDs" enabled="true" use-ccm="false">
+                    <xa-datasource-property name="URL">
+                        jdbc:mysql://localhost:3306/domibus_cipa_sender
+                    </xa-datasource-property>
+                    <driver>com.mysql</driver>
+                    <xa-pool>
+                        <min-pool-size>0</min-pool-size>
+                        <max-pool-size>20</max-pool-size>
+                        <is-same-rm-override>false</is-same-rm-override>
+                        <interleaving>false</interleaving>
+                        <pad-xid>false</pad-xid>
+                        <wrap-xa-resource>false</wrap-xa-resource>
+                    </xa-pool>
+                    <security>
+                        <user-name>domibus</user-name>
+                        <password>domibus</password>
+                    </security>
+                    <validation>
+                        <validate-on-match>false</validate-on-match>
+                        <background-validation>false</background-validation>
+                    </validation>
+                    <statement>
+                        <share-prepared-statements>false</share-prepared-statements>
+                    </statement>
+                </xa-datasource>
                 <drivers>
                     <driver name="h2" module="com.h2database.h2">
                         <xa-datasource-class>org.h2.jdbcx.JdbcDataSource</xa-datasource-class>

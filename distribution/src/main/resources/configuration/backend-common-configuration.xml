@@ -56,7 +56,7 @@
                     org.hibernate.dialect.MySQL5InnoDBDialect
                 </prop>
                 <!-- Log all SQL statements to console - FOR DEBUGGING PURPOSES -->
-                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.show_sql">false</prop>
                 <!-- format SQL statements before logging - only used when
                 hibernate.show_sql=true -->
                 <prop key="hibernate.format_sql">true</prop>
