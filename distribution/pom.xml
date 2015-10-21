@@ -134,45 +134,18 @@
                 </module>
                 <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web
                 </module>
-                <module>../cipa-core/Implementation/java/cipa-parent-pom</module>
-                <module>../cipa-core/Implementation/java/cipa-commons-busdox</module>
-                <module>../cipa-core/Implementation/java/cipa-peppol-types</module>
-                <module>../cipa-core/Implementation/java/cipa-smp-client-library</module>
-                <module>../cipa-core/Implementation/java/cipa-sml-client-library</module>
-                <module>../cipa-core/Implementation/java/cipa-smp-server-library</module>
-                <module>../cipa-core/Implementation/java/cipa-smp-full-webapp</module>
-                <module>../mendelson/mendelson-as2-war</module>
-                <module>../as4/Domibus-MSH</module>
-            </modules>
-        </profile>
-        <profile>
-            <!-- profile to be used for BRIS pilot -->
-            <id>oldBris</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <!-- the name of the assembly file -->
-                <assemblyName>bris</assemblyName>
-                <!-- true if the AS2 component must not be packed -->
-                <skipAS2>true</skipAS2>
-                <!-- true if the connector component must not be packed -->
-                <skipConnector>false</skipConnector>
-                <!-- true if the Domibus3 component must not be packed -->
-                <skipDomibus3>true</skipDomibus3>
-                <!-- true if the SMP component must not be packed -->
-                <skipSMP>true</skipSMP>
-            </properties>
-            <modules>
-                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-parent
-                </module>
-                <module>../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web
-                </module>
-                <module>../as4/Domibus-MSH</module>
+                <module>../common/cipa-parent-pom</module>
+                <module>../common/cipa-commons-busdox</module>
+                <module>../common/cipa-peppol-types</module>
+                <module>../smp/cipa-smp-client-library</module>
+                <module>../sml/cipa-sml-client-library</module>
+                <module>../smp/cipa-smp-server-library</module>
+                <module>../smp/cipa-smp-full-webapp</module>
+                <module>../as2/mendelson-as2-war</module>
+                <module>../as4</module>
             </modules>
         </profile>
     </profiles>
-
     <build>
         <filters>
             <filter>src/main/filters/${type}.properties</filter>
@@ -312,13 +285,13 @@
                                 <concat destfile="${project.build.directory}/sql-scripts/create-mysql.sql"
                                         append="true" fixlastline="yes">
                                     <filelist
-                                            dir="${project.basedir}/../cipa-core/Implementation/java/cipa-smp-server-library/database"
+                                            dir="${project.basedir}/../smp/cipa-smp-server-library/database"
                                             files="create-Mysql.sql"/>
                                 </concat>
                                 <concat destfile="${project.build.directory}/sql-scripts/create-oracle.sql"
                                         append="true">
                                     <filelist
-                                            dir="${project.basedir}/../cipa-core/Implementation/java/cipa-smp-server-library/database"
+                                            dir="${project.basedir}/../smp/cipa-smp-server-library/database"
                                             files="create-Oracle.sql"/>
                                 </concat>
                             </target>
@@ -362,7 +335,7 @@
                                 <concat destfile="${project.build.directory}/sql-scripts/create-mysql.sql"
                                         append="true" fixlastline="yes">
                                     <filelist
-                                            dir="${project.basedir}/../..//ETRUSTEX/001 e-TrustEx/006 Deployment/Database Scripts/001 Environment Creation/002 MySQL"
+                                            dir="${project.basedir}/../../ETRUSTEX/001 e-TrustEx/006 Deployment/Database Scripts/001 Environment Creation/002 MySQL"
                                             files="01-CreateDBAndTables.sql,02-UsersAndPrivileges.sql,03-InsertReferenceData-BRIS.sql,04-PlatformConfig-BRIS.sql"/>
                                     <filelist dir="src/main/resources/sql"
                                               files="data-${type}.sql"/>
@@ -375,7 +348,7 @@
                                 <concat destfile="${project.build.directory}/sql-scripts/create-oracle.sql"
                                         append="true" fixlastline="yes">
                                     <filelist
-                                            dir="${project.basedir}/../..//ETRUSTEX/001 e-TrustEx/006 Deployment/Database Scripts/001 Environment Creation/001 Oracle"
+                                            dir="${project.basedir}/../../ETRUSTEX/001 e-TrustEx/006 Deployment/Database Scripts/001 Environment Creation/001 Oracle"
                                             files="01-CreateDBAndTables.sql,02-UsersAndPrivileges.sql,03-InsertReferenceData-BRIS.sql,04-PlatformConfig-BRIS.sql"/>
                                     <filelist dir="src/main/resources/sql"
                                               files="data-${type}.sql"/>

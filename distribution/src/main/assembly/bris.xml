@@ -171,7 +171,7 @@
             <filtered>false</filtered>
         </file>
         <file>
-            <source>src/main/doc/ReleaseNotes-2.4.4-SNAPSHOT.txt</source>
+            <source>src/main/doc/ReleaseNotes-3.1.0.txt</source>
             <outputDirectory>/</outputDirectory>
             <filtered>false</filtered>
         </file>

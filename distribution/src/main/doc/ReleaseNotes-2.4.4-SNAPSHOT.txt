@@ -1,4 +1,0 @@
-
-Release Notes - CIPA e-Delivery - Version e-Delivery v2.4.4
-
-Comply with changes performed on Domibus 2 to allow clustering. 
