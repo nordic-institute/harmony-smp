@@ -22,7 +22,7 @@
 		<m2e.jsf.activation>false</m2e.jsf.activation>
 		<org.apache.cxf.version>2.2.3</org.apache.cxf.version>
         <cipa.version>3.0.0</cipa.version>
-        <domibus.version>3.0.0</domibus.version>
+        <domibus.version>2.4.3</domibus.version>
         <ftp.host>wltdgt02.cc.cec.eu.int</ftp.host>
         <ftp.port>2059</ftp.port>
         <ftp.remotedir>/ec/test/server/weblogic/u010/home/digciedt/data/CIPA-EDEL_DEV/autodeploy</ftp.remotedir>

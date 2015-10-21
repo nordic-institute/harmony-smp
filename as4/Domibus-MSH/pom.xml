@@ -131,11 +131,11 @@
             <artifactId>commons-logging</artifactId>
             <version>1.2</version>
         </dependency>
-        <dependency>
+        <!--        <dependency>
             <groupId>net.timewalker.ffmq</groupId>
             <artifactId>ffmq3-core</artifactId>
             <version>3.0.5</version>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>javax.jms</groupId>
             <artifactId>javax.jms-api</artifactId>
@@ -251,6 +251,35 @@
         </dependency>
     </dependencies>
 
+    <pluginRepositories>
+        <pluginRepository>
+            <id>plugin.joinup</id>
+            <url>https://joinup.ec.europa.eu/nexus/content/groups/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+    <repositories>
+        <repository>
+            <id>joinup.nexus</id>
+            <url>https://joinup.ec.europa.eu/nexus/content/groups/public</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>joinup.nexus.snapshot</id>
+            <url>https://joinup.ec.europa.eu/nexus/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
     <build>
         <plugins>
             <plugin>
@@ -273,6 +302,8 @@
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <warName>domibus</warName>
+                    <classesClassifier>classes</classesClassifier>
+                    <attachClasses>true</attachClasses>
                 </configuration>
             </plugin>
             <plugin>
@@ -291,6 +322,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.1</version>
                 <executions>
                     <execution>
                         <id>attach-javadocs</id>
@@ -539,6 +571,9 @@
                         <configuration>
                             <container>
                                 <containerId>tomcat8x</containerId>
+                                <zipUrlInstaller>
+                                    <url>https://joinup.ec.europa.eu/nexus/content/groups/public/org/apache/tomcat/tomcat/8.0.24/tomcat-8.0.24.zip</url>
+                                </zipUrlInstaller>
                             </container>
                             <packager>
                                 <outputLocation>
@@ -581,7 +616,7 @@
                     <execution>
                         <id>make-assembly</id>
                         <!-- bound to verify because we need to execute cargo-package first
-                            which is in pre-integration-test -->
+                        which is in pre-integration-test -->
                         <phase>verify</phase>
                         <goals>
                             <goal>single</goal>

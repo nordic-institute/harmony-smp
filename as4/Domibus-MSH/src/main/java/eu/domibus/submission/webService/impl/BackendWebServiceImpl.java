@@ -79,6 +79,9 @@ public class BackendWebServiceImpl extends AbstractBackendConnector<Messaging, U
     @Autowired
     private PartyIndentifierResolverService partyIndentifierResolverService;
 
+    public BackendWebServiceImpl() {
+        super("DefaultWebService");
+    }
     public BackendWebServiceImpl(String name) {
         super(name);
     }
