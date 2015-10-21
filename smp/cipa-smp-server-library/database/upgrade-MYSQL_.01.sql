@@ -1,0 +1,1 @@
+rename table `smp_service_metadata_redirection` TO `smp_service_metadata_red`;
