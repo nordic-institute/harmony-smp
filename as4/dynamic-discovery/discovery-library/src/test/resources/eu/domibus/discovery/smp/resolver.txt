@@ -1,0 +1,5 @@
+#
+# Resolver records for locator mockup
+#
+
+B-22851f4b26219dce7ec3a037f1d3d301.DE.test.civil-law.community.eu.: res://eu.domibus.discovery.smp.SMPTest/govello-1234567890123-456789012.xml

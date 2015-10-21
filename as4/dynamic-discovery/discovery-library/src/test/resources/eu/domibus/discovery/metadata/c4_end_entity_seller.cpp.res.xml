@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cpp:CollaborationProtocolProfile xmlns:cpp="http://docs.oasis-open.org/ebxmlcppa/cppa-3.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xsi:schemaLocation="http://docs.oasis-open.org/ebxmlcppa/cppa-3.0 https://www.oasis-open.org/committees/download.php/49199/cppa-3.0%20May%202013.xsd" cppid="C4_cpp" version="3.0">
+    <cpp:PartyInfo partyName="Seller" >
+        <cpp:PartyId>c4</cpp:PartyId>
+        <cpp:PartyRef xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href=""/>
+        <cpp:CollaborationRole>
+            <cpp:ProcessSpecification version="2.0" 
+                name="BII06-Procurement" 
+                xlink:type="simple"
+                xlink:href="http://www.cen.eu/cwa/bii/specs/Profiles/ebbp/BIIprofile06-Procurementv1.xml" 
+                uuid="70cb8e96-862a-46be-9028-02032ae9ed3c"/>
+            <cpp:Role name="Seller" 
+                xlink:type="simple"
+                xlink:href="http://www.cen.eu/cwa/bii/specs/Profiles/ebbp/BIIprofile06-Procurementv1.xml#Seller"/>
+            <cpp:ServiceBinding>
+                <cpp:Service>OrderingBilling</cpp:Service>
+                <cpp:ActionBinding id="C4_s1_a1" action="SubmitOrder"  sendOrReceive="receive">
+                    <cpp:ChannelRef>res://eu.domibus.discovery.metadata.MetadataTest/c3_gateway_seller.cpp.xml#c3_s1_a1</cpp:ChannelRef>
+                </cpp:ActionBinding>
+                <cpp:ActionBinding id="C4_s1_a2" action="AcceptOrder" sendOrReceive="send">
+                    <cpp:ChannelRef>res://eu.domibus.discovery.metadata.MetadataTest/c3_gateway_seller.cpp.xml#c3_s1_a2</cpp:ChannelRef>
+                </cpp:ActionBinding>
+                <!--  
+                <cpp:ActionBinding id="C4_s1_a3" action="RejectOrder" sendOrReceive="send">
+                    <cpp:ChannelRef>res://eu.ecodex.discovery.metadata.MetadataTest/c3_gateway_Seller.cpp.xml#c3_s1_a3</cpp:ChannelRef>
+                </cpp:ActionBinding>
+                -->
+            </cpp:ServiceBinding>
+        </cpp:CollaborationRole>
+    </cpp:PartyInfo>
+</cpp:CollaborationProtocolProfile>

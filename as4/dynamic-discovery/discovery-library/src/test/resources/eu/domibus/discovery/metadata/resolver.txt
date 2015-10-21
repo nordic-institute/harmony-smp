@@ -1,0 +1,11 @@
+#
+# Resolver records for locator mockup
+#
+
+c1.DE.test.civil-law.community.eu.: res://eu.domibus.discovery.metadata.MetadataTest/c1_end_entity_buyer.cpp.res.xml
+
+c4.DE.test.civil-law.community.eu.: res://eu.domibus.discovery.metadata.MetadataTest/c4_end_entity_seller.cpp.res.xml
+
+govello-1234567890123-456789012.DE.test.civil-law.community.eu.: res://eu.domibus.discovery.metadata.MetadataTest/govello-1234567890123-456789012.xml
+
+govello-1234567890123-456789012-nogroup.DE.test.civil-law.community.eu.: res://eu.domibus.discovery.metadata.MetadataTest/govello-1234567890123-456789012.Form_A.xml

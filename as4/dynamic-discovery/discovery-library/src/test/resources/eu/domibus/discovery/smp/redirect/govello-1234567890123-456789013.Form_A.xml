@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<smp:ServiceMetadata xmlns:smp="http://busdox.org/serviceMetadata/publishing/1.0/"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:ids="http://busdox.org/transport/identifiers/1.0/">
+    <smp:Redirect href="res://eu.domibus.discovery.smp.redirect.SMPRedirectTest/govello-1234567890123-456789013.EPO.Form_A.xml">
+        <smp:CertificateUID>...</smp:CertificateUID>
+    </smp:Redirect>        
+</smp:ServiceMetadata>

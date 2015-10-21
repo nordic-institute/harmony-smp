@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cpp:CollaborationProtocolProfile xmlns:cpp="http://docs.oasis-open.org/ebxmlcppa/cppa-3.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ds="http://www.w3.org/2000/09/xmldsig#" 
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xsi:schemaLocation="http://docs.oasis-open.org/ebxmlcppa/cppa-3.0 https://www.oasis-open.org/committees/download.php/49199/cppa-3.0%20May%202013.xsd" cppid="c3_cpp" version="3.0">
+    <cpp:PartyInfo partyName="Seller Gateway" >
+        <cpp:PartyId>C3</cpp:PartyId>
+        <cpp:PartyRef xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href=""/>
+        <cpp:CollaborationRole>
+            <cpp:ProcessSpecification version="2.0" 
+                name="BII06-Procurement" 
+                xlink:type="simple"
+                xlink:href="http://www.cen.eu/cwa/bii/specs/Profiles/ebbp/BIIprofile06-Procurementv1.xml" 
+                uuid="70cb8e96-862a-46be-9028-02032ae9ed3c"/>
+            <cpp:Role name="Seller" 
+                xlink:type="simple"
+                xlink:href="http://www.cen.eu/cwa/bii/specs/Profiles/ebbp/BIIprofile06-Procurementv1.xml#Seller"/>
+            <cpp:ServiceBinding>
+                <cpp:Service>OrderingBilling</cpp:Service>
+                <cpp:ActionBinding id="c3_s1_a1" action="SubmitOrder"  sendOrReceive="receive" >
+                    <cpp:BusinessTransactionCharacteristics 
+                        isConfidential="persistent"/>
+                    <cpp:ChannelId>c3_channel</cpp:ChannelId>
+                </cpp:ActionBinding>
+                <cpp:ActionBinding id="c3_s1_a2" action="AcceptOrder" sendOrReceive="send">
+                    <cpp:ChannelId>c3_channel</cpp:ChannelId>
+                </cpp:ActionBinding>
+                <cpp:ActionBinding id="c3_s1_a3" action="RejectOrder" sendOrReceive="send">
+                    <cpp:ChannelId>c3_channel</cpp:ChannelId>
+                </cpp:ActionBinding>
+            </cpp:ServiceBinding>
+            
+            <cpp:ServiceBinding>
+                <cpp:Service>http://docs.oasis-open.org/bdxr/connect-1.0</cpp:Service>
+                <cpp:ActionBinding id="c3_s2_a1" action="ConnectRequest" sendOrReceive="receive">
+                    <cpp:ChannelId>c3_channel</cpp:ChannelId>
+                </cpp:ActionBinding>
+                <cpp:ActionBinding id="c3_s2_a2" action="ConnectResponse" sendOrReceive="send">
+                    <cpp:ChannelId>c3_channel</cpp:ChannelId>
+                </cpp:ActionBinding>
+            </cpp:ServiceBinding>
+            
+        </cpp:CollaborationRole>
+        
+        <cpp:Certificate certId="Seller_ServerCert">
+            <ds:KeyInfo>
+                <ds:KeyName>Seller_ServerCert_Key</ds:KeyName>
+                <ds:X509Data>
+                    <ds:X509SubjectName>C2 Gateway</ds:X509SubjectName>
+                    <ds:X509Certificate>aGFsbG8gYWxsZW1hYWw=</ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </cpp:Certificate>
+        
+        <cpp:Certificate certId="Seller_ClientCert">
+            <ds:KeyInfo>
+                <ds:KeyName>Seller_ClientCert_Key</ds:KeyName>
+            </ds:KeyInfo>
+        </cpp:Certificate>
+        
+        
+        <cpp:DeliveryChannel channelId="c3_channel" 
+            docExchangeId="c3_docexchange" 
+            transportId="c3_transport_client" />
+        <cpp:Transport transportId="c3_transport_client">
+            <cpp:TransportSender>
+                <cpp:TransportProtocol version="1.1" method="POST">HTTP</cpp:TransportProtocol>
+                <cpp:TransportClientSecurity>
+                    <cpp:TransportSecurityProtocol version="1.2">TLS</cpp:TransportSecurityProtocol>
+                    <cpp:ClientCertificateRef certId="Seller_ClientCert"/>
+                </cpp:TransportClientSecurity>
+            </cpp:TransportSender>
+            <cpp:TransportReceiver>
+                <cpp:TransportProtocol version="1.1">HTTP</cpp:TransportProtocol>
+                <cpp:Endpoint uri="http://c3.example.com/msh"/>
+                <cpp:TransportServerSecurity>
+                    <cpp:TransportSecurityProtocol version="1.2">TLS</cpp:TransportSecurityProtocol>
+                    <cpp:ServerCertificateRef certId="Seller_ServerCert"/>
+                </cpp:TransportServerSecurity>
+            </cpp:TransportReceiver>
+        </cpp:Transport>
+        <cpp:DocExchange docExchangeId="c3_docexchange">
+            <cpp:ebXMLSenderBinding version="3.0">
+                <!-- details omitted -->
+            </cpp:ebXMLSenderBinding>
+            <cpp:ebXMLReceiverBinding version="3.0">
+                <!-- details omitted -->
+            </cpp:ebXMLReceiverBinding>
+        </cpp:DocExchange>
+    </cpp:PartyInfo>
+</cpp:CollaborationProtocolProfile>

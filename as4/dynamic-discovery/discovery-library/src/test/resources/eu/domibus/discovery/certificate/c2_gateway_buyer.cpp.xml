@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cpp:CollaborationProtocolProfile xmlns:cpp="http://docs.oasis-open.org/ebxmlcppa/cppa-3.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:xlink="http://www.w3.org/1999/xlink"
+    xsi:schemaLocation="http://docs.oasis-open.org/ebxmlcppa/cppa-3.0 https://www.oasis-open.org/committees/download.php/49199/cppa-3.0%20May%202013.xsd"
+    cppid="c2_cpp" version="3.0">
+    <cpp:PartyInfo partyName="Buyer Gateway">
+        <cpp:PartyId>C2</cpp:PartyId>
+        <cpp:PartyRef xmlns:xlink="http://www.w3.org/1999/xlink" xlink:type="simple" xlink:href=""/>
+        <cpp:CollaborationRole>
+            <cpp:ProcessSpecification version="2.0" name="BII06-Procurement" xlink:type="simple"
+                xlink:href="http://www.cen.eu/cwa/bii/specs/Profiles/ebbp/BIIprofile06-Procurementv1.xml"/>
+            <cpp:Role name="Buyer" xlink:type="simple"
+                xlink:href="http://www.cen.eu/cwa/bii/specs/Profiles/ebbp/BIIprofile06-Procurementv1.xml#Buyer"/>
+            <cpp:ServiceBinding>
+                <cpp:Service>OrderingBilling</cpp:Service>
+                <cpp:ActionBinding id="c2_s1_a1" action="SubmitOrder" sendOrReceive="send">
+                    <cpp:ChannelId>c2_channel</cpp:ChannelId>
+                </cpp:ActionBinding>
+                <cpp:ActionBinding id="c2_s1_a2" action="AcceptOrder" sendOrReceive="receive">
+                    <cpp:ChannelId>c2_channel</cpp:ChannelId>
+                </cpp:ActionBinding>
+                <cpp:ActionBinding id="c2_s1_a3" action="RejectOrder" sendOrReceive="receive">
+                    <cpp:ChannelId>c2_channel</cpp:ChannelId>
+                </cpp:ActionBinding>
+            </cpp:ServiceBinding>
+
+        </cpp:CollaborationRole>
+        
+        <cpp:Certificate certId="Buyer_SigningCert">
+            <ds:KeyInfo>
+                <ds:KeyName>Buyer_SigningCert</ds:KeyName>
+            </ds:KeyInfo>
+        </cpp:Certificate>
+        
+        <cpp:Certificate certId="Buyer_ServerCert">
+            <ds:KeyInfo> 
+                <ds:KeyName>Buyer_ServerCert_Key</ds:KeyName> 
+                <ds:X509Data>
+                    <ds:X509SubjectName>CN=Thorsten Niedzwetzki</ds:X509SubjectName>
+                    <ds:X509Certificate>MIICLDCCAZWgAwIBAgIQ3z4tw4Zjr6hMWH9DrsnoPjANBgkqhkiG9w0BAQQFADAfMR0wGwYDVQQDExRUaG9yc3RlbiBOaWVkendldHpraTAeFw0xMDEyMzEyMjAwMDBaFw0xNjEyMzEyMjAwMDBaMB8xHTAbBgNVBAMTFFRob3JzdGVuIE5pZWR6d2V0emtpMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCaL9xqlCJIs7R8s4sq7fGxXlORt+itD7/bcY+l2Z6dJzJ6lzZdbouwftcPrYyKjQR7cf5R/odertC/M4Pxezz8j+rE+HwuG3/6DI5VadbpN4GoYGLOKjkd+YiL1gMm0UCnEUBYnsJqSAKdyea20JiApkgZIxy3sFhHwAtmCWJepQIDAQABo2kwZzATBgNVHSUEDDAKBggrBgEFBQcDAzBQBgNVHQEESTBHgBAIUvsXw6J6Wnwp79VZwnl8oSEwHzEdMBsGA1UEAxMUVGhvcnN0ZW4gTmllZHp3ZXR6a2mCEN8+LcOGY6+oTFh/Q67J6D4wDQYJKoZIhvcNAQEEBQADgYEAPuhJAxSSdO8ibLZHbQaZLDYhunVFADaBfHNqD3G9oERl/M2EzAkcAHyYYK/fuE2i0IQg4ASZVKdcKN5vwV+qpFklenTPY37D9goOzGW6ry/K1CZtqcZGS0ogZVM9+8xCHsFeY+D0xO8H8obVB68gx7in8aQImO/J4OECpXX+bCU=</ds:X509Certificate>
+                </ds:X509Data> 
+            </ds:KeyInfo>
+        </cpp:Certificate>
+        
+        <cpp:Certificate certId="Buyer_ClientCert">
+            <ds:KeyInfo> <ds:KeyName>Buyer_ClientCert_Key</ds:KeyName> </ds:KeyInfo>
+        </cpp:Certificate>
+        
+        <cpp:DeliveryChannel channelId="c2_channel" docExchangeId="c2_docexchange"
+            transportId="c2_transport_client"/>
+        
+        <cpp:Transport transportId="c2_transport_client">
+            <cpp:TransportSender>
+                <cpp:TransportProtocol version="1.1" method="POST">HTTP</cpp:TransportProtocol>
+                <cpp:TransportClientSecurity>
+                    <cpp:TransportSecurityProtocol version="1.2">TLS</cpp:TransportSecurityProtocol>
+                    <cpp:ClientCertificateRef certId="Buyer_ClientCert"/>
+                </cpp:TransportClientSecurity>
+            </cpp:TransportSender>
+            <cpp:TransportReceiver>
+                <cpp:TransportProtocol version="1.1">HTTP</cpp:TransportProtocol>
+                <cpp:Endpoint uri="http://c2.example.com/msh"/>
+                <cpp:TransportServerSecurity>
+                    <cpp:TransportSecurityProtocol version="1.2">TLS</cpp:TransportSecurityProtocol>
+                    <cpp:ServerCertificateRef certId="Buyer_ServerCert"/>
+                </cpp:TransportServerSecurity>
+            </cpp:TransportReceiver>
+        </cpp:Transport>
+        
+        <cpp:DocExchange docExchangeId="c2_docexchange">
+            <cpp:ebXMLSenderBinding version="3.0">
+                <!-- details omitted -->
+                <cpp:SenderNonRepudiation>
+                    <cpp:NonRepudiationProtocol>wss-v1.1-spec-errata-os-X509TokenProfile</cpp:NonRepudiationProtocol>
+                    <cpp:HashFunction>http://www.w3.org/2000/09/xmldsig#sha1</cpp:HashFunction>
+                    <cpp:SignatureAlgorithm>http://www.w3.org/2000/09/xmldsig#rsa-sha1</cpp:SignatureAlgorithm>
+                    <cpp:SigningCertificateRef certId="Buyer_SigningCert"/>
+                </cpp:SenderNonRepudiation>
+            </cpp:ebXMLSenderBinding>
+            <cpp:ebXMLReceiverBinding version="3.0">
+                <!-- details omitted --> 
+            </cpp:ebXMLReceiverBinding>
+        </cpp:DocExchange>
+        
+    </cpp:PartyInfo>
+</cpp:CollaborationProtocolProfile>

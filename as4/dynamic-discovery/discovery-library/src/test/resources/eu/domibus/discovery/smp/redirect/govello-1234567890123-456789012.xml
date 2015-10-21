@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<smp:ServiceGroup xmlns:smp="http://busdox.org/serviceMetadata/publishing/1.0/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ids="http://busdox.org/transport/identifiers/1.0/">
+    <ids:ParticipantIdentifier scheme="egvp">govello-1234567890123-456789012</ids:ParticipantIdentifier>
+    <smp:ServiceMetadataReferenceCollection>
+        <smp:ServiceMetadataReference 
+            href="res://eu.domibus.discovery.smp.redirect.SMPRedirectTest/govello-1234567890123-456789012.Form_A.xml" />
+    </smp:ServiceMetadataReferenceCollection>
+</smp:ServiceGroup>
