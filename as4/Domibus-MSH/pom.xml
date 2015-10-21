@@ -626,18 +626,15 @@
             </plugin>
         </plugins>
     </build>
+    <!-- Where to deploy binaries -->
     <distributionManagement>
         <repository>
-            <id>nexus-releases</id>
-            <url>
-                https://secure.e-codex.eu/nexus/content/repositories/releases/
-            </url>
+            <id>joinup-releases</id>
+            <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
         </repository>
         <snapshotRepository>
-            <id>nexus-snapshots</id>
-            <url>
-                https://secure.e-codex.eu/nexus/content/repositories/snapshots/
-            </url>
+            <id>joinup-snapshots</id>
+            <url>https://joinup.ec.europa.eu/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
 </project>
