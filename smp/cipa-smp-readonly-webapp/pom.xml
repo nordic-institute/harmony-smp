@@ -3,11 +3,11 @@
   <parent>
     <groupId>eu.europa.ec.cipa</groupId>
     <artifactId>cipa-parent-pom</artifactId>
-    <version>3.0.0</version>
+    <version>3.1.0-SNAPSHOT</version>
     <relativePath>../../common/cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-smp-readonly-webapp</artifactId>
-  <version>3.0.0</version>
+  <version>3.1.0-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>cipa-smp-readonly-webapp</name>
   <description>SMP webapp with all available features (read &amp; write)</description>
