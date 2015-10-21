@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>eu.europa.ec.cipa</groupId>
+	<artifactId>cipa-sml-builder</artifactId>
+	<packaging>pom</packaging>
+	<name>CIPA SML Builder POM</name>
+	<version>3.0.0</version>
+
+	<modules>
+		<module>cipa-sml-client-library</module>
+		<module>cipa-sml-server-library</module>
+		<module>cipa-sml-webapp</module>
+	</modules>
+
+	<!-- Where to deploy binaries -->
+	<distributionManagement>
+		<repository>
+			<id>joinup-releases</id>
+			<url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>joinup-snapshots</id>
+			<url>https://joinup.ec.europa.eu/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
+</project>
