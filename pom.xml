@@ -1,15 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>eu.europa.ec.cipa</groupId>
-  <artifactId>cipa-builder</artifactId>
-  <packaging>pom</packaging>
-  <name>CIPA Builder POM</name>
-  <version>3.0.0</version>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>eu.europa.ec.cipa</groupId>
+	<artifactId>cipa-builder</artifactId>
+	<packaging>pom</packaging>
+	<name>CIPA Builder POM</name>
+	<version>3.0.0</version>
 
-  <modules>
-	<module>cipa-core/Implementation/java</module>
-	<module>as4/Domibus-MSH</module>
-	<module>mendelson/mendelson-as2-war</module>
-  </modules>
+	<modules>
+		<module>common</module>
+		<module>bdmsl</module>
+		<module>as2</module>
+		<module>as4</module>
+		<module>smp</module>
+		<module>sml</module>
+	</modules>
+
+	<!-- Where to deploy binaries -->
+	<distributionManagement>
+		<repository>
+			<id>joinup-releases</id>
+			<url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
+		</repository>
+		<snapshotRepository>
+			<id>joinup-snapshots</id>
+			<url>https://joinup.ec.europa.eu/nexus/content/repositories/snapshots/</url>
+		</snapshotRepository>
+	</distributionManagement>
 </project>
