@@ -24,7 +24,7 @@
 
     <groupId>eu.domibus</groupId>
     <artifactId>domibus</artifactId>
-    <version>3.0-FINAL</version>
+    <version>3.0.0</version>
     <packaging>war</packaging>
     <name>domibus</name>
 

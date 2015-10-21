@@ -22,7 +22,7 @@
     <artifactId>cipa-edelivery-distribution</artifactId>
     <packaging>pom</packaging>
     <name>cipa-edelivery-distribution</name>
-    <version>2.4.4-SNAPSHOT</version>
+    <version>3.0.0</version>
 
     <!-- Some properties are preset for setting up a sender and a receiver. The configuration is set with the "type" property -->
     <properties>

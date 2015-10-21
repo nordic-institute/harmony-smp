@@ -5,7 +5,7 @@
   <artifactId>cipa-builder</artifactId>
   <packaging>pom</packaging>
   <name>CIPA Builder POM</name>
-  <version>2.4.4-SNAPSHOT</version>
+  <version>3.0.0</version>
 
   <modules>
 	<module>cipa-core/Implementation/java</module>
