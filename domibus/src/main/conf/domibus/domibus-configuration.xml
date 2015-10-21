@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2015 e-CODEX Project
+  ~
+  ~ Licensed under the EUPL, Version 1.1 or – as soon they
+  ~ will be approved by the European Commission - subsequent
+  ~ versions of the EUPL (the "Licence");
+  ~ You may not use this work except in compliance with the
+  ~ Licence.
+  ~ You may obtain a copy of the Licence at:
+  ~ http://ec.europa.eu/idabc/eupl5
+  ~ Unless required by applicable law or agreed to in
+  ~ writing, software distributed under the Licence is
+  ~ distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~ express or implied.
+  ~ See the Licence for the specific language governing
+  ~ permissions and limitations under the Licence.
+  -->
+
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:sec="http://www.springframework.org/schema/security"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/util
+    http://www.springframework.org/schema/util/spring-util.xsd
+    http://www.springframework.org/schema/security
+    http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+    <!-- database configuration -->
+    <bean id="entityManagerFactory"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <!-- the datasource to be used by domibus -->
+        <property name="dataSource" ref="dataSource"/>
+        <!-- package to scan for autodetection of entity classes
+        This value should not be changed -->
+        <property name="packagesToScan" value="eu.domibus"/>
+        <!-- This adapter allows to plug in vendor specific behaviour into the
+        Spring EntityManager -->
+        <property name="jpaVendorAdapter">
+            <!-- By default a HibernateJpaVendorAdapter is used -->
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+        </property>
+        <!-- The validation mode to be used by the provider for the persistence unit  -->
+        <property name="validationMode" value="AUTO"/>
+        <!-- Properties for the jpa configuration -->
+        <property name="jpaProperties">
+            <props>
+                <!-- Automatic validation of the database schema when session
+                factory is created -could be disabled by setting to "none" -->
+                <prop key="hibernate.hbm2ddl.auto">validate</prop>
+                <!-- database dialect to use -->
+                <prop key="hibernate.dialect">
+                    org.hibernate.dialect.MySQL5InnoDBDialect
+                </prop>
+                <!-- Log all SQL statements to console - FOR DEBUGGING PURPOSES -->
+                <prop key="hibernate.show_sql">false</prop>
+                <!-- format SQL statements before logging - only used when
+                hibernate.show_sql=true -->
+                <prop key="hibernate.format_sql">true</prop>
+                <!-- generate comments inside SQL statements - only used when
+                hibernate.show_sql=true -->
+                <prop key="hibernate.use_sql_comments">true</prop>
+            </props>
+        </property>
+    </bean>
+
+    <!-- database pooling provider -->
+    <bean id="dataSource" class="org.apache.tomcat.jdbc.pool.DataSource">
+        <!-- Databasedriver class name -->
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+        <!-- URL of the domibus database -->
+        <property name="url" value="jdbc:mysql://localhost:3306/domibus"/>
+        <!-- database user name -->
+        <property name="username" value="domibus"/>
+        <!-- database password -->
+        <property name="password" value="changeit"/>
+    </bean>
+
+
+    <!-- Passwordcallback for private key access. By default a simple
+         implementation which stores the password in plaintext is used.
+         THIS IS NOT SAFE FOR PRODUCTION PURPOSES please switch to
+         your own implementation
+    -->
+    <bean id="keystorePasswordCallback"
+          class="eu.domibus.ebms3.security.SimpleKeystorePasswordCallback">
+        <!-- Map with "alias" as key and "password" as value.
+             This map will be used by the passwordcallback to
+             retrieve the private key password for a given alias -->
+        <property name="passwordStore">
+            <util:map>
+                <entry key="blue_gw_sigkey" value="test123456"/>
+            </util:map>
+        </property>
+    </bean>
+
+    <!-- Properties for keystore with private key -->
+    <util:properties id="keystoreProperties">
+        <!-- The crypto provider to be used -->
+        <prop key="org.apache.ws.security.crypto.provider">
+            org.apache.ws.security.components.crypto.Merlin
+        </prop>
+        <!-- Type of the used keystore -->
+        <prop key="org.apache.ws.security.crypto.merlin.keystore.type">jks
+        </prop>
+        <!-- The password used to load the keystore -->
+        <prop key="org.apache.ws.security.crypto.merlin.keystore.password">
+            test123
+        </prop>
+        <!-- The keystore alias to use for decryption and signing. -->
+        <prop key="org.apache.ws.security.crypto.merlin.keystore.alias">
+            blue_gw_sigkey
+        </prop>
+        <!-- The location of the keystore -->
+        <prop key="org.apache.ws.security.crypto.merlin.file">
+            ${domibus.config.location}/gateway_keystore_blue.jks
+        </prop>
+    </util:properties>
+
+    <!-- Properties for truststore with public keys for the partners -->
+    <util:properties id="truststoreProperties">
+        <!-- The crypto provider to be used -->
+        <prop key="org.apache.ws.security.crypto.provider">
+            org.apache.ws.security.components.crypto.Merlin
+        </prop>
+        <!-- Type of the used keystore -->
+        <prop key="org.apache.ws.security.crypto.merlin.keystore.type">jks
+        </prop>
+        <!-- The password used to load the keystore -->
+        <prop key="org.apache.ws.security.crypto.merlin.keystore.password">
+            test123
+        </prop>
+        <!-- The location of the keystore -->
+        <prop key="org.apache.ws.security.crypto.merlin.file">
+            ${domibus.config.location}/gateway_truststore_blue.jks
+        </prop>
+    </util:properties>
+
+    <!-- Internal configuration provider. Do not change unless you have special requirements (i.e. dynamic
+    discovery injection of PModes)-->
+    <bean id="pModeProvider"
+          class="eu.domibus.ebms3.common.dao.PModeDao"
+          init-method="init"/>
+
+    <!-- General domibus properties -->
+    <util:properties id="domibusProperties">
+        <!-- The suffix of the messageId generated by this instance of domibus.
+        Schema is:  ${UUID}@${SUFFIX} -->
+        <prop key="domibus.msh.messageid.suffix">domibus.eu</prop>
+        <!-- Sender Worker execution interval as a cron expression -->
+        <prop key="domibus.msh.sender.cron">0/5 * * * * ?</prop>
+        <!-- Should unrecoverable errors should be retried or not -->
+        <prop key="domibus.dispatch.ebms.error.unrecoverable.retry">true</prop>
+    </util:properties>
+
+    <!-- Mimetypes listed in this map will not be compressed (in outgoing messages)
+    even if compression is turned on for the given message. -->
+    <util:list id="compressionBlacklist" value-type="java.lang.String">
+        <value>application/vnd.etsi.asic-s+zip</value>
+        <value>image/jpeg</value>
+    </util:list>
+
+    <!-- message sender that is being executed by the senderworker -->
+    <bean id="messageSender" class="eu.domibus.ebms3.sender.MessageSender"/>
+
+    <!-- quartz job for the  -->
+    <bean id="senderWorkerJob"
+          class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+        <property name="jobClass" value="eu.domibus.ebms3.sender.SenderWorker"/>
+        <property name="durability" value="true"/>
+    </bean>
+
+    <bean id="senderWorkerTrigger"
+          class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="senderWorkerJob"/>
+        <property name="cronExpression" value="${domibus.msh.sender.cron}"/>
+    </bean>
+
+    <!-- customizable list of triggers to be executed by quartz -->
+    <bean id="userdefinedTriggerList"
+          class="org.springframework.beans.factory.config.ListFactoryBean">
+        <property name="sourceList">
+            <list>
+                <ref bean="senderWorkerTrigger"/>
+            </list>
+        </property>
+    </bean>
+
+    <!-- Administration GUI user credentials-->
+    <bean name="bcryptEncoder"
+          class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"/>
+
+    <sec:authentication-manager>
+        <sec:authentication-provider>
+            <sec:password-encoder ref="bcryptEncoder"/>
+            <sec:user-service>
+                <sec:user name="user" password="$2a$10$HApapHvDStTEwjjneMCvxuqUKVyycXZRfXMwjU0rRmaWMsjWQp/Zu"
+                          authorities="ROLE_USER"/>
+                <sec:user name="admin" password="$2a$10$5uKS72xK2ArGDgb2CwjYnOzQcOmB7CPxK6fz2MGcDBM9vJ4rUql36"
+                          authorities="ROLE_USER, ROLE_ADMIN"/>
+            </sec:user-service>
+        </sec:authentication-provider>
+    </sec:authentication-manager>
+
+
+</beans>

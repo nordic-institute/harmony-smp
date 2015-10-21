@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright 2015 e-CODEX Project
+  ~
+  ~ Licensed under the EUPL, Version 1.1 or – as soon they
+  ~ will be approved by the European Commission - subsequent
+  ~ versions of the EUPL (the "Licence");
+  ~ You may not use this work except in compliance with the
+  ~ Licence.
+  ~ You may obtain a copy of the Licence at:
+  ~ http://ec.europa.eu/idabc/eupl5
+  ~ Unless required by applicable law or agreed to in
+  ~ writing, software distributed under the Licence is
+  ~ distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+  ~ express or implied.
+  ~ See the Licence for the specific language governing
+  ~ permissions and limitations under the Licence.
+  -->
+
+<appendix xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xmlns:xi="http://www.w3.org/2001/XInclude"
+          xml:id="a4_backend_integration"
+          version="5.0"
+          xml:lang="en"
+          xmlns="http://docbook.org/ns/docbook"
+          xsi:schemaLocation="http://docbook.org/ns/docbook http://www.docbook.org/xml/5.0/xsd/docbook.xsd">
+    <title>Backend Integration</title>
+    <section>
+        <title>General Overview</title>
+        <para>To allow integration into any desired infrastructure, Domibus provides a flexible plugin system,
+            supporting arbitrary transport protocols, formats and securities.
+        </para>
+    </section>
+    <section>
+        <title>Plugin Structure</title>
+        <para>
+            Each plugin must contain implementations of<computeroutput>
+            eu.domibus.submission.BackendConnector&lt;U,T&gt;</computeroutput>,
+            <computeroutput>eu.domibus.submission.transformer.MessageSubmissionTransformer&lt;U&gt;</computeroutput>
+            and
+            <computeroutput>eu.domibus.submission.transformer.MessageRetrievalTransformer&lt;T&gt;</computeroutput>.
+        </para>
+        <para>
+            The
+            <computeroutput>BackendConnector&lt;U,T&gt;</computeroutput>
+            implementation is responsible for the connection to the backend system, receiving messages in the
+            <computeroutput>U</computeroutput>
+            format and delivering messages in the
+            <computeroutput>T</computeroutput>
+            format. The
+            <computeroutput>Message*Transformer</computeroutput>
+            classes are responsible for the transformation between<computeroutput>U</computeroutput>,
+            <computeroutput>eu.domibus.submission.Submission</computeroutput>
+            (the Domibus 3 internal data format, for documentation refer to the according JavaDoc) and<computeroutput>
+            T</computeroutput>.
+        </para>
+        <para>
+            This way multiple plugins can
+            share the same data formats while using different transport protocols or enforcing different security
+            policies. It also is possible to implement transport handlers for protocols while keeping the actual data
+            format pluggable.
+        </para>
+
+        <section>
+            <title>Message flow</title>
+            <section>
+                <figure>
+                    <title>Message submission from the backend</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="graphics/D3Submit.svg" scalefit="1" width="100%"
+                                       format="SVG"></imagedata>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
+            </section>
+            <section>
+                <figure>
+                    <title>Message reception by the backend and delivery to the plugin</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="graphics/D3receive.svg" scalefit="1" width="100%"
+                                       format="SVG"></imagedata>
+                        </imageobject>
+                    </mediaobject>
+                </figure>
+            </section>
+        </section>
+
+        <section>
+            <title>Code examples</title>
+            <section>
+                <title>eu.domibus.submission.BackendConnector&lt;U,T&gt;</title>
+                <para>
+                    It is highly recommended to extend
+                    <computeroutput>eu.domibus.submission.AbstractBackendConnector&lt;U,T&gt;</computeroutput>
+                    for this implementation.
+                </para>
+                <important>
+                    <para>
+                        It is vital to still use the
+                        <computeroutput>implements</computeroutput>
+                        clause as otherwise the Spring framework will produce hard to debug errors.
+                    </para>
+                </important>
+                <programlisting language="domibus-conf">
+                    <xi:include href="graphics/ExampleBackendConnector.java" parse="text"/>
+                </programlisting>
+            </section>
+            <section>
+                <title>eu.domibus.submission.transformer.Message*Transformer&lt;U|T&gt;</title>
+                <para>
+                    The transformer classes are responsible for the transformation from/to a
+                    <computeroutput>Submission</computeroutput>
+                    object. The difficulty of the concrete implementation is dependant on the data model used for
+                    communication between the backend and the plugin. It can range from calling a bunch of setters to
+                    implementing some dedicated dynamic discovery logic.
+                </para>
+                <note>
+                    <para>While it is a goal of Domibus 3 to make plugin development as easy as possible, some basic AS4
+                        knowledge is required to successfuly implement a working transformer.
+                    </para>
+                </note>
+                <para>
+                    A good example for a transformer implementation is
+                    <computeroutput>eu.domibus.submission.transformer.impl.JMSMessageTransformer</computeroutput>
+                    which transforms
+                    <computeroutput>MapMessage</computeroutput>
+                    objects conforming to the e-CODEX JMS specification to Submission objects.
+                </para>
+                <programlisting language="domibus-conf">
+                    <xi:include href="../main/java/eu/domibus/submission/transformer/impl/JMSMessageTransformer.java"
+                                parse="text"/>
+                </programlisting>
+
+            </section>
+        </section>
+        <section>
+            <title>Plugin configuration</title>
+            <para>All plugins are configured in the
+                <computeroutput>${domibus.config.location}/submission-config.xml</computeroutput>
+                file.
+            </para>
+            <programlisting language="domibus-conf">
+                <xi:include href="graphics/submission-config-example-simple.xml" parse="text"/>
+            </programlisting>
+            <para>
+                This is the basic configuration. Real implementations might require more complicated setups, as the
+                next, real-world example shows.
+            </para>
+            <programlisting language="domibus-conf">
+                <xi:include href="graphics/submission-config-example-full.xml" parse="text"/>
+            </programlisting>
+            <para>
+                This example shows a webservice and a JMS plugin working in parallel. Both plugins use Spring
+                annotations to wire their transformers, so this configuration is not needed in the XML file.
+            </para>
+            <important>
+                <para>
+                    The order of the plugins in the "<computeroutput>backends</computeroutput>" list is important as the
+                    <computeroutput>isResponsible(MessageMetadata metadata)</computeroutput>
+                    methods of the plugins are called in that order.
+                </para>
+            </important>
+        </section>
+    </section>
+</appendix>
