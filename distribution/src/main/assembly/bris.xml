@@ -141,7 +141,7 @@
     </fileSets>
     <files>
         <file>
-            <source>../../EDELIVERY/domibus-3-submission/ref-backend-ws/target/submission.war</source>
+            <source>../../EDELIVERY/domibus-3-submission/domibus-submission-webapp/target/submission.war</source>
             <outputDirectory>/standalone/deployments</outputDirectory>
             <filtered>false</filtered>
         </file>
