@@ -7,13 +7,6 @@
   - mvn clean install -DskipTests=true -Pbris
   - mvn clean install -DskipTests=true -Pbris -Dtype=VM
   - mvn antrun:run -N -Pbris
-
-
-  To build a version for the old version of the BRIS project (no AS2, no SMP, domibus 2, connector), run the following command lines :
-  - mvn clean install -DskipTests=true "-Dwar.deployment.dir=../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target" -Detrustex.localFileStorePath=../filestores/etrustex -PoldBris,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss
-  - mvn clean install -DskipTests=true -Dtype=VM "-Dwar.deployment.dir=../../ETRUSTEX/001 e-TrustEx/004 Development/001 Implementation/e-TrustEx/etrustex-admin-web/target" -Detrustex.localFileStorePath=../filestores/etrustex -PoldBris,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss
-  - mvn antrun:run -N -PoldBris,LOCAL-JBOSS,JBoss,mysql,edelivery,jboss
-
  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
