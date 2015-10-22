@@ -110,6 +110,7 @@
             </properties>
             <modules>
                 <module>../../EDELIVERY/domibus-3-submission</module>
+                <module>../as4/dynamic-discovery</module>
             </modules>
         </profile>
         <profile>
@@ -375,12 +376,10 @@
                         <phase>package</phase>
                         <configuration>
                             <target>
-                                <echo>Copying the module.zip file from the eTrustex distribution...
+                                <echo>Unzip the modules.zip file...
                                 </echo>
-                                <copy file="${project.basedir}/../../ETRUSTEX/001 e-TrustEx/006 Deployment/JBoss/modules.zip"
-                                      tofile="${project.build.directory}/modules.zip"/>
                                 <echo>Unzipping the module.zip...</echo>
-                                <unzip src="${project.build.directory}/modules.zip" dest="${project.build.directory}"
+                                <unzip src="${project.basedir}/src/main/resources/jboss/modules.zip" dest="${project.build.directory}"
                                        overwrite="true"/>
                             </target>
                         </configuration>

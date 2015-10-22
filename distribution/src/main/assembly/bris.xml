@@ -60,10 +60,6 @@
         <fileSet>
             <directory>${project.build.directory}</directory>
             <useDefaultExcludes>true</useDefaultExcludes>
-            <excludes>
-                <exclude>modules/org/apache/httpcomponents/main/module.xml</exclude>
-                <exclude>modules/javax/persistence/api/main/module.xml</exclude>
-            </excludes>
             <includes>
                 <include>modules/**</include>
             </includes>
@@ -99,6 +95,9 @@
         <fileSet>
             <directory>src/main/resources/jboss</directory>
             <useDefaultExcludes>true</useDefaultExcludes>
+            <excludes>
+                <exclude>**/modules.zip</exclude>
+            </excludes>
             <includes>
                 <include>**/*</include>
             </includes>
@@ -141,8 +140,9 @@
         </fileSet>
     </fileSets>
     <files>
-        <file><source>../../EDELIVERY/domibus-3-submission/ref-backend-ws/target/submission.war</source>
-        <outputDirectory>/standalone/deployments</outputDirectory>
+        <file>
+            <source>../../EDELIVERY/domibus-3-submission/ref-backend-ws/target/submission.war</source>
+            <outputDirectory>/standalone/deployments</outputDirectory>
             <filtered>false</filtered>
         </file>
         <file>
