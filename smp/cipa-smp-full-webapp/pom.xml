@@ -13,8 +13,8 @@
   <description>SMP webapp with all available features (read &amp; write)</description>
 
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-smp-full-webapp</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-smp-full-webapp</developerConnection>
+    <connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/smp/cipa-smp-full-webapp</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/smp/cipa-smp-full-webapp</developerConnection>
   </scm>
 
     <!-- Default properties to copy the artifact on the DEV platform -->

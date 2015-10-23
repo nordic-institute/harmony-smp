@@ -20,8 +20,8 @@
 		<display_version>v${project.version}</display_version>
 	</properties>
 	<scm>
-		<connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-sml-webapp</connection>
-		<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-sml-webapp</developerConnection>
+		<connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/sml/cipa-sml-webapp</connection>
+		<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/sml/cipa-sml-webapp</developerConnection>
 	</scm>
 
 	<dependencies>

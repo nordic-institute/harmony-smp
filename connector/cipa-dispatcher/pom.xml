@@ -14,6 +14,11 @@
 	<version>3.1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>cipa-dispatcher</name>
+	
+	<scm>
+		<connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/connector/cipa-dispatcher</connection>
+		<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/connector/cipa-dispatcher</developerConnection>
+	</scm>
 
 	<properties>
 		<display_version>v${project.version}</display_version>
@@ -261,7 +266,7 @@
 			<plugin>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-codegen-plugin</artifactId>
-				<version>2.6.1</version>
+				<version>3.0.1</version>
 				<executions>
 					<execution>
 						<id>generate-sources</id>

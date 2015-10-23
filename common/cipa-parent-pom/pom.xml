@@ -14,11 +14,17 @@
 		<maven>3.0.4</maven>
 	</prerequisites>
 
+	<!-- SVN location -->
+	<scm>
+		<connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/common/cipa-parent-pom</connection>
+		<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/common/cipa-parent-pom</developerConnection>
+	</scm>
+
 	<!-- Used licenses -->
 	<licenses>
 		<license>
 			<name>EUPL 1.1</name>
-			<url>http://joinup.ec.europa.eu/software/page/eupl/licence-eupl</url>
+			<url>https://joinup.ec.europa.eu/software/page/eupl/licence-eupl</url>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -467,6 +473,11 @@
 					<groupId>com.mycila</groupId>
 					<artifactId>license-maven-plugin</artifactId>
 					<version>2.11</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-jar-plugin</artifactId>
+					<version>2.6</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

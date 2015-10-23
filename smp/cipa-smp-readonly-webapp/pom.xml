@@ -13,8 +13,8 @@
   <description>SMP webapp with all available features (read &amp; write)</description>
 
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-smp-readonly-webapp</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-smp-readonly-webapp</developerConnection>
+    <connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/smp/cipa-smp-readonly-webapp</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/smp/cipa-smp-readonly-webapp</developerConnection>
   </scm>
 
   <dependencies>

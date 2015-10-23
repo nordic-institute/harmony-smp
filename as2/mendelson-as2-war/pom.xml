@@ -16,7 +16,7 @@
     </properties>
 
     <scm>
-        <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/mendelson/mendelson-as2-war</connection>
+        <connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/mendelson/mendelson-as2-war</connection>
         <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/mendelson/mendelson-as2-war
         </developerConnection>
     </scm>

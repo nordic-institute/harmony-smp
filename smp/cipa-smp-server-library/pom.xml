@@ -14,10 +14,10 @@
 
     <scm>
         <connection>
-            scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-smp-server-library
+            scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/smp/cipa-smp-server-library
         </connection>
         <developerConnection>
-            scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-core/Implementation/java/cipa-smp-server-library
+            scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/smp/cipa-smp-server-library
         </developerConnection>
     </scm>
 
