@@ -72,6 +72,7 @@
 		<servlet-api.version>2.5</servlet-api.version>
 		<jersey.version>1.17.1</jersey.version>
 		<metro.version>2.2.1-1</metro.version>
+		<commons-io.version>2.4</commons-io.version>
 	</properties>
 
 	<!-- Where are we looking for JARs? -->
@@ -363,6 +364,11 @@
 				<groupId>commons-net</groupId>
 				<artifactId>commons-net</artifactId>
 				<version>${commons-net.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>commons-io</groupId>
+				<artifactId>commons-io</artifactId>
+				<version>${commons-io.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>

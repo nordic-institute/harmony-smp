@@ -2,19 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.europa.ec.cipa</groupId>
-	<artifactId>cipa-builder</artifactId>
+	<artifactId>cipa-connector-builder</artifactId>
 	<packaging>pom</packaging>
-	<name>CIPA Builder POM</name>
+	<name>CIPA connector Builder POM</name>
 	<version>3.1.0-SNAPSHOT</version>
 
 	<modules>
-		<module>common</module>
-		<module>bdmsl</module>
-		<module>connector</module>
-		<module>as2</module>
-		<module>as4</module>
-		<module>smp</module>
-		<module>sml</module>
+		<module>cipa-dispatcher</module>
 	</modules>
 
 	<!-- Where to deploy binaries -->
