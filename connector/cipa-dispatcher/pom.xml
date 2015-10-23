@@ -387,7 +387,7 @@
                             </property>
                         </soapuiProperties>
                         <testFailIgnore>false</testFailIgnore>
-                        <projectFile>${project.basedir}/../../../Test/Supporting Tools/AP-soapui-project.xml</projectFile>
+                        <projectFile>${project.basedir}/../../test/Supporting Tools/AP-soapui-project.xml</projectFile>
                         <projectProperties>
                             <value>url=${url}</value>
                         </projectProperties>

@@ -127,7 +127,7 @@
                     </property>
                 </soapuiProperties>
                 <testFailIgnore>false</testFailIgnore>
-                <projectFile>${project.basedir}/../../../Test/Supporting Tools/SMP-soapui-project.xml</projectFile>
+                <projectFile>${project.basedir}/../../test/Supporting Tools/SMP-soapui-project.xml</projectFile>
                 <projectProperties>
                     <value>url=${url}</value>
                     <value>username=${username}</value>
