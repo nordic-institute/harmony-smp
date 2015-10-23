@@ -13,8 +13,8 @@
   <name>cipa-commons-cenbii</name>
 
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-commons-cenbii</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-commons-cenbii</developerConnection>
+    <connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/addons/cipa-commons-cenbii</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/addons/cipa-commons-cenbii</developerConnection>
   </scm>
   
   <dependencies>

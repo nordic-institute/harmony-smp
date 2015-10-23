@@ -13,8 +13,8 @@
   <description>UBL 2.0 test files for BIS V1</description>
 
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-test-files</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-test-files</developerConnection>
+    <connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/addons/cipa-test-files</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/addons/cipa-test-files</developerConnection>
   </scm>
 
   <dependencies>

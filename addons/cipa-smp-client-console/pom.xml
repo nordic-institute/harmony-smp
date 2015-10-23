@@ -12,8 +12,8 @@
   <name>cipa-smp-client-console</name>
 
   <scm>
-    <connection>scm:svn:http://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-smp-client-console</connection>
-    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/cipa-addons/Implementation/java/cipa-smp-client-console</developerConnection>
+    <connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/addons/cipa-smp-client-console</connection>
+    <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/addons/cipa-smp-client-console</developerConnection>
   </scm>
 
   <dependencies>
