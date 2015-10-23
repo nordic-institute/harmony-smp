@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="requestType" type="requestType"/>
+
+  <xs:complexType name="requestType">
+    <xs:sequence>
+      <xs:element name="metaData" type="messageMetaDataType" minOccurs="0"/>
+      <xs:any namespace="##other" processContents="lax"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="messageMetaDataType">
+    <xs:sequence>
+      <xs:element name="documentId" type="xs:string" minOccurs="0"/>
+      <xs:element name="documentInfo" type="documentInfoType" minOccurs="0"/>
+      <xs:element name="documentScheme" type="xs:string" minOccurs="0"/>
+      <xs:element name="processId" type="xs:string" minOccurs="0"/>
+      <xs:element name="processScheme" type="xs:string" minOccurs="0"/>
+      <xs:element name="recipient" type="participantType" minOccurs="0"/>
+      <xs:element name="sender" type="participantType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="documentInfoType">
+    <xs:sequence>
+      <xs:element name="creationDateAndTime" type="xs:string" minOccurs="0"/>
+      <xs:element name="instanceIdentifier" type="xs:string" minOccurs="0"/>
+      <xs:element name="standard" type="xs:string" minOccurs="0"/>
+      <xs:element name="type" type="xs:string" minOccurs="0"/>
+      <xs:element name="typeVersion" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="participantType">
+    <xs:sequence>
+      <xs:element name="scheme" type="xs:string" minOccurs="0"/>
+      <xs:element name="value" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+

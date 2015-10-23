@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<!-- edited with XMLSpy v2008 sp1 (http://www.altova.com) by XMLSpy 2008 Enterprise Ed., Installed for 5 users (European Commission DG Regio) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.unece.org/cefact/namespaces/StandardBusinessDocumentHeader" targetNamespace="http://www.unece.org/cefact/namespaces/StandardBusinessDocumentHeader" elementFormDefault="qualified" attributeFormDefault="unqualified">
+	<xs:complexType name="DocumentIdentification">
+		<xs:sequence>
+			<xs:element name="Standard" type="xs:string" minOccurs="0"/>
+			<xs:element name="TypeVersion" type="xs:string" minOccurs="0"/>
+			<xs:element name="InstanceIdentifier" type="xs:string"/>
+			<xs:element name="Type" type="xs:string"/>
+			<xs:element name="MultipleType" type="xs:boolean" minOccurs="0"/>
+			<xs:element name="CreationDateAndTime" type="xs:dateTime" minOccurs="0"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
