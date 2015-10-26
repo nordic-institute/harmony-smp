@@ -86,13 +86,13 @@
     <profiles>
         <profile>
             <!-- profile to be used for BRIS pilot with Domibus 3-->
-            <id>as4</id>
+            <id>as4-jboss</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
                 <!-- the name of the assembly file -->
-                <assemblyName>as4</assemblyName>
+                <assemblyName>as4-jboss</assemblyName>
                 <!-- true if the AS2 component must not be packed -->
                 <skipAS2>true</skipAS2>
                 <!-- true if the connector component must not be packed -->
