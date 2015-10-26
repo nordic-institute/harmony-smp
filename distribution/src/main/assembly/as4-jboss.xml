@@ -148,7 +148,6 @@
             <includes>
                 <include>**/signEncrypt.xml</include>
                 <include>**/ehcache.xml</include>
-                <include>**/clientauthentication.xml</include>
                 <include>**/submission-config.xml</include>
             </includes>
             <fileMode>0444</fileMode>
