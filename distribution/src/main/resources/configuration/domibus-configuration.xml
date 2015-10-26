@@ -43,7 +43,7 @@
              retrieve the private key password for a given alias -->
         <property name="passwordStore">
             <util:map>
-                <entry key="testInitiator" value="test"/>
+                <entry key="testResponder" value="test"/>
             </util:map>
         </property>
     </bean>
@@ -58,9 +58,14 @@
         <prop key="org.apache.ws.security.crypto.merlin.keystore.type">jks
         </prop>
         <!-- The password used to load the keystore -->
-	<prop key="org.apache.ws.security.crypto.merlin.keystore.private.password">test</prop>		<!-- The password used to load the keystore -->        <prop key="org.apache.ws.security.crypto.merlin.keystore.password">test</prop>        <!-- The default keystore alias to use, if none is specified. -->        <prop key="org.apache.ws.security.crypto.merlin.keystore.alias">exampleInitiator</prop>        <!-- The location of the keystore -->
+	<prop key="org.apache.ws.security.crypto.merlin.keystore.private.password">test</prop>
+		<!-- The password used to load the keystore -->
+        <prop key="org.apache.ws.security.crypto.merlin.keystore.password">test</prop>
+        <!-- The default keystore alias to use, if none is specified. -->
+        <prop key="org.apache.ws.security.crypto.merlin.keystore.alias">exampleResponder</prop>
+        <!-- The location of the keystore -->
         <prop key="org.apache.ws.security.crypto.merlin.file">
-            ${domibus.config.location}/keystore.jks
+            ${jboss.server.base.dir}/certificates/keystore.jks
         </prop>
     </util:properties>
 
@@ -79,7 +84,7 @@
         </prop>
         <!-- The location of the keystore -->
         <prop key="org.apache.ws.security.crypto.merlin.file">
-            ${domibus.config.location}/truststore.jks
+            ${jboss.server.base.dir}/certificates/truststore.jks
         </prop>
     </util:properties>
 

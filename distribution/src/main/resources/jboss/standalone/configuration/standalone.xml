@@ -159,7 +159,7 @@
                 </xa-datasource>
                  <xa-datasource jta="true" jndi-name="java:/jdbc/cipaeDeliveryDs" pool-name="cipaeDeliveryDs" enabled="true" use-ccm="false">
                     <xa-datasource-property name="URL">
-                        jdbc:mysql://localhost:3306/domibus_cipa_sender
+                        jdbc:mysql://localhost:3306/edelivery
                     </xa-datasource-property>
                     <driver>com.mysql</driver>
                     <xa-pool>
@@ -171,8 +171,8 @@
                         <wrap-xa-resource>false</wrap-xa-resource>
                     </xa-pool>
                     <security>
-                        <user-name>domibus</user-name>
-                        <password>domibus</password>
+                        <user-name>edelivery</user-name>
+                        <password>edelivery</password>
                     </security>
                     <validation>
                         <validate-on-match>false</validate-on-match>

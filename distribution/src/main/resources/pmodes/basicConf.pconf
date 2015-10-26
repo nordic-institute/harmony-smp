@@ -1,0 +1,162 @@
+// Employed ebMS3 profile. used for configuration validation. Supported values are: AS4, ESENS, UNDEFINED
+// NOT SUPPORTED YET
+EmployedProfile : UNDEFINED
+
+MPCs{
+	// Configuration Id
+	MPC defaultMpc {
+		// Used by default. There may only be one default MPC
+		Default : true
+		// IF enabled = false this MPC will not accept any messages
+		Enabled : true
+		// corresponding to eb:Messaging/eb:UserMessage/@mpc
+		Name : 'http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC'
+		/** 
+		 * Message retention in minutes.
+		 * 0 = delete immediately
+		 * -1 = keep indefinitely
+		 */
+		MessageRetentionDownloaded : 0	
+		MessageRetentionUnDownloaded : 60
+	} 
+}
+
+Parties{
+	PartyIdTypes{
+		Type exampleType : 'http://www.domibus.eu/exampleType'
+	}
+	/**
+	 * Internal name of party entity.  
+	 * Use this as the alias for the corresponding pubilc encryption key in your keystore.
+	 */
+	Party instanceA {
+		exampleType : 'instanceAId1' 
+		exampleType: 'instanceAId2'
+		Endpoint : 'http://localhost:8080/domibus/services/msh'
+		
+	}
+	Party instanceB {
+		exampleType : 'instanceBId1'
+		exampleType: 'instanceBId2'
+		Endpoint : 'http://localhost:8180/domibus/services/msh'	
+	}
+	
+	}
+
+
+	
+
+
+AS4{	
+	Reliability exampleReliabilityNonrepudiationTrueReplypatternResponse : Nonrepudiation  = true Replypattern = response
+	ReceptionAwareness exampleReceptionAwarenessRetryThreeDuplicateDetectionTrue : retryTimeout = 1 retryCount = 6 strategy = CONSTANT duplicateDetection = true		
+}
+
+
+Securities{
+	Security signAndEncrypt {
+		Policy : 'signEncrypt.xml' 
+		SignatureMethod : RSA_SHA256 
+	}	
+	}
+
+BusinessProcessConfiguration{
+	
+	Agreements{
+		Agreement exampleAgreement : 'http://domibus.eu/agreement'
+	}
+	
+	Actions{
+		Action sendMessage : 'SendMessage'
+		
+	
+	}
+	
+	Services{
+		ServiceTypes {
+			Type tc1 : 'exampleService'
+		}
+		Service as4Service : 'AS4' type = tc1 Actions { sendMessage }
+		
+	}
+	
+	ExchangePatterns{
+		Patterns{
+			MEP oneway : 'http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/oneWay' Legs = 1	
+			MEP twoway : 'http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/twoWay' Legs = 2		
+		}
+		Bindings{
+			Binding push : 'http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/push'	
+			Binding pushAndPush : 'http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/push-and-push'		
+		}
+	}
+	
+	Roles{
+		Role default : 'http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultRole'
+		Role exampleMessageProducer : 'exampleMessageProducer'
+		Role exampleMessageReceiver : 'exampleMessageReceiver'
+	}
+	
+	Processes{	
+		
+	PayloadProfiles{
+		Payloads{
+			Payload businessContentPayload : cid='BRISPayload' mime = 'text/xml' required = true
+			Payload businessContentAttachment : cid = 'BRISAttachment' mime = 'application/octet-stream' required = false
+			
+				}
+			Profile BRISMessageProfile :  businessContentPayload businessContentAttachment maxSize=1024
+			}
+			
+		PropertySets{
+			Properties{
+				Property originalSenderProperty : key=originalSender type = string required= true
+				Property finalRecipientProperty : key=finalRecipient type = string required= true
+			}
+			Set listPropertySet: finalRecipientProperty originalSenderProperty 
+		}		
+		
+	
+		ErrorHandlings{
+			ErrorHandling BRISErrorHandling {
+				ErrorAsResponse : true
+				ProcessErrorNotifyProducer : true
+				ProcessErrorNotifyConsumer : true
+				DeliveryFailureNotifyProducer : true				
+			}	
+		}
+		
+		Legs{	
+			
+			Leg examplePushLegOne {
+				
+				ReceptionAwareness : exampleReceptionAwarenessRetryThreeDuplicateDetectionTrue			
+				Service : as4Service
+				Action : sendMessage
+				DefaultMpc : defaultMpc
+				//PayloadProfile : BRISMessageProfile		
+				Security : signAndEncrypt
+				Reliability : exampleReliabilityNonrepudiationTrueReplypatternResponse
+				ErrorHandling : BRISErrorHandling
+				CompressPayloads : false
+			}
+			
+	
+	}
+		
+				
+		Process as4exampleProcess {
+			Agreement : exampleAgreement
+			Mep : oneway
+			Binding : push
+			InitiatorRole : exampleMessageProducer
+			ResponderRole : exampleMessageReceiver
+			InitiatorParties : instanceA, instanceB
+			ResponderParties : instanceA, instanceB
+			Legs : examplePushLegOne
+		}	
+
+	
+		
+	}
+}

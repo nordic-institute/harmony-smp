@@ -2,7 +2,7 @@
         xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2 http://maven.apache.org/xsd/assembly-1.1.2.xsd">
-    <id>bris</id>
+    <id>as4</id>
     <formats>
         <format>zip</format>
     </formats>
@@ -115,7 +115,7 @@
         </fileSet>
         <fileSet>
             <directory>src/main/resources/keystore</directory>
-            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
+            <outputDirectory>/certificates</outputDirectory>
             <excludes>
                 <exclude>**/*.p12</exclude>
                 <exclude>**/ssl-keystore.jks</exclude>
@@ -125,15 +125,32 @@
             <filtered>false</filtered>
         </fileSet>
         <fileSet>
-            <directory>../../EDELIVERY/domibus/Domibus-MSH/src/main/conf</directory>
-            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/</outputDirectory>
+            <directory>src/main/resources/pmodes</directory>
+            <outputDirectory>/pmodes</outputDirectory>
+            <fileMode>0444</fileMode>
+            <directoryMode>0555</directoryMode>
+            <filtered>false</filtered>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/configuration</directory>
+            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
             <excludes>
-                <exclude>**/db/*</exclude>
-                <exclude>**/doNothingPolicy.xml</exclude>
-                <exclude>**/truststore.jks</exclude>
-                <exclude>**/keystore.jks</exclude>
-                <exclude>**/domibus-configuration.xml</exclude>
+                <exclude>**/smp.config.properties</exclude>
+                <exclude>**/mendelson.properties</exclude>
             </excludes>
+            <fileMode>0444</fileMode>
+            <directoryMode>0555</directoryMode>
+            <filtered>false</filtered>
+        </fileSet>
+        <fileSet>
+            <directory>${projectRootPath}/Domibus-MSH/src/main/conf</directory>
+            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main</outputDirectory>
+            <includes>
+                <include>**/signEncrypt.xml</include>
+                <include>**/ehcache.xml</include>
+                <include>**/clientauthentication.xml</include>
+                <include>**/submission-config.xml</include>
+            </includes>
             <fileMode>0444</fileMode>
             <directoryMode>0555</directoryMode>
             <filtered>true</filtered>
@@ -141,12 +158,12 @@
     </fileSets>
     <files>
         <file>
-            <source>../../EDELIVERY/domibus-3-submission/domibus-submission-webapp/target/submission.war</source>
+            <source>${projectRootPath}/domibus-submission-webapp/target/submission.war</source>
             <outputDirectory>/standalone/deployments</outputDirectory>
             <filtered>false</filtered>
         </file>
         <file>
-            <source>../../EDELIVERY/domibus-3-submission/Domibus-MSH/target/domibus.war</source>
+            <source>${projectRootPath}/Domibus-MSH/target/domibus.war</source>
             <outputDirectory>/standalone/deployments</outputDirectory>
             <filtered>false</filtered>
         </file>
@@ -173,51 +190,6 @@
         <file>
             <source>src/main/doc/ReleaseNotes-3.1.0.txt</source>
             <outputDirectory>/</outputDirectory>
-            <filtered>false</filtered>
-        </file>
-        <file>
-            <source>src/main/resources/configuration/domibus-configuration.xml</source>
-            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
-            <filtered>true</filtered>
-        </file>
-        <file>
-            <source>src/main/resources/configuration/backend-common-configuration.xml</source>
-            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
-            <filtered>true</filtered>
-        </file>
-        <file>
-            <source>src/main/resources/configuration/submission-config.xml</source>
-            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
-            <filtered>true</filtered>
-        </file>
-        <file>
-            <source>src/main/resources/configuration/pmode-local.xml</source>
-            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
-            <filtered>false</filtered>
-        </file>
-        <file>
-            <source>src/main/resources/configuration/pmode-VM.xml</source>
-            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
-            <filtered>false</filtered>
-        </file>
-        <file>
-            <source>src/main/resources/configuration/encryptAll.xml</source>
-            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
-            <filtered>false</filtered>
-        </file>
-        <file>
-            <source>src/main/resources/configuration/signOnly.xml</source>
-            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
-            <filtered>false</filtered>
-        </file>
-        <file>
-            <source>src/main/resources/configuration/doNothingPolicy.xml</source>
-            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
-            <filtered>false</filtered>
-        </file>
-        <file>
-            <source>src/main/resources/configuration/ehCache.xml</source>
-            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
             <filtered>false</filtered>
         </file>
     </files>

@@ -4,9 +4,9 @@
   Pre-requisite: VBoxManage MUST be in the PATH
 
   To build a version for the BRIS project (no AS2, no SMP, Domibus3, no connector), run the following command lines :
-  - mvn clean install -DskipTests=true -Pbris
-  - mvn clean install -DskipTests=true -Pbris -Dtype=VM
-  - mvn antrun:run -N -Pbris
+  - mvn clean install -DskipTests=true -Pas4
+  - mvn clean install -DskipTests=true -Pas4 -Dtype=VM
+  - mvn antrun:run -N -Pas4
  -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -23,6 +23,7 @@
         <!-- can be either "local" or "VM" -->
         <type>local</type>
         <server.version>7.1.1.Final</server.version>
+        <projectRootPath>../../EDELIVERY/domibus-3-submission</projectRootPath>
     </properties>
 
     <dependencies>
@@ -85,13 +86,13 @@
     <profiles>
         <profile>
             <!-- profile to be used for BRIS pilot with Domibus 3-->
-            <id>bris</id>
+            <id>as4</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
                 <!-- the name of the assembly file -->
-                <assemblyName>bris</assemblyName>
+                <assemblyName>as4</assemblyName>
                 <!-- true if the AS2 component must not be packed -->
                 <skipAS2>true</skipAS2>
                 <!-- true if the connector component must not be packed -->
@@ -102,7 +103,7 @@
                 <skipSMP>true</skipSMP>
             </properties>
             <modules>
-                <module>../../EDELIVERY/domibus-3-submission</module>
+                <module>${projectRootPath}</module>
                 <module>../as4/dynamic-discovery</module>
             </modules>
         </profile>
@@ -304,13 +305,13 @@
                                 <concat destfile="${project.build.directory}/sql-scripts/create-mysql.sql"
                                         append="true" fixlastline="yes">
                                     <filelist
-                                            dir="${project.basedir}/../../EDELIVERY/domibus-3-submission/Domibus-MSH/target/sql-scripts"
+                                            dir="${project.basedir}/${projectRootPath}/Domibus-MSH/target/sql-scripts"
                                             files="mysql5innoDb-initial.ddl,mysql5innoDb-quartz.ddl"/>
                                 </concat>
                                 <concat destfile="${project.build.directory}/sql-scripts/create-oracle.sql"
                                         append="true">
                                     <filelist
-                                            dir="${project.basedir}/../../EDELIVERY/domibus-3-submission/Domibus-MSH/target/sql-scripts"
+                                            dir="${project.basedir}/${projectRootPath}/Domibus-MSH/target/sql-scripts"
                                             files="oracle10g-initial.ddl,oracle10g-quartz.ddl"/>
                                 </concat>
                             </target>
