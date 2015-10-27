@@ -62,10 +62,10 @@
 		<!-- The password used to load the keystore -->
         <prop key="org.apache.ws.security.crypto.merlin.keystore.password">test</prop>
         <!-- The default keystore alias to use, if none is specified. -->
-        <prop key="org.apache.ws.security.crypto.merlin.keystore.alias">exampleResponder</prop>
+        <prop key="org.apache.ws.security.crypto.merlin.keystore.alias">instanceA</prop>
         <!-- The location of the keystore -->
         <prop key="org.apache.ws.security.crypto.merlin.file">
-            ${jboss.server.base.dir}/certificates/keystore.jks
+            ${domibus.config.location}/../../../../../../../../certificates/keystore.jks
         </prop>
     </util:properties>
 
@@ -84,7 +84,7 @@
         </prop>
         <!-- The location of the keystore -->
         <prop key="org.apache.ws.security.crypto.merlin.file">
-            ${jboss.server.base.dir}/certificates/truststore.jks
+            ${domibus.config.location}/../../../../../../../../certificates/truststore.jks
         </prop>
     </util:properties>
 
