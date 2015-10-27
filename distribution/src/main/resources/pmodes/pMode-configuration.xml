@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <db:configuration xmlns:db="http://domibus.eu/configuration"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://domibus.eu/configuration file:/C:/development/git-repos/domibus/Domibus-MSH/domibus-configuration.xsd" party="instanceB">
+	xsi:schemaLocation="http://domibus.eu/configuration file:/C:/development/git-repos/domibus/Domibus-MSH/domibus-configuration.xsd" party="instanceA">
 	<mpcs>
 		<mpc name="defaultMpc" 
 				qualifiedName="http://docs.oasis-open.org/ebxml-msg/ebms/v3.0/ns/core/200704/defaultMPC"
@@ -24,13 +24,13 @@
 				<partyIdType name="exampleType" value="http://www.domibus.eu/exampleType"/>
 			</partyIdTypes>
 			<party name="instanceA" 
-					endpoint="http://localhost:8080/domibus/services/msh" 
+					endpoint="http://UndefinedHostnameA:8080/domibus/services/msh" 
 >
 				<identifier partyId="instanceAId1" partyIdType="exampleType"/>
 				<identifier partyId="instanceAId2" partyIdType="exampleType"/>
 			</party>
 			<party name="instanceB" 
-					endpoint="http://localhost:8180/domibus/services/msh" 
+					endpoint="http://UndefinedHostnameB:8080/domibus/services/msh" 
 >
 				<identifier partyId="instanceBId1" partyIdType="exampleType"/>
 				<identifier partyId="instanceBId2" partyIdType="exampleType"/>
