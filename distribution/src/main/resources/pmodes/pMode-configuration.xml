@@ -66,7 +66,7 @@
 					required="false"
 					mimeType="application/octet-stream"/>
 			<payloadProfile name="BRISMessageProfile" 
-					maxSize="1024">
+					maxSize="40894464">
 				<attachment name="businessContentPayload"/>
 				<attachment name="businessContentAttachment"/>
 			</payloadProfile>
@@ -100,6 +100,7 @@
 			<legConfiguration name="examplePushLegOne" 
 					service="as4Service" 
 					action="sendMessage" 
+					payloadProfile="BRISMessageProfile"
 					defaultMpc="defaultMpc" 
 					reliability="exampleReliabilityNonrepudiationTrueReplypatternResponse" 
 					security="signAndEncrypt" 
