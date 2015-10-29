@@ -109,6 +109,9 @@
         <fileSet>
             <directory>${project.build.directory}/sql-scripts</directory>
             <outputDirectory>/sql-scripts/</outputDirectory>
+            <includes>
+                <include>**/*mysql*.sql</include>
+            </includes>
             <fileMode>0444</fileMode>
             <directoryMode>0555</directoryMode>
             <filtered>false</filtered>
