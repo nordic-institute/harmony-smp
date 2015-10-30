@@ -194,5 +194,10 @@
             <outputDirectory>/</outputDirectory>
             <filtered>false</filtered>
         </file>
+        <file>
+            <source>src/main/doc/Building Block DSI_IntroDocument (eDelivery)-v1.00.pdf</source>
+            <outputDirectory>/</outputDirectory>
+            <filtered>false</filtered>
+        </file>
     </files>
 </assembly>
