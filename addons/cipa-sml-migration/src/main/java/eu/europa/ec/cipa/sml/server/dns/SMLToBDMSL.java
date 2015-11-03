@@ -119,7 +119,7 @@ public class SMLToBDMSL {
 
             final Name publisherHost = createPublisherDNSNameObject(participant.getSmpId(), dnsZoneName);
             NAPTRRecord naptrRecord;
-            naptrRecord = new NAPTRRecord(participantNaptrHost, DClass.IN, DEFAULT_TTL_SECS, 100, 10, "U", "Meta:SMP", "!^.$!http://" + publisherHost + "!", Name.fromString("."));
+            naptrRecord = new NAPTRRecord(participantNaptrHost, DClass.IN, DEFAULT_TTL_SECS, 100, 10, "U", "Meta:SMP", "!^.*$!http://" + publisherHost + "!", Name.fromString("."));
             logger.debug("Creating NAPTRRecord in the DNS for SMP " + participantNaptrHost);
             updateList.add(naptrRecord);
 
@@ -178,7 +178,7 @@ public class SMLToBDMSL {
         if ("*".equals(participantId)) {
             smpDnsName = "*." + scheme + "." + dnsZoneName;
         } else {
-            smpDnsName = prefix + HashUtil.getSHA224Hash(participantId) + "." + scheme + "." + dnsZoneName;
+            smpDnsName = prefix + HashUtil.getSHA224Hash(participantId.toLowerCase(Locale.US)) + "." + scheme + "." + dnsZoneName;
         }
         return Name.fromString(smpDnsName);
     }
