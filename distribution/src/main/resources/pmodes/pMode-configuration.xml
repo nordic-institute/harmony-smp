@@ -106,7 +106,7 @@
 					security="signAndEncrypt" 
 					receptionAwareness="exampleReceptionAwarenessRetryThreeDuplicateDetectionTrue" 
 					errorHandling="BRISErrorHandling"
-					compressPayloads="false">
+					compressPayloads="true">
 					</legConfiguration>
 		</legConfigurations>
 		<process name="as4exampleProcess" 
