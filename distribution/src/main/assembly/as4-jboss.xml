@@ -175,7 +175,7 @@
             <filtered>false</filtered>
         </file>
         <file>
-            <source>src/test/Test_Guide.docx</source>
+            <source>src/test/Test guide.pdf</source>
             <outputDirectory>test</outputDirectory>
             <filtered>false</filtered>
         </file>
@@ -184,11 +184,11 @@
             <outputDirectory>/</outputDirectory>
             <filtered>false</filtered>
         </file>
-        <file>
-            <source>src/main/doc/Known Issues.pdf</source>
-            <outputDirectory>/</outputDirectory>
-            <filtered>false</filtered>
-        </file>
+        <!--<file>-->
+            <!--<source>src/main/doc/Known Issues.pdf</source>-->
+            <!--<outputDirectory>/</outputDirectory>-->
+            <!--<filtered>false</filtered>-->
+        <!--</file>-->
         <file>
             <source>src/main/doc/ReleaseNotes-3.1.0.txt</source>
             <outputDirectory>/</outputDirectory>

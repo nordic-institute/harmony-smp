@@ -4,23 +4,23 @@
 	<parent>
 		<groupId>eu.europa.ec.cipa</groupId>
 		<artifactId>cipa-parent-pom</artifactId>
-		<version>3.1.0-SNAPSHOT</version>
+		<version>3.2.0-SNAPSHOT</version>
 		<relativePath>../../common/cipa-parent-pom/pom.xml</relativePath>
 	</parent>
 	<artifactId>cipa-sml-migration</artifactId>
-	<version>3.1.0-SNAPSHOT</version>
+	<version>3.2.0-SNAPSHOT</version>
 	<name>cipa-sml-migration</name>
 
 	<dependencies>
 		<dependency>
 			<groupId>eu.europa.ec.cipa</groupId>
 			<artifactId>cipa-sml-server-library</artifactId>
-			<version>3.1.0-SNAPSHOT</version>
+			<version>3.2.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>eu.europa.ec.cipa</groupId>
 			<artifactId>cipa-bdmsl-client</artifactId>
-			<version>3.1.0-SNAPSHOT</version>
+			<version>3.2.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
