@@ -3,6 +3,7 @@ package eu.europa.ec.cipa.bdmsl.security;
 import eu.europa.ec.cipa.bdmsl.common.exception.CertificateAuthenticationException;
 import eu.europa.ec.cipa.common.exception.BusinessException;
 import eu.europa.ec.cipa.common.exception.TechnicalException;
+import eu.europa.ec.cipa.common.util.Constant;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.bouncycastle.openssl.jcajce.JcaPEMWriter;
@@ -60,17 +61,17 @@ public class X509CertificateAuthentication implements Authentication {
 
         String commonName = null;
         for (final Rdn rdn : ldapName.getRdns()) {
-            if ("CN".equals(rdn.getType())) {
+            if ("CN".equalsIgnoreCase(rdn.getType())) {
                 commonName = (String) rdn.getValue();
             }
         }
 
         List<GrantedAuthority> roles = new ArrayList<>();
 
-        if (commonName.startsWith("SMP_")) {
+        if (commonName.toLowerCase(Constant.LOCALE).startsWith("SMP_".toLowerCase(Constant.LOCALE))) {
             // SMP certificate --> SMP_ROLE
             roles.add(new SimpleGrantedAuthority(CustomAuthenticationProvider.SMP_ROLE));
-        } else if (commonName.startsWith("PYP_")) {
+        } else if (commonName.toLowerCase(Constant.LOCALE).startsWith("PYP_".toLowerCase(Constant.LOCALE))) {
             // PYP certificate --> PYP_ROLE
             roles.add(new SimpleGrantedAuthority(CustomAuthenticationProvider.PYP_ROLE));
         } else {

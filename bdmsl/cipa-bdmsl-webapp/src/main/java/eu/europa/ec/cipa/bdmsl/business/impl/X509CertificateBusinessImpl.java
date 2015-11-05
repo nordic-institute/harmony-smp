@@ -112,11 +112,7 @@ public class X509CertificateBusinessImpl extends AbstractBusinessImpl implements
             }
 
             // Re-order - least important item comes first (=reverse order)!
-            List<Rdn> list = new ArrayList<>();
-            list.add(parts.get("C"));
-            list.add(parts.get("O"));
-            list.add(parts.get("CN"));
-            final String subjectName = new LdapName(list).toString();
+            final String subjectName = parts.get("CN").toString() + "," + parts.get("O").toString() + "," + parts.get("C").toString();
 
             // subject-name + ":" + serial number hexstring
             String serialNumber = StringUtils.leftPad(cert.getSerialNumber().toString(), 16, "0");

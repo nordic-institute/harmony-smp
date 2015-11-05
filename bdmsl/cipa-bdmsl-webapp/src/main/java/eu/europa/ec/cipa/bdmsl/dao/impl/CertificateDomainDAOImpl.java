@@ -18,20 +18,6 @@ import java.util.List;
 public class CertificateDomainDAOImpl extends AbstractDAOImpl implements ICertificateDomainDAO {
 
     @Override
-    @Cacheable("domainById")
-    public CertificateDomainBO findDomain(String rootCertificateAlias) throws TechnicalException {
-        CertificateDomainBO resultBO = null;
-        CertificateDomainEntity resultEntity = getEntityManager().find(CertificateDomainEntity.class, rootCertificateAlias);
-        if (resultEntity != null) {
-            resultBO = mapperFactory.getMapperFacade().map(resultEntity, CertificateDomainBO.class);
-        } else {
-            loggingService.debug("No entry found for certificate root alias " + rootCertificateAlias);
-        }
-
-        return resultBO;
-    }
-
-    @Override
     @Cacheable("allDomains")
     public List<CertificateDomainBO> findAll() throws TechnicalException {
         List<CertificateDomainEntity> resultEntityList = getEntityManager().createQuery("SELECT c FROM CertificateDomainEntity c", CertificateDomainEntity.class).getResultList();

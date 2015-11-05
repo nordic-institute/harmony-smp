@@ -39,7 +39,7 @@ public class ManageParticipantIdentifierBusinessImpl extends AbstractBusinessImp
      * The regular expression to be used for validating participant identifier
      * schemes (not values!).
      */
-    private static final String PARTICIPANT_IDENTIFIER_SCHEME_REGEX = "[a-z0-9\\-]+";
+    private static final String PARTICIPANT_IDENTIFIER_SCHEME_REGEX = "[a-z0-9]+-[a-z0-9]+-[a-z0-9]+";
 
     /**
      * The default identifier scheme ID to be used for participants/businesses.<br>
@@ -204,7 +204,7 @@ public class ManageParticipantIdentifierBusinessImpl extends AbstractBusinessImp
     @Override
     public void prepareToMigrate(MigrationRecordBO prepareToMigrateBO) throws BusinessException, TechnicalException {
         // find if a migration record already exists
-        MigrationRecordBO found = migrationDAO.findMigrationRecord(prepareToMigrateBO);
+        MigrationRecordBO found = migrationDAO.findNonMigratedRecord(prepareToMigrateBO);
 
         // a migration record already exists, then update it
         if (found != null) {
@@ -223,12 +223,12 @@ public class ManageParticipantIdentifierBusinessImpl extends AbstractBusinessImp
         participantBO.setParticipantId(migrateBO.getParticipantId());
         participantDAO.updateParticipant(participantBO, migrateBO.getOldSmpId());
         migrateBO.setMigrated(true);
-        migrationDAO.updateMigrationRecord(migrateBO);
+        migrationDAO.performMigration(migrateBO);
     }
 
     @Override
-    public MigrationRecordBO findMigrationRecord(MigrationRecordBO migrateBO) throws BusinessException, TechnicalException {
-        return migrationDAO.findMigrationRecord(migrateBO);
+    public MigrationRecordBO findNonMigratedRecord(MigrationRecordBO migrateBO) throws BusinessException, TechnicalException {
+        return migrationDAO.findNonMigratedRecord(migrateBO);
     }
 
     @Override

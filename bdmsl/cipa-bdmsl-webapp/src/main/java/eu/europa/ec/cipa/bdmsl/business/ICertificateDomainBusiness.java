@@ -10,6 +10,12 @@ import java.util.List;
  */
 public interface ICertificateDomainBusiness {
 
+    /**
+     * This method find a certificate, whatever the order of the fields
+     * @param rootCertificateAlias
+     * @return
+     * @throws TechnicalException
+     */
     CertificateDomainBO findDomain(String rootCertificateAlias) throws TechnicalException;
 
     List<CertificateDomainBO> findAll() throws TechnicalException;

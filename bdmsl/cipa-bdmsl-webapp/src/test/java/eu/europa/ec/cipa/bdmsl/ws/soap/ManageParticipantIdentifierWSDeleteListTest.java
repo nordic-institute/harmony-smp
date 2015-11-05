@@ -17,6 +17,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.security.Security;
+
 /**
  * Created by feriaad on 16/06/2015.
  */
@@ -35,6 +37,7 @@ public class ManageParticipantIdentifierWSDeleteListTest extends AbstractTest {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
     }
 
     @Test(expected = BadRequestFault.class)
@@ -69,9 +72,10 @@ public class ManageParticipantIdentifierWSDeleteListTest extends AbstractTest {
     @Test
     public void testDeleteListParticipantOk() throws Exception {
         // First we ensure the participants don't exist
-        final String partId1 = "0009:123456789DeleteList";
-        final String partId2 = "0009:223456789DeleteList";
-        final String smpId = "foundUnsecure";
+        // Ids must be case insensitive so we put them in upper case to test the case insensitivity
+        final String partId1 = "0009:123456789DELETELIST";
+        final String partId2 = "0009:223456789DELETELIST";
+        final String smpId = "FOUNDUNSECURE";
         ParticipantBO partBO = new ParticipantBO();
         partBO.setSmpId(smpId);
         partBO.setScheme("iso6523-actorid-upis");

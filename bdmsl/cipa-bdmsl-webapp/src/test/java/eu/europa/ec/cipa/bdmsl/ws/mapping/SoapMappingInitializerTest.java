@@ -13,6 +13,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.security.Security;
+
 /**
  * Created by feriaad on 16/06/2015.
  */
@@ -26,6 +28,7 @@ public class SoapMappingInitializerTest extends AbstractTest {
         UnsecureAuthentication authentication = new UnsecureAuthentication();
         authentication.setAuthenticated(true);
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
     }
 
     @Test

@@ -7,6 +7,7 @@ import eu.europa.ec.cipa.bdmsl.common.exception.DuplicateParticipantException;
 import eu.europa.ec.cipa.bdmsl.dao.AbstractDAOImpl;
 import eu.europa.ec.cipa.bdmsl.dao.IMigrationDAO;
 import eu.europa.ec.cipa.bdmsl.dao.entity.MigrateEntity;
+import eu.europa.ec.cipa.common.util.Constant;
 import eu.europa.ec.cipa.common.exception.TechnicalException;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.Transformer;
@@ -22,10 +23,30 @@ import java.util.List;
 public class MigrationDAOImpl extends AbstractDAOImpl implements IMigrationDAO {
 
     @Override
-    public MigrationRecordBO findMigrationRecord(MigrationRecordBO migrationRecordBO) throws TechnicalException {
-        List<MigrateEntity> resultEntityList = getEntityManager().createQuery("SELECT m FROM MigrateEntity m where m.scheme = :scheme and m.participantId = :participantId", MigrateEntity.class)
+    public MigrationRecordBO findNonMigratedRecord(MigrationRecordBO migrationRecordBO) throws TechnicalException {
+        List<MigrateEntity> resultEntityList = getEntityManager().createQuery("SELECT m FROM MigrateEntity m where m.scheme = :scheme and upper(m.participantId) = upper(:participantId) and m.migrated = :migrated", MigrateEntity.class)
                 .setParameter("scheme", migrationRecordBO.getScheme())
                 .setParameter("participantId", migrationRecordBO.getParticipantId())
+                .setParameter("migrated", false)
+                .getResultList();
+        if (resultEntityList != null && resultEntityList.size() > 1) {
+            throw new DuplicateParticipantException("There are more than one migration record for the given participant : " + migrationRecordBO.getScheme() + "/" + migrationRecordBO.getParticipantId());
+        } else if (resultEntityList != null && resultEntityList.size() == 1) {
+            return mapperFactory.getMapperFacade().map(resultEntityList.get(0), MigrationRecordBO.class);
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+      public MigrationRecordBO findMigratedRecord(MigrationRecordBO migrationRecordBO) throws TechnicalException {
+        List<MigrateEntity> resultEntityList = getEntityManager().createQuery("SELECT m FROM MigrateEntity m where m.scheme = :scheme and upper(m.participantId) = upper(:participantId) and m.migrated = :migrated and upper(m.oldSmpId) =upper(:oldSmpId) and upper(m.newSmpId) = upper(:newSmpId) and m.migrationKey = :migrationKey", MigrateEntity.class)
+                .setParameter("scheme", migrationRecordBO.getScheme())
+                .setParameter("participantId", migrationRecordBO.getParticipantId())
+                .setParameter("migrationKey", migrationRecordBO.getMigrationCode())
+                .setParameter("migrated", true)
+                .setParameter("oldSmpId", migrationRecordBO.getOldSmpId())
+                .setParameter("newSmpId", migrationRecordBO.getNewSmpId())
                 .getResultList();
         if (resultEntityList != null && resultEntityList.size() > 1) {
             throw new DuplicateParticipantException("There are more than one migration record for the given participant : " + migrationRecordBO.getScheme() + "/" + migrationRecordBO.getParticipantId());
@@ -38,10 +59,10 @@ public class MigrationDAOImpl extends AbstractDAOImpl implements IMigrationDAO {
 
     @Override
     public void updateMigrationRecord(MigrationRecordBO migrationRecordBO) throws TechnicalException {
-        MigrateEntity resultEntity = getEntityManager().createQuery("SELECT m FROM MigrateEntity m where m.scheme = :scheme and m.participantId = :participantId and m.oldSmpId = :oldSmpId", MigrateEntity.class)
+        MigrateEntity resultEntity = getEntityManager().createQuery("SELECT m FROM MigrateEntity m where m.scheme = :scheme and upper(m.participantId) = upper(:participantId) and m.migrated = :migrated", MigrateEntity.class)
                 .setParameter("scheme", migrationRecordBO.getScheme())
                 .setParameter("participantId", migrationRecordBO.getParticipantId())
-                .setParameter("oldSmpId", migrationRecordBO.getOldSmpId())
+                .setParameter("migrated", migrationRecordBO.isMigrated())
                 .getSingleResult();
         resultEntity.setMigrationKey(migrationRecordBO.getMigrationCode());
         if (!Strings.isNullOrEmpty(migrationRecordBO.getNewSmpId())) {
@@ -50,6 +71,24 @@ public class MigrationDAOImpl extends AbstractDAOImpl implements IMigrationDAO {
         resultEntity.setMigrated(migrationRecordBO.isMigrated());
         super.merge(resultEntity);
     }
+
+    @Override
+    public void performMigration(MigrationRecordBO migrationRecordBO) throws TechnicalException {
+        MigrateEntity resultEntity = getEntityManager().createQuery("SELECT m FROM MigrateEntity m where m.scheme = :scheme and upper(m.participantId) = upper(:participantId) and upper(m.oldSmpId) = upper(:oldSmpId) and m.migrationKey = :migrationKey", MigrateEntity.class)
+                .setParameter("scheme", migrationRecordBO.getScheme())
+                .setParameter("participantId", migrationRecordBO.getParticipantId())
+                .setParameter("migrationKey", migrationRecordBO.getMigrationCode())
+                .setParameter("oldSmpId", migrationRecordBO.getOldSmpId())
+                .getSingleResult();
+        resultEntity.setMigrationKey(migrationRecordBO.getMigrationCode());
+        resultEntity.setOldSmpId(migrationRecordBO.getOldSmpId());
+        if (!Strings.isNullOrEmpty(migrationRecordBO.getNewSmpId())) {
+            resultEntity.setNewSmpId(migrationRecordBO.getNewSmpId());
+        }
+        resultEntity.setMigrated(migrationRecordBO.isMigrated());
+        super.merge(resultEntity);
+    }
+
 
     @Override
     public void createMigrationRecord(MigrationRecordBO migrationRecordBO) throws TechnicalException {
@@ -62,10 +101,10 @@ public class MigrationDAOImpl extends AbstractDAOImpl implements IMigrationDAO {
         Collection participantIds = CollectionUtils.collect(participantBOList, new Transformer() {
             @Override
             public Object transform(Object input) {
-                return ((ParticipantBO) input).getParticipantId();
+                return ((ParticipantBO) input).getParticipantId().toUpperCase(Constant.LOCALE);
             }
         });
-        List<MigrateEntity> resultEntityList = getEntityManager().createQuery("SELECT m FROM MigrateEntity m where m.oldSmpId = :smpId and m.participantId in :participantIds and m.migrated = :migrated", MigrateEntity.class)
+        List<MigrateEntity> resultEntityList = getEntityManager().createQuery("SELECT m FROM MigrateEntity m where upper(m.oldSmpId) = upper(:smpId) and upper(m.participantId) in :participantIds and m.migrated = :migrated", MigrateEntity.class)
                 .setParameter("smpId", smpId)
                 .setParameter("participantIds", participantIds)
                 .setParameter("migrated", Boolean.FALSE)
@@ -75,7 +114,7 @@ public class MigrationDAOImpl extends AbstractDAOImpl implements IMigrationDAO {
 
     @Override
     public List<MigrationRecordBO> findMigrationsRecordsForSMP(String smpId) throws TechnicalException {
-        List<MigrateEntity> resultEntityList = getEntityManager().createQuery("SELECT m FROM MigrateEntity m where m.oldSmpId = :smpId and m.migrated = :migrated", MigrateEntity.class)
+        List<MigrateEntity> resultEntityList = getEntityManager().createQuery("SELECT m FROM MigrateEntity m where upper(m.oldSmpId) = upper(:smpId) and m.migrated = :migrated", MigrateEntity.class)
                 .setParameter("smpId", smpId)
                 .setParameter("migrated", Boolean.FALSE)
                 .getResultList();

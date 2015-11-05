@@ -112,6 +112,11 @@
             <column name="fk_smp_id" value="foundUnsecure"/>
         </insert>
         <insert tableName="bdmsl_participant_identifier">
+            <column name="participant_id" value="0009:caseInsensitivityCheck"/>
+            <column name="scheme" value="iso6523-actorid-upis"/>
+            <column name="fk_smp_id" value="foundUnsecure"/>
+        </insert>
+        <insert tableName="bdmsl_participant_identifier">
             <column name="participant_id" value="0007:123456789"/>
             <column name="scheme" value="iso6523-actorid-upis"/>
             <column name="fk_smp_id" value="found"/>

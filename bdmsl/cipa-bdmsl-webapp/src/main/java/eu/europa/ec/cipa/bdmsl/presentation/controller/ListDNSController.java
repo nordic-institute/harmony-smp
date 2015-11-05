@@ -23,7 +23,7 @@ import java.util.*;
 /**
  * Created by feriaad on 16/07/2015.
  */
-@Controller
+@Controller()
 public class ListDNSController {
 
     @Autowired

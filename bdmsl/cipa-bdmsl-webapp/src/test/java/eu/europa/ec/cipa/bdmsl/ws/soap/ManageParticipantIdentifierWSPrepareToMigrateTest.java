@@ -16,6 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.security.Security;
+
 /**
  * Created by feriaad on 16/06/2015.
  */
@@ -33,6 +35,7 @@ public class ManageParticipantIdentifierWSPrepareToMigrateTest extends AbstractT
         SecurityContextHolder.getContext().setAuthentication(authentication);
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
     }
 
     @Test(expected = BadRequestFault.class)
@@ -82,7 +85,7 @@ public class ManageParticipantIdentifierWSPrepareToMigrateTest extends AbstractT
         migrationRecordBO.setOldSmpId(migrationRecordType.getServiceMetadataPublisherID());
         migrationRecordBO.setParticipantId(migrationRecordType.getParticipantIdentifier().getValue());
         migrationRecordBO.setScheme(migrationRecordType.getParticipantIdentifier().getScheme());
-        MigrationRecordBO found = migrationDAO.findMigrationRecord(migrationRecordBO);
+        MigrationRecordBO found = migrationDAO.findNonMigratedRecord(migrationRecordBO);
         Assert.assertNotNull(found);
     }
 
@@ -110,12 +113,13 @@ public class ManageParticipantIdentifierWSPrepareToMigrateTest extends AbstractT
     public void testPrepareToMigrateParticipantUpdateOk() throws Exception {
         // first we ensure that the migration record exists
         MigrationRecordBO migrationRecordBO = new MigrationRecordBO();
-        String smpId = "foundUnsecure";
+        // Ids must be case insensitive so we put them in upper case to test the case insensitivity
+        String smpId = "FOUNDUNSECURE";
         migrationRecordBO.setOldSmpId(smpId);
-        String participantId = "0009:223456789MigrateTest";
+        String participantId = "0009:223456789MIGRATETEST";
         migrationRecordBO.setParticipantId(participantId);
         migrationRecordBO.setScheme("iso6523-actorid-upis");
-        MigrationRecordBO found = migrationDAO.findMigrationRecord(migrationRecordBO);
+        MigrationRecordBO found = migrationDAO.findNonMigratedRecord(migrationRecordBO);
         Assert.assertEquals("123456789", found.getMigrationCode());
 
         // update the migration key
@@ -126,8 +130,48 @@ public class ManageParticipantIdentifierWSPrepareToMigrateTest extends AbstractT
         manageParticipantIdentifierWS.prepareToMigrate(migrationRecordType);
 
         // check that the migration key is updated
-        found = migrationDAO.findMigrationRecord(migrationRecordBO);
+        found = migrationDAO.findNonMigratedRecord(migrationRecordBO);
         Assert.assertEquals("987654321", found.getMigrationCode());
+    }
+
+    @Test(expected = UnauthorizedFault.class)
+    public void testPrepareToMigrateParticipantNotLinkedToSMP() throws Exception {
+        MigrationRecordType migrationRecordType = createMigrationRecord();
+        migrationRecordType.getParticipantIdentifier().setValue("0009:123456789");
+        migrationRecordType.setServiceMetadataPublisherID("found");
+        manageParticipantIdentifierWS.prepareToMigrate(migrationRecordType);
+    }
+
+
+    /**
+     * Call the function PrepareToMigrate twice (but with a different Migration Key) for the same ParticipantIdentifier with a PrepareMigrationRecord (which contains the Migration Key and the Participant Identifier which is about to be migrated from one SMP to another).
+     * The result should be that the Migration Key has been updated to the Migration Key of the second request
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testPrepareToMigrateCalledTwice() throws Exception {
+        MigrationRecordType migrationRecordType = createMigrationRecord();
+        migrationRecordType.setServiceMetadataPublisherID("foundUnsecure");
+        migrationRecordType.getParticipantIdentifier().setValue("0009:123456789");
+        manageParticipantIdentifierWS.prepareToMigrate(migrationRecordType);
+
+        // Finally we verify that the migrationRecord exists
+        MigrationRecordBO migrationRecordBO = new MigrationRecordBO();
+        migrationRecordBO.setOldSmpId(migrationRecordType.getServiceMetadataPublisherID());
+        migrationRecordBO.setParticipantId(migrationRecordType.getParticipantIdentifier().getValue());
+        migrationRecordBO.setScheme(migrationRecordType.getParticipantIdentifier().getScheme());
+        MigrationRecordBO found = migrationDAO.findNonMigratedRecord(migrationRecordBO);
+        Assert.assertNotNull(found);
+
+        found = migrationDAO.findNonMigratedRecord(migrationRecordBO);
+        Assert.assertEquals("123456789123456879", found.getMigrationCode());
+
+        migrationRecordType.setMigrationKey("987654");
+        manageParticipantIdentifierWS.prepareToMigrate(migrationRecordType);
+
+        found = migrationDAO.findNonMigratedRecord(migrationRecordBO);
+        Assert.assertEquals("987654", found.getMigrationCode());
     }
 }
 

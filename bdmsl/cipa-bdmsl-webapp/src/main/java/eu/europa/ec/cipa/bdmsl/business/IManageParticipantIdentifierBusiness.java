@@ -29,7 +29,7 @@ public interface IManageParticipantIdentifierBusiness {
 
     void performMigration(MigrationRecordBO migrateBO) throws BusinessException, TechnicalException;
 
-    MigrationRecordBO findMigrationRecord(MigrationRecordBO migrateBO) throws BusinessException, TechnicalException;
+    MigrationRecordBO findNonMigratedRecord(MigrationRecordBO migrateBO) throws BusinessException, TechnicalException;
 
     ParticipantListBO list() throws BusinessException, TechnicalException;
 

@@ -10,6 +10,7 @@ import eu.europa.ec.cipa.bdmsl.service.dns.IDnsClientService;
 import eu.europa.ec.cipa.common.exception.BusinessException;
 import eu.europa.ec.cipa.common.exception.TechnicalException;
 import eu.europa.ec.cipa.common.service.AbstractServiceImpl;
+import eu.europa.ec.cipa.common.util.Constant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -259,6 +260,11 @@ public class ManageParticipantIdentifierServiceImpl extends AbstractServiceImpl 
             throw new ParticipantNotFoundException("The participant identifier '" + prepareToMigrateBO.getParticipantId() + "' doesn't exist for the scheme " + prepareToMigrateBO.getScheme() + " for the smp " + prepareToMigrateBO.getOldSmpId());
         }
 
+        // check that the participant is linked to the SMP
+        if (!existingParticipantBO.getSmpId().equalsIgnoreCase(existingSmpBO.getSmpId())) {
+            throw new UnauthorizedException("The participant " + existingParticipantBO.getParticipantId() + " is not linked to the SMP " + existingSmpBO.getSmpId());
+        }
+
         // check that the user owns the SMP
         String currentCertificate = SecurityContextHolder.getContext().getAuthentication().getName();
         if (existingSmpBO.getCertificateId().equals(currentCertificate)) {
@@ -279,7 +285,7 @@ public class ManageParticipantIdentifierServiceImpl extends AbstractServiceImpl 
         ServiceMetadataPublisherBO existingSmpBO = manageServiceMetadataBusiness.verifySMPExist(migrateBO.getNewSmpId());
 
         //find the migration record created by the prepareToMigrate service
-        MigrationRecordBO existingMigrationRecord = manageParticipantIdentifierBusiness.findMigrationRecord(migrateBO);
+        MigrationRecordBO existingMigrationRecord = manageParticipantIdentifierBusiness.findNonMigratedRecord(migrateBO);
         if (existingMigrationRecord == null) {
             throw new MigrationNotFoundException("No migration record found. Please call the prepareToMigrate service prior to the Migrate service.");
         }

@@ -2,6 +2,7 @@ package eu.europa.ec.cipa.bdmsl.service;
 
 import eu.europa.ec.cipa.bdmsl.AbstractTest;
 import eu.europa.ec.cipa.bdmsl.security.CertificateDetails;
+import eu.europa.ec.cipa.common.util.Constant;
 import eu.europa.ec.cipa.common.exception.BusinessException;
 import eu.europa.ec.cipa.common.exception.TechnicalException;
 import org.apache.commons.lang3.time.DateUtils;
@@ -34,7 +35,7 @@ public class BlueCoatCertificateServiceImplTest extends AbstractTest {
         String serial = "123ABCD";
         String issuer = "CN=PEPPOL SERVICE METADATA PUBLISHER TEST CA,OU=FOR TEST PURPOSES ONLY,O=NATIONAL IT AND TELECOM AGENCY,C=DK";
         String subject = "O=DG-DIGIT,CN=SMP_1000000007,C=BE";
-        DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
+        DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Constant.LOCALE);
         Date validFrom = df.parse("Jun 01 10:37:53 2015 CEST");
         Date validTo = df.parse("Jun 01 10:37:53 2035 CEST");
 
@@ -57,6 +58,50 @@ public class BlueCoatCertificateServiceImplTest extends AbstractTest {
     }
 
     /**
+     * Valid certificate but the order of the certificate attributes of the subject are different. The certificate must be valid anyway
+     * @throws TechnicalException
+     * @throws BusinessException
+     */
+    @Test
+    public void testIsBlueCoatClientCertificateValidSubjectDifferentOrder1() throws TechnicalException, BusinessException{
+        certificateDetails.setSubject("C=BE,O=DG-DIGIT,CN=SMP_1000000007");
+        Assert.assertTrue(blueCoatCertificateService.isBlueCoatClientCertificateValid(certificateDetails));
+    }
+
+    /**
+     * Valid certificate but the order of the certificate attributes of the subject are different and contain spaces after the commas. The certificate must be valid anyway
+     * @throws TechnicalException
+     * @throws BusinessException
+     */
+    @Test
+    public void testIsBlueCoatClientCertificateValidSubjectDifferentOrderWithSpaces() throws TechnicalException, BusinessException{
+        certificateDetails.setSubject("C=BE, CN=SMP_1000000007, O=DG-DIGIT");
+        Assert.assertTrue(blueCoatCertificateService.isBlueCoatClientCertificateValid(certificateDetails));
+    }
+
+    /**
+     * Valid certificate but the order of the certificate attributes of the issuer are different. The certificate must be valid anyway
+     * @throws TechnicalException
+     * @throws BusinessException
+     */
+    @Test
+    public void testIsBlueCoatClientCertificateValidIssuerDifferentOrder() throws TechnicalException, BusinessException{
+        certificateDetails.setIssuer("OU=FOR TEST PURPOSES ONLY,CN=PEPPOL SERVICE METADATA PUBLISHER TEST CA,O=NATIONAL IT AND TELECOM AGENCY,C=DK");
+        Assert.assertTrue(blueCoatCertificateService.isBlueCoatClientCertificateValid(certificateDetails));
+    }
+
+    /**
+     * Valid certificate but the order of the certificate attributes of the issuer are different and contain spaces after the commas. The certificate must be valid anyway
+     * @throws TechnicalException
+     * @throws BusinessException
+     */
+    @Test
+    public void testIsBlueCoatClientCertificateValidIssuerDifferentOrderWithSpaces() throws TechnicalException, BusinessException{
+        certificateDetails.setIssuer("OU=FOR TEST PURPOSES ONLY, C=DK, CN=PEPPOL SERVICE METADATA PUBLISHER TEST CA, O=NATIONAL IT AND TELECOM AGENCY");
+        Assert.assertTrue(blueCoatCertificateService.isBlueCoatClientCertificateValid(certificateDetails));
+    }
+
+    /**
      * Certificate is expired
      * @throws TechnicalException
      * @throws BusinessException
@@ -64,7 +109,7 @@ public class BlueCoatCertificateServiceImplTest extends AbstractTest {
      */
     @Test
     public void testIsBlueCoatClientCertificateExpired() throws TechnicalException, BusinessException, ParseException {
-        DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
+        DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Constant.LOCALE);
         Date validFrom = df.parse("Jun 01 10:37:53 2009 CEST");
         Date validTo = df.parse("Jun 01 10:37:53 2010 CEST");
         certificateDetails.setValidFrom(DateUtils.toCalendar(validFrom));

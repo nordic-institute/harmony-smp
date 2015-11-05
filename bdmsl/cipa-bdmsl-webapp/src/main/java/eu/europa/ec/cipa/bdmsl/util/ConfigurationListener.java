@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
+import java.security.Security;
 
 /**
  * Created by feriaad on 22/06/2015.
@@ -88,6 +89,8 @@ public class ConfigurationListener implements ServletContextListener {
                 .autowireBean(this);
 
         loggingService.debug("Entering configuration listener...");
+
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 
         configureProxy();
 

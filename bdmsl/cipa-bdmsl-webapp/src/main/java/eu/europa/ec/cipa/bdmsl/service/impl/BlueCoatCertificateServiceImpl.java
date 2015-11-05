@@ -6,6 +6,7 @@ import eu.europa.ec.cipa.bdmsl.security.CertificateDetails;
 import eu.europa.ec.cipa.bdmsl.service.IBlueCoatCertificateService;
 import eu.europa.ec.cipa.bdmsl.service.ICRLVerifierService;
 import eu.europa.ec.cipa.bdmsl.service.ICipaService;
+import eu.europa.ec.cipa.common.util.Constant;
 import eu.europa.ec.cipa.bdmsl.util.LogEvents;
 import eu.europa.ec.cipa.common.exception.BusinessException;
 import eu.europa.ec.cipa.common.exception.TechnicalException;
@@ -41,11 +42,12 @@ public class BlueCoatCertificateServiceImpl extends AbstractServiceImpl implemen
         boolean result = false;
         Date today = Calendar.getInstance().getTime();
         if (!today.after(certificate.getValidFrom().getTime()) || !today.before(certificate.getValidTo().getTime())) {
-            DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
+            DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Constant.LOCALE);
             loggingService.securityLog(LogEvents.SEC_CERTIFICATE_EXPIRED, df.format(today), df.format(certificate.getValidFrom().getTime()), df.format(certificate.getValidTo().getTime()));
         } else {
             // We look into the database to search if the issuer belongs to the list of known and authorized list of root certificate aliases
             final CertificateDomainBO certDomainBO = cipaService.findDomain(certificate.getIssuer());
+            loggingService.info("The issuer of the certificate is " + certificate.getIssuer());
             if (certDomainBO != null) {
                 try {
                     crlVerifierService.verifyCertificateCRLs(certificate.getSerial(), certDomainBO.getCrl());

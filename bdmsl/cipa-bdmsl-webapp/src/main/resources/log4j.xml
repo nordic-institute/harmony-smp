@@ -47,17 +47,17 @@
     </root>
 
     <category name="eu.europa.ec.cipa.common.logging.impl.LoggerSecurityImpl">
-        <priority value="DEBUG" />
+        <priority value="INFO" />
         <appender-ref ref="SecurityLogFile" />
     </category>
 
     <category name="eu.europa.ec.cipa.common.logging.impl.LoggerBusinessImpl">
-        <priority value="DEBUG" />
+        <priority value="INFO" />
         <appender-ref ref="BusinessLogFile" />
     </category>
 
     <category name="eu.europa.ec.cipa">
-        <priority value="DEBUG" />
+        <priority value="INFO" />
     </category>
 
 </log4j:configuration>

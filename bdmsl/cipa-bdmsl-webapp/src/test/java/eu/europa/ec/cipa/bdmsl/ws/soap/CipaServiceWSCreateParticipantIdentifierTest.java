@@ -85,11 +85,12 @@ public class CipaServiceWSCreateParticipantIdentifierTest extends AbstractTest {
         cipaServiceWS.createParticipantIdentifier(participantType);
 
         String messages = dnsMessageSenderService.getMessages();
-        Assert.assertTrue(messages.contains("B-548113997c2b615d667ac512da31474f.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu.\t0\tANY\tANY"));
-        Assert.assertTrue(messages.contains("B-1d51d91db4358ccf472afb065b628d9d03a3c20b376ba4667c5ff4b8.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu.\t0\tANY\tANY"));
-        Assert.assertTrue(messages.contains("B-548113997c2b615d667ac512da31474f.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu.\t60\tIN\tCNAME\tfoundUnsecure.publisher.acc.edelivery.tech.ec.europa.eu."));
-        Assert.assertTrue(messages.contains("B-1d51d91db4358ccf472afb065b628d9d03a3c20b376ba4667c5ff4b8.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu.\t60\tIN\tNAPTR\t100 10 \"U\" \"META:SMP_TEST\" \"!^.$!http://foundUnsecure.publisher.acc.edelivery.tech.ec.europa.eu.!\" ."));
 
+        // the hash is performed on lower case identifiers, therefore hash(partId) = hash(partId.toLowerCase()).
+        Assert.assertTrue(messages.contains("B-0646991f168c8cc071e6a01353fc1b1b.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu.\t0\tANY\tANY"));
+        Assert.assertTrue(messages.contains("B-c8a46ac5ee724836d859d1e065e4ea2bacd9ff92db008edf35ca0a0c.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu.\t0\tANY\tANY"));
+        Assert.assertTrue(messages.contains("B-0646991f168c8cc071e6a01353fc1b1b.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu.\t60\tIN\tCNAME\tfoundUnsecure.publisher.acc.edelivery.tech.ec.europa.eu."));
+        Assert.assertTrue(messages.contains("B-c8a46ac5ee724836d859d1e065e4ea2bacd9ff92db008edf35ca0a0c.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu.\t60\tIN\tNAPTR\t100 10 \"U\" \"META:SMP_TEST\" \"!^.*$!http://foundUnsecure.publisher.acc.edelivery.tech.ec.europa.eu.!\" ."));
 
         // Finally we verify that the participant has been created
         found = participantDAO.findParticipant(partBO);

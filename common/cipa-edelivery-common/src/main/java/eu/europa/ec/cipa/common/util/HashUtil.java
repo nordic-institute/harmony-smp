@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.Security;
 import java.util.Locale;
 
 /**
@@ -44,9 +45,12 @@ public class HashUtil {
      * @throws UnsupportedEncodingException
      */
     private static String getHash(String stringToBeHashed, String algorithm) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        MessageDigest md = MessageDigest.getInstance(algorithm);
+        if (Security.getProvider("BC") == null) {
+            Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        }
+        MessageDigest md = MessageDigest.getInstance(algorithm, new org.bouncycastle.jce.provider.BouncyCastleProvider());
         md.reset();
-        md.update(stringToBeHashed.getBytes());
+        md.update(stringToBeHashed.getBytes(Constant.DEFAULT_CHARSET));
         byte[] hashBytes = md.digest();
 
         //convert the byte to hex format method 2

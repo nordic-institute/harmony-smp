@@ -104,6 +104,16 @@ public class ManageServiceMetadataWSTest extends AbstractTest {
         manageServiceMetadataWS.create(smp);
     }
 
+    /**
+     * SMP ids are case insensitive
+     * @throws Exception
+     */
+    @Test(expected = BadRequestFault.class)
+    public void testCreateAlreadyExistCaseInsensitivity() throws Exception {
+        ServiceMetadataPublisherServiceType smp = createSimpleSMP("FoUnD");
+        manageServiceMetadataWS.create(smp);
+    }
+
 
     /**
      * Create a SMP that doesn't exist with an unsecure certificate.
@@ -164,8 +174,9 @@ public class ManageServiceMetadataWSTest extends AbstractTest {
         manageServiceMetadataWS.delete("toBeDeleted");
 
         String messages = dnsMessageSenderService.getMessages();
-        Assert.assertTrue(messages.contains("B-0d8a3142047e1f07f0b56ff4ab3c5c8a.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu.\t0\tANY\tANY"));
-        Assert.assertTrue(messages.contains("B-ad2ad556658228598f7abcd6334c22a4139e98f042f708196469bbe3.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu.\t0\tANY\tANY"));
+        // participant 0009:223456789DeletedTest1 is also deleted
+        Assert.assertTrue(messages.contains("B-b44c40da17d7831413ea237888fd6cd4.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu.\t0\tANY\tANY"));
+        Assert.assertTrue(messages.contains("B-384ef24e0719add50a96b6957e8e310489699372a8935a34eef0d153.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu.\t0\tANY\tANY"));
         Assert.assertTrue(messages.contains("toBeDeleted.publisher.acc.edelivery.tech.ec.europa.eu.\t0\tANY\tANY"));
         try {
             manageServiceMetadataWS.read(smpToBeDeleted);
@@ -189,6 +200,14 @@ public class ManageServiceMetadataWSTest extends AbstractTest {
     @Test(expected = UnauthorizedFault.class)
      public void testUpdateUnauthorized() throws Exception {
         String smpId = "found";
+        ServiceMetadataPublisherServiceType smpToBeUpdated = createSimpleSMP(smpId);
+        smpToBeUpdated.setServiceMetadataPublisherID(smpId);
+        manageServiceMetadataWS.update(smpToBeUpdated);
+    }
+
+    @Test(expected = UnauthorizedFault.class)
+    public void testUpdateUnauthorizedDifferentCase() throws Exception {
+        String smpId = "FoUnD";
         ServiceMetadataPublisherServiceType smpToBeUpdated = createSimpleSMP(smpId);
         smpToBeUpdated.setServiceMetadataPublisherID(smpId);
         manageServiceMetadataWS.update(smpToBeUpdated);
@@ -245,6 +264,12 @@ public class ManageServiceMetadataWSTest extends AbstractTest {
     @Test(expected = UnauthorizedFault.class)
     public void testDeleteWithMigrationPlanned() throws Exception {
         String smpId = "toBeDeletedWithMigrationPlanned";
+        manageServiceMetadataWS.delete(smpId);
+    }
+
+    @Test(expected = UnauthorizedFault.class)
+    public void testDeleteWithMigrationPlannedDifferentCase() throws Exception {
+        String smpId = "toBeDeletedWithMigrationPLANNED";
         manageServiceMetadataWS.delete(smpId);
     }
 

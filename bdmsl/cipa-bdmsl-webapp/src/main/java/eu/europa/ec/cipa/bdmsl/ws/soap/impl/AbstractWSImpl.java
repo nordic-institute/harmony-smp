@@ -31,48 +31,48 @@ public abstract class AbstractWSImpl {
         if (e instanceof BadRequestException) {
             final FaultType faultInfo = objectFactory.createFaultType();
             faultInfo.setFaultMessage(e.getMessage());
-            throw new BadRequestFault(sessionId, faultInfo, e);
+            throw new BadRequestFault(e.getMessage() + " [" + sessionId + "]", faultInfo, e);
         } else if (e instanceof SmpNotFoundException) {
             final FaultType faultInfo = objectFactory.createFaultType();
             faultInfo.setFaultMessage(e.getMessage());
-            throw new NotFoundFault(sessionId, faultInfo, e);
+            throw new NotFoundFault(e.getMessage() + " [" + sessionId + "]", faultInfo, e);
         } else if (e instanceof ParticipantNotFoundException) {
             final FaultType faultInfo = objectFactory.createFaultType();
             faultInfo.setFaultMessage(e.getMessage());
-            throw new NotFoundFault(sessionId, faultInfo, e);
+            throw new NotFoundFault(e.getMessage() + " [" + sessionId + "]", faultInfo, e);
         } else if (e instanceof MigrationNotFoundException) {
             final FaultType faultInfo = objectFactory.createFaultType();
             faultInfo.setFaultMessage(e.getMessage());
-            throw new NotFoundFault(sessionId, faultInfo, e);
+            throw new NotFoundFault(e.getMessage() + " [" + sessionId + "]", faultInfo, e);
         } else if (e instanceof UnauthorizedException) {
             final FaultType faultInfo = objectFactory.createFaultType();
             faultInfo.setFaultMessage(e.getMessage());
-            throw new UnauthorizedFault(sessionId, faultInfo, e);
+            throw new UnauthorizedFault(e.getMessage() + " [" + sessionId + "]", faultInfo, e);
         } else if (e instanceof CertificateAuthenticationException) {
             final FaultType faultInfo = objectFactory.createFaultType();
             faultInfo.setFaultMessage(e.getMessage());
-            throw new UnauthorizedFault(sessionId, faultInfo, e);
+            throw new UnauthorizedFault(e.getMessage() + " [" + sessionId + "]", faultInfo, e);
         } else if (e instanceof MigrationPlannedException) {
             final FaultType faultInfo = objectFactory.createFaultType();
             faultInfo.setFaultMessage(e.getMessage());
-            throw new UnauthorizedFault(sessionId, faultInfo, e);
+            throw new UnauthorizedFault(e.getMessage() + " [" + sessionId + "]", faultInfo, e);
         } else if (e instanceof AccessDeniedException) {
             final FaultType faultInfo = objectFactory.createFaultType();
             faultInfo.setFaultMessage(e.getMessage());
-            throw new UnauthorizedFault(sessionId, faultInfo, e);
+            throw new UnauthorizedFault(e.getMessage() + " [" + sessionId + "]", faultInfo, e);
         } else if (e instanceof BusinessException) {
             final FaultType faultInfo = objectFactory.createFaultType();
             faultInfo.setFaultMessage(e.getMessage());
-            throw new InternalErrorFault(sessionId /* e.getMessage() */, faultInfo, e);
+            throw new InternalErrorFault(e.getMessage() + " [" + sessionId + "]", faultInfo, e);
         } else if (e instanceof TechnicalException) {
             final FaultType faultInfo = objectFactory.createFaultType();
             faultInfo.setFaultMessage(e.getMessage());
-            throw new InternalErrorFault(sessionId /* e.getMessage() */, faultInfo, e);
+            throw new InternalErrorFault(e.getMessage() + " [" + sessionId + "]", faultInfo, e);
         } else {
             // All others as internal errors
             final FaultType faultInfo = objectFactory.createFaultType();
             faultInfo.setFaultMessage("Internal error");
-            throw new InternalErrorFault(sessionId /* e.getMessage() */, faultInfo, e);
+            throw new InternalErrorFault("Internal error" + " [" + sessionId + "]", faultInfo, e);
         }
     }
 }

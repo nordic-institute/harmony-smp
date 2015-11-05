@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.Query;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by feriaad on 15/06/2015.
@@ -23,9 +24,10 @@ public class SmpDAOImpl extends AbstractDAOImpl implements ISmpDAO {
     @Override
     public ServiceMetadataPublisherBO findSMP(String id) throws TechnicalException {
         ServiceMetadataPublisherBO resultBO = null;
-        SmpEntity resultSmpEntity = getEntityManager().find(SmpEntity.class, id);
-        if (resultSmpEntity != null) {
-            resultBO = mapperFactory.getMapperFacade().map(resultSmpEntity, ServiceMetadataPublisherBO.class);
+        Query query = getEntityManager().createQuery("SELECT smp from SmpEntity smp where upper(smp.smpId) = upper(:smpId)").setParameter("smpId", id);
+        List<SmpEntity> resultSmpEntities = query.getResultList();
+        if (resultSmpEntities != null && resultSmpEntities.size() == 1) {
+            resultBO = mapperFactory.getMapperFacade().map(resultSmpEntities.get(0), ServiceMetadataPublisherBO.class);
         } else {
             loggingService.debug("No SMP found for id " + id);
         }
@@ -48,13 +50,15 @@ public class SmpDAOImpl extends AbstractDAOImpl implements ISmpDAO {
 
     @Override
     public void deleteSMP(ServiceMetadataPublisherBO smpBO) throws TechnicalException {
-        getEntityManager().remove(getEntityManager().find(SmpEntity.class, smpBO.getSmpId()));
-        //getEntityManager().createQuery("DELETE from SmpEntity where smpId = :smpId").setParameter("smpId", smpBO.getSmpId()).executeUpdate();
+        //getEntityManager().remove(getEntityManager().find(SmpEntity.class, smpBO.getSmpId()));
+        Query query = getEntityManager().createQuery("DELETE from SmpEntity where upper(smpId) = upper(:smpId)").setParameter("smpId", smpBO.getSmpId());
+        query.executeUpdate();
     }
 
     @Override
     public void updateSMP(ServiceMetadataPublisherBO smpBO) throws TechnicalException {
-        SmpEntity smpEntity = getEntityManager().find(SmpEntity.class, smpBO.getSmpId());
+        Query query = getEntityManager().createQuery("SELECT smp from SmpEntity smp where upper(smp.smpId) = upper(:smpId)").setParameter("smpId", smpBO.getSmpId());
+        SmpEntity smpEntity = (SmpEntity) query.getSingleResult();
         smpEntity.setEndpointLogicalAddress(smpBO.getLogicalAddress());
         smpEntity.setEndpointPhysicalAddress(smpBO.getPhysicalAddress());
         super.merge(smpEntity);

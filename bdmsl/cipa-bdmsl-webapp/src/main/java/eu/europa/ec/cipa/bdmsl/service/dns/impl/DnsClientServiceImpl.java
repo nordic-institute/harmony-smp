@@ -1,5 +1,6 @@
 package eu.europa.ec.cipa.bdmsl.service.dns.impl;
 
+import eu.europa.ec.cipa.bdmsl.business.ICertificateDomainBusiness;
 import eu.europa.ec.cipa.bdmsl.common.bo.CertificateDomainBO;
 import eu.europa.ec.cipa.bdmsl.common.bo.ParticipantBO;
 import eu.europa.ec.cipa.bdmsl.common.bo.ServiceMetadataPublisherBO;
@@ -13,6 +14,7 @@ import eu.europa.ec.cipa.bdmsl.service.dns.ISIG0KeyProviderService;
 import eu.europa.ec.cipa.bdmsl.util.LogEvents;
 import eu.europa.ec.cipa.common.exception.TechnicalException;
 import eu.europa.ec.cipa.common.logging.ILoggingService;
+import eu.europa.ec.cipa.common.util.Constant;
 import eu.europa.ec.cipa.common.util.HashUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +43,7 @@ public class DnsClientServiceImpl implements IDnsClientService {
     private ILoggingService loggingService;
 
     @Autowired
-    private ICertificateDomainDAO certificateDomainDAO;
+    private ICertificateDomainBusiness certificateDomainBusiness;
 
     @Autowired
     private IDnsMessageSenderService dnsMessageSenderService;
@@ -188,7 +190,7 @@ public class DnsClientServiceImpl implements IDnsClientService {
             NAPTRRecord naptrRecord;
             try {
                 cnameRecord = new CNAMERecord(participantCnameHost, DClass.IN, DEFAULT_TTL_SECS, publisherHost);
-                naptrRecord = new NAPTRRecord(participantNaptrHost, DClass.IN, DEFAULT_TTL_SECS, 100, 10, "U", participantBO.getType(), "!^.$!http://" + publisherHost + "!", Name.fromString("."));
+                naptrRecord = new NAPTRRecord(participantNaptrHost, DClass.IN, DEFAULT_TTL_SECS, 100, 10, "U", participantBO.getType(), "!^.*$!http://" + publisherHost + "!", Name.fromString("."));
 
                 loggingService.debug("Creating CNAMERecord in the DNS for SMP " + participantCnameHost);
                 dnsUpdate.add(cnameRecord);
@@ -235,7 +237,7 @@ public class DnsClientServiceImpl implements IDnsClientService {
 
     private String getDnsZoneName() throws TechnicalException {
         // retrieve the DNS zone name
-        CertificateDomainBO certificateDomainBO = certificateDomainDAO.findDomain(((CertificateDetails) SecurityContextHolder.getContext().getAuthentication().getDetails()).getRootCertificateDN());
+        CertificateDomainBO certificateDomainBO = certificateDomainBusiness.findDomain(((CertificateDetails) SecurityContextHolder.getContext().getAuthentication().getDetails()).getRootCertificateDN());
         String dnsZoneName = certificateDomainBO.getDomain();
         // we need the full qualified dns-name
         if (!dnsZoneName.endsWith(".")) {
@@ -260,7 +262,7 @@ public class DnsClientServiceImpl implements IDnsClientService {
             if ("*".equals(participantId)) {
                 smpDnsName = "*." + scheme + "." + dnsZoneName;
             } else {
-                smpDnsName = prefix + HashUtil.getMD5Hash(participantId) + "." + scheme + "." + dnsZoneName;
+                smpDnsName = prefix + HashUtil.getMD5Hash(participantId.toLowerCase(Constant.LOCALE)) + "." + scheme + "." + dnsZoneName;
             }
             return Name.fromString(smpDnsName);
         } catch (final TextParseException | NoSuchAlgorithmException | UnsupportedEncodingException exc) {
@@ -270,16 +272,16 @@ public class DnsClientServiceImpl implements IDnsClientService {
 
 
     private Name createParticipantDNSNameObjectBDXL(String prefix, String participantId, String scheme, String dnsZoneName) throws TechnicalException {
-        String smpDnsName = null;
+        String smpDnsName = participantId + ", " + scheme + ", " + dnsZoneName;
         try {
             if ("*".equals(participantId)) {
                 smpDnsName = "*." + scheme + "." + dnsZoneName;
             } else {
-                smpDnsName = prefix + HashUtil.getSHA224Hash(participantId) + "." + scheme + "." + dnsZoneName;
+                smpDnsName = prefix + HashUtil.getSHA224Hash(participantId.toLowerCase(Constant.LOCALE)) + "." + scheme + "." + dnsZoneName;
             }
             return Name.fromString(smpDnsName);
         } catch (final TextParseException | NoSuchAlgorithmException | UnsupportedEncodingException exc) {
-            throw new DNSClientException("Failed to build DNS Name from '" + smpDnsName + "'", exc);
+            throw new DNSClientException("Failed to build DNS Name for '" + smpDnsName + "'", exc);
         }
     }
 

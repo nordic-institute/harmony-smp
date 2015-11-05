@@ -18,6 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.security.Security;
+
 /**
  * Created by feriaad on 16/06/2015.
  */
@@ -38,7 +40,7 @@ public class ManageParticipantIdentifierListTest extends AbstractTest {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
-
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
     }
 
     @Before

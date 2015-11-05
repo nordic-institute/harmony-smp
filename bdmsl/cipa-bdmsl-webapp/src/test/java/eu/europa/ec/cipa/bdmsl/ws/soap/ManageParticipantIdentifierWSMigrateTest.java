@@ -19,6 +19,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.security.Security;
+
 /**
  * Created by feriaad on 16/06/2015.
  */
@@ -43,6 +45,7 @@ public class ManageParticipantIdentifierWSMigrateTest extends AbstractTest {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
     }
 
     @Test(expected = NotFoundFault.class)
@@ -55,21 +58,22 @@ public class ManageParticipantIdentifierWSMigrateTest extends AbstractTest {
 
     @Test
     public void testMigrateOk() throws Exception {
-        String smpId = "smpForMigrateTest";
-        String participantId = "0009:223456789MigrateTest1";
+        // Ids must be case insensitive so we put them in upper case to test the case insensitivity
+        String smpId = "SMPFORMIGRATETEST";
+        String participantId = "0009:223456789MIGRATETEST1";
 
         // verify initial data
         ParticipantBO participantBO = new ParticipantBO();
         participantBO.setParticipantId(participantId);
         participantBO.setScheme("iso6523-actorid-upis");
-        participantBO.setSmpId("foundUnsecure");
+        participantBO.setSmpId("FOUNDUNSECURE");
         Assert.assertNotNull(participantDAO.findParticipant(participantBO));
 
         MigrationRecordBO migrationRecordBO = new MigrationRecordBO();
         migrationRecordBO.setOldSmpId(smpId);
         migrationRecordBO.setParticipantId(participantId);
         migrationRecordBO.setScheme("iso6523-actorid-upis");
-        MigrationRecordBO found = migrationDAO.findMigrationRecord(migrationRecordBO);
+        MigrationRecordBO found = migrationDAO.findNonMigratedRecord(migrationRecordBO);
         Assert.assertFalse(found.isMigrated());
 
         // Perform the migration
@@ -80,7 +84,8 @@ public class ManageParticipantIdentifierWSMigrateTest extends AbstractTest {
         manageParticipantIdentifierWS.migrate(migrationRecordType);
 
         // check that the migration is done
-        found = migrationDAO.findMigrationRecord(migrationRecordBO);
+        found.setNewSmpId(smpId);
+        found = migrationDAO.findMigratedRecord(found);
         Assert.assertTrue(found.isMigrated());
 
         // check that the participant has been updated

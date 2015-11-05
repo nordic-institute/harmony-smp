@@ -6,6 +6,7 @@ import eu.europa.ec.cipa.bdmsl.dao.ICertificateDAO;
 import eu.europa.ec.cipa.bdmsl.security.BlueCoatClientCertificateAuthentication;
 import eu.europa.ec.cipa.bdmsl.security.UnsecureAuthentication;
 import eu.europa.ec.cipa.bdmsl.security.UnsecureAuthenticationRoleSMP;
+import eu.europa.ec.cipa.common.util.Constant;
 import eu.europa.ec.cipa.common.exception.TechnicalException;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
@@ -85,7 +86,7 @@ public class CipaServiceWSChangeCertificateTest extends AbstractTest {
         String serial = "000000000123ABCD";
         String issuer = "CN=rootCN,OU=B4,O=DIGIT,L=Brussels,ST=BE,C=BE";
         String subject = "CN=SMP_TEST_CHANGE_CERTIFICATE,O=DG-DIGIT,C=BE";
-        DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
+        DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Constant.LOCALE);
         Date validFrom = df.parse("Jun 01 10:37:53 2015 CEST");
         Date validTo = df.parse("Jun 01 10:37:53 2035 CEST");
         String certHeaderValue = "serial=" + serial + "&subject=" + subject + "&validFrom="+ df.format(validFrom) +"&validTo=" + df.format(validTo) +"&issuer=" + issuer;

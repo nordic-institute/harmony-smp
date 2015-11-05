@@ -56,7 +56,9 @@ public class SignResponseInterceptor extends WSS4JOutInterceptor {
             sigProps.put("org.apache.ws.security.crypto.merlin.keystore.password", keystorePassword);
             sigProps.put("org.apache.ws.security.crypto.merlin.keystore.alias", keystoreAlias);
             sigProps.put("org.apache.ws.security.crypto.merlin.file", configurationDir + keystoreFileName);
+
             props.put(WSHandlerConstants.SIG_PROP_REF_ID, "sigProps");
+            props.put(WSHandlerConstants.MUST_UNDERSTAND, "false");
             props.put("sigProps", sigProps);
             props.put(WSHandlerConstants.PW_CALLBACK_REF, new CallbackHandler() {
                 @Override

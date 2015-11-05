@@ -1,3 +1,4 @@
+import ec.services.wsdl.bdmsl.data._1.ListParticipantsInType;
 import eu.europa.ec.cipa.bdmsl.ws.soap.ICipaServiceWS;
 import eu.europa.ec.cipa.bdmsl.ws.soap.InternalErrorFault;
 import eu.europa.ec.cipa.bdmsl.ws.soap.UnauthorizedFault;
@@ -13,6 +14,6 @@ public class ClientExample {
         QName SERVICE_NAME = new QName("ec:services:wsdl:BDMSL:1.0", "CipaServiceWSImplService");
         Service service = Service.create(wsdlURL, SERVICE_NAME);
         ICipaServiceWS client = service.getPort(ICipaServiceWS.class);
-        System.out.println(client.listParticipants());
+        System.out.println(client.listParticipants(new ListParticipantsInType()));
     }
 }

@@ -53,8 +53,9 @@ public class CipaServiceWSImpl extends AbstractWSImpl implements ICipaServiceWS 
     private MapperFactory mapperFactory;
 
     @Override
-    @WebMethod(operationName = "IsAlive", action = "ec:services:wsdl:BDMSL:1.0:isAliveIn")
-    public void isAlive(){
+    public void isAlive(
+            @WebParam(partName = "messagePart", name = "IsAlive", targetNamespace = "ec:services:wsdl:BDMSL:data:1.0")
+            ec.services.wsdl.bdmsl.data._1.IsAliveType messagePart) {
         loggingService.info("Calling CipaServiceWSImpl.isAlive");
     }
 
@@ -104,7 +105,10 @@ public class CipaServiceWSImpl extends AbstractWSImpl implements ICipaServiceWS 
 
     @Override
     @WebMethod(operationName = "ClearCache", action = "ec:services:wsdl:BDMSL:1.0:clearCacheIn")
-    public void clearCache() throws InternalErrorFault {
+    public void clearCache(
+            @WebParam(partName = "messagePart", name = "ClearCache", targetNamespace = "ec:services:wsdl:BDMSL:data:1.0")
+            ec.services.wsdl.bdmsl.data._1.ClearCacheType messagePart
+    ) throws InternalErrorFault {
         loggingService.info("Calling CipaServiceWSImpl.clearCache");
         try {
             cipaService.clearCache();
@@ -119,9 +123,12 @@ public class CipaServiceWSImpl extends AbstractWSImpl implements ICipaServiceWS 
     }
 
     @Override
-    @WebResult(name = "ListParticipants", targetNamespace = "ec:services:wsdl:BDMSL:data:1.0", partName = "messagePart")
+    @WebResult(name = "ListParticipantsOut", targetNamespace = "ec:services:wsdl:BDMSL:data:1.0", partName = "messagePart")
     @WebMethod(operationName = "ListParticipants", action = "ec:services:wsdl:BDMSL:1.0:listParticipantsIn")
-    public ListParticipantsType listParticipants() throws InternalErrorFault, UnauthorizedFault {
+    public ec.services.wsdl.bdmsl.data._1.ListParticipantsType listParticipants(
+            @WebParam(partName = "messagePart", name = "ListParticipantsIn", targetNamespace = "ec:services:wsdl:BDMSL:data:1.0")
+            ec.services.wsdl.bdmsl.data._1.ListParticipantsInType messagePart
+    ) throws InternalErrorFault, UnauthorizedFault {
         ListParticipantsType result = null;
         loggingService.info("Calling CipaServiceWSImpl.listParticipants");
         try {

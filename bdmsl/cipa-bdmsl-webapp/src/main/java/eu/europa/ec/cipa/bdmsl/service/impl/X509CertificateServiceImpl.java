@@ -6,6 +6,7 @@ import eu.europa.ec.cipa.bdmsl.common.exception.CertificateAuthenticationExcepti
 import eu.europa.ec.cipa.bdmsl.common.exception.CertificateRevokedException;
 import eu.europa.ec.cipa.bdmsl.service.ICRLVerifierService;
 import eu.europa.ec.cipa.bdmsl.service.IX509CertificateService;
+import eu.europa.ec.cipa.common.util.Constant;
 import eu.europa.ec.cipa.bdmsl.util.LogEvents;
 import eu.europa.ec.cipa.common.exception.BusinessException;
 import eu.europa.ec.cipa.common.exception.TechnicalException;
@@ -41,7 +42,7 @@ public class X509CertificateServiceImpl extends AbstractServiceImpl implements I
         String trustedRootDN = this.getTrustedRootCertificateDN(certificates);
         if (!Strings.isNullOrEmpty(trustedRootDN)) {
             Date today = Calendar.getInstance().getTime();
-            DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
+            DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Constant.LOCALE);
             for (X509Certificate cert : certificates) {
                 try {
                     // crl from the certificate

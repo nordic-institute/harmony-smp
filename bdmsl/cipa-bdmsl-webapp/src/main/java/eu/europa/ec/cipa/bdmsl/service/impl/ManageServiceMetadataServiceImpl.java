@@ -110,8 +110,12 @@ public class ManageServiceMetadataServiceImpl extends AbstractServiceImpl implem
                         loggingService.businessLog(LogEvents.BUS_PARTICIPANT_LIST_DELETED, participantBOList.toString());
                     }
                 }
+            } catch (TechnicalException exc) {
+                throw exc;
+            } catch (BusinessException exc) {
+                throw exc;
             } catch (Exception exc) {
-                throw new SmpDeleteException("The SMP couldn't be deleted but some of its participants have been deleted. Please see the logs to know which participants have been deleted", exc);
+                throw new SmpDeleteException("The SMP couldn't be deleted but some of its participants may have been deleted. Please see the logs or contact the system administrator to identify which participants have been deleted", exc);
             }
 
             // all the participants have been deleted
@@ -122,7 +126,7 @@ public class ManageServiceMetadataServiceImpl extends AbstractServiceImpl implem
                 dnsClientService.deleteDNSRecordsForSMP(smpBO);
             }
         } else {
-            throw new UnauthorizedException("The SMP " + smpBO.getSmpId() + " was not created with the current certificate " + smpBO.getCertificateId());
+            throw new UnauthorizedException("The SMP " + smpBO.getSmpId() + " was not created with the current certificate " + currentCertificate);
         }
     }
 

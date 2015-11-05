@@ -1,6 +1,7 @@
 package eu.europa.ec.cipa.bdmsl.security;
 
 import eu.europa.ec.cipa.bdmsl.common.exception.CertificateAuthenticationException;
+import eu.europa.ec.cipa.common.util.Constant;
 import eu.europa.ec.cipa.common.exception.TechnicalException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -74,7 +75,7 @@ public class BlueCoatClientCertificateAuthentication implements Authentication {
 
     private String calculateCertificateId(final String certHeaderValue) throws CertificateAuthenticationException {
         try {
-            String clientCertHeaderDecoded = URLDecoder.decode(certHeaderValue, "UTF-8");
+            String clientCertHeaderDecoded = URLDecoder.decode(certHeaderValue, Constant.DEFAULT_CHARSET.name());
             parseClientCertHeader(clientCertHeaderDecoded);
             certificate.setSerial(certificate.getSerial().replaceAll(":", ""));
             // in the sml database, the subject is stored in a different way than the one in the
@@ -94,12 +95,7 @@ public class BlueCoatClientCertificateAuthentication implements Authentication {
                 parts.put(rdn.getType(), rdn);
             }
 
-            // Re-order - least important item comes first (=reverse order)!
-            List<Rdn> list = new ArrayList<>();
-            list.add(parts.get("C"));
-            list.add(parts.get("O"));
-            list.add(parts.get("CN"));
-            final String subjectName = new LdapName(list).toString();
+            final String subjectName = parts.get("CN").toString() + "," + parts.get("O").toString() + "," + parts.get("C").toString();
 
             // subject-name + ":" + serial number hexstring
             String serialNumber = StringUtils.leftPad(certificate.getSerial(), 16, "0");
@@ -143,7 +139,7 @@ public class BlueCoatClientCertificateAuthentication implements Authentication {
         }
         certificate.setSerial(split[0].substring(split[0].indexOf('=') + 1));
 
-        DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
+        DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Constant.LOCALE);
 
         try {
             certificate.setValidFrom(DateUtils.toCalendar(df.parse(split[2].substring(split[2].indexOf('=') + 1))));

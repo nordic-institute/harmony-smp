@@ -16,6 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.security.Security;
+
 /**
  * Created by feriaad on 16/06/2015.
  */
@@ -34,6 +36,7 @@ public class ManageParticipantIdentifierWSDeleteTest extends AbstractTest {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
     }
 
     @Test(expected = BadRequestFault.class)
@@ -65,8 +68,8 @@ public class ManageParticipantIdentifierWSDeleteTest extends AbstractTest {
 
     @Test
     public void testDeleteParticipantOk() throws Exception {
-        // First we ensure that the participant exists
-        final String partId = "0009:123456789AlwaysPresent";
+        // First we ensure that the participant exists (the case is insensitive)
+        final String partId = "0009:123456789aLwaySpreSenT";
         final String smpId = "foundUnsecure";
         ParticipantBO partBO = new ParticipantBO();
         partBO.setSmpId(smpId);
