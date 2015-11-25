@@ -24,6 +24,8 @@
         <type>local</type>
         <server.version>7.1.1.Final</server.version>
         <projectRootPath>../../EDELIVERY/domibus-3-submission</projectRootPath>
+        <domibusRootPath>../../EDELIVERY/domibus-3-submission/Domibus-MSH</domibusRootPath>
+        <modulesZipPath>${project.basedir}/src/main/resources/jboss/modules.zip</modulesZipPath>
     </properties>
 
     <dependencies>
@@ -84,6 +86,31 @@
         </dependency>
     </dependencies>
     <profiles>
+        <profile>
+            <!-- profile to be used for BRIS pilot with Domibus 3-->
+            <id>domibusapp-jboss</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <!-- the name of the assembly file -->
+                <assemblyName>domibusapp-jboss</assemblyName>
+                <!-- true if the AS2 component must not be packed -->
+                <skipAS2>true</skipAS2>
+                <!-- true if the connector component must not be packed -->
+                <skipConnector>true</skipConnector>
+                <!-- true if the Domibus3 component must not be packed -->
+                <skipDomibus3>false</skipDomibus3>
+                <!-- true if the SMP component must not be packed -->
+                <skipSMP>true</skipSMP>
+                <modulesZipPath>../../DOMIBUSAPP/trunk/environment/jboss-as7</modulesZipPath>
+                <projectRootPath>../../DOMIBUSAPP/trunk</projectRootPath>
+            </properties>
+            <modules>
+                <module>${projectRootPath}</module>
+            </modules>
+        </profile>
+    
         <profile>
             <!-- profile to be used for BRIS pilot with Domibus 3-->
             <id>as4-jboss</id>
@@ -305,13 +332,13 @@
                                 <concat destfile="${project.build.directory}/sql-scripts/create-mysql.sql"
                                         append="true" fixlastline="yes">
                                     <filelist
-                                            dir="${project.basedir}/${projectRootPath}/Domibus-MSH/target/sql-scripts"
+                                            dir="${project.basedir}/${domibusRootPath}/target/sql-scripts"
                                             files="mysql5innoDb-initial.ddl,mysql5innoDb-quartz.ddl"/>
                                 </concat>
                                 <concat destfile="${project.build.directory}/sql-scripts/create-oracle.sql"
                                         append="true">
                                     <filelist
-                                            dir="${project.basedir}/${projectRootPath}/Domibus-MSH/target/sql-scripts"
+                                            dir="${project.basedir}/${domibusRootPath}/target/sql-scripts"
                                             files="oracle10g-initial.ddl,oracle10g-quartz.ddl"/>
                                 </concat>
                             </target>
@@ -373,7 +400,7 @@
                                 <echo>Unzip the modules.zip file...
                                 </echo>
                                 <echo>Unzipping the module.zip...</echo>
-                                <unzip src="${project.basedir}/src/main/resources/jboss/modules.zip" dest="${project.build.directory}"
+                                <unzip src="${modulesZipPath}/modules.zip" dest="${project.build.directory}"
                                        overwrite="true"/>
                             </target>
                         </configuration>
