@@ -169,7 +169,7 @@
             <filtered>false</filtered>
         </file>
         <file>
-            <source>${projectRootPath}/environment/jboss-as7/standalone/deployments/domibus.war</source>
+            <source>${domibusRootPath}/target/domibus.war</source>
             <outputDirectory>/standalone/deployments</outputDirectory>
             <filtered>false</filtered>
         </file>
