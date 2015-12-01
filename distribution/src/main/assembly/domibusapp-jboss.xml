@@ -84,7 +84,11 @@
             <excludes>
                 <exclude>modules/**</exclude>
                 <exclude>domain/configuration/mgmt-users.properties</exclude>
+                <exclude>domain/configuration/application-roles.properties</exclude>
+                <exclude>domain/configuration/application-users.properties</exclude>
                 <exclude>standalone/configuration/mgmt-users.properties</exclude>
+                <exclude>standalone/configuration/application-roles.properties</exclude>
+                <exclude>standalone/configuration/application-users.properties</exclude>
                 <exclude>standalone/configuration/standalone.xml</exclude>
             </excludes>
             <outputDirectory>/</outputDirectory>
@@ -150,14 +154,18 @@
             <directoryMode>0555</directoryMode>
             <filtered>true</filtered>
         </fileSet>
-    </fileSets>
-    <files>    
-        <file>
-            <source>src/main/resources/jboss/standalone/configuration/mgmt-users.properties</source>
-            <outputDirectory>/standalone/configuration/</outputDirectory>
+        <fileSet>
+            <directory>src/main/resources/jboss/standalone/configuration</directory>
+            <outputDirectory>/standalone/configuration</outputDirectory>
+            <excludes>
+                <exclude>**/standalone.xml</exclude>
+            </excludes>
+            <fileMode>0444</fileMode>
+            <directoryMode>0555</directoryMode>
             <filtered>true</filtered>
-        </file>
-        
+        </fileSet>
+    </fileSets>
+    <files>
         <file>
             <source>${projectRootPath}/environment/jboss-as7/standalone/configuration/standalone.xml</source>
             <outputDirectory>/standalone/configuration/</outputDirectory>

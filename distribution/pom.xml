@@ -104,7 +104,7 @@
                 <!-- true if the SMP component must not be packed -->
                 <skipSMP>true</skipSMP>
                 <modulesZipPath>src/main/resources/jboss/domibusapp_modules</modulesZipPath>
-                <projectRootPath>../../DOMIBUSAPP/trunk</projectRootPath>
+                <projectRootPath>../../EDELIVERY/domibusapp</projectRootPath>
             </properties>
             <modules>
                 <module>${projectRootPath}</module>

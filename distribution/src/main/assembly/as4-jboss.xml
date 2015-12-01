@@ -84,7 +84,11 @@
             <excludes>
                 <exclude>modules/**</exclude>
                 <exclude>domain/configuration/mgmt-users.properties</exclude>
+                <exclude>domain/configuration/application-roles.properties</exclude>
+                <exclude>domain/configuration/application-users.properties</exclude>
                 <exclude>standalone/configuration/mgmt-users.properties</exclude>
+                <exclude>standalone/configuration/application-roles.properties</exclude>
+                <exclude>standalone/configuration/application-users.properties</exclude>
                 <exclude>standalone/configuration/standalone.xml</exclude>
             </excludes>
             <outputDirectory>/</outputDirectory>
