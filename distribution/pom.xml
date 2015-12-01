@@ -25,7 +25,7 @@
         <server.version>7.1.1.Final</server.version>
         <projectRootPath>../../EDELIVERY/domibus-3-submission</projectRootPath>
         <domibusRootPath>../../EDELIVERY/domibus-3-submission/Domibus-MSH</domibusRootPath>
-        <modulesZipPath>${project.basedir}/src/main/resources/jboss/modules.zip</modulesZipPath>
+        <modulesZipPath>${project.basedir}/src/main/resources/jboss</modulesZipPath>
     </properties>
 
     <dependencies>
