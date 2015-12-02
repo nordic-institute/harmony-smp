@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="8ee7f6aa-631e-43f0-b700-27afe0570db2" activeEnvironment="Default" name="Domibus" soapui-version="5.2.0" abortOnError="false" runType="SEQUENTIAL" resourceRoot="" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="98cbcca9-804a-4450-9c8b-1f83e42811b2" wsaVersion="NONE" name="DomibusBasicInterfaceSoapBinding" type="wsdl" bindingName="{http://ec.europa.eu/digit/domibus/wsdl/endpoint/basic}DomibusBasicInterfaceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:8080/domibusapp/services/basic?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:8080/domibusapp/services/basic?wsdl"><con:part><con:url>http://localhost:8080/domibusapp/services/basic?wsdl</con:url><con:content><![CDATA[<wsdl:definitions name="DomibusBasicInterface" targetNamespace="http://ec.europa.eu/digit/domibus/wsdl/endpoint/basic" xmlns:ns1="http://ec.europa.eu/digit/domibus/common/aggregate/components" xmlns:ns2="http://schemas.xmlsoap.org/soap/http" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://ec.europa.eu/digit/domibus/wsdl/endpoint/basic" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+    <xs:schema targetNamespace="http://www.w3.org/2005/05/xmlmime" version="1.0" xmlns:tns="http://www.w3.org/2005/05/xmlmime" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:complexType name="base64Binary">
+        <xs:simpleContent>
+          <xs:extension base="xs:base64Binary">
+            <xs:attribute ref="tns:contentType"/>
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+      <xs:complexType name="hexBinary">
+        <xs:simpleContent>
+          <xs:extension base="xs:string">
+            <xs:attribute ref="tns:contentType"/>
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+      <xs:attribute name="contentType" type="xs:string"/>
+    </xs:schema>
+    <xs:schema elementFormDefault="qualified" targetNamespace="http://ec.europa.eu/digit/domibus/common/aggregate/components" version="1.0" xmlns:ns1="http://www.w3.org/2005/05/xmlmime" xmlns:tns="http://ec.europa.eu/digit/domibus/common/aggregate/components" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+      <xs:import namespace="http://www.w3.org/2005/05/xmlmime"/>
+      <xs:element name="Acknowledgement">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="MessageInfo" type="tns:MessageInfoType"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="AddressInfo" type="tns:AddressInfoType"/>
+      <xs:element name="Attachment" type="tns:AttachmentType"/>
+      <xs:element name="Attachments" type="tns:AttachmentsType"/>
+      <xs:element name="FaultDetail">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="ResponseCode" type="xs:string"/>
+            <xs:element name="Message" nillable="true" type="xs:string"/>
+            <xs:element name="Description" nillable="true" type="xs:string"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GatewayBody">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="MessageContent" type="tns:MessageContentType"/>
+            <xs:element minOccurs="0" name="Attachments" type="tns:AttachmentsType"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="GatewayHeader">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="AddressInfo" type="tns:AddressInfoType"/>
+            <xs:element name="MessageInfo" type="tns:MessageInfoType"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="MessageContent" type="tns:MessageContentType"/>
+      <xs:element name="MessageInfo" type="tns:MessageInfoType"/>
+      <xs:element name="Receiver" type="tns:ReceiverType"/>
+      <xs:element name="Sender" type="tns:SenderType"/>
+      <xs:complexType name="AddressInfoType">
+        <xs:sequence>
+          <xs:element name="Sender" type="tns:SenderType"/>
+          <xs:element name="Receiver" type="tns:ReceiverType"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="SenderType">
+        <xs:sequence>
+          <xs:element name="Id" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="ReceiverType">
+        <xs:sequence>
+          <xs:element name="Id" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="MessageInfoType">
+        <xs:sequence>
+          <xs:element name="Timestamp" type="xs:dateTime"/>
+          <xs:element minOccurs="0" name="MessageId" type="xs:string"/>
+          <xs:element minOccurs="0" name="CorrelationId" type="xs:string"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="MessageContentType">
+        <xs:sequence>
+          <xs:any namespace="##other" processContents="lax"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="AttachmentsType">
+        <xs:sequence>
+          <xs:element maxOccurs="unbounded" name="Attachment" type="tns:AttachmentType"/>
+        </xs:sequence>
+      </xs:complexType>
+      <xs:complexType name="AttachmentType">
+        <xs:simpleContent>
+          <xs:extension base="ns1:base64Binary">
+            <xs:attribute name="fileName" type="xs:token" use="required"/>
+          </xs:extension>
+        </xs:simpleContent>
+      </xs:complexType>
+    </xs:schema>
+  </wsdl:types>
+  <wsdl:message name="submitResponse">
+    <wsdl:part element="ns1:Acknowledgement" name="Acknowledgement"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="FaultResponse">
+    <wsdl:part element="ns1:FaultDetail" name="FaultResponse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="submit">
+    <wsdl:part element="ns1:GatewayHeader" name="GatewayHeader"></wsdl:part>
+    <wsdl:part element="ns1:GatewayBody" name="GatewayBody"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="DomibusBasicInterface">
+    <wsdl:operation name="submit">
+      <wsdl:input message="tns:submit" name="submit"></wsdl:input>
+      <wsdl:output message="tns:submitResponse" name="submitResponse"></wsdl:output>
+      <wsdl:fault message="tns:FaultResponse" name="FaultResponse"></wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="DomibusBasicInterfaceSoapBinding" type="tns:DomibusBasicInterface">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="submit">
+      <soap:operation soapAction="" style="document"/>
+      <wsdl:input name="submit">
+        <soap:header message="tns:submit" part="GatewayHeader" use="literal"></soap:header>
+        <soap:body parts="GatewayBody" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="submitResponse">
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="FaultResponse">
+        <soap:fault name="FaultResponse" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="DomibusBasicInterface">
+    <wsdl:port binding="tns:DomibusBasicInterfaceSoapBinding" name="DomibusInterfaceBinding">
+      <soap:address location="http://localhost:8080/domibusapp/services/basic"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://localhost:8080/domibusapp/services/basic</con:endpoint></con:endpoints><con:operation id="0e11ecd8-4fb2-42e3-92b6-f5014cde63a3" isOneWay="false" action="" name="submit" bindingOperationName="submit" type="Request-Response" outputName="submitResponse" inputName="submit" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="d497add1-02f9-4085-acdd-c820e1956a32" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/domibusapp/services/basic</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:com="http://ec.europa.eu/digit/domibus/common/aggregate/components" xmlns:xm="http://www.w3.org/2005/05/xmlmime">
+   <soapenv:Header>
+      <com:GatewayHeader>
+         <com:AddressInfo>
+            <com:Sender>
+               <com:Id>?</com:Id>
+            </com:Sender>
+            <com:Receiver>
+               <com:Id>?</com:Id>
+            </com:Receiver>
+         </com:AddressInfo>
+         <com:MessageInfo>
+            <com:Timestamp>?</com:Timestamp>
+            <!--Optional:-->
+            <com:MessageId>?</com:MessageId>
+            <!--Optional:-->
+            <com:CorrelationId>?</com:CorrelationId>
+         </com:MessageInfo>
+      </com:GatewayHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <com:GatewayBody>
+         <com:MessageContent>
+            <!--You may enter ANY elements at this point-->
+         </com:MessageContent>
+         <!--Optional:-->
+         <com:Attachments>
+            <!--1 or more repetitions:-->
+            <com:Attachment xm:contentType="application/?" fileName="?">cid:1377556634778</com:Attachment>
+         </com:Attachments>
+      </com:GatewayBody>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ec.europa.eu/digit/domibus/wsdl/endpoint/basic/DomibusBasicInterface/submit"/></con:call><con:call id="1f7a4a89-200d-4ab9-8aa9-a61ab7cdbc7b" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/domibusapp/services/basic</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:com="http://ec.europa.eu/digit/domibus/common/aggregate/components" xmlns:xm="http://www.w3.org/2005/05/xmlmime">
+   <soapenv:Header>
+      <com:GatewayHeader>
+         <com:AddressInfo>
+            <com:Sender>
+               <com:Id>?</com:Id>
+            </com:Sender>
+            <com:Receiver>
+               <com:Id>?</com:Id>
+            </com:Receiver>
+         </com:AddressInfo>
+         <com:MessageInfo>
+            <com:Timestamp>?</com:Timestamp>
+            <!--Optional:-->
+            <com:MessageId>?</com:MessageId>
+            <!--Optional:-->
+            <com:CorrelationId>?</com:CorrelationId>
+         </com:MessageInfo>
+      </com:GatewayHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <com:GatewayBody>
+         <com:MessageContent>
+            <!--You may enter ANY elements at this point-->
+         </com:MessageContent>
+         <!--Optional:-->
+         <com:Attachments>
+            <!--1 or more repetitions:-->
+            <com:Attachment xm:contentType="application/?" fileName="?">cid:22699879712</com:Attachment>
+         </com:Attachments>
+      </com:GatewayBody>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ec.europa.eu/digit/domibus/wsdl/endpoint/basic/DomibusBasicInterface/submit"/></con:call></con:operation></con:interface><con:testSuite id="8e81e6da-5362-4e44-ae37-c5ea0e1c577d" name="DomibusBasicInterfaceSoapBinding TestSuite"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="e18ca281-7672-48e4-9945-5355af3614ac" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="submit TestCase" searchProperties="true"><con:settings/><con:testStep type="request" id="59e5c0fa-4523-4020-b061-81795ff1e01d" name="submit"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>DomibusBasicInterfaceSoapBinding</con:interface><con:operation>submit</con:operation><con:request name="submit" id="93663c09-442f-4c3a-9ade-dbcfe81f6009"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/domibusapp/services/basic</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:com="http://ec.europa.eu/digit/domibus/common/aggregate/components" xmlns:xm="http://www.w3.org/2005/05/xmlmime">
+   <soapenv:Header>
+      <com:GatewayHeader>
+         <com:AddressInfo>
+            <com:Sender>
+               <com:Id>instanceAId1</com:Id>
+            </com:Sender>
+            <com:Receiver>
+               <com:Id>instanceBId1</com:Id>
+            </com:Receiver>
+         </com:AddressInfo>
+         <com:MessageInfo>            
+            <!--Optional:-->
+            <com:CorrelationId>333333</com:CorrelationId>
+         </com:MessageInfo>
+      </com:GatewayHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <com:GatewayBody>
+         <com:MessageContent>
+            <!--You may enter ANY elements at this point-->
+            <BRISPayload><![CDATA[<?xml version="7.0" encoding="UTF-8"?>
+<BR-CompanyDetailsRequest xmlns:cct="urn:un:unece:uncefact:data:specification:CoreComponentTypeSchemaModule:2" xmlns:p="http://ec.europa.eu/bris/br/CompanyDetails-0" xmlns:bac="http://ec.europa.eu/bris/common/AggregateComponents-0" xmlns:bbc="http://ec.europa.eu/bris/common/BasicComponents-0" xsi:schemaLocation="http://ec.europa.eu/bris/br/CompanyDetails-0 BR-CompanyDetails-0.07.xsd">
+	<bac:MessageHeader>
+		<bbc:CorrelationID>111</bbc:CorrelationID>
+		<bbc:MessageID>123456</bbc:MessageID>
+	</bac:MessageHeader>
+	<bbc:CompanyRegistrationNumber>NF004188</bbc:CompanyRegistrationNumber>
+	<bac:BusinessRegisterReference>
+		<bbc:BusinessRegisterID>EW</bbc:BusinessRegisterID>
+		<bbc:BusinessRegisterCountry>UK</bbc:BusinessRegisterCountry>
+	</bac:BusinessRegisterReference>
+</BR-CompanyDetailsRequest>]]]]>><![CDATA[</BRISPayload>
+         </com:MessageContent>
+         <!--Optional:-->
+         <com:Attachments>
+            <!--1 or more repetitions:-->
+            <com:Attachment xm:contentType="application/octet-stream" fileName="BRISAttachment">cid:473258844374</com:Attachment>
+         </com:Attachments>
+      </com:GatewayBody>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:username>user</con:username><con:password>test</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:attachment><con:name>error.log</con:name><con:contentType>application/octet-stream</con:contentType><con:size>23772</con:size><con:contentId>error.log</con:contentId><con:part>473258844374</con:part><con:url>/Applications/SoapUI-5.2.0.app/Contents/java/app/bin/error.log</con:url><con:data>UEsDBBQACAgIAGKHe0cAAAAAAAAAAAAAAAAJAAAAZXJyb3IubG9n7ZpNb+IwEIbP218RdTnQw7q0hLRw6xdSK8qi0tWercQEt8bO2g6Uf79OAltQA4WqXYn2PaAQe+Ydj2P70UTpd9r+TctrUy5Y5FnlCUUjLxTUGG9f6ZgYMfAfCB8lgvQttTzsqDhm+pzLiOl9stcvBC7ZgKbCchlnIlL9UAnTzlxJr9r92TtwupmblwmxEZM275t79xnzhtYmrcPDyWQyi+miH4YqYoYM7Uh8fxndGyj3S7Uduv8Rsy4HQ/Ye6JgSQWVMLrIsusq2VSqjq6eQJVnMlheqEWFjPqGaEaNoknKSiDTm0hCaWkUGNLRKcxf4zN1ejxKl7S2zQxW1857p3jdqvTyOZJb8uuvkkTpu5piuHBGdyupyI8mMW/UgOHira6Ox4GpYmGpup+QsDJkxF0parYRwxpHqaT52zzJmUbXrJmzMvGLoayOTgZvQ/H5FdH/B/XluZzbZkimcX3j6x7Nxm1SSETch6dBUhu6BVc6SpFxkbjGLXTt9Y+x6o9yTuGXTpSNWWzlBL20L9UL3qFkrbNeso2Ic59SwfITZOmrPV1V1oTMXbAbb6q3WCvxXtXr5dWH+ioZnzSWDIuXj5ltlS9Sax+8o5m8qdksljfMtci2NpUIsSc57Z+mebClK841YCWq1Mr366XZylc6/jM09NY/EOSapZX32J3VHJ3eDn5bF8Wuvr6SNApUmEdQ/UvydpqhUvHG0sLlTy4Wzlu4I1W4yyV12mBp3DuQy7ImF1eWmYs3W10i0lX68UVzm5pG6yjSW2oph1P0NNH67K9P3Q81olI8mE6iW9hYbvraJak8pQUxIZXWpJVc4Od1YYeJuShQCP9g2swx0q5OqN91yeG+QXzr8qDHTU7AcLAfLwXKwHCwHy3eS5SjKAXKAHCAHyD8S5GDtWtYGx1+CtaibgVvgFrgFboFb4BalLVgL1oK1YO1OsxbvqPGOGnUzWA6Wg+VgOVgOloPlKMoBcoAcIAfIAXKA/HOCHEU5WA6Wg+VgOVgOlu82y1GUA+QAOUAOkOOrNHyVhroZuAVugVvgFrgFbncctyhtwVqwFqwFa/GO+nOC/Iu8o0bdDJaD5WA5WA6Wg+X/l+V/AVBLBwiJ9WrZPQMAANxcAABQSwECFAAUAAgICABih3tHifVq2T0DAADcXAAACQAAAAAAAAAAAAAAAAAAAAAAZXJyb3IubG9nUEsFBgAAAAABAAEANwAAAHQDAAAAAA==</con:data><con:id>096d2e2a-fdad-4bd9-bd0c-eb82bc26e717</con:id></con:attachment><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://ec.europa.eu/digit/domibus/wsdl/endpoint/basic/DomibusBasicInterface/submit" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:properties/></con:testSuite><con:mockService id="188eed05-6837-499d-b5dd-e7e6c3ee2f74" port="8089" path="/mockBasicDomibus" host="localhost" name="MockService 1" bindToHostOnly="false" docroot=""><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:onRequestScript>import com.eviware.soapui.impl.rest.RestRequestInterface;
+
+if ( mockRequest.getMethod() != RestRequestInterface.HttpMethod.POST){
+	// Do nothing as this can be a GET request for the WSDL
+	return;
+}
+
+log.info "Mock service called";
+
+if (mockRequest.getRequestContent() != null){
+	log.info mockRequest.getRequestContent();
+	def responseNode = new groovy.util.XmlSlurper(false,true).parseText(mockRequest.getRequestContent());
+	def corId = "0";
+	if (responseNode != null)
+		corId = responseNode.Header.Messaging.UserMessage.CollaborationInfo.ConversationId.text();
+	mockRunner.getMockService().getProject().setPropertyValue("CorrelationId", corId );
+	mockRunner.getMockService().getProject().setPropertyValue("Timestamp", corId );
+	mockRunner.getMockService().getProject().setPropertyValue("MessageId", corId );
+	log.info "Conversation ID: " + corId;
+}</con:onRequestScript><con:afterRequestScript>import com.eviware.soapui.impl.rest.RestRequestInterface;
+
+if ( !mockResult ){
+	return;
+}
+
+if ( !mockResult.getMockRequest() ){
+	return;
+}
+
+if ( mockResult.getMockRequest().getMethod() != RestRequestInterface.HttpMethod.POST){
+	// Do nothing as this can be a GET request for the WSDL
+	return;
+}
+
+mockRunner.getMockService().getProject().setPropertyValue("messagePushed", "1" );
+
+log.info "messagePushed flag set";
+
+javax.swing.JOptionPane.showMessageDialog(null, "Message pushed to Basic Mock\nCheck the script log to see the result");</con:afterRequestScript><con:mockOperation name="submit" id="a1b15d7d-9dbf-4fb0-9c51-544605cd01b1" interface="DomibusBasicInterfaceSoapBinding" operation="submit"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Response 1" id="07a889a4-274b-446c-ad06-94d05c87821a" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:com="http://ec.europa.eu/digit/domibus/common/aggregate/components">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <com:Acknowledgement>
+         <com:MessageInfo>
+            <com:Timestamp>2015-12-01T15:03:48.168+01:00</com:Timestamp>
+            <!--Optional:-->
+            <com:MessageId>dummyID</com:MessageId>
+            <!--Optional:-->
+            <com:CorrelationId>dummyID</com:CorrelationId>
+         </com:MessageInfo>
+      </com:Acknowledgement>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ec.europa.eu/digit/domibus/wsdl/endpoint/basic/DomibusBasicInterface/submitResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:properties><con:property><con:name>messagePushed to Basic Mock</con:name><con:value>1</con:value></con:property><con:property><con:name>messagePushed</con:name><con:value>1</con:value></con:property><con:property><con:name>CorrelationId</con:name><con:value/></con:property><con:property><con:name>Timestamp</con:name><con:value/></con:property><con:property><con:name>MessageId</con:name><con:value/></con:property></con:properties><con:wssContainer/><con:oAuth2ProfileContainer/><con:sensitiveInformation/></con:soapui-project>
