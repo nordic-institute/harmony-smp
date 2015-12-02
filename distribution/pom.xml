@@ -108,7 +108,8 @@
             </properties>
             <modules>
                 <module>${projectRootPath}</module>
-            </modules>
+                <module>${domibusRootPath}</module>
+        </modules>
         </profile>
     
         <profile>
