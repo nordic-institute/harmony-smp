@@ -90,21 +90,33 @@
 			<service name="as4Service" value="AS4" type="exampleService"/>
 		</services>
 		<actions>
-			<action name="sendMessage" value="SendMessage"/>
+			<action name="sendDefaultMessage" value="SendMessage"/>
+			<action name="sendBasicMessage" value="submit"/>
 		</actions>
 		<as4>
 			<receptionAwareness name="exampleReceptionAwarenessRetryThreeDuplicateDetectionTrue" retry="1;6;CONSTANT" duplicateDetection="true"/>
 			<reliability name="exampleReliabilityNonrepudiationTrueReplypatternResponse" nonRepudiation="true" replyPattern="response"/>
 		</as4>
 		<legConfigurations>
-			<legConfiguration name="examplePushLegOne" 
+			<legConfiguration name="examplePushLeg1sendDefaultMessage" 
 					service="as4Service" 
-					action="sendMessage" 
-					payloadProfile="BRISMessageProfile"
+					action="sendDefaultMessage" 
 					defaultMpc="defaultMpc" 
 					reliability="exampleReliabilityNonrepudiationTrueReplypatternResponse" 
 					security="signAndEncrypt" 
 					receptionAwareness="exampleReceptionAwarenessRetryThreeDuplicateDetectionTrue" 
+					payloadProfile="BRISMessageProfile"
+					errorHandling="BRISErrorHandling"
+					compressPayloads="true">
+					</legConfiguration>
+			<legConfiguration name="examplePushLeg2sendBasicMessage" 
+					service="as4Service" 
+					action="sendBasicMessage" 
+					defaultMpc="defaultMpc" 
+					reliability="exampleReliabilityNonrepudiationTrueReplypatternResponse" 
+					security="signAndEncrypt" 
+					receptionAwareness="exampleReceptionAwarenessRetryThreeDuplicateDetectionTrue" 
+					payloadProfile="BRISMessageProfile"
 					errorHandling="BRISErrorHandling"
 					compressPayloads="true">
 					</legConfiguration>
@@ -124,7 +136,8 @@
 				<responderParty name="instanceB"/>
 			</responderParties>
 			<legs>
-				<leg name="examplePushLegOne"/>
+				<leg name="examplePushLeg1sendDefaultMessage"/>
+				<leg name="examplePushLeg2sendBasicMessage"/>
 			</legs>
 		</process>
 	</businessProcesses>
