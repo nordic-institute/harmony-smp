@@ -143,6 +143,13 @@
             <filtered>false</filtered>
         </fileSet>
         <fileSet>
+            <directory>${projectRootPath}/environment/jboss-as7/modules/eu/europa/ec/digit/domibus/main</directory>
+            <outputDirectory>/modules/eu/europa/ec/digit/domibus/main/</outputDirectory>
+            <fileMode>0444</fileMode>
+            <directoryMode>0555</directoryMode>
+            <filtered>false</filtered>
+        </fileSet>
+        <fileSet>
             <directory>${domibusRootPath}/src/main/conf</directory>
             <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main</outputDirectory>
             <includes>
