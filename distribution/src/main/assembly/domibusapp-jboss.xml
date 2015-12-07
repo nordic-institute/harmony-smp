@@ -136,26 +136,31 @@
             <filtered>false</filtered>
         </fileSet>
         <fileSet>
-            <directory>${projectRootPath}/environment/jboss-as7/modules/eu/europa/ec/cipa/configuration/main</directory>
-            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/</outputDirectory>
-            <fileMode>0444</fileMode>
-            <directoryMode>0555</directoryMode>
-            <filtered>false</filtered>
-        </fileSet>
-        <fileSet>
-            <directory>${projectRootPath}/environment/jboss-as7/modules/eu/europa/ec/digit/domibus/main</directory>
-            <outputDirectory>/modules/eu/europa/ec/digit/domibus/main/</outputDirectory>
-            <fileMode>0444</fileMode>
-            <directoryMode>0555</directoryMode>
-            <filtered>false</filtered>
-        </fileSet>
-        <fileSet>
-            <directory>${domibusRootPath}/src/main/conf</directory>
-            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main</outputDirectory>
+            <directory>${projectRootPath}/environment/jboss-as7/modules/eu/europa/ec/digit/domibus/msh/main</directory>
+            <outputDirectory>/modules/eu/europa/ec/digit/domibus/msh/main</outputDirectory>
             <includes>
-                <include>**/signEncrypt.xml</include>
-                <include>**/ehcache.xml</include>
-                <include>**/submission-config.xml</include>
+                <include>clientauthentication.xml</include>
+                <include>domibus-configuration.xml</include>
+                <include>module.xml</include>
+            </includes>
+            <fileMode>0444</fileMode>
+            <directoryMode>0555</directoryMode>
+            <filtered>false</filtered>
+        </fileSet>
+        <fileSet>
+            <directory>${projectRootPath}/environment/jboss-as7/modules/eu/europa/ec/digit/domibus/app/main</directory>
+            <outputDirectory>/modules/eu/europa/ec/digit/domibus/app/main/</outputDirectory>
+            <fileMode>0444</fileMode>
+            <directoryMode>0555</directoryMode>
+            <filtered>false</filtered>
+        </fileSet>
+        <fileSet>
+            <directory>${domibusRootPath}/src/main/conf/domibus</directory>
+            <outputDirectory>modules/eu/europa/ec/digit/domibus/msh/main</outputDirectory>
+            <includes>
+                <include>signEncrypt.xml</include>
+                <include>ehcache.xml</include>
+                <include>submission-config.xml</include>
             </includes>
             <fileMode>0444</fileMode>
             <directoryMode>0555</directoryMode>
