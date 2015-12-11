@@ -25,12 +25,14 @@
 			</partyIdTypes>
 			<party name="instanceA" 
 					endpoint="http://UndefinedHostnameA:8080/domibus/services/msh" 
+					allowChunking="false"
 >
 				<identifier partyId="instanceAId1" partyIdType="exampleType"/>
 				<identifier partyId="instanceAId2" partyIdType="exampleType"/>
 			</party>
 			<party name="instanceB" 
 					endpoint="http://UndefinedHostnameB:8080/domibus/services/msh" 
+					allowChunking="false"
 >
 				<identifier partyId="instanceBId1" partyIdType="exampleType"/>
 				<identifier partyId="instanceBId2" partyIdType="exampleType"/>
@@ -58,14 +60,16 @@
 		</properties>				
 		<payloadProfiles>
 			<payload name="businessContentPayload"
-					cid="BRISPayload" 
+					cid="payload" 
 					required="true"
-					mimeType="text/xml"/>
+					mimeType="text/xml"
+					inBody="false"/>
 			<payload name="businessContentAttachment"
-					cid="BRISAttachment" 
+					cid="attachment" 
 					required="false"
-					mimeType="application/octet-stream"/>
-			<payloadProfile name="BRISMessageProfile" 
+					mimeType="application/octet-stream"
+					inBody="false"/>
+			<payloadProfile name="messageProfile" 
 					maxSize="40894464">
 				<attachment name="businessContentPayload"/>
 				<attachment name="businessContentAttachment"/>
@@ -77,7 +81,7 @@
 					signatureMethod="RSA_SHA256" />	
 		</securities>
 		<errorHandlings>
-			<errorHandling name="BRISErrorHandling" 
+			<errorHandling name="errorHandling" 
 					errorAsResponse="true" 
 					businessErrorNotifyProducer="true"
 					businessErrorNotifyConsumer="true" 
@@ -90,55 +94,42 @@
 			<service name="as4Service" value="AS4" type="exampleService"/>
 		</services>
 		<actions>
-			<action name="sendDefaultMessage" value="SendMessage"/>
 			<action name="sendBasicMessage" value="submit"/>
 		</actions>
 		<as4>
 			<receptionAwareness name="exampleReceptionAwarenessRetryThreeDuplicateDetectionTrue" retry="1;6;CONSTANT" duplicateDetection="true"/>
-			<reliability name="exampleReliabilityNonrepudiationTrueReplypatternResponse" nonRepudiation="true" replyPattern="response"/>
+			<reliability name="exampleReliabilityNonrepudiationTrueReplypatternResponse" nonRepudiation="false" replyPattern="response"/>
 		</as4>
 		<legConfigurations>
-			<legConfiguration name="examplePushLeg1sendDefaultMessage" 
-					service="as4Service" 
-					action="sendDefaultMessage" 
-					defaultMpc="defaultMpc" 
-					reliability="exampleReliabilityNonrepudiationTrueReplypatternResponse" 
-					security="signAndEncrypt" 
-					receptionAwareness="exampleReceptionAwarenessRetryThreeDuplicateDetectionTrue" 
-					payloadProfile="BRISMessageProfile"
-					errorHandling="BRISErrorHandling"
-					compressPayloads="true">
-					</legConfiguration>
-			<legConfiguration name="examplePushLeg2sendBasicMessage" 
+			<legConfiguration name="examplePushLegsendBasicMessage" 
 					service="as4Service" 
 					action="sendBasicMessage" 
 					defaultMpc="defaultMpc" 
 					reliability="exampleReliabilityNonrepudiationTrueReplypatternResponse" 
 					security="signAndEncrypt" 
 					receptionAwareness="exampleReceptionAwarenessRetryThreeDuplicateDetectionTrue" 
-					payloadProfile="BRISMessageProfile"
-					errorHandling="BRISErrorHandling"
+					payloadProfile="messageProfile"
+					errorHandling="errorHandling"
 					compressPayloads="true">
 					</legConfiguration>
 		</legConfigurations>
-		<process name="as4exampleProcess" 
-				agreement="exampleAgreement" 
-				mep="oneway" 
-				binding="push" 
-				initiatorRole="exampleMessageProducer" 
-				responderRole="exampleMessageReceiver">
-			<initiatorParties>
-				<initiatorParty name="instanceA"/>
-				<initiatorParty name="instanceB"/>
-			</initiatorParties>
-			<responderParties>
-				<responderParty name="instanceA"/>
-				<responderParty name="instanceB"/>
-			</responderParties>
-			<legs>
-				<leg name="examplePushLeg1sendDefaultMessage"/>
-				<leg name="examplePushLeg2sendBasicMessage"/>
-			</legs>
-		</process>
+<process name="as4exampleProcess" 
+		agreement="exampleAgreement" 
+		mep="oneway" 
+		binding="push" 
+		initiatorRole="exampleMessageProducer" 
+		responderRole="exampleMessageReceiver">
+	<initiatorParties>
+		<initiatorParty name="instanceA"/>
+		<initiatorParty name="instanceB"/>
+	</initiatorParties>
+	<responderParties>
+		<responderParty name="instanceA"/>
+		<responderParty name="instanceB"/>
+	</responderParties>
+	<legs>
+		<leg name="examplePushLegsendBasicMessage"/>
+	</legs>
+</process>
 	</businessProcesses>
 </db:configuration>
