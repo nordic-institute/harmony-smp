@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project id="2d1171f7-c3a4-402c-a0d9-a10da97d318f" activeEnvironment="Default" name="Domibus_3_2_0" soapui-version="5.2.0" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:interface xsi:type="con:WsdlInterface" id="2b35a629-2beb-4f8d-9a0a-27e932fa5dc3" wsaVersion="NONE" name="DomibusBasicInterfaceSoapBinding" type="wsdl" bindingName="{http://ec.europa.eu/digit/domibus/wsdl/endpoint/basic}DomibusBasicInterfaceSoapBinding" soapVersion="1_1" anonymous="optional" definition="http://localhost:8080/domibus-app/services/basic?wsdl" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart="http://localhost:8080/domibus-app/services/basic?wsdl"><con:part><con:url>http://localhost:8080/domibus-app/services/basic?wsdl</con:url><con:content><![CDATA[<wsdl:definitions targetNamespace="http://ec.europa.eu/digit/domibus/wsdl/endpoint/basic" xmlns:dac="http://ec.europa.eu/digit/domibus/common/aggregate/components" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="http://ec.europa.eu/digit/domibus/wsdl/endpoint/basic" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <wsdl:types>
+    <xsd:schema elementFormDefault="qualified" targetNamespace="http://ec.europa.eu/digit/domibus/wsdl/endpoint/basic" xmlns="http://ec.europa.eu/digit/domibus/wsdl/endpoint/basic">
+      <xsd:import namespace="http://ec.europa.eu/digit/domibus/common/aggregate/components" schemaLocation="http://localhost:8080/domibus-app/services/basic?xsd=../xsd/DMS-AggregateComponents-0.01.xsd"/>
+    </xsd:schema>
+  </wsdl:types>
+  <wsdl:message name="FaultResponse">
+    <wsdl:part element="dac:FaultDetail" name="FaultResonse"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="Acknowledgement">
+    <wsdl:part element="dac:Acknowledgement" name="Acknowledgement"></wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="Envelope">
+    <wsdl:part element="dac:GatewayHeader" name="GatewayHeader"></wsdl:part>
+    <wsdl:part element="dac:GatewayBody" name="GatewayBody"></wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="DomibusBasicInterface">
+    <wsdl:operation name="submit">
+      <wsdl:input message="tns:Envelope"></wsdl:input>
+      <wsdl:output message="tns:Acknowledgement"></wsdl:output>
+      <wsdl:fault message="tns:FaultResponse" name="FaultResponse"></wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="DomibusBasicInterfaceSoapBinding" type="tns:DomibusBasicInterface">
+    <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="submit">
+      <soap:operation soapAction=""/>
+      <wsdl:input>
+        <soap:header message="tns:Envelope" part="GatewayHeader" use="literal"></soap:header>
+        <soap:body parts="GatewayBody" use="literal"/>
+      </wsdl:input>
+      <wsdl:output>
+        <soap:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="FaultResponse">
+        <soap:fault name="FaultResponse" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="DomibusBasicService">
+    <wsdl:port binding="tns:DomibusBasicInterfaceSoapBinding" name="DomibusBasicBinding">
+      <soap:address location="http://localhost:8080/domibus-app/services/basic"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>]]></con:content><con:type>http://schemas.xmlsoap.org/wsdl/</con:type></con:part><con:part><con:url>http://localhost:8080/domibus-app/services/basic?xsd=../xsd/DMS-AggregateComponents-0.01.xsd</con:url><con:content><![CDATA[<xsd:schema attributeFormDefault="unqualified" elementFormDefault="qualified" targetNamespace="http://ec.europa.eu/digit/domibus/common/aggregate/components" xmlns="http://ec.europa.eu/digit/domibus/common/aggregate/components" xmlns:mime="http://www.w3.org/2005/05/xmlmime" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:import namespace="http://www.w3.org/2005/05/xmlmime" schemaLocation="http://localhost:8080/domibus-app/services/basic?xsd=../xsd/xmlmime.xsd"/>
+  <xsd:element name="AddressInfo" type="AddressInfoType"/>
+  <xsd:element name="Attachment" type="AttachmentType"/>
+  <xsd:element name="Attachments" type="AttachmentsType"/>
+  <xsd:element name="MessageContent" type="MessageContentType"/>
+  <xsd:element name="MessageInfo" type="MessageInfoType"/>
+  <xsd:element name="Receiver" type="ReceiverType"/>
+  <xsd:element name="Sender" type="SenderType"/>
+  <xsd:complexType name="AddressInfoType">
+    <xsd:sequence>
+      <xsd:element ref="Sender"/>
+      <xsd:element ref="Receiver"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:element name="Acknowledgement">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="MessageInfo"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="AttachmentsType">
+    <xsd:sequence>
+      <xsd:element maxOccurs="unbounded" ref="Attachment"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="AttachmentType">
+    <xsd:simpleContent>
+      <xsd:extension base="mime:base64Binary">
+        <xsd:attribute name="fileName" type="xsd:token" use="required"/>
+      </xsd:extension>
+    </xsd:simpleContent>
+  </xsd:complexType>
+  <xsd:element name="FaultDetail">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="ResponseCode" type="xsd:string"/>
+        <xsd:element name="Message" nillable="true" type="xsd:string"/>
+        <xsd:element name="Description" nillable="true" type="xsd:string"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GatewayHeader">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="AddressInfo"/>
+        <xsd:element ref="MessageInfo"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:element name="GatewayBody">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="MessageContent"/>
+        <xsd:element minOccurs="0" ref="Attachments"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+  <xsd:complexType name="MessageContentType">
+    <xsd:sequence>
+      <xsd:any namespace="##any" processContents="skip"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="MessageInfoType">
+    <xsd:sequence>
+      <xsd:element name="Timestamp" type="xsd:dateTime"/>
+      <xsd:element minOccurs="0" name="MessageId" type="xsd:string"/>
+      <xsd:element minOccurs="0" name="CorrelationId" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="ReceiverType">
+    <xsd:sequence>
+      <xsd:element name="Id" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+  <xsd:complexType name="SenderType">
+    <xsd:sequence>
+      <xsd:element name="Id" type="xsd:string"/>
+    </xsd:sequence>
+  </xsd:complexType>
+</xsd:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part><con:part><con:url>http://localhost:8080/domibus-app/services/basic?xsd=../xsd/xmlmime.xsd</con:url><con:content><![CDATA[<xs:schema targetNamespace="http://www.w3.org/2005/05/xmlmime" xmlns:xmime="http://www.w3.org/2005/05/xmlmime" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:attribute name="contentType">
+    <xs:simpleType>
+      <xs:restriction base="xs:string">
+        <xs:minLength value="3"/>
+      </xs:restriction>
+    </xs:simpleType>
+  </xs:attribute>
+  <xs:attribute name="expectedContentTypes" type="xs:string"/>
+  <xs:complexType name="base64Binary">
+    <xs:simpleContent>
+      <xs:extension base="xs:base64Binary" xmime:expectedContentTypes="application/octet-stream">
+        <xs:attribute ref="xmime:contentType"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="hexBinary">
+    <xs:simpleContent>
+      <xs:extension base="xs:hexBinary">
+        <xs:attribute ref="xmime:contentType"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+</xs:schema>]]></con:content><con:type>http://www.w3.org/2001/XMLSchema</con:type></con:part></con:definitionCache><con:endpoints><con:endpoint>http://Horias-MacBook-Pro.local:8088/mockBasicDomibus</con:endpoint><con:endpoint>http://localhost:8080/domibus-app/services/basic</con:endpoint></con:endpoints><con:operation id="af66f5be-1292-4611-988b-e37027268d84" isOneWay="false" action="" name="submit" bindingOperationName="submit" type="Request-Response" inputName="" receivesAttachments="false" sendsAttachments="false" anonymous="optional"><con:settings/><con:call id="6c33229e-63a4-418f-bd26-d7a573b4be59" name="Request 1"><con:settings/><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/domibus-app/services/basic</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:com="http://ec.europa.eu/digit/domibus/common/aggregate/components" xmlns:xm="http://www.w3.org/2005/05/xmlmime">
+   <soapenv:Header>
+      <com:GatewayHeader>
+         <com:AddressInfo>
+            <com:Sender>
+               <com:Id>?</com:Id>
+            </com:Sender>
+            <com:Receiver>
+               <com:Id>?</com:Id>
+            </com:Receiver>
+         </com:AddressInfo>
+         <com:MessageInfo>
+            <com:Timestamp>?</com:Timestamp>
+            <!--Optional:-->
+            <com:MessageId>?</com:MessageId>
+            <!--Optional:-->
+            <com:CorrelationId>?</com:CorrelationId>
+         </com:MessageInfo>
+      </com:GatewayHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <com:GatewayBody>
+         <com:MessageContent>
+            <!--You may enter ANY elements at this point-->
+         </com:MessageContent>
+         <!--Optional:-->
+         <com:Attachments>
+            <!--1 or more repetitions:-->
+            <com:Attachment xm:contentType="application/?" fileName="?">cid:645972746837</com:Attachment>
+         </com:Attachments>
+      </com:GatewayBody>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ec.europa.eu/digit/domibus/wsdl/endpoint/basic/DomibusBasicInterface/submitRequest"/></con:call></con:operation></con:interface><con:testSuite id="5922b845-d5fd-45da-9fba-c48780015ca5" name="DomibusBasicInterfaceSoapBinding TestSuite"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase id="8ab6cf75-d52b-4e3d-a90f-dcec75878132" failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="submit TestCase" searchProperties="true"><con:settings/><con:testStep type="request" id="fa0777ea-9219-4d6d-a0b8-3892c188074c" name="submit"><con:settings/><con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:interface>DomibusBasicInterfaceSoapBinding</con:interface><con:operation>submit</con:operation><con:request name="submit" id="e2685053-0f09-4543-ac64-869d0bf8bd54"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/domibus-app/services/basic</con:endpoint><con:request><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:com="http://ec.europa.eu/digit/domibus/common/aggregate/components" xmlns:xm="http://www.w3.org/2005/05/xmlmime">
+   <soapenv:Header>
+      <com:GatewayHeader>
+         <com:AddressInfo>
+            <com:Sender>
+               <com:Id>instanceAId1</com:Id>
+            </com:Sender>
+            <com:Receiver>
+               <com:Id>instanceBId1</com:Id>
+            </com:Receiver>
+         </com:AddressInfo>
+         <com:MessageInfo>            
+            <!--Optional:-->
+            <com:CorrelationId>99778844374</com:CorrelationId>
+         </com:MessageInfo>
+      </com:GatewayHeader>
+   </soapenv:Header>
+   <soapenv:Body>
+      <com:GatewayBody>
+         <com:MessageContent>
+            <!--You may enter ANY elements at this point-->
+            <payload>cid:55558844374</payload>
+         </com:MessageContent>
+         <!--Optional:-->
+         <com:Attachments>
+            <!--1 or more repetitions:-->
+            <com:Attachment xm:contentType="application/octet-stream" fileName="attachment">cid:123458844374</com:Attachment>
+         </com:Attachments>
+      </com:GatewayBody>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:request><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig action="http://ec.europa.eu/digit/domibus/wsdl/endpoint/basic/DomibusBasicInterface/submitRequest" mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep><con:properties/></con:testCase><con:properties/></con:testSuite><con:mockService id="5884e2c1-d056-41dd-82f0-c05387c398f0" port="8088" path="/mockBasicDomibus" host="localhost" name="DomibusBasicInterfaceSoapBinding MockService" bindToHostOnly="false" docroot="" faultMockOperation="submit"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.mock.WsdlMockService@require-soap-action">false</con:setting></con:settings><con:properties/><con:mockOperation name="submit" id="16ee4181-70d0-44f1-8458-fab9f8354676" interface="DomibusBasicInterfaceSoapBinding" operation="submit"><con:settings/><con:defaultResponse>Response 1</con:defaultResponse><con:dispatchStyle>SEQUENCE</con:dispatchStyle><con:response name="Response 1" id="1586a690-e8f1-4c25-86ce-8cbc75cc9b06" httpResponseStatus="200" encoding="UTF-8"><con:settings/><con:responseContent><![CDATA[<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/" xmlns:com="http://ec.europa.eu/digit/domibus/common/aggregate/components">
+   <soapenv:Header/>
+   <soapenv:Body>
+      <com:Acknowledgement>
+         <com:MessageInfo>
+            <com:Timestamp>?</com:Timestamp>
+            <!--Optional:-->
+            <com:MessageId>?</com:MessageId>
+            <!--Optional:-->
+            <com:CorrelationId>?</com:CorrelationId>
+         </com:MessageInfo>
+      </com:Acknowledgement>
+   </soapenv:Body>
+</soapenv:Envelope>]]></con:responseContent><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://ec.europa.eu/digit/domibus/wsdl/endpoint/basic/DomibusBasicInterface/submitResponse"/></con:response><con:dispatchConfig/></con:mockOperation></con:mockService><con:properties/><con:wssContainer/><con:oAuth2ProfileContainer/><con:sensitiveInformation/></con:soapui-project>

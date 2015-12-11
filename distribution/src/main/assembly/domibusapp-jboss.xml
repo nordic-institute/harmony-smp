@@ -144,7 +144,7 @@
         </fileSet>
         <fileSet>
             <directory>${domibusRootPath}/src/main/conf/domibus</directory>
-            <outputDirectory>modules/eu/domibus/main</outputDirectory>
+            <outputDirectory>/modules/eu/domibus/main/</outputDirectory>
             <includes>
                 <include>signEncrypt.xml</include>
                 <include>ehcache.xml</include>
@@ -185,7 +185,7 @@
             <filtered>false</filtered>
         </file>
         <file>
-            <source>src/test/Domibus-soapui-project.xml</source>
+            <source>src/test/Domibus-3-2-0-soapui-project.xml</source>
             <outputDirectory>test</outputDirectory>
             <filtered>false</filtered>
         </file>
