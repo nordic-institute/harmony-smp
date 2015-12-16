@@ -44,8 +44,9 @@ public class GatewayBasicEndpointTest extends AbstractTestClient {
 		header.setAddressInfo(addressInfo());
 		GatewayBody body = new GatewayBody();
 		MessageContentType messageContent = new MessageContentType();
-
+		//String message = "<message>Eureka</message>";
 		messageContent.setAny(getMessage());
+
 		body.setMessageContent(messageContent);
 		Acknowledgement ack = getDomibusBasicInterface().submit(header, body);
 
@@ -55,7 +56,7 @@ public class GatewayBasicEndpointTest extends AbstractTestClient {
 	}
 
 	private Element getMessage() throws Exception {
-		String message = "<message>Eureka</message>";
+		String message = "<message><abc>Eureka!</abc></message>";
 		InputStream stream  = new ByteArrayInputStream(message.getBytes(Charset.forName("UTF-8")));
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setNamespaceAware(false);
