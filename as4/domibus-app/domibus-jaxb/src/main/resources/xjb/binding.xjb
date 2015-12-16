@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jaxb:bindings version="1.0" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb">
+		
+		<jaxb:bindings schemaLocation="./xsd/domibus.xsd">
+			<jaxb:schemaBindings>
+			    <jaxb:package name = "eu.europa.ec.digit.domibus.binding"/>
+			</jaxb:schemaBindings>
+		</jaxb:bindings>
+		<jaxb:bindings schemaLocation="./xsd/ebms-3_0-200704.xsd">
+			<jaxb:schemaBindings>
+			    <jaxb:package name = "eu.europa.ec.digit.domibus.binding"/>
+			</jaxb:schemaBindings>
+		</jaxb:bindings>
+</jaxb:bindings>
+

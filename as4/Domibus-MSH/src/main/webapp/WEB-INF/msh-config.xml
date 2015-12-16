@@ -93,6 +93,8 @@
                 </prop>
                 <prop key="org.quartz.scheduler.instanceId">AUTO</prop>
                 <prop key="org.quartz.scheduler.jmx.export">true</prop>
+                <prop key="org.quartz.plugin.shutdownhook.class">org.quartz.plugins.management.ShutdownHookPlugin</prop>
+                <prop key="org.quartz.plugin.shutdownhook.cleanShutdown">true</prop>
             </props>
         </property>
         <property name="jobFactory">

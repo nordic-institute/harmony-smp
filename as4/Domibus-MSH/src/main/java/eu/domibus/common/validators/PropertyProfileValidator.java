@@ -66,7 +66,7 @@ public class PropertyProfileValidator {
             }
             modifiablePropertyList.remove(profiled);
             if (profiled == null) {
-                throw new EbMS3Exception(EbMS3Exception.EbMS3ErrorCode.EBMS_0010, "Property profiling for this exchange does not include a property named: " + property.getName(), null, null);
+                throw new EbMS3Exception(EbMS3Exception.EbMS3ErrorCode.EBMS_0010, "Property profiling for this exchange does not include a property named: " + property.getName(), null, null, null);
             }
 
             switch (profiled.getDatatype().toLowerCase()) {
@@ -77,7 +77,7 @@ public class PropertyProfileValidator {
                         Integer.parseInt(property.getValue());
                         break;
                     } catch (final NumberFormatException e) {
-                        throw new EbMS3Exception(EbMS3Exception.EbMS3ErrorCode.EBMS_0010, "Property profiling for this exchange requires a INTEGER datatype for property named: " + property.getName() + ", but got " + property.getValue(), null, null);
+                        throw new EbMS3Exception(EbMS3Exception.EbMS3ErrorCode.EBMS_0010, "Property profiling for this exchange requires a INTEGER datatype for property named: " + property.getName() + ", but got " + property.getValue(), null, null, null);
                     }
                 case "boolean":
                     if (property.getValue().equalsIgnoreCase("false") || property.getValue().equalsIgnoreCase("true")) {
@@ -92,7 +92,7 @@ public class PropertyProfileValidator {
         }
         for (final Property property : modifiablePropertyList) {
             if (property.isRequired()) {
-                throw new EbMS3Exception(EbMS3Exception.EbMS3ErrorCode.EBMS_0010, "Required property missing: " + property, null, null);
+                throw new EbMS3Exception(EbMS3Exception.EbMS3ErrorCode.EBMS_0010, "Required property missing: " + property, null, null, null);
 
             }
         }

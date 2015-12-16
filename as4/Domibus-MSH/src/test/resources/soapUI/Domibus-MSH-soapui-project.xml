@@ -16,9 +16,9 @@
   ~ express or implied.
   ~ See the Licence for the specific language governing
   ~ permissions and limitations under the Licence.
-  --><con:soapui-project xmlns:con="http://eviware.com/soapui/config" activeEnvironment="Default" name="Domibus-MSH" resourceRoot="" soapui-version="5.0.0" abortOnError="false" runType="SEQUENTIAL">
+  --><con:soapui-project activeEnvironment="Default" name="Domibus-MSH" resourceRoot="" soapui-version="5.2.0" abortOnError="false" runType="SEQUENTIAL" id="5490bb87-ddbd-43b9-8d20-8ae028278a50" xmlns:con="http://eviware.com/soapui/config">
     <con:settings/>
-    <con:interface xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:WsdlInterface" wsaVersion="NONE" name="BackendService_1_1SoapBinding" type="wsdl" bindingName="{http://org.ecodex.backend/1_1/}BackendService_1_1SoapBinding" soapVersion="1_2" anonymous="optional" definition="http://localhost:8080/domibus/services/backend?wsdl">
+    <con:interface xsi:type="con:WsdlInterface" wsaVersion="NONE" name="BackendService_1_1SoapBinding" type="wsdl" bindingName="{http://org.ecodex.backend/1_1/}BackendService_1_1SoapBinding" soapVersion="1_2" anonymous="optional" definition="http://localhost:8080/domibus/services/backend?wsdl" id="432ff5a0-7c13-45b1-860a-44ad6b53786c" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
         <con:settings/>
         <con:definitionCache type="TEXT" rootPart="http://localhost:8080/domibus/services/backend?wsdl">
             <con:part>
@@ -692,9 +692,9 @@
             <con:endpoint>http://localhost:8080/Domibus-MSH/services/backend</con:endpoint>
         <con:endpoint>http://localhost:8080/domibus/services/backend</con:endpoint>
     </con:endpoints>
-        <con:operation isOneWay="false" action="" name="downloadMessage" bindingOperationName="downloadMessage" type="Request-Response" outputName="downloadMessageResponse" inputName="downloadMessage" receivesAttachments="false" sendsAttachments="false" anonymous="optional">
+        <con:operation isOneWay="false" action="" name="downloadMessage" bindingOperationName="downloadMessage" type="Request-Response" outputName="downloadMessageResponse" inputName="downloadMessage" receivesAttachments="false" sendsAttachments="false" anonymous="optional" id="5e6a42d1-f7ad-434d-a66c-137cd34e35c8">
             <con:settings/>
-            <con:call name="Request 1">
+            <con:call name="Request 1" id="11b32ddc-50b0-4b4d-a0d7-a58a2ecb96e1">
                 <con:settings/>
                 <con:encoding>UTF-8</con:encoding>
                 <con:endpoint>http://localhost:8080/domibus/services/backend</con:endpoint>
@@ -709,9 +709,9 @@
                 <con:credentials><con:authType>Global HTTP Settings</con:authType></con:credentials><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://org.ecodex.backend/1_1/BackendInterface/downloadMessage"/>
             </con:call>
         </con:operation>
-        <con:operation isOneWay="false" action="" name="listPendingMessages" bindingOperationName="listPendingMessages" type="Request-Response" outputName="listPendingMessagesResponse" inputName="listPendingMessages" receivesAttachments="false" sendsAttachments="false" anonymous="optional">
+        <con:operation isOneWay="false" action="" name="listPendingMessages" bindingOperationName="listPendingMessages" type="Request-Response" outputName="listPendingMessagesResponse" inputName="listPendingMessages" receivesAttachments="false" sendsAttachments="false" anonymous="optional" id="f214d5bb-40c7-41d8-ac26-2c4e6c616dc8">
             <con:settings/>
-            <con:call name="Request 1">
+            <con:call name="Request 1" id="e7b3b28f-5d87-4110-a9c2-d87b41bd264c">
                 <con:settings/>
                 <con:encoding>UTF-8</con:encoding>
                 <con:endpoint>http://localhost:8080/domibus/services/backend</con:endpoint>
@@ -724,9 +724,9 @@
                 <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://org.ecodex.backend/1_1/BackendInterface/listPendingMessages"/>
             </con:call>
         </con:operation>
-        <con:operation isOneWay="false" action="" name="sendMessage" bindingOperationName="sendMessage" type="Request-Response" outputName="sendMessageResponse" inputName="sendMessage" receivesAttachments="false" sendsAttachments="false" anonymous="optional">
+        <con:operation isOneWay="false" action="" name="sendMessage" bindingOperationName="sendMessage" type="Request-Response" outputName="sendMessageResponse" inputName="sendMessage" receivesAttachments="false" sendsAttachments="false" anonymous="optional" id="1a93431f-3555-4b4e-8451-03c58869b293">
             <con:settings/>
-            <con:call name="Request 1">
+            <con:call name="Request 1" id="9590b5d1-5532-4db5-93b9-8861c88f65c1">
                 <con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings>
                 <con:encoding>UTF-8</con:encoding>
                 <con:endpoint>http://localhost:8080/domibus/services/backend</con:endpoint>
@@ -821,9 +821,9 @@
                 <con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://org.ecodex.backend/1_1/BackendInterface/sendMessage"/>
             <con:wsrmConfig version="1.2"/></con:call>
         </con:operation>
-        <con:operation isOneWay="false" action="" name="sendMessageWithReference" bindingOperationName="sendMessageWithReference" type="Request-Response" outputName="sendMessageWithReferenceResponse" inputName="sendMessageWithReference" receivesAttachments="false" sendsAttachments="false" anonymous="optional">
+        <con:operation isOneWay="false" action="" name="sendMessageWithReference" bindingOperationName="sendMessageWithReference" type="Request-Response" outputName="sendMessageWithReferenceResponse" inputName="sendMessageWithReference" receivesAttachments="false" sendsAttachments="false" anonymous="optional" id="a4929ab4-9c1d-44ec-bf51-3d5feb88d143">
             <con:settings/>
-            <con:call name="Request 1">
+            <con:call name="Request 1" id="49eeceb6-2c69-49fe-948f-a8df28b10e86">
                 <con:settings/>
                 <con:encoding>UTF-8</con:encoding>
                 <con:endpoint>http://localhost:8080/domibus/services/backend</con:endpoint>
@@ -918,9 +918,9 @@
                 <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://org.ecodex.backend/1_1/BackendInterface/sendMessageWithReference"/>
             </con:call>
         </con:operation>
-        <con:operation isOneWay="false" action="" name="getMessageStatus" bindingOperationName="getMessageStatus" type="Request-Response" outputName="getMessageStatusResponse" inputName="getMessageStatus" receivesAttachments="false" sendsAttachments="false" anonymous="optional">
+        <con:operation isOneWay="false" action="" name="getMessageStatus" bindingOperationName="getMessageStatus" type="Request-Response" outputName="getMessageStatusResponse" inputName="getMessageStatus" receivesAttachments="false" sendsAttachments="false" anonymous="optional" id="13637bb5-6281-49c7-b76c-1ff5edfab4f2">
             <con:settings/>
-            <con:call name="Request 1">
+            <con:call name="Request 1" id="ec8cc010-86b1-4bf6-9feb-98aa809d27a1">
                 <con:settings/>
                 <con:encoding>UTF-8</con:encoding>
                 <con:endpoint>http://localhost:8080/domibus/services/backend</con:endpoint>
@@ -933,9 +933,9 @@
                 <con:wsaConfig mustUnderstand="NONE" version="200508" action="http://org.ecodex.backend/1_1/BackendInterface/getMessageStatus"/>
             </con:call>
         </con:operation>
-        <con:operation isOneWay="false" action="" name="getMessageErrors" bindingOperationName="getMessageErrors" type="Request-Response" outputName="getMessageErrorsResponse" inputName="getMessageErrors" receivesAttachments="false" sendsAttachments="false" anonymous="optional">
+        <con:operation isOneWay="false" action="" name="getMessageErrors" bindingOperationName="getMessageErrors" type="Request-Response" outputName="getMessageErrorsResponse" inputName="getMessageErrors" receivesAttachments="false" sendsAttachments="false" anonymous="optional" id="5b9de61c-e0b5-489f-a5a4-9948ed4aa324">
             <con:settings/>
-            <con:call name="Request 1">
+            <con:call name="Request 1" id="b456e39c-be0a-402d-b97e-5e0783a65839">
                 <con:settings/>
                 <con:encoding>UTF-8</con:encoding>
                 <con:endpoint>http://localhost:8080/domibus/services/backend</con:endpoint>
@@ -945,17 +945,17 @@
       <_1:messageId>?</_1:messageId>
    </soap:Body>
 </soap:Envelope>]]></con:request><con:wsaConfig mustUnderstand="NONE" version="200508" action="http://org.ecodex.backend/1_1/BackendInterface/getMessageErrors"/></con:call></con:operation></con:interface>
-    <con:testSuite name="BackendService_1_1 TestSuite">
+    <con:testSuite name="BackendService_1_1 TestSuite" id="e1ffc0e4-5233-4cba-8912-5d6aab99b15f">
         <con:settings/>
         <con:runType>SEQUENTIAL</con:runType>
         <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="sendMessageFromInitiatorToResponder" searchProperties="true" id="b4a9af5c-e18b-4295-a160-175accfc63e9">
             <con:settings/>
-            <con:testStep type="request" name="sendMessage">
+            <con:testStep type="request" name="sendMessage" id="04b01aea-66db-4f1a-addc-493547d9a35c">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>sendMessage</con:operation>
-                    <con:request name="sendMessage">
+                    <con:request name="sendMessage" id="1297552f-8c50-464a-84cf-35e0ac9b43bc">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                         </con:settings>
@@ -967,11 +967,11 @@
        <ns:UserMessage>
 				<ns:PartyInfo>
 					<ns:From>
-						<ns:PartyId type="http://www.domibus.eu/exampleType">exampleInitiatorId</ns:PartyId>
+						<ns:PartyId type="http://www.domibus.eu/exampleType">instanceAId1</ns:PartyId>
 						<ns:Role>exampleMessageProducer</ns:Role>
 					</ns:From>
 					<ns:To>						
-						<ns:PartyId type="http://www.domibus.eu/exampleType">exampleResponderId</ns:PartyId>
+						<ns:PartyId type="http://www.domibus.eu/exampleType">instanceBId1</ns:PartyId>
 						<ns:Role>exampleMessageReceiver</ns:Role>
 					</ns:To>
 				</ns:PartyInfo>
@@ -984,13 +984,8 @@
 					<ns:Property name="finalRecipient">CourtB</ns:Property>
 				</ns:MessageProperties>
 				<ns:PayloadInfo>
-					<ns:PartInfo>
-						<ns:Description xml:lang="en-US">business document</ns:Description>				
-						<ns:PartProperties>
-							<ns:Property name="MimeType">text/xml</ns:Property>										
-						</ns:PartProperties>																							
-					</ns:PartInfo>					
-					<ns:PartInfo href="example@e-codex.eu">
+									
+					<ns:PartInfo href="BRISPayload">
 						<ns:Description xml:lang="en-US">example</ns:Description>						
 						<ns:PartProperties>
 							<ns:Property name="MimeType">text/xml</ns:Property>										
@@ -1002,15 +997,14 @@
    </soap:Header>
    <soap:Body>
       <_1:sendRequest>        	
-      		<bodyload>PHJvb3Q+PGJvZHlsb2FkLz48L3Jvb3Q+</bodyload>	
-        		<payload payloadId="example@e-codex.eu">PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPGhlbGxvPndvcmxkPC9oZWxsbz4=</payload>        		
+      		<payload payloadId="BRISPayload">PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPGhlbGxvPndvcmxkPC9oZWxsbz4=</payload>        		
        </_1:sendRequest>
    </soap:Body>
-</soap:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
+</soap:Envelope>]]></con:request><con:assertion type="SOAP Response" id="e1e64a33-7aea-4f99-93c9-2a5dd1fb0ee9"/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
             
-            <con:testStep type="transfer" name="ParameterTransfer">
+            <con:testStep type="transfer" name="ParameterTransfer" id="fb1cdc52-e326-4739-8f87-4e93bc2bc829">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:PropertyTransfersStep">
+                <con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false">
                         <con:name>Transfer_MessageID</con:name>
                         <con:sourceType>Response</con:sourceType>
@@ -1021,7 +1015,7 @@
                         </con:sourcePath>
                         <con:targetType>MessageID</con:targetType>
                         <con:targetStep>ResponseParameters</con:targetStep>
-                    </con:transfers>
+                    <con:upgraded>true</con:upgraded></con:transfers>
                     <con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" transferChildNodes="false" useXQuery="false" transferToAll="false" ignoreEmpty="false" entitize="false">
                         <con:name>Transfer_FromPartyID</con:name>
                         <con:sourceType>Request</con:sourceType>
@@ -1034,7 +1028,7 @@
                         </con:sourcePath>
                         <con:targetType>FromPartyID</con:targetType>
                         <con:targetStep>RequestParameters</con:targetStep>
-                    </con:transfers>
+                    <con:upgraded>true</con:upgraded></con:transfers>
                     <con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" entitize="false" transferToAll="false" transferChildNodes="false" useXQuery="false">
                         <con:name>Transfer_ToPartyID</con:name>
                         <con:sourceType>Request</con:sourceType>
@@ -1047,12 +1041,12 @@
                         </con:sourcePath>
                         <con:targetType>ToPartyID</con:targetType>
                         <con:targetStep>RequestParameters</con:targetStep>
-                    </con:transfers>
+                    <con:upgraded>true</con:upgraded></con:transfers>
                 </con:config>
             </con:testStep>
-            <con:testStep type="properties" name="RequestParameters">
+            <con:testStep type="properties" name="RequestParameters" id="4b70f017-b561-4be2-b4c4-0527e98868a5">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:PropertiesStep" saveFirst="true">
+                <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:properties>
                         <con:property>
                             <con:name>FromPartyID</con:name>
@@ -1065,9 +1059,9 @@
                     </con:properties>
                 </con:config>
             </con:testStep>
-            <con:testStep type="properties" name="ResponseParameters">
+            <con:testStep type="properties" name="ResponseParameters" id="62366be4-2c59-44cf-9271-03b0fe3e6238">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:PropertiesStep" saveFirst="true">
+                <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:properties>
                         <con:property>
                             <con:name>MessageID</con:name>
@@ -1076,16 +1070,16 @@
                     </con:properties>
                 </con:config>
             </con:testStep>
-            <con:testStep type="delay" name="WaitForMessage">
+            <con:testStep type="delay" name="WaitForMessage" id="0a3dce0a-e640-475c-8d04-ddec8796bfad">
                 <con:settings/>
                 <con:config><delay>10000</delay></con:config>
             </con:testStep>
-            <con:testStep type="request" name="GetStatus">
+            <con:testStep type="request" name="GetStatus" id="4125fdde-94a2-4203-afe6-4928136e0e9a">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>getMessageStatus</con:operation>
-                    <con:request name="GetStatus">
+                    <con:request name="GetStatus" id="44acbf30-34f2-4237-8540-c560338f0ce8">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                         </con:settings>
@@ -1099,8 +1093,8 @@
       </_1:getStatusRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
-                        <con:assertion type="XPath Match" name="XPath Match">
+                        <con:assertion type="SOAP Response" id="91246641-60c8-4be0-9794-fbffbdd7d63c"/>
+                        <con:assertion type="XPath Match" name="XPath Match" id="c65f3a13-6820-45d5-b18a-e4dcd19be46d">
                             <con:configuration>
                                 <path>declare namespace
                                     S12='http://www.w3.org/2003/05/soap-envelope';
@@ -1135,12 +1129,12 @@
                     </con:request>
                 </con:config>
             </con:testStep>
-            <con:testStep type="request" name="GetErrors">
+            <con:testStep type="request" name="GetErrors" id="d69a4825-64c9-4a08-8cf8-34bd688b5672">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>getMessageErrors</con:operation>
-                    <con:request name="GetErrors">
+                    <con:request name="GetErrors" id="b268377c-131f-42cd-931f-3df4588d5238">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                         </con:settings>
@@ -1154,7 +1148,7 @@
       </_1:getErrorsRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
+                        <con:assertion type="SOAP Response" id="4b71d646-4ea4-4a3b-a4ec-503a2cd5935c"/>
                         <con:credentials>
                             <con:authType>No Authorization</con:authType>
                         </con:credentials>
@@ -1165,18 +1159,18 @@
                     </con:request>
                 </con:config>
             </con:testStep>
-            <con:testStep type="delay" name="wait_conditional">
+            <con:testStep type="delay" name="wait_conditional" id="0644a809-4ac8-4600-9d7e-f7dd5e1e5d2a">
                 <con:settings/>
                 <con:config>
                     <delay>1000</delay>
                 </con:config>
             </con:testStep>
-            <con:testStep type="request" name="check_if_messages_available">
+            <con:testStep type="request" name="check_if_messages_available" id="4dd29916-42fb-425d-9a5a-300106aa591b">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>listPendingMessages</con:operation>
-                    <con:request name="check_if_messages_available">
+                    <con:request name="check_if_messages_available" id="a04c7e70-b980-45ec-ac65-b36325e6b924">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                         </con:settings>
@@ -1188,7 +1182,7 @@
       <_1:listPendingMessagesRequest></_1:listPendingMessagesRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
+                        <con:assertion type="SOAP Response" id="4d259864-707c-4725-b2b0-894722e7fc34"/>
                         <con:credentials>
                             <con:authType>No Authorization</con:authType>
                         </con:credentials>
@@ -1199,9 +1193,9 @@
                     </con:request>
                 </con:config>
             </con:testStep>
-            <con:testStep type="goto" name="wait_until_message_arrives">
+            <con:testStep type="goto" name="wait_until_message_arrives" id="13af26c7-e172-441c-85b6-6f43e9fea246">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:GotoStep">
+                <con:config xsi:type="con:GotoStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:condition>
                         <con:name>if_message_arrived</con:name>
                         <con:type>XPATH</con:type>
@@ -1230,12 +1224,12 @@
                     </con:condition>
                 </con:config>
             </con:testStep>
-            <con:testStep type="request" name="ListPendingMessages">
+            <con:testStep type="request" name="ListPendingMessages" id="f1e369b7-a217-4918-84fa-d85264addb6a">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>listPendingMessages</con:operation>
-                    <con:request name="ListPendingMessages">
+                    <con:request name="ListPendingMessages" id="01454820-c19f-45aa-a8fb-f38787a9fd4e">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                         </con:settings>
@@ -1247,9 +1241,9 @@
       <_1:listPendingMessagesRequest></_1:listPendingMessagesRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
-                        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault"/>
-                        <con:assertion type="XPath Match" name="XPath Match">
+                        <con:assertion type="SOAP Response" id="dba1fbbf-4f38-46af-bb4d-1ff10b764d93"/>
+                        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="e5764263-6541-4f80-a450-5df5523b92d8"/>
+                        <con:assertion type="XPath Match" name="XPath Match" id="c9d8796c-e334-412d-a8c0-4299997de7f5">
                             <con:configuration>
                                 <path>declare namespace
                                     soapenv='http://www.w3.org/2003/05/soap-envelope';
@@ -1264,7 +1258,7 @@
                                 <ignoreComments>false</ignoreComments>
                             </con:configuration>
                         </con:assertion>
-                        <con:assertion type="Simple Contains" name="Contains">
+                        <con:assertion type="Simple Contains" name="Contains" id="4577371c-5e13-4737-b85f-23b418d94088">
                             <con:configuration>
                                 <token>${messageID}</token>
                                 <ignoreCase>false</ignoreCase>
@@ -1281,12 +1275,12 @@
                     </con:request>
                 </con:config>
             </con:testStep>
-            <con:testStep type="request" name="DownloadMessage">
+            <con:testStep type="request" name="DownloadMessage" id="cde5960a-4653-4fed-8c1e-c6f071dec907">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>downloadMessage</con:operation>
-                    <con:request name="DownloadMessage">
+                    <con:request name="DownloadMessage" id="12b80531-3df0-42ba-a4d8-e0b4ac668fb5">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                         </con:settings>
@@ -1300,7 +1294,7 @@
       </_1:downloadMessageRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
+                        <con:assertion type="SOAP Response" id="543431d2-8e4f-4a2e-86ff-2f83f1cd03c6"/>
                         <con:credentials>
                             <con:authType>No Authorization</con:authType>
                         </con:credentials>
@@ -1312,11 +1306,11 @@
                 </con:config>
             </con:testStep><con:properties/>
         </con:testCase>
-        <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="sendMshMessage" searchProperties="true">
+        <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="sendMshMessage" searchProperties="true" id="708208b1-5f8d-497c-8e67-e89e88fae6bd">
             <con:settings/>
-            <con:testStep type="httprequest" name="SendMsgMessageWithCompressedPayloadToInitiator">
+            <con:testStep type="httprequest" name="SendMsgMessageWithCompressedPayloadToInitiator" id="a2e7e1bf-fffb-451c-a46c-c0d88cd7ef3e">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" method="POST" xsi:type="con:HttpRequest" name="SendMsgMessageWithCompressedPayloadToInitiator" postQueryString="false" mediaType="application/xml">
+                <con:config method="POST" xsi:type="con:HttpRequest" name="SendMsgMessageWithCompressedPayloadToInitiator" postQueryString="false" mediaType="application/xml" id="44c34ac1-a15f-43f4-a321-6bc9a2418b7a" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:settings>
                         <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                     </con:settings>
@@ -1384,12 +1378,12 @@
         </con:testCase>
         <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="sendMessageFromInitiatorToInitiator" searchProperties="true" id="cfc8a3ca-9c7d-44a4-afe1-5d71ceb17145">
             <con:settings/>
-            <con:testStep type="request" name="sendMessage">
+            <con:testStep type="request" name="sendMessage" id="58df30ec-39e3-4fea-80bd-1cd2277e4682">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>sendMessage</con:operation>
-                    <con:request name="sendMessage">
+                    <con:request name="sendMessage" id="c23df8e9-f6bd-4fca-9736-d5c8e33395d3">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                         </con:settings>
@@ -1448,8 +1442,8 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response" name="SOAP Response"/>
-                        <con:assertion type="XPath Match" name="XPath Match">
+                        <con:assertion type="SOAP Response" name="SOAP Response" id="972e0767-fe70-43ee-80ca-019ba600ff5e"/>
+                        <con:assertion type="XPath Match" name="XPath Match" id="9c6206c1-ec30-4e04-b2f3-5a6f1be93830">
                             <con:configuration>
                                 <path>declare namespace
                                     soap='http://www.w3.org/2003/05/soap-envelope';
@@ -1479,9 +1473,9 @@
                     </con:request>
                 </con:config>
             </con:testStep>
-            <con:testStep type="transfer" name="ParameterTransfer">
+            <con:testStep type="transfer" name="ParameterTransfer" id="a3667ca8-69d6-407e-800a-0684ab6fbbe7">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:PropertyTransfersStep">
+                <con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false">
                         <con:name>Transfer_MessageID</con:name>
                         <con:sourceType>Response</con:sourceType>
@@ -1492,7 +1486,7 @@
                         </con:sourcePath>
                         <con:targetType>MessageID</con:targetType>
                         <con:targetStep>ResponseParameters</con:targetStep>
-                    </con:transfers>
+                    <con:upgraded>true</con:upgraded></con:transfers>
                     <con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" transferChildNodes="false" useXQuery="false" transferToAll="false" ignoreEmpty="false" entitize="false">
                         <con:name>Transfer_FromPartyID</con:name>
                         <con:sourceType>Request</con:sourceType>
@@ -1505,7 +1499,7 @@
                         </con:sourcePath>
                         <con:targetType>FromPartyID</con:targetType>
                         <con:targetStep>RequestParameters</con:targetStep>
-                    </con:transfers>
+                    <con:upgraded>true</con:upgraded></con:transfers>
                     <con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" entitize="false" transferToAll="false" transferChildNodes="false" useXQuery="false">
                         <con:name>Transfer_ToPartyID</con:name>
                         <con:sourceType>Request</con:sourceType>
@@ -1518,12 +1512,12 @@
                         </con:sourcePath>
                         <con:targetType>ToPartyID</con:targetType>
                         <con:targetStep>RequestParameters</con:targetStep>
-                    </con:transfers>
+                    <con:upgraded>true</con:upgraded></con:transfers>
                 </con:config>
             </con:testStep>
-            <con:testStep type="properties" name="RequestParameters">
+            <con:testStep type="properties" name="RequestParameters" id="64aa8493-a8dc-4d4f-a1b4-539fc88453f6">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:PropertiesStep" saveFirst="true">
+                <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:properties>
                         <con:property>
                             <con:name>FromPartyID</con:name>
@@ -1536,9 +1530,9 @@
                     </con:properties>
                 </con:config>
             </con:testStep>
-            <con:testStep type="properties" name="ResponseParameters">
+            <con:testStep type="properties" name="ResponseParameters" id="924dcc5c-dbf8-4d1a-b5fe-87367b2d5066">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:PropertiesStep" saveFirst="true">
+                <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:properties>
                         <con:property>
                             <con:name>MessageID</con:name>
@@ -1547,16 +1541,16 @@
                     </con:properties>
                 </con:config>
             </con:testStep>
-            <con:testStep type="delay" name="WaitForMessage">
+            <con:testStep type="delay" name="WaitForMessage" id="2ddcb66b-0566-45b4-90b5-3c39cab518d8">
                 <con:settings/>
                 <con:config><delay>10000</delay></con:config>
             </con:testStep>
-            <con:testStep type="request" name="GetStatus">
+            <con:testStep type="request" name="GetStatus" id="b81662de-f83e-4493-8265-9a194c5c3505">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>getMessageStatus</con:operation>
-                    <con:request name="GetStatus">
+                    <con:request name="GetStatus" id="343fb233-7b4b-4b10-966f-9a7826cd3f75">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                         </con:settings>
@@ -1570,8 +1564,8 @@
       </_1:getStatusRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
-                        <con:assertion type="XPath Match" name="XPath Match">
+                        <con:assertion type="SOAP Response" id="d16ecdfd-fa98-4653-a024-95255b828018"/>
+                        <con:assertion type="XPath Match" name="XPath Match" id="aeb9ed70-8ae7-40a5-b89f-e41cd72ee2da">
                             <con:configuration>
                                 <path>declare namespace
                                     S12='http://www.w3.org/2003/05/soap-envelope';
@@ -1606,12 +1600,12 @@
                     </con:request>
                 </con:config>
             </con:testStep>
-            <con:testStep type="request" name="GetErrors">
+            <con:testStep type="request" name="GetErrors" id="012c2dbb-dc9f-4a36-b51d-93e094c84521">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>getMessageErrors</con:operation>
-                    <con:request name="GetErrors">
+                    <con:request name="GetErrors" id="f49dcc9c-eabf-4238-8805-0a3ad9b09101">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                                 &lt;xml-fragment/>
@@ -1627,7 +1621,7 @@
       </_1:getErrorsRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
+                        <con:assertion type="SOAP Response" id="8baa37ca-cf7c-4b5a-9595-6f9b79b2d803"/>
                         <con:credentials>
                             <con:authType>No Authorization</con:authType>
                         </con:credentials>
@@ -1638,18 +1632,18 @@
                     </con:request>
                 </con:config>
             </con:testStep>
-            <con:testStep type="delay" name="wait_conditional">
+            <con:testStep type="delay" name="wait_conditional" id="b7373e57-f7e6-49c3-94db-7f994d2803e2">
                 <con:settings/>
                 <con:config>
                     <delay>1000</delay>
                 </con:config>
             </con:testStep>
-            <con:testStep type="request" name="check_if_messages_available">
+            <con:testStep type="request" name="check_if_messages_available" id="32fc5862-6e3c-4b3c-897d-bd2aa65ffebe">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>listPendingMessages</con:operation>
-                    <con:request name="check_if_messages_available">
+                    <con:request name="check_if_messages_available" id="47e2ea40-f4f9-49dd-9ae3-f75f4ccc9b07">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                                 &lt;xml-fragment/>
@@ -1663,7 +1657,7 @@
       <_1:listPendingMessagesRequest></_1:listPendingMessagesRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
+                        <con:assertion type="SOAP Response" id="11f2d9b8-2e06-4109-b8b2-907ab0e45e2e"/>
                         <con:credentials>
                             <con:authType>No Authorization</con:authType>
                         </con:credentials>
@@ -1674,9 +1668,9 @@
                     </con:request>
                 </con:config>
             </con:testStep>
-            <con:testStep type="goto" name="wait_until_message_arrives">
+            <con:testStep type="goto" name="wait_until_message_arrives" id="5ec43a4f-601d-4057-bdd6-a58009ee5b5f">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:GotoStep">
+                <con:config xsi:type="con:GotoStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:condition>
                         <con:name>if_message_arrived</con:name>
                         <con:type>XPATH</con:type>
@@ -1705,12 +1699,12 @@
                     </con:condition>
                 </con:config>
             </con:testStep>
-            <con:testStep type="request" name="ListPendingMessages">
+            <con:testStep type="request" name="ListPendingMessages" id="29322f1d-469f-4cb8-9c74-82bc179bcf15">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>listPendingMessages</con:operation>
-                    <con:request name="ListPendingMessages">
+                    <con:request name="ListPendingMessages" id="9cd410ea-d6d2-4e78-87da-3a95bd788f12">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                                 &lt;xml-fragment/>
@@ -1724,9 +1718,9 @@
       <_1:listPendingMessagesRequest></_1:listPendingMessagesRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
-                        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault"/>
-                        <con:assertion type="XPath Match" name="XPath Match">
+                        <con:assertion type="SOAP Response" id="5b74e354-431e-4f7b-b6f1-207825739cf2"/>
+                        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="b00ff43c-ae3a-4278-a55b-c7911447f178"/>
+                        <con:assertion type="XPath Match" name="XPath Match" id="e40ea9d1-f3d0-4173-bae3-e7d9fa90a7d9">
                             <con:configuration>
                                 <path>declare namespace
                                     soapenv='http://www.w3.org/2003/05/soap-envelope';
@@ -1741,7 +1735,7 @@
                                 <ignoreComments>false</ignoreComments>
                             </con:configuration>
                         </con:assertion>
-                        <con:assertion type="Simple Contains" name="Contains">
+                        <con:assertion type="Simple Contains" name="Contains" id="3593fb52-0ed4-4517-b33e-48a94e95ed1c">
                             <con:configuration>
                                 <token>${messageID}</token>
                                 <ignoreCase>false</ignoreCase>
@@ -1758,12 +1752,12 @@
                     </con:request>
                 </con:config>
             </con:testStep>
-            <con:testStep type="request" name="DownloadMessage">
+            <con:testStep type="request" name="DownloadMessage" id="ce750639-5c89-47ad-a253-103c99478f85">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>downloadMessage</con:operation>
-                    <con:request name="DownloadMessage">
+                    <con:request name="DownloadMessage" id="b78d90a1-738e-408e-8f05-50719e8914ce">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                         </con:settings>
@@ -1777,7 +1771,7 @@
       </_1:downloadMessageRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
+                        <con:assertion type="SOAP Response" id="2d5e326b-6047-4de8-b2c9-7f24dcf72cef"/>
                         <con:credentials>
                             <con:authType>No Authorization</con:authType>
                         </con:credentials>
@@ -1790,14 +1784,14 @@
             </con:testStep>
             <con:properties/>
         </con:testCase>
-        <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="sendMessageProfilingTest" searchProperties="true">
+        <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="sendMessageProfilingTest" searchProperties="true" id="c1bee222-8e95-496a-adbe-62eb4c168f09">
             <con:settings/>
-            <con:testStep type="request" name="sendMessage">
+            <con:testStep type="request" name="sendMessage" id="e0e8865c-7857-426e-a487-e040c0a0b37b">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>sendMessage</con:operation>
-                    <con:request name="sendMessage">
+                    <con:request name="sendMessage" id="2405495c-9771-45f4-982d-140d14959798">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                                 &lt;xml-fragment/>
@@ -1843,7 +1837,7 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
+                        <con:assertion type="SOAP Response" id="0e3c0ee2-54c1-4c14-bafb-0c3377dc5ed7"/>
                         <con:credentials>
                             <con:authType>No Authorization</con:authType>
                         </con:credentials>
@@ -1855,9 +1849,9 @@
                 </con:config>
             </con:testStep>
 
-            <con:testStep type="transfer" name="ParameterTransfer">
+            <con:testStep type="transfer" name="ParameterTransfer" id="5c595b40-2071-462a-b15f-d55fca3f51da">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:PropertyTransfersStep">
+                <con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false">
                         <con:name>Transfer_MessageID</con:name>
                         <con:sourceType>Response</con:sourceType>
@@ -1868,7 +1862,7 @@
                         </con:sourcePath>
                         <con:targetType>MessageID</con:targetType>
                         <con:targetStep>ResponseParameters</con:targetStep>
-                    </con:transfers>
+                    <con:upgraded>true</con:upgraded></con:transfers>
                     <con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" transferChildNodes="false" useXQuery="false" transferToAll="false" ignoreEmpty="false" entitize="false">
                         <con:name>Transfer_FromPartyID</con:name>
                         <con:sourceType>Request</con:sourceType>
@@ -1881,7 +1875,7 @@
                         </con:sourcePath>
                         <con:targetType>FromPartyID</con:targetType>
                         <con:targetStep>RequestParameters</con:targetStep>
-                    </con:transfers>
+                    <con:upgraded>true</con:upgraded></con:transfers>
                     <con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" entitize="false" transferToAll="false" transferChildNodes="false" useXQuery="false">
                         <con:name>Transfer_ToPartyID</con:name>
                         <con:sourceType>Request</con:sourceType>
@@ -1894,12 +1888,12 @@
                         </con:sourcePath>
                         <con:targetType>ToPartyID</con:targetType>
                         <con:targetStep>RequestParameters</con:targetStep>
-                    </con:transfers>
+                    <con:upgraded>true</con:upgraded></con:transfers>
                 </con:config>
             </con:testStep>
-            <con:testStep type="properties" name="RequestParameters">
+            <con:testStep type="properties" name="RequestParameters" id="39c3c777-ad6b-4c9b-a75d-11e695734a18">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:PropertiesStep" saveFirst="true">
+                <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:properties>
                         <con:property>
                             <con:name>FromPartyID</con:name>
@@ -1912,9 +1906,9 @@
                     </con:properties>
                 </con:config>
             </con:testStep>
-            <con:testStep type="properties" name="ResponseParameters">
+            <con:testStep type="properties" name="ResponseParameters" id="da11f659-6e45-4e47-9035-7e6ef2df644f">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:PropertiesStep" saveFirst="true">
+                <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:properties>
                         <con:property>
                             <con:name>MessageID</con:name>
@@ -1925,18 +1919,18 @@
                     </con:properties>
                 </con:config>
             </con:testStep>
-            <con:testStep type="delay" name="WaitForMessage">
+            <con:testStep type="delay" name="WaitForMessage" id="4b48c6b5-bf5d-4520-ade1-8c8109f60be2">
                 <con:settings/>
                 <con:config>
                     <delay>10000</delay>
                 </con:config>
             </con:testStep>
-            <con:testStep type="request" name="GetStatus">
+            <con:testStep type="request" name="GetStatus" id="674a582d-2abe-4e03-ab25-63160ff229aa">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>getMessageStatus</con:operation>
-                    <con:request name="GetStatus">
+                    <con:request name="GetStatus" id="7f1f85c1-6f1b-4376-8073-ccdcb4281792">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                                 &lt;xml-fragment/>
@@ -1954,8 +1948,8 @@
       </_1:getStatusRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
-                        <con:assertion type="XPath Match" name="XPath Match">
+                        <con:assertion type="SOAP Response" id="0867ccbb-bc2a-48d7-aef1-1fefe55a5bd5"/>
+                        <con:assertion type="XPath Match" name="XPath Match" id="f21731d5-d129-49c5-8dde-3bdcaa39577a">
                             <con:configuration>
                                 <path>declare namespace
                                     S12='http://www.w3.org/2003/05/soap-envelope';
@@ -1990,12 +1984,12 @@
                     </con:request>
                 </con:config>
             </con:testStep>
-            <con:testStep type="request" name="GetErrors">
+            <con:testStep type="request" name="GetErrors" id="d7bad915-4bff-4067-95a7-c9cd43a56f1c">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>getMessageErrors</con:operation>
-                    <con:request name="GetErrors">
+                    <con:request name="GetErrors" id="e83b6fb3-e2c5-4c40-a26f-ab304daef09d">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                                 &lt;xml-fragment/>
@@ -2013,7 +2007,7 @@
       </_1:getErrorsRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
+                        <con:assertion type="SOAP Response" id="1d535ae4-ad7b-4dca-9034-42fdb82da2df"/>
                         <con:credentials>
                             <con:authType>No Authorization</con:authType>
                         </con:credentials>
@@ -2024,18 +2018,18 @@
                     </con:request>
                 </con:config>
             </con:testStep>
-            <con:testStep type="delay" name="wait_conditional">
+            <con:testStep type="delay" name="wait_conditional" id="ed065411-932a-4ac2-b1e7-972394392a48">
                 <con:settings/>
                 <con:config>
                     <delay>1000</delay>
                 </con:config>
             </con:testStep>
-            <con:testStep type="request" name="check_if_messages_available">
+            <con:testStep type="request" name="check_if_messages_available" id="e2dc533a-86e6-4d99-89eb-8f5727342111">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>listPendingMessages</con:operation>
-                    <con:request name="check_if_messages_available">
+                    <con:request name="check_if_messages_available" id="71f20356-4095-4fa4-aea1-641038ef1b1c">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                                 &lt;xml-fragment/>
@@ -2051,7 +2045,7 @@
       <_1:listPendingMessagesRequest></_1:listPendingMessagesRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
+                        <con:assertion type="SOAP Response" id="69521a68-b13f-4bb0-bbd7-65b2f5ec5f44"/>
                         <con:credentials>
                             <con:authType>No Authorization</con:authType>
                         </con:credentials>
@@ -2062,9 +2056,9 @@
                     </con:request>
                 </con:config>
             </con:testStep>
-            <con:testStep type="goto" name="wait_until_message_arrives">
+            <con:testStep type="goto" name="wait_until_message_arrives" id="b0f1cb2e-969b-4448-a10f-7f3438525171">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:GotoStep">
+                <con:config xsi:type="con:GotoStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:condition>
                         <con:name>if_message_arrived</con:name>
                         <con:type>XPATH</con:type>
@@ -2093,12 +2087,12 @@
                     </con:condition>
                 </con:config>
             </con:testStep>
-            <con:testStep type="request" name="ListPendingMessages">
+            <con:testStep type="request" name="ListPendingMessages" id="0695c207-a24a-424a-8724-eb8a91daf833">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>listPendingMessages</con:operation>
-                    <con:request name="ListPendingMessages">
+                    <con:request name="ListPendingMessages" id="1c6d8f9f-d8ef-4cc2-8c15-5e942b0d5444">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                                 &lt;xml-fragment/>
@@ -2114,9 +2108,9 @@
       <_1:listPendingMessagesRequest></_1:listPendingMessagesRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
-                        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault"/>
-                        <con:assertion type="XPath Match" name="XPath Match">
+                        <con:assertion type="SOAP Response" id="d0e1d247-d1ed-4a5d-8aae-ed8fcf4fa7ba"/>
+                        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="ebb0c565-026e-4c50-9569-adcf640cac63"/>
+                        <con:assertion type="XPath Match" name="XPath Match" id="a0e8d73c-6064-469f-a631-17cafda6b5b2">
                             <con:configuration>
                                 <path>declare namespace
                                     soapenv='http://www.w3.org/2003/05/soap-envelope';
@@ -2131,7 +2125,7 @@
                                 <ignoreComments>false</ignoreComments>
                             </con:configuration>
                         </con:assertion>
-                        <con:assertion type="Simple Contains" name="Contains">
+                        <con:assertion type="Simple Contains" name="Contains" id="a00ccb50-f6c3-4c74-a5a0-f5be7350227f">
                             <con:configuration>
                                 <token>${messageID}</token>
                                 <ignoreCase>false</ignoreCase>
@@ -2148,12 +2142,12 @@
                     </con:request>
                 </con:config>
             </con:testStep>
-            <con:testStep type="request" name="DownloadMessage">
+            <con:testStep type="request" name="DownloadMessage" id="d4f3ddb3-e635-4172-8956-b6fdddef4477">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>downloadMessage</con:operation>
-                    <con:request name="DownloadMessage">
+                    <con:request name="DownloadMessage" id="bfb096df-4512-4cbb-87c2-f8a754e144e3">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                                 &lt;xml-fragment/>
@@ -2171,7 +2165,7 @@
       </_1:downloadMessageRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
+                        <con:assertion type="SOAP Response" id="f31e4909-6994-42c6-be4a-e488c5f65a05"/>
                         <con:credentials>
                             <con:authType>No Authorization</con:authType>
                         </con:credentials>
@@ -2184,14 +2178,14 @@
             </con:testStep>
             <con:properties/>
         </con:testCase>
-        <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="DemoTest" searchProperties="true">
+        <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="DemoTest" searchProperties="true" id="6918efa2-ad0a-4ba9-bff0-f4d80391d189">
             <con:settings/>
-            <con:testStep type="request" name="sendMessage">
+            <con:testStep type="request" name="sendMessage" id="09229e13-22e8-4a46-bb22-d12761f4349a">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>sendMessage</con:operation>
-                    <con:request name="sendMessage">
+                    <con:request name="sendMessage" id="e365af30-2dc5-4e7f-b1e6-e43d0c49fba9">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                         </con:settings>
@@ -2244,11 +2238,11 @@
         		<payload payloadId="example@e-codex.eu">PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPGhlbGxvPndvcmxkPC9oZWxsbz4=</payload>        		
        </_1:sendRequest>
    </soap:Body>
-</soap:Envelope>]]></con:request><con:assertion type="SOAP Response"/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
+</soap:Envelope>]]></con:request><con:assertion type="SOAP Response" id="4eb9e42b-9516-4fd5-9e84-6f17129068ef"/><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:wsaConfig mustUnderstand="NONE" version="200508"/><con:wsrmConfig version="1.2"/></con:request></con:config></con:testStep>
             
-            <con:testStep type="transfer" name="ParameterTransfer">
+            <con:testStep type="transfer" name="ParameterTransfer" id="85c236a0-7ef0-4bf9-a66d-635a98e6cdea">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:PropertyTransfersStep">
+                <con:config xsi:type="con:PropertyTransfersStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" ignoreEmpty="false" transferToAll="false" useXQuery="false" entitize="false" transferChildNodes="false">
                         <con:name>Transfer_MessageID</con:name>
                         <con:sourceType>Response</con:sourceType>
@@ -2259,7 +2253,7 @@
                         </con:sourcePath>
                         <con:targetType>MessageID</con:targetType>
                         <con:targetStep>ResponseParameters</con:targetStep>
-                    </con:transfers>
+                    <con:upgraded>true</con:upgraded></con:transfers>
                     <con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" transferChildNodes="false" useXQuery="false" transferToAll="false" ignoreEmpty="false" entitize="false">
                         <con:name>Transfer_FromPartyID</con:name>
                         <con:sourceType>Request</con:sourceType>
@@ -2272,7 +2266,7 @@
                         </con:sourcePath>
                         <con:targetType>FromPartyID</con:targetType>
                         <con:targetStep>RequestParameters</con:targetStep>
-                    </con:transfers>
+                    <con:upgraded>true</con:upgraded></con:transfers>
                     <con:transfers setNullOnMissingSource="true" transferTextContent="true" failOnError="true" entitize="false" transferToAll="false" transferChildNodes="false" useXQuery="false">
                         <con:name>Transfer_ToPartyID</con:name>
                         <con:sourceType>Request</con:sourceType>
@@ -2285,12 +2279,12 @@
                         </con:sourcePath>
                         <con:targetType>ToPartyID</con:targetType>
                         <con:targetStep>RequestParameters</con:targetStep>
-                    </con:transfers>
+                    <con:upgraded>true</con:upgraded></con:transfers>
                 </con:config>
             </con:testStep>
-            <con:testStep type="properties" name="RequestParameters">
+            <con:testStep type="properties" name="RequestParameters" id="4660f6e4-f11c-4e19-a1e3-51e6e923a85f">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:PropertiesStep" saveFirst="true">
+                <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:properties>
                         <con:property>
                             <con:name>FromPartyID</con:name>
@@ -2303,9 +2297,9 @@
                     </con:properties>
                 </con:config>
             </con:testStep>
-            <con:testStep type="properties" name="ResponseParameters">
+            <con:testStep type="properties" name="ResponseParameters" id="576abc8f-36be-47b1-be06-9f5b54f04489">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:PropertiesStep" saveFirst="true">
+                <con:config xsi:type="con:PropertiesStep" saveFirst="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:properties>
                         <con:property>
                             <con:name>MessageID</con:name>
@@ -2314,16 +2308,16 @@
                     </con:properties>
                 </con:config>
             </con:testStep>
-            <con:testStep type="delay" name="WaitForMessage">
+            <con:testStep type="delay" name="WaitForMessage" id="df4eeae7-1111-4322-9249-62b40a3d7cb3">
                 <con:settings/>
                 <con:config><delay>10000</delay></con:config>
             </con:testStep>
-            <con:testStep type="request" name="GetStatus">
+            <con:testStep type="request" name="GetStatus" id="73dff21a-7095-4b9f-ba1e-4a534e0cf99e">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>getMessageStatus</con:operation>
-                    <con:request name="GetStatus">
+                    <con:request name="GetStatus" id="c4cc1f00-a256-4203-a957-ae6132391c7a">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                         </con:settings>
@@ -2337,8 +2331,8 @@
       </_1:getStatusRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
-                        <con:assertion type="XPath Match" name="XPath Match">
+                        <con:assertion type="SOAP Response" id="ee331b1d-81fe-4e38-a4d0-8b6db0b808b8"/>
+                        <con:assertion type="XPath Match" name="XPath Match" id="ef5d8e97-8d21-4df7-a4cc-e7d4b5149554">
                             <con:configuration>
                                 <path>declare namespace
                                     S12='http://www.w3.org/2003/05/soap-envelope';
@@ -2373,12 +2367,12 @@
                     </con:request>
                 </con:config>
             </con:testStep>
-            <con:testStep type="request" name="GetErrors">
+            <con:testStep type="request" name="GetErrors" id="8cbf5bbd-8be8-4dcd-8a4b-80d851670906">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>getMessageErrors</con:operation>
-                    <con:request name="GetErrors">
+                    <con:request name="GetErrors" id="e263cac8-32c2-4e28-91df-307148c7d912">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                         </con:settings>
@@ -2392,7 +2386,7 @@
       </_1:getErrorsRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
+                        <con:assertion type="SOAP Response" id="385e935f-5a63-477b-968c-d17f49bf3785"/>
                         <con:credentials>
                             <con:authType>No Authorization</con:authType>
                         </con:credentials>
@@ -2403,18 +2397,18 @@
                     </con:request>
                 </con:config>
             </con:testStep>
-            <con:testStep type="delay" name="wait_conditional">
+            <con:testStep type="delay" name="wait_conditional" id="b1f9087f-40b0-46cc-9f92-d69a57ef7832">
                 <con:settings/>
                 <con:config>
                     <delay>1000</delay>
                 </con:config>
             </con:testStep>
-            <con:testStep type="request" name="check_if_messages_available">
+            <con:testStep type="request" name="check_if_messages_available" id="6c81b9ab-8e75-4675-90d8-5b4d151f7f2a">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>listPendingMessages</con:operation>
-                    <con:request name="check_if_messages_available">
+                    <con:request name="check_if_messages_available" id="9beff767-915a-449e-b51a-66e3b2e5ee7a">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                         </con:settings>
@@ -2426,7 +2420,7 @@
       <_1:listPendingMessagesRequest></_1:listPendingMessagesRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
+                        <con:assertion type="SOAP Response" id="86bcca60-c5fd-4a36-8f34-4592b2d74c8c"/>
                         <con:credentials>
                             <con:authType>No Authorization</con:authType>
                         </con:credentials>
@@ -2437,9 +2431,9 @@
                     </con:request>
                 </con:config>
             </con:testStep>
-            <con:testStep type="goto" name="wait_until_message_arrives">
+            <con:testStep type="goto" name="wait_until_message_arrives" id="654f8edf-89f1-406a-ac66-f117bfa041af">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:GotoStep">
+                <con:config xsi:type="con:GotoStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:condition>
                         <con:name>if_message_arrived</con:name>
                         <con:type>XPATH</con:type>
@@ -2468,12 +2462,12 @@
                     </con:condition>
                 </con:config>
             </con:testStep>
-            <con:testStep type="request" name="ListPendingMessages">
+            <con:testStep type="request" name="ListPendingMessages" id="beeb6b0c-710e-44ae-8cfe-6c289ee5fc6e">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>listPendingMessages</con:operation>
-                    <con:request name="ListPendingMessages">
+                    <con:request name="ListPendingMessages" id="c7e481fe-7081-481a-bf13-8acfb801ef3d">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                         </con:settings>
@@ -2485,9 +2479,9 @@
       <_1:listPendingMessagesRequest></_1:listPendingMessagesRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
-                        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault"/>
-                        <con:assertion type="XPath Match" name="XPath Match">
+                        <con:assertion type="SOAP Response" id="c5a4a608-8c22-40ff-8ab6-0975a72fc1a1"/>
+                        <con:assertion type="SOAP Fault Assertion" name="Not SOAP Fault" id="331a7324-1cee-43d2-bbe9-c944a499055b"/>
+                        <con:assertion type="XPath Match" name="XPath Match" id="47de0931-a69d-49b0-ac47-721d53125f1d">
                             <con:configuration>
                                 <path>declare namespace
                                     soapenv='http://www.w3.org/2003/05/soap-envelope';
@@ -2502,7 +2496,7 @@
                                 <ignoreComments>false</ignoreComments>
                             </con:configuration>
                         </con:assertion>
-                        <con:assertion type="Simple Contains" name="Contains">
+                        <con:assertion type="Simple Contains" name="Contains" id="d2f5d7aa-7c32-42fd-9578-62d93ee10d3b">
                             <con:configuration>
                                 <token>${messageID}</token>
                                 <ignoreCase>false</ignoreCase>
@@ -2519,12 +2513,12 @@
                     </con:request>
                 </con:config>
             </con:testStep>
-            <con:testStep type="request" name="DownloadMessage">
+            <con:testStep type="request" name="DownloadMessage" id="2975ec26-ec4f-4b55-9cb4-a974c7f3a758">
                 <con:settings/>
-                <con:config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="con:RequestStep">
+                <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
                     <con:interface>BackendService_1_1SoapBinding</con:interface>
                     <con:operation>downloadMessage</con:operation>
-                    <con:request name="DownloadMessage">
+                    <con:request name="DownloadMessage" id="aa41efee-df45-4d2d-a320-ce743e2719af">
                         <con:settings>
                             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
                         </con:settings>
@@ -2538,7 +2532,7 @@
       </_1:downloadMessageRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-                        <con:assertion type="SOAP Response"/>
+                        <con:assertion type="SOAP Response" id="3ed07834-dc8d-4cfd-ad0d-abe2302815dc"/>
                         <con:credentials>
                             <con:authType>No Authorization</con:authType>
                         </con:credentials>
@@ -2550,21 +2544,16 @@
                 </con:config>
             </con:testStep><con:properties/>
         </con:testCase>
-      <con:testCase failOnError="true" failTestCaseOnErrors="true"
-                    keepSession="false" maxResults="0" name="InteropTestcase1"
-                    searchProperties="true">
+      <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="InteropTestcase1" searchProperties="true" id="97ce7fe6-104a-4c55-bcb0-e00e09b21929">
         <con:settings/>
-        <con:testStep type="request" name="sendToIBMgw">
+        <con:testStep type="request" name="sendToIBMgw" id="4e116bd6-d6a0-422a-85ef-e3ed94f2cd0d">
           <con:settings/>
-          <con:config
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:type="con:RequestStep">
+          <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <con:interface>BackendService_1_1SoapBinding</con:interface>
             <con:operation>sendMessage</con:operation>
-            <con:request name="sendToIBMgw">
+            <con:request name="sendToIBMgw" id="4c03a466-6d56-41ca-832a-bb808ba9f9a4">
               <con:settings>
-                <con:setting
-                        id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+                <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                   &lt;xml-fragment/>
                 </con:setting>
               </con:settings>
@@ -2612,7 +2601,7 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-              <con:assertion type="SOAP Response"/>
+              <con:assertion type="SOAP Response" id="af28abd3-e279-4d86-af88-e48585641094"/>
               <con:credentials>
                 <con:authType>No Authorization</con:authType>
               </con:credentials>
@@ -2625,17 +2614,14 @@
         </con:testStep>
 
 
-        <con:testStep type="request" name="sendToRedGW">
+        <con:testStep type="request" name="sendToRedGW" id="85b90e7b-b90d-46dd-bf39-956b4b22c8e1">
           <con:settings/>
-          <con:config
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:type="con:RequestStep">
+          <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <con:interface>BackendService_1_1SoapBinding</con:interface>
             <con:operation>sendMessage</con:operation>
-            <con:request name="sendToRedGW">
+            <con:request name="sendToRedGW" id="e4047fd2-fc8a-4905-8141-088d7b65eebc">
               <con:settings>
-                <con:setting
-                        id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+                <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                   &lt;xml-fragment/>
                 </con:setting>
               </con:settings>
@@ -2684,7 +2670,7 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-              <con:assertion type="SOAP Response"/>
+              <con:assertion type="SOAP Response" id="0a135327-df2d-4da6-925a-a9f345b7e60d"/>
               <con:credentials>
                 <con:authType>No Authorization</con:authType>
               </con:credentials>
@@ -2695,17 +2681,14 @@
             </con:request>
           </con:config>
         </con:testStep>
-        <con:testStep type="request" name="sendToHolodeck">
+        <con:testStep type="request" name="sendToHolodeck" id="b9bc61ce-3e61-4695-a7a0-94bf4178896e">
           <con:settings/>
-          <con:config
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:type="con:RequestStep">
+          <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <con:interface>BackendService_1_1SoapBinding</con:interface>
             <con:operation>sendMessage</con:operation>
-            <con:request name="sendToHolodeck">
+            <con:request name="sendToHolodeck" id="01fb91d8-5e95-4396-9db1-7ea76c6a3e04">
               <con:settings>
-                <con:setting
-                        id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+                <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                   &lt;xml-fragment/>
                 </con:setting>
               </con:settings>
@@ -2752,7 +2735,7 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-              <con:assertion type="SOAP Response"/>
+              <con:assertion type="SOAP Response" id="0b37ad2d-8093-4ace-97ba-d3713d8ee290"/>
               <con:credentials>
                 <con:authType>No Authorization</con:authType>
               </con:credentials>
@@ -2763,17 +2746,14 @@
             </con:request>
           </con:config>
         </con:testStep>
-        <con:testStep type="request" name="sendToFlame">
+        <con:testStep type="request" name="sendToFlame" id="d5f83309-5f7b-493f-8d82-ddc6205d60a8">
           <con:settings/>
-          <con:config
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:type="con:RequestStep">
+          <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <con:interface>BackendService_1_1SoapBinding</con:interface>
             <con:operation>sendMessage</con:operation>
-            <con:request name="sendToFlame">
+            <con:request name="sendToFlame" id="30e9f286-50b3-4177-8f37-749a2a3c012c">
               <con:settings>
-                <con:setting
-                        id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+                <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                   &lt;xml-fragment/>
                 </con:setting>
               </con:settings>
@@ -2820,7 +2800,7 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-              <con:assertion type="SOAP Response"/>
+              <con:assertion type="SOAP Response" id="b8eb1813-4d29-4a8c-9e43-90493918a283"/>
               <con:credentials>
                 <con:authType>No Authorization</con:authType>
               </con:credentials>
@@ -2833,21 +2813,16 @@
         </con:testStep>
         <con:properties/>
       </con:testCase>
-      <con:testCase failOnError="true" failTestCaseOnErrors="true"
-                    keepSession="false" maxResults="0" name="InteropTestcase2"
-                    searchProperties="true">
+      <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="InteropTestcase2" searchProperties="true" id="36010e11-d556-4082-9fa7-bb40341ea463">
         <con:settings/>
-        <con:testStep type="request" name="sendToIBMgw">
+        <con:testStep type="request" name="sendToIBMgw" id="4838cdf4-82fe-48cc-8d6e-292ca0ecd314">
           <con:settings/>
-          <con:config
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:type="con:RequestStep">
+          <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <con:interface>BackendService_1_1SoapBinding</con:interface>
             <con:operation>sendMessage</con:operation>
-            <con:request name="sendToIBMgw">
+            <con:request name="sendToIBMgw" id="0a1926b4-e9d6-4c05-ab29-028e4098d897">
               <con:settings>
-                <con:setting
-                        id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+                <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                   &lt;xml-fragment/>
                 </con:setting>
               </con:settings>
@@ -2894,7 +2869,7 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-              <con:assertion type="SOAP Response"/>
+              <con:assertion type="SOAP Response" id="e03164c5-2b13-44ff-898b-4340526e4dfc"/>
               <con:credentials>
                 <con:authType>No Authorization</con:authType>
               </con:credentials>
@@ -2907,17 +2882,14 @@
         </con:testStep>
 
 
-        <con:testStep type="request" name="sendToRedGW">
+        <con:testStep type="request" name="sendToRedGW" id="48720b12-3c8a-426f-9992-d3ca0ad17dd1">
           <con:settings/>
-          <con:config
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:type="con:RequestStep">
+          <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <con:interface>BackendService_1_1SoapBinding</con:interface>
             <con:operation>sendMessage</con:operation>
-            <con:request name="sendToRedGW">
+            <con:request name="sendToRedGW" id="cd6bd2da-c6e6-4f2d-908e-3701ce8a4dda">
               <con:settings>
-                <con:setting
-                        id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+                <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                   &lt;xml-fragment/>
                 </con:setting>
               </con:settings>
@@ -2965,7 +2937,7 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-              <con:assertion type="SOAP Response"/>
+              <con:assertion type="SOAP Response" id="6ec66380-370a-4c1b-9f2c-4c2d428d00db"/>
               <con:credentials>
                 <con:authType>No Authorization</con:authType>
               </con:credentials>
@@ -2976,17 +2948,14 @@
             </con:request>
           </con:config>
         </con:testStep>
-        <con:testStep type="request" name="sendToHolodeck">
+        <con:testStep type="request" name="sendToHolodeck" id="98fc538d-cef5-416c-b35c-3f0f30da02e7">
           <con:settings/>
-          <con:config
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:type="con:RequestStep">
+          <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <con:interface>BackendService_1_1SoapBinding</con:interface>
             <con:operation>sendMessage</con:operation>
-            <con:request name="sendToHolodeck">
+            <con:request name="sendToHolodeck" id="ea87fc3a-bd62-434b-b316-ff1bd3e8fa09">
               <con:settings>
-                <con:setting
-                        id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+                <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                   &lt;xml-fragment/>
                 </con:setting>
               </con:settings>
@@ -3033,7 +3002,7 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-              <con:assertion type="SOAP Response"/>
+              <con:assertion type="SOAP Response" id="d6898d15-4632-481a-a08a-e1ec05205e69"/>
               <con:credentials>
                 <con:authType>No Authorization</con:authType>
               </con:credentials>
@@ -3044,17 +3013,14 @@
             </con:request>
           </con:config>
         </con:testStep>
-        <con:testStep type="request" name="sendToFlame">
+        <con:testStep type="request" name="sendToFlame" id="4ee4ddab-e12b-41e5-99e1-95dcdbbfa469">
           <con:settings/>
-          <con:config
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:type="con:RequestStep">
+          <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <con:interface>BackendService_1_1SoapBinding</con:interface>
             <con:operation>sendMessage</con:operation>
-            <con:request name="sendToFlame">
+            <con:request name="sendToFlame" id="8dae2191-f250-4feb-8228-7f53fe5b4db6">
               <con:settings>
-                <con:setting
-                        id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+                <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                   &lt;xml-fragment/>
                 </con:setting>
               </con:settings>
@@ -3101,7 +3067,7 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-              <con:assertion type="SOAP Response"/>
+              <con:assertion type="SOAP Response" id="f971895f-6810-48c5-872b-4e9c926b3cf1"/>
               <con:credentials>
                 <con:authType>No Authorization</con:authType>
               </con:credentials>
@@ -3112,17 +3078,14 @@
             </con:request>
           </con:config>
         </con:testStep>
-        <con:testStep type="request" name="sendBernhardMSG">
+        <con:testStep type="request" name="sendBernhardMSG" id="c3784e9e-101e-48a1-8ece-61d7d13b9810">
           <con:settings/>
-          <con:config
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:type="con:RequestStep">
+          <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <con:interface>BackendService_1_1SoapBinding</con:interface>
             <con:operation>sendMessage</con:operation>
-            <con:request name="sendBernhardMSG">
+            <con:request name="sendBernhardMSG" id="7655f35f-11ea-467e-acd5-71ec20dd0a5b">
               <con:settings>
-                <con:setting
-                        id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+                <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                   &lt;xml-fragment/>
                 </con:setting>
               </con:settings>
@@ -3196,7 +3159,7 @@
     </soap:Body>
 </soap:Envelope>
 ]]></con:request>
-              <con:assertion type="SOAP Response"/>
+              <con:assertion type="SOAP Response" id="5901abf9-d853-4b21-8e09-35e3b58ad182"/>
               <con:credentials>
                 <con:authType>No Authorization</con:authType>
               </con:credentials>
@@ -3209,21 +3172,16 @@
         </con:testStep>
         <con:properties/>
       </con:testCase>
-      <con:testCase failOnError="true" failTestCaseOnErrors="true"
-                    keepSession="false" maxResults="0" name="InteropTestcase3"
-                    searchProperties="true">
+      <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="InteropTestcase3" searchProperties="true" id="106fffad-6445-448c-9f73-a7f553d1cb02">
         <con:settings/>
-        <con:testStep type="request" name="sendToIBMgwLeg1">
+        <con:testStep type="request" name="sendToIBMgwLeg1" id="3382c524-8219-48d0-8910-6ca613667fe7">
           <con:settings/>
-          <con:config
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:type="con:RequestStep">
+          <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <con:interface>BackendService_1_1SoapBinding</con:interface>
             <con:operation>sendMessage</con:operation>
-            <con:request name="sendToIBMgwLeg1">
+            <con:request name="sendToIBMgwLeg1" id="9cef43a5-5275-4e22-9a40-00169869a268">
               <con:settings>
-                <con:setting
-                        id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+                <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                   &lt;xml-fragment/>
                 </con:setting>
               </con:settings>
@@ -3270,7 +3228,7 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-              <con:assertion type="SOAP Response"/>
+              <con:assertion type="SOAP Response" id="c3f8e7ff-34a0-466e-b07d-19c81afb71d0"/>
               <con:credentials>
                 <con:authType>No Authorization</con:authType>
               </con:credentials>
@@ -3283,17 +3241,14 @@
         </con:testStep>
 
 
-        <con:testStep type="request" name="sendToRedGWLeg1">
+        <con:testStep type="request" name="sendToRedGWLeg1" id="a66eba12-db12-4172-9304-a7d48067aee8">
           <con:settings/>
-          <con:config
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:type="con:RequestStep">
+          <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <con:interface>BackendService_1_1SoapBinding</con:interface>
             <con:operation>sendMessage</con:operation>
-            <con:request name="sendToRedGWLeg1">
+            <con:request name="sendToRedGWLeg1" id="88292347-3a68-46e9-ab11-b8a8141a64a6">
               <con:settings>
-                <con:setting
-                        id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+                <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                   &lt;xml-fragment/>
                 </con:setting>
               </con:settings>
@@ -3340,7 +3295,7 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-              <con:assertion type="SOAP Response"/>
+              <con:assertion type="SOAP Response" id="4c695042-54cd-43f5-8403-ed14361a5cb7"/>
               <con:credentials>
                 <con:authType>No Authorization</con:authType>
               </con:credentials>
@@ -3351,17 +3306,14 @@
             </con:request>
           </con:config>
         </con:testStep>
-        <con:testStep type="request" name="sendToHolodeckLeg1">
+        <con:testStep type="request" name="sendToHolodeckLeg1" id="bde1f290-539e-47bc-bcd7-f2a26908230d">
           <con:settings/>
-          <con:config
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:type="con:RequestStep">
+          <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <con:interface>BackendService_1_1SoapBinding</con:interface>
             <con:operation>sendMessage</con:operation>
-            <con:request name="sendToHolodeckLeg1">
+            <con:request name="sendToHolodeckLeg1" id="e2c4d91c-dcba-4827-8343-9058afd8b1e7">
               <con:settings>
-                <con:setting
-                        id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+                <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                   &lt;xml-fragment/>
                 </con:setting>
               </con:settings>
@@ -3408,7 +3360,7 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-              <con:assertion type="SOAP Response"/>
+              <con:assertion type="SOAP Response" id="458b7969-60b4-46b8-b4d6-9d5bbdbb126b"/>
               <con:credentials>
                 <con:authType>No Authorization</con:authType>
               </con:credentials>
@@ -3419,17 +3371,14 @@
             </con:request>
           </con:config>
         </con:testStep>
-        <con:testStep type="request" name="sendToFlameLeg1">
+        <con:testStep type="request" name="sendToFlameLeg1" id="14c893e3-cb12-45a1-8f7f-29298a5f3ffb">
           <con:settings/>
-          <con:config
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:type="con:RequestStep">
+          <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <con:interface>BackendService_1_1SoapBinding</con:interface>
             <con:operation>sendMessage</con:operation>
-            <con:request name="sendToFlameLeg1">
+            <con:request name="sendToFlameLeg1" id="71e64df8-805d-4497-a23a-f53dbe321379">
               <con:settings>
-                <con:setting
-                        id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+                <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                   &lt;xml-fragment/>
                 </con:setting>
               </con:settings>
@@ -3476,7 +3425,7 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-              <con:assertion type="SOAP Response"/>
+              <con:assertion type="SOAP Response" id="3c5d5a65-3dcf-4146-93e8-8df9c7a6a84d"/>
               <con:credentials>
                 <con:authType>No Authorization</con:authType>
               </con:credentials>
@@ -3487,17 +3436,14 @@
             </con:request>
           </con:config>
         </con:testStep>
-        <con:testStep type="request" name="sendToIBMgwLeg2">
+        <con:testStep type="request" name="sendToIBMgwLeg2" id="25e541f0-6d80-4f5a-85a3-6324163c1e2a">
           <con:settings/>
-          <con:config
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:type="con:RequestStep">
+          <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <con:interface>BackendService_1_1SoapBinding</con:interface>
             <con:operation>sendMessage</con:operation>
-            <con:request name="sendToIBMgwLeg2">
+            <con:request name="sendToIBMgwLeg2" id="426b6ba6-9f59-4325-9dc4-0e3ada2449c9">
               <con:settings>
-                <con:setting
-                        id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+                <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                   &lt;xml-fragment/>
                 </con:setting>
               </con:settings>
@@ -3547,7 +3493,7 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-              <con:assertion type="SOAP Response"/>
+              <con:assertion type="SOAP Response" id="617f9ed2-ae90-4173-b3dc-36b8e3333427"/>
               <con:credentials>
                 <con:authType>No Authorization</con:authType>
               </con:credentials>
@@ -3558,17 +3504,14 @@
             </con:request>
           </con:config>
         </con:testStep>
-        <con:testStep type="request" name="sendToRedGWLeg2">
+        <con:testStep type="request" name="sendToRedGWLeg2" id="20e05375-2d65-4819-bcbe-08be4f9fef0a">
           <con:settings/>
-          <con:config
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:type="con:RequestStep">
+          <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <con:interface>BackendService_1_1SoapBinding</con:interface>
             <con:operation>sendMessage</con:operation>
-            <con:request name="sendToRedGWLeg2">
+            <con:request name="sendToRedGWLeg2" id="dbd1ceea-6d28-4b77-9957-5b757bc444bf">
               <con:settings>
-                <con:setting
-                        id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+                <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                   &lt;xml-fragment/>
                 </con:setting>
               </con:settings>
@@ -3618,7 +3561,7 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-              <con:assertion type="SOAP Response"/>
+              <con:assertion type="SOAP Response" id="9e4e1452-74ca-4fd0-9acc-91f3b3a98277"/>
               <con:credentials>
                 <con:authType>No Authorization</con:authType>
               </con:credentials>
@@ -3629,17 +3572,14 @@
             </con:request>
           </con:config>
         </con:testStep>
-        <con:testStep type="request" name="sendToHolodeckLeg2">
+        <con:testStep type="request" name="sendToHolodeckLeg2" id="e1ef2c23-fa2a-4691-bc6b-ff34f47a4c12">
           <con:settings/>
-          <con:config
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:type="con:RequestStep">
+          <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <con:interface>BackendService_1_1SoapBinding</con:interface>
             <con:operation>sendMessage</con:operation>
-            <con:request name="sendToHolodeckLeg2">
+            <con:request name="sendToHolodeckLeg2" id="a6a00dcd-3e05-44da-8350-927659c3aae5">
               <con:settings>
-                <con:setting
-                        id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+                <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                   &lt;xml-fragment/>
                 </con:setting>
               </con:settings>
@@ -3689,7 +3629,7 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-              <con:assertion type="SOAP Response"/>
+              <con:assertion type="SOAP Response" id="58dea78d-75bf-4cde-b14d-87b6c0adfc12"/>
               <con:credentials>
                 <con:authType>No Authorization</con:authType>
               </con:credentials>
@@ -3700,17 +3640,14 @@
             </con:request>
           </con:config>
         </con:testStep>
-        <con:testStep type="request" name="sendToFlameLeg2">
+        <con:testStep type="request" name="sendToFlameLeg2" id="2a5d717a-27d1-4b8b-b9af-5101915487dc">
           <con:settings/>
-          <con:config
-                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-                  xsi:type="con:RequestStep">
+          <con:config xsi:type="con:RequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
             <con:interface>BackendService_1_1SoapBinding</con:interface>
             <con:operation>sendMessage</con:operation>
-            <con:request name="sendToFlameLeg2">
+            <con:request name="sendToFlameLeg2" id="8e6a731a-47d8-431b-8297-40814d44375c">
               <con:settings>
-                <con:setting
-                        id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
+                <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">
                   &lt;xml-fragment/>
                 </con:setting>
               </con:settings>
@@ -3760,7 +3697,7 @@
        </_1:sendRequest>
    </soap:Body>
 </soap:Envelope>]]></con:request>
-              <con:assertion type="SOAP Response"/>
+              <con:assertion type="SOAP Response" id="e5b47579-600a-470e-abfe-1af35295aa6f"/>
               <con:credentials>
                 <con:authType>No Authorization</con:authType>
               </con:credentials>
@@ -3774,13 +3711,13 @@
         <con:properties/>
         </con:testCase><con:properties/>
     </con:testSuite>
-    <con:restMockService port="8280" path="/" host="localhost" name="Domibus AS4 Mock" docroot="">
+    <con:restMockService port="8280" path="/" host="localhost" name="Domibus AS4 Mock" docroot="" id="bf722f6b-e814-4a5a-bcb8-97c8c0625e14">
         <con:settings/>
         <con:properties/>
         <con:onRequestScript/>
-        <con:restMockAction name="/domibus/services/msh" method="POST" resourcePath="/domibus/services/msh">
+        <con:restMockAction name="/domibus/services/msh" method="POST" resourcePath="/domibus/services/msh" id="69331722-b39a-4381-8583-9b94cdc5db92">
             <con:settings/>
-            <con:defaultResponse xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:nil="true"/>
+            <con:defaultResponse xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
             <con:dispatchStyle>SEQUENCE</con:dispatchStyle>
             <con:dispatchPath>/*
 // Examples showing how to match based on path, query param and header
@@ -3822,7 +3759,7 @@ if( acceptEncodingHeadeList.contains("gzip,deflate") )
 }
 
 */
-</con:dispatchPath><con:response name="AS4Response" httpResponseStatus="200" mediaType="application/soap+xml"><con:settings/><con:script>//evaluate(new File("C:/Daten/dev/repository/domibus/SoapUIScripts/src/main/groovy/GenerateAS4Receipt.groovy"))
+</con:dispatchPath><con:response name="AS4Response" httpResponseStatus="200" mediaType="application/soap+xml" id="246a50da-f749-4a96-b9d1-57a8957d3fc2"><con:settings/><con:script>//evaluate(new File("C:/Daten/dev/repository/domibus/SoapUIScripts/src/main/groovy/GenerateAS4Receipt.groovy"))
 //evaluate(new File("C:/Daten/dev/repository/domibus/SoapUIScripts/src/main/groovy/GenerateMirrorResponse.groovy"))
 //evaluate(new File("C:/Daten/dev/repository/domibus/SoapUIScripts/src/main/groovy/GenerateResponseFromRequestWithoutMessaging.groovy"))
 //evaluate(new File("C:/Daten/dev/repository/domibus/SoapUIScripts/src/main/groovy/GenerateSignalMessageWithoutReceipt.groovy"))

@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<project
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+    xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>eu.europa.ec.digit.domibus</groupId>
+    <version>1.0.0-alpha-1</version>
+    <artifactId>domibus-jaxb</artifactId>
+    <name>domibus-jaxb</name>
+    <packaging>jar</packaging>
+
+    <properties>
+        <jaxws.plugin.version>2.3</jaxws.plugin.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.jvnet.jax-ws-commons</groupId>
+            <artifactId>jaxws-maven-plugin</artifactId>
+            <version>${jaxws.plugin.version}</version>
+        </dependency>
+    </dependencies>
+
+    <distributionManagement>
+        <!-- use the following if you're not using a snapshot version. -->
+        <repository>
+            <id>joinup-releases</id>
+            <url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
+        </repository>
+        <!-- use the following if you ARE using a snapshot version. -->
+        <snapshotRepository>
+            <id>joinup-snapshots</id>
+            <url>https://joinup.ec.europa.eu/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.0</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                    <encoding>UTF-8</encoding>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.jvnet.jax-ws-commons</groupId>
+                <artifactId>jaxws-maven-plugin</artifactId>
+                <version>${jaxws.plugin.version}</version>
+                <executions>
+
+                    <execution>
+                        <id>domibus</id>
+                        <goals>
+                            <goal>wsimport</goal>
+                        </goals>
+                        <configuration>
+                            <wsdlDirectory>src/main/resources/wsdl</wsdlDirectory>
+                            <wsdlFiles>
+                                <wsdlFile>DMS-Gateway-0.01.wsdl</wsdlFile>
+                            </wsdlFiles>
+<!--
+                            <bindingFiles>
+                                <bindingFile>../main/resources/xjb/binding.xjb</bindingFile>
+                            </bindingFiles>
+-->
+                            <target>2.1</target>
+                            <staleFile>${project.build.directory}/jaxws/stale/.attachmentStaleFlag</staleFile>
+                            <keep>true</keep>
+                            <xnocompile>false</xnocompile>
+                        </configuration>
+                    </execution>
+
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+

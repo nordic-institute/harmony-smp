@@ -54,7 +54,7 @@
                     <sp:OnlySignEntireHeadersAndBody/>
                     <sp:AlgorithmSuite>
                         <wsp:Policy>
-                            <sp:Basic128Sha256/>
+                            <sp-cxf:Basic128GCMSha256 xmlns:sp-cxf="http://e-delivery.eu/custom/security-policy"/>
                         </wsp:Policy>
                     </sp:AlgorithmSuite>
                 </wsp:Policy>

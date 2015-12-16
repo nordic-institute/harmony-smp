@@ -16,7 +16,6 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-
 package eu.domibus.submission.webService.impl;
 
 import eu.domibus.common.MessageStatus;
@@ -65,7 +64,7 @@ public class BackendWebServiceImpl extends AbstractBackendConnector<Messaging, U
     private static final Log LOG = LogFactory.getLog(BackendWebServiceImpl.class);
     private static final ObjectFactory WEBSERVICE_OF = new ObjectFactory();
     private static final eu.domibus.common.model.org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.ObjectFactory EBMS_OBJECT_FACTORY = new eu.domibus.common.model.org.oasis_open.docs.ebxml_msg.ebms.v3_0.ns.core._200704.ObjectFactory();
-
+	
     @Autowired
     private MessageRetrievalTransformer<UserMessage> messageRetrievalTransformer;
     @Autowired
@@ -82,10 +81,10 @@ public class BackendWebServiceImpl extends AbstractBackendConnector<Messaging, U
     public BackendWebServiceImpl() {
         super("DefaultWebService");
     }
+
     public BackendWebServiceImpl(String name) {
         super(name);
     }
-
 
     @SuppressWarnings("ValidExternallyBoundObject")
     @Override
@@ -111,8 +110,8 @@ public class BackendWebServiceImpl extends AbstractBackendConnector<Messaging, U
             }
             if (!foundPayload) {
                 //can only be in bodyload, href MAY be null!
-                if (href == null && bodyload.getPayloadId() == null ||
-                        href != null && href.equals(bodyload.getPayloadId())) {
+                if (href == null && bodyload.getPayloadId() == null
+                        || href != null && href.equals(bodyload.getPayloadId())) {
 
                     this.copyPartProperties(bodyload, partInfo);
                     partInfo.setInBody(true);
@@ -121,7 +120,6 @@ public class BackendWebServiceImpl extends AbstractBackendConnector<Messaging, U
                     throw new SendMessageFault("no payload found for PartInfo with href " + partInfo.getHref());
                 }
             }
-
 
         }
         if (ebMSHeaderInfo.getUserMessage().getPartyInfo().getTo().getPartyId().isEmpty()) {
@@ -171,7 +169,6 @@ public class BackendWebServiceImpl extends AbstractBackendConnector<Messaging, U
         metadata.put(Metadata.COUNTRY_CODE_OR_EU, "*");
         metadata.put(Metadata.NAMING_SCHEME, new ECodexNamingScheme());
 
-
         try {
             discoveryClient.resolveMetadata(metadata);
             endpointAddress = (String) metadata.get(Metadata.ENDPOINT_ADDRESS);
@@ -180,13 +177,13 @@ public class BackendWebServiceImpl extends AbstractBackendConnector<Messaging, U
             LOG.error("", e);
         }
 
-            Collection<Identifier> identifiers = partyIndentifierResolverService.resolveByEndpoint(endpointAddress);
-            PartyId partyId = new PartyId();
-            for (Identifier identifier : identifiers) {
-                partyId.setType(identifier.getPartyIdType().getValue());
-                partyId.setValue(identifier.getPartyId());
-                ebMSHeaderInfo.getUserMessage().getPartyInfo().getTo().getPartyId().add(partyId);
-         }
+        Collection<Identifier> identifiers = partyIndentifierResolverService.resolveByEndpoint(endpointAddress);
+        PartyId partyId = new PartyId();
+        for (Identifier identifier : identifiers) {
+            partyId.setType(identifier.getPartyIdType().getValue());
+            partyId.setValue(identifier.getPartyId());
+            ebMSHeaderInfo.getUserMessage().getPartyInfo().getTo().getPartyId().add(partyId);
+        }
 
     }
 
@@ -214,10 +211,8 @@ public class BackendWebServiceImpl extends AbstractBackendConnector<Messaging, U
             partProperties.getProperties().add(prop);
         }
 
-
         partInfo.setPartProperties(partProperties);
     }
-
 
     @Override
     public ListPendingMessagesResponse listPendingMessages(final Object listPendingMessagesRequest) {
@@ -278,7 +273,8 @@ public class BackendWebServiceImpl extends AbstractBackendConnector<Messaging, U
     }
 
     /**
-     * As incomming messages can only be pulled, this implementation is never responsible for message delivery
+     * As incomming messages can only be pulled, this implementation is never
+     * responsible for message delivery
      *
      * @param metadata
      * @return false

@@ -81,13 +81,13 @@ public class PayloadProfileValidator {
             }
             size += partInfo.getBinaryData().length;
             if (profile.getMaxSize() > 0 && size > profile.getMaxSize()) {
-                throw new EbMS3Exception(EbMS3Exception.EbMS3ErrorCode.EBMS_0010, "Payload profiling error, max allowed size of combined elements is " + profile.getMaxSize(), null, null);
+                throw new EbMS3Exception(EbMS3Exception.EbMS3ErrorCode.EBMS_0010, "Payload profiling error, max allowed size of combined elements is " + profile.getMaxSize(), null, null, null);
             }
 
         }
         for (final Payload payload : modifiableProfileList) {
             if (payload.isRequired()) {
-                throw new EbMS3Exception(EbMS3Exception.EbMS3ErrorCode.EBMS_0010, "Payload profiling error, missing payload:" + payload, null, null);
+                throw new EbMS3Exception(EbMS3Exception.EbMS3ErrorCode.EBMS_0010, "Payload profiling error, missing payload:" + payload, null, null, null);
 
             }
         }

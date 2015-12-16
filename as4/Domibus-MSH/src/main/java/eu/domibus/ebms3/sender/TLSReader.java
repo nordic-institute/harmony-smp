@@ -29,6 +29,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import org.apache.commons.lang.StringUtils;
+
 
 /**
  * TODO: add class description
@@ -46,8 +48,8 @@ public class TLSReader {
         try {
             encoded = Files.readAllBytes(Paths.get(System.getProperty("domibus.config.location"), CLIENTAUTHENTICATION_XML));
             config = new String(encoded, "UTF-8");
-            config = config.replaceAll("\\Q${domibus.config.location}\\E", System.getProperty("domibus.config.location").replace('\\', '/'));
-
+            config = StringUtils.replace(config, "${domibus.config.location}", System.getProperty("domibus.config.location")).replace('\\', '/');
+            LOG.info("ClientAuthentication is: " + config);
             return (TLSClientParameters) TLSClientParametersConfig.createTLSClientParameters(config);
 
         } catch (FileNotFoundException e) {

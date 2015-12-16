@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<project
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>eu.europa.ec.digit.domibus</groupId>
+    <artifactId>domibus-app</artifactId>
+    <version>1.0.0-alpha-1</version>
+  </parent>
+
+  <artifactId>domibus-core</artifactId>
+  <packaging>jar</packaging>
+  <name>domibus-core</name>
+
+
+  <dependencies>
+    <dependency>
+      <groupId>eu.europa.ec.digit.domibus</groupId>
+      <artifactId>domibus-entity</artifactId>
+      <version>${domibus.app.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>eu.europa.ec.digit.domibus</groupId>
+      <artifactId>domibus-domain</artifactId>
+      <version>${domibus.app.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>eu.europa.ec.digit.domibus</groupId>
+      <artifactId>domibus-common</artifactId>
+      <version>${domibus.app.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>eu.europa.ec.digit.domibus</groupId>
+      <artifactId>domibus-base</artifactId>
+      <version>${domibus.app.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${org.apache.commons.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>eu.europa.ec.digit.domibus</groupId>
+      <artifactId>domibus-base</artifactId>
+      <version>${domibus.app.version}</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>eu.europa.ec.digit.domibus</groupId>
+      <artifactId>domibus-jaxb</artifactId>
+      <type>jar</type>
+    </dependency>
+  </dependencies>
+
+</project>

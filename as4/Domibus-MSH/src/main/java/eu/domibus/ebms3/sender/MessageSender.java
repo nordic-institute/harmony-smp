@@ -16,7 +16,6 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-
 package eu.domibus.ebms3.sender;
 
 import eu.domibus.common.MSHRole;
@@ -34,6 +33,8 @@ import eu.domibus.ebms3.common.dao.PModeProvider;
 import eu.domibus.submission.AbstractBackendConnector;
 import eu.domibus.submission.BackendConnector;
 import eu.domibus.submission.MessageMetadata;
+import eu.domibus.submission.webService.impl.BackendWebServiceImpl;
+import java.util.ArrayList;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.interceptor.Fault;
@@ -50,7 +51,6 @@ import java.util.List;
 
 //import eu.domibus.ebms3.pmode.PModeFinder;
 //import eu.domibus.ebms3.pmode.model.PMode;
-
 /**
  * This class is responsible for the handling of outgoing messages.
  *
@@ -58,9 +58,9 @@ import java.util.List;
  * @author Stefan Müller
  * @since 3.0
  */
-
 @Service
 public class MessageSender {
+
     private static final Log LOG = LogFactory.getLog(MessageSender.class);
 
     private final String UNRECOVERABLE_ERROR_RETRY = "domibus.dispatch.ebms.error.unrecoverable.retry";
@@ -88,7 +88,6 @@ public class MessageSender {
 
     @Autowired
     private EbmsErrorChecker ebmsErrorChecker;
-
 
     @Resource(name = "backends")
     private List<AbstractBackendConnector> backends;
@@ -123,6 +122,24 @@ public class MessageSender {
      */
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     private void sendUserMessage(final String messageId) {
+
+//        java.security.Provider[] providers = java.security.Security.getProviders();
+//        MessageSender.LOG.info("Providers!!!!!!!!!!!!!!!!!!!!!");
+//
+//        for (java.security.Provider provider : java.security.Security.getProviders()) {
+//            System.out.println("Provider: " + provider.getName() + " (ver " + provider.getVersion() + ")");
+//            System.out.print(" Algorithms: ");
+//            ArrayList<String> algos = new ArrayList<String>();
+//            for (java.security.Provider.Service service : provider.getServices()) {
+//                algos.add(String.format("%s (%s)", service.getAlgorithm(), service.getType()));
+//            }
+//            java.util.Collections.sort(algos);
+//            String algorsStr = algos.toString(); // remove [ and ] from ArrayList's toString() 
+//            algorsStr = algorsStr.substring(1, algorsStr.length() - 1);
+//            System.out.println(algorsStr);
+//            System.out.println();
+//        }
+
         boolean reliabilityCheckSuccessful = false;
         EbmsErrorChecker.CheckResult errorCheckResult = null;
 
@@ -151,6 +168,8 @@ public class MessageSender {
 
         } catch (EbMS3Exception e) {
             this.handleEbms3Exception(e, messageId, legConfiguration);
+        } catch (Exception e) {
+            LOG.error("Exception " + e.getMessage());
         } finally {
             if (reliabilityCheckSuccessful) {
 
@@ -175,10 +194,13 @@ public class MessageSender {
     }
 
     /**
-     * This method is responsible for the ebMS3 error handling (creation of errorlogs and marking message as sent)
+     * This method is responsible for the ebMS3 error handling (creation of
+     * errorlogs and marking message as sent)
      *
-     * @param exceptionToHandle the exception {@link eu.domibus.common.exception.EbMS3Exception} that needs to be handled
-     * @param messageId         id of the message the exception belongs to
+     * @param exceptionToHandle the exception
+     * {@link eu.domibus.common.exception.EbMS3Exception} that needs to be
+     * handled
+     * @param messageId id of the message the exception belongs to
      */
     private void handleEbms3Exception(EbMS3Exception exceptionToHandle, String messageId, LegConfiguration legConfiguration) {
         exceptionToHandle.setRefToMessageId(messageId);
@@ -197,21 +219,20 @@ public class MessageSender {
     @Async
     private void notifyBackends(MessageMetadata metadata) {
 
-
         for (BackendConnector backend : backends) {
             if (backend.isResponsible(metadata)) {
                 backend.messageNotification(metadata);
                 break;
             }
 
-
         }
     }
 
     /**
-     * This method is responsible for the handling of retries for a given message
+     * This method is responsible for the handling of retries for a given
+     * message
      *
-     * @param messageId        id of the message that needs to be retried
+     * @param messageId id of the message that needs to be retried
      * @param legConfiguration processing information for the message
      */
     @Transactional(Transactional.TxType.REQUIRES_NEW)
@@ -229,6 +250,5 @@ public class MessageSender {
 
         this.messageLogDao.update(messageLogEntry);
     }
-
 
 }

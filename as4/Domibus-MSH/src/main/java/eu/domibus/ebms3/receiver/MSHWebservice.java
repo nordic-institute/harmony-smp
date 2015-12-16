@@ -16,7 +16,6 @@
  * See the Licence for the specific language governing
  * permissions and limitations under the Licence.
  */
-
 package eu.domibus.ebms3.receiver;
 
 import eu.domibus.common.MSHRole;
@@ -41,16 +40,12 @@ import eu.domibus.ebms3.common.MessageIdGenerator;
 import eu.domibus.ebms3.common.TimestampDateFormatter;
 import eu.domibus.ebms3.common.dao.PModeProvider;
 import eu.domibus.ebms3.sender.MSHDispatcher;
-import eu.domibus.submission.BackendConnector;
-import eu.domibus.submission.MessageMetadata;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.cxf.attachment.AttachmentUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.w3c.dom.Node;
 
-import javax.annotation.Resource;
 import javax.transaction.Transactional;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -72,20 +67,20 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 
 /**
- * This method is responsible for the receiving of ebMS3 messages and the sending of signal messages like receipts or ebMS3 errors in return
+ * This method is responsible for the receiving of ebMS3 messages and the
+ * sending of signal messages like receipts or ebMS3 errors in return
  *
  * @author Christian Koch
  * @author Stefan Müller
  * @since 3.0
  */
-
 @WebServiceProvider(portName = "mshPort", serviceName = "mshService")
 @ServiceMode(Service.Mode.MESSAGE)
 @BindingType(SOAPBinding.SOAP12HTTP_BINDING)
 public class MSHWebservice implements Provider<SOAPMessage> {
+
     private static final Log LOG = LogFactory.getLog(MSHWebservice.class);
 
     @Autowired
@@ -119,9 +114,6 @@ public class MSHWebservice implements Provider<SOAPMessage> {
 
     @Autowired
     private PropertyProfileValidator propertyProfileValidator;
-
-    @Resource(name = "backends")
-    private List<BackendConnector> backends;
 
     public void setJaxbContext(JAXBContext jaxbContext) {
         this.jaxbContext = jaxbContext;
@@ -167,12 +159,7 @@ public class MSHWebservice implements Provider<SOAPMessage> {
                 messageId = this.persistReceivedMessage(request, legConfiguration, pmodeKey, messaging);
             }
             responseMessage = this.generateReceipt(request, legConfiguration, messageExists);
-
-
-            if (!messageExists) {
-                this.notifyBackends(messageId, legConfiguration);
-            }
-
+            
         } catch (TransformerException | SOAPException | JAXBException | IOException e) {
             throw new RuntimeException(e);
         } catch (EbMS3Exception e) {
@@ -181,7 +168,6 @@ public class MSHWebservice implements Provider<SOAPMessage> {
 
         return responseMessage;
     }
-
 
     /**
      * Required for AS4_TA_12
@@ -200,7 +186,8 @@ public class MSHWebservice implements Provider<SOAPMessage> {
     }
 
     /**
-     * If message with same messageId is already in the database return <code>true</code> else <code>false</code>
+     * If message with same messageId is already in the database return
+     * <code>true</code> else <code>false</code>
      *
      * @param messaging
      * @return result of duplicate check
@@ -209,28 +196,14 @@ public class MSHWebservice implements Provider<SOAPMessage> {
 
         return messageLogDao.findByMessageId(messaging.getUserMessage().getMessageInfo().getMessageId(), MSHRole.RECEIVING) != null;
 
-
-    }
-
-    @Async
-    private void notifyBackends(String messageId, LegConfiguration legConfiguration) {
-        MessageMetadata metadata = new MessageMetadata(messageId, legConfiguration.getService(), legConfiguration.getAction(), MessageMetadata.Type.INBOUND);
-        for (BackendConnector backend : this.backends) {
-            if (backend.isResponsible(metadata)) {
-                backend.messageNotification(metadata);
-                break;
-            }
-        }
-
-
     }
 
     /**
      * Handles Receipt generation for a incoming message
      *
-     * @param request          the incoming message
+     * @param request the incoming message
      * @param legConfiguration processing information of the message
-     * @param duplicate        indicates whether or not the message is a duplicate
+     * @param duplicate indicates whether or not the message is a duplicate
      * @return the response message to the incoming request message
      * @throws EbMS3Exception if generation of receipt was not successful
      */
@@ -253,7 +226,7 @@ public class MSHWebservice implements Provider<SOAPMessage> {
                 transformer.setParameter("messageid", this.messageIdGenerator.generateMessageId());
                 transformer.setParameter("timestamp", this.timestampDateFormatter.generateTimestamp());
                 transformer.setParameter("nonRepudiation", Boolean.toString(legConfiguration.getReliability().isNonRepudiation()));
-
+                transformer.setParameter("isDuplicate", Boolean.toString(duplicate));
                 DOMResult domResult = new DOMResult();
 
                 transformer.transform(requestMessage, domResult);
@@ -273,9 +246,10 @@ public class MSHWebservice implements Provider<SOAPMessage> {
     }
 
     /**
-     * This method persists incoming messages into the database (and handles decompression before)
+     * This method persists incoming messages into the database (and handles
+     * decompression before)
      *
-     * @param request          the message to persist
+     * @param request the message to persist
      * @param legConfiguration processing information for the message
      * @throws SOAPException
      * @throws JAXBException
@@ -285,7 +259,6 @@ public class MSHWebservice implements Provider<SOAPMessage> {
      */
     //TODO: improve error handling
     private String persistReceivedMessage(SOAPMessage request, LegConfiguration legConfiguration, String pmodeKey, Messaging messaging) throws SOAPException, JAXBException, TransformerException, EbMS3Exception {
-
 
         boolean bodyloadFound = false;
         for (PartInfo partInfo : messaging.getUserMessage().getPayloadInfo().getPartInfo()) {
@@ -338,7 +311,7 @@ public class MSHWebservice implements Provider<SOAPMessage> {
         messageLogEntry.setMshRole(MSHRole.RECEIVING);
         messageLogEntry.setReceived(new Date());
         String mpc = messaging.getUserMessage().getMpc();
-        messageLogEntry.setMpc((mpc == null || mpc.isEmpty())? Mpc.DEFAULT_MPC:mpc);
+        messageLogEntry.setMpc((mpc == null || mpc.isEmpty()) ? Mpc.DEFAULT_MPC : mpc);
         messageLogEntry.setMessageStatus(MessageStatus.RECEIVED);
 
         this.messageLogDao.create(messageLogEntry);
@@ -350,7 +323,8 @@ public class MSHWebservice implements Provider<SOAPMessage> {
     private Messaging getMessaging(SOAPMessage request) throws SOAPException, JAXBException {
         Node messagingXml = (Node) request.getSOAPHeader().getChildElements(ObjectFactory._Messaging_QNAME).next();
         Unmarshaller unmarshaller = this.jaxbContext.createUnmarshaller(); //Those are not thread-safe, therefore a new one is created each call
-        @SuppressWarnings("unchecked") JAXBElement<Messaging> root = (JAXBElement<Messaging>) unmarshaller.unmarshal(messagingXml);
+        @SuppressWarnings("unchecked")
+        JAXBElement<Messaging> root = (JAXBElement<Messaging>) unmarshaller.unmarshal(messagingXml);
         return root.getValue();
     }
 }

@@ -95,16 +95,25 @@ public class DatabaseMessageHandler implements MessageSubmitter<Submission>, Mes
             userMessage = this.messagingDao.findUserMessageByMessageId(messageId);
             messageLogEntry = this.messageLogDao.findByMessageId(messageId, MSHRole.RECEIVING);
         } catch (final NoResultException e) {
-            DatabaseMessageHandler.LOG.warn("Message with id" + messageId + " was not found");
-            throw new ValidationException("Message with id" + messageId + " was not found", e);
+            DatabaseMessageHandler.LOG.warn("Message with id " + messageId + " was not found");
+            throw new ValidationException("Message with id " + messageId + " was not found", e);
         }
-
+        /* fix NullPointer issue */
+        if(messageLogEntry == null) {
+            DatabaseMessageHandler.LOG.warn("Message with id " + messageId + " was not found");
+            throw new ValidationException("Message with id " + messageId + " was not found");
+        }
+        if(messageLogEntry.getMessageStatus() == MessageStatus.DELETED) {
+            DatabaseMessageHandler.LOG.warn("Message with id " + messageId + " was already deleted");
+            throw new ValidationException("Message with id " + messageId + " was already deleted");
+        }
+        
         messageLogEntry.setDeleted(new Date());
         this.messageLogDao.update(messageLogEntry);
         if (0 == pModeProvider.getRetentionDownloadedByMpcName(messageLogEntry.getMpc())) {
             messagingDao.delete(messageId);
         }
-        ;
+
         return this.transformer.transformFromMessaging(userMessage);
     }
 

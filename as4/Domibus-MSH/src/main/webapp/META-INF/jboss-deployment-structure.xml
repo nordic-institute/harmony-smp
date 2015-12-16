@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-deployment-structure>
+    <deployment>
+        <dependencies>
+            <module name="deployment.javaee.api" />
+            <module name="eu.domibus" />
+            <module name="org.bouncycastle" slot="1.50" export="true" />
+        </dependencies>
+        <exclusions>
+            <module name="javaee.api" />
+        </exclusions>
+    </deployment>
+    <module name="deployment.javaee.api">
+        <dependencies>
+            <module name="javaee.api" export="true">
+                <imports>
+                    <exclude path="org/apache/xml/security/**" />
+                </imports>
+            </module>
+        </dependencies>
+    </module>
+</jboss-deployment-structure>

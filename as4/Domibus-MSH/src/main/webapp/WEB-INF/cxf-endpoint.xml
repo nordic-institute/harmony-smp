@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  ~ Copyright 2015 e-CODEX Project
-  ~
-  ~ Licensed under the EUPL, Version 1.1 or – as soon they
-  ~ will be approved by the European Commission - subsequent
-  ~ versions of the EUPL (the "Licence");
-  ~ You may not use this work except in compliance with the
-  ~ Licence.
-  ~ You may obtain a copy of the Licence at:
-  ~ http://ec.europa.eu/idabc/eupl5
-  ~ Unless required by applicable law or agreed to in
-  ~ writing, software distributed under the Licence is
-  ~ distributed on an "AS IS" basis,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
-  ~ express or implied.
-  ~ See the Licence for the specific language governing
-  ~ permissions and limitations under the Licence.
-  -->
+~ Copyright 2015 e-CODEX Project
+~
+~ Licensed under the EUPL, Version 1.1 or – as soon they
+~ will be approved by the European Commission - subsequent
+~ versions of the EUPL (the "Licence");
+~ You may not use this work except in compliance with the
+~ Licence.
+~ You may obtain a copy of the Licence at:
+~ http://ec.europa.eu/idabc/eupl5
+~ Unless required by applicable law or agreed to in
+~ writing, software distributed under the Licence is
+~ distributed on an "AS IS" basis,
+~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+~ express or implied.
+~ See the Licence for the specific language governing
+~ permissions and limitations under the Licence.
+-->
 
 <!-- This file contains the configuration of both the Webservice endpoint and client -->
 <beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jaxws="http://cxf.apache.org/jaxws"
@@ -38,18 +38,6 @@
         </cxf:features>
     </cxf:bus>
 
-    <!--Message logger configuration-->
-    <bean id="logInbound" class="org.apache.cxf.interceptor.LoggingInInterceptor">
-        <property name="prettyLogging" value="true"/>
-        <property name="showBinaryContent" value="false"/>
-    </bean>
-
-    <bean id="logOutbound" class="org.apache.cxf.interceptor.LoggingOutInterceptor">
-        <property name="prettyLogging" value="true"/>
-        <property name="showBinaryContent" value="false"/>
-        <property name="after" value="org.apache.cxf.ws.policy.PolicyVerificationOutInterceptor.class"/>
-    </bean>
-
     <!--Interceptors to enable SwA encryption for Dispatch/WebServiceProvider implementations-->
     <bean id="setPolicyInInterceptorServer" class="eu.domibus.ebms3.receiver.SetPolicyInInterceptor">
         <property name="jaxbContext" ref="jaxbContextEBMS"/>
@@ -60,6 +48,9 @@
 
     <bean id="propertyValueExchangeInterceptor" class="eu.domibus.ebms3.receiver.PropertyValueExchangeInterceptor"/>
 
+    <bean id="notifyBackendOutInterceptor" class="eu.domibus.ebms3.receiver.NotifyBackendOutInterceptor">
+        <property name="jaxbContext" ref="jaxbContextEBMS"/>
+    </bean>
     <bean id="setPolicyOutInterceptor" class="eu.domibus.ebms3.sender.SetPolicyOutInterceptor">
     </bean>
 
@@ -85,10 +76,12 @@
             <entry key="exceptionMessageCauseEnabled" value="false"/>
         </jaxws:properties>
         <jaxws:inInterceptors>
-            <!--<ref bean="logInbound"/>-->
             <ref bean="setPolicyInInterceptorServer"/>
             <ref bean="propertyValueExchangeInterceptor"/>
         </jaxws:inInterceptors>
+        <jaxws:outInterceptors>
+            <ref bean="notifyBackendOutInterceptor"/>
+        </jaxws:outInterceptors>
 
         <jaxws:handlers>
             <bean class="eu.domibus.ebms3.receiver.FaultInHandler"/>
@@ -100,7 +93,6 @@
     <!--MSH Webservice client-->
     <jaxws:client id="{http://domibus.eu}msh-dispatch" name="{http://domibus.eu}msh-dispatch" createdFromAPI="true">
         <jaxws:outInterceptors>
-            <!--<ref bean="logOutbound"/>-->
             <ref bean="setPolicyOutInterceptor"/>
         </jaxws:outInterceptors>
         <jaxws:inInterceptors>
