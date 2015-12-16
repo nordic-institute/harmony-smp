@@ -97,15 +97,12 @@
             <filtered>false</filtered>
         </fileSet>
         <fileSet>
-            <directory>src/main/resources/jboss</directory>
+            <directory>src/main/resources/jboss/domain</directory>
             <useDefaultExcludes>true</useDefaultExcludes>
-            <excludes>
-                <exclude>**/modules.zip</exclude>
-            </excludes>
             <includes>
                 <include>**/*</include>
             </includes>
-            <outputDirectory>/</outputDirectory>
+            <outputDirectory>/domain/</outputDirectory>
             <fileMode>0444</fileMode>
             <directoryMode>0555</directoryMode>
             <filtered>true</filtered>
@@ -139,24 +136,33 @@
             <filtered>false</filtered>
         </fileSet>
         <fileSet>
-            <directory>src/main/resources/configuration</directory>
-            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main/domibus</outputDirectory>
-            <excludes>
-                <exclude>**/smp.config.properties</exclude>
-                <exclude>**/mendelson.properties</exclude>
-            </excludes>
+            <directory>${projectRootPath}/environment/jboss-as7/modules/eu/europa/ec/digit/domibus/main</directory>
+            <outputDirectory>/modules/eu/europa/ec/digit/domibus/main/</outputDirectory>
             <fileMode>0444</fileMode>
             <directoryMode>0555</directoryMode>
             <filtered>false</filtered>
         </fileSet>
         <fileSet>
-            <directory>${projectRootPath}/Domibus-MSH/src/main/conf</directory>
-            <outputDirectory>/modules/eu/europa/ec/cipa/configuration/main</outputDirectory>
+            <directory>${domibusRootPath}/src/main/conf/domibus</directory>
+            <outputDirectory>/modules/eu/domibus/main/</outputDirectory>
             <includes>
-                <include>**/signEncrypt.xml</include>
-                <include>**/ehcache.xml</include>
-                <include>**/submission-config.xml</include>
+                <include>signEncrypt.xml</include>
+                <include>ehcache.xml</include>
+                <include>submission-config.xml</include>
+                <include>clientauthentication.xml</include>
+                <include>domibus-configuration.xml</include>
+                <include>module.xml</include>
             </includes>
+            <fileMode>0444</fileMode>
+            <directoryMode>0555</directoryMode>
+            <filtered>true</filtered>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/jboss/standalone/configuration</directory>
+            <outputDirectory>/standalone/configuration</outputDirectory>
+            <excludes>
+                <exclude>**/standalone.xml</exclude>
+            </excludes>
             <fileMode>0444</fileMode>
             <directoryMode>0555</directoryMode>
             <filtered>true</filtered>
@@ -164,17 +170,22 @@
     </fileSets>
     <files>
         <file>
-            <source>${projectRootPath}/domibus-submission-webapp/target/submission.war</source>
+            <source>${projectRootPath}/environment/jboss-as7/standalone/configuration/standalone.xml</source>
+            <outputDirectory>/standalone/configuration/</outputDirectory>
+            <filtered>true</filtered>
+        </file>
+        <file>
+            <source>${projectRootPath}/domibus-endpoint/target/domibus-app.war</source>
             <outputDirectory>/standalone/deployments</outputDirectory>
             <filtered>false</filtered>
         </file>
         <file>
-            <source>${projectRootPath}/Domibus-MSH/target/domibus.war</source>
+            <source>${domibusRootPath}/target/domibus.war</source>
             <outputDirectory>/standalone/deployments</outputDirectory>
             <filtered>false</filtered>
         </file>
         <file>
-            <source>src/test/BRIS-test-guide-soapui-project.xml</source>
+            <source>src/test/Domibus-3-2-0-soapui-project.xml</source>
             <outputDirectory>test</outputDirectory>
             <filtered>false</filtered>
         </file>
@@ -193,11 +204,11 @@
             <!--<outputDirectory>/</outputDirectory>-->
             <!--<filtered>false</filtered>-->
         <!--</file>-->
-        <file>
+        <!--<file>
             <source>src/main/doc/ReleaseNotes-3.1.0.txt</source>
             <outputDirectory>/</outputDirectory>
             <filtered>false</filtered>
-        </file>
+        </file>-->
         <file>
             <source>src/main/doc/Building Block DSI_IntroDocument (eDelivery)-v1.00.pdf</source>
             <outputDirectory>/</outputDirectory>

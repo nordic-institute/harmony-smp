@@ -12,10 +12,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europa.ec.cipa</groupId>
-    <artifactId>cipa-edelivery-distribution</artifactId>
+    <artifactId>cef-edelivery-distribution</artifactId>
     <packaging>pom</packaging>
-    <name>cipa-edelivery-distribution</name>
-    <version>3.2.0-SNAPSHOT</version>
+    <name>cef-edelivery-distribution</name>
+    <version>3.2.0-alpha-1</version>
 
     <!-- Some properties are preset for setting up a sender and a receiver. The configuration is set with the "type" property -->
     <properties>
@@ -23,8 +23,8 @@
         <!-- can be either "local" or "VM" -->
         <type>local</type>
         <server.version>7.1.1.Final</server.version>
-        <projectRootPath>../../EDELIVERY/domibus-3-submission</projectRootPath>
-        <domibusRootPath>../../EDELIVERY/domibus-3-submission/Domibus-MSH</domibusRootPath>
+        <projectRootPath>../as4/domibus-app</projectRootPath>
+        <domibusRootPath>../as4/Domibus-MSH</domibusRootPath>
         <modulesZipPath>${project.basedir}/src/main/resources/jboss</modulesZipPath>
     </properties>
 
@@ -88,32 +88,6 @@
     <profiles>
         <profile>
             <!-- profile to be used for BRIS pilot with Domibus 3-->
-            <id>domibusapp-jboss</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <properties>
-                <!-- the name of the assembly file -->
-                <assemblyName>domibusapp-jboss</assemblyName>
-                <!-- true if the AS2 component must not be packed -->
-                <skipAS2>true</skipAS2>
-                <!-- true if the connector component must not be packed -->
-                <skipConnector>true</skipConnector>
-                <!-- true if the Domibus3 component must not be packed -->
-                <skipDomibus3>false</skipDomibus3>
-                <!-- true if the SMP component must not be packed -->
-                <skipSMP>true</skipSMP>
-                <modulesZipPath>src/main/resources/jboss/domibusapp_modules</modulesZipPath>
-                <projectRootPath>../../EDELIVERY/domibus-app</projectRootPath>
-            </properties>
-            <modules>
-                <module>${projectRootPath}</module>
-                <module>${domibusRootPath}</module>
-        </modules>
-        </profile>
-    
-        <profile>
-            <!-- profile to be used for BRIS pilot with Domibus 3-->
             <id>as4-jboss</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
@@ -129,12 +103,13 @@
                 <skipDomibus3>false</skipDomibus3>
                 <!-- true if the SMP component must not be packed -->
                 <skipSMP>true</skipSMP>
+                <modulesZipPath>src/main/resources/jboss/domibusapp_modules</modulesZipPath>
             </properties>
             <modules>
                 <module>${projectRootPath}</module>
-                <module>../as4/dynamic-discovery</module>
-            </modules>
-        </profile>
+                <module>${domibusRootPath}</module>
+        </modules>
+        </profile>    
         <profile>
             <id>complete-jboss</id>
             <activation>
