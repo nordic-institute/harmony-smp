@@ -166,10 +166,10 @@
       <com:GatewayHeader>\r
          <com:AddressInfo>\r
             <com:Sender>\r
-               <com:Id>instanceAId1</com:Id>\r
+               <com:Id>instanceBId1</com:Id>\r
             </com:Sender>\r
             <com:Receiver>\r
-               <com:Id>instanceBId1</com:Id>\r
+               <com:Id>instanceAId1</com:Id>\r
             </com:Receiver>\r
          </com:AddressInfo>\r
          <com:MessageInfo>\r
@@ -197,10 +197,10 @@ else
       <com:GatewayHeader>\r
          <com:AddressInfo>\r
             <com:Sender>\r
-               <com:Id>instanceBId1</com:Id>\r
+               <com:Id>instanceAId1</com:Id>\r
             </com:Sender>\r
             <com:Receiver>\r
-               <com:Id>instanceAId1</com:Id>\r
+               <com:Id>instanceBId1</com:Id>\r
             </com:Receiver>\r
          </com:AddressInfo>\r
          <com:MessageInfo>\r
