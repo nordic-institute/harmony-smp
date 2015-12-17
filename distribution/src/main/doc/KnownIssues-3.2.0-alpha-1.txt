@@ -1,0 +1,23 @@
+
+Known Issues for cef-edelivery-distribution, version 3.2.0-alpha-1:
+
+	•	Attachments: Cannot send multiple attachments, only one attachment is accepted and transferred. 
+		In case of multiple attachments, only the last one is sent over the wire, no error is raised.
+
+	•	Gateway: No error is received when the gateway at the receiver side is down. 
+
+	•	Gateway: No error is returned when sending a message where the Sender is not supposed to be linked with the receiving MSH.
+
+	•	Gateway: When the sender and the receiver are both using the same gateway, sending the message will fail after it is persisted to the database.
+
+	•	pMode: Maximum length set in the pMode is not enforce properly in the message.
+
+	•	DB: Sending multiple messages back and forth may result in a database lock. After several retries, the sending/receiving will work again. 
+		This needs further investigation.
+
+	•	WSDL: Creating dummy attributes or values in the message does not generate an error.
+
+	•	Streaming: The Submission Module is using the Message Transmission Optimization Mechanism (MTOM) to stream the payloads. 
+		Streaming is not yet implemented at the MSH level
+
+	•	Duplicates: Duplicated messages are not checked during the notification. A duplicate message will be notified twice to the receiving endpoint.
