@@ -199,13 +199,13 @@
             <outputDirectory>/</outputDirectory>
             <filtered>false</filtered>
         </file>
-        <!--<file>-->
-            <!--<source>src/main/doc/Known Issues.pdf</source>-->
-            <!--<outputDirectory>/</outputDirectory>-->
-            <!--<filtered>false</filtered>-->
-        <!--</file>-->
         <file>
-            <source>src/main/doc/Release Notes 3.2.0 .pdf</source>
+            <source>src/main/doc/Pmodes Presentation (eDelivery)-v1.00.pptx</source>
+            <outputDirectory>/</outputDirectory>
+            <filtered>false</filtered>
+        </file>
+        <file>
+            <source>src/main/doc/Release notes.pdf</source>
             <outputDirectory>/</outputDirectory>
             <filtered>false</filtered>
         </file>
