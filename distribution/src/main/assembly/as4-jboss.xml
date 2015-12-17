@@ -205,7 +205,7 @@
             <!--<filtered>false</filtered>-->
         <!--</file>-->
         <file>
-            <source>src/main/doc/Release Notes 3.2.0.pdf</source>
+            <source>src/main/doc/Release Notes 3.2.0 .pdf</source>
             <outputDirectory>/</outputDirectory>
             <filtered>false</filtered>
         </file>
