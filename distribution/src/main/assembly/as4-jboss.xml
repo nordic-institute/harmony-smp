@@ -185,7 +185,7 @@
             <filtered>false</filtered>
         </file>
         <file>
-            <source>src/test/Domibus-3-2-0-soapui-project.xml</source>
+            <source>src/test/AS4-test-guide-soapui-project.xml</source>
             <outputDirectory>test</outputDirectory>
             <filtered>false</filtered>
         </file>
