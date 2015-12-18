@@ -10,7 +10,6 @@ import eu.domibus.submission.handler.MessageSubmitter;
 import eu.europa.ec.digit.domibus.common.exception.DomibusProgramException;
 import eu.europa.ec.digit.domibus.common.log.LogEvent;
 import eu.europa.ec.digit.domibus.common.log.Logger;
-import eu.europa.ec.digit.domibus.core.mapper.ebms.SubmissionConversion;
 import eu.europa.ec.digit.domibus.core.mapper.ebms.SubmissionMapper;
 import eu.europa.ec.digit.domibus.domain.domibus.MessageBO;
 import eu.europa.ec.digit.domibus.domain.domibus.MessageIdBO;
@@ -24,9 +23,6 @@ public class MessageSubmissionServiceImpl implements MessageSubmissionService {
     /* ---- Instance Variables ---- */
     @Autowired
     private MessageSubmitter<Submission> messageSubmitter = null;
-
-    @Autowired
-    private SubmissionConversion submissionConversion = null;
 
     @Autowired
     private SubmissionMapper submissionMapper = null;
@@ -69,13 +65,4 @@ public class MessageSubmissionServiceImpl implements MessageSubmissionService {
     public void setMessageSubmitter(MessageSubmitter<Submission> messageSubmitter) {
         this.messageSubmitter = messageSubmitter;
     }
-
-    public SubmissionConversion getSubmissionConversion() {
-        return submissionConversion;
-    }
-
-    public void setSubmissionConversion(SubmissionConversion submissionConversion) {
-        this.submissionConversion = submissionConversion;
-    }
-
 }
