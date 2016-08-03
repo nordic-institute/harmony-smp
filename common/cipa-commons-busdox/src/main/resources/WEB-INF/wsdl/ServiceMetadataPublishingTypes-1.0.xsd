@@ -311,16 +311,16 @@ that redirect. It is the responsibility of the client to enforce this constraint
 Child elements of the &lt;smp:Extension&gt; element are known as &quot;custom 
 extension elements&quot;. Extension points may be used for optional extensions 
 of service metadata. This implies:
-* Extension elements added to a specific Service Metadata resource MUST be ignorable 
-by any client of the transport infrastructure. The ability to parse and adjust client 
-behavior based on an extension element MUST NOT be a prerequisite for a client to 
+* Extension elements added to a specific Service Metadata resource MUST be ignorable
+        by any client of the transport infrastructure. The ability to parse and adjust client
+        behaviour based on an extension element MUST NOT be a prerequisite for a client to
 locate a service, or to make a successful request at the referenced service. 
 * A client MAY ignore any extension element added to specific service metadata 
 resource instances.      
       </xs:documentation>
     </xs:annotation>
     <xs:sequence>
-      <xs:any processContents="lax" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:any processContents="lax"/>
     </xs:sequence>
   </xs:complexType>
 </xs:schema>
