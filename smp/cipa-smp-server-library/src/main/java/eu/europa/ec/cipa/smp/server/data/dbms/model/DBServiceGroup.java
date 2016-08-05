@@ -97,7 +97,7 @@ public class DBServiceGroup implements Serializable {
 
   @Transient
   public void setExtension (@Nullable final ExtensionType aExtension) {
-    setExtension(XMLUtils.marshallObject(aExtension, ExtensionType.class, XMLUtils.EXT_TYPE_QNAME));
+    setExtension(XMLUtils.marshallObjectNoNameSpaces(aExtension, ExtensionType.class, XMLUtils.EXT_TYPE_QNAME));
   }
 
   @OneToMany (fetch = FetchType.LAZY, mappedBy = "serviceGroup", cascade = { CascadeType.ALL })
