@@ -5,12 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.xbill.DNS.*;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -61,28 +62,13 @@ public class FixEdelivery907 {
         return client;
     }
 
-    public static String addDomainExtraCharacter() throws IOException {
-        String domain = UtilHelper.getProperty("domain");
-        if (!domain.substring(domain.length() - 1).equals(".")) {
-            return domain + ".";
-        }
-        return domain;
-    }
-
-    public static String removeDomainExtraCharacter(String domain) {
-        if (domain.substring(domain.length() - 1).equals(".")) {
-            return domain.substring(0, domain.length() - 1);
-        }
-        return domain;
-    }
-
     private static void handle(Record oldRecord, String smpId) throws IOException, NoSuchAlgorithmException {
         final Name participantNaptrHost = Name.fromString(oldRecord.getName().toString());
-        final Name publisherHost = createPublisherDNSNameObject(smpId, addDomainExtraCharacter(), "publisher");
-        logger.info("DELETING Record: " + oldRecord);
+        final Name publisherHost = createPublisherDNSNameObject(smpId, UtilHelper.addDomainExtraCharacter(), "publisher");
+        logger.info("DELETING NAPTRRecord: " + oldRecord);
         getDnsClient().deleteList(Arrays.asList(new Record[]{oldRecord}));
 
-        NAPTRRecord newNaptrRecord = new NAPTRRecord(participantNaptrHost, DClass.IN, DEFAULT_TTL_SECS, 100, 10, "U", "Meta:SMP", "!^.*$!http://" + removeDomainExtraCharacter(publisherHost.toString()) + "!", Name.fromString("."));
+        NAPTRRecord newNaptrRecord = new NAPTRRecord(participantNaptrHost, DClass.IN, DEFAULT_TTL_SECS, 100, 10, "U", "Meta:SMP", "!^.*$!http://" + UtilHelper.removeDomainExtraCharacter(publisherHost.toString()) + "!", Name.fromString("."));
         logger.info("CREATING  NAPTRRecord: " + newNaptrRecord);
         getDnsClient().addRecords(Arrays.asList(new Record[]{newNaptrRecord}));
     }
@@ -92,4 +78,3 @@ public class FixEdelivery907 {
         return Name.fromString(principalSmpDnsName);
     }
 }
-
