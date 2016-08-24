@@ -22,7 +22,7 @@ public class HashUtil {
      * @throws UnsupportedEncodingException
      */
     public static String getMD5Hash(String stringToBeHashed) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        return getHash(stringToBeHashed, "MD5",false);
+        return getHash(stringToBeHashed, "MD5", false);
     }
 
     /**
@@ -34,20 +34,33 @@ public class HashUtil {
      * @throws UnsupportedEncodingException
      */
     public static String getSHA224Hash(String stringToBeHashed) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        return getHash(stringToBeHashed, "SHA224",false);
+        return getHash(stringToBeHashed, "SHA224", false);
     }
 
-
     /**
-     * Returns the SHA224 hash of the given String
+     * Returns the SHA256 hash of the given String
      *
      * @param stringToBeHashed
-     * @return the SHA224 hash of the given string
+     * @return the SHA256 hash of the given string
+     * @throws NoSuchAlgorithmException
+     * @throws UnsupportedEncodingException
+     * @deprecated Replaced by a BASE32 hash {@link #getSHA256HashBase32(String)}
+     */
+    @Deprecated
+    public static String getSHA256Hash(String stringToBeHashed) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        return getHash(stringToBeHashed, "SHA256", false);
+    }
+
+    /**
+     * Returns the SHA256 hash of the given String
+     *
+     * @param stringToBeHashed
+     * @return the SHA256 hash of the given string
      * @throws NoSuchAlgorithmException
      * @throws UnsupportedEncodingException
      */
     public static String getSHA256HashBase32(String stringToBeHashed) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-        return getHash(stringToBeHashed, "SHA256",true);
+        return getHash(stringToBeHashed, "SHA256", true);
     }
 
     /**

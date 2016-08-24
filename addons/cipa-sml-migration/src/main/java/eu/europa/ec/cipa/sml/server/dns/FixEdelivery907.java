@@ -39,6 +39,7 @@ public class FixEdelivery907 {
         ResultSet resultSet = pstmt.executeQuery();
         List<Record> records = getDnsClient().getAllRecords();
         int result = 0;
+        int participants = 0;
         while (resultSet.next()) {
             String participantId = resultSet.getString("PARTICIPANT_ID");
             String smpId = resultSet.getString("FK_SMP_ID");
@@ -52,7 +53,8 @@ public class FixEdelivery907 {
             }
         }
         conn.close();
-        logger.info(result + " record(s) migrated.");
+        logger.info(participants + " Participants(s) found.");
+        logger.info(result + " NAPTRRecord(s) migrated.");
     }
 
     private static IDNSClient getDnsClient() {
