@@ -44,10 +44,9 @@ public class HashUtil {
      * @return the SHA256 hash of the given string
      * @throws NoSuchAlgorithmException
      * @throws UnsupportedEncodingException
-     * @deprecated Replaced by a BASE32 hash {@link #getSHA256HashBase32(String)}
+     *
      */
-    @Deprecated
-    public static String getSHA256Hash(String stringToBeHashed) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+    public static String getSHA256HashBase64(String stringToBeHashed) throws NoSuchAlgorithmException, UnsupportedEncodingException {
         return getHash(stringToBeHashed, "SHA256", false);
     }
 
