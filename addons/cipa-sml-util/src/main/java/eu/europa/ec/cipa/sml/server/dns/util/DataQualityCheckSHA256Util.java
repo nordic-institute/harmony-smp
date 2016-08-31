@@ -137,6 +137,13 @@ public class DataQualityCheckSHA256Util {
         return dnsEntries;
     }
 
+    private static String addDomainExtraCharacter(String domain) throws IOException {
+        if (!domain.substring(domain.length() - 1).equals(".")) {
+            return domain + ".";
+        }
+        return domain;
+    }
+
     private static Map<String, String> getParticipantsFromDB() throws
             IOException, ZoneTransferException, ClassNotFoundException, SQLException, NoSuchAlgorithmException {
         logger.info("Retrieving Participants from the database...");
@@ -156,11 +163,10 @@ public class DataQualityCheckSHA256Util {
             ++participantsCount;
             // MD5
             String participantId = rs.getString(participantColumn);
-
             String hashMD5 = HashUtil.getMD5Hash(participantId);
             String scheme = rs.getString("SCHEME");
-            String dnsName = "B-" + hashMD5 + "." + scheme + "." + sZoneName + ".";
-            participantHashInDBMap.put(participantId, dnsName);
+            String dnsName = "B-" + hashMD5 + "." + scheme + "." + sZoneName;
+            participantHashInDBMap.put(participantId, addDomainExtraCharacter(dnsName));
 
             if (BDMSL.equalsIgnoreCase(component)) {
                 // SHA256
