@@ -1,5 +1,6 @@
 package eu.europa.ec.cipa.sml.server.dns.util;
 
+import eu.europa.ec.cipa.sml.server.dns.HashUtil;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +17,9 @@ import java.util.*;
  * <p/>
  * This class can be used to test data consistency between the DNS and the database
  */
-public class DataQualityCheckUtil {
+public class DataQualityChecSHA224Util {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataQualityCheckUtil.class);
+    private static final Logger logger = LoggerFactory.getLogger(DataQualityChecSHA224Util.class);
 
     private static Properties properties;
 
@@ -61,9 +62,7 @@ public class DataQualityCheckUtil {
 
         // Get all domain records
         final List<Record> aAllRecords = getAllRecords(sZoneName, sServer);
-
         List<String> participantHashMd5InDNSList = new ArrayList<>();
-
         List<String> participantHashSha224InDNSList = new ArrayList<>();
 
         // Filter the ones for the current SML domain only
