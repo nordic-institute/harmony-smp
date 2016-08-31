@@ -22,10 +22,7 @@ public class DNSHandlerUtil {
     public static void main(String[] args) throws IOException, ZoneTransferException, DNSSEC.DNSSECException {
         //deleteRecords(getRecordChildrenBySMPName("TestHash1.publisher.acc.edelivery.tech.ec.europa.eu"));
         //deleteRecord(getRecordByName("B-03952de4b9adae9fcff6858eaa2342b1.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu."));
-
-        stringPattern("B-ffdc2aec1ac5b8e06b111566e9fec3b6.iso6523-actorid-upis.edelivery.tech.ec.europa.eu.", "60", "IN", "CNAME", "smp.difi.no.publisher.edelivery.tech.ec.europa.eu.");
-        stringPattern("B-ffccd0c77c3a6f69c91b208d0170dab5.iso6523-actorid-upis.edelivery.tech.ec.europa.eu.", "60", "IN", "CNAME", "TICKSTAR-SMP.publisher.edelivery.tech.ec.europa.eu.");
-        exportRecords();
+        //exportRecords();
     }
 
     private static IDNSClient getDnsClient() {
