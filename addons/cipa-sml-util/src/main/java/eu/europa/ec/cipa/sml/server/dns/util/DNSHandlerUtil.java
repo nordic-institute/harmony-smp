@@ -107,26 +107,6 @@ public class DNSHandlerUtil {
         addRecords(Arrays.asList(new Record[]{record}));
     }
 
-    private static Record getRecordByName(String recordName) {
-        try {
-            for (Record record : getDnsClient().getAllRecords()) {
-
-                if (record instanceof CNAMERecord) {
-                    System.out.println(((CNAMERecord) record).getAlias());
-                    System.out.println(((CNAMERecord) record));
-                }
-                if (record.getName().toString().equals(recordName)) {
-                    return record;
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ZoneTransferException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     private static List<Record> getRecordChildrenBySMPName(String recordName) {
         List<Record> records = new ArrayList<>();
         try {
