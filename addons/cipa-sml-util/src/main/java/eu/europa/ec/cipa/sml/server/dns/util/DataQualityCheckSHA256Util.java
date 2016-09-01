@@ -44,10 +44,10 @@ public class DataQualityCheckSHA256Util {
     public static void main(String[] args) throws Throwable {
         Security.addProvider(new BouncyCastleProvider());
         if (args == null || args.length != 2) {
-            logger.info("syntax : 'java -jar bdmsl-util [environment] [component]'.  Values allowed for [environment] : ACC, PROD. Values allowed for [component] : SML, BDMSL");
+            logger.info("syntax : 'java -jar cipa-util [environment] [component]'.  Values allowed for [environment] : ACC, PROD. Values allowed for [component] : SML, BDMSL");
         } else {
             if (!ACCEPTANCE.equalsIgnoreCase(args[0]) && !PRODUCTION.equalsIgnoreCase(args[0]) && !BDMSL.equalsIgnoreCase(args[1]) && !SML.equalsIgnoreCase(args[1])) {
-                logger.info("syntax : 'java -jar bdmsl-util [environment] [component]'.  Values allowed for [environment] : ACC, PROD. Values allowed for [component] : SML, BDMSL");
+                logger.info("syntax : 'java -jar cipa-util [environment] [component]'.  Values allowed for [environment] : ACC, PROD. Values allowed for [component] : SML, BDMSL");
             } else {
                 properties = new Properties();
                 properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(args[0].toLowerCase() + ".config.properties"));
