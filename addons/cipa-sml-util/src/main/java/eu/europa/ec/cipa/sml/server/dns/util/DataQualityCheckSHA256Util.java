@@ -15,8 +15,8 @@ import java.sql.*;
 import java.util.*;
 
 /**
- * Created by feriaad on 09/06/2015.
- * <p/>
+ * Created by rodrfla on 30/08/2016.
+ *
  * This class can be used to test data consistency between the DNS and the database
  */
 public class DataQualityCheckSHA256Util {
