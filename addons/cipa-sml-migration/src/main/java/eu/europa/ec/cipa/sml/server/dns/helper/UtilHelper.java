@@ -15,7 +15,7 @@ import java.util.Properties;
 public class UtilHelper {
 
     private static Properties properties;
-    private static final String ENVIRONMENT = "dev.config.properties";
+    private static final String ENVIRONMENT = "acc.config.properties";
 
     static {
         try {
@@ -34,10 +34,7 @@ public class UtilHelper {
     }
 
     public static String removeDomainExtraCharacter(String domain) {
-        if (domain.substring(domain.length() - 1).equals(".")) {
-            return domain.substring(0, domain.length() - 1);
-        }
-        return domain;
+        return domain.replace(".eu.!", ".eu!");
     }
 
     public static String getProperty(String key) throws IOException {

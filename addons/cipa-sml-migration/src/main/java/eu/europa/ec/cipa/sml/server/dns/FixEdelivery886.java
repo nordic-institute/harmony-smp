@@ -69,11 +69,11 @@ public class FixEdelivery886 {
 
     private static void handle(Record oldRecord, String participantId, String smpId, String scheme) throws IOException, NoSuchAlgorithmException {
         final Name participantNaptrHost = createParticipantDNSNameObjectBDXL(participantId, scheme, UtilHelper.addDomainExtraCharacter());
-        final Name publisherHost = createPublisherDNSNameObject(smpId, UtilHelper.addDomainExtraCharacter(), "publisher");
         logger.info("DELETING NAPTRRecord: " + oldRecord);
+        final String publisherHost = ((NAPTRRecord) oldRecord).getRegexp();
         getDnsClient().deleteList(Arrays.asList(new Record[]{oldRecord}));
 
-        NAPTRRecord newNaptrRecord = new NAPTRRecord(participantNaptrHost, DClass.IN, DEFAULT_TTL_SECS, 100, 10, "U", "Meta:SMP", "!^.*$!http://" + UtilHelper.removeDomainExtraCharacter(publisherHost.toString()) + "!", Name.fromString("."));
+        NAPTRRecord newNaptrRecord = new NAPTRRecord(participantNaptrHost, DClass.IN, DEFAULT_TTL_SECS, 100, 10, "U", "Meta:SMP", publisherHost, Name.fromString("."));
         logger.info("CREATING  NAPTRRecord: " + newNaptrRecord);
         getDnsClient().addRecords(Arrays.asList(new Record[]{newNaptrRecord}));
     }

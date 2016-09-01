@@ -33,27 +33,18 @@ public class FixEdelivery907 {
     }
 
     private static void migrate() throws SQLException, ClassNotFoundException, IOException, ZoneTransferException, NoSuchAlgorithmException {
-        String SQL = "SELECT PARTICIPANT_ID,FK_SMP_ID FROM BDMSL_PARTICIPANT_IDENTIFIER";
-        Connection conn = UtilHelper.getConnection();
-        PreparedStatement pstmt = conn.prepareStatement(SQL);
-        ResultSet resultSet = pstmt.executeQuery();
         List<Record> records = getDnsClient().getAllRecords();
         int result = 0;
-        int participants = 0;
-        while (resultSet.next()) {
-            String participantId = resultSet.getString("PARTICIPANT_ID");
-            String smpId = resultSet.getString("FK_SMP_ID");
-            for (Record record : records) {
-                if (record instanceof NAPTRRecord) {
-                    if (record.getName().toString().contains(HashUtil.getSHA224Hash(participantId.toLowerCase(Locale.US))) && ((NAPTRRecord) record).getRegexp().contains(".!")) {
-                        handle(record, smpId);
-                        result++;
-                    }
+
+        for (Record record : records) {
+            if (record instanceof NAPTRRecord) {
+                if (((NAPTRRecord) record).getRegexp().contains("acc.edelivery.tech.ec.europa.eu.!")) {
+                    handle(record);
+                    result++;
                 }
             }
         }
-        conn.close();
-        logger.info(participants + " Participants(s) found.");
+
         logger.info(result + " NAPTRRecord(s) migrated.");
     }
 
@@ -64,13 +55,12 @@ public class FixEdelivery907 {
         return client;
     }
 
-    private static void handle(Record oldRecord, String smpId) throws IOException, NoSuchAlgorithmException {
+    private static void handle(Record oldRecord) throws IOException, NoSuchAlgorithmException {
         final Name participantNaptrHost = Name.fromString(oldRecord.getName().toString());
-        final Name publisherHost = createPublisherDNSNameObject(smpId, UtilHelper.addDomainExtraCharacter(), "publisher");
+        final String publisherHost = ((NAPTRRecord) oldRecord).getRegexp();
         logger.info("DELETING NAPTRRecord: " + oldRecord);
         getDnsClient().deleteList(Arrays.asList(new Record[]{oldRecord}));
-
-        NAPTRRecord newNaptrRecord = new NAPTRRecord(participantNaptrHost, DClass.IN, DEFAULT_TTL_SECS, 100, 10, "U", "Meta:SMP", "!^.*$!http://" + UtilHelper.removeDomainExtraCharacter(publisherHost.toString()) + "!", Name.fromString("."));
+        NAPTRRecord newNaptrRecord = new NAPTRRecord(participantNaptrHost, DClass.IN, DEFAULT_TTL_SECS, 100, 10, "U", "Meta:SMP", UtilHelper.removeDomainExtraCharacter(publisherHost), Name.fromString("."));
         logger.info("CREATING  NAPTRRecord: " + newNaptrRecord);
         getDnsClient().addRecords(Arrays.asList(new Record[]{newNaptrRecord}));
     }
