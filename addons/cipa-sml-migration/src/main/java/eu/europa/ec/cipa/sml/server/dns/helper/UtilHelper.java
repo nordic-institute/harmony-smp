@@ -15,7 +15,7 @@ import java.util.Properties;
 public class UtilHelper {
 
     private static Properties properties;
-    private static final String ENVIRONMENT = "acc.config.properties";
+    private static final String ENVIRONMENT = "dev.config.properties";
 
     static {
         try {
