@@ -1,6 +1,8 @@
 package eu.europa.ec.cipa.sml.server.dns.util;
 
+import eu.europa.ec.cipa.sml.server.dns.DNSClientFactory;
 import eu.europa.ec.cipa.sml.server.dns.HashUtil;
+import eu.europa.ec.cipa.sml.server.dns.IDNSClient;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +75,7 @@ public class DataQualityCheckSHA256Util {
         logger.info("Searching for data inconsistency...");
         int count = 0;
         count += checkSMPs(smpInDNSList);
-        count += checkChildren(participantHashInDNSList);
+        count += checkParticipants(participantHashInDNSList);
 
         logger.info("...");
 
@@ -220,6 +222,10 @@ public class DataQualityCheckSHA256Util {
         return smpInDBList;
     }
 
+    private static IDNSClient getDnsClient() {
+        return DNSClientFactory.getSimpleInstace();
+    }
+
 
     private static List<Record> getAllRecords(String dnsZone, String dnsServer) throws
             IOException, ZoneTransferException {
@@ -257,19 +263,20 @@ public class DataQualityCheckSHA256Util {
         return count;
     }
 
-    private static int checkChildren(List<String> participantHashInDNSList) throws ClassNotFoundException, SQLException, ZoneTransferException, NoSuchAlgorithmException, IOException {
+    private static int checkParticipants(List<String> participantHashInDNSList) throws ClassNotFoundException, SQLException, ZoneTransferException, NoSuchAlgorithmException, IOException {
         int count = 0;
         Map<String, Map> maps = getParticipantsFromDB();
         Map<String, String> participantHashMD5InDBMap = maps.get("MD5");
         Map<String, String> participantHashSHA256InDBMap = maps.get("SHA256");
-        logger.info(" --- SMP Children(CNAME, A, NAPTR) - Data is in the DNS but is not in the Database ---");
+
+        logger.info(" --- SMP Participants(CNAME, A, NAPTR) - Data is in the DNS but is not in the Database ---");
         for (String participant : participantHashInDNSList) {
             if (!participantHashMD5InDBMap.values().contains(participant) && !participantHashSHA256InDBMap.values().contains(participant)) {
                 logger.warn(" >>> The participant with hash " + participant + " is in the DNS but is not in the database");
                 count++;
             }
         }
-        logger.info(" --- SMP Children(CNAME, A, NAPTR) - Data is in the database but is not in the DNS ---");
+        logger.info(" --- SMP Participants(CNAME, A, NAPTR) - Data is in the database but is not in the DNS ---");
         for (String participant : participantHashMD5InDBMap.keySet()) {
             if (!participantHashInDNSList.contains(participantHashMD5InDBMap.get(participant))) {
                 logger.warn(" >>> The participant " + participant + "(dnsName= " + participantHashMD5InDBMap.get(participant) + ") is in the database but is not in the DNS");
