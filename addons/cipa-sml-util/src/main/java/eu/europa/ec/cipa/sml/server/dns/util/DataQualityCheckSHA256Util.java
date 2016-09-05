@@ -6,6 +6,7 @@ import eu.europa.ec.cipa.sml.server.dns.IDNSClient;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 import org.xbill.DNS.*;
 
 import java.io.IOException;
@@ -58,7 +59,7 @@ public class DataQualityCheckSHA256Util {
         }
     }
 
-    private static void checkDataConsistency() throws IOException, ZoneTransferException, ClassNotFoundException, SQLException, NoSuchAlgorithmException {
+    private static void checkDataConsistency() throws Exception {
         logger.info("Checking Data Consistency");
 
         Map<String, Object> dnsEntries = getDNSEntries();
@@ -274,11 +275,10 @@ public class DataQualityCheckSHA256Util {
         return count;
     }
 
-
-    private static int checkParticipants(List<String> participantHashInDNSList) throws ClassNotFoundException, SQLException, ZoneTransferException, NoSuchAlgorithmException, IOException {
+    private static int checkParticipants(List<String> participantHashInDNSList) throws Exception {
         int count = 0;
         List<Participant> participantsHashInDB = getParticipantsFromDB();
-
+        List<Record> recordsToCreate = new ArrayList<>();
         logger.info(" --- SMP Participants(CNAME, A, NAPTR) - Data is in the DNS but is not in the Database ---");
         boolean hasMd5 = false;
         boolean hasSHA256 = false;
@@ -301,7 +301,7 @@ public class DataQualityCheckSHA256Util {
                     logger.warn(" >>> The participant with hash SHA256 " + participantId + " is in the DNS but is not in the database");
                     count++;
                 }
-             //   count++;
+                //   count++;
             }
             hasMd5 = false;
             hasSHA256 = false;
@@ -311,8 +311,6 @@ public class DataQualityCheckSHA256Util {
         hasSHA256 = false;
         logger.info(" --- SMP Participants(CNAME, A, NAPTR) - Data is in the database but is not in the DNS ---");
         for (Participant participant : participantsHashInDB) {
-
-            // if (participant.getParticipantId().equals("9906:01807620404")) {
             for (String participantId : participantHashInDNSList) {
                 if (participant.getMd5Code().equals(participantId)) {
                     hasMd5 = true;
@@ -328,27 +326,14 @@ public class DataQualityCheckSHA256Util {
                     count++;
                 }
                 if (!hasSHA256) {
-                    logger.warn(" >>> The participant SHA256 " + participant.getParticipantId() + "(dnsName= " + participant.getMd5Code() + ") is in the database but is not in the DNS");
+                    logger.warn(" >>> The participant SHA256 " + participant.getParticipantId() + "(dnsName= " + participant.getSha256Code() + ") is in the database but is not in the DNS");
                     count++;
                 }
             }
-
             hasMd5 = false;
             hasSHA256 = false;
-            //  }
         }
-
         return count;
-    }
-
-    private static Name createParticipantDNSNameObjectSML(String prefix, String participantId, String scheme, String dnsZoneName) throws Exception {
-        String smpDnsName = null;
-        if ("*".equals(participantId)) {
-            smpDnsName = "*." + scheme + "." + dnsZoneName;
-        } else {
-            smpDnsName = prefix + HashUtil.getMD5Hash(participantId.toLowerCase(Locale.US)) + "." + scheme + "." + dnsZoneName;
-        }
-        return Name.fromString(smpDnsName);
     }
 
     public static class Participant {
