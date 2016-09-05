@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.xbill.DNS.*;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.Security;
 import java.sql.*;
@@ -16,7 +17,7 @@ import java.util.*;
 
 /**
  * Created by rodrfla on 30/08/2016.
- *
+ * <p>
  * This class can be used to test data consistency between the DNS and the database
  */
 public class DataQualityCheckSHA256Util {
@@ -146,12 +147,11 @@ public class DataQualityCheckSHA256Util {
         return domain;
     }
 
-    private static Map<String, Map> getParticipantsFromDB() throws
+    private static List<Participant> getParticipantsFromDB() throws
             IOException, ZoneTransferException, ClassNotFoundException, SQLException, NoSuchAlgorithmException {
         logger.info("Retrieving Participants from the database...");
         final String sZoneName = properties.getProperty(CONFIG_ZONE);
-        Map<String, String> participantHashMD5InDBMap = new HashMap<>();
-        Map<String, String> participantHashSHA256InDBMap = new HashMap<>();
+        List<Participant> participantsHashInDB = new ArrayList<>();
         Class.forName(properties.getProperty(CONFIG_JDBC_DRIVER));
         Connection conn = DriverManager.getConnection(properties.getProperty(CONFIG_JDBC_URL), properties.getProperty(CONFIG_JDBC_USER), properties.getProperty(CONFIG_JDBC_PASSWORD));
         conn.setAutoCommit(false);
@@ -159,11 +159,11 @@ public class DataQualityCheckSHA256Util {
         Statement stmt = conn.createStatement();
         String sql = "SELECT SMP_ID FROM SERVICE_METADATA_PUBLISHER";
         String participantColumn = "REC_VALUE";
-        sql = "SELECT " + participantColumn + ", SCHEME FROM RECIPIENT_PART_IDENTIFIER";
+        sql = "SELECT " + participantColumn + ", SCHEME,SMP_ID FROM RECIPIENT_PART_IDENTIFIER";
 
         if (BDMSL.equalsIgnoreCase(component)) {
             participantColumn = "PARTICIPANT_ID";
-            sql = "SELECT " + participantColumn + ", SCHEME FROM BDMSL_PARTICIPANT_IDENTIFIER";
+            sql = "SELECT " + participantColumn + ", SCHEME,FK_SMP_ID FROM BDMSL_PARTICIPANT_IDENTIFIER";
         }
 
         ResultSet rs = stmt.executeQuery(sql);
@@ -171,29 +171,40 @@ public class DataQualityCheckSHA256Util {
         while (rs.next()) {
             ++participantsCount;
             // MD5
+            Participant participant = new Participant();
             String participantId = rs.getString(participantColumn);
             String hashMD5 = HashUtil.getMD5Hash(participantId.toLowerCase(Locale.US));
             String scheme = rs.getString("SCHEME");
             String dnsName = "B-" + hashMD5 + "." + scheme + "." + sZoneName;
-            participantHashMD5InDBMap.put(participantId, addDomainExtraCharacter(dnsName));
+            String smpId = "";
+
+            if (BDMSL.equalsIgnoreCase(component)) {
+                smpId = rs.getString("FK_SMP_ID");
+            } else {
+                smpId = rs.getString("SMP_ID");
+            }
+            dnsName = addDomainExtraCharacter(dnsName);
+            participant.setMd5Code(dnsName);
+            participant.setScheme(scheme);
+            participant.setParticipantId(participantId);
+            participant.setSmpId(smpId);
 
             if (BDMSL.equalsIgnoreCase(component)) {
                 // SHA256
                 String hashSha256 = HashUtil.getSHA256HashBase32(participantId.toLowerCase(Locale.US));
                 dnsName = hashSha256 + "." + scheme + "." + sZoneName;
-                participantHashSHA256InDBMap.put(participantId, addDomainExtraCharacter(dnsName));
+                dnsName = addDomainExtraCharacter(dnsName);
+                participant.setSha256Code(dnsName);
             }
+            participantsHashInDB.add(participant);
+
         }
         rs.close();
         stmt.close();
         conn.close();
 
-        Map<String, Map> maps = new HashMap<>();
-        maps.put("MD5", participantHashMD5InDBMap);
-        maps.put("SHA256", participantHashSHA256InDBMap);
-
         logger.info("There are " + participantsCount + " participants in the database");
-        return maps;
+        return participantsHashInDB;
     }
 
     private static List<String> getSMPsFromDB() throws
@@ -263,33 +274,132 @@ public class DataQualityCheckSHA256Util {
         return count;
     }
 
+
     private static int checkParticipants(List<String> participantHashInDNSList) throws ClassNotFoundException, SQLException, ZoneTransferException, NoSuchAlgorithmException, IOException {
         int count = 0;
-        Map<String, Map> maps = getParticipantsFromDB();
-        Map<String, String> participantHashMD5InDBMap = maps.get("MD5");
-        Map<String, String> participantHashSHA256InDBMap = maps.get("SHA256");
+        List<Participant> participantsHashInDB = getParticipantsFromDB();
 
         logger.info(" --- SMP Participants(CNAME, A, NAPTR) - Data is in the DNS but is not in the Database ---");
-        for (String participant : participantHashInDNSList) {
-            if (!participantHashMD5InDBMap.values().contains(participant) && !participantHashSHA256InDBMap.values().contains(participant)) {
-                logger.warn(" >>> The participant with hash " + participant + " is in the DNS but is not in the database");
-                count++;
+        boolean hasMd5 = false;
+        boolean hasSHA256 = false;
+        for (String participantId : participantHashInDNSList) {
+            for (Participant participant : participantsHashInDB) {
+                if (participant.getMd5Code().equals(participantId)) {
+                    hasMd5 = true;
+                }
+                if (participant.getSha256Code().equals(participantId)) {
+                    hasSHA256 = true;
+                }
             }
-        }
-        logger.info(" --- SMP Participants(CNAME, A, NAPTR) - Data is in the database but is not in the DNS ---");
-        for (String participant : participantHashMD5InDBMap.keySet()) {
-            if (!participantHashInDNSList.contains(participantHashMD5InDBMap.get(participant))) {
-                logger.warn(" >>> The participant " + participant + "(dnsName= " + participantHashMD5InDBMap.get(participant) + ") is in the database but is not in the DNS");
-                count++;
+
+            if (!hasMd5 && participantId.contains("B-") || !hasSHA256 && !participantId.contains("B-")) {
+                if (!hasMd5 && participantId.contains("B-")) {
+                    logger.warn(" >>> The participant with hash MD5 " + participantId + " is in the DNS but is not in the database");
+                    count++;
+                }
+                if (!hasSHA256 && !participantId.contains("B-")) {
+                    logger.warn(" >>> The participant with hash SHA256 " + participantId + " is in the DNS but is not in the database");
+                    count++;
+                }
+             //   count++;
             }
+            hasMd5 = false;
+            hasSHA256 = false;
         }
 
-        for (String participant : participantHashSHA256InDBMap.keySet()) {
-            if (!participantHashInDNSList.contains(participantHashSHA256InDBMap.get(participant))) {
-                logger.warn(" >>> The participant " + participant + "(dnsName= " + participantHashSHA256InDBMap.get(participant) + ") is in the database but is not in the DNS");
-                count++;
+        hasMd5 = false;
+        hasSHA256 = false;
+        logger.info(" --- SMP Participants(CNAME, A, NAPTR) - Data is in the database but is not in the DNS ---");
+        for (Participant participant : participantsHashInDB) {
+
+            // if (participant.getParticipantId().equals("9906:01807620404")) {
+            for (String participantId : participantHashInDNSList) {
+                if (participant.getMd5Code().equals(participantId)) {
+                    hasMd5 = true;
+                }
+                if (participant.getSha256Code().equals(participantId)) {
+                    hasSHA256 = true;
+                }
             }
+
+            if (!hasMd5 || !hasSHA256) {
+                if (!hasMd5) {
+                    logger.warn(" >>> The participant MD5 " + participant.getParticipantId() + "(dnsName= " + participant.getMd5Code() + ") is in the database but is not in the DNS");
+                    count++;
+                }
+                if (!hasSHA256) {
+                    logger.warn(" >>> The participant SHA256 " + participant.getParticipantId() + "(dnsName= " + participant.getMd5Code() + ") is in the database but is not in the DNS");
+                    count++;
+                }
+            }
+
+            hasMd5 = false;
+            hasSHA256 = false;
+            //  }
         }
+
         return count;
+    }
+
+    private static Name createParticipantDNSNameObjectSML(String prefix, String participantId, String scheme, String dnsZoneName) throws Exception {
+        String smpDnsName = null;
+        if ("*".equals(participantId)) {
+            smpDnsName = "*." + scheme + "." + dnsZoneName;
+        } else {
+            smpDnsName = prefix + HashUtil.getMD5Hash(participantId.toLowerCase(Locale.US)) + "." + scheme + "." + dnsZoneName;
+        }
+        return Name.fromString(smpDnsName);
+    }
+
+    public static class Participant {
+        private String participantId;
+        private String scheme;
+        private String smpId;
+        private String md5Code;
+        private String sha256Code;
+
+        public Participant() {
+
+        }
+
+        public String getSha256Code() {
+            return sha256Code;
+        }
+
+        public void setSha256Code(String sha256Code) {
+            this.sha256Code = sha256Code;
+        }
+
+        public String getMd5Code() {
+            return md5Code;
+        }
+
+        public void setMd5Code(String md5Code) {
+            this.md5Code = md5Code;
+        }
+
+        public String getParticipantId() {
+            return participantId;
+        }
+
+        public void setParticipantId(String participantId) {
+            this.participantId = participantId;
+        }
+
+        public String getScheme() {
+            return scheme;
+        }
+
+        public void setScheme(String scheme) {
+            this.scheme = scheme;
+        }
+
+        public String getSmpId() {
+            return smpId;
+        }
+
+        public void setSmpId(String smpId) {
+            this.smpId = smpId;
+        }
     }
 }
