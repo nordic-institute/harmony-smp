@@ -1,4 +1,4 @@
-package eu.europa.ec.cipa.sml.server.dns;
+package eu.europa.ec.cipa.sml.server.dns.helper;
 
 import com.google.common.io.BaseEncoding;
 
