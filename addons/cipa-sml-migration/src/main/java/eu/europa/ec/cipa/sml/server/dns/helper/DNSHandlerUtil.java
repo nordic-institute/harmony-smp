@@ -1,7 +1,6 @@
 package eu.europa.ec.cipa.sml.server.dns.helper;
 
 import eu.europa.ec.cipa.sml.server.dns.DNSClientFactory;
-import eu.europa.ec.cipa.sml.server.dns.HashUtil;
 import eu.europa.ec.cipa.sml.server.dns.IDNSClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +11,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by rodrfla on 30/08/2016.

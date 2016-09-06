@@ -23,9 +23,9 @@ import java.util.*;
  * <p>
  * This class can be used to test data consistency between the DNS and the database
  */
-public class CreateMissingParticipantsIntoDNS {
+public class CreateMissingDataIntoDNS {
 
-    private static final Logger logger = LoggerFactory.getLogger(CreateMissingParticipantsIntoDNS.class);
+    private static final Logger logger = LoggerFactory.getLogger(CreateMissingDataIntoDNS.class);
 
     private static Properties properties;
 
