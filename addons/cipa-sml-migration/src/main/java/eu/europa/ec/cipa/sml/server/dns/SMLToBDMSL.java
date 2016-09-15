@@ -1,5 +1,6 @@
 package eu.europa.ec.cipa.sml.server.dns;
 
+import com.mysql.jdbc.JDBC4PreparedStatement;
 import eu.europa.ec.cipa.sml.server.dns.helper.HashUtil;
 import org.slf4j.LoggerFactory;
 import org.xbill.DNS.*;
@@ -101,7 +102,7 @@ public class SMLToBDMSL {
 
     private static void updateNAPTRRecords(Connection connOrigin) throws IOException, ZoneTransferException, SQLException, NoSuchAlgorithmException {
         logger.info("Delete all NAPTR records");
-        deleteAllNaptrRecords();
+        //deleteAllNaptrRecords();
 
         logger.info("get all participants from database");
         List<Participant> participants = selectParticipants(connOrigin);
@@ -116,7 +117,7 @@ public class SMLToBDMSL {
         int i = 0;
         for (Participant participant : participants) {
             // Delete old host - if exists!
-            final Name participantNaptrHost = createParticipantDNSNameObjectBDXL("B-", participant.getRecValue(), participant.getScheme(), dnsZoneName + ".");
+            final Name participantNaptrHost = createParticipantDNSNameObjectBDXL(participant.getRecValue(), participant.getScheme(), dnsZoneName + ".");
 
             final Name publisherHost = createPublisherDNSNameObject(participant.getSmpId(), dnsZoneName);
             NAPTRRecord naptrRecord;
@@ -131,12 +132,12 @@ public class SMLToBDMSL {
             i++;
             if (i == 400) {
                 i = 0;
-                addRecordsWithRetry(updateList);
-                updateList.clear();
+                //addRecordsWithRetry(updateList);
+                //updateList.clear();
             }
         }
         if (!updateList.isEmpty()) {
-            addRecordsWithRetry(updateList);
+            //addRecordsWithRetry(updateList);
         }
     }
 
@@ -174,12 +175,12 @@ public class SMLToBDMSL {
         return Name.fromString(smpDnsName);
     }
 
-    private static Name createParticipantDNSNameObjectBDXL(String prefix, String participantId, String scheme, String dnsZoneName) throws UnsupportedEncodingException, NoSuchAlgorithmException, TextParseException {
+    private static Name createParticipantDNSNameObjectBDXL(String participantId, String scheme, String dnsZoneName) throws UnsupportedEncodingException, NoSuchAlgorithmException, TextParseException {
         String smpDnsName = null;
         if ("*".equals(participantId)) {
             smpDnsName = "*." + scheme + "." + dnsZoneName;
         } else {
-            smpDnsName = prefix + HashUtil.getSHA224Hash(participantId.toLowerCase(Locale.US)) + "." + scheme + "." + dnsZoneName;
+            smpDnsName = HashUtil.getSHA256HashBase32(participantId.toLowerCase(Locale.US)) + "." + scheme + "." + dnsZoneName;
         }
         return Name.fromString(smpDnsName);
     }
@@ -247,19 +248,22 @@ public class SMLToBDMSL {
 
     private static void updateBDMSLMigrationRecord(Connection connDestination, Connection connOrigin, List<MigrationRecord> migrationRecordList) throws SQLException {
         String SQL = "INSERT INTO bdmsl_migrate(scheme, participant_id, migration_key, migrated, old_smp_id, new_smp_id, created_on, last_updated_on) values (?,?,?,?,?,?,?,?)";
+        PreparedStatement pstmt = connDestination.prepareStatement(SQL);
         for (MigrationRecord migrationRecord : migrationRecordList) {
-            PreparedStatement pstmt = connDestination.prepareStatement(SQL);
             pstmt.setString(1, migrationRecord.getScheme());
             pstmt.setString(2, migrationRecord.getRecValue());
             pstmt.setString(3, migrationRecord.getMigrationCode());
             pstmt.setBoolean(4, false);
-            String oldSmpId = getSmpId(connOrigin, migrationRecord);
-            pstmt.setString(5, oldSmpId);
-            pstmt.setString(6, null);
+            String currentSmpId = getSmpId(connOrigin, migrationRecord);
+            pstmt.setString(5, "OLD_" + currentSmpId);
+            pstmt.setString(6, currentSmpId);
             pstmt.setTimestamp(7, new Timestamp(Calendar.getInstance().getTimeInMillis()));
             pstmt.setTimestamp(8, new Timestamp(Calendar.getInstance().getTimeInMillis()));
-            pstmt.executeUpdate();
+            // pstmt.executeUpdate();
+            pstmt.addBatch();
         }
+        int[] count = pstmt.executeBatch();
+        connDestination.commit();
     }
 
     private static String getSmpId(Connection conn, MigrationRecord migrationRecord) throws SQLException {
@@ -291,15 +295,18 @@ public class SMLToBDMSL {
 
     private static void updateBDMSLParticipant(Connection conn, List<Participant> participantList) throws SQLException {
         String SQL = "INSERT INTO bdmsl_participant_identifier(participant_id, scheme, fk_smp_id, created_on, last_updated_on) values (?,?,?,?,?)";
+        PreparedStatement pstmt = conn.prepareStatement(SQL);
         for (Participant participant : participantList) {
-            PreparedStatement pstmt = conn.prepareStatement(SQL);
             pstmt.setString(1, participant.getRecValue());
             pstmt.setString(2, participant.getScheme());
             pstmt.setString(3, participant.getSmpId());
             pstmt.setTimestamp(4, new Timestamp(Calendar.getInstance().getTimeInMillis()));
             pstmt.setTimestamp(5, new Timestamp(Calendar.getInstance().getTimeInMillis()));
-            pstmt.executeUpdate();
+            // pstmt.executeUpdate();
+            pstmt.addBatch();
         }
+        int[] count = pstmt.executeBatch();
+        conn.commit();
     }
 
     private static List<Participant> selectParticipants(Connection conn) throws SQLException {
@@ -319,16 +326,19 @@ public class SMLToBDMSL {
 
     private static void updateBDMSLSmp(Connection conn, List<SMP> smpList) throws SQLException {
         String SQL = "INSERT INTO bdmsl_smp(smp_id, fk_certificate_id, endpoint_physical_address, endpoint_logical_address, created_on, last_updated_on) values (?,?,?,?,?,?)";
+        PreparedStatement pstmt = conn.prepareStatement(SQL);
         for (SMP smp : smpList) {
-            PreparedStatement pstmt = conn.prepareStatement(SQL);
             pstmt.setString(1, smp.getSmpId());
             pstmt.setInt(2, certificateIdMap.get(smp.getUsername()));
             pstmt.setString(3, smp.getPhysicalAddress());
             pstmt.setString(4, smp.getLogicalAddress());
             pstmt.setTimestamp(5, new Timestamp(Calendar.getInstance().getTimeInMillis()));
             pstmt.setTimestamp(6, new Timestamp(Calendar.getInstance().getTimeInMillis()));
-            pstmt.executeUpdate();
+            // pstmt.executeUpdate();
+            pstmt.addBatch();
         }
+        int[] count = pstmt.executeBatch();
+        conn.commit();
     }
 
     private static List<SMP> selectSMP(Connection conn) throws SQLException {
