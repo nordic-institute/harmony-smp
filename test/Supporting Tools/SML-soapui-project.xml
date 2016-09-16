@@ -7053,7 +7053,7 @@ test.finalize();</scriptText></con:configuration></con:assertion><con:assertion 
       <ns:PrepareMigrationRecord>
          <ns:ServiceMetadataPublisherID>testSMPMigrate520</ns:ServiceMetadataPublisherID>
          <ns1:ParticipantIdentifier scheme="iso6523-actorid-upis">0088:5798000000777</ns1:ParticipantIdentifier>
-         <ns:MigrationKey>1234</ns:MigrationKey>
+         <ns:MigrationKey>12345</ns:MigrationKey>
       </ns:PrepareMigrationRecord>
    </soapenv:Body>
 </soapenv:Envelope>
@@ -7066,7 +7066,7 @@ test.finalize();</scriptText></con:configuration></con:assertion><con:assertion 
       <ns:CompleteMigrationRecord>
          <ns:ServiceMetadataPublisherID>testSMPMigrate520New</ns:ServiceMetadataPublisherID>
          <ns1:ParticipantIdentifier scheme="iso6523-actorid-upis">0088:5798000000777</ns1:ParticipantIdentifier>
-         <ns:MigrationKey>1234</ns:MigrationKey>
+         <ns:MigrationKey>12345</ns:MigrationKey>
       </ns:CompleteMigrationRecord>
    </soapenv:Body>
 </soapenv:Envelope>]]></con:request><con:assertion type="SOAP Response" id="aed340a1-02c4-4fb9-bd41-b0172889e02a"/><con:assertion type="GroovyScriptAssertion" id="f687c98b-d6bd-49b7-92f7-ced446e6b22f" name="Script Assertion"><con:configuration><scriptText>def test = new BDMSL(log,messageExchange,context,'${#Project#jdbc.url}','${#Project#jdbc.driver}');
