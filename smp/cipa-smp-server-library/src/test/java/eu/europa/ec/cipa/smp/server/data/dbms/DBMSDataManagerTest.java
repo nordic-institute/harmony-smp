@@ -98,7 +98,7 @@ public class DBMSDataManagerTest {
   private static final String USERNAME = "peppol_user";
   private static final String PASSWORD = "Test1234";
 
-  private static final String CERTIFICATE = "VGhpcyBpcyBzdXJlbHkgbm90IGEgdmFsaWQgY2VydGlmaWNhdGUsIGJ1dCBpdCBo\r\n"
+  private static final String CERTIFICATE = "VGhpcyBpcyBzdXJlbHkgbm90IGEgdmFsaWQgY2VydGlmaWNhdGUsIGJ1dCBpdCBo\n"
                                             + "YXMgbW9yZSB0aGFuIDY0IGNoYXJhY3RlcnM=";
   private static final String ADDRESS = "http://test.eu/accesspoint.svc";
   private static final boolean REQUIRE_SIGNATURE = true;

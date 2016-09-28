@@ -49,24 +49,24 @@ import org.junit.Test;
  */
 public class SMPDBUtilsTest {
   @Test
-  public void testGetRFC1421CompliantString () {
-    assertNull (SMPDBUtils.getRFC1421CompliantString (null));
-    assertEquals ("", SMPDBUtils.getRFC1421CompliantString (""));
+  public void getRFC1421CompliantStringWithoutCarriageReturnCharacters () {
+    assertNull (SMPDBUtils.getRFC1421CompliantStringWithoutCarriageReturnCharacters(null));
+    assertEquals ("", SMPDBUtils.getRFC1421CompliantStringWithoutCarriageReturnCharacters(""));
 
     // for up to 64 chars it makes no difference
     for (int i = 0; i <= 64; ++i) {
       final char [] aChars = new char [i];
       Arrays.fill (aChars, 'a');
       final String sText = new String (aChars);
-      assertEquals (sText, SMPDBUtils.getRFC1421CompliantString (sText));
+      assertEquals (sText, SMPDBUtils.getRFC1421CompliantStringWithoutCarriageReturnCharacters(sText));
     }
 
     final String sLong = "123456789012345678901234567890123456789012345678901234567890abcd"
                          + "123456789012345678901234567890123456789012345678901234567890abcd"
                          + "xyz";
-    final String sFormatted = SMPDBUtils.getRFC1421CompliantString (sLong);
-    assertEquals ("123456789012345678901234567890123456789012345678901234567890abcd\r\n"
-                  + "123456789012345678901234567890123456789012345678901234567890abcd\r\n"
+    final String sFormatted = SMPDBUtils.getRFC1421CompliantStringWithoutCarriageReturnCharacters(sLong);
+    assertEquals ("123456789012345678901234567890123456789012345678901234567890abcd\n"
+                  + "123456789012345678901234567890123456789012345678901234567890abcd\n"
                   + "xyz", sFormatted);
   }
 }

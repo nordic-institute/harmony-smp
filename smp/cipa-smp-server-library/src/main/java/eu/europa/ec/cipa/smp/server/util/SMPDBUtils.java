@@ -79,7 +79,7 @@ public final class SMPDBUtils {
    * @return The RFC 1421 compliant string
    */
   @Nullable
-  public static String getRFC1421CompliantString (@Nullable final String sCertificate) {
+  public static String getRFC1421CompliantStringWithoutCarriageReturnCharacters(@Nullable final String sCertificate) {
     if (StringHelper.hasNoText (sCertificate))
       return sCertificate;
 
@@ -88,11 +88,11 @@ public final class SMPDBUtils {
 
     // Start building the result
     final int nMaxLineLength = 64;
-    final String sCRLF = "\r\n";
+    final String sLF = "\n"; //Originally RFC suggests CRLF instead of LF
     final StringBuilder aSB = new StringBuilder ();
     while (sPlainString.length () > nMaxLineLength) {
-      // Append line + CRLF
-      aSB.append (sPlainString, 0, nMaxLineLength).append (sCRLF);
+      // Append line + LF
+      aSB.append (sPlainString, 0, nMaxLineLength).append (sLF);
 
       // Remove the start of the string
       sPlainString = sPlainString.substring (nMaxLineLength);

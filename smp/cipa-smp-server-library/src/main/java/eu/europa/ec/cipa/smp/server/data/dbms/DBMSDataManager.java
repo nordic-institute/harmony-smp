@@ -548,7 +548,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 aEndpointType.setServiceExpirationDate(aDBEndpoint.getServiceExpirationDate());
                 aEndpointType.setTechnicalContactUrl(aDBEndpoint.getTechnicalContactUrl());
                 aEndpointType.setTechnicalInformationUrl(aDBEndpoint.getTechnicalInformationUrl());
-                aEndpointType.setCertificate(SMPDBUtils.getRFC1421CompliantString(aDBEndpoint.getCertificate()));
+                aEndpointType.setCertificate(SMPDBUtils.getRFC1421CompliantStringWithoutCarriageReturnCharacters(aDBEndpoint.getCertificate()));
                 aEndpointType.setMinimumAuthenticationLevel(aDBEndpoint.getMinimumAuthenticationLevel());
                 aEndpointType.setRequireBusinessLevelSignature(aDBEndpoint.isRequireBusinessLevelSignature());
 
