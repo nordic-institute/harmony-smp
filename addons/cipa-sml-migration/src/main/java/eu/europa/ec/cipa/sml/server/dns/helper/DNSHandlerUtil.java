@@ -21,6 +21,7 @@ public class DNSHandlerUtil {
     private static final Logger logger = LoggerFactory.getLogger(DNSHandlerUtil.class);
 
     public static void main(String[] args) throws IOException, ZoneTransferException, DNSSEC.DNSSECException, NoSuchAlgorithmException {
+        exportRecords();
        /* deleteRecord(getRecordByName("05ab0010659a5e5eb7582142edc5256925918681500cfe8e093d5206.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu."));
         deleteRecord(getRecordByName("45420262e80335418ff5d046651eb693e3b1fc8d0bda4720ade8bc2c.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu."));
         deleteRecord(getRecordByName("2YO72LIMIKWPSK62UHI47YOVXVZDL57ZBFHQCPJ6NN3MAJUKFW3A.iso6523-actorid-upis.acc.edelivery.tech.ec.europa.eu."));

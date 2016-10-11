@@ -238,6 +238,7 @@ public class CreateMissingDataIntoDNS {
             }
         }
 
+
         if (!recordsToCreate.isEmpty()) {
             getDnsClient().addRecords(recordsToCreate);
         }
@@ -270,8 +271,21 @@ public class CreateMissingDataIntoDNS {
             hasSHA256 = false;
         }
 
-        if (!recordsToCreate.isEmpty()) {
-            getDnsClient().addRecords(recordsToCreate);
+
+
+        List<Record> smallRecordsToCreate = new ArrayList<>();
+        int i = 0;
+        for (Record record : recordsToCreate) {
+            smallRecordsToCreate.add(record);
+            i++;
+            if (i == 100) {
+                i = 0;
+                getDnsClient().addRecords(smallRecordsToCreate);
+                smallRecordsToCreate.clear();
+            }
+        }
+        if (!smallRecordsToCreate.isEmpty()) {
+            getDnsClient().addRecords(smallRecordsToCreate);
         }
     }
 
