@@ -37,35 +37,28 @@
  */
 package eu.europa.ec.cipa.sml.client;
 
-import java.net.URL;
-import java.util.Collection;
-import java.util.UUID;
-
-import javax.annotation.Nonnull;
-import javax.annotation.OverridingMethodsMustInvokeSuper;
-import javax.xml.ws.BindingProvider;
-
+import com.helger.commons.ValueEnforcer;
+import com.helger.commons.annotations.Nonempty;
+import com.helger.commons.annotations.OverrideOnDemand;
+import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
+import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 import org.busdox.servicemetadata.locator._1.MigrationRecordType;
 import org.busdox.servicemetadata.locator._1.PageRequestType;
 import org.busdox.servicemetadata.locator._1.ParticipantIdentifierPageType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
-import org.busdox.servicemetadata.managebusinessidentifierservice._1.BadRequestFault;
-import org.busdox.servicemetadata.managebusinessidentifierservice._1.InternalErrorFault;
-import org.busdox.servicemetadata.managebusinessidentifierservice._1.ManageBusinessIdentifierService;
-import org.busdox.servicemetadata.managebusinessidentifierservice._1.ManageBusinessIdentifierServiceSoap;
-import org.busdox.servicemetadata.managebusinessidentifierservice._1.NotFoundFault;
-import org.busdox.servicemetadata.managebusinessidentifierservice._1.UnauthorizedFault;
+import org.busdox.servicemetadata.managebusinessidentifierservice._1.*;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.annotations.OverrideOnDemand;
+import javax.annotation.Nonnull;
+import javax.annotation.OverridingMethodsMustInvokeSuper;
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.handler.MessageContext;
+import java.net.URL;
+import java.util.*;
 
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
-
+import static java.util.Collections.emptyMap;
 /**
  * This class is used for calling the Manage Participant Identifier interface on
  * the SML.
@@ -76,8 +69,10 @@ import eu.europa.ec.cipa.peppol.sml.ISMLInfo;
 public class ManageParticipantIdentifierServiceCaller {
   private static final Logger s_aLogger = LoggerFactory.getLogger (ManageParticipantIdentifierServiceCaller.class);
   private static final String NO_SMP_ID_REQUIRED = "";
+  private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
 
   private final URL m_aEndpointAddress;
+  private Map<String, List<String>> m_sClientCertHttpHeader = emptyMap();
 
   /**
    * Constructs a service caller for the manage business identifier interface.<br>
@@ -109,6 +104,26 @@ public class ManageParticipantIdentifierServiceCaller {
   }
 
   /**
+   * Constructs a service caller for the manage business identifier interface.<br>
+   * Example of a host:<br>
+   * https://sml.peppolcentral.org/managebusinessidentifier
+   *
+   * @param aEndpointAddress
+   *        The URL of the manage participant identifier interface. May not be
+   *        <code>null</code>.
+   * @param sClientCert
+   *        The certificate to be passed as a HTTP header: "Client-Cert". May not be <code>null</code>
+   *        Usually SML authenticates client's certificate during SSL handshake,
+   *        but if it is reached with  http (without SSL), then we pass certificate within HTTP header,
+   *        assuming the client's cert is already validated.
+   */
+  public ManageParticipantIdentifierServiceCaller (@Nonnull final URL aEndpointAddress, @Nonnull final String sClientCert) {
+    this(aEndpointAddress);
+    m_sClientCertHttpHeader = new HashMap<>();
+    m_sClientCertHttpHeader.put(CLIENT_CERT_HEADER_KEY, Arrays.asList(sClientCert));
+  }
+
+  /**
    * @return The endpoint address as specified in the constructor. Never
    *         <code>null</code>.
    */
@@ -128,8 +143,9 @@ public class ManageParticipantIdentifierServiceCaller {
   protected ManageBusinessIdentifierServiceSoap createWSPort () {
     final ManageBusinessIdentifierService aService = new ManageBusinessIdentifierService ();
     final ManageBusinessIdentifierServiceSoap aPort = aService.getManageBusinessIdentifierServicePort ();
-    ((BindingProvider) aPort).getRequestContext ().put (BindingProvider.ENDPOINT_ADDRESS_PROPERTY,
-                                                        m_aEndpointAddress.toString ());
+    Map<String, Object> requestContext = ((BindingProvider) aPort).getRequestContext();
+    requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, m_aEndpointAddress.toString());
+    requestContext.put(MessageContext.HTTP_REQUEST_HEADERS, m_sClientCertHttpHeader);
     return aPort;
   }
 

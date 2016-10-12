@@ -78,10 +78,12 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
   private static final String CONFIG_HOOK_ID = "regServiceRegistrationHook.id";
   private static final String CONFIG_HOOK_KEYSTORE_CLASSPATH = "regServiceRegistrationHook.keystore.classpath";
   private static final String CONFIG_HOOK_KEYSTORE_PASSWORD = "regServiceRegistrationHook.keystore.password";
+  private static final String CONFIG_HOOK_CLIENT_CERT = "regServiceRegistrationHook.clientCert";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (RegistrationServiceRegistrationHook.class);
   private static final URL s_aSMLEndpointURL;
   private static final String s_sSMPID;
+  private static final String s_sSMPClientCertificate;
 
   private static ConfigFile configFile;
 
@@ -104,6 +106,7 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
 
     // SMP ID
     s_sSMPID = configFile.getString (CONFIG_HOOK_ID);
+    s_sSMPClientCertificate = configFile.getString(CONFIG_HOOK_CLIENT_CERT);
 
     s_aLogger.info ("Using the following SML address: " + s_aSMLEndpointURL);
     s_aLogger.info ("This SMP has the ID: " + s_sSMPID);
@@ -159,7 +162,8 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
 
     try {
       _setupSSLSocketFactory ();
-      final ManageParticipantIdentifierServiceCaller aSMLCaller = new ManageParticipantIdentifierServiceCaller (s_aSMLEndpointURL);
+      final ManageParticipantIdentifierServiceCaller aSMLCaller
+              = new ManageParticipantIdentifierServiceCaller (s_aSMLEndpointURL, s_sSMPClientCertificate);
       aSMLCaller.create (s_sSMPID, m_aBusinessIdentifier);
       s_aLogger.info ("Succeeded in creating business " +
                       m_aBusinessIdentifier +
@@ -187,7 +191,7 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
 
     try {
       _setupSSLSocketFactory ();
-      final ManageParticipantIdentifierServiceCaller aSMPCaller = new ManageParticipantIdentifierServiceCaller (s_aSMLEndpointURL);
+      final ManageParticipantIdentifierServiceCaller aSMPCaller = new ManageParticipantIdentifierServiceCaller (s_aSMLEndpointURL, s_sSMPClientCertificate);
       aSMPCaller.delete (m_aBusinessIdentifier);
       s_aLogger.info ("Succeded in deleting business " +
                       m_aBusinessIdentifier +
@@ -210,7 +214,7 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     if (eSuccess.isFailure ())
       try {
         _setupSSLSocketFactory ();
-        final ManageParticipantIdentifierServiceCaller aSMLCaller = new ManageParticipantIdentifierServiceCaller (s_aSMLEndpointURL);
+        final ManageParticipantIdentifierServiceCaller aSMLCaller = new ManageParticipantIdentifierServiceCaller (s_aSMLEndpointURL, s_sSMPClientCertificate);
 
         switch (m_eAction) {
           case CREATE:
