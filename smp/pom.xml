@@ -5,7 +5,7 @@
 	<artifactId>cipa-smp-builder</artifactId>
 	<packaging>pom</packaging>
 	<name>CIPA SMP Builder POM</name>
-	<version>2.5.0</version>
+	<version>2.5.1-SNAPSHOT</version>
 
 	<modules>
 		<module>cipa-smp-client-library</module>
