@@ -5,7 +5,7 @@
 	<artifactId>cipa-smp-builder</artifactId>
 	<packaging>pom</packaging>
 	<name>CIPA SMP Builder POM</name>
-	<version>2.2.5-SNAPSHOT</version>
+	<version>2.5.0</version>
 
 	<modules>
 		<module>cipa-smp-client-library</module>
@@ -16,6 +16,7 @@
 
 	<!-- Where to deploy binaries -->
 	<distributionManagement>
+		<!--
 		<repository>
 			<id>joinup-releases</id>
 			<url>https://joinup.ec.europa.eu/nexus/content/repositories/releases/</url>
@@ -24,5 +25,16 @@
 			<id>joinup-snapshots</id>
 			<url>https://joinup.ec.europa.eu/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
+		-->
+		<repository>
+			<id>edelivery-releases</id>
+			<url>https://ec.europa.eu/cefdigital/artifact/content/repositories/eDelivery/</url>
+		</repository>
+		<snapshotRepository>
+			<id>edelivery-snapshots</id>
+			<url>https://ec.europa.eu/cefdigital/artifact/content/repositories/eDelivery-snapshots/</url>
+		</snapshotRepository>
 	</distributionManagement>
+
+
 </project>
