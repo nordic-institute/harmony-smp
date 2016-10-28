@@ -135,11 +135,17 @@
           <con:params/>
           <con:element>html</con:element>
         </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>0</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
         <con:request name="UC07" id="ee5b7ec4-2dee-44b5-b548-a89c7e0237ea" mediaType="application/json">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://localhost:8080</con:endpoint>
+          <con:endpoint>http://130.206.118.4:8888</con:endpoint>
           <con:request/>
           <con:originalUri>http://localhost/0007:1238000007666/services/</con:originalUri>
           <con:credentials>
@@ -186,7 +192,7 @@
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://localhost:8080</con:endpoint>
+          <con:endpoint>http://130.206.118.4:8888</con:endpoint>
           <con:request><![CDATA[<SignedServiceMetadata xmlns="ec:services:SMP:1.0">
    <ServiceMetadata xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
      <ServiceInformation>
@@ -272,7 +278,7 @@
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://localhost:8080</con:endpoint>
+          <con:endpoint>http://130.206.118.4:8888</con:endpoint>
           <con:request/>
           <con:originalUri>http://localhost/iso6523-actorid-upis::0007:1238000007666/services/THE_DOC_TYPE</con:originalUri>
           <con:credentials>
@@ -479,7 +485,7 @@
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://localhost:8080</con:endpoint>
+          <con:endpoint>http://130.206.118.4:8888</con:endpoint>
           <con:request/>
           <con:originalUri>http://localhost/0007:1238000007666/services/</con:originalUri>
           <con:credentials>
@@ -574,7 +580,7 @@
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://localhost:8080</con:endpoint>
+          <con:endpoint>http://130.206.118.4:8888</con:endpoint>
           <con:request><![CDATA[<ServiceGroup xmlns="ec:services:SMP:1.0">
    <Extension>
       <ex:Test xmlns:ex="http://smp-digit-acc.publisher.acc.edelivery.tech.ec.europa.eu">Test</ex:Test>
@@ -610,7 +616,7 @@
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://localhost:8080</con:endpoint>
+          <con:endpoint>http://130.206.118.4:8888</con:endpoint>
           <con:request/>
           <con:originalUri>http://localhost/iso6523-actorid-upis::0007:1238000007666</con:originalUri>
           <con:credentials>
@@ -991,7 +997,7 @@ if( requestBody.contains("some data") )
         <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <ErrorResponse xmlns="ec:services:SMP:1.0">
  	<BusinessCode>XSD_INVALID</BusinessCode> 
-	<ErrorDescription>Not expected node &lt;abc><UNSUPPORTED ACTION OR WRONG URL</ErrorDescription> 
+	<ErrorDescription>Not expected node &lt;abc&gt;</ErrorDescription> 
 	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
 </ErrorResponse>]]></con:responseContent>
       </con:response>
@@ -1136,7 +1142,7 @@ if( requestBody.contains("some data") )
         <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <ErrorResponse xmlns="ec:services:SMP:1.0">
  	<BusinessCode>XSD_INVALID</BusinessCode> 
-	<ErrorDescription>Not expected node &lt;abc><UNSUPPORTED ACTION OR WRONG URL</ErrorDescription> 
+	<ErrorDescription>Not expected node &lt;abc&gt;</ErrorDescription> 
 	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
 </ErrorResponse>]]></con:responseContent>
       </con:response>
