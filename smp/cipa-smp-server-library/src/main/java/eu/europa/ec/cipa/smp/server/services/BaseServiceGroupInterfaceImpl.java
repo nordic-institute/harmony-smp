@@ -41,9 +41,12 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
+import com.helger.commons.string.StringParser;
 import org.busdox.servicemetadata.publishing._1.ObjectFactory;
 import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
 import org.busdox.servicemetadata.publishing._1.ServiceMetadataReferenceCollectionType;
@@ -61,6 +64,7 @@ import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifi
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
+import org.springframework.util.StringUtils;
 
 /**
  * This class implements the read-only methods for the REST ServiceGroup
@@ -71,7 +75,8 @@ import eu.europa.ec.cipa.smp.server.data.IDataManager;
  */
 public final class BaseServiceGroupInterfaceImpl {
   private static final Logger s_aLogger = LoggerFactory.getLogger (BaseServiceGroupInterfaceImpl.class);
-  
+  public static final int UNSET_URI_PORT = -1;
+
   private static ConfigFile configFile;
 
   static {
@@ -92,18 +97,20 @@ public final class BaseServiceGroupInterfaceImpl {
   /**
    * @param aUriInfo
    *        Request URI info
+   * @param httpHeaders
+   *        Request's HTTP headers
    * @param sServiceGroupID
    *        Requested service group ID
    * @param aServiceMetadataInterface
-   *        The implementation class of the MetadataInterface
-   * @return <code>null</code> in case of a syntactical invalid service group ID
+ *        The implementation class of the MetadataInterface   @return <code>null</code> in case of a syntactical invalid service group ID
    * @throws Throwable
    *         in case of an error
    */
   @Nullable
-  public static JAXBElement <ServiceGroupType> getServiceGroup (@Nonnull final UriInfo aUriInfo,
-                                                                @Nullable final String sServiceGroupID,
-                                                                @Nonnull final Class <?> aServiceMetadataInterface) throws Throwable {
+  public static JAXBElement <ServiceGroupType> getServiceGroup(@Nonnull final UriInfo aUriInfo,
+                                                               @Nonnull HttpHeaders httpHeaders,
+                                                               @Nullable final String sServiceGroupID,
+                                                               @Nonnull final Class<?> aServiceMetadataInterface) throws Throwable {
     s_aLogger.info ("GET /" + sServiceGroupID);
 
     final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
@@ -131,21 +138,18 @@ public final class BaseServiceGroupInterfaceImpl {
       final List <DocumentIdentifierType> aDocTypeIds = aDataManager.getDocumentTypes (aServiceGroupID);
       for (final DocumentIdentifierType aDocTypeId : aDocTypeIds) {
         final ServiceMetadataReferenceType aMetadataReference = aObjFactory.createServiceMetadataReferenceType ();
-        if (configFile.getString ("contextPath.output", "false").equals ("true")) {
-          aMetadataReference.setHref (aUriInfo.getBaseUriBuilder ()
-                                              .path (aServiceMetadataInterface)
-                                              .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID),
-                                                                 IdentifierUtils.getIdentifierURIPercentEncoded (aDocTypeId))
-                                              .toString ());
+        UriBuilder uriBuilder = aUriInfo.getBaseUriBuilder();
+        if (configFile.getString ("contextPath.output", "false").equals ("false")) {
+          uriBuilder.replacePath ("");
         }
-        else {
-          aMetadataReference.setHref (aUriInfo.getBaseUriBuilder ()
-                                              .replacePath ("")
-                                              .path (aServiceMetadataInterface)
-                                              .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID),
-                                                                 IdentifierUtils.getIdentifierURIPercentEncoded (aDocTypeId))
-                                              .toString ());
-        }
+        applyReverseProxyParams(uriBuilder, httpHeaders);
+        String metadataHref = uriBuilder
+                .path (aServiceMetadataInterface)
+                .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID),
+                                   IdentifierUtils.getIdentifierURIPercentEncoded (aDocTypeId))
+                .toString();
+
+        aMetadataReference.setHref (metadataHref);
         aMetadataReferences.add (aMetadataReference);
       }
       aServiceGroup.setServiceMetadataReferenceCollection (aCollectionType);
@@ -164,6 +168,34 @@ public final class BaseServiceGroupInterfaceImpl {
     catch (final Throwable ex) {
       s_aLogger.error ("Error getting service group " + aServiceGroupID, ex);
       throw ex;
+    }
+  }
+
+  private static void applyReverseProxyParams(UriBuilder uriBuilder, HttpHeaders httpHeaders) {
+    String host = getHeader(httpHeaders, "X-Forwarded-Host");
+    if( ! StringUtils.isEmpty(host)) {
+      uriBuilder.host(host);
+
+      String port = getHeader(httpHeaders, "X-Forwarded-Port");
+      if (StringParser.isUnsignedInt(port)) {
+        uriBuilder.port(Integer.parseInt(port));
+      } else {
+        uriBuilder.port(UNSET_URI_PORT);
+      }
+
+      String protocol = getHeader(httpHeaders, "X-Forwarded-Proto");
+      if( ! StringUtils.isEmpty(protocol)){
+        uriBuilder.scheme(protocol);
+      }
+    }
+  }
+
+  private static String getHeader(HttpHeaders httpHeaders, String headerKey) {
+    List<String> headerValues = httpHeaders.getRequestHeader(headerKey);
+    if(headerValues != null && headerValues.size() > 0){
+      return headerValues.get(0);
+    }else {
+      return null;
     }
   }
 }

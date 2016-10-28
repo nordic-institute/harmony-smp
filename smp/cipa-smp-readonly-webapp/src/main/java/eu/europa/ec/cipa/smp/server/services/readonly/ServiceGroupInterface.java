@@ -43,11 +43,11 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
-import eu.europa.ec.cipa.smp.server.services.readonly.ServiceMetadataInterface;
 import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
 
 import eu.europa.ec.cipa.smp.server.services.BaseServiceGroupInterfaceImpl;
@@ -59,6 +59,9 @@ import eu.europa.ec.cipa.smp.server.services.BaseServiceGroupInterfaceImpl;
  */
 @Path ("/{ServiceGroupId}")
 public final class ServiceGroupInterface {
+
+  @Context
+  private HttpHeaders headers;
   @Context
   private UriInfo uriInfo;
 
@@ -68,6 +71,6 @@ public final class ServiceGroupInterface {
   @Produces (MediaType.TEXT_XML)
   public JAXBElement <ServiceGroupType> getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId) throws Throwable {
     // Delegate to common implementation
-    return BaseServiceGroupInterfaceImpl.getServiceGroup (uriInfo, sServiceGroupId, ServiceMetadataInterface.class);
+    return BaseServiceGroupInterfaceImpl.getServiceGroup (uriInfo, headers, sServiceGroupId, ServiceMetadataInterface.class);
   }
 }

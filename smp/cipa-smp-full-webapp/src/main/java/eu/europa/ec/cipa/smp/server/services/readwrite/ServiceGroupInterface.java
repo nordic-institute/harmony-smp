@@ -85,7 +85,7 @@ public final class ServiceGroupInterface {
   public Response getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId){
     // Delegate to common implementation
     try{
-      return Response.ok(BaseServiceGroupInterfaceImpl.getServiceGroup (uriInfo, sServiceGroupId, ServiceMetadataInterface.class)).build();
+      return Response.ok(BaseServiceGroupInterfaceImpl.getServiceGroup (uriInfo, headers, sServiceGroupId, ServiceMetadataInterface.class)).build();
     }
     catch(Throwable ex)
     {
