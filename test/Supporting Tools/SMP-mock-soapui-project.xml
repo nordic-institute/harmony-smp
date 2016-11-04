@@ -141,11 +141,17 @@
           <con:params/>
           <con:element>data</con:element>
         </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>0</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
         <con:request name="UC07" id="ee5b7ec4-2dee-44b5-b548-a89c7e0237ea" mediaType="application/json">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://130.206.118.4:8888</con:endpoint>
+          <con:endpoint>http://localhost:8080</con:endpoint>
           <con:request/>
           <con:originalUri>http://localhost/0007:1238000007666/services/</con:originalUri>
           <con:credentials>
@@ -172,7 +178,7 @@
         </con:representation>
         <con:representation type="FAULT">
           <con:mediaType>application/xml</con:mediaType>
-          <con:status>500 400</con:status>
+          <con:status>500 400 404</con:status>
           <con:params/>
           <con:element xmlns:ns="ec:services:SMP:1.0">ns:ErrorResponse</con:element>
         </con:representation>
@@ -188,11 +194,53 @@
           <con:params/>
           <con:element>html</con:element>
         </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>500</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>500</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>500</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>500</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>500</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>500</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>500</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
         <con:request name="UC04" id="5b3ec50e-7964-4237-a8a1-1e7426069cbe" mediaType="application/xml" postQueryString="false">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://130.206.118.4:8888</con:endpoint>
+          <con:endpoint>http://localhost:8080</con:endpoint>
           <con:request><![CDATA[<SignedServiceMetadata xmlns="ec:services:SMP:1.0">
    <ServiceMetadata xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
      <ServiceInformation>
@@ -274,11 +322,23 @@
           <con:status>404 500</con:status>
           <con:params/>
         </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>500</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>500</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
         <con:request name="UC05" id="732b985a-b408-4171-a43c-5b7fc0de3159" mediaType="application/json" postQueryString="false">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://130.206.118.4:8888</con:endpoint>
+          <con:endpoint>http://localhost:8080</con:endpoint>
           <con:request/>
           <con:originalUri>http://localhost/iso6523-actorid-upis::0007:1238000007666/services/THE_DOC_TYPE</con:originalUri>
           <con:credentials>
@@ -481,11 +541,17 @@
           <con:params/>
           <con:element>data</con:element>
         </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>0</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
         <con:request name="UC06" id="ee5b7ec4-2dee-44b5-b548-a89c7e0237ea" mediaType="application/json">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://130.206.118.4:8888</con:endpoint>
+          <con:endpoint>http://localhost:8080</con:endpoint>
           <con:request/>
           <con:originalUri>http://localhost/0007:1238000007666/services/</con:originalUri>
           <con:credentials>
@@ -512,7 +578,7 @@
         </con:representation>
         <con:representation type="FAULT">
           <con:mediaType>application/xml</con:mediaType>
-          <con:status>500 400</con:status>
+          <con:status>500 400 404</con:status>
           <con:params/>
           <con:element xmlns:ns="ec:services:SMP:1.0">ns:ErrorResponse</con:element>
         </con:representation>
@@ -576,11 +642,23 @@
           <con:params/>
           <con:element>data</con:element>
         </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/html; charset=utf-8</con:mediaType>
+          <con:status>503 404</con:status>
+          <con:params/>
+          <con:element>html</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>204</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
         <con:request name="UC02" id="5b3ec50e-7964-4237-a8a1-1e7426069cbe" mediaType="application/xml" postQueryString="false">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://130.206.118.4:8888</con:endpoint>
+          <con:endpoint>http://localhost:8080</con:endpoint>
           <con:request><![CDATA[<ServiceGroup xmlns="ec:services:SMP:1.0">
    <Extension>
       <ex:Test xmlns:ex="http://smp-digit-acc.publisher.acc.edelivery.tech.ec.europa.eu">Test</ex:Test>
@@ -616,7 +694,7 @@
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
-          <con:endpoint>http://130.206.118.4:8888</con:endpoint>
+          <con:endpoint>http://localhost:8080</con:endpoint>
           <con:request/>
           <con:originalUri>http://localhost/iso6523-actorid-upis::0007:1238000007666</con:originalUri>
           <con:credentials>
@@ -633,28 +711,63 @@
     <con:description/>
     <con:settings/>
     <con:properties/>
-    <con:onRequestScript>// Overloaded dispatcher by Gutowski (SoapUI mcoks do not support URL params)
+    <con:onRequestScript>/*
+ * SoapUI mocking framework does not support URL params (but SMP uses them)
+ * For this reason dispatching logic is rewritten a bit with the script below.
+ * See also tiny scripts within each actions.
+ */ 
 
 def requestPath = mockRequest.getPath()
-def serviceMetadataMatcher = requestPath =~ /\/(?&lt;serviceGroupId>[^\/]+)\/services\/(?&lt;documentTypeId>[^\/]+)/
-def serviceGroupMatcher    = requestPath =~ /\/(?&lt;serviceGroupId>[^\/]+)/
+def serviceMetadataMatcher = requestPath =~ /\/(?&lt;participantIdentifier>[^\/]+)\/services\/(?&lt;documentTypeId>[^\/]+)/
+def serviceGroupMatcher    = requestPath =~ /\/(?&lt;participantIdentifier>[^\/]+)/
 def action = "BAD_REQUEST"
 def httpMethod = mockRequest.getMethod().name()
 def methodIsSupported = ["GET", "PUT", "DELETE"].contains(httpMethod)
 
-log.info "Recieved the request: " + httpMethod + " " + requestPath
-log.info "This HTTP method is supported: " + methodIsSupported
+/*
+ * {participantIdentifier} = {participantScheme}::{participantId}
+ */
+def feedContextWithParticipantIds = { matcher ->
+	context.participantIdentifier = matcher.group( 'participantIdentifier' )
+	def participantIdentifierMatcher = context.participantIdentifier =~/(?&lt;participantScheme>[^\/]+)::(?&lt;participantId>[^\/]+)/
+	if( participantIdentifierMatcher.matches()){
+		context.participantScheme = participantIdentifierMatcher.group('participantScheme')
+		context.participantId     = participantIdentifierMatcher.group('participantId')
+	}else{
+		context.participantScheme = ""
+		context.participantId     = ""
+	}
+}
+
+/*
+ * Common messages dispatcher to be used by all 6 Use Cases
+ * Chooses the response with the same name as participantId.
+ * Fallbacks to whole participantIdentifier if no double :: was present
+ */
+context.dispatchMessage = { 
+	def messageName = context.participantId ? context.participantId : context.participantIdentifier
+	log.info("Dispatched to message: ["+messageName+"] with context: " + context);
+	messageName
+}
+
+// ===========================
+// ======= START HERE ========
+// ===========================
+
+log.info "Recieved the request: " + httpMethod + " " + requestPath + " - This HTTP method is supported: " + methodIsSupported
 
 if(methodIsSupported){
 	 if(serviceGroupMatcher.matches()){
-		context.serviceGroupId = serviceGroupMatcher.group( 'serviceGroupId' )
+		feedContextWithParticipantIds(serviceGroupMatcher)
 		action = httpMethod + " ServiceGroup"
-		log.info action + ", serviceGroupId=[" + context.serviceGroupId + "]"
+		log.info action + ", participantIdentifier=[" + context.participantIdentifier + "]"
 	} else if(serviceMetadataMatcher.matches()){
-		context.serviceGroupId = serviceMetadataMatcher.group( 'serviceGroupId' )
+		feedContextWithParticipantIds(serviceMetadataMatcher)
 		context.documentTypeId = serviceMetadataMatcher.group( 'documentTypeId' )
 		action = httpMethod + " ServiceMetadata"
-		log.info action + ", serviceGroupId=[" + context.serviceGroupId + "], documentTypeId=[" + context.documentTypeId + "]"
+		log.info action + ", participantIdentifier=[" + context.participantIdentifier + "], documentTypeId=[" + context.documentTypeId + "]"
+	} else {
+		log.info "No groovy match"
 	}
 }
 
@@ -728,183 +841,62 @@ if( requestBody.contains("some data") )
     </con:restMockAction>
     <con:restMockAction name="GET ServiceMetadata" method="GET" resourcePath="/" id="c1a011f7-4bb9-4fd9-b543-df345f99dffc">
       <con:settings/>
-      <con:defaultResponse>OK</con:defaultResponse>
-      <con:dispatchStyle>SEQUENCE</con:dispatchStyle>
+      <con:defaultResponse>urn:poland:ncpb</con:defaultResponse>
+      <con:dispatchStyle>SCRIPT</con:dispatchStyle>
       <con:dispatchPath>/*
-// Script dispatcher is used to select a response based on the incoming request.
-// Here are few examples showing how to match based on path, query param, header and body
-
-// Match based on path
-def requestPath = mockRequest.getPath()
-log.info "Path: "+ requestPath
-
-if( requestPath.contains("json") )
-{
-    // return the name of the response you want to dispatch
-    return "JSON Response"
-}
-
-
-// Match based on query parameter
-def queryString = mockRequest.getRequest().getQueryString()
-log.info "QueryString: " + queryString
-
-if( queryString.contains("stockholm") )
-{
-    // return the name of the response you want to dispatch
-    return "Response Stockholm"
-}
-else if( queryString.contains("london") )
-{
-    // return the name of the response you want to dispatch
-    return "Response London"
-}
-
-
-// Match based on header
-def acceptEncodingHeaderList = mockRequest.getRequestHeaders().get("Accept-Encoding")
-log.info "AcceptEncoding Header List: " + acceptEncodingHeaderList
-
-if( acceptEncodingHeaderList.contains("gzip,deflate") )
-{
-    // return the name of the response you want to dispatch
-    return "GZiped Response"
-}
-
-
-// Match based on body
-def requestBody = mockRequest.getRequestContent()
-log.info "Request body: " + requestBody
-
-if( requestBody.contains("some data") )
-{
-    // return the name of the response you want to dispatch
-    return "Response N"
-}
-*/</con:dispatchPath>
-      <con:response name="OK" id="9c2cb703-88ec-4105-bd3a-3155377e2a44" httpResponseStatus="200">
+ * Use the common dispatcher defined in parent script
+ */
+context.dispatchMessage()</con:dispatchPath>
+      <con:response name="urn:poland:ncpb" id="9c2cb703-88ec-4105-bd3a-3155377e2a44" httpResponseStatus="200">
         <con:settings/>
-        <con:responseContent><![CDATA[<SignedServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
-   <ServiceMetadata xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-utility-1.0.xsd">
-     <ServiceInformation>
-       <ParticipantIdentifier scheme="busdox-actorid-upis">0010:5798000000001</ParticipantIdentifier>
-       <DocumentIdentifier scheme="bdx-docid-qns">${documentTypeId}urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice##UBL-2.02
-       </DocumentIdentifier>
-       <ProcessList>
-         <Process>
-           <ProcessIdentifier scheme="cenbii-procid-ubl">BII04</ProcessIdentifier>
-           <ServiceEndpointList>
-             <Endpoint transportProfile="busdox-transport-start">
-               <EndpointURI>http://busdox.org/sampleService/</EndpointURI>
-               <RequireBusinessLevelSignature>false
-               </RequireBusinessLevelSignature>
-               <MinimumAuthenticationLevel>2</MinimumAuthenticationLevel>
-               <ServiceActivationDate>2009-05-01T09:00:00
-               </ServiceActivationDate>
-               <ServiceExpirationDate>2016-05-01T09:00:00
-               </ServiceExpirationDate>
-               <Certificate>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</Certificate>
-               <ServiceDescription>invoice service</ServiceDescription>
-               <TechnicalContactUrl>https://example.com
-               </TechnicalContactUrl>
-               <TechnicalInformationUrl>http://example.com/info
-               </TechnicalInformationUrl>
-             </Endpoint>
-           </ServiceEndpointList>
-         </Process>
-         <Process>
-           <ProcessIdentifier scheme="cenbii-procid-ubl">BII07</ProcessIdentifier>
-           <ServiceEndpointList>
-             <Endpoint transportProfile="busdox-transport-start">
-               <EndpointURI>http://busdox.org/sampleService/</EndpointURI>
-               <RequireBusinessLevelSignature>true
-               </RequireBusinessLevelSignature>
-               <MinimumAuthenticationLevel>1</MinimumAuthenticationLevel>
-               <ServiceActivationDate>2009-05-01T09:00:00
-               </ServiceActivationDate>
-               <ServiceExpirationDate>2016-05-01T09:00:00
-               </ServiceExpirationDate>
-               <Certificate>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</Certificate>
-               <ServiceDescription>invoice service</ServiceDescription>
-               <TechnicalContactUrl>https://example.com
-               </TechnicalContactUrl>
-               <TechnicalInformationUrl>http://example.com/info
-               </TechnicalInformationUrl>
-               <Extension>
-                 <ex:Test xmlns:ex="http://test.eu">Test</ex:Test>
-               </Extension>
-             </Endpoint>
-           </ServiceEndpointList>
-           <Extension>
-             <ex:Test xmlns:ex="http://test.eu">Test</ex:Test>
-           </Extension>
-         </Process>
-       </ProcessList>
-       <Extension>
-         <ex:ExampleNotStandardExtension xmlns:ex="http://test.eu">
-         		<ServiceGroup>${serviceGroupId}</ServiceGroup>
-         	</ex:ExampleNotStandardExtension>
-        </Extension>
-     </ServiceInformation>
-   </ServiceMetadata>
-
-    <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
-          <SignedInfo>
-             <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
-             <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
-             <Reference URI="">
-                <Transforms>
-                   <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
-                </Transforms>
-                <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-                <DigestValue>6r3W426Gx5foBPtasSdIEj6JvAY=</DigestValue>
-             </Reference>
-          </SignedInfo>
-          <SignatureValue>2NJB0Pv3ORL+EpPYLCl/InXI+mDbUsV8CrWzRVJvEJMnnyuI2bPMe6k4MJwp9A4bTkzjvkMPARYAhyVNm6MNNlJRAFL4qddsRrWa4Jgf/QF0zQgpJ7ZUPdVQ8L8A54FiPZWltOIgZCfO7sDbEcB00V4gKmzVPBsVu6BIBOws/UY=</SignatureValue>
-          <KeyInfo>
-             <X509Data>
-                <X509SubjectName>1.2.840.113549.1.9.1=#160e73656e64657240746573742e6265,CN=senderCN,OU=B4,O=DIGIT,L=Brussels,ST=BE,C=BE</X509SubjectName>
-                <X509Certificate>MIICpTCCAg6gAwIBAgIBATANBgkqhkiG9w0BAQUFADB4MQswCQYDVQQGEwJCRTELMAkGA1UECAwCQkUxETAPBgNVBAcMCEJydXNzZWxzMQ4wDAYDVQQKDAVESUdJVDELMAkGA1UECwwCQjQxDzANBgNVBAMMBnJvb3RDTjEbMBkGCSqGSIb3DQEJARYMcm9vdEB0ZXN0LmJlMB4XDTE1MDMxNzE2MTkwN1oXDTI1MDMxNDE2MTkwN1owfDELMAkGA1UEBhMCQkUxCzAJBgNVBAgMAkJFMREwDwYDVQQHDAhCcnVzc2VsczEOMAwGA1UECgwFRElHSVQxCzAJBgNVBAsMAkI0MREwDwYDVQQDDAhzZW5kZXJDTjEdMBsGCSqGSIb3DQEJARYOc2VuZGVyQHRlc3QuYmUwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBANxLUPjIn7R0CsHf86kIwNzCu+6AdmWM8fBLUHL+VXT6ayr1kwgGbFMb/vUUX6a46jRCiZBM+9IK1Hpjg9QX/QIQiWtvD+yDr6jUxahZ/w13kqFG/K81IVu9DwLBoiNwDvQ6l6UbvMvV+1nWy3gjRcKlFs/C+E2uybgJxSM/sMkbAgMBAAGjOzA5MB8GA1UdIwQYMBaAFHCVSh4WnWR8MGBGedr+bJH96tc4MAkGA1UdEwQCMAAwCwYDVR0PBAQDAgTwMA0GCSqGSIb3DQEBBQUAA4GBAK6idNRxyeBmqPoSKxq7Ck3ej6R2QPyWbwZ+6/S7iCRt8PfgOu++Yu5YEjlUX1hlkbQKF/JuKTLqxNnKIE6Ef65+JP2ZaI9O2wdzpRclAhAd00XbNKpyipr4jMdWmu2U8vyBBwn/utG1ZrLhAUiqnPvmaQrResiGHM2xzCmVwtse</X509Certificate>
-             </X509Data>
-          </KeyInfo>
-       </Signature>
-
- </SignedServiceMetadata>]]></con:responseContent>
-      </con:response>
-      <con:response name="OK - Redirection" id="c24c67dd-242b-4491-bab2-fe77dad0086e" httpResponseStatus="200">
-        <con:settings/>
-        <con:responseContent><![CDATA[<SignedServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+        <con:responseContent><![CDATA[<SignedServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05" xmlns:sig="http://www.w3.org/2000/09/xmldsig#">
    <ServiceMetadata>
-      <Redirect href="http://serviceMetadata2.eu/busdox-actorid-upis%3A%3A0010%3A5798000000001/services/bdx-docid-qns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice- 2%3A%3AInvoice%23%23UBL-2.0">
-         <CertificateUID>PID:9208-2001-3-279815395</CertificateUID>
-         <Extension>
-            <ex:Test xmlns:ex="http://test.eu">Test</ex:Test>
-         </Extension>
-      </Redirect>
+      <ServiceInformation>
+         <ParticipantIdentifier scheme="${participantScheme}">${participantId}</ParticipantIdentifier>
+         <DocumentIdentifier scheme="epsos-docid-qns">${documentTypeId}</DocumentIdentifier>
+         <ProcessList>
+            <Process>
+               <ProcessIdentifier scheme="${participantScheme}">${participantId}:epsosPatientService::List</ProcessIdentifier>
+               <ServiceEndpointList>
+                  <Endpoint transportProfile="urn:ihe:iti:2013:xcpd">
+                     <EndpointURI>http://germany/ncp/patient/list</EndpointURI>
+                     <RequireBusinessLevelSignature>false</RequireBusinessLevelSignature>
+                     <MinimumAuthenticationLevel>urn:epSOS:loa:1</MinimumAuthenticationLevel>
+                     <ServiceActivationDate>2015-04-29T12:55:39Z</ServiceActivationDate>
+                     <ServiceExpirationDate>2015-04-29T12:55:39Z</ServiceExpirationDate>
+                     <Certificate>SGksIEkgYW0gYSBuaWNlIFg1MDkgQ2VydGlmaWNhdGU=</Certificate>
+                     <ServiceDescription>This is the epSOS Patient Service List for the German NCP</ServiceDescription>
+                     <TechnicalContactUrl>http://germany/contact</TechnicalContactUrl>
+                     <TechnicalInformationUrl>http://germany/contact</TechnicalInformationUrl>
+                  </Endpoint>
+               </ServiceEndpointList>
+            </Process>
+         </ProcessList>
+      </ServiceInformation>
    </ServiceMetadata>
-   <Signature xmlns="http://www.w3.org/2000/09/xmldsig#">
-      <SignedInfo>
-         <CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
-         <SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
-         <Reference URI="">
-            <Transforms>
-               <Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
-            </Transforms>
-            <DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
-            <DigestValue>6r3W426Gx5foBPtasSdIEj6JvAY=</DigestValue>
-         </Reference>
-      </SignedInfo>
-      <SignatureValue>2NJB0Pv3ORL+EpPYLCl/InXI+mDbUsV8CrWzRVJvEJMnnyuI2bPMe6k4MJwp9A4bTkzjvkMPARYAhyVNm6MNNlJRAFL4qddsRrWa4Jgf/QF0zQgpJ7ZUPdVQ8L8A54FiPZWltOIgZCfO7sDbEcB00V4gKmzVPBsVu6BIBOws/UY=</SignatureValue>
-      <KeyInfo>
-         <X509Data>
-            <X509SubjectName>1.2.840.113549.1.9.1=#160e73656e64657240746573742e6265,CN=senderCN,OU=B4,O=DIGIT,L=Brussels,ST=BE,C=BE</X509SubjectName>
-            <X509Certificate>MIICpTCCAg6gAwIBAgIBATANBgkqhkiG9w0BAQUFADB4MQswCQYDVQQGEwJCRTELMAkGA1UECAwCQkUxETAPBgNVBAcMCEJydXNzZWxzMQ4wDAYDVQQKDAVESUdJVDELMAkGA1UECwwCQjQxDzANBgNVBAMMBnJvb3RDTjEbMBkGCSqGSIb3DQEJARYMcm9vdEB0ZXN0LmJlMB4XDTE1MDMxNzE2MTkwN1oXDTI1MDMxNDE2MTkwN1owfDELMAkGA1UEBhMCQkUxCzAJBgNVBAgMAkJFMREwDwYDVQQHDAhCcnVzc2VsczEOMAwGA1UECgwFRElHSVQxCzAJBgNVBAsMAkI0MREwDwYDVQQDDAhzZW5kZXJDTjEdMBsGCSqGSIb3DQEJARYOc2VuZGVyQHRlc3QuYmUwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBANxLUPjIn7R0CsHf86kIwNzCu+6AdmWM8fBLUHL+VXT6ayr1kwgGbFMb/vUUX6a46jRCiZBM+9IK1Hpjg9QX/QIQiWtvD+yDr6jUxahZ/w13kqFG/K81IVu9DwLBoiNwDvQ6l6UbvMvV+1nWy3gjRcKlFs/C+E2uybgJxSM/sMkbAgMBAAGjOzA5MB8GA1UdIwQYMBaAFHCVSh4WnWR8MGBGedr+bJH96tc4MAkGA1UdEwQCMAAwCwYDVR0PBAQDAgTwMA0GCSqGSIb3DQEBBQUAA4GBAK6idNRxyeBmqPoSKxq7Ck3ej6R2QPyWbwZ+6/S7iCRt8PfgOu++Yu5YEjlUX1hlkbQKF/JuKTLqxNnKIE6Ef65+JP2ZaI9O2wdzpRclAhAd00XbNKpyipr4jMdWmu2U8vyBBwn/utG1ZrLhAUiqnPvmaQrResiGHM2xzCmVwtse</X509Certificate>
-         </X509Data>
-      </KeyInfo>
-   </Signature>
+   <sig:Signature>
+      <sig:SignedInfo>
+         <sig:CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/>
+         <sig:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+         <sig:Reference URI="">
+            <sig:Transforms>
+               <sig:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/>
+            </sig:Transforms>
+            <sig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/>
+            <sig:DigestValue>8aXgozYW9pzch6IPIMIQ17vsoHA=</sig:DigestValue>
+         </sig:Reference>
+      </sig:SignedInfo>
+      <sig:SignatureValue>kgYT9MujitbagYwQzXeohTOwC0fdXpaG1OtmvbNwsafH6ojFDWnhWH/wbtfNxwhMJjiUJuhJc5jGHE4dV0yDJjK4bx6qJGd99MIoEFmsm4p6pEEeBIsPH42khoeirpocFTfZGUsNPJtZD2Ywau34cihLouWLkhZjP4c6IsLZZ2KrmVAX2Yq/AQx0m3eMzAdNyVKJvn/rbytSz7WUeVGktEIj8rb/k7szf//movOkm/rBnO0vRK42iXtutX2Ky1cAlWPKkbRYhviJqdYsi4cUvVUn2ihNSX9RPL8LLpPAfJfAJjKlV5G4K+NXolHb0fgwoMv+tZ5Q+rCml0jaiaT7gw==</sig:SignatureValue>
+      <sig:KeyInfo>
+         <sig:X509Data>
+            <sig:X509SubjectName>CN=SMP_OpenPEPPOL SMK 003,O=OpenPEPPOL,C=BE</sig:X509SubjectName>
+            <sig:X509Certificate>MIIEjjCCA3agAwIBAgIQOzsWLn033S5Q7cbTN4mX4TANBgkqhkiG9w0BAQsFADCBizELMAkGA1UEBhMCREsxJzAlBgNVBAoTHk5BVElPTkFMIElUIEFORCBURUxFQ09NIEFHRU5DWTEfMB0GA1UECxMWRk9SIFRFU1QgUFVSUE9TRVMgT05MWTEyMDAGA1UEAxMpUEVQUE9MIFNFUlZJQ0UgTUVUQURBVEEgUFVCTElTSEVSIFRFU1QgQ0EwHhcNMTYxMDEyMDAwMDAwWhcNMTgxMDEyMjM1OTU5WjBDMQswCQYDVQQGEwJCRTETMBEGA1UECgwKT3BlblBFUFBPTDEfMB0GA1UEAwwWU01QX09wZW5QRVBQT0wgU01LIDAwMzCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBAOiD6MfVaoUzvfZZ6AOHIcyT26vyYrADDnRnaGOdk3nXr45wQiphkMi0GHfqo0afreFtyn7ajFAVJGTlTk4cEn0THBzk7zWr6hmti8q7ZmIwoUMuzDJ2Rv1HIfTOSV3t1OgmLu3YVvyZNph+5mSbOOR0oBhEmzbKir34gM9eqznk8AJPUTxYMaXQH4kFkKI/kdXEZwV5rnMjANLeuLFrcci4lL5rv5j1QyuLW8xsSwaEI3DfLCSrfA1lNZaQbFv0TYnSfPc0NKA1HunKUiNZNHB7mfHblZdMWJLA8AT5vD8/5ncfAL6bHOxy3LmeVgmPzpN+jXIpgdzfvVO7ZATn6YkCAwEAAaOCATMwggEvMAkGA1UdEwQCMAAwCwYDVR0PBAQDAgO4MIGDBgNVHR8EfDB6MHigdqB0hnJodHRwOi8vcGlsb3RvbnNpdGVjcmwudmVyaXNpZ24uY29tL0RpZ2l0YWxpc2VyaW5nc3N0eXJlbHNlblBpbG90T3BlblBFUFBPTFNFUlZJQ0VNRVRBREFUQVBVQkxJU0hFUkNBL0xhdGVzdENSTC5jcmwwHwYDVR0jBBgwFoAU4MeFQDU6/Rzz9l7CHzDQ8mShAncwHQYDVR0OBBYEFBcVDUgZkqMblXnmVhXvLlF1cjzhMDoGCCsGAQUFBwEBBC4wLDAqBggrBgEFBQcwAYYeaHR0cDovL3BpbG90LW9jc3AudmVyaXNpZ24uY29tMBMGA1UdJQQMMAoGCCsGAQUFBwMCMA0GCSqGSIb3DQEBCwUAA4IBAQBoc1MDfjcr83OrzbH5k1lI6hNnprKk7pY7oBXqnzak31vm5ll7ycFUPgRCsd9Bku37yHXQKYvx6EG5pdb8wSIwJNqgXng4NJAF5C9vfcUaWfdf4G6uvbgq7/0yfGDYUEltZKTWUK7forp//0l0D7qh63lvw7MYHmvB2IWq3jlzEco3AoVSaFlBKRGFCSbd2gbR67SK19v6OjlCXCjeUe/X7G5fsUs6ZGWt5c4q6XY8h0FB91zW3XA76SBtgUDnLY0M1n7uUX2kky5GfDB48eDre9yE0f0nQGioq8Vpx6MSl2VyjqbloiLBkveKj8vQJLJih+r4CveXVTfZ8mHQjljm</sig:X509Certificate>
+         </sig:X509Data>
+      </sig:KeyInfo>
+   </sig:Signature>
 </SignedServiceMetadata>]]></con:responseContent>
       </con:response>
-      <con:response name="404 Not Found" id="d30501ba-8193-45e6-9447-ace7afeb8646" httpResponseStatus="404">
+      <con:response name="urn:france:ncpb" id="d30501ba-8193-45e6-9447-ace7afeb8646" httpResponseStatus="404">
         <con:settings/>
         <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <ErrorResponse xmlns="ec:services:SMP:1.0">
@@ -913,7 +905,7 @@ if( requestBody.contains("some data") )
 	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
 </ErrorResponse>]]></con:responseContent>
       </con:response>
-      <con:response name="500 Internal server error" id="5241c383-659f-4c11-be93-e1db857afa05" httpResponseStatus="500">
+      <con:response name="urn:germany:ncpb" id="5241c383-659f-4c11-be93-e1db857afa05" httpResponseStatus="500">
         <con:settings/>
         <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <ErrorResponse xmlns="ec:services:SMP:1.0">
@@ -922,77 +914,7 @@ if( requestBody.contains("some data") )
 	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
 </ErrorResponse>]]></con:responseContent>
       </con:response>
-    </con:restMockAction>
-    <con:restMockAction name="PUT ServiceMetadata" method="PUT" resourcePath="/" id="9413407c-1e15-4a72-9b0e-3f6e0703ca79">
-      <con:settings/>
-      <con:defaultResponse>201 Created</con:defaultResponse>
-      <con:dispatchStyle>SEQUENCE</con:dispatchStyle>
-      <con:dispatchPath>/*
-// Script dispatcher is used to select a response based on the incoming request.
-// Here are few examples showing how to match based on path, query param, header and body
-
-// Match based on path
-def requestPath = mockRequest.getPath()
-log.info "Path: "+ requestPath
-
-if( requestPath.contains("json") )
-{
-    // return the name of the response you want to dispatch
-    return "JSON Response"
-}
-
-
-// Match based on query parameter
-def queryString = mockRequest.getRequest().getQueryString()
-log.info "QueryString: " + queryString
-
-if( queryString.contains("stockholm") )
-{
-    // return the name of the response you want to dispatch
-    return "Response Stockholm"
-}
-else if( queryString.contains("london") )
-{
-    // return the name of the response you want to dispatch
-    return "Response London"
-}
-
-
-// Match based on header
-def acceptEncodingHeaderList = mockRequest.getRequestHeaders().get("Accept-Encoding")
-log.info "AcceptEncoding Header List: " + acceptEncodingHeaderList
-
-if( acceptEncodingHeaderList.contains("gzip,deflate") )
-{
-    // return the name of the response you want to dispatch
-    return "GZiped Response"
-}
-
-
-// Match based on body
-def requestBody = mockRequest.getRequestContent()
-log.info "Request body: " + requestBody
-
-if( requestBody.contains("some data") )
-{
-    // return the name of the response you want to dispatch
-    return "Response N"
-}
-*/</con:dispatchPath>
-      <con:response name="201 Created" id="e3845af2-7719-4c91-ab74-f8e268a38ff7" httpResponseStatus="201">
-        <con:settings/>
-        <con:responseContent/>
-      </con:response>
-      <con:response name="500 Internal server error" id="874c1e30-3047-4ac6-8859-804996f54894" httpResponseStatus="500">
-        <con:settings/>
-        <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
-<ErrorResponse xmlns="ec:services:SMP:1.0">
- 	<BusinessCode>TECHNICAL</BusinessCode> 
-	<ErrorDescription>Some unexpected technical error occurred.(detailed information available here)</ErrorDescription> 
-	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
-</ErrorResponse>]]></con:responseContent>
-      </con:response>
-      <con:response name="400 Bad Request" id="4f39b1bc-4b70-4369-9c71-f51e28a09a8b" httpResponseStatus="400">
+      <con:response name="urn:portugal:ncpb" id="cd7396a3-3111-4063-b2b2-5f5d1c2ee421" httpResponseStatus="400">
         <con:settings/>
         <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <ErrorResponse xmlns="ec:services:SMP:1.0">
@@ -1002,67 +924,37 @@ if( requestBody.contains("some data") )
 </ErrorResponse>]]></con:responseContent>
       </con:response>
     </con:restMockAction>
-    <con:restMockAction name="DELETE ServiceMetadata" method="DELETE" resourcePath="/" id="9e6ba27e-dd70-44a5-9850-2bd466798704">
+    <con:restMockAction name="PUT ServiceMetadata" method="PUT" resourcePath="/" id="9413407c-1e15-4a72-9b0e-3f6e0703ca79">
       <con:settings/>
-      <con:defaultResponse>200 OK</con:defaultResponse>
-      <con:dispatchStyle>SEQUENCE</con:dispatchStyle>
+      <con:defaultResponse>urn:poland:ncpb</con:defaultResponse>
+      <con:dispatchStyle>SCRIPT</con:dispatchStyle>
       <con:dispatchPath>/*
-// Script dispatcher is used to select a response based on the incoming request.
-// Here are few examples showing how to match based on path, query param, header and body
-
-// Match based on path
-def requestPath = mockRequest.getPath()
-log.info "Path: "+ requestPath
-
-if( requestPath.contains("json") )
-{
-    // return the name of the response you want to dispatch
-    return "JSON Response"
-}
-
-
-// Match based on query parameter
-def queryString = mockRequest.getRequest().getQueryString()
-log.info "QueryString: " + queryString
-
-if( queryString.contains("stockholm") )
-{
-    // return the name of the response you want to dispatch
-    return "Response Stockholm"
-}
-else if( queryString.contains("london") )
-{
-    // return the name of the response you want to dispatch
-    return "Response London"
-}
-
-
-// Match based on header
-def acceptEncodingHeaderList = mockRequest.getRequestHeaders().get("Accept-Encoding")
-log.info "AcceptEncoding Header List: " + acceptEncodingHeaderList
-
-if( acceptEncodingHeaderList.contains("gzip,deflate") )
-{
-    // return the name of the response you want to dispatch
-    return "GZiped Response"
-}
-
-
-// Match based on body
-def requestBody = mockRequest.getRequestContent()
-log.info "Request body: " + requestBody
-
-if( requestBody.contains("some data") )
-{
-    // return the name of the response you want to dispatch
-    return "Response N"
-}
-*/</con:dispatchPath>
-      <con:response name="200 OK" id="88a8139a-7830-4b60-9ba6-90de10e05907" httpResponseStatus="200">
+ * Use the common dispatcher defined in parent script
+ */
+context.dispatchMessage()</con:dispatchPath>
+      <con:response name="urn:poland:ncpb" id="e3845af2-7719-4c91-ab74-f8e268a38ff7" httpResponseStatus="200">
         <con:settings/>
         <con:responseContent/>
       </con:response>
-      <con:response name="404 Not found" id="7b0d6f15-a35c-40c4-85c6-e94407d96993" httpResponseStatus="404">
+      <con:response name="urn:germany:ncpb" id="874c1e30-3047-4ac6-8859-804996f54894" httpResponseStatus="500">
+        <con:settings/>
+        <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<ErrorResponse xmlns="ec:services:SMP:1.0">
+ 	<BusinessCode>TECHNICAL</BusinessCode> 
+	<ErrorDescription>Some unexpected technical error occurred.(detailed information available here)</ErrorDescription> 
+	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
+</ErrorResponse>]]></con:responseContent>
+      </con:response>
+      <con:response name="urn:portugal:ncpb" id="4f39b1bc-4b70-4369-9c71-f51e28a09a8b" httpResponseStatus="400">
+        <con:settings/>
+        <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<ErrorResponse xmlns="ec:services:SMP:1.0">
+ 	<BusinessCode>XSD_INVALID</BusinessCode> 
+	<ErrorDescription>Not expected node &lt;abc&gt;</ErrorDescription> 
+	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
+</ErrorResponse>]]></con:responseContent>
+      </con:response>
+      <con:response name="urn:france:ncpb" id="4834b64f-102b-4ac2-bd7a-9698b2f5b653" httpResponseStatus="404">
         <con:settings/>
         <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <ErrorResponse xmlns="ec:services:SMP:1.0">
@@ -1071,36 +963,74 @@ if( requestBody.contains("some data") )
 	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
 </ErrorResponse>]]></con:responseContent>
       </con:response>
-      <con:response name="500 Internal server error" id="d389c7fc-241e-4942-a1b8-8207f8f4bdf4" httpResponseStatus="500">
+      <con:response name="urn:greece:ncpb" id="67b02247-1535-41a4-8406-6008cbfaf05b" httpResponseStatus="201">
+        <con:settings/>
+        <con:responseContent/>
+      </con:response>
+    </con:restMockAction>
+    <con:restMockAction name="DELETE ServiceMetadata" method="DELETE" resourcePath="/" id="9e6ba27e-dd70-44a5-9850-2bd466798704">
+      <con:settings/>
+      <con:defaultResponse>urn:poland:ncpb</con:defaultResponse>
+      <con:dispatchStyle>SCRIPT</con:dispatchStyle>
+      <con:dispatchPath>/*
+ * Use the common dispatcher defined in parent script
+ */
+context.dispatchMessage()</con:dispatchPath>
+      <con:response name="urn:poland:ncpb" id="88a8139a-7830-4b60-9ba6-90de10e05907" httpResponseStatus="200">
+        <con:settings/>
+        <con:responseContent/>
+      </con:response>
+      <con:response name="urn:france:ncpb" id="7b0d6f15-a35c-40c4-85c6-e94407d96993" httpResponseStatus="404">
+        <con:settings/>
+        <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<ErrorResponse xmlns="ec:services:SMP:1.0">
+ 	<BusinessCode>NOT_FOUND</BusinessCode> 
+	<ErrorDescription>Resource does not exist</ErrorDescription> 
+	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
+</ErrorResponse>]]></con:responseContent>
+      </con:response>
+      <con:response name="urn:germany:ncpb" id="d389c7fc-241e-4942-a1b8-8207f8f4bdf4" httpResponseStatus="500">
         <con:settings/>
         <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <ErrorResponse xmlns="ec:services:SMP:1.0">
  	<BusinessCode>TECHNICAL</BusinessCode> 
 	<ErrorDescription>Some unexpected technical error occurred.(detailed information available here)</ErrorDescription> 
+	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
+</ErrorResponse>]]></con:responseContent>
+      </con:response>
+      <con:response name="urn:portugal:ncpb" id="23e4fb7c-702a-4a97-91e8-c2d69a946c83" httpResponseStatus="400">
+        <con:settings/>
+        <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<ErrorResponse xmlns="ec:services:SMP:1.0">
+ 	<BusinessCode>XSD_INVALID</BusinessCode> 
+	<ErrorDescription>Not expected node &lt;abc&gt;</ErrorDescription> 
 	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
 </ErrorResponse>]]></con:responseContent>
       </con:response>
     </con:restMockAction>
     <con:restMockAction name="GET ServiceGroup" method="GET" resourcePath="/" id="c1a011f7-4bb9-4fd9-b543-df345f99dffc">
       <con:settings/>
-      <con:defaultResponse>OK</con:defaultResponse>
-      <con:dispatchStyle>SEQUENCE</con:dispatchStyle>
-      <con:dispatchPath/>
-      <con:response name="OK" id="9c2cb703-88ec-4105-bd3a-3155377e2a44" httpResponseStatus="200">
+      <con:defaultResponse>urn:poland:ncpb</con:defaultResponse>
+      <con:dispatchStyle>SCRIPT</con:dispatchStyle>
+      <con:dispatchPath>/*
+ * Use the common dispatcher defined in parent script
+ */
+context.dispatchMessage()</con:dispatchPath>
+      <con:response name="urn:poland:ncpb" id="9c2cb703-88ec-4105-bd3a-3155377e2a44" httpResponseStatus="200">
         <con:settings/>
         <con:responseContent><![CDATA[<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
-   <ParticipantIdentifier scheme="busdox-actorid-upis">0010:5798000000001</ParticipantIdentifier>
+   <ParticipantIdentifier scheme="${participantScheme}">${participantId}</ParticipantIdentifier>
    <ServiceMetadataReferenceCollection>
-     <ServiceMetadataReference href="http://130.206.118.4:8888/${serviceGroupId}/services/bdx-docid-qns00000000%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-2%3A%3AInvoice%23%23UBL-2.0" />
-     <ServiceMetadataReference href="http://130.206.118.4:8888/${serviceGroupId}/services/bdx-docid-qns11111111%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-2%3A%3AInvoice%23%23UBL-2.0" />
-     <ServiceMetadataReference href="http://130.206.118.4:8888/${serviceGroupId}/services/bdx-docid-qns22222222%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-2%3A%3AInvoice%23%23UBL-2.0" />
+     <ServiceMetadataReference href="http://130.206.118.4:8888/${participantIdentifier}/services/${participantScheme}%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-2%3A%3AInvoice%23%23UBL-2.0" />
+     <ServiceMetadataReference href="http://130.206.118.4:8888/${participantIdentifier}/services/${participantScheme}%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-2%3A%3AInvoice%23%23UBL-2.0" />
+     <ServiceMetadataReference href="http://130.206.118.4:8888/${participantIdentifier}/services/${participantScheme}%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-2%3A%3AInvoice%23%23UBL-2.0" />
    </ServiceMetadataReferenceCollection>
    <Extension>
      <ex:Test xmlns:ex="http://smp-digit-acc.publisher.acc.edelivery.tech.ec.europa.eu">Test</ex:Test>
    </Extension>
  </ServiceGroup>]]></con:responseContent>
       </con:response>
-      <con:response name="404 Not Found" id="d30501ba-8193-45e6-9447-ace7afeb8646" httpResponseStatus="404">
+      <con:response name="urn:france:ncpb" id="d30501ba-8193-45e6-9447-ace7afeb8646" httpResponseStatus="404">
         <con:settings/>
         <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <ErrorResponse xmlns="ec:services:SMP:1.0">
@@ -1109,7 +1039,7 @@ if( requestBody.contains("some data") )
 	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
 </ErrorResponse>]]></con:responseContent>
       </con:response>
-      <con:response name="500 Internal server error" id="5241c383-659f-4c11-be93-e1db857afa05" httpResponseStatus="500">
+      <con:response name="urn:germany:ncpb" id="5241c383-659f-4c11-be93-e1db857afa05" httpResponseStatus="500">
         <con:settings/>
         <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <ErrorResponse xmlns="ec:services:SMP:1.0">
@@ -1118,26 +1048,7 @@ if( requestBody.contains("some data") )
 	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
 </ErrorResponse>]]></con:responseContent>
       </con:response>
-    </con:restMockAction>
-    <con:restMockAction name="PUT ServiceGroup" method="PUT" resourcePath="/" id="9413407c-1e15-4a72-9b0e-3f6e0703ca79">
-      <con:settings/>
-      <con:defaultResponse>201 Created</con:defaultResponse>
-      <con:dispatchStyle>SEQUENCE</con:dispatchStyle>
-      <con:dispatchPath/>
-      <con:response name="201 Created" id="e3845af2-7719-4c91-ab74-f8e268a38ff7" httpResponseStatus="201">
-        <con:settings/>
-        <con:responseContent/>
-      </con:response>
-      <con:response name="500 Internal server error" id="874c1e30-3047-4ac6-8859-804996f54894" httpResponseStatus="500">
-        <con:settings/>
-        <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
-<ErrorResponse xmlns="ec:services:SMP:1.0">
- 	<BusinessCode>TECHNICAL</BusinessCode> 
-	<ErrorDescription>Some unexpected technical error occurred.(detailed information available here)</ErrorDescription> 
-	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
-</ErrorResponse>]]></con:responseContent>
-      </con:response>
-      <con:response name="400 Bad Request" id="4f39b1bc-4b70-4369-9c71-f51e28a09a8b" httpResponseStatus="400">
+      <con:response name="urn:portugal:ncpb" id="781c92b7-69d7-4484-ae22-c452d67f06a3" httpResponseStatus="400">
         <con:settings/>
         <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <ErrorResponse xmlns="ec:services:SMP:1.0">
@@ -1147,16 +1058,37 @@ if( requestBody.contains("some data") )
 </ErrorResponse>]]></con:responseContent>
       </con:response>
     </con:restMockAction>
-    <con:restMockAction name="DELETE ServiceGroup" method="DELETE" resourcePath="/" id="9e6ba27e-dd70-44a5-9850-2bd466798704">
+    <con:restMockAction name="PUT ServiceGroup" method="PUT" resourcePath="/" id="9413407c-1e15-4a72-9b0e-3f6e0703ca79">
       <con:settings/>
-      <con:defaultResponse>200 OK</con:defaultResponse>
-      <con:dispatchStyle>SEQUENCE</con:dispatchStyle>
-      <con:dispatchPath/>
-      <con:response name="200 OK" id="88a8139a-7830-4b60-9ba6-90de10e05907" httpResponseStatus="200">
+      <con:defaultResponse>urn:poland:ncpb</con:defaultResponse>
+      <con:dispatchStyle>SCRIPT</con:dispatchStyle>
+      <con:dispatchPath>/*
+ * Use the common dispatcher defined in parent script
+ */
+context.dispatchMessage()</con:dispatchPath>
+      <con:response name="urn:poland:ncpb" id="e3845af2-7719-4c91-ab74-f8e268a38ff7" httpResponseStatus="200">
         <con:settings/>
         <con:responseContent/>
       </con:response>
-      <con:response name="404 Not found" id="7b0d6f15-a35c-40c4-85c6-e94407d96993" httpResponseStatus="404">
+      <con:response name="urn:germany:ncpb" id="874c1e30-3047-4ac6-8859-804996f54894" httpResponseStatus="500">
+        <con:settings/>
+        <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<ErrorResponse xmlns="ec:services:SMP:1.0">
+ 	<BusinessCode>TECHNICAL</BusinessCode> 
+	<ErrorDescription>Some unexpected technical error occurred.(detailed information available here)</ErrorDescription> 
+	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
+</ErrorResponse>]]></con:responseContent>
+      </con:response>
+      <con:response name="urn:portugal:ncpb" id="4f39b1bc-4b70-4369-9c71-f51e28a09a8b" httpResponseStatus="400">
+        <con:settings/>
+        <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<ErrorResponse xmlns="ec:services:SMP:1.0">
+ 	<BusinessCode>XSD_INVALID</BusinessCode> 
+	<ErrorDescription>Not expected node &lt;abc&gt;</ErrorDescription> 
+	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
+</ErrorResponse>]]></con:responseContent>
+      </con:response>
+      <con:response name="urn:france:ncpb" id="4d220358-9f23-4007-bfd7-2e9babc1533d" httpResponseStatus="404">
         <con:settings/>
         <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <ErrorResponse xmlns="ec:services:SMP:1.0">
@@ -1165,12 +1097,47 @@ if( requestBody.contains("some data") )
 	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
 </ErrorResponse>]]></con:responseContent>
       </con:response>
-      <con:response name="500 Internal server error" id="d389c7fc-241e-4942-a1b8-8207f8f4bdf4" httpResponseStatus="500">
+      <con:response name="urn:greece:ncpb" id="237081e5-7e62-48d9-abc5-ea330068918c" httpResponseStatus="201">
+        <con:settings/>
+        <con:responseContent/>
+      </con:response>
+    </con:restMockAction>
+    <con:restMockAction name="DELETE ServiceGroup" method="DELETE" resourcePath="/" id="9e6ba27e-dd70-44a5-9850-2bd466798704">
+      <con:settings/>
+      <con:defaultResponse>200 OK</con:defaultResponse>
+      <con:dispatchStyle>SCRIPT</con:dispatchStyle>
+      <con:dispatchPath>/*
+ * Use the common dispatcher defined in parent script
+ */
+context.dispatchMessage()</con:dispatchPath>
+      <con:response name="urn:poland:ncpb" id="88a8139a-7830-4b60-9ba6-90de10e05907" httpResponseStatus="200">
+        <con:settings/>
+        <con:responseContent/>
+      </con:response>
+      <con:response name="urn:france:ncpb" id="7b0d6f15-a35c-40c4-85c6-e94407d96993" httpResponseStatus="404">
+        <con:settings/>
+        <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<ErrorResponse xmlns="ec:services:SMP:1.0">
+ 	<BusinessCode>NOT_FOUND</BusinessCode> 
+	<ErrorDescription>Resource does not exist</ErrorDescription> 
+	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
+</ErrorResponse>]]></con:responseContent>
+      </con:response>
+      <con:response name="urn:germany:ncpb" id="d389c7fc-241e-4942-a1b8-8207f8f4bdf4" httpResponseStatus="500">
         <con:settings/>
         <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
 <ErrorResponse xmlns="ec:services:SMP:1.0">
  	<BusinessCode>TECHNICAL</BusinessCode> 
 	<ErrorDescription>Some unexpected technical error occurred.(detailed information available here)</ErrorDescription> 
+	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
+</ErrorResponse>]]></con:responseContent>
+      </con:response>
+      <con:response name="urn:portugal:ncpb" id="e60d7358-6293-4a1a-93b3-17f77ad45dbc" httpResponseStatus="400">
+        <con:settings/>
+        <con:responseContent><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<ErrorResponse xmlns="ec:services:SMP:1.0">
+ 	<BusinessCode>XSD_INVALID</BusinessCode> 
+	<ErrorDescription>Not expected node &lt;abc&gt;</ErrorDescription> 
 	<ErrorUniqueId>5378C627DA4275F698458AB6845C68456845</ErrorUniqueId>
 </ErrorResponse>]]></con:responseContent>
       </con:response>
@@ -1208,7 +1175,7 @@ if( requestBody.contains("some data") )
     </con:property>
     <con:property>
       <con:name>smpId</con:name>
-      <con:value>0007:1238000007667</con:value>
+      <con:value>urn:poland:ncpb</con:value>
     </con:property>
     <con:property>
       <con:name>smpIdentifier</con:name>
