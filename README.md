@@ -6,7 +6,7 @@ This is the untouched version of last SVN Joinup state, migrated on 07.12.2016:
 The further development work is being continued in this branch:
 [https://ec.europa.eu/cefdigital/code/projects/EDELIVERY/repos/smp/browse?at=refs/heads/cipa]
 
-Continues Integration job for SMP:
+Continuous Integration job for SMP:
 [https://webgate.ec.europa.eu/CITnet/bamboo/browse/EDELIVERY-SMPDEV]
 
 
