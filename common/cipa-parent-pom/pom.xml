@@ -131,6 +131,10 @@
 				<enabled>true</enabled>
 			</snapshots>
 		</repository>
+		<repository>
+			<id>webgate-digit-proxy-soapui</id>
+			<url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/soapui/</url>
+		</repository>
 	</repositories>
 
 	<!-- Default version numbers to use -->
