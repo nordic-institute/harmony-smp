@@ -100,7 +100,7 @@
 			<url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/public</url>
 		</pluginRepository>
 		<pluginRepository>
-			<id>webgate-digit-proxy-soapui</id>
+			<id>webgate-digit-soapui</id>
 			<url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/soapui/</url>
 		</pluginRepository>
 	</pluginRepositories>
