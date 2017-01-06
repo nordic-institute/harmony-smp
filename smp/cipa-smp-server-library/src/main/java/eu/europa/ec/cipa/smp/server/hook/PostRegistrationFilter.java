@@ -37,7 +37,10 @@
  */
 package eu.europa.ec.cipa.smp.server.hook;
 
-import java.io.IOException;
+import com.helger.commons.state.ESuccess;
+import eu.europa.ec.cipa.smp.server.util.ExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.servlet.Filter;
@@ -48,11 +51,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.helger.commons.state.ESuccess;
+import java.io.IOException;
 
 /**
  * Filter which handles post-registration hooks. If a registration was started
@@ -69,7 +68,7 @@ public final class PostRegistrationFilter implements Filter {
    *
    * @author Ravnholdt
    */
-  private static final class HttpServletResponseWrapperWithStatus extends HttpServletResponseWrapper {
+  public static final class HttpServletResponseWrapperWithStatus extends HttpServletResponseWrapper {
     private int m_nStatus = HttpServletResponse.SC_OK;
 
     public HttpServletResponseWrapperWithStatus (final HttpServletResponse aHttpResponse) {
@@ -134,6 +133,7 @@ public final class PostRegistrationFilter implements Filter {
 
       // Success or failure?
       if (aResponseWrapper.getStatus () >= 400) {
+        ExceptionHandler.buildXmlResponse(aResponseWrapper);
         if (s_aLogger.isDebugEnabled ())
           s_aLogger.debug ("Operation failed, status: " + aResponseWrapper.getStatus ());
         _notifyRegistrationHook (ESuccess.FAILURE);
@@ -145,19 +145,22 @@ public final class PostRegistrationFilter implements Filter {
       }
     }
     catch (final IOException e) {
+      aResponseWrapper.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      ExceptionHandler.buildXmlResponse(aResponseWrapper);
       s_aLogger.warn ("Got IOException " + e.getMessage ());
       _notifyRegistrationHook (ESuccess.FAILURE);
-      throw e;
     }
     catch (final ServletException e) {
+      aResponseWrapper.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      ExceptionHandler.buildXmlResponse(aResponseWrapper);
       s_aLogger.warn ("Got ServletException " + e.getMessage ());
       _notifyRegistrationHook (ESuccess.FAILURE);
-      throw e;
     }
     catch (final RuntimeException e) {
+      aResponseWrapper.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      ExceptionHandler.buildXmlResponse(aResponseWrapper);
       s_aLogger.warn ("Got RuntimeException " + e.getMessage ());
       _notifyRegistrationHook (ESuccess.FAILURE);
-      throw e;
     }
   }
 

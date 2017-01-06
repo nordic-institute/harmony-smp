@@ -51,6 +51,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
+import eu.europa.ec.cipa.smp.server.util.ExceptionHandler;
 import org.busdox.servicemetadata.publishing._1.ServiceInformationType;
 import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.busdox.servicemetadata.publishing._1.SignedServiceMetadataType;
@@ -94,7 +95,7 @@ public final class ServiceMetadataInterface {
   @PUT
   public Response saveServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
                                            @PathParam ("DocumentTypeId") final String sDocumentTypeID,
-                                           final ServiceMetadataType aServiceMetadata) throws Throwable {
+                                           final ServiceMetadataType aServiceMetadata) {
     s_aLogger.info ("PUT /" + sServiceGroupID + "/services/" + sDocumentTypeID + " ==> " + aServiceMetadata);
 
     final SimpleParticipantIdentifier aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
@@ -147,15 +148,19 @@ public final class ServiceMetadataInterface {
 
       return Response.ok ().build ();
     }
+    catch (Exception ex) {
+      s_aLogger.error ("Error in saving Service metadata.", ex);
+      return ExceptionHandler.buildResponse(ex);
+    }
     catch (final Throwable ex) {
       s_aLogger.error ("Error in saving Service metadata.", ex);
-      throw ex;
+      return Response.serverError ().build ();
     }
   }
 
   @DELETE
   public Response deleteServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
-                                             @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
+                                             @PathParam ("DocumentTypeId") final String sDocumentTypeID) {
     s_aLogger.info ("DELETE /" + sServiceGroupID + "/services/" + sDocumentTypeID);
 
     final SimpleParticipantIdentifier aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
@@ -180,9 +185,13 @@ public final class ServiceMetadataInterface {
 
       return Response.ok ().build ();
     }
+    catch (Exception ex) {
+      s_aLogger.error ("Error in deleting Service metadata.", ex);
+      return ExceptionHandler.buildResponse(ex);
+    }
     catch (final Throwable ex) {
       s_aLogger.error ("Error in deleting Service metadata.", ex);
-      throw ex;
+      return Response.serverError ().build ();
     }
   }
 }

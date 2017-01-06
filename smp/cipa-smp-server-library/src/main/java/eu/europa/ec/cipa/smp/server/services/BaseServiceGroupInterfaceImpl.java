@@ -38,6 +38,7 @@
 package eu.europa.ec.cipa.smp.server.services;
 
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -47,6 +48,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
 import com.helger.commons.string.StringParser;
+import eu.europa.ec.cipa.smp.server.util.ExceptionHandler;
 import org.busdox.servicemetadata.publishing._1.ObjectFactory;
 import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
 import org.busdox.servicemetadata.publishing._1.ServiceMetadataReferenceCollectionType;
@@ -139,7 +141,7 @@ public final class BaseServiceGroupInterfaceImpl {
       for (final DocumentIdentifierType aDocTypeId : aDocTypeIds) {
         final ServiceMetadataReferenceType aMetadataReference = aObjFactory.createServiceMetadataReferenceType ();
         UriBuilder uriBuilder = aUriInfo.getBaseUriBuilder();
-        if (configFile.getString ("contextPath.output", "false").equals ("false")) {
+        if (Objects.equals(configFile.getString("contextPath.output", "false"), "false")) {
           uriBuilder.replacePath ("");
         }
         applyReverseProxyParams(uriBuilder, httpHeaders);
@@ -161,13 +163,9 @@ public final class BaseServiceGroupInterfaceImpl {
        */
       return aObjFactory.createServiceGroup (aServiceGroup);
     }
-    catch (final NotFoundException ex) {
-      // No logging needed here - already logged in DB
-      throw ex;
-    }
-    catch (final Throwable ex) {
-      s_aLogger.error ("Error getting service group " + aServiceGroupID, ex);
-      throw ex;
+    catch (Exception ex) {
+      ExceptionHandler.handleException(ex);
+      return null;
     }
   }
 
