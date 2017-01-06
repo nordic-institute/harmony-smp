@@ -75,18 +75,4 @@ public class ServiceMetadataConverter {
         return dbf.newDocumentBuilder();
     }
 
-    /*
-    public static String extractServiceMetadataXmlToString(Document serviceMetadataDoc) throws JAXBException, TransformerException, UnsupportedEncodingException {
-        NodeList elements = serviceMetadataDoc.getElementsByTagNameNS(NS, "ServiceInformation");
-        if (elements.getLength() > 0) {
-            Element element = (Element) elements.item(0);
-            String elementStr = marshall(element);
-            return elementStr;
-        }else{
-            return null;
-        }
-
-    }
-    */
-
 }

@@ -9,7 +9,6 @@ import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -112,65 +111,4 @@ public class ServiceMetadataConverterTest {
         ServiceMetadataConverter.toSignedServiceMetadatadaDocument("this is malformed XML body");
     }
 
-
-
-
-
-
-
-
-
-
-
-    /*
-    @Test
-    public void testExtractServiceInformationXmlToStringPositive() throws IOException, SAXException, ParserConfigurationException, JAXBException, TransformerException {
-        //given
-        Document inputDoc = XmlTestUtils.loadDocument(RES_PATH + "ServiceInformationInsideServiceMetadata.xml");
-        String expectedOutput = XmlTestUtils.loadDocumentAsString(RES_PATH + "ServiceMetadataWithServiceInformation.xml");
-
-        //when
-        String serviceInformationXML = ServiceMetadataConverter.extractServiceMetadataXmlToString(inputDoc);
-
-        //then
-        assertEquals(expectedOutput, serviceInformationXML);
-    }
-
-    @Test
-    public void testExtractServiceInformationXmlToStringEmpty() throws IOException, SAXException, ParserConfigurationException, JAXBException, TransformerException {
-        //given
-        Document inputDoc = XmlTestUtils.loadDocument(RES_PATH + "ServiceMetadataWithRedirect.xml");
-
-        //when
-        String serviceInformationXML = ServiceMetadataConverter.extractServiceMetadataXmlToString(inputDoc);
-
-        //then
-        assertNull(serviceInformationXML);
-    }
-
-    @Test
-    public void testExtractRedirectXmlToStringPositive() throws IOException, SAXException, ParserConfigurationException, JAXBException, TransformerException {
-        //given
-        Document inputDoc = XmlTestUtils.loadDocument(RES_PATH + "ServiceMetadataWithRedirect.xml");
-        String expectedOutput = XmlTestUtils.loadDocumentAsString(RES_PATH + "Redirect.xml");
-
-        //when
-        String serviceInformationXML = ServiceMetadataConverter.extractRedirectXmlToString(inputDoc);
-
-        //then
-        assertEquals(expectedOutput, serviceInformationXML);
-    }
-
-    @Test
-    public void testExtractRedirectXmlToStringEmpty() throws IOException, SAXException, ParserConfigurationException, JAXBException, TransformerException {
-        //given
-        Document inputDoc = XmlTestUtils.loadDocument(RES_PATH + "ServiceInformationInsideServiceMetadata.xml");
-
-        //when
-        String serviceInformationXML = ServiceMetadataConverter.extractRedirectXmlToString(inputDoc);
-
-        //then
-        assertNull(serviceInformationXML);
-    }
-*/
 }
