@@ -56,6 +56,7 @@ CREATE TABLE smp_service_metadata (
   businessIdentifier varchar(256) NOT NULL,
   businessIdentifierScheme varchar(256) NOT NULL,
   extension TEXT,
+  xmlcontent TEXT,
   PRIMARY KEY  (documentIdentifier,documentIdentifierScheme,businessIdentifier,businessIdentifierScheme),
   KEY FK_service_metadata_1 (businessIdentifier,businessIdentifierScheme),
   CONSTRAINT FK_service_metadata_1 FOREIGN KEY (businessIdentifier, businessIdentifierScheme) REFERENCES smp_service_group (businessIdentifier, businessIdentifierScheme) ON DELETE CASCADE ON UPDATE CASCADE

@@ -1,0 +1,35 @@
+<ServiceMetadata xmlns="http://busdox.org/serviceMetadata/publishing/1.0/" xmlns:ids="http://busdox.org/transport/identifiers/1.0/">
+    <ServiceInformation>
+        <ids:ParticipantIdentifier scheme="iso6523-actorid-upis">0088:5798000000112</ids:ParticipantIdentifier>
+        <ids:DocumentIdentifier scheme="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice##urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:#urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</ids:DocumentIdentifier>
+        <ProcessList>
+            <Process>
+                <ids:ProcessIdentifier scheme="cenbii-procid-ubl">urn:www.cenbii.eu:profile:bii04:ver1.0</ids:ProcessIdentifier>
+                <ServiceEndpointList>
+                    <Endpoint transportProfile="busdox-transport-as2-ver1p0">
+                        <EndpointReference xmlns="http://www.w3.org/2005/08/addressing">
+                            <Address>http://d02di1010873.net1.cec.eu.int:7080/cipa-dispatcher/AS2Receiver/</Address>
+                        </EndpointReference>
+                        <RequireBusinessLevelSignature>false</RequireBusinessLevelSignature>
+                        <ServiceActivationDate>2003-01-01T00:00:00</ServiceActivationDate>
+                        <ServiceExpirationDate>2020-05-01T00:00:00</ServiceExpirationDate>
+                        <Certificate>CERTIFICATEA</Certificate>
+                        <ServiceDescription>invoice service AS2</ServiceDescription>
+                        <TechnicalContactUrl>https://example.com</TechnicalContactUrl>
+                    </Endpoint>
+                    <Endpoint transportProfile="busdox-transport-as2-ver1p0">
+                        <EndpointReference xmlns="http://www.w3.org/2005/08/addressing">
+                            <Address>http://busdox.org/otherService/as2</Address>
+                        </EndpointReference>
+                        <RequireBusinessLevelSignature>false</RequireBusinessLevelSignature>
+                        <ServiceActivationDate>2009-05-01T09:00:00</ServiceActivationDate>
+                        <ServiceExpirationDate>2016-05-01T09:00:00</ServiceExpirationDate>
+                        <Certificate>CERTIFICATEA</Certificate>
+                        <ServiceDescription>invoice service</ServiceDescription>
+                        <TechnicalContactUrl>https://example.com</TechnicalContactUrl>
+                    </Endpoint>
+                </ServiceEndpointList>
+            </Process>
+        </ProcessList>
+    </ServiceInformation>
+</ServiceMetadata>

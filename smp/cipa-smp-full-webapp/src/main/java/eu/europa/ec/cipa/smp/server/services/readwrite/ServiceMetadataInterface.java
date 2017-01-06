@@ -37,6 +37,9 @@
  */
 package eu.europa.ec.cipa.smp.server.services.readwrite;
 
+import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
+import eu.europa.ec.cipa.smp.server.util.RequestHelper;
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
@@ -50,7 +53,10 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.ParserConfigurationException;
 
+import com.sun.jersey.spi.MessageBodyWorkers;
 import org.busdox.servicemetadata.publishing._1.ServiceInformationType;
 import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.busdox.servicemetadata.publishing._1.SignedServiceMetadataType;
@@ -63,7 +69,10 @@ import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifi
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
-import eu.europa.ec.cipa.smp.server.util.RequestHelper;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import java.io.IOException;
 
 /**
  * This class implements the REST interface for getting SignedServiceMetadata's.
@@ -79,14 +88,16 @@ public final class ServiceMetadataInterface {
   private HttpHeaders headers;
   @Context
   private UriInfo uriInfo;
+  @Context
+  private MessageBodyWorkers bodyWorkers;
 
   public ServiceMetadataInterface () {}
 
   @GET
   // changed Produced media type to match the smp specification.
   @Produces (MediaType.TEXT_XML)
-  public JAXBElement <SignedServiceMetadataType> getServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
-                                                                         @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
+  public Document getServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
+                                          @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
     // Delegate to common implementation
     return BaseServiceMetadataInterfaceImpl.getServiceRegistration (uriInfo, sServiceGroupID, sDocumentTypeID);
   }
@@ -94,48 +105,33 @@ public final class ServiceMetadataInterface {
   @PUT
   public Response saveServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
                                            @PathParam ("DocumentTypeId") final String sDocumentTypeID,
-                                           final ServiceMetadataType aServiceMetadata) throws Throwable {
-    s_aLogger.info ("PUT /" + sServiceGroupID + "/services/" + sDocumentTypeID + " ==> " + aServiceMetadata);
+                                           //final ServiceMetadataType aServiceMetadata,
+                                           //final InputStream bodyInputStream
+                                           //final Document bodyDoc
+                                           final String body) throws Throwable {
 
-    final SimpleParticipantIdentifier aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
-    if (aServiceGroupID == null) {
-      // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return Response.status (Status.BAD_REQUEST).build ();
-    }
+/*
+    ByteArrayInputStream bodyArrayStream = new ByteArrayInputStream(IOUtils.toByteArray(bodyInputStream));
+    MessageBodyReader<ServiceMetadataType> jaxbReader = bodyWorkers.getMessageBodyReader(ServiceMetadataType.class, ServiceMetadataType.class, new Annotation[] {}, MediaType.APPLICATION_XML_TYPE);
+    MessageBodyReader<Document> xmlDocReader = bodyWorkers.getMessageBodyReader(Document.class, Document.class, new Annotation[] {}, MediaType.APPLICATION_XML_TYPE);
+    final Document bodyDoc = xmlDocReader.readFrom(Document.class, Document.class, new Annotation[] {}, MediaType.APPLICATION_XML_TYPE, null, bodyArrayStream);
+    bodyArrayStream.reset();
+    final ServiceMetadataType aServiceMetadata = jaxbReader.readFrom(ServiceMetadataType.class, ServiceMetadataType.class, new Annotation[] {}, MediaType.APPLICATION_XML_TYPE, null, bodyArrayStream);
+*/
+    s_aLogger.info ("PUT /" + sServiceGroupID + "/services/" + sDocumentTypeID + " ==> " + body);
 
-    final SimpleDocumentTypeIdentifier aDocTypeID = SimpleDocumentTypeIdentifier.createFromURIPartOrNull (sDocumentTypeID);
-    if (aDocTypeID == null) {
-      // Invalid identifier
-      s_aLogger.info ("Failed to parse document type identifier '" + sDocumentTypeID + "'");
-      return null;
-    }
+    try{
 
-    try {
-      final ServiceInformationType aServiceInformationType = aServiceMetadata.getServiceInformation ();
-
-      // Business identifiers from path (ServiceGroupID) and from service
-      // metadata (body) must equal path
-      if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getParticipantIdentifier (), aServiceGroupID)) {
-        s_aLogger.info ("Save service metadata was called with bad parameters. serviceInfo:" +
-                        IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getParticipantIdentifier ()) +
-                        " param:" +
-                        aServiceGroupID);
-        return Response.status (Status.BAD_REQUEST).build ();
+      Response errorResponse = getValidationErrors(sServiceGroupID, sDocumentTypeID, body);
+      if(errorResponse != null){
+        return errorResponse;
       }
 
-      if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getDocumentIdentifier (), aDocTypeID)) {
-        s_aLogger.info ("Save service metadata was called with bad parameters. serviceInfo:" +
-                        IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getDocumentIdentifier ()) +
-                        " param:" +
-                        aDocTypeID);
-        // Document type must equal path
-        return Response.status (Status.BAD_REQUEST).build ();
-      }
+      final ServiceMetadataType aServiceMetadata = ServiceMetadataConverter.unmarshall(body);
 
       // Main save
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
-      aDataManager.saveService (aServiceMetadata, RequestHelper.getAuth (headers));
+      aDataManager.saveService (aServiceMetadata, body, RequestHelper.getAuth (headers));
 
       s_aLogger.info ("Finished saveServiceRegistration(" +
                       sServiceGroupID +
@@ -151,6 +147,50 @@ public final class ServiceMetadataInterface {
       s_aLogger.error ("Error in saving Service metadata.", ex);
       throw ex;
     }
+  }
+
+  private Response getValidationErrors(final String sServiceGroupID,
+                                   final String sDocumentTypeID,
+                                   final String body) throws ParserConfigurationException, IOException, SAXException, JAXBException {
+
+    final ServiceMetadataType aServiceMetadata = ServiceMetadataConverter.unmarshall(body);
+
+    final SimpleParticipantIdentifier aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull(sServiceGroupID);
+    if (aServiceGroupID == null) {
+      // Invalid identifier
+      s_aLogger.info("Failed to parse participant identifier '" + sServiceGroupID + "'");
+      return Response.status(Status.BAD_REQUEST).build();
+    }
+
+    final SimpleDocumentTypeIdentifier aDocTypeID = SimpleDocumentTypeIdentifier.createFromURIPartOrNull(sDocumentTypeID);
+    if (aDocTypeID == null) {
+      // Invalid identifier
+      s_aLogger.info("Failed to parse document type identifier '" + sDocumentTypeID + "'");
+      return Response.status(Status.BAD_REQUEST).build();
+    }
+
+    final ServiceInformationType aServiceInformationType = aServiceMetadata.getServiceInformation();
+
+    // Business identifiers from path (ServiceGroupID) and from service
+    // metadata (body) must equal path
+    if (!IdentifierUtils.areIdentifiersEqual(aServiceInformationType.getParticipantIdentifier(), aServiceGroupID)) {
+      s_aLogger.info("Save service metadata was called with bad parameters. serviceInfo:" +
+              IdentifierUtils.getIdentifierURIEncoded(aServiceInformationType.getParticipantIdentifier()) +
+              " param:" +
+              aServiceGroupID);
+      return Response.status(Status.BAD_REQUEST).build();
+    }
+
+    if (!IdentifierUtils.areIdentifiersEqual(aServiceInformationType.getDocumentIdentifier(), aDocTypeID)) {
+      s_aLogger.info("Save service metadata was called with bad parameters. serviceInfo:" +
+              IdentifierUtils.getIdentifierURIEncoded(aServiceInformationType.getDocumentIdentifier()) +
+              " param:" +
+              aDocTypeID);
+      // Document type must equal path
+      return Response.status(Status.BAD_REQUEST).build();
+    }
+
+    return null;
   }
 
   @DELETE
