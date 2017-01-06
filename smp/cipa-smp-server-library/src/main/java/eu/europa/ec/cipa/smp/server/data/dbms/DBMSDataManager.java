@@ -48,7 +48,6 @@ import com.helger.db.jpa.JPAExecutionResult;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.NotFoundException;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
@@ -56,19 +55,16 @@ import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
 import eu.europa.ec.cipa.smp.server.exception.UnknownUserException;
 import eu.europa.ec.cipa.smp.server.hook.IRegistrationHook;
 import eu.europa.ec.cipa.smp.server.hook.RegistrationHookFactory;
-import eu.europa.ec.cipa.smp.server.util.SMPDBUtils;
 import eu.europa.ec.cipa.smp.server.util.XMLUtils;
 import org.busdox.servicemetadata.publishing._1.*;
 import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
-import javax.xml.ws.wsaddressing.W3CEndpointReference;
 import java.util.*;
 import java.util.concurrent.Callable;
 
@@ -346,7 +342,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
                 final List<ServiceMetadataType> aList = new ArrayList<ServiceMetadataType>();
                 for (final DBServiceMetadata aService : aServices) {
-                    ServiceMetadataType aServiceMetadata = ServiceMetadataConverter.unmarshall(aService.getXmlContent());
+                    ServiceMetadataType aServiceMetadata = ServiceMetadataConverter.unmarshal(aService.getXmlContent());
                     aList.add(aServiceMetadata);
                 }
                 return aList;
@@ -356,11 +352,11 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     }
 
     @Nullable
-    public Document getService(@Nonnull final ParticipantIdentifierType aServiceGroupID,
-                               @Nonnull final DocumentIdentifierType aDocTypeID) throws Throwable {
-        JPAExecutionResult<Document> ret;
-        ret = doSelect(new Callable<Document>() {
-            public Document call() throws Exception {
+    public String getService(@Nonnull final ParticipantIdentifierType aServiceGroupID,
+                             @Nonnull final DocumentIdentifierType aDocTypeID) throws Throwable {
+        JPAExecutionResult<String> ret;
+        ret = doSelect(new Callable<String>() {
+            public String call() throws Exception {
                 final DBServiceMetadataID aDBServiceMetadataID = new DBServiceMetadataID(aServiceGroupID, aDocTypeID);
                 final DBServiceMetadata aDBServiceMetadata = getEntityManager().find(DBServiceMetadata.class,
                         aDBServiceMetadataID);
@@ -374,7 +370,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                     return null;
                 }
 
-                return ServiceMetadataConverter.toSignedServiceMetadatada(aDBServiceMetadata.getXmlContent());
+                return aDBServiceMetadata.getXmlContent();
             }
         });
         return ret.getOrThrow();

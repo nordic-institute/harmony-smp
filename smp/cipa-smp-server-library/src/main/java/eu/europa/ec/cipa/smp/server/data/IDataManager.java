@@ -50,7 +50,6 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
-import org.w3c.dom.Document;
 
 /**
  * This interface is used by the REST interface for accessing the underlying SMP
@@ -143,7 +142,7 @@ public interface IDataManager {
    * @throws Throwable
    */
   @Nullable
-  Document getService (@Nonnull ParticipantIdentifierType aServiceGroupID,
+  String getService (@Nonnull ParticipantIdentifierType aServiceGroupID,
                        @Nonnull DocumentIdentifierType aDocType) throws Throwable;
 
   /**

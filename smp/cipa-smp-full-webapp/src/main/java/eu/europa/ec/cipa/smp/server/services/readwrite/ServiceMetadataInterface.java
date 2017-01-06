@@ -52,14 +52,12 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.sun.jersey.spi.MessageBodyWorkers;
 import org.busdox.servicemetadata.publishing._1.ServiceInformationType;
 import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
-import org.busdox.servicemetadata.publishing._1.SignedServiceMetadataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,19 +103,8 @@ public final class ServiceMetadataInterface {
   @PUT
   public Response saveServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
                                            @PathParam ("DocumentTypeId") final String sDocumentTypeID,
-                                           //final ServiceMetadataType aServiceMetadata,
-                                           //final InputStream bodyInputStream
-                                           //final Document bodyDoc
                                            final String body) throws Throwable {
 
-/*
-    ByteArrayInputStream bodyArrayStream = new ByteArrayInputStream(IOUtils.toByteArray(bodyInputStream));
-    MessageBodyReader<ServiceMetadataType> jaxbReader = bodyWorkers.getMessageBodyReader(ServiceMetadataType.class, ServiceMetadataType.class, new Annotation[] {}, MediaType.APPLICATION_XML_TYPE);
-    MessageBodyReader<Document> xmlDocReader = bodyWorkers.getMessageBodyReader(Document.class, Document.class, new Annotation[] {}, MediaType.APPLICATION_XML_TYPE);
-    final Document bodyDoc = xmlDocReader.readFrom(Document.class, Document.class, new Annotation[] {}, MediaType.APPLICATION_XML_TYPE, null, bodyArrayStream);
-    bodyArrayStream.reset();
-    final ServiceMetadataType aServiceMetadata = jaxbReader.readFrom(ServiceMetadataType.class, ServiceMetadataType.class, new Annotation[] {}, MediaType.APPLICATION_XML_TYPE, null, bodyArrayStream);
-*/
     s_aLogger.info ("PUT /" + sServiceGroupID + "/services/" + sDocumentTypeID + " ==> " + body);
 
     try{
@@ -127,7 +114,7 @@ public final class ServiceMetadataInterface {
         return errorResponse;
       }
 
-      final ServiceMetadataType aServiceMetadata = ServiceMetadataConverter.unmarshall(body);
+      final ServiceMetadataType aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
 
       // Main save
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
@@ -153,7 +140,7 @@ public final class ServiceMetadataInterface {
                                    final String sDocumentTypeID,
                                    final String body) throws ParserConfigurationException, IOException, SAXException, JAXBException {
 
-    final ServiceMetadataType aServiceMetadata = ServiceMetadataConverter.unmarshall(body);
+    final ServiceMetadataType aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
 
     final SimpleParticipantIdentifier aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull(sServiceGroupID);
     if (aServiceGroupID == null) {

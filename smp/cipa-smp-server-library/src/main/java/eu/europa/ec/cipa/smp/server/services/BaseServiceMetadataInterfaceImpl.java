@@ -40,18 +40,12 @@ package eu.europa.ec.cipa.smp.server.services;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
 
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
-import org.busdox.servicemetadata.publishing._1.ObjectFactory;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
-import org.busdox.servicemetadata.publishing._1.SignedServiceMetadataType;
 import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.sun.jersey.api.NotFoundException;
 
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
@@ -93,7 +87,8 @@ public final class BaseServiceMetadataInterfaceImpl {
 
     try {
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
-      Document aSignedServiceMetadata = aDataManager.getService (aServiceGroupID, aDocTypeID);
+      String sServiceMetadata = aDataManager.getService (aServiceGroupID, aDocTypeID);
+      Document aSignedServiceMetadata = ServiceMetadataConverter.toSignedServiceMetadatadaDocument(sServiceMetadata);
 
       s_aLogger.info ("Finished getServiceRegistration(" + sServiceGroupID + "," + sDocumentTypeID + ")");
       return aSignedServiceMetadata;

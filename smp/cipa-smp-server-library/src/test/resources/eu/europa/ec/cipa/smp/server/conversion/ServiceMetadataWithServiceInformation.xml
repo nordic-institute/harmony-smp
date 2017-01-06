@@ -1,4 +1,4 @@
-<ServiceMetadata xmlns="http://busdox.org/serviceMetadata/publishing/1.0/" xmlns:ids="http://busdox.org/transport/identifiers/1.0/">
+<?xml version="1.0" encoding="UTF-8"?><ServiceMetadata xmlns="http://busdox.org/serviceMetadata/publishing/1.0/" xmlns:ids="http://busdox.org/transport/identifiers/1.0/">
     <ServiceInformation>
         <ids:ParticipantIdentifier scheme="iso6523-actorid-upis">0088:5798000000112</ids:ParticipantIdentifier>
         <ids:DocumentIdentifier scheme="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice##urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:#urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</ids:DocumentIdentifier>

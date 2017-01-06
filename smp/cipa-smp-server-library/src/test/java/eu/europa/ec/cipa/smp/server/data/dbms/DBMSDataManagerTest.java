@@ -45,6 +45,8 @@ import static org.junit.Assert.fail;
 
 import java.util.Date;
 
+import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
+import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
 import org.busdox.servicemetadata.publishing._1.EndpointType;
 import org.busdox.servicemetadata.publishing._1.ExtensionType;
 import org.busdox.servicemetadata.publishing._1.ObjectFactory;
@@ -135,6 +137,7 @@ public class DBMSDataManagerTest {
 
   private ServiceGroupType m_aServiceGroup;
   private ServiceMetadataType m_aServiceMetadata;
+  private String m_sServiceMetadata;
 
   @Before
   public void beforeTest () throws Throwable {
@@ -190,6 +193,7 @@ public class DBMSDataManagerTest {
       aServiceInformation.setProcessList (processList);
     }
     m_aServiceMetadata.setServiceInformation (aServiceInformation);
+    m_sServiceMetadata = XmlTestUtils.marshall(m_aServiceMetadata);
   }
 
   @Test
@@ -271,10 +275,11 @@ public class DBMSDataManagerTest {
   @Test
   public void testCreateServiceMetadata () throws Throwable {
     // Save to DB
-    s_aDataMgr.saveService (m_aServiceMetadata, CREDENTIALS);
+    s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, CREDENTIALS);
 
     // Retrieve from DB
-    final ServiceMetadataType aDBServiceMetadata = s_aDataMgr.getService (SERVICEGROUP_ID, DOCTYPE_ID);
+    final String docDBServiceMetadata = s_aDataMgr.getService (SERVICEGROUP_ID, DOCTYPE_ID);
+    final ServiceMetadataType aDBServiceMetadata = ServiceMetadataConverter.unmarshal(docDBServiceMetadata);
     assertNotNull (aDBServiceMetadata);
 
     final ProcessListType aOrigProcessList = m_aServiceMetadata.getServiceInformation ().getProcessList ();
@@ -310,7 +315,7 @@ public class DBMSDataManagerTest {
   public void testCreateServiceMetadataUnknownUser () throws Throwable {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
     try {
-      s_aDataMgr.saveService (m_aServiceMetadata, aCredentials);
+      s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, aCredentials);
       fail ();
     }
     catch (final UnknownUserException ex) {}
@@ -320,7 +325,7 @@ public class DBMSDataManagerTest {
   public void testCreateServiceMetadataWrongPass () throws Throwable {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WrongPassword");
     try {
-      s_aDataMgr.saveService (m_aServiceMetadata, aCredentials);
+      s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, aCredentials);
       fail ();
     }
     catch (final UnauthorizedException ex) {}
@@ -329,14 +334,14 @@ public class DBMSDataManagerTest {
   @Test
   public void testPrintServiceMetadata () throws Throwable {
     // Ensure something is present :)
-    s_aDataMgr.saveService (m_aServiceMetadata, CREDENTIALS);
+    s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, CREDENTIALS);
     System.out.println (s_aDataMgr.getService (SERVICEGROUP_ID, DOCTYPE_ID));
   }
 
   @Test
   public void testDeleteServiceMetadata () throws Throwable {
     // Ensure something is present :)
-    s_aDataMgr.saveService (m_aServiceMetadata, CREDENTIALS);
+    s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, CREDENTIALS);
 
     // First deletion succeeds
     s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, CREDENTIALS);

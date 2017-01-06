@@ -1,5 +1,6 @@
 package eu.europa.ec.cipa.smp.server.conversion;
 
+import eu.europa.ec.cipa.smp.server.exception.XmlParsingException;
 import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -41,23 +42,31 @@ public class ServiceMetadataConverter {
         }
     }
 
-    public static Document toSignedServiceMetadatada(String serviceMetadataXml) throws ParserConfigurationException, SAXException, IOException {
-        Document docServiceMetadata = parse(serviceMetadataXml);
-        Document root = parse(DOC_SIGNED_SERVICE_METADATA_EMPTY);
-        Node imported = root.importNode(docServiceMetadata.getDocumentElement(), true);
-        root.getDocumentElement().appendChild(imported);
-        return root;
+    public static Document toSignedServiceMetadatadaDocument(String serviceMetadataXml)  {
+        try {
+            Document docServiceMetadata = parse(serviceMetadataXml);
+            Document root = parse(DOC_SIGNED_SERVICE_METADATA_EMPTY);
+            Node imported = root.importNode(docServiceMetadata.getDocumentElement(), true);
+            root.getDocumentElement().appendChild(imported);
+            return root;
+        }catch(ParserConfigurationException | SAXException | IOException e){
+            throw new XmlParsingException(e);
+        }
+    }
+
+    public static ServiceMetadataType unmarshal(String serviceMetadataXml){
+        try {
+            Document serviceMetadataDoc = parse(serviceMetadataXml);
+            ServiceMetadataType serviceMetadata = getUnmarshaller().unmarshal(serviceMetadataDoc, ServiceMetadataType.class).getValue();
+            return serviceMetadata;
+        } catch (SAXException | IOException | ParserConfigurationException | JAXBException e) {
+            throw new XmlParsingException(e);
+        }
     }
 
     private static Document parse(String serviceMetadataXml) throws SAXException, IOException, ParserConfigurationException {
         InputStream inputStream = new ByteArrayInputStream(serviceMetadataXml.getBytes());
         return getDocumentBuilder().parse(inputStream);
-    }
-
-    public static ServiceMetadataType unmarshall(String serviceMetadataXml) throws JAXBException, ParserConfigurationException, IOException, SAXException {
-        Document serviceMetadataDoc = parse(serviceMetadataXml);
-        ServiceMetadataType serviceMetadata = getUnmarshaller().unmarshal(serviceMetadataDoc, ServiceMetadataType.class).getValue();
-        return serviceMetadata;
     }
 
     private static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
@@ -80,13 +89,4 @@ public class ServiceMetadataConverter {
     }
     */
 
-    /*
-    private static String marshall(Node doc) throws TransformerException, UnsupportedEncodingException {
-        TransformerFactory tf = TransformerFactory.newInstance();
-        Transformer trans = tf.newTransformer();
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        trans.transform(new DOMSource(doc), new StreamResult(stream));
-        return stream.toString("UTF-8");
-    }
-    */
 }

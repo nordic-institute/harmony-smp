@@ -111,6 +111,8 @@ REFERENCES smp_service_metadata (
 documentIdentifierScheme, businessIdentifier, 
 businessIdentifierScheme, documentIdentifier);
 
+ALTER TABLE smp_process DISABLE CONSTRAINT FK_smp_proc_docIdScheme;
+
 ALTER TABLE smp_service_metadata ADD CONSTRAINT 
 FK_smp_service_meta_busId FOREIGN KEY (
 businessIdentifier, businessIdentifierScheme) 
