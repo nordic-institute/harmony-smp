@@ -164,6 +164,7 @@ public final class BaseServiceGroupInterfaceImpl {
       return aObjFactory.createServiceGroup (aServiceGroup);
     }
     catch (Exception ex) {
+      s_aLogger.error ("Error getting service group " + aServiceGroupID, ex);
       ExceptionHandler.handleException(ex);
       return null;
     }

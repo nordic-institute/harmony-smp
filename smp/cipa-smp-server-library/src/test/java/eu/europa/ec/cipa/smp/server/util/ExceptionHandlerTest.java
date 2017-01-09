@@ -30,6 +30,11 @@ public class ExceptionHandlerTest {
     }
 
     @Test
+    public void testHandleInexistentException() throws Exception {
+        ExceptionHandler.handleException(null);
+    }
+
+    @Test
     public void testBuildResponse() {
         NotFoundException exception = Mockito.mock(NotFoundException.class);
         Response received = ExceptionHandler.buildResponse(exception);
