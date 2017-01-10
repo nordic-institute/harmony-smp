@@ -1,5 +1,9 @@
 package eu.europa.ec.cipa.smp.server.exception;
 
+import com.helger.commons.mime.CMimeType;
+
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -8,24 +12,53 @@ import java.util.UUID;
  * Created by migueti on 05/01/2017.
  */
 public class ErrorResponseBuilder {
-    private static String getTimeStamp() {
-        Date date = new Date();
-        StringBuilder timeStamp = new StringBuilder();
-        timeStamp.append(new SimpleDateFormat("yyyy-MM-dd").format(date))
-                .append("T")
-                .append(new SimpleDateFormat("HH:mm:ss.SSSZ").format(date))
-                .append(UUID.randomUUID());
-        return String.valueOf(timeStamp);
+    private StringBuilder response = new StringBuilder();
+    private String strBusinessCode = "TECHNICAL";
+    private String strErrorDescription = "Unexpected technical error occurred.";
+
+    private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSz");
+
+    private ErrorResponseBuilder() {
+        response = new StringBuilder();
     }
 
-    public static String build() {
-        StringBuilder result = new StringBuilder();
-        result.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-        result.append("<ErrorResponse xmlns=\"ec:services:SMP:1.0\">");
-        result.append("<BusinessCode>TECHNICAL</BusinessCode>");
-        result.append("<ErrorDescription>Unexpected technical error occurred.</ErrorDescription>");
-        result.append("<ErrorUniqueId>").append(getTimeStamp()).append("</ErrorUniqueId>");
-        result.append("</ErrorResponse>");
-        return String.valueOf(result);
+    private static String getErrorUniqueId() {
+        StringBuilder errId = new StringBuilder();
+        errId.append(TIMESTAMP_FORMAT.format(new Date()))
+                .append(":")
+                .append(UUID.randomUUID());
+        return String.valueOf(errId);
+    }
+
+    public static ErrorResponseBuilder newInstance() {
+        return new ErrorResponseBuilder();
+    }
+
+
+    public String build() {
+        response.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        response.append("<ErrorResponse xmlns=\"ec:services:SMP:1.0\">");
+        response.append("<BusinessCode>").append(strBusinessCode).append("</BusinessCode>");
+        response.append("<ErrorDescription>").append(strErrorDescription).append("</ErrorDescription>");
+        response.append("<ErrorUniqueId>").append(getErrorUniqueId()).append("</ErrorUniqueId>");
+        response.append("</ErrorResponse>");
+        return String.valueOf(response);
+    }
+
+    public ErrorResponseBuilder setBusinessCode(String newBusinessCode) {
+        strBusinessCode = newBusinessCode;
+        return this;
+    }
+
+    public ErrorResponseBuilder setErrorDescription(String newErrorDescription) {
+        strErrorDescription = newErrorDescription;
+        return this;
+    }
+
+    public Response build(Status status) {
+        return Response.status(status)
+                .entity(build())
+                .type(CMimeType.TEXT_XML.getAsString ())
+                .build();
     }
 }

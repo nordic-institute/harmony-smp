@@ -42,17 +42,12 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import com.helger.commons.mime.CMimeType;
-
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Provider
 public class UnknownUserExceptionMapper implements ExceptionMapper <UnknownUserException> {
   public Response toResponse (final UnknownUserException e) {
-    return Response.status (Status.FORBIDDEN)
-            .entity (ErrorResponseBuilder.build())
-            .type (CMimeType.TEXT_XML.getAsString ())
-            .build ();
+    return ErrorResponseBuilder.newInstance().build(Status.FORBIDDEN);
   }
 }

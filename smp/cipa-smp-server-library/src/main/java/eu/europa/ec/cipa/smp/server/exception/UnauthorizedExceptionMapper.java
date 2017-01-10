@@ -42,17 +42,12 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import com.helger.commons.mime.CMimeType;
-
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Provider
 public class UnauthorizedExceptionMapper implements ExceptionMapper <UnauthorizedException> {
   public Response toResponse (final UnauthorizedException e) {
-    return Response.status (Status.UNAUTHORIZED)
-            .entity (ErrorResponseBuilder.build())
-            .type (CMimeType.TEXT_XML.getAsString ())
-            .build ();
+    return ErrorResponseBuilder.newInstance().build(Status.UNAUTHORIZED);
   }
 }
