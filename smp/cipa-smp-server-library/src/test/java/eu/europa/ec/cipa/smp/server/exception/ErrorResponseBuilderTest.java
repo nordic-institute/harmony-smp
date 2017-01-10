@@ -62,12 +62,12 @@ public class ErrorResponseBuilderTest {
 
         // test result 1
         String errorUniqueId1 = checkXmlError(result1, DEFAULT_BUSINESS_CODE, DEFAULT_ERROR_DESCRIPTION);
-        assertNotNull(errorUniqueId1);
 
         // test result 2
         String errorUniqueId2 = checkXmlError(result2, DEFAULT_BUSINESS_CODE, DEFAULT_ERROR_DESCRIPTION);
-        assertNotNull(errorUniqueId2);
 
+        assertNotNull(errorUniqueId1);
+        assertNotNull(errorUniqueId2);
         assertNotEquals(errorUniqueId1, errorUniqueId2);
 
     }
@@ -82,12 +82,12 @@ public class ErrorResponseBuilderTest {
 
         // test result 1
         String errorUniqueId1 = checkXmlError(result1, STR_BUSINESS_CODE, STR_ERROR_DESCRIPTION);
-        assertNotNull(errorUniqueId1);
 
         // test result 2
         String errorUniqueId2 = checkXmlError(result2, STR_BUSINESS_CODE, STR_ERROR_DESCRIPTION);
-        assertNotNull(errorUniqueId2);
 
+        assertNotNull(errorUniqueId1);
+        assertNotNull(errorUniqueId2);
         assertNotEquals(errorUniqueId1, errorUniqueId2);
     }
 
@@ -97,6 +97,7 @@ public class ErrorResponseBuilderTest {
         String result = ErrorResponseBuilder.newInstance().setBusinessCode(STR_BUSINESS_CODE).build();
 
         String errorUniqueId = checkXmlError(result, STR_BUSINESS_CODE, DEFAULT_ERROR_DESCRIPTION);
+
         assertNotNull(errorUniqueId);
     }
 
@@ -106,6 +107,7 @@ public class ErrorResponseBuilderTest {
         String result = ErrorResponseBuilder.newInstance().setErrorDescription(STR_ERROR_DESCRIPTION).build();
 
         String errorUniqueId = checkXmlError(result, DEFAULT_BUSINESS_CODE, STR_ERROR_DESCRIPTION);
+
         assertNotNull(errorUniqueId);
     }
 
