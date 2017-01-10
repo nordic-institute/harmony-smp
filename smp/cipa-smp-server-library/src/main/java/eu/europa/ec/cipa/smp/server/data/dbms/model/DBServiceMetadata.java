@@ -58,7 +58,7 @@ public class DBServiceMetadata implements Serializable {
   private DBServiceMetadataID m_aID;
   private DBServiceGroup m_aServiceGroup;
   private String m_sExtension;
-  private Set <DBProcess> m_aProcesses = new HashSet <DBProcess> (0);
+  private String m_sXmlContent;
 
   public DBServiceMetadata () {}
 
@@ -70,11 +70,11 @@ public class DBServiceMetadata implements Serializable {
   public DBServiceMetadata (final DBServiceMetadataID aID,
                             final DBServiceGroup aServiceGroup,
                             final String sExtension,
-                            final Set <DBProcess> aProcesses) {
+                            final String sXmlContent) {
     m_aID = aID;
     m_aServiceGroup = aServiceGroup;
     m_sExtension = sExtension;
-    m_aProcesses = aProcesses;
+    m_sXmlContent = sXmlContent;
   }
 
   @EmbeddedId
@@ -106,6 +106,16 @@ public class DBServiceMetadata implements Serializable {
   }
 
   @Lob
+  @Column(name = "xmlcontent")
+  public String getXmlContent(){
+    return m_sXmlContent;
+  }
+
+  public void setXmlContent(String sXmlContent){
+    m_sXmlContent = sXmlContent;
+  }
+
+  @Lob
   @Column (name = "extension", length = 65535)
   public String getExtension () {
     return m_sExtension;
@@ -120,12 +130,4 @@ public class DBServiceMetadata implements Serializable {
     setExtension(XMLUtils.marshallObjectNoNameSpaces(aExtension, ExtensionType.class, XMLUtils.EXT_TYPE_QNAME));
   }
 
-  @OneToMany (fetch = FetchType.LAZY, mappedBy = "serviceMetadata", cascade = { CascadeType.ALL })
-  public Set <DBProcess> getProcesses () {
-    return m_aProcesses;
-  }
-
-  public void setProcesses (final Set <DBProcess> aProcesses) {
-    m_aProcesses = aProcesses;
-  }
 }

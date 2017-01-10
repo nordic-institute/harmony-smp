@@ -59,7 +59,8 @@ extension CLOB,
 documentIdentifierScheme VARCHAR(25) NOT NULL, 
 businessIdentifier VARCHAR(50) NOT NULL, 
 businessIdentifierScheme VARCHAR(25) NOT NULL, 
-documentIdentifier VARCHAR(500) NOT NULL, 
+documentIdentifier VARCHAR(500) NOT NULL,
+xmlcontent CLOB,
 PRIMARY KEY (
 documentIdentifierScheme, 
 businessIdentifier, 
@@ -109,6 +110,8 @@ documentIdentifier)
 REFERENCES smp_service_metadata (
 documentIdentifierScheme, businessIdentifier, 
 businessIdentifierScheme, documentIdentifier);
+
+ALTER TABLE smp_process DISABLE CONSTRAINT FK_smp_proc_docIdScheme;
 
 ALTER TABLE smp_service_metadata ADD CONSTRAINT 
 FK_smp_service_meta_busId FOREIGN KEY (

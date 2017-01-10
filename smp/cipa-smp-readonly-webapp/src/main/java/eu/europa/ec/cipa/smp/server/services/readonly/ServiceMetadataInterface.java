@@ -40,6 +40,7 @@ package eu.europa.ec.cipa.smp.server.services.readonly;
 
 import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
 import org.busdox.servicemetadata.publishing._1.SignedServiceMetadataType;
+import org.w3c.dom.Document;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -63,8 +64,8 @@ public final class ServiceMetadataInterface {
   @GET
   // changed Produced media type to match the smp specification.
   @Produces (MediaType.TEXT_XML)
-  public JAXBElement <SignedServiceMetadataType> getServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
-                                                                         @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
+  public Document getServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
+                                          @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
     // Delegate to common implementation
     return BaseServiceMetadataInterfaceImpl.getServiceRegistration (uriInfo, sServiceGroupID, sDocumentTypeID);
   }

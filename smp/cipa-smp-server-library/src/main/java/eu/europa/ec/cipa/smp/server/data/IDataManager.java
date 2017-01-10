@@ -142,19 +142,21 @@ public interface IDataManager {
    * @throws Throwable
    */
   @Nullable
-  ServiceMetadataType getService (@Nonnull ParticipantIdentifierType aServiceGroupID,
-                                  @Nonnull DocumentIdentifierType aDocType) throws Throwable;
+  String getService (@Nonnull ParticipantIdentifierType aServiceGroupID,
+                       @Nonnull DocumentIdentifierType aDocType) throws Throwable;
 
   /**
    * Saves the given service metadata in the underlying data layer.
    * 
    * @param aServiceMetadata
    *        The service metadata to save.
+   * @param sXmlContent
+   *        The service metadata XML content to save.
    * @param aCredentials
    *        The credentials to use.
    * @throws Throwable
    */
-  void saveService (@Nonnull ServiceMetadataType aServiceMetadata, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
+  void saveService (@Nonnull ServiceMetadataType aServiceMetadata, @Nonnull final String sXmlContent, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
 
   /**
    * Deletes a service metadata object given by its service group id and
