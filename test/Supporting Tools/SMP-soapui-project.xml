@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project activeEnvironment="Default" name="SMP" resourceRoot="" soapui-version="5.1.2" abortOnError="false" runType="SEQUENTIAL" id="8147b356-07e4-4ff9-ade6-4e92e0597a38" xmlns:con="http://eviware.com/soapui/config"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.actions.iface.tools.soapui.ProTestRunnerAction@values-local"><![CDATA[<xml-fragment xmlns:con="http://eviware.com/soapui/config">
+<con:soapui-project activeEnvironment="Default" name="SMP" resourceRoot="" soapui-version="5.2.1" abortOnError="false" runType="SEQUENTIAL" id="8147b356-07e4-4ff9-ade6-4e92e0597a38" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="com.eviware.soapui.impl.wsdl.actions.iface.tools.soapui.ProTestRunnerAction@values-local"><![CDATA[<xml-fragment xmlns:con="http://eviware.com/soapui/config">
   <con:entry key="Environment" value="Default"/>
   <con:entry key="Global Properties" value=""/>
   <con:entry key="TestSuite" value="&lt;all>"/>
@@ -29,7 +31,259 @@
   <con:entry key="Add Settings" value="false"/>
   <con:entry key="Endpoint" value=""/>
   <con:entry key="Select Report Type" value="TestSuite Report"/>
-</xml-fragment>]]></con:setting></con:settings><con:interface xsi:type="con:RestService" wadlVersion="http://wadl.dev.java.net/2009/02" name="SMP" type="rest" basePath="" id="b21f11f2-5b00-44e4-a963-71e94f13b839" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:settings/><con:definitionCache type="TEXT" rootPart=""/><con:endpoints><con:endpoint>http://localhost:8080</con:endpoint></con:endpoints><con:resource name="ServiceGroup" path="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112" id="2ff08415-f133-4c23-bf64-91204b94f5c1"><con:settings/><con:parameters/><con:method name="Get" method="GET" id="36ced4c8-0e92-4686-a5f4-e9c9870b721f"><con:settings/><con:parameters/><con:representation type="RESPONSE"><con:mediaType>application/xml</con:mediaType><con:status>200</con:status><con:params/><con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:ServiceGroup</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/plain</con:mediaType><con:status>404</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/html;charset=utf-8</con:mediaType><con:status>404 500</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType>text/xml</con:mediaType><con:status>200</con:status><con:params/><con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:ServiceGroup</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/html; charset=UTF-8</con:mediaType><con:status>401</con:status><con:params/><con:element>html</con:element></con:representation><con:request name="Get" mediaType="application/xml" id="a9f15369-89e3-4e53-a448-a9881605a8b0"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://localhost:8080</con:endpoint><con:request/><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:request></con:method><con:method name="Put" method="PUT" id="951c948c-9ef6-494b-b569-389e1dd323ea"><con:settings/><con:parameters/><con:representation type="REQUEST"><con:mediaType>text/xml</con:mediaType><con:params/><con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:ServiceGroup</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/html;charset=utf-8</con:mediaType><con:status>400 403</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/plain</con:mediaType><con:status>403</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/html; charset=UTF-8</con:mediaType><con:status>401 403 500 400</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="Put" mediaType="text/xml" postQueryString="false" id="e50d78e0-763f-4bfd-aa1c-f4dcc7595a2a"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://localhost:8080</con:endpoint><con:request><![CDATA[<ServiceGroup xmlns="http://busdox.org/serviceMetadata/publishing/1.0/" xmlns:ids="http://busdox.org/transport/identifiers/1.0/">
+</xml-fragment>]]></con:setting>
+  </con:settings>
+  <con:interface xsi:type="con:RestService" wadlVersion="http://wadl.dev.java.net/2009/02" name="SMP" type="rest" basePath="" id="b21f11f2-5b00-44e4-a963-71e94f13b839" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <con:settings/>
+    <con:definitionCache type="TEXT" rootPart=""/>
+    <con:endpoints>
+      <con:endpoint>http://localhost:8080</con:endpoint>
+    </con:endpoints>
+    <con:resource name="ServiceGroup" path="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112" id="2ff08415-f133-4c23-bf64-91204b94f5c1">
+      <con:settings/>
+      <con:parameters/>
+      <con:method name="Get" method="GET" id="36ced4c8-0e92-4686-a5f4-e9c9870b721f">
+        <con:settings/>
+        <con:parameters/>
+        <con:representation type="RESPONSE">
+          <con:mediaType>application/xml</con:mediaType>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:ServiceGroup</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/plain</con:mediaType>
+          <con:status>404</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/html;charset=utf-8</con:mediaType>
+          <con:status>404 500</con:status>
+          <con:params/>
+          <con:element>html</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType>text/xml</con:mediaType>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:ServiceGroup</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/html; charset=UTF-8</con:mediaType>
+          <con:status>401</con:status>
+          <con:params/>
+          <con:element>html</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/xml</con:mediaType>
+          <con:status>404</con:status>
+          <con:params/>
+        </con:representation>
+        <con:request name="Get" mediaType="application/xml" id="a9f15369-89e3-4e53-a448-a9881605a8b0">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>http://localhost:8080</con:endpoint>
+          <con:request/>
+          <con:credentials>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:request>
+      </con:method>
+      <con:method name="Put" method="PUT" id="951c948c-9ef6-494b-b569-389e1dd323ea">
+        <con:settings/>
+        <con:parameters/>
+        <con:representation type="REQUEST">
+          <con:mediaType>text/xml</con:mediaType>
+          <con:params/>
+          <con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:ServiceGroup</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/html;charset=utf-8</con:mediaType>
+          <con:status>400 403</con:status>
+          <con:params/>
+          <con:element>html</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/plain</con:mediaType>
+          <con:status>403</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/html; charset=UTF-8</con:mediaType>
+          <con:status>401 403 500 400</con:status>
+          <con:params/>
+          <con:element>html</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:request name="Put" mediaType="text/xml" postQueryString="false" id="e50d78e0-763f-4bfd-aa1c-f4dcc7595a2a">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>http://localhost:8080</con:endpoint>
+          <con:request><![CDATA[<ServiceGroup xmlns="http://busdox.org/serviceMetadata/publishing/1.0/" xmlns:ids="http://busdox.org/transport/identifiers/1.0/">
    <ids:ParticipantIdentifier scheme="iso6523-actorid-upis">0088:5798000000112</ids:ParticipantIdentifier>
    <ServiceMetadataReferenceCollection>
       <ServiceMetadataReference href="http://serviceMetadata.eu/busdox-actoridupis%3A%3A0088%3A5798000000112/services/busdox-docidqns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-12%3A%3AInvoice%23%23UBL-2.0"/>
@@ -37,7 +291,405 @@
    <Extension>
       <ex:Test xmlns:ex="http://test.eu">Test</ex:Test>
    </Extension>
-</ServiceGroup>]]></con:request><con:credentials><con:username>user</con:username><con:password>user</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:request></con:method><con:method name="Delete" method="DELETE" id="f5889514-5798-4fbe-bf1d-c5aaa792566e"><con:settings/><con:parameters/><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="REQUEST"><con:mediaType>application/xml</con:mediaType><con:params/></con:representation><con:representation type="FAULT"><con:mediaType>text/html; charset=UTF-8</con:mediaType><con:status>500</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="Delete" mediaType="application/xml" id="a97cde56-8e9c-4d6f-b950-faf82b0268e9" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://localhost:8080</con:endpoint><con:request/><con:credentials><con:username>user</con:username><con:password>user</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:request></con:method></con:resource><con:resource name="SignedServiceMetadata" path="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0" id="05ed7407-d19e-43be-97e0-969414c666fd"><con:settings/><con:parameters/><con:method name="Get" method="GET" id="6168176b-9b10-487e-bedb-5f48e97fd78a"><con:settings/><con:parameters/><con:representation type="RESPONSE"><con:mediaType>application/xml</con:mediaType><con:status>200</con:status><con:params/><con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:SignedServiceMetadata</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/plain</con:mediaType><con:status>500 404</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/html;charset=utf-8</con:mediaType><con:status>404 500</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType>text/xml</con:mediaType><con:status>200</con:status><con:params/><con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:SignedServiceMetadata</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/html; charset=UTF-8</con:mediaType><con:status>401</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="Get" mediaType="application/xml" id="798e6729-3cf8-44b5-8fc7-f19165c82521"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://localhost:8080</con:endpoint><con:request/><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:request></con:method><con:method name="Put" method="PUT" id="00044aac-b021-4ec0-8723-690887be30fe"><con:settings/><con:parameters/><con:representation type="FAULT"><con:mediaType>text/plain</con:mediaType><con:status>403</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="REQUEST"><con:mediaType>text/xml</con:mediaType><con:params/><con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:ServiceMetadata</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/html;charset=utf-8</con:mediaType><con:status>400</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/html; charset=UTF-8</con:mediaType><con:status>500</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="Put" mediaType="text/xml" postQueryString="false" id="74cb305c-6d80-4836-a6eb-4c6cc61f0dab"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://localhost:8080</con:endpoint><con:request><![CDATA[<ServiceMetadata xmlns="http://busdox.org/serviceMetadata/publishing/1.0/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wsswssecurity- utility-1.0.xsd" xmlns:ids="http://busdox.org/transport/identifiers/1.0/">
+</ServiceGroup>]]></con:request>
+          <con:credentials>
+            <con:username>user</con:username>
+            <con:password>user</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:request>
+      </con:method>
+      <con:method name="Delete" method="DELETE" id="f5889514-5798-4fbe-bf1d-c5aaa792566e">
+        <con:settings/>
+        <con:parameters/>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="REQUEST">
+          <con:mediaType>application/xml</con:mediaType>
+          <con:params/>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/html; charset=UTF-8</con:mediaType>
+          <con:status>500</con:status>
+          <con:params/>
+          <con:element>html</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>0</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>0</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:request name="Delete" mediaType="application/xml" id="a97cde56-8e9c-4d6f-b950-faf82b0268e9" postQueryString="false">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>http://localhost:8080</con:endpoint>
+          <con:request/>
+          <con:credentials>
+            <con:username>user</con:username>
+            <con:password>user</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:request>
+      </con:method>
+    </con:resource>
+    <con:resource name="SignedServiceMetadata" path="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0" id="05ed7407-d19e-43be-97e0-969414c666fd">
+      <con:settings/>
+      <con:parameters/>
+      <con:method name="Get" method="GET" id="6168176b-9b10-487e-bedb-5f48e97fd78a">
+        <con:settings/>
+        <con:parameters/>
+        <con:representation type="RESPONSE">
+          <con:mediaType>application/xml</con:mediaType>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:SignedServiceMetadata</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/plain</con:mediaType>
+          <con:status>500 404</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/html;charset=utf-8</con:mediaType>
+          <con:status>404 500</con:status>
+          <con:params/>
+          <con:element>html</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType>text/xml</con:mediaType>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:SignedServiceMetadata</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/html; charset=UTF-8</con:mediaType>
+          <con:status>401</con:status>
+          <con:params/>
+          <con:element>html</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>0</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/html; charset=utf-8</con:mediaType>
+          <con:status>403</con:status>
+          <con:params/>
+          <con:element>html</con:element>
+        </con:representation>
+        <con:request name="Get" mediaType="application/xml" id="798e6729-3cf8-44b5-8fc7-f19165c82521">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>http://localhost:8080</con:endpoint>
+          <con:request/>
+          <con:credentials>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:request>
+      </con:method>
+      <con:method name="Put" method="PUT" id="00044aac-b021-4ec0-8723-690887be30fe">
+        <con:settings/>
+        <con:parameters/>
+        <con:representation type="FAULT">
+          <con:mediaType>text/plain</con:mediaType>
+          <con:status>403</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="REQUEST">
+          <con:mediaType>text/xml</con:mediaType>
+          <con:params/>
+          <con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:ServiceMetadata</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/html;charset=utf-8</con:mediaType>
+          <con:status>400</con:status>
+          <con:params/>
+          <con:element>html</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/html; charset=UTF-8</con:mediaType>
+          <con:status>500</con:status>
+          <con:params/>
+          <con:element>html</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:request name="Put" mediaType="text/xml" postQueryString="false" id="74cb305c-6d80-4836-a6eb-4c6cc61f0dab">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>http://localhost:8080</con:endpoint>
+          <con:request><![CDATA[<ServiceMetadata xmlns="http://busdox.org/serviceMetadata/publishing/1.0/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wsswssecurity- utility-1.0.xsd" xmlns:ids="http://busdox.org/transport/identifiers/1.0/">
    <ServiceInformation>
       <ids:ParticipantIdentifier scheme="iso6523-actorid-upis">0088:5798000000112</ids:ParticipantIdentifier>
       <ids:DocumentIdentifier scheme="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice##urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:#urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</ids:DocumentIdentifier>
@@ -60,10 +712,266 @@
          </Process>
       </ProcessList>
    </ServiceInformation>
-</ServiceMetadata>]]></con:request><con:credentials><con:username>user</con:username><con:password>user</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:request></con:method><con:method name="Delete" method="DELETE" id="cccbd073-0e3d-439b-a747-946a73f5b67c"><con:settings/><con:parameters/><con:representation type="FAULT"><con:mediaType>text/plain</con:mediaType><con:status>403 404</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/html;charset=utf-8</con:mediaType><con:status>404 500</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="REQUEST"><con:mediaType>application/xml</con:mediaType><con:params/></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="Delete" mediaType="application/xml" id="cfe391c2-9084-45a5-a637-fbbc25a25f27" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://localhost:8080</con:endpoint><con:request/><con:credentials><con:username>user</con:username><con:password>user</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:request></con:method></con:resource><con:resource name="List" path="/cipa-smp-full-webapp/list/feriaad" id="d3f28527-fcb5-4cd4-88d4-abfa496d329a"><con:settings/><con:parameters/><con:method name="List" method="GET" id="2a1a4370-dea7-48ba-b384-f391d30063ff"><con:settings/><con:parameters/><con:representation type="FAULT"><con:mediaType>text/plain</con:mediaType><con:status>403</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType>application/xml</con:mediaType><con:status>200</con:status><con:params/><con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:ServiceGroupReferenceList</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/html;charset=utf-8</con:mediaType><con:status>404</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType>text/xml</con:mediaType><con:status>200</con:status><con:params/><con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:ServiceGroupReferenceList</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/html; charset=UTF-8</con:mediaType><con:status>401 500</con:status><con:params/><con:element>html</con:element></con:representation><con:request name="List" mediaType="application/xml" id="a7b65ec4-c61a-42aa-b4c8-8b4c55aa5687"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://localhost:8080</con:endpoint><con:request/><con:credentials><con:username>user</con:username><con:password>user</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:request></con:method></con:resource><con:resource name="Complete" path="/cipa-smp-full-webapp/complete/iso6523-actorid-upis::0088:5798000000112" id="1dc8e39b-2e63-4065-b20d-8f7dd4371066"><con:settings/><con:parameters/><con:method name="Complete" method="GET" id="959beb5a-f532-4917-9642-78c9fcc9ad59"><con:settings/><con:parameters/><con:representation type="RESPONSE"><con:mediaType>application/xml</con:mediaType><con:status>200</con:status><con:params/><con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:CompleteServiceGroup</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType>text/xml</con:mediaType><con:status>200</con:status><con:params/><con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:CompleteServiceGroup</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/html; charset=UTF-8</con:mediaType><con:status>401</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/plain</con:mediaType><con:status>404</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="Complete" mediaType="application/xml" id="7d9b17bd-403e-4d6f-b4ef-75f6ebd8b78c"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://localhost:8080</con:endpoint><con:request/><con:credentials><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:authType>Global HTTP Settings</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:request></con:method></con:resource></con:interface><con:testSuite name="SMP Services" id="d1ab0237-7870-42fb-b60b-a317f939230f"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Get ServiceGroup" searchProperties="true" id="1a379e38-f2d0-49c5-8c15-e77ed27c86eb"><con:description>This test step retrieves the Service Group according to the input duplet participantIdentifier+participantIndentifierScheme.
+</ServiceMetadata>]]></con:request>
+          <con:credentials>
+            <con:username>user</con:username>
+            <con:password>user</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:request>
+      </con:method>
+      <con:method name="Delete" method="DELETE" id="cccbd073-0e3d-439b-a747-946a73f5b67c">
+        <con:settings/>
+        <con:parameters/>
+        <con:representation type="FAULT">
+          <con:mediaType>text/plain</con:mediaType>
+          <con:status>403 404</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/html;charset=utf-8</con:mediaType>
+          <con:status>404 500</con:status>
+          <con:params/>
+          <con:element>html</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="REQUEST">
+          <con:mediaType>application/xml</con:mediaType>
+          <con:params/>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>0</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>0</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType xsi:nil="true"/>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:request name="Delete" mediaType="application/xml" id="cfe391c2-9084-45a5-a637-fbbc25a25f27" postQueryString="false">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>http://localhost:8080</con:endpoint>
+          <con:request/>
+          <con:credentials>
+            <con:username>user</con:username>
+            <con:password>user</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:request>
+      </con:method>
+    </con:resource>
+    <con:resource name="List" path="/cipa-smp-full-webapp/list/feriaad" id="d3f28527-fcb5-4cd4-88d4-abfa496d329a">
+      <con:settings/>
+      <con:parameters/>
+      <con:method name="List" method="GET" id="2a1a4370-dea7-48ba-b384-f391d30063ff">
+        <con:settings/>
+        <con:parameters/>
+        <con:representation type="FAULT">
+          <con:mediaType>text/plain</con:mediaType>
+          <con:status>403</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType>application/xml</con:mediaType>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:ServiceGroupReferenceList</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/html;charset=utf-8</con:mediaType>
+          <con:status>404</con:status>
+          <con:params/>
+          <con:element>html</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType>text/xml</con:mediaType>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:ServiceGroupReferenceList</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/html; charset=UTF-8</con:mediaType>
+          <con:status>401 500</con:status>
+          <con:params/>
+          <con:element>html</con:element>
+        </con:representation>
+        <con:request name="List" mediaType="application/xml" id="a7b65ec4-c61a-42aa-b4c8-8b4c55aa5687">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>http://localhost:8080</con:endpoint>
+          <con:request/>
+          <con:credentials>
+            <con:username>user</con:username>
+            <con:password>user</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:request>
+      </con:method>
+    </con:resource>
+    <con:resource name="Complete" path="/cipa-smp-full-webapp/complete/iso6523-actorid-upis::0088:5798000000112" id="1dc8e39b-2e63-4065-b20d-8f7dd4371066">
+      <con:settings/>
+      <con:parameters/>
+      <con:method name="Complete" method="GET" id="959beb5a-f532-4917-9642-78c9fcc9ad59">
+        <con:settings/>
+        <con:parameters/>
+        <con:representation type="RESPONSE">
+          <con:mediaType>application/xml</con:mediaType>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:CompleteServiceGroup</con:element>
+        </con:representation>
+        <con:representation type="RESPONSE">
+          <con:mediaType>text/xml</con:mediaType>
+          <con:status>200</con:status>
+          <con:params/>
+          <con:element xmlns:ns="http://busdox.org/serviceMetadata/publishing/1.0/">ns:CompleteServiceGroup</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/html; charset=UTF-8</con:mediaType>
+          <con:status>401</con:status>
+          <con:params/>
+          <con:element>html</con:element>
+        </con:representation>
+        <con:representation type="FAULT">
+          <con:mediaType>text/plain</con:mediaType>
+          <con:status>404</con:status>
+          <con:params/>
+          <con:element>data</con:element>
+        </con:representation>
+        <con:request name="Complete" mediaType="application/xml" id="7d9b17bd-403e-4d6f-b4ef-75f6ebd8b78c">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>http://localhost:8080</con:endpoint>
+          <con:request/>
+          <con:credentials>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters/>
+        </con:request>
+      </con:method>
+    </con:resource>
+  </con:interface>
+  <con:testSuite name="SMP Services" id="d1ab0237-7870-42fb-b60b-a317f939230f">
+    <con:settings/>
+    <con:runType>SEQUENTIAL</con:runType>
+    <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Get ServiceGroup" searchProperties="true" id="1a379e38-f2d0-49c5-8c15-e77ed27c86eb">
+      <con:description>This test step retrieves the Service Group according to the input duplet participantIdentifier+participantIndentifierScheme.
 A script assertion verifies that the returned list of references to the signedServiceMetadata ressources are associated with the participantIdentifier+participantIndentifierScheme specified in the request. 
-The verification is done from the SMP_SERVICE_GROUP table.
- </con:description><con:settings/><con:testStep type="restrequest" name="Get ServiceGroup" id="d9c8939b-59a8-43b0-bde0-056e55181117"><con:settings/><con:config service="SMP" methodName="Get" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="Get ServiceGroup" mediaType="application/xml" id="44412828-f8e2-4a35-8cbb-210c5c72cdca"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>${#Project#url}</con:endpoint><con:request/><con:originalUri>http://wltdgt02.cc.cec.eu.int/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000001</con:originalUri><con:assertion type="GroovyScriptAssertion" id="f09906c6-6518-4fc8-9fbb-615c73951652" name="Script Assertion"><con:configuration><scriptText>import groovy.sql.Sql
+The verification is done from the SMP_SERVICE_GROUP table.</con:description>
+      <con:settings/>
+      <con:testStep type="restrequest" name="Get ServiceGroup" id="d9c8939b-59a8-43b0-bde0-056e55181117">
+        <con:settings/>
+        <con:config service="SMP" methodName="Get" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:restRequest name="Get ServiceGroup" mediaType="application/xml" id="44412828-f8e2-4a35-8cbb-210c5c72cdca">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+            </con:settings>
+            <con:encoding>UTF-8</con:encoding>
+            <con:endpoint>${#Project#url}</con:endpoint>
+            <con:request/>
+            <con:originalUri>http://wltdgt02.cc.cec.eu.int/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000001</con:originalUri>
+            <con:assertion type="GroovyScriptAssertion" id="f09906c6-6518-4fc8-9fbb-615c73951652" name="Script Assertion">
+              <con:configuration>
+                <scriptText>import groovy.sql.Sql
 import java.sql.SQLException
 
 // First check the Raw Response code
@@ -197,8 +1105,29 @@ while(counter&lt;urlRefList.size()){
 //	assert (marker>0), "Error:Exec: Extension $extensionsList[counter] is not associated with Business Identifier $ParticipantIdentifierRequest."
 //	sql.close()
 //	counter ++
-//}
-</scriptText></con:configuration></con:assertion><con:assertion type="Valid HTTP Status Codes" id="b1937038-94a7-4a37-a3b1-247859c031da" name="Valid HTTP Status Codes"><con:configuration><codes>200</codes></con:configuration></con:assertion><con:credentials><con:username>${#Project#username}</con:username><con:password>${#Project#password}</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:restRequest></con:config></con:testStep><con:setupScript>import groovy.sql.Sql
+//}</scriptText>
+              </con:configuration>
+            </con:assertion>
+            <con:assertion type="Valid HTTP Status Codes" id="b1937038-94a7-4a37-a3b1-247859c031da" name="Valid HTTP Status Codes">
+              <con:configuration>
+                <codes>200</codes>
+              </con:configuration>
+            </con:assertion>
+            <con:credentials>
+              <con:username>${#Project#username}</con:username>
+              <con:password>${#Project#password}</con:password>
+              <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+              <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+              <con:preemptive>true</con:preemptive>
+              <con:authType>Preemptive</con:authType>
+            </con:credentials>
+            <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+            <con:jmsPropertyConfig/>
+            <con:parameters/>
+          </con:restRequest>
+        </con:config>
+      </con:testStep>
+      <con:setupScript>import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the BUSINESS IDENTIFIER from the request
@@ -276,7 +1205,8 @@ sql.execute "insert into SMP_OWNERSHIP(USERNAME,BUSINESSIDENTIFIER,BUSINESSIDENT
 sleep(50)
 
 // Disconnect from the Database
-sql.close()</con:setupScript><con:tearDownScript>import groovy.sql.Sql
+sql.close()</con:setupScript>
+      <con:tearDownScript>import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the BUSINESS IDENTIFIER from the request
@@ -328,9 +1258,28 @@ sql.execute "DELETE from SMP_SERVICE_GROUP where BUSINESSIDENTIFIER=$Participant
 sleep(50)
 
 // Disconnect from the Database
-sql.close()</con:tearDownScript><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Get SignedServiceMetadata" searchProperties="true" id="bd8f867b-1f2d-4c5b-8aa3-7780232b686b"><con:description>This test step retrieves the signedServiceMetadata according to the input quadruplet participantIdentifier+participantIndentifierScheme+documentIdentifier+documentIdentifierScheme.
+sql.close()</con:tearDownScript>
+      <con:properties/>
+      <con:reportParameters/>
+    </con:testCase>
+    <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Get SignedServiceMetadata" searchProperties="true" id="bd8f867b-1f2d-4c5b-8aa3-7780232b686b">
+      <con:description>This test step retrieves the signedServiceMetadata according to the input quadruplet participantIdentifier+participantIndentifierScheme+documentIdentifier+documentIdentifierScheme.
 A script assertion verifies that the returned signedServiceMetadata ressources are associated with quadruplet specified in the request.
-The verification is done via the SMP_ENDPOINT table.</con:description><con:settings/><con:testStep type="restrequest" name="Get SignedServiceMetadata" id="a8a3b291-da04-452a-adc5-90f7c7256db3"><con:settings/><con:config service="SMP" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0" methodName="Get" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="Get SignedServiceMetadata" mediaType="application/xml" id="a14d5055-96e4-422a-a5a7-2b8942b66ceb"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>${#Project#url}</con:endpoint><con:request/><con:originalUri>http://wltdgt02.cc.cec.eu.int/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000001/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</con:originalUri><con:assertion type="GroovyScriptAssertion" id="77de1978-f581-4968-a9da-a58b517804bc" name="Script Assertion"><con:configuration><scriptText>import groovy.sql.Sql
+The verification is done via the SMP_ENDPOINT table.</con:description>
+      <con:settings/>
+      <con:testStep type="restrequest" name="Get SignedServiceMetadata" id="a8a3b291-da04-452a-adc5-90f7c7256db3">
+        <con:settings/>
+        <con:config service="SMP" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0" methodName="Get" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:restRequest name="Get SignedServiceMetadata" mediaType="application/xml" id="a14d5055-96e4-422a-a5a7-2b8942b66ceb">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+            </con:settings>
+            <con:endpoint>${#Project#url}</con:endpoint>
+            <con:request/>
+            <con:originalUri>http://wltdgt02.cc.cec.eu.int/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000001/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-2::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</con:originalUri>
+            <con:assertion type="GroovyScriptAssertion" id="77de1978-f581-4968-a9da-a58b517804bc" name="Script Assertion">
+              <con:configuration>
+                <scriptText>import groovy.sql.Sql
 import java.sql.SQLException
 import oracle.sql.*
 
@@ -500,8 +1449,29 @@ allNodes = ServiceMetadata.depthFirst().each{
 }
 
 // Disconnect from the Database
-sql.close()
-</scriptText></con:configuration></con:assertion><con:assertion type="Valid HTTP Status Codes" id="f3348d20-bbd6-4dd5-9926-6de6fe8706b8" name="Valid HTTP Status Codes"><con:configuration><codes>200</codes></con:configuration></con:assertion><con:credentials><con:username>${#Project#username}</con:username><con:password>${#Project#password}</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:restRequest></con:config></con:testStep><con:setupScript>import groovy.sql.Sql
+sql.close()</scriptText>
+              </con:configuration>
+            </con:assertion>
+            <con:assertion type="Valid HTTP Status Codes" id="f3348d20-bbd6-4dd5-9926-6de6fe8706b8" name="Valid HTTP Status Codes">
+              <con:configuration>
+                <codes>200</codes>
+              </con:configuration>
+            </con:assertion>
+            <con:credentials>
+              <con:username>${#Project#username}</con:username>
+              <con:password>${#Project#password}</con:password>
+              <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+              <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+              <con:preemptive>true</con:preemptive>
+              <con:authType>Preemptive</con:authType>
+            </con:credentials>
+            <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+            <con:jmsPropertyConfig/>
+            <con:parameters/>
+          </con:restRequest>
+        </con:config>
+      </con:testStep>
+      <con:setupScript><![CDATA[import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the BUSINESS IDENTIFIER from the request
@@ -530,19 +1500,21 @@ swap2[2] = swap2[2].replaceFirst('::','/')
 swap3 = swap2[2].split('/')
 assert (swap3.size()>= 2), "Error:Script: This reference has an unknown format: can't locate Document Identifier."
 def documentIdentSchemeRequest
-def documentIdentifierRequest  
+def documentIdentifierRequest
 documentIdentSchemeRequest = swap3[0]
 documentIdentifierRequest = swap3[1].replaceAll('%23','#')
 documentIdentifierRequest = documentIdentifierRequest.replaceAll('%3A',':')
 
+def serviceMetadataXML = '<?xml version="1.0" encoding="UTF-8" standalone="no"?><ns0:SignedServiceMetadata xmlns:ns0="http://busdox.org/serviceMetadata/publishing/1.0/" xmlns:ns1="http://busdox.org/transport/identifiers/1.0/" xmlns:ns2="http://www.w3.org/2005/08/addressing" xmlns:ns3="http://www.w3.org/2000/09/xmldsig#"><ns0:ServiceMetadata><ns0:ServiceInformation><ns1:ParticipantIdentifier scheme="iso6523-actorid-upis">0088:5798000000112</ns1:ParticipantIdentifier><ns1:DocumentIdentifier scheme="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice##urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:#urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</ns1:DocumentIdentifier><ns0:ProcessList><ns0:Process><ns1:ProcessIdentifier scheme="cenbii-procid-ubl">urn:www.cenbii.eu:profile:bii04:ver1.0</ns1:ProcessIdentifier><ns0:ServiceEndpointList><ns0:Endpoint transportProfile="busdox-transport-as2-ver1p0"><ns2:EndpointReference><ns2:Address>http://d02di1010873.net1.cec.eu.int:7080/cipa-dispatcher/AS2Receiver</ns2:Address></ns2:EndpointReference><ns0:RequireBusinessLevelSignature>false</ns0:RequireBusinessLevelSignature><ns0:ServiceActivationDate>2003-01-01T00:00:00Z</ns0:ServiceActivationDate><ns0:ServiceExpirationDate>2020-01-01T00:00:00Z</ns0:ServiceExpirationDate><ns0:Certificate>CERTIFICATEA</ns0:Certificate><ns0:ServiceDescription>invoice service AS2</ns0:ServiceDescription><ns0:TechnicalContactUrl>https://example.com</ns0:TechnicalContactUrl></ns0:Endpoint></ns0:ServiceEndpointList></ns0:Process></ns0:ProcessList></ns0:ServiceInformation></ns0:ServiceMetadata><Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><DigestValue>Vip1YUgyDFt9iMUHUiulwCcFdiI=</DigestValue></Reference></SignedInfo><SignatureValue>qczHe/H4FU/UFUGROwEo1nlnL/oAk355n/ef5jkR4+CfHJ6n88C5Ksq90NIwq2whSqezS+HS22+6oYeyQlsKU4S1jjkvVA==</SignatureValue><KeyInfo><X509Data><X509SubjectName>CN=SMP_OpenPEPPOL SMK 003,O=OpenPEPPOL,C=BE</X509SubjectName><X509Certificate>MIIEjjCCA3agAwIBAgIQOzsWLn033S5Q7ciLBkveKj8vQJLJih+r4CveXVTfZ8mHQjljm</X509Certificate></X509Data></KeyInfo></Signature></ns0:SignedServiceMetadata>'
+
 // Connect to the Database
 def sql
 try{
-	sql = Sql.newInstance(context.expand( '${#Project#jdbc.url}' ), context.expand( '${#Project#jdbc.driver}' ))
+    sql = Sql.newInstance(context.expand( '${#Project#jdbc.url}' ), context.expand( '${#Project#jdbc.driver}' ))
 }
 catch (SQLException ex)
 {
-	assert 0,"SQLException occured: " + ex;
+    assert 0,"SQLException occured: " + ex;
 }
 
 // Delete any values related to the Business Identifier if still present
@@ -576,7 +1548,7 @@ sql.execute "insert into SMP_SERVICE_GROUP(EXTENSION, BUSINESSIDENTIFIER, BUSINE
 sleep(50)
 
 // Insert the values again to SMP_SERVICE_METADATA
-sql.execute "insert into SMP_SERVICE_METADATA(DOCUMENTIDENTIFIERSCHEME,BUSINESSIDENTIFIER,BUSINESSIDENTIFIERSCHEME,DOCUMENTIDENTIFIER) values ('$documentIdentSchemeRequest','$ParticipantIdentifierRequest','$businessIdSchemeRequest','$documentIdentifierRequest')"
+sql.execute "insert into SMP_SERVICE_METADATA(DOCUMENTIDENTIFIERSCHEME,BUSINESSIDENTIFIER,BUSINESSIDENTIFIERSCHEME,DOCUMENTIDENTIFIER,XMLCONTENT) values ('$documentIdentSchemeRequest','$ParticipantIdentifierRequest','$businessIdSchemeRequest','$documentIdentifierRequest','$serviceMetadataXML')"
 sleep(50)
 
 // Insert the values again to SMP_SERVICE_METADATA_RED
@@ -596,7 +1568,8 @@ sql.execute "insert into SMP_OWNERSHIP(USERNAME,BUSINESSIDENTIFIER,BUSINESSIDENT
 sleep(50)
 
 // Disconnect from the Database
-sql.close()</con:setupScript><con:tearDownScript>import groovy.sql.Sql
+sql.close()]]></con:setupScript>
+      <con:tearDownScript>import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the BUSINESS IDENTIFIER from the request
@@ -648,9 +1621,31 @@ sql.execute "DELETE from SMP_SERVICE_GROUP where BUSINESSIDENTIFIER=$Participant
 sleep(50)
 
 // Disconnect from the Database
-sql.close()</con:tearDownScript><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:testSuite name="Non-core SMP Services" id="5f9be0a5-5b01-4574-9e2b-7940719eb7e7"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Put ServiceGroup" searchProperties="true" id="3e5b56cb-4a29-43aa-bf7f-62a5fff45b55"><con:description>This test step subscribes a new Service Group identified by its duplet participantIdentifier+participantIndentifierScheme.
+sql.close()</con:tearDownScript>
+      <con:properties/>
+      <con:reportParameters/>
+    </con:testCase>
+    <con:properties/>
+    <con:reportParameters/>
+  </con:testSuite>
+  <con:testSuite name="Non-core SMP Services" id="5f9be0a5-5b01-4574-9e2b-7940719eb7e7">
+    <con:settings/>
+    <con:runType>SEQUENTIAL</con:runType>
+    <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Put ServiceGroup" searchProperties="true" id="3e5b56cb-4a29-43aa-bf7f-62a5fff45b55">
+      <con:description>This test step subscribes a new Service Group identified by its duplet participantIdentifier+participantIndentifierScheme.
 A script assertion verifies that the Service Group specified in the request is correctly added. 
-The verification is done via the SMP_SERVICE_GROUP table.</con:description><con:settings/><con:testStep type="restrequest" name="Put ServiceGroup" id="971d5a09-57af-4c71-8695-2222a71904dd"><con:settings/><con:config service="SMP" methodName="Put" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="Put ServiceGroup" mediaType="text/xml" postQueryString="false" accept="" id="4c29e283-20f2-43a0-a5bb-b02dee7a7e5b"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>${#Project#url}</con:endpoint><con:request><![CDATA[<ServiceGroup xmlns="http://busdox.org/serviceMetadata/publishing/1.0/" xmlns:ids="http://busdox.org/transport/identifiers/1.0/">
+The verification is done via the SMP_SERVICE_GROUP table.</con:description>
+      <con:settings/>
+      <con:testStep type="restrequest" name="Put ServiceGroup" id="971d5a09-57af-4c71-8695-2222a71904dd">
+        <con:settings/>
+        <con:config service="SMP" methodName="Put" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:restRequest name="Put ServiceGroup" mediaType="text/xml" postQueryString="false" accept="" id="4c29e283-20f2-43a0-a5bb-b02dee7a7e5b">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+            </con:settings>
+            <con:encoding>UTF-8</con:encoding>
+            <con:endpoint>${#Project#url}</con:endpoint>
+            <con:request><![CDATA[<ServiceGroup xmlns="http://busdox.org/serviceMetadata/publishing/1.0/" xmlns:ids="http://busdox.org/transport/identifiers/1.0/">
    <ids:ParticipantIdentifier scheme="iso6523-actorid-upis">0088:5798000000112</ids:ParticipantIdentifier>
    <ServiceMetadataReferenceCollection>
       <ServiceMetadataReference href="http://serviceMetadata.eu/busdox-actoridupis%3A%3A0088%3A5798000000112/services/busdox-docidqns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-12%3A%3AInvoice%23%23UBL-2.0"/>
@@ -658,7 +1653,16 @@ The verification is done via the SMP_SERVICE_GROUP table.</con:description><con:
    <Extension>
       <ex:Test xmlns:ex="http://test.eu">Test</ex:Test>
    </Extension>
-</ServiceGroup>]]></con:request><con:originalUri>http://wltdgt02.cc.cec.eu.int/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000001</con:originalUri><con:assertion type="Valid HTTP Status Codes" id="d56a48bf-d491-476a-8ff9-28865f47f677" name="Valid HTTP Status Codes"><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="GroovyScriptAssertion" id="08579505-b489-455b-abe9-25123721049d" name="Script Assertion"><con:configuration><scriptText>import groovy.sql.Sql
+</ServiceGroup>]]></con:request>
+            <con:originalUri>http://wltdgt02.cc.cec.eu.int/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000001</con:originalUri>
+            <con:assertion type="Valid HTTP Status Codes" id="d56a48bf-d491-476a-8ff9-28865f47f677" name="Valid HTTP Status Codes">
+              <con:configuration>
+                <codes>200</codes>
+              </con:configuration>
+            </con:assertion>
+            <con:assertion type="GroovyScriptAssertion" id="08579505-b489-455b-abe9-25123721049d" name="Script Assertion">
+              <con:configuration>
+                <scriptText>import groovy.sql.Sql
 import java.sql.SQLException
 
 // First check the Raw Response code
@@ -714,8 +1718,24 @@ sql.close()
 //sql = Sql.newInstance(context.expand( '${#Project#jdbc.url }' ), context.expand( '${#Project#jdbc.driver }' ))
 //sql.eachRow("Select count(*) lines from SMP_SERVICE_METADATA where BUSINESSIDENTIFIER=$ParticipantIdentifierRequestand and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest and DOCUMENTIDENTIFIERSCHEME=$documentIdentScheme and DOCUMENTIDENTIFIER=$documentIdentifier"){
 //	marker=it.lines
-//}
-</scriptText></con:configuration></con:assertion><con:credentials><con:username>${#Project#username}</con:username><con:password>${#Project#password}</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:restRequest></con:config></con:testStep><con:setupScript>import groovy.sql.Sql
+//}</scriptText>
+              </con:configuration>
+            </con:assertion>
+            <con:credentials>
+              <con:username>${#Project#username}</con:username>
+              <con:password>${#Project#password}</con:password>
+              <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+              <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+              <con:preemptive>true</con:preemptive>
+              <con:authType>Preemptive</con:authType>
+            </con:credentials>
+            <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+            <con:jmsPropertyConfig/>
+            <con:parameters/>
+          </con:restRequest>
+        </con:config>
+      </con:testStep>
+      <con:setupScript>import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the BUSINESS IDENTIFIER from the request
@@ -769,7 +1789,8 @@ sql.execute "DELETE from SMP_SERVICE_GROUP where BUSINESSIDENTIFIER=$Participant
 sleep(50)
 
 // Disconnect frm the Database
-sql.close()</con:setupScript><con:tearDownScript>import groovy.sql.Sql
+sql.close()</con:setupScript>
+      <con:tearDownScript>import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the BUSINESS IDENTIFIER from the request
@@ -814,9 +1835,39 @@ sql.execute "DELETE from SMP_SERVICE_GROUP where BUSINESSIDENTIFIER=$Participant
 sleep(50)
 
 // Disconnect from the Database
-sql.close()</con:tearDownScript><con:properties><con:property><con:name>Username</con:name><con:value>ghouiah​</con:value></con:property></con:properties><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Delete ServiceGroup" searchProperties="true" id="f9cd7172-151c-4bbf-aa83-fd2f1816bb59"><con:description>This test step deletes a Service Group identified by its duplet participantIdentifier+participantIndentifierScheme.
+sql.close()</con:tearDownScript>
+      <con:properties>
+        <con:property>
+          <con:name>Username</con:name>
+          <con:value>ghouiah​</con:value>
+        </con:property>
+      </con:properties>
+      <con:reportParameters/>
+    </con:testCase>
+    <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Delete ServiceGroup" searchProperties="true" id="f9cd7172-151c-4bbf-aa83-fd2f1816bb59">
+      <con:description>This test step deletes a Service Group identified by its duplet participantIdentifier+participantIndentifierScheme.
 A script assertion verifies that the Service Group specified in the request is correctly removed. 
-The verification is done via the SMP_SERVICE_GROUP table.</con:description><con:settings/><con:testStep type="restrequest" name="Delete ServiceGroup" id="1360fe12-efd4-4714-9f30-6081693504ea"><con:settings/><con:config service="SMP" methodName="Delete" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="Delete ServiceGroup" mediaType="application/xml" accept="" id="47caba16-8d14-452c-b317-bb65af1103ed" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>${#Project#url}</con:endpoint><con:request/><con:originalUri>http://wltdgt02.cc.cec.eu.int/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112</con:originalUri><con:assertion type="Valid HTTP Status Codes" id="9aac2d8c-47d9-4763-9cad-067edc719820" name="Valid HTTP Status Codes"><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="GroovyScriptAssertion" id="17f637a2-7191-4f81-bbdb-4a00ed65e70d" name="Script Assertion"><con:configuration><scriptText>import groovy.sql.Sql
+The verification is done via the SMP_SERVICE_GROUP table.</con:description>
+      <con:settings/>
+      <con:testStep type="restrequest" name="Delete ServiceGroup" id="1360fe12-efd4-4714-9f30-6081693504ea">
+        <con:settings/>
+        <con:config service="SMP" methodName="Delete" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:restRequest name="Delete ServiceGroup" mediaType="application/xml" accept="" id="47caba16-8d14-452c-b317-bb65af1103ed" postQueryString="false">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+            </con:settings>
+            <con:encoding>UTF-8</con:encoding>
+            <con:endpoint>${#Project#url}</con:endpoint>
+            <con:request/>
+            <con:originalUri>http://wltdgt02.cc.cec.eu.int/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112</con:originalUri>
+            <con:assertion type="Valid HTTP Status Codes" id="9aac2d8c-47d9-4763-9cad-067edc719820" name="Valid HTTP Status Codes">
+              <con:configuration>
+                <codes>200</codes>
+              </con:configuration>
+            </con:assertion>
+            <con:assertion type="GroovyScriptAssertion" id="17f637a2-7191-4f81-bbdb-4a00ed65e70d" name="Script Assertion">
+              <con:configuration>
+                <scriptText>import groovy.sql.Sql
 import java.sql.SQLException
 
 // First check the Raw Response code
@@ -870,20 +1921,6 @@ sql.eachRow("Select count(*) lines from SMP_SERVICE_METADATA where BUSINESSIDENT
 assert (marker &lt;= 0), "Error:Exec: BUSINESS IDENTIFIER $ParticipantIdentifierRequest still stored in the database (SMP_SERVICE_METADATA)."
 marker=0
 
-//  Check this Service Group is not stored in the SMP_ENDPOINT
-sql.eachRow("Select count(*) lines from SMP_ENDPOINT where BUSINESSIDENTIFIER=$ParticipantIdentifierRequest and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest "){
- 	marker=it.lines
-}
-assert (marker &lt;= 0), "Error:Exec: BUSINESS IDENTIFIER $ParticipantIdentifierRequest still stored in the database (SMP_ENDPOINT)."
-marker=0
-
-//  Check this Service Group is not stored in the SMP_PROCESS
-sql.eachRow("Select count(*) lines from SMP_PROCESS where BUSINESSIDENTIFIER=$ParticipantIdentifierRequest and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest "){
- 	marker=it.lines
-}
-assert (marker &lt;= 0), "Error:Exec: BUSINESS IDENTIFIER $ParticipantIdentifierRequest still stored in the database (SMP_PROCESS)."
-marker=0
-
 //  Check this Service Group is not stored in the SMP_OWNERSHIP
 sql.eachRow("Select count(*) lines from SMP_OWNERSHIP where BUSINESSIDENTIFIER=$ParticipantIdentifierRequest and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest "){
  	marker=it.lines
@@ -891,7 +1928,24 @@ sql.eachRow("Select count(*) lines from SMP_OWNERSHIP where BUSINESSIDENTIFIER=$
 assert (marker &lt;= 0), "Error:Exec: BUSINESS IDENTIFIER $ParticipantIdentifierRequest still stored in the database (SMP_PROCESS)."
 
 // Disconnect from the Database
-sql.close()</scriptText></con:configuration></con:assertion><con:credentials><con:username>${#Project#username}</con:username><con:password>${#Project#password}</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:restRequest></con:config></con:testStep><con:setupScript>import groovy.sql.Sql
+sql.close()</scriptText>
+              </con:configuration>
+            </con:assertion>
+            <con:credentials>
+              <con:username>${#Project#username}</con:username>
+              <con:password>${#Project#password}</con:password>
+              <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+              <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+              <con:preemptive>true</con:preemptive>
+              <con:authType>Preemptive</con:authType>
+            </con:credentials>
+            <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+            <con:jmsPropertyConfig/>
+            <con:parameters/>
+          </con:restRequest>
+        </con:config>
+      </con:testStep>
+      <con:setupScript>import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the BUSINESS IDENTIFIER from the request
@@ -969,8 +2023,8 @@ sql.execute "insert into SMP_OWNERSHIP(USERNAME,BUSINESSIDENTIFIER,BUSINESSIDENT
 sleep(50)
 
 // Disconnect from the Database
-sql.close()
-</con:setupScript><con:tearDownScript>import groovy.sql.Sql
+sql.close()</con:setupScript>
+      <con:tearDownScript>import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the BUSINESS IDENTIFIER from the request
@@ -1022,9 +2076,25 @@ sql.execute "DELETE from SMP_SERVICE_GROUP where BUSINESSIDENTIFIER=$Participant
 sleep(50)
 
 // Disconnect from the Database
-sql.close()</con:tearDownScript><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Put SignedServiceMetadata" searchProperties="true" id="7117b468-7cdb-448f-98cc-c4951364d0e4"><con:description>This test step adds new signedServiceMetadata identified by quadruplet participantIdentifier+participantIndentifierScheme+documentIdentifier+documentIdentifierScheme.
+sql.close()</con:tearDownScript>
+      <con:properties/>
+      <con:reportParameters/>
+    </con:testCase>
+    <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Put SignedServiceMetadata" searchProperties="true" id="7117b468-7cdb-448f-98cc-c4951364d0e4">
+      <con:description>This test step adds new signedServiceMetadata identified by quadruplet participantIdentifier+participantIndentifierScheme+documentIdentifier+documentIdentifierScheme.
 A script assertion verifies that the new signedServiceMetadata ressources are added correctly.
-The verification is done via the SMP_SERVICE_METADATA and SMP_ENDPOINT tables.</con:description><con:settings/><con:testStep type="restrequest" name="Put SignedServiceMetadata" id="4ad1f272-2da4-494a-9a26-d026580c6d5a"><con:settings/><con:config service="SMP" methodName="Put" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="Put SignedServiceMetadata" mediaType="text/xml" postQueryString="false" accept="" id="19511fa8-c914-4823-a63d-455b672fcd27"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>${#Project#url}</con:endpoint><con:request><![CDATA[<ServiceMetadata xmlns="http://busdox.org/serviceMetadata/publishing/1.0/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wsswssecurity- utility-1.0.xsd" xmlns:ids="http://busdox.org/transport/identifiers/1.0/">
+The verification is done via the SMP_SERVICE_METADATA and SMP_ENDPOINT tables.</con:description>
+      <con:settings/>
+      <con:testStep type="restrequest" name="Put SignedServiceMetadata" id="4ad1f272-2da4-494a-9a26-d026580c6d5a">
+        <con:settings/>
+        <con:config service="SMP" methodName="Put" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:restRequest name="Put SignedServiceMetadata" mediaType="text/xml" postQueryString="false" accept="" id="19511fa8-c914-4823-a63d-455b672fcd27">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+            </con:settings>
+            <con:encoding>UTF-8</con:encoding>
+            <con:endpoint>${#Project#url}</con:endpoint>
+            <con:request><![CDATA[<ServiceMetadata xmlns="http://busdox.org/serviceMetadata/publishing/1.0/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wsswssecurity- utility-1.0.xsd" xmlns:ids="http://busdox.org/transport/identifiers/1.0/">
    <ServiceInformation>
       <ids:ParticipantIdentifier scheme="iso6523-actorid-upis">0088:5798000000112</ids:ParticipantIdentifier>
       <ids:DocumentIdentifier scheme="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice##urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:#urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</ids:DocumentIdentifier>
@@ -1058,7 +2128,11 @@ The verification is done via the SMP_SERVICE_METADATA and SMP_ENDPOINT tables.</
          </Process>
       </ProcessList>
    </ServiceInformation>
-</ServiceMetadata>]]></con:request><con:originalUri>http://wltdgt02.cc.cec.eu.int/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</con:originalUri><con:assertion type="GroovyScriptAssertion" id="e1f0e18d-d0c5-41e6-8890-22f6a3fd2834" name="Script Assertion"><con:configuration><scriptText>import groovy.sql.Sql
+</ServiceMetadata>]]></con:request>
+            <con:originalUri>http://wltdgt02.cc.cec.eu.int/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</con:originalUri>
+            <con:assertion type="GroovyScriptAssertion" id="e1f0e18d-d0c5-41e6-8890-22f6a3fd2834" name="Script Assertion">
+              <con:configuration>
+                <scriptText>import groovy.sql.Sql
 import java.sql.SQLException
 
 // First check the Raw Response code
@@ -1121,8 +2195,29 @@ sql.eachRow("Select count(*) lines from SMP_SERVICE_METADATA where BUSINESSIDENT
 assert (marker>0), "Error:Exec: BUSINESS IDENTIFIER $ParticipantIdentifierResponse or DOCUMENT IDENTIFIER $documentIdentifierResponse not stored in the SMP_ERVICE_METADATA."
 
 // Disconnect from the Database
-sql.close()
-</scriptText></con:configuration></con:assertion><con:assertion type="Valid HTTP Status Codes" id="a1bd3cf1-ec95-4a96-bd2b-ea60fb42371b" name="Valid HTTP Status Codes"><con:configuration><codes>200</codes></con:configuration></con:assertion><con:credentials><con:username>${#Project#username}</con:username><con:password>${#Project#password}</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:restRequest></con:config></con:testStep><con:setupScript>import groovy.sql.Sql
+sql.close()</scriptText>
+              </con:configuration>
+            </con:assertion>
+            <con:assertion type="Valid HTTP Status Codes" id="a1bd3cf1-ec95-4a96-bd2b-ea60fb42371b" name="Valid HTTP Status Codes">
+              <con:configuration>
+                <codes>200</codes>
+              </con:configuration>
+            </con:assertion>
+            <con:credentials>
+              <con:username>${#Project#username}</con:username>
+              <con:password>${#Project#password}</con:password>
+              <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+              <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+              <con:preemptive>true</con:preemptive>
+              <con:authType>Preemptive</con:authType>
+            </con:credentials>
+            <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+            <con:jmsPropertyConfig/>
+            <con:parameters/>
+          </con:restRequest>
+        </con:config>
+      </con:testStep>
+      <con:setupScript>import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the BUSINESS IDENTIFIER from the request
@@ -1201,7 +2296,8 @@ sql.execute "insert into SMP_OWNERSHIP(USERNAME,BUSINESSIDENTIFIER,BUSINESSIDENT
 sleep(50)
 
 // Disconnect from the Database
-sql.close()</con:setupScript><con:tearDownScript>import groovy.sql.Sql
+sql.close()</con:setupScript>
+      <con:tearDownScript>import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the BUSINESS IDENTIFIER from the request
@@ -1270,9 +2366,29 @@ sql.execute "DELETE from SMP_SERVICE_GROUP where BUSINESSIDENTIFIER=$Participant
 sleep(50)
 
 // Disconnect from the Database
-sql.close()</con:tearDownScript><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Delete SignedServiceMetadata" searchProperties="true" id="4fd3ba90-5d00-4a07-83e5-34594ecdd695"><con:description>This test step removes signedServiceMetadata identified by quadruplet participantIdentifier+participantIndentifierScheme+documentIdentifier+documentIdentifierScheme.
+sql.close()</con:tearDownScript>
+      <con:properties/>
+      <con:reportParameters/>
+    </con:testCase>
+    <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Delete SignedServiceMetadata" searchProperties="true" id="4fd3ba90-5d00-4a07-83e5-34594ecdd695">
+      <con:description>This test step removes signedServiceMetadata identified by quadruplet participantIdentifier+participantIndentifierScheme+documentIdentifier+documentIdentifierScheme.
 A script assertion verifies that the specific signedServiceMetadata ressources are indeed deleted.
-The verification is done via the SMP_SERVICE_METADATA and SMP_ENDPOINT tables.</con:description><con:settings/><con:testStep type="restrequest" name="Delete SignedServiceMetadata" id="9f926e65-3988-46f6-ba11-6df48a0e8485"><con:settings/><con:config service="SMP" methodName="Delete" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="Delete SignedServiceMetadata" mediaType="application/xml" id="6a2e1d86-7380-4478-9eec-cf4bd98dcc1b" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>${#Project#url}</con:endpoint><con:request/><con:originalUri>http://localhost/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</con:originalUri><con:assertion type="GroovyScriptAssertion" id="7feec3b0-5997-4058-8ae6-a4ee06d2b9db" name="Script Assertion"><con:configuration><scriptText>import groovy.sql.Sql
+The verification is done via the SMP_SERVICE_METADATA and SMP_ENDPOINT tables.</con:description>
+      <con:settings/>
+      <con:testStep type="restrequest" name="Delete SignedServiceMetadata" id="9f926e65-3988-46f6-ba11-6df48a0e8485">
+        <con:settings/>
+        <con:config service="SMP" methodName="Delete" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:restRequest name="Delete SignedServiceMetadata" mediaType="application/xml" id="6a2e1d86-7380-4478-9eec-cf4bd98dcc1b" postQueryString="false">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+            </con:settings>
+            <con:encoding>UTF-8</con:encoding>
+            <con:endpoint>${#Project#url}</con:endpoint>
+            <con:request/>
+            <con:originalUri>http://localhost/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</con:originalUri>
+            <con:assertion type="GroovyScriptAssertion" id="7feec3b0-5997-4058-8ae6-a4ee06d2b9db" name="Script Assertion">
+              <con:configuration>
+                <scriptText>import groovy.sql.Sql
 import java.sql.SQLException
 
 // First check the Raw Response code
@@ -1334,23 +2450,30 @@ sql.eachRow("Select count(*) lines from SMP_SERVICE_METADATA where BUSINESSIDENT
 }
 assert (marker&lt;=0), "Error:Exec: BUSINESS IDENTIFIER $ParticipantIdentifierResponse or DOCUMENT IDENTIFIER $documentIdentifierResponse still stored in the SMP_ERVICE_METADATA."
 
-//  Check this Metadata in the SMP_ENDPOINT table
-marker = 1
-sql.eachRow("Select count(*) lines from SMP_ENDPOINT where BUSINESSIDENTIFIER=$ParticipantIdentifierRequest and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest and DOCUMENTIDENTIFIERSCHEME=$documentIdentSchemeRequest and DOCUMENTIDENTIFIER=$documentIdentifierRequest"){
-	marker=it.lines
-}
-assert (marker&lt;=0), "Error:Exec: BUSINESS IDENTIFIER $ParticipantIdentifierResponse or DOCUMENT IDENTIFIER $documentIdentifierResponse still stored in the SMP_ENDPOINT."
-
-//  Check this Metadata in the SMP_PROCESS table
-marker = 1
-sql.eachRow("Select count(*) lines from SMP_PROCESS where BUSINESSIDENTIFIER=$ParticipantIdentifierRequest and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest and DOCUMENTIDENTIFIERSCHEME=$documentIdentSchemeRequest and DOCUMENTIDENTIFIER=$documentIdentifierRequest"){
-	marker=it.lines
-}
-assert (marker&lt;=0), "Error:Exec: BUSINESS IDENTIFIER $ParticipantIdentifierResponse or DOCUMENT IDENTIFIER $documentIdentifierResponse still stored in the SMP_PROCESS."
-
 // Disconnect from the Database
-sql.close()
-</scriptText></con:configuration></con:assertion><con:assertion type="Valid HTTP Status Codes" id="09961946-bd6e-47d1-b5c3-198606afa165" name="Valid HTTP Status Codes"><con:configuration><codes>200</codes></con:configuration></con:assertion><con:credentials><con:username>${#Project#username}</con:username><con:password>${#Project#password}</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:restRequest></con:config></con:testStep><con:setupScript>import groovy.sql.Sql
+sql.close()</scriptText>
+              </con:configuration>
+            </con:assertion>
+            <con:assertion type="Valid HTTP Status Codes" id="09961946-bd6e-47d1-b5c3-198606afa165" name="Valid HTTP Status Codes">
+              <con:configuration>
+                <codes>200</codes>
+              </con:configuration>
+            </con:assertion>
+            <con:credentials>
+              <con:username>${#Project#username}</con:username>
+              <con:password>${#Project#password}</con:password>
+              <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+              <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+              <con:preemptive>true</con:preemptive>
+              <con:authType>Preemptive</con:authType>
+            </con:credentials>
+            <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+            <con:jmsPropertyConfig/>
+            <con:parameters/>
+          </con:restRequest>
+        </con:config>
+      </con:testStep>
+      <con:setupScript>import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the BUSINESS IDENTIFIER from the request
@@ -1445,7 +2568,8 @@ sql.execute "insert into SMP_OWNERSHIP(USERNAME,BUSINESSIDENTIFIER,BUSINESSIDENT
 sleep(50)
 
 // Disconnect from the Database
-sql.close()</con:setupScript><con:tearDownScript>import groovy.sql.Sql
+sql.close()</con:setupScript>
+      <con:tearDownScript>import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the BUSINESS IDENTIFIER from the request
@@ -1523,9 +2647,34 @@ sql.execute "DELETE from SMP_SERVICE_GROUP where BUSINESSIDENTIFIER=$Participant
 sleep(50)
 
 // Disconnect from the Database
-sql.close()</con:tearDownScript><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="List" searchProperties="true" id="63aecf95-4710-4f30-ba8d-95c552c2253f"><con:description>This test case lists the participantIdentifier+participantIdentifierScheme associated with the username specified  in the input request.
+sql.close()</con:tearDownScript>
+      <con:properties/>
+      <con:reportParameters/>
+    </con:testCase>
+    <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="List" searchProperties="true" id="63aecf95-4710-4f30-ba8d-95c552c2253f">
+      <con:description>This test case lists the participantIdentifier+participantIdentifierScheme associated with the username specified  in the input request.
 A script assertion verifies that the returned list is accurate.
-You need to check the radio button "Authenticate pre-emptively" in the SoapUI-Preferences-HTTP Settings.</con:description><con:settings/><con:testStep type="restrequest" name="List" id="64f7a0eb-8b0b-4c64-a4c6-2737f8e24428"><con:settings/><con:config service="SMP" methodName="List" resourcePath="/cipa-smp-full-webapp/list/feriaad" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="List" mediaType="application/xml" id="81f53384-6f9f-4839-a38d-7ba6f9f5c36f"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:encoding>UTF-8</con:encoding><con:endpoint>${#Project#url}</con:endpoint><con:request/><con:originalUri>http://wltdgt02.cc.cec.eu.int/cipa-smp-full-webapp/list/user</con:originalUri><con:assertion type="Valid HTTP Status Codes" id="1e6aced6-5b74-47f9-a95a-89bf88afe0db" name="Valid HTTP Status Codes"><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="GroovyScriptAssertion" id="47594060-29cb-411c-8a97-51617f322084" name="Script Assertion"><con:configuration><scriptText>import groovy.sql.Sql
+You need to check the radio button "Authenticate pre-emptively" in the SoapUI-Preferences-HTTP Settings.</con:description>
+      <con:settings/>
+      <con:testStep type="restrequest" name="List" id="64f7a0eb-8b0b-4c64-a4c6-2737f8e24428">
+        <con:settings/>
+        <con:config service="SMP" methodName="List" resourcePath="/cipa-smp-full-webapp/list/feriaad" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:restRequest name="List" mediaType="application/xml" id="81f53384-6f9f-4839-a38d-7ba6f9f5c36f">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+            </con:settings>
+            <con:encoding>UTF-8</con:encoding>
+            <con:endpoint>${#Project#url}</con:endpoint>
+            <con:request/>
+            <con:originalUri>http://wltdgt02.cc.cec.eu.int/cipa-smp-full-webapp/list/user</con:originalUri>
+            <con:assertion type="Valid HTTP Status Codes" id="1e6aced6-5b74-47f9-a95a-89bf88afe0db" name="Valid HTTP Status Codes">
+              <con:configuration>
+                <codes>200</codes>
+              </con:configuration>
+            </con:assertion>
+            <con:assertion type="GroovyScriptAssertion" id="47594060-29cb-411c-8a97-51617f322084" name="Script Assertion">
+              <con:configuration>
+                <scriptText>import groovy.sql.Sql
 import java.sql.SQLException
 
 // First check the Raw Response code
@@ -1603,8 +2752,24 @@ sql.eachRow("Select count(*) lines from SMP_OWNERSHIP where USERNAME=$userNameRe
 assert (marker==counter), "Error:Exec: BUSINESS IDENTIFIERs missing for USER: $userNameRequest."
 
 // Disconnect from the Database
-sql.close()
-</scriptText></con:configuration></con:assertion><con:credentials><con:username>${#Project#username}</con:username><con:password>${#Project#password}</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:restRequest></con:config></con:testStep><con:setupScript>import groovy.sql.Sql
+sql.close()</scriptText>
+              </con:configuration>
+            </con:assertion>
+            <con:credentials>
+              <con:username>${#Project#username}</con:username>
+              <con:password>${#Project#password}</con:password>
+              <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+              <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+              <con:preemptive>true</con:preemptive>
+              <con:authType>Preemptive</con:authType>
+            </con:credentials>
+            <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+            <con:jmsPropertyConfig/>
+            <con:parameters/>
+          </con:restRequest>
+        </con:config>
+      </con:testStep>
+      <con:setupScript>import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the user name from the request
@@ -1673,7 +2838,8 @@ sql.execute "insert into SMP_OWNERSHIP(USERNAME,BUSINESSIDENTIFIER,BUSINESSIDENT
 sleep(50)
 
 // Disconnect from the Database
-sql.close()</con:setupScript><con:tearDownScript>import groovy.sql.Sql
+sql.close()</con:setupScript>
+      <con:tearDownScript>import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the user name from the request
@@ -1719,283 +2885,22 @@ sql.execute "DELETE from SMP_SERVICE_GROUP where BUSINESSIDENTIFIER='0088:579800
 sleep(50)
 
 // Disconnect from the Database
-sql.close()</con:tearDownScript><con:properties/><con:reportParameters/></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="Complete" searchProperties="true" id="5d9eca1b-92ab-4091-b571-bd95f46c5c41"><con:description>This test case returns the signedServiceMetadata associated with the participantIdentifier+participantIdentifierScheme specified in the input request.
-A script assertion verifies that the returned data is accurate.</con:description><con:settings/><con:testStep type="restrequest" name="Complete" id="0e9b6529-90bb-4e49-b24a-4484c6575871"><con:settings/><con:config service="SMP" resourcePath="/cipa-smp-full-webapp/complete/iso6523-actorid-upis::0088:5798000000112" methodName="Complete" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="Complete" mediaType="application/xml" id="d64f014a-990c-44cb-b44e-77c91dbd8ea0"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>${#Project#url}</con:endpoint><con:request/><con:originalUri>http://wltdgt02.cc.cec.eu.int/cipa-smp-full-webapp/complete/iso6523-actorid-upis::0088:5798000000001</con:originalUri><con:assertion type="Valid HTTP Status Codes" id="f92dd5a5-73da-47c6-982a-be5beb935ce4" name="Valid HTTP Status Codes"><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="GroovyScriptAssertion" id="b65c69c0-ef1e-4d0c-a9a8-d440f321e374" name="Script Assertion"><con:configuration><scriptText>import groovy.sql.Sql
-import java.sql.SQLException
-
-// First check the Raw Response code
-// Check REST Raw Request Return Status--------------------------------------------------------
-def responseRawRef = messageExchange.getRawResponseData()
-assert (responseRawRef!=null),"Error:Exec: Empty Response!"
-def responseRaw = new String(responseRawRef)
-assert (responseRaw!=null),"Error:Exec: Epmty Response!"
-def responseTab = responseRaw.split(' ')
-assert (responseTab.size()>= 2),"Error:Script: Could not extract the Raw Response code. Non usual request format."
-assert (responseTab[1].isInteger()),"Error:Script: Could not extract the Raw Response code. Non usual request format."
-def responseCode = responseTab[1] 
-assert (responseCode.toInteger() == 200),"Error:Exec: Request failed. Response Code: $responseCode"
-// ------------------------------------------------------------------------------------------------
-
-// Load the Request
-def requestContent = messageExchange.getOperation() 
-
-// Extract the Participant Identifier and the Business Identifier Scheme from the Request
-def operationTable = []
-operationTable = requestContent.toString().split('::')
-assert (operationTable.size()>= 2),"Error:Script: Could not extract the Participant Identifier from the request. Non usual request format."
-def tempo = operationTable[0].split('/')
-assert (tempo.size()>= 3), "Error:Script: Could not extract the Business Identifier Scheme from the request. Non usual request format."
-def businessIdScheme = tempo[3]
-def ParticipantIdentifierRequest = operationTable[1].split('/')[0]
-//--------------------------------------------------------------------------------------------------
-
-// Load the Response xml file
-def responseContent = messageExchange.getResponseContentAsXml() 
-
-// Connect to the database
-def marker = 0
-def sql
-try{
-	sql = Sql.newInstance(context.expand( '${#Project#jdbc.url}' ), context.expand( '${#Project#jdbc.driver}' ))
-}
-catch (SQLException ex)
-{
-	assert 0,"SQLException occured: " + ex;
-}
-
-// Extract the parameters from the xml File
-def ParticipantIdentifierResponse
-def businessIdSchemeResponse 
-def documentIdentSchemeResponse
-def documentIdentifierResponse
-def processId=null, processIdType=null,transpProf=null,endPointRef=null
-def reqBuissLevSig=null,serActvDate=null,serExpDate=null,certificate=null,serDesc=null,techContUrl=null
-def actDate
-def expDate
-def tempor
-def temporr
-def ServiceMetadata = new XmlSlurper().parseText(responseContent)
-
-allNodes = ServiceMetadata.depthFirst().each{
-	   if(it.name()== "Redirect"){
-			
-        }
-	   if(it.name()== "ParticipantIdentifier"){
-        	 ParticipantIdentifierResponse=it.text()
-        	 businessIdSchemeResponse=it.@scheme.text()
-        }
-        if(it.name()== "DocumentIdentifier"){
-        	 documentIdentifierResponse=it.text()
-        	 documentIdentSchemeResponse=it.@scheme.text()
-        }
-        if(it.name()== "ProcesList"){
-        	 pNum = it.size()
-        }
-        if(it.name()== "ProcessIdentifier"){
-        	 processId=it.text()
-        	 processIdType=it.@scheme.text()
-        }
-        if (it.name()=="ServiceEndpointList"){
-        	epNumb=it.size()
-        }
-        if(it.name()== "Endpoint"){
-        	 transpProf = it.@transportProfile.text()
-        }
-        if(it.name()== "Address"){
-        	 endPointRef = it.text()
-        } 
-        if(it.name()== "RequireBusinessLevelSignature"){
-        	if(it.text()=~ /[f|F][a|A][l|L][S|s]/){
-        		reqBuissLevSig=0
-        	}else{
-        		if(it.text()=~ /[T|t][R|r][U|u]/){
-        			reqBuissLevSig=1
-        		}
-        		else{
-        			reqBuissLevSig = it.text()
-        		}
-        	}
-        }
-        if(it.name()== "ServiceActivationDate"){
-        	 serActvDate=Date.parse("yyyy-MM-dd'T'HH:mm:ss'Z'",it.text())
-        }
-        if(it.name()== "ServiceExpirationDate"){
-        	 serExpDate = Date.parse("yyyy-MM-dd'T'HH:mm:ss'Z'",it.text())
-        }
-        if(it.name()== "Certificate"){
-        	 certificate = it.text()
-        }
-        if(it.name()== "ServiceDescription"){
-        	 serDesc = it.text()
-        }
-        if(it.name()== "TechnicalContactUrl"){
-        	techContUrl = it.text()
-          //  Check this END POINT in the SMP_ENDPOINT table
-		 sql.eachRow("Select count(*) lines from SMP_ENDPOINT where BUSINESSIDENTIFIER=$ParticipantIdentifierResponse and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeResponse and DOCUMENTIDENTIFIERSCHEME=$documentIdentSchemeResponse and DOCUMENTIDENTIFIER=$documentIdentifierResponse and PROCESSIDENTIFIER=$processId and PROCESSIDENTIFIERTYPE=$processIdType and TRANSPORTPROFILE=$transpProf and ENDPOINTREFERENCE=$endPointRef and TECHNICALCONTACTURL=$techContUrl and REQUIREBUSINESSLEVELSIGNATURE=$reqBuissLevSig"){
-		 	marker=it.lines
-		 }
-		 assert (marker>0),"Error:Exec: Can't find correct data for BUSINESS IDENTIFIER $ParticipantIdentifierResponse, DOCUMENT IDENTIFIER $documentIdentifierResponse."
-		 sql.eachRow("Select CERTIFICATE from SMP_ENDPOINT where BUSINESSIDENTIFIER=$ParticipantIdentifierResponse and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeResponse and DOCUMENTIDENTIFIERSCHEME=$documentIdentSchemeResponse and DOCUMENTIDENTIFIER=$documentIdentifierResponse and PROCESSIDENTIFIER=$processId and PROCESSIDENTIFIERTYPE=$processIdType and TRANSPORTPROFILE=$transpProf and ENDPOINTREFERENCE=$endPointRef and TECHNICALCONTACTURL=$techContUrl and REQUIREBUSINESSLEVELSIGNATURE=$reqBuissLevSig"){
-		     tempor = it.CERTIFICATE.getAsciiStream().getText()
-		 	tempor=tempor.stripMargin()
-		 	assert (tempor==certificate), "Error:Exec: Wrong certificate for BUSINESS IDENTIFIER $ParticipantIdentifierResponse, DOCUMENT IDENTIFIER $documentIdentifierResponse."
-		 }
-		 sql.eachRow("Select SERVICEDESCRIPTION from SMP_ENDPOINT where BUSINESSIDENTIFIER=$ParticipantIdentifierResponse and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeResponse and DOCUMENTIDENTIFIERSCHEME=$documentIdentSchemeResponse and DOCUMENTIDENTIFIER=$documentIdentifierResponse and PROCESSIDENTIFIER=$processId and PROCESSIDENTIFIERTYPE=$processIdType and TRANSPORTPROFILE=$transpProf and ENDPOINTREFERENCE=$endPointRef and TECHNICALCONTACTURL=$techContUrl and REQUIREBUSINESSLEVELSIGNATURE=$reqBuissLevSig"){
-		 	temporr = it.SERVICEDESCRIPTION.getAsciiStream().getText()
-		     assert (temporr==serDesc), "Error:Exec: Wrong service information for BUSINESS IDENTIFIER $ParticipantIdentifierResponse, DOCUMENT IDENTIFIER $documentIdentifierResponse."
-		 }
-		 sql.eachRow("Select SERVICEACTIVATIONDATE,SERVICEEXPIRATIONDATE from SMP_ENDPOINT where BUSINESSIDENTIFIER=$ParticipantIdentifierResponse and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeResponse and DOCUMENTIDENTIFIERSCHEME=$documentIdentSchemeResponse and DOCUMENTIDENTIFIER=$documentIdentifierResponse and PROCESSIDENTIFIER=$processId and PROCESSIDENTIFIERTYPE=$processIdType and TRANSPORTPROFILE=$transpProf and ENDPOINTREFERENCE=$endPointRef and TECHNICALCONTACTURL=$techContUrl and REQUIREBUSINESSLEVELSIGNATURE=$reqBuissLevSig"){
-		     actDate = it.SERVICEACTIVATIONDATE
-		     expDate = it.SERVICEEXPIRATIONDATE
-		 	assert (serActvDate==actDate), "Error:Exec: Wrong Activation date information for BUSINESS IDENTIFIER $ParticipantIdentifierResponse, DOCUMENT IDENTIFIER $documentIdentifierResponse."
-		 	assert (serExpDate==expDate), "Error:Exec: Wrong Expiration date information for BUSINESS IDENTIFIER $ParticipantIdentifierResponse, DOCUMENT IDENTIFIER $documentIdentifierResponse."
-		 }
-		 reqBuissLevSig=null
-		 serActvDate=null
-		 serExpDate=null
-		 certificate=null
-		 serDesc=null
-		 techContUrl=null
-		 transpProf=null
-		 endPointRef=null
-		 tempor=null
-		 temporr=null
-        }
-}
-
-
-// Disconnect from the database
-sql.close()</scriptText></con:configuration></con:assertion><con:credentials><con:username>${#Project#username}</con:username><con:password>${#Project#password}</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:restRequest></con:config></con:testStep><con:setupScript>import groovy.sql.Sql
-import java.sql.SQLException
-
-// Get the BUSINESS IDENTIFIER from the request
-def requestContent = testRunner.testCase.testSteps["Complete"].getOperation()
-
-// Extract the Participant Identifier and the Business Identifier Scheme from the Request
-def operationTable = []
-operationTable = requestContent.toString().split('::')
-assert (operationTable.size()== 2),"Error:Script: Could not extract the Participant Identifier from the request. Non usual request format."
-def tempo = operationTable[0].split('/')
-assert (tempo.size()>= 3), "Error:Script: Could not extract the Business Identifier Scheme from the request. Non usual request format."
-def businessIdSchemeRequest = tempo[3]
-def ParticipantIdentifierRequest = operationTable[1]
-def BusIdRed = ("$ParticipantIdentifierRequest"+"_REMOVE_TO_ENABLE_REDIRECTION").toString()
-def runner = context.expand( '${#Project#username}' )
-
-// Connect to the Database
-def sql
-try{
-	sql = Sql.newInstance(context.expand( '${#Project#jdbc.url}' ), context.expand( '${#Project#jdbc.driver}' ))
-}
-catch (SQLException ex)
-{
-	assert 0,"SQLException occured: " + ex;
-}
-
-// Delete any values related to the Business Identifier if still present
-// Delete from SMP_ENDPOINT
-sql.execute "DELETE from SMP_ENDPOINT where BUSINESSIDENTIFIER=$ParticipantIdentifierRequest and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest"
-sleep(50)
-
-// Delete from SMP_PROCESS
-sql.execute "DELETE from SMP_PROCESS where BUSINESSIDENTIFIER=$ParticipantIdentifierRequest and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest"
-sleep(50)
-
-// Delete from SMP_OWNERSHIP
-sql.execute "DELETE from SMP_OWNERSHIP where BUSINESSIDENTIFIER=$ParticipantIdentifierRequest and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest"
-sleep(50)
-
-// Delete from SMP_SERVICE_METADATA
-sql.execute "DELETE from SMP_SERVICE_METADATA where BUSINESSIDENTIFIER=$ParticipantIdentifierRequest and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest"
-sleep(50)
-
-// Delete from SMP_SERVICE_METADATA_RED
-sql.execute "DELETE from SMP_SERVICE_METADATA_RED where BUSINESSIDENTIFIER=$BusIdRed and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest"
-sleep(50)
-
-// Delete from SMP_SERVICE_GROUP
-sql.execute "DELETE from SMP_SERVICE_GROUP where BUSINESSIDENTIFIER=$ParticipantIdentifierRequest and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest"
-sleep(50)
-
-// Insert the values related to the Business Identifier
-// Insert the values again to SMP_SERVICE_GROUP
-sql.execute "insert into SMP_SERVICE_GROUP(EXTENSION, BUSINESSIDENTIFIER, BUSINESSIDENTIFIERSCHEME) values ('Test', '$ParticipantIdentifierRequest', '$businessIdSchemeRequest')"
-sleep(50)
-
-// Insert the values again to SMP_SERVICE_METADATA
-sql.execute "insert into SMP_SERVICE_METADATA(DOCUMENTIDENTIFIERSCHEME,BUSINESSIDENTIFIER,BUSINESSIDENTIFIERSCHEME,DOCUMENTIDENTIFIER) values ('busdox-docid-qns','$ParticipantIdentifierRequest','$businessIdSchemeRequest','urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice##urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:#urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0')"
-sleep(50)
-
-// Insert the values again to SMP_SERVICE_METADATA_RED
-sql.execute "insert into SMP_SERVICE_METADATA_RED(CERTIFICATEUID,EXTENSION,REDIRECTIONURL,DOCUMENTIDENTIFIERSCHEME,BUSINESSIDENTIFIER,BUSINESSIDENTIFIERSCHEME,DOCUMENTIDENTIFIER) values ('certuid','test','http://redirection.com','busdox-docid-qns','$BusIdRed','$businessIdSchemeRequest','urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice##urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:#urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0')"
-sleep(50)
-
-// Insert the values again to SMP_PROCESS
-sql.execute "insert into SMP_PROCESS(DOCUMENTIDENTIFIERSCHEME,PROCESSIDENTIFIER,BUSINESSIDENTIFIER,BUSINESSIDENTIFIERSCHEME,DOCUMENTIDENTIFIER,PROCESSIDENTIFIERTYPE) values ('busdox-docid-qns','urn:www.cenbii.eu:profile:bii04:ver1.0','$ParticipantIdentifierRequest','$businessIdSchemeRequest','urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice##urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:#urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0','cenbii-procid-ubl')"
-sleep(50)
-
-// Insert the values again to SMP_ENDPOINT
-sql.execute "insert into SMP_ENDPOINT(CERTIFICATE, REQUIREBUSINESSLEVELSIGNATURE, SERVICEACTIVATIONDATE, SERVICEDESCRIPTION,SERVICEEXPIRATIONDATE,TECHNICALCONTACTURL,DOCUMENTIDENTIFIERSCHEME,BUSINESSIDENTIFIER,BUSINESSIDENTIFIERSCHEME,ENDPOINTREFERENCE,DOCUMENTIDENTIFIER,PROCESSIDENTIFIER,PROCESSIDENTIFIERTYPE,TRANSPORTPROFILE) values ('CERTIFICATEA',0, TIMESTAMP '2003-01-01 00:00:00 ', 'invoice service AS2',TIMESTAMP '2020-01-01 00:00:00 ','https://example.com','busdox-docid-qns','$ParticipantIdentifierRequest','$businessIdSchemeRequest','http://d02di1010873.net1.cec.eu.int:7080/cipa-dispatcher/AS2Receiver','urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice##urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:#urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0','urn:www.cenbii.eu:profile:bii04:ver1.0','cenbii-procid-ubl','busdox-transport-as2-ver1p0')"
-sleep(50)
-
-// Insert the values again to SMP_OWNERSHIP
-sql.execute "insert into SMP_OWNERSHIP(USERNAME,BUSINESSIDENTIFIER,BUSINESSIDENTIFIERSCHEME) values ('$runner','$ParticipantIdentifierRequest','$businessIdSchemeRequest')"
-sleep(50)
-
-// Disconnect from the Database
-sql.close()</con:setupScript><con:tearDownScript>import groovy.sql.Sql
-import java.sql.SQLException
-
-// Get the BUSINESS IDENTIFIER from the request
-def requestContent = testRunner.testCase.testSteps["Complete"].getOperation()
-
-// Extract the Participant Identifier and the Business Identifier Scheme from the Request
-def operationTable = []
-operationTable = requestContent.toString().split('::')
-assert (operationTable.size()== 2), "Error:Script: Could not extract the Participant Identifier from the request. Non usual request format."
-def tempo = operationTable[0].split('/')
-assert (tempo.size()>= 3), "Error:Script: Could not extract the Business Identifier Scheme from the request. Non usual request format."
-def businessIdSchemeRequest = tempo[3]
-def ParticipantIdentifierRequest = operationTable[1]
-def BusIdRed = ("$ParticipantIdentifierRequest"+"_REMOVE_TO_ENABLE_REDIRECTION").toString()
-
-// Connect to the Database
-def sql
-try{
-	sql = Sql.newInstance(context.expand( '${#Project#jdbc.url}' ), context.expand( '${#Project#jdbc.driver}' ))
-}
-catch (SQLException ex)
-{
-	assert 0,"SQLException occured: " + ex;
-}
-
-// Delete any values related to the Business Identifier if still present
-// Delete from SMP_ENDPOINT
-sql.execute "DELETE from SMP_ENDPOINT where BUSINESSIDENTIFIER=$ParticipantIdentifierRequest and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest"
-sleep(50)
-
-// Delete from SMP_PROCESS
-sql.execute "DELETE from SMP_PROCESS where BUSINESSIDENTIFIER=$ParticipantIdentifierRequest and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest"
-sleep(50)
-
-// Delete from SMP_OWNERSHIP
-sql.execute "DELETE from SMP_OWNERSHIP where BUSINESSIDENTIFIER=$ParticipantIdentifierRequest and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest"
-sleep(50)
-
-// Delete from SMP_SERVICE_METADATA
-sql.execute "DELETE from SMP_SERVICE_METADATA where BUSINESSIDENTIFIER=$ParticipantIdentifierRequest and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest"
-sleep(50)
-
-// Delete from SMP_SERVICE_METADATA_RED
-sql.execute "DELETE from SMP_SERVICE_METADATA_RED where BUSINESSIDENTIFIER=$BusIdRed and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest"
-sleep(50)
-
-// Delete from SMP_SERVICE_GROUP
-sql.execute "DELETE from SMP_SERVICE_GROUP where BUSINESSIDENTIFIER=$ParticipantIdentifierRequest and BUSINESSIDENTIFIERSCHEME=$businessIdSchemeRequest"
-sleep(50)
-
-// Disconnect from the Database
-sql.close()</con:tearDownScript><con:properties/><con:reportParameters/></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:testSuite name="Load Tests" id="7ad0aaaa-d836-45df-b81b-524b68d36b65"><con:settings/><con:runType>SEQUENTIAL</con:runType><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="SignedServiceMetadata" searchProperties="true" id="d5c699c8-45b9-438e-82d8-585ea963a638"><con:settings/><con:testStep type="groovy" name="PrepareDB" id="83837857-0836-4507-a28b-68e07f4b3bab"><con:settings/><con:config><script>import groovy.sql.Sql
+sql.close()</con:tearDownScript>
+      <con:properties/>
+      <con:reportParameters/>
+    </con:testCase>
+    <con:properties/>
+    <con:reportParameters/>
+  </con:testSuite>
+  <con:testSuite name="Load Tests" id="7ad0aaaa-d836-45df-b81b-524b68d36b65">
+    <con:settings/>
+    <con:runType>SEQUENTIAL</con:runType>
+    <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="SignedServiceMetadata" searchProperties="true" id="d5c699c8-45b9-438e-82d8-585ea963a638">
+      <con:settings/>
+      <con:testStep type="groovy" name="PrepareDB" id="83837857-0836-4507-a28b-68e07f4b3bab">
+        <con:settings/>
+        <con:config>
+          <script><![CDATA[import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the BUSINESS IDENTIFIER from the request
@@ -2028,6 +2933,8 @@ def documentIdentifierRequest
 documentIdentSchemeRequest = swap3[0]
 documentIdentifierRequest = swap3[1].replaceAll('%23','#')
 documentIdentifierRequest = documentIdentifierRequest.replaceAll('%3A',':')
+
+def serviceMetadataXML = '<?xml version="1.0" encoding="UTF-8" standalone="no"?><ns0:SignedServiceMetadata xmlns:ns0="http://busdox.org/serviceMetadata/publishing/1.0/" xmlns:ns1="http://busdox.org/transport/identifiers/1.0/" xmlns:ns2="http://www.w3.org/2005/08/addressing" xmlns:ns3="http://www.w3.org/2000/09/xmldsig#"><ns0:ServiceMetadata><ns0:ServiceInformation><ns1:ParticipantIdentifier scheme="iso6523-actorid-upis">0088:5798000000112</ns1:ParticipantIdentifier><ns1:DocumentIdentifier scheme="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice##urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:#urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</ns1:DocumentIdentifier><ns0:ProcessList><ns0:Process><ns1:ProcessIdentifier scheme="cenbii-procid-ubl">urn:www.cenbii.eu:profile:bii04:ver1.0</ns1:ProcessIdentifier><ns0:ServiceEndpointList><ns0:Endpoint transportProfile="busdox-transport-as2-ver1p0"><ns2:EndpointReference><ns2:Address>http://d02di1010873.net1.cec.eu.int:7080/cipa-dispatcher/AS2Receiver</ns2:Address></ns2:EndpointReference><ns0:RequireBusinessLevelSignature>false</ns0:RequireBusinessLevelSignature><ns0:ServiceActivationDate>2003-01-01T00:00:00Z</ns0:ServiceActivationDate><ns0:ServiceExpirationDate>2020-01-01T00:00:00Z</ns0:ServiceExpirationDate><ns0:Certificate>CERTIFICATEA</ns0:Certificate><ns0:ServiceDescription>invoice service AS2</ns0:ServiceDescription><ns0:TechnicalContactUrl>https://example.com</ns0:TechnicalContactUrl></ns0:Endpoint></ns0:ServiceEndpointList></ns0:Process></ns0:ProcessList></ns0:ServiceInformation></ns0:ServiceMetadata><Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><DigestValue>Vip1YUgyDFt9iMUHUiulwCcFdiI=</DigestValue></Reference></SignedInfo><SignatureValue>qczHe/H4FU/UFUGROwEo1nlnL/oAk355n/ef5jkR4+CfHJ6n88C5Ksq90NIwq2whSqezS+HS22+6oYeyQlsKU4S1jjkvVA==</SignatureValue><KeyInfo><X509Data><X509SubjectName>CN=SMP_OpenPEPPOL SMK 003,O=OpenPEPPOL,C=BE</X509SubjectName><X509Certificate>MIIEjjCCA3agAwIBAgIQOzsWLn033S5Q7ciLBkveKj8vQJLJih+r4CveXVTfZ8mHQjljm</X509Certificate></X509Data></KeyInfo></Signature></ns0:SignedServiceMetadata>'
 
 // Connect to the Database
 def sql
@@ -2071,7 +2978,7 @@ sql.execute "insert into SMP_SERVICE_GROUP(EXTENSION, BUSINESSIDENTIFIER, BUSINE
 sleep(50)
 
 // Insert the values again to SMP_SERVICE_METADATA
-sql.execute "insert into SMP_SERVICE_METADATA(DOCUMENTIDENTIFIERSCHEME,BUSINESSIDENTIFIER,BUSINESSIDENTIFIERSCHEME,DOCUMENTIDENTIFIER) values ('$documentIdentSchemeRequest','$ParticipantIdentifierRequest','$businessIdSchemeRequest','$documentIdentifierRequest')"
+sql.execute "insert into SMP_SERVICE_METADATA(DOCUMENTIDENTIFIERSCHEME,BUSINESSIDENTIFIER,BUSINESSIDENTIFIERSCHEME,DOCUMENTIDENTIFIER,XMLCONTENT) values ('$documentIdentSchemeRequest','$ParticipantIdentifierRequest','$businessIdSchemeRequest','$documentIdentifierRequest','$serviceMetadataXML')"
 sleep(50)
 
 // Insert the values again to SMP_SERVICE_METADATA_RED
@@ -2091,7 +2998,32 @@ sql.execute "insert into SMP_OWNERSHIP(USERNAME,BUSINESSIDENTIFIER,BUSINESSIDENT
 sleep(50)
 
 // Disconnect from the Database
-sql.close()</script></con:config></con:testStep><con:testStep type="restrequest" name="Get SignedServiceMetadata" id="bca0ed64-cc39-4186-a261-7f13a1469a0d"><con:settings/><con:config service="SMP" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0" methodName="Get" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="Get SignedServiceMetadata" mediaType="application/xml" id="6ce8d408-7471-42cd-9756-81bd417dc4f1"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>${#Project#url}</con:endpoint><con:request/><con:originalUri>http://localhost/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</con:originalUri><con:assertion type="Schema Compliance" name="Schema Compliance" id="e45f5f32-b221-45fb-ae83-6a072b9fa61a"><con:configuration><definition/></con:configuration></con:assertion><con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="08bda89c-df01-4371-abe7-76de99aedc59"><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="XPath Match" id="b1eedc40-cf04-4d25-a836-5b5ddc219cfe" name="XPath Match"><con:configuration><path>declare namespace ns1='http://www.w3.org/2000/09/xmldsig#';
+sql.close()]]></script>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="restrequest" name="Get SignedServiceMetadata" id="bca0ed64-cc39-4186-a261-7f13a1469a0d">
+        <con:settings/>
+        <con:config service="SMP" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0" methodName="Get" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:restRequest name="Get SignedServiceMetadata" mediaType="application/xml" id="6ce8d408-7471-42cd-9756-81bd417dc4f1">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+            </con:settings>
+            <con:endpoint>${#Project#url}</con:endpoint>
+            <con:request/>
+            <con:originalUri>http://localhost/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</con:originalUri>
+            <con:assertion type="Schema Compliance" name="Schema Compliance" id="e45f5f32-b221-45fb-ae83-6a072b9fa61a">
+              <con:configuration>
+                <definition/>
+              </con:configuration>
+            </con:assertion>
+            <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="08bda89c-df01-4371-abe7-76de99aedc59">
+              <con:configuration>
+                <codes>200</codes>
+              </con:configuration>
+            </con:assertion>
+            <con:assertion type="XPath Match" id="b1eedc40-cf04-4d25-a836-5b5ddc219cfe" name="XPath Match">
+              <con:configuration>
+                <path>declare namespace ns1='http://www.w3.org/2000/09/xmldsig#';
 declare namespace ns0='http://busdox.org/serviceMetadata/publishing/1.0/';
 declare namespace ns2='http://www.w3.org/2005/08/addressing';
 declare namespace ns3='http://www.w3.org/2000/09/xmldsig#';
@@ -2123,7 +3055,31 @@ and
 and
 //ns0:ServiceDescription = 'invoice service AS2'
 and
-//ns0:TechnicalContactUrl = 'https://example.com'</path><content>true</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:username>${#Project#username}</con:username><con:password>${#Project#password}</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:restRequest></con:config></con:testStep><con:testStep type="groovy" name="CleanDB" id="9dc5984c-9dd5-4759-b8b3-4cb917fa1dec"><con:settings/><con:config><script>import groovy.sql.Sql
+//ns0:TechnicalContactUrl = 'https://example.com'</path>
+                <content>true</content>
+                <allowWildcards>false</allowWildcards>
+                <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+                <ignoreComments>false</ignoreComments>
+              </con:configuration>
+            </con:assertion>
+            <con:credentials>
+              <con:username>${#Project#username}</con:username>
+              <con:password>${#Project#password}</con:password>
+              <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+              <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+              <con:preemptive>true</con:preemptive>
+              <con:authType>Preemptive</con:authType>
+            </con:credentials>
+            <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+            <con:jmsPropertyConfig/>
+            <con:parameters/>
+          </con:restRequest>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="groovy" name="CleanDB" id="9dc5984c-9dd5-4759-b8b3-4cb917fa1dec">
+        <con:settings/>
+        <con:config>
+          <script>import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the BUSINESS IDENTIFIER from the request
@@ -2176,7 +3132,46 @@ sql.execute "DELETE from SMP_SERVICE_GROUP where BUSINESSIDENTIFIER=$Participant
 sleep(50)
 
 // Disconnect from the Database
-sql.close()</script></con:config></con:testStep><con:loadTest name="LoadTest Get SignedServiceMetadata" id="4cb53796-c057-461d-9b4a-f3eb9de5eeb1"><con:settings/><con:threadCount>1</con:threadCount><con:startDelay>0</con:startDelay><con:sampleInterval>250</con:sampleInterval><con:calculateTPSOnTimePassed>true</con:calculateTPSOnTimePassed><con:resetStatisticsOnThreadCountChange>true</con:resetStatisticsOnThreadCountChange><con:historyLimit>-1</con:historyLimit><con:testLimit>120</con:testLimit><con:limitType>TIME</con:limitType><con:loadStrategy><con:type>Thread</con:type><con:config><startThreadCount>1</startThreadCount><endThreadCount>1</endThreadCount></con:config></con:loadStrategy><con:assertion type="Step Status" name="Step Status"><con:configuration><name>Step Status</name><min-requests>0</min-requests><test-step>- Any -</test-step><max-errors>-1</max-errors></con:configuration></con:assertion><con:assertion type="Max Errors" name="Max Errors"><con:configuration><name>Max Errors</name><max-absolute-errors>0</max-absolute-errors><max-relative-errors>0.0</max-relative-errors><test-step>- Total -</test-step></con:configuration></con:assertion><con:maxAssertionErrors>100</con:maxAssertionErrors><con:cancelExcessiveThreads>true</con:cancelExcessiveThreads><con:strategyInterval>500</con:strategyInterval><con:setupScript>//execute only once the database preparation
+sql.close()</script>
+        </con:config>
+      </con:testStep>
+      <con:loadTest name="LoadTest Get SignedServiceMetadata" id="4cb53796-c057-461d-9b4a-f3eb9de5eeb1">
+        <con:settings/>
+        <con:threadCount>1</con:threadCount>
+        <con:startDelay>0</con:startDelay>
+        <con:sampleInterval>250</con:sampleInterval>
+        <con:calculateTPSOnTimePassed>true</con:calculateTPSOnTimePassed>
+        <con:resetStatisticsOnThreadCountChange>true</con:resetStatisticsOnThreadCountChange>
+        <con:historyLimit>-1</con:historyLimit>
+        <con:testLimit>120</con:testLimit>
+        <con:limitType>TIME</con:limitType>
+        <con:loadStrategy>
+          <con:type>Thread</con:type>
+          <con:config>
+            <startThreadCount>1</startThreadCount>
+            <endThreadCount>1</endThreadCount>
+          </con:config>
+        </con:loadStrategy>
+        <con:assertion type="Step Status" name="Step Status">
+          <con:configuration>
+            <name>Step Status</name>
+            <min-requests>0</min-requests>
+            <test-step>- Any -</test-step>
+            <max-errors>-1</max-errors>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Max Errors" name="Max Errors">
+          <con:configuration>
+            <name>Max Errors</name>
+            <max-absolute-errors>0</max-absolute-errors>
+            <max-relative-errors>0.0</max-relative-errors>
+            <test-step>- Total -</test-step>
+          </con:configuration>
+        </con:assertion>
+        <con:maxAssertionErrors>100</con:maxAssertionErrors>
+        <con:cancelExcessiveThreads>true</con:cancelExcessiveThreads>
+        <con:strategyInterval>500</con:strategyInterval>
+        <con:setupScript>//execute only once the database preparation
 def testCase = loadTestRunner.loadTest.testCase;
 def testStep = testCase.getTestStepByName( "PrepareDB" );
 testRunner = new com.eviware.soapui.impl.wsdl.testcase.WsdlTestCaseRunner(testCase, null);
@@ -2185,7 +3180,8 @@ testStep.run(testRunner, testStepContext);
 
 // disable some steps to avoid the following error : "ORA-00060: deadlock detected while waiting for resource"
 loadTestRunner.loadTest.testCase.getTestStepByName( "PrepareDB" ).setDisabled(true)
-loadTestRunner.loadTest.testCase.getTestStepByName( "CleanDB" ).setDisabled(true)</con:setupScript><con:tearDownScript>// disable some steps to avoid the following error : "ORA-00060: deadlock detected while waiting for resource"
+loadTestRunner.loadTest.testCase.getTestStepByName( "CleanDB" ).setDisabled(true)</con:setupScript>
+        <con:tearDownScript>// disable some steps to avoid the following error : "ORA-00060: deadlock detected while waiting for resource"
 loadTestRunner.loadTest.testCase.getTestStepByName( "PrepareDB" ).setDisabled(false)
 loadTestRunner.loadTest.testCase.getTestStepByName( "CleanDB" ).setDisabled(false)
 
@@ -2194,7 +3190,28 @@ def testCase = loadTestRunner.loadTest.testCase;
 def testStep = testCase.getTestStepByName( "CleanDB" );
 testRunner = new com.eviware.soapui.impl.wsdl.testcase.WsdlTestCaseRunner(testCase, null);
 testStepContext = new com.eviware.soapui.impl.wsdl.testcase.WsdlTestRunContext(testStep);
-testStep.run(testRunner, testStepContext);</con:tearDownScript><con:reportParameters/></con:loadTest><con:properties/><con:reportParameters/><con:breakPoints><con:testStepId>83837857-0836-4507-a28b-68e07f4b3bab</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>9dc5984c-9dd5-4759-b8b3-4cb917fa1dec</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints></con:testCase><con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="ServiceGroup" searchProperties="true" id="08e4e17d-e1c9-40c2-b72b-c697c816d631"><con:settings/><con:testStep type="groovy" name="PrepareDB" id="6c0e461c-085a-453a-9f1c-2cd9e38be5eb"><con:settings/><con:config><script>import groovy.sql.Sql
+testStep.run(testRunner, testStepContext);</con:tearDownScript>
+        <con:reportParameters/>
+      </con:loadTest>
+      <con:properties/>
+      <con:reportParameters/>
+      <con:breakPoints>
+        <con:testStepId>83837857-0836-4507-a28b-68e07f4b3bab</con:testStepId>
+        <con:status>NONE</con:status>
+        <con:properties/>
+      </con:breakPoints>
+      <con:breakPoints>
+        <con:testStepId>9dc5984c-9dd5-4759-b8b3-4cb917fa1dec</con:testStepId>
+        <con:status>NONE</con:status>
+        <con:properties/>
+      </con:breakPoints>
+    </con:testCase>
+    <con:testCase failOnError="true" failTestCaseOnErrors="true" keepSession="false" maxResults="0" name="ServiceGroup" searchProperties="true" id="08e4e17d-e1c9-40c2-b72b-c697c816d631">
+      <con:settings/>
+      <con:testStep type="groovy" name="PrepareDB" id="6c0e461c-085a-453a-9f1c-2cd9e38be5eb">
+        <con:settings/>
+        <con:config>
+          <script>import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the BUSINESS IDENTIFIER from the request
@@ -2272,7 +3289,32 @@ sql.execute "insert into SMP_OWNERSHIP(USERNAME,BUSINESSIDENTIFIER,BUSINESSIDENT
 sleep(50)
 
 // Disconnect from the Database
-sql.close()</script></con:config></con:testStep><con:testStep type="restrequest" name="Get ServiceGroup" id="3f18fec3-5761-4789-8de4-c57c27f7e168"><con:settings/><con:config service="SMP" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112" methodName="Get" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="Get ServiceGroup" mediaType="application/xml" id="7f336710-cd21-4adc-8365-1243714f55f5"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>${#Project#url}</con:endpoint><con:request/><con:originalUri>http://wltdgt02.cc.cec.eu.int/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112</con:originalUri><con:assertion type="Schema Compliance" name="Schema Compliance" id="059282ea-c13d-4b2a-b935-2a12447e0b0e"><con:configuration><definition/></con:configuration></con:assertion><con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="76055f9f-c323-4de9-85f9-2c95ff8fe065"><con:configuration><codes>200</codes></con:configuration></con:assertion><con:assertion type="XPath Match" id="b195812c-507a-4182-ba29-c95e48dac3b7" name="XPath Match"><con:configuration><path>declare namespace ns0='http://busdox.org/serviceMetadata/publishing/1.0/';
+sql.close()</script>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="restrequest" name="Get ServiceGroup" id="3f18fec3-5761-4789-8de4-c57c27f7e168">
+        <con:settings/>
+        <con:config service="SMP" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112" methodName="Get" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+          <con:restRequest name="Get ServiceGroup" mediaType="application/xml" id="7f336710-cd21-4adc-8365-1243714f55f5">
+            <con:settings>
+              <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+            </con:settings>
+            <con:endpoint>${#Project#url}</con:endpoint>
+            <con:request/>
+            <con:originalUri>http://wltdgt02.cc.cec.eu.int/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112</con:originalUri>
+            <con:assertion type="Schema Compliance" name="Schema Compliance" id="059282ea-c13d-4b2a-b935-2a12447e0b0e">
+              <con:configuration>
+                <definition/>
+              </con:configuration>
+            </con:assertion>
+            <con:assertion type="Valid HTTP Status Codes" name="Valid HTTP Status Codes" id="76055f9f-c323-4de9-85f9-2c95ff8fe065">
+              <con:configuration>
+                <codes>200</codes>
+              </con:configuration>
+            </con:assertion>
+            <con:assertion type="XPath Match" id="b195812c-507a-4182-ba29-c95e48dac3b7" name="XPath Match">
+              <con:configuration>
+                <path>declare namespace ns0='http://busdox.org/serviceMetadata/publishing/1.0/';
 declare namespace ns2='http://www.w3.org/2000/09/xmldsig#';
 declare namespace ns3='http://www.w3.org/2005/08/addressing';
 declare namespace ns1='http://busdox.org/transport/identifiers/1.0/';
@@ -2281,7 +3323,31 @@ declare namespace ns1='http://busdox.org/transport/identifiers/1.0/';
 and
 //ns1:ParticipantIdentifier/@scheme='iso6523-actorid-upis'
 and
-//ns2:ServiceMetadataReference/@href ='http://wltdgt02.cc.cec.eu.int:1065/cipa-smp-full-webapp/iso6523-actorid-upis%3A%3A0088%3A5798000000112/services/busdox-docid-qns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-12%3A%3AInvoice%23%23urn%3Awww.cenbii.eu%3Atransaction%3Abiicoretrdm010%3Aver1.0%3A%23urn%3Awww.peppol.eu%3Abis%3Apeppol4a%3Aver1.0%3A%3A2.0'</path><content>false</content><allowWildcards>false</allowWildcards><ignoreNamspaceDifferences>false</ignoreNamspaceDifferences><ignoreComments>false</ignoreComments></con:configuration></con:assertion><con:credentials><con:username>${#Project#username}</con:username><con:password>${#Project#password}</con:password><con:selectedAuthProfile>Basic</con:selectedAuthProfile><con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes><con:preemptive>true</con:preemptive><con:authType>Preemptive</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:restRequest></con:config></con:testStep><con:testStep type="groovy" name="CleanDB" id="5d2a075a-6b67-4d74-b6b8-16b4c27d1ba1"><con:settings/><con:config><script>import groovy.sql.Sql
+//ns2:ServiceMetadataReference/@href ='http://wltdgt02.cc.cec.eu.int:1065/cipa-smp-full-webapp/iso6523-actorid-upis%3A%3A0088%3A5798000000112/services/busdox-docid-qns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-12%3A%3AInvoice%23%23urn%3Awww.cenbii.eu%3Atransaction%3Abiicoretrdm010%3Aver1.0%3A%23urn%3Awww.peppol.eu%3Abis%3Apeppol4a%3Aver1.0%3A%3A2.0'</path>
+                <content>false</content>
+                <allowWildcards>false</allowWildcards>
+                <ignoreNamspaceDifferences>false</ignoreNamspaceDifferences>
+                <ignoreComments>false</ignoreComments>
+              </con:configuration>
+            </con:assertion>
+            <con:credentials>
+              <con:username>${#Project#username}</con:username>
+              <con:password>${#Project#password}</con:password>
+              <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+              <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+              <con:preemptive>true</con:preemptive>
+              <con:authType>Preemptive</con:authType>
+            </con:credentials>
+            <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+            <con:jmsPropertyConfig/>
+            <con:parameters/>
+          </con:restRequest>
+        </con:config>
+      </con:testStep>
+      <con:testStep type="groovy" name="CleanDB" id="5d2a075a-6b67-4d74-b6b8-16b4c27d1ba1">
+        <con:settings/>
+        <con:config>
+          <script>import groovy.sql.Sql
 import java.sql.SQLException
 
 // Get the BUSINESS IDENTIFIER from the request
@@ -2333,7 +3399,46 @@ sql.execute "DELETE from SMP_SERVICE_GROUP where BUSINESSIDENTIFIER=$Participant
 sleep(50)
 
 // Disconnect from the Database
-sql.close()</script></con:config></con:testStep><con:loadTest name="LoadTest Get ServiceGroup" id="12ea984d-1697-4c24-b043-92a99bec8489"><con:settings/><con:threadCount>10</con:threadCount><con:startDelay>0</con:startDelay><con:sampleInterval>250</con:sampleInterval><con:calculateTPSOnTimePassed>true</con:calculateTPSOnTimePassed><con:resetStatisticsOnThreadCountChange>true</con:resetStatisticsOnThreadCountChange><con:historyLimit>-1</con:historyLimit><con:testLimit>120</con:testLimit><con:limitType>TIME</con:limitType><con:loadStrategy><con:type>Thread</con:type><con:config><startThreadCount>1</startThreadCount><endThreadCount>10</endThreadCount></con:config></con:loadStrategy><con:assertion type="Step Status" name="Step Status"><con:configuration><name>Step Status</name><min-requests>0</min-requests><test-step>- Any -</test-step><max-errors>-1</max-errors></con:configuration></con:assertion><con:assertion type="Max Errors" name="Max Errors"><con:configuration><name>Max Errors</name><max-absolute-errors>0</max-absolute-errors><max-relative-errors>0.0</max-relative-errors><test-step>- Total -</test-step></con:configuration></con:assertion><con:maxAssertionErrors>100</con:maxAssertionErrors><con:cancelExcessiveThreads>true</con:cancelExcessiveThreads><con:strategyInterval>500</con:strategyInterval><con:setupScript>//execute only once the database preparation
+sql.close()</script>
+        </con:config>
+      </con:testStep>
+      <con:loadTest name="LoadTest Get ServiceGroup" id="12ea984d-1697-4c24-b043-92a99bec8489">
+        <con:settings/>
+        <con:threadCount>10</con:threadCount>
+        <con:startDelay>0</con:startDelay>
+        <con:sampleInterval>250</con:sampleInterval>
+        <con:calculateTPSOnTimePassed>true</con:calculateTPSOnTimePassed>
+        <con:resetStatisticsOnThreadCountChange>true</con:resetStatisticsOnThreadCountChange>
+        <con:historyLimit>-1</con:historyLimit>
+        <con:testLimit>120</con:testLimit>
+        <con:limitType>TIME</con:limitType>
+        <con:loadStrategy>
+          <con:type>Thread</con:type>
+          <con:config>
+            <startThreadCount>1</startThreadCount>
+            <endThreadCount>10</endThreadCount>
+          </con:config>
+        </con:loadStrategy>
+        <con:assertion type="Step Status" name="Step Status">
+          <con:configuration>
+            <name>Step Status</name>
+            <min-requests>0</min-requests>
+            <test-step>- Any -</test-step>
+            <max-errors>-1</max-errors>
+          </con:configuration>
+        </con:assertion>
+        <con:assertion type="Max Errors" name="Max Errors">
+          <con:configuration>
+            <name>Max Errors</name>
+            <max-absolute-errors>0</max-absolute-errors>
+            <max-relative-errors>0.0</max-relative-errors>
+            <test-step>- Total -</test-step>
+          </con:configuration>
+        </con:assertion>
+        <con:maxAssertionErrors>100</con:maxAssertionErrors>
+        <con:cancelExcessiveThreads>true</con:cancelExcessiveThreads>
+        <con:strategyInterval>500</con:strategyInterval>
+        <con:setupScript>//execute only once the database preparation
 def testCase = loadTestRunner.loadTest.testCase;
 def testStep = testCase.getTestStepByName( "PrepareDB" );
 testRunner = new com.eviware.soapui.impl.wsdl.testcase.WsdlTestCaseRunner(testCase, null);
@@ -2342,7 +3447,8 @@ testStep.run(testRunner, testStepContext);
 
 // disable some steps to avoid the following error : "ORA-00060: deadlock detected while waiting for resource"
 loadTestRunner.loadTest.testCase.getTestStepByName( "PrepareDB" ).setDisabled(true)
-loadTestRunner.loadTest.testCase.getTestStepByName( "CleanDB" ).setDisabled(true)</con:setupScript><con:tearDownScript>// disable some steps to avoid the following error : "ORA-00060: deadlock detected while waiting for resource"
+loadTestRunner.loadTest.testCase.getTestStepByName( "CleanDB" ).setDisabled(true)</con:setupScript>
+        <con:tearDownScript>// disable some steps to avoid the following error : "ORA-00060: deadlock detected while waiting for resource"
 loadTestRunner.loadTest.testCase.getTestStepByName( "PrepareDB" ).setDisabled(false)
 loadTestRunner.loadTest.testCase.getTestStepByName( "CleanDB" ).setDisabled(false)
 
@@ -2351,4 +3457,54 @@ def testCase = loadTestRunner.loadTest.testCase;
 def testStep = testCase.getTestStepByName( "CleanDB" );
 testRunner = new com.eviware.soapui.impl.wsdl.testcase.WsdlTestCaseRunner(testCase, null);
 testStepContext = new com.eviware.soapui.impl.wsdl.testcase.WsdlTestRunContext(testStep);
-testStep.run(testRunner, testStepContext);</con:tearDownScript><con:reportParameters/></con:loadTest><con:properties/><con:reportParameters/><con:breakPoints><con:testStepId>6c0e461c-085a-453a-9f1c-2cd9e38be5eb</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints><con:breakPoints><con:testStepId>5d2a075a-6b67-4d74-b6b8-16b4c27d1ba1</con:testStepId><con:status>NONE</con:status><con:properties/></con:breakPoints></con:testCase><con:properties/><con:reportParameters/></con:testSuite><con:requirements/><con:properties><con:property><con:name>jdbc.driver</con:name><con:value>oracle.jdbc.OracleDriver</con:value></con:property><con:property><con:name>jdbc.url</con:name><con:value>jdbc:oracle:thin:CIPA_ADMIN/asdqwe123$@devora5.cc.cec.eu.int:1597/EX1UDIGD.cc.cec.eu.int</con:value></con:property><con:property><con:name>url</con:name><con:value>http://wltdgt02.cc.cec.eu.int:2061</con:value></con:property><con:property><con:name>username</con:name><con:value>feriaad</con:value></con:property><con:property><con:name>password</con:name><con:value>we3c6sd1</con:value></con:property></con:properties><con:wssContainer/><con:databaseConnectionContainer/><con:oAuth2ProfileContainer/><con:reporting><con:xmlTemplates/><con:parameters/></con:reporting><con:sensitiveInformation/></con:soapui-project>
+testStep.run(testRunner, testStepContext);</con:tearDownScript>
+        <con:reportParameters/>
+      </con:loadTest>
+      <con:properties/>
+      <con:reportParameters/>
+      <con:breakPoints>
+        <con:testStepId>6c0e461c-085a-453a-9f1c-2cd9e38be5eb</con:testStepId>
+        <con:status>NONE</con:status>
+        <con:properties/>
+      </con:breakPoints>
+      <con:breakPoints>
+        <con:testStepId>5d2a075a-6b67-4d74-b6b8-16b4c27d1ba1</con:testStepId>
+        <con:status>NONE</con:status>
+        <con:properties/>
+      </con:breakPoints>
+    </con:testCase>
+    <con:properties/>
+    <con:reportParameters/>
+  </con:testSuite>
+  <con:requirements/>
+  <con:properties>
+    <con:property>
+      <con:name>jdbc.driver</con:name>
+      <con:value>oracle.jdbc.OracleDriver</con:value>
+    </con:property>
+    <con:property>
+      <con:name>jdbc.url</con:name>
+      <con:value>jdbc:oracle:thin:CIPA_ADMIN/asdqwe123$@olrdev3.cc.cec.eu.int:1597/EX1UDIGD_TAF.cc.cec.eu.int</con:value>
+    </con:property>
+    <con:property>
+      <con:name>url</con:name>
+      <con:value>http://wltdgt02.cc.cec.eu.int:2061</con:value>
+    </con:property>
+    <con:property>
+      <con:name>username</con:name>
+      <con:value>feriaad</con:value>
+    </con:property>
+    <con:property>
+      <con:name>password</con:name>
+      <con:value>we3c6sd1</con:value>
+    </con:property>
+  </con:properties>
+  <con:wssContainer/>
+  <con:databaseConnectionContainer/>
+  <con:oAuth2ProfileContainer/>
+  <con:reporting>
+    <con:xmlTemplates/>
+    <con:parameters/>
+  </con:reporting>
+  <con:sensitiveInformation/>
+</con:soapui-project>
