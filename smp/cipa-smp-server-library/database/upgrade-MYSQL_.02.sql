@@ -1,0 +1,1 @@
+ALTER TABLE smp_service_metadata ADD xmlcontent TEXT;

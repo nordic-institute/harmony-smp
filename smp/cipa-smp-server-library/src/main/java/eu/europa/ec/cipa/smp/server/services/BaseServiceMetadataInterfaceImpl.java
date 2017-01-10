@@ -40,22 +40,18 @@ package eu.europa.ec.cipa.smp.server.services;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
 
-import org.busdox.servicemetadata.publishing._1.ObjectFactory;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
-import org.busdox.servicemetadata.publishing._1.SignedServiceMetadataType;
+import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.jersey.api.NotFoundException;
-
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
+import org.w3c.dom.Document;
 
 /**
  * This class implements the read-only methods for the REST
@@ -70,7 +66,7 @@ public final class BaseServiceMetadataInterfaceImpl {
   private BaseServiceMetadataInterfaceImpl () {}
 
   @Nonnull
-  public static JAXBElement <SignedServiceMetadataType> getServiceRegistration (@Nonnull final UriInfo uriInfo,
+  public static Document getServiceRegistration (@Nonnull final UriInfo uriInfo,
                                                                                 @Nullable final String sServiceGroupID,
                                                                                 @Nullable final String sDocumentTypeID) throws Throwable {
     s_aLogger.info ("GET /" + sServiceGroupID + "/services/" + sDocumentTypeID);
@@ -90,23 +86,12 @@ public final class BaseServiceMetadataInterfaceImpl {
     }
 
     try {
-      final ObjectFactory aObjFactory = new ObjectFactory ();
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
-
-      // First check for redirection, then for actual service
-      ServiceMetadataType aService = aDataManager.getRedirection (aServiceGroupID, aDocTypeID);
-      if (aService == null) {
-        aService = aDataManager.getService (aServiceGroupID, aDocTypeID);
-        if (aService == null)
-          throw new NotFoundException ("service", uriInfo.getAbsolutePath ());
-      }
-
-      final SignedServiceMetadataType aSignedServiceMetadata = aObjFactory.createSignedServiceMetadataType ();
-      aSignedServiceMetadata.setServiceMetadata (aService);
-      // Signature is added by a handler
+      String sServiceMetadata = aDataManager.getService (aServiceGroupID, aDocTypeID);
+      Document aSignedServiceMetadata = ServiceMetadataConverter.toSignedServiceMetadatadaDocument(sServiceMetadata);
 
       s_aLogger.info ("Finished getServiceRegistration(" + sServiceGroupID + "," + sDocumentTypeID + ")");
-      return aObjFactory.createSignedServiceMetadata (aSignedServiceMetadata);
+      return aSignedServiceMetadata;
     }
     catch (final Throwable ex) {
       s_aLogger.error ("Error in returning service metadata.", ex);
