@@ -51,7 +51,9 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
-import eu.europa.ec.cipa.smp.server.util.ExceptionHandler;
+import com.helger.commons.mime.CMimeType;
+import com.sun.jersey.api.NotFoundException;
+import eu.europa.ec.cipa.smp.server.exception.ErrorResponseBuilder;
 import org.busdox.servicemetadata.publishing._1.ServiceInformationType;
 import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.busdox.servicemetadata.publishing._1.SignedServiceMetadataType;
@@ -86,23 +88,43 @@ public final class ServiceMetadataInterface {
   @GET
   // changed Produced media type to match the smp specification.
   @Produces (MediaType.TEXT_XML)
-  public JAXBElement <SignedServiceMetadataType> getServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
+  public Response getServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
                                                                          @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
     // Delegate to common implementation
-    return BaseServiceMetadataInterfaceImpl.getServiceRegistration (uriInfo, sServiceGroupID, sDocumentTypeID);
+    try {
+      return Response.ok(BaseServiceMetadataInterfaceImpl.getServiceRegistration(uriInfo, sServiceGroupID, sDocumentTypeID)).build();
+    }
+    catch(Throwable ex)
+    {
+      s_aLogger.error ("Error getting service registration with SGid" + sServiceGroupID + " and DTid " + sDocumentTypeID, ex);
+      if (ex instanceof NotFoundException) {
+        return Response.status (Status.NOT_FOUND)
+                .entity (ErrorResponseBuilder.build())
+                .type (CMimeType.TEXT_XML.getAsString ())
+                .build ();
+      } else {
+        return Response.status (Status.INTERNAL_SERVER_ERROR)
+                .entity (ErrorResponseBuilder.build())
+                .type (CMimeType.TEXT_XML.getAsString ())
+                .build ();
+      }
+    }
   }
 
   @PUT
   public Response saveServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
                                            @PathParam ("DocumentTypeId") final String sDocumentTypeID,
-                                           final ServiceMetadataType aServiceMetadata) {
+                                           final ServiceMetadataType aServiceMetadata) throws Throwable {
     s_aLogger.info ("PUT /" + sServiceGroupID + "/services/" + sDocumentTypeID + " ==> " + aServiceMetadata);
 
     final SimpleParticipantIdentifier aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
     if (aServiceGroupID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return Response.status (Status.BAD_REQUEST).build ();
+      return Response.status (Status.BAD_REQUEST)
+              .entity (ErrorResponseBuilder.build())
+              .type (CMimeType.TEXT_XML.getAsString ())
+              .build ();
     }
 
     final SimpleDocumentTypeIdentifier aDocTypeID = SimpleDocumentTypeIdentifier.createFromURIPartOrNull (sDocumentTypeID);
@@ -122,7 +144,10 @@ public final class ServiceMetadataInterface {
                         IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getParticipantIdentifier ()) +
                         " param:" +
                         aServiceGroupID);
-        return Response.status (Status.BAD_REQUEST).build ();
+        return Response.status (Status.BAD_REQUEST)
+                .entity (ErrorResponseBuilder.build())
+                .type (CMimeType.TEXT_XML.getAsString ())
+                .build ();
       }
 
       if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getDocumentIdentifier (), aDocTypeID)) {
@@ -131,7 +156,10 @@ public final class ServiceMetadataInterface {
                         " param:" +
                         aDocTypeID);
         // Document type must equal path
-        return Response.status (Status.BAD_REQUEST).build ();
+        return Response.status (Status.BAD_REQUEST)
+                .entity (ErrorResponseBuilder.build())
+                .type (CMimeType.TEXT_XML.getAsString ())
+                .build ();
       }
 
       // Main save
@@ -148,26 +176,25 @@ public final class ServiceMetadataInterface {
 
       return Response.ok ().build ();
     }
-    catch (Exception ex) {
-      s_aLogger.error ("Error in saving Service metadata.", ex);
-      return ExceptionHandler.buildResponse(ex);
-    }
     catch (final Throwable ex) {
       s_aLogger.error ("Error in saving Service metadata.", ex);
-      return Response.serverError ().build ();
+      throw ex;
     }
   }
 
   @DELETE
   public Response deleteServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
-                                             @PathParam ("DocumentTypeId") final String sDocumentTypeID) {
+                                             @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
     s_aLogger.info ("DELETE /" + sServiceGroupID + "/services/" + sDocumentTypeID);
 
     final SimpleParticipantIdentifier aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
     if (aServiceGroupID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return Response.status (Status.BAD_REQUEST).build ();
+      return Response.status (Status.BAD_REQUEST)
+              .entity (ErrorResponseBuilder.build())
+              .type (CMimeType.TEXT_XML.getAsString ())
+              .build ();
     }
 
     final SimpleDocumentTypeIdentifier aDocTypeID = SimpleDocumentTypeIdentifier.createFromURIPartOrNull (sDocumentTypeID);
@@ -185,13 +212,9 @@ public final class ServiceMetadataInterface {
 
       return Response.ok ().build ();
     }
-    catch (Exception ex) {
-      s_aLogger.error ("Error in deleting Service metadata.", ex);
-      return ExceptionHandler.buildResponse(ex);
-    }
     catch (final Throwable ex) {
       s_aLogger.error ("Error in deleting Service metadata.", ex);
-      return Response.serverError ().build ();
+      throw ex;
     }
   }
 }

@@ -50,8 +50,9 @@ import com.helger.commons.mime.CMimeType;
 @Provider
 public final class RuntimeExceptionMapper implements ExceptionMapper <RuntimeException> {
   public Response toResponse (final RuntimeException ex) {
-    final String sText = StackTraceHelper.getStackAsString (ex);
-
-    return Response.serverError ().entity (sText).type (CMimeType.TEXT_PLAIN.getAsString ()).build ();
+    return Response.status (Response.Status.INTERNAL_SERVER_ERROR)
+            .entity (ErrorResponseBuilder.build())
+            .type (CMimeType.TEXT_XML.getAsString ())
+            .build ();
   }
 }

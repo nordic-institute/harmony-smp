@@ -42,7 +42,6 @@ import javax.annotation.Nullable;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
-import eu.europa.ec.cipa.smp.server.util.ExceptionHandler;
 import org.busdox.servicemetadata.publishing._1.ObjectFactory;
 import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.busdox.servicemetadata.publishing._1.SignedServiceMetadataType;
@@ -109,10 +108,9 @@ public final class BaseServiceMetadataInterfaceImpl {
       s_aLogger.info ("Finished getServiceRegistration(" + sServiceGroupID + "," + sDocumentTypeID + ")");
       return aObjFactory.createSignedServiceMetadata (aSignedServiceMetadata);
     }
-    catch (Exception ex) {
+    catch (final Throwable ex) {
       s_aLogger.error ("Error in returning service metadata.", ex);
-      ExceptionHandler.handleException(ex);
-      return null;
+      throw ex;
     }
   }
 }

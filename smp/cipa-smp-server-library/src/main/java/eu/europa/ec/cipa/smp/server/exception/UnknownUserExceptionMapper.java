@@ -51,8 +51,8 @@ import com.helger.commons.mime.CMimeType;
 public class UnknownUserExceptionMapper implements ExceptionMapper <UnknownUserException> {
   public Response toResponse (final UnknownUserException e) {
     return Response.status (Status.FORBIDDEN)
-                   .entity (e.getMessage ())
-                   .type (CMimeType.TEXT_PLAIN.getAsString ())
-                   .build ();
+            .entity (ErrorResponseBuilder.build())
+            .type (CMimeType.TEXT_XML.getAsString ())
+            .build ();
   }
 }

@@ -50,9 +50,9 @@ import com.helger.commons.mime.CMimeType;
 @Provider
 public class UnauthorizedExceptionMapper implements ExceptionMapper <UnauthorizedException> {
   public Response toResponse (final UnauthorizedException e) {
-    return Response.status (Status.FORBIDDEN)
-                   .entity (e.getMessage ())
-                   .type (CMimeType.TEXT_PLAIN.getAsString ())
-                   .build ();
+    return Response.status (Status.UNAUTHORIZED)
+            .entity (ErrorResponseBuilder.build())
+            .type (CMimeType.TEXT_XML.getAsString ())
+            .build ();
   }
 }
