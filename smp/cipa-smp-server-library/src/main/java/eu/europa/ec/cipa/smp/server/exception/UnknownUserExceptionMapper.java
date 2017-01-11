@@ -48,6 +48,6 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class UnknownUserExceptionMapper implements ExceptionMapper <UnknownUserException> {
   public Response toResponse (final UnknownUserException e) {
-    return ErrorResponseBuilder.newInstance().build(Status.FORBIDDEN);
+    return ErrorResponseBuilder.status(Status.FORBIDDEN).build();
   }
 }

@@ -56,15 +56,18 @@ public class ErrorResponseBuilderTest {
     }
 
     @Test
-    public void testBuild() throws ParserConfigurationException, IOException, SAXException {
-        String result1 = ErrorResponseBuilder.newInstance().build();
-        String result2 = ErrorResponseBuilder.newInstance().build();
+    public void testDifferentErrorIds() throws ParserConfigurationException, IOException, SAXException {
+        Response result1 = ErrorResponseBuilder.status().build();
+        Response result2 = ErrorResponseBuilder.status().build();
+
+        String entity1 = (String) result1.getEntity();
+        String entity2 = (String) result2.getEntity();
 
         // test result 1
-        String errorUniqueId1 = checkXmlError(result1, DEFAULT_BUSINESS_CODE, DEFAULT_ERROR_DESCRIPTION);
+        String errorUniqueId1 = checkXmlError(entity1, DEFAULT_BUSINESS_CODE, DEFAULT_ERROR_DESCRIPTION);
 
         // test result 2
-        String errorUniqueId2 = checkXmlError(result2, DEFAULT_BUSINESS_CODE, DEFAULT_ERROR_DESCRIPTION);
+        String errorUniqueId2 = checkXmlError(entity2, DEFAULT_BUSINESS_CODE, DEFAULT_ERROR_DESCRIPTION);
 
         assertNotNull(errorUniqueId1);
         assertNotNull(errorUniqueId2);
@@ -73,18 +76,21 @@ public class ErrorResponseBuilderTest {
     }
 
     @Test
-    public void testBuildWithBusinessCodeAndErrorDescription() throws ParserConfigurationException, IOException, SAXException {
-        String result1 = ErrorResponseBuilder.newInstance().setBusinessCode("BUSINESSCODE").setErrorDescription("Business Error Description").build();
-        String result2 = ErrorResponseBuilder.newInstance().setBusinessCode("BUSINESSCODE").setErrorDescription("Business Error Description").build();
+    public void testDifferentErrorIdsWithBusinessCodeAndErrorDescription() throws ParserConfigurationException, IOException, SAXException {
+        Response result1 = ErrorResponseBuilder.status().businessCode("BUSINESSCODE").errorDescription("Business Error Description").build();
+        Response result2 = ErrorResponseBuilder.status().businessCode("BUSINESSCODE").errorDescription("Business Error Description").build();
+
+        String entity1 = (String) result1.getEntity();
+        String entity2 = (String) result2.getEntity();
 
         final String STR_BUSINESS_CODE = "BUSINESSCODE";
         final String STR_ERROR_DESCRIPTION = "Business Error Description";
 
         // test result 1
-        String errorUniqueId1 = checkXmlError(result1, STR_BUSINESS_CODE, STR_ERROR_DESCRIPTION);
+        String errorUniqueId1 = checkXmlError(entity1, STR_BUSINESS_CODE, STR_ERROR_DESCRIPTION);
 
         // test result 2
-        String errorUniqueId2 = checkXmlError(result2, STR_BUSINESS_CODE, STR_ERROR_DESCRIPTION);
+        String errorUniqueId2 = checkXmlError(entity2, STR_BUSINESS_CODE, STR_ERROR_DESCRIPTION);
 
         assertNotNull(errorUniqueId1);
         assertNotNull(errorUniqueId2);
@@ -92,34 +98,56 @@ public class ErrorResponseBuilderTest {
     }
 
     @Test
-    public void testSetBusinessCode() throws ParserConfigurationException, IOException, SAXException {
+    public void testBusinessCode() throws ParserConfigurationException, IOException, SAXException {
         final String STR_BUSINESS_CODE = "BUSINESSCODE";
-        String result = ErrorResponseBuilder.newInstance().setBusinessCode(STR_BUSINESS_CODE).build();
+        Response result = ErrorResponseBuilder.status().businessCode(STR_BUSINESS_CODE).build();
 
-        String errorUniqueId = checkXmlError(result, STR_BUSINESS_CODE, DEFAULT_ERROR_DESCRIPTION);
+        String entity = (String) result.getEntity();
+
+        String errorUniqueId = checkXmlError(entity, STR_BUSINESS_CODE, DEFAULT_ERROR_DESCRIPTION);
 
         assertNotNull(errorUniqueId);
     }
 
     @Test
-    public void testSetErrorDescription() throws ParserConfigurationException, IOException, SAXException {
+    public void testErrorDescription() throws ParserConfigurationException, IOException, SAXException {
         final String STR_ERROR_DESCRIPTION = "Business Error Description";
-        String result = ErrorResponseBuilder.newInstance().setErrorDescription(STR_ERROR_DESCRIPTION).build();
+        Response result = ErrorResponseBuilder.status().errorDescription(STR_ERROR_DESCRIPTION).build();
 
-        String errorUniqueId = checkXmlError(result, DEFAULT_BUSINESS_CODE, STR_ERROR_DESCRIPTION);
+        String entity = (String) result.getEntity();
+
+        String errorUniqueId = checkXmlError(entity, DEFAULT_BUSINESS_CODE, STR_ERROR_DESCRIPTION);
 
         assertNotNull(errorUniqueId);
     }
 
     @Test
     public void testBuildWithStatus() throws IOException, SAXException, ParserConfigurationException {
-        Response result = ErrorResponseBuilder.newInstance().build(Response.Status.BAD_REQUEST);
+        Response result = ErrorResponseBuilder.status(Response.Status.BAD_REQUEST).build();
 
         assertNotNull(result);
         String entity = (String) result.getEntity();
         String errorUniqueId = checkXmlError(entity, DEFAULT_BUSINESS_CODE, DEFAULT_ERROR_DESCRIPTION);
         assertNotNull(errorUniqueId);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), result.getStatus());
-
     }
+
+    @Test
+    public void testBuildTwoInstancesWithStatus() throws IOException, SAXException, ParserConfigurationException {
+        Response result1 = ErrorResponseBuilder.status(Response.Status.BAD_REQUEST).build();
+        Response result2 = ErrorResponseBuilder.status().build();
+
+        assertNotNull(result1);
+        String entity1 = (String) result1.getEntity();
+        String errorUniqueId1 = checkXmlError(entity1, DEFAULT_BUSINESS_CODE, DEFAULT_ERROR_DESCRIPTION);
+        assertNotNull(errorUniqueId1);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), result1.getStatus());
+
+        assertNotNull(result2);
+        String entity2 = (String) result2.getEntity();
+        String errorUniqueId2 = checkXmlError(entity2, DEFAULT_BUSINESS_CODE, DEFAULT_ERROR_DESCRIPTION);
+        assertNotNull(errorUniqueId2);
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), result2.getStatus());
+    }
+
 }

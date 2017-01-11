@@ -92,9 +92,9 @@ public final class ServiceGroupInterface {
     {
       s_aLogger.error ("Error getting service group " + sServiceGroupId, ex);
       if (ex instanceof NotFoundException) {
-        return ErrorResponseBuilder.newInstance().build(Status.NOT_FOUND);
+        return ErrorResponseBuilder.status(Status.NOT_FOUND).build();
       } else {
-        return ErrorResponseBuilder.newInstance().build(Status.INTERNAL_SERVER_ERROR);
+        return ErrorResponseBuilder.status().build();
       }
     }
   }
@@ -108,13 +108,13 @@ public final class ServiceGroupInterface {
     if (aServiceGroupID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return ErrorResponseBuilder.newInstance().build(Status.BAD_REQUEST);
+      return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
     }
 
     try {
       if (!IdentifierUtils.areIdentifiersEqual (aServiceGroupID, aServiceGroup.getParticipantIdentifier ())) {
         // Business identifier must equal path
-        return ErrorResponseBuilder.newInstance().build(Status.BAD_REQUEST);
+        return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
       }
 
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
@@ -126,7 +126,7 @@ public final class ServiceGroupInterface {
     }
     catch (final Throwable ex) {
       s_aLogger.error ("Error saving service group " + aServiceGroupID, ex);
-      return ErrorResponseBuilder.newInstance().build(Status.INTERNAL_SERVER_ERROR);
+      return ErrorResponseBuilder.status().build();
     }
   }
 
@@ -138,7 +138,7 @@ public final class ServiceGroupInterface {
     if (aServiceGroupID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return ErrorResponseBuilder.newInstance().build(Status.BAD_REQUEST);
+      return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
     }
 
     try {
@@ -151,7 +151,7 @@ public final class ServiceGroupInterface {
     }
     catch (final Throwable ex) {
       s_aLogger.error ("Error deleting service group " + aServiceGroupID, ex);
-      return ErrorResponseBuilder.newInstance().build(Status.INTERNAL_SERVER_ERROR);
+      return ErrorResponseBuilder.status().build();
     }
   }
 }

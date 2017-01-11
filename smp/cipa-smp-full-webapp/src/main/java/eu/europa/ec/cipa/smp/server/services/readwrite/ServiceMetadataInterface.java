@@ -52,6 +52,7 @@ import org.busdox.servicemetadata.publishing._1.ServiceInformationType;
 import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import javax.ws.rs.DELETE;
@@ -92,21 +93,10 @@ public final class ServiceMetadataInterface {
   @GET
   // changed Produced media type to match the smp specification.
   @Produces (MediaType.TEXT_XML)
-  public Response getServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
-                                                                         @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
+  public Document getServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
+                                          @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
     // Delegate to common implementation
-    try {
-      return Response.ok(BaseServiceMetadataInterfaceImpl.getServiceRegistration(uriInfo, sServiceGroupID, sDocumentTypeID)).build();
-    }
-    catch(Throwable ex)
-    {
-      s_aLogger.error ("Error getting service registration with SGid" + sServiceGroupID + " and DTid " + sDocumentTypeID, ex);
-      if (ex instanceof NotFoundException) {
-        return ErrorResponseBuilder.newInstance().build(Status.NOT_FOUND);
-      } else {
-        return ErrorResponseBuilder.newInstance().build(Status.INTERNAL_SERVER_ERROR);
-      }
-    }
+    return BaseServiceMetadataInterfaceImpl.getServiceRegistration(uriInfo, sServiceGroupID, sDocumentTypeID);
   }
 
   @PUT
@@ -155,7 +145,7 @@ public final class ServiceMetadataInterface {
     if (aServiceGroupID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return ErrorResponseBuilder.newInstance().build(Status.BAD_REQUEST);
+      return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
     }
 
     final SimpleDocumentTypeIdentifier aDocTypeID = SimpleDocumentTypeIdentifier.createFromURIPartOrNull(sDocumentTypeID);
@@ -174,7 +164,7 @@ public final class ServiceMetadataInterface {
                         IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getParticipantIdentifier ()) +
                         " param:" +
                         aServiceGroupID);
-        return ErrorResponseBuilder.newInstance().build(Status.BAD_REQUEST);
+        return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
       }
 
       if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getDocumentIdentifier (), aDocTypeID)) {
@@ -183,7 +173,7 @@ public final class ServiceMetadataInterface {
                         " param:" +
                         aDocTypeID);
         // Document type must equal path
-        return ErrorResponseBuilder.newInstance().build(Status.BAD_REQUEST);
+        return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
       }
 
     return null;
@@ -198,7 +188,7 @@ public final class ServiceMetadataInterface {
     if (aServiceGroupID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return ErrorResponseBuilder.newInstance().build(Status.BAD_REQUEST);
+      return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
     }
 
     final SimpleDocumentTypeIdentifier aDocTypeID = SimpleDocumentTypeIdentifier.createFromURIPartOrNull (sDocumentTypeID);

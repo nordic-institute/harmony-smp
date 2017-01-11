@@ -12,15 +12,11 @@ import java.util.UUID;
  * Created by migueti on 05/01/2017.
  */
 public class ErrorResponseBuilder {
-    private StringBuilder response = new StringBuilder();
+    private Status status = Status.INTERNAL_SERVER_ERROR;
     private String strBusinessCode = "TECHNICAL";
     private String strErrorDescription = "Unexpected technical error occurred.";
 
     private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSz");
-
-    private ErrorResponseBuilder() {
-        response = new StringBuilder();
-    }
 
     private static String getErrorUniqueId() {
         StringBuilder errId = new StringBuilder();
@@ -30,12 +26,20 @@ public class ErrorResponseBuilder {
         return String.valueOf(errId);
     }
 
-    public static ErrorResponseBuilder newInstance() {
-        return new ErrorResponseBuilder();
+    private ErrorResponseBuilder(Status status) {
+        this.status = status;
     }
 
+    public static ErrorResponseBuilder status(Status status) {
+        return new ErrorResponseBuilder(status);
+    }
 
-    public String build() {
+    public static ErrorResponseBuilder status() {
+        return new ErrorResponseBuilder(Status.INTERNAL_SERVER_ERROR);
+    }
+
+    private String buildBody() {
+        StringBuilder response = new StringBuilder();
         response.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         response.append("<ErrorResponse xmlns=\"ec:services:SMP:1.0\">");
         response.append("<BusinessCode>").append(strBusinessCode).append("</BusinessCode>");
@@ -45,19 +49,19 @@ public class ErrorResponseBuilder {
         return String.valueOf(response);
     }
 
-    public ErrorResponseBuilder setBusinessCode(String newBusinessCode) {
-        strBusinessCode = newBusinessCode;
+    ErrorResponseBuilder businessCode(String newBusinessCode) {
+        this.strBusinessCode = newBusinessCode;
         return this;
     }
 
-    public ErrorResponseBuilder setErrorDescription(String newErrorDescription) {
-        strErrorDescription = newErrorDescription;
+    ErrorResponseBuilder errorDescription(String newErrorDescription) {
+        this.strErrorDescription = newErrorDescription;
         return this;
     }
 
-    public Response build(Status status) {
-        return Response.status(status)
-                .entity(build())
+    public Response build() {
+        return Response.status(this.status)
+                .entity(this.buildBody())
                 .type(CMimeType.TEXT_XML.getAsString ())
                 .build();
     }
