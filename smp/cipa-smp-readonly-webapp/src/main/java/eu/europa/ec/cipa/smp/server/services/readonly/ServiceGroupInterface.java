@@ -48,9 +48,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
-import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
-
 import eu.europa.ec.cipa.smp.server.services.BaseServiceGroupInterfaceImpl;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 
 /**
  * This class implements the REST interface for getting ServiceGroup's.
@@ -69,7 +68,7 @@ public final class ServiceGroupInterface {
 
   @GET
   @Produces (MediaType.TEXT_XML)
-  public JAXBElement <ServiceGroupType> getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId) throws Throwable {
+  public ServiceGroup getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId) throws Throwable {
     // Delegate to common implementation
     return BaseServiceGroupInterfaceImpl.getServiceGroup (uriInfo, headers, sServiceGroupId, ServiceMetadataInterface.class);
   }

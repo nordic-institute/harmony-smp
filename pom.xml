@@ -18,6 +18,7 @@
 		<module>as2/mendelson-as2-war</module>
 		<module>as4/Domibus-MSH</module>
 		<module>as4/dynamic-discovery</module>
+		<module>smp-api</module>
 		<module>smp/cipa-smp-client-library</module>
 		<module>smp/cipa-smp-full-webapp</module>
 		<module>smp/cipa-smp-readonly-webapp</module>

@@ -42,12 +42,13 @@ import javax.annotation.Nullable;
 import javax.ws.rs.core.UriInfo;
 
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
-import org.busdox.transport.identifiers._1.DocumentIdentifierType;
-import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
+import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
+
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
@@ -71,14 +72,14 @@ public final class BaseServiceMetadataInterfaceImpl {
                                                                                 @Nullable final String sDocumentTypeID) throws Throwable {
     s_aLogger.info ("GET /" + sServiceGroupID + "/services/" + sDocumentTypeID);
 
-    final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
+    final ParticipantIdentifierType aServiceGroupID = IdentifierUtils.createParticipantIdentifierFromURIPartOrNull(sServiceGroupID);
     if (aServiceGroupID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
       return null;
     }
 
-    final DocumentIdentifierType aDocTypeID = IdentifierUtils.createDocumentTypeIdentifierFromURIPartOrNull (sDocumentTypeID);
+    final DocumentIdentifier aDocTypeID = IdentifierUtils.createDocumentTypeIdentifierFromURIPartOrNull (sDocumentTypeID);
     if (aDocTypeID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse document type identifier '" + sDocumentTypeID + "'");

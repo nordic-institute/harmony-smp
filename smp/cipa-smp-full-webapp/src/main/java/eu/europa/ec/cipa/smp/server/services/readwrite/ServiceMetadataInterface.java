@@ -38,6 +38,7 @@
 package eu.europa.ec.cipa.smp.server.services.readwrite;
 
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
+import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.cipa.smp.server.util.RequestHelper;
 
 import javax.ws.rs.DELETE;
@@ -56,14 +57,17 @@ import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 
 import com.sun.jersey.spi.MessageBodyWorkers;
-import org.busdox.servicemetadata.publishing._1.ServiceInformationType;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
+
+import org.busdox.transport.identifiers._1.DocumentIdentifierType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceInformationType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
+
+
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
@@ -114,7 +118,7 @@ public final class ServiceMetadataInterface {
         return errorResponse;
       }
 
-      final ServiceMetadataType aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
+      final ServiceMetadata aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
 
       // Main save
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
@@ -140,16 +144,16 @@ public final class ServiceMetadataInterface {
                                    final String sDocumentTypeID,
                                    final String body) throws ParserConfigurationException, IOException, SAXException, JAXBException {
 
-    final ServiceMetadataType aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
+    final ServiceMetadata aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
 
-    final SimpleParticipantIdentifier aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull(sServiceGroupID);
+    final ParticipantIdentifierType aServiceGroupID = IdentifierUtils.createParticipantIdentifierFromURIPartOrNull(sServiceGroupID);
     if (aServiceGroupID == null) {
       // Invalid identifier
       s_aLogger.info("Failed to parse participant identifier '" + sServiceGroupID + "'");
       return Response.status(Status.BAD_REQUEST).build();
     }
 
-    final SimpleDocumentTypeIdentifier aDocTypeID = SimpleDocumentTypeIdentifier.createFromURIPartOrNull(sDocumentTypeID);
+    final DocumentIdentifier aDocTypeID =  IdentifierUtils.createDocumentTypeIdentifierFromURIPartOrNull(sDocumentTypeID);
     if (aDocTypeID == null) {
       // Invalid identifier
       s_aLogger.info("Failed to parse document type identifier '" + sDocumentTypeID + "'");
@@ -185,14 +189,14 @@ public final class ServiceMetadataInterface {
                                              @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
     s_aLogger.info ("DELETE /" + sServiceGroupID + "/services/" + sDocumentTypeID);
 
-    final SimpleParticipantIdentifier aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
+    final ParticipantIdentifierType aServiceGroupID = IdentifierUtils.createParticipantIdentifierFromURIPartOrNull(sServiceGroupID);
     if (aServiceGroupID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
       return Response.status (Status.BAD_REQUEST).build ();
     }
 
-    final SimpleDocumentTypeIdentifier aDocTypeID = SimpleDocumentTypeIdentifier.createFromURIPartOrNull (sDocumentTypeID);
+    final DocumentIdentifier aDocTypeID = IdentifierUtils.createDocumentTypeIdentifierFromURIPartOrNull(sDocumentTypeID);
     if (aDocTypeID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse document type identifier '" + sDocumentTypeID + "'");

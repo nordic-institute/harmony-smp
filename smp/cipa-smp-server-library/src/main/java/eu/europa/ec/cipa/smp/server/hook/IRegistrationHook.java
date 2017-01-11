@@ -42,6 +42,7 @@ import javax.annotation.Nonnull;
 import com.helger.commons.state.ESuccess;
 
 import eu.europa.ec.cipa.busdox.identifier.IParticipantIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
@@ -55,7 +56,7 @@ public interface IRegistrationHook {
    * @throws HookException
    *         If something goes wrong.
    */
-  void create (@Nonnull IParticipantIdentifier aPI) throws HookException;
+  void create (@Nonnull ParticipantIdentifierType aPI) throws HookException;
 
   /**
    * Delete a participant in the SML.
@@ -65,7 +66,7 @@ public interface IRegistrationHook {
    * @throws HookException
    *         If something goes wrong.
    */
-  void delete (@Nonnull IParticipantIdentifier aPI) throws HookException;
+  void delete (@Nonnull ParticipantIdentifierType aPI) throws HookException;
 
   /**
    * In case of failure, this method is meant to rollback the previously done

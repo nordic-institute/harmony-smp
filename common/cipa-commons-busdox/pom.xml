@@ -8,7 +8,7 @@
     <relativePath>../cipa-parent-pom/pom.xml</relativePath>
   </parent>
   <artifactId>cipa-commons-busdox</artifactId>
-  <version>2.2.5-SNAPSHOT</version>
+  <version>3.2.0-SNAPSHOT</version>
   <packaging>bundle</packaging>
   <name>cipa-commons-busdox</name>
 
@@ -16,7 +16,7 @@
     <connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/common/cipa-commons-busdox</connection>
     <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/common/cipa-commons-busdox</developerConnection>
   </scm>
-  
+
   <dependencies>
     <dependency>
       <groupId>com.helger</groupId>

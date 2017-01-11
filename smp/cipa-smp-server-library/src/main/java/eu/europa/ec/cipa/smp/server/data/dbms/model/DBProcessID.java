@@ -44,9 +44,9 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
-import org.busdox.transport.identifiers._1.DocumentIdentifierType;
-import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
-import org.busdox.transport.identifiers._1.ProcessIdentifierType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessIdentifier;
 
 import com.helger.commons.annotations.UsedViaReflection;
 import com.helger.commons.equals.EqualsUtils;
@@ -54,7 +54,7 @@ import com.helger.commons.hash.HashCodeGenerator;
 import com.helger.commons.string.ToStringGenerator;
 
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyDocumentTypeIdentifier;
-import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
+
 import eu.europa.ec.cipa.busdox.identifier.IReadonlyProcessIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
@@ -105,7 +105,7 @@ public class DBProcessID implements Serializable {
   }
 
   @Transient
-  public void setBusinessIdentifier (@Nonnull final IReadonlyParticipantIdentifier aBusinessIdentifier) {
+  public void setBusinessIdentifier (@Nonnull final ParticipantIdentifierType aBusinessIdentifier) {
     setBusinessIdentifierScheme (aBusinessIdentifier.getScheme ());
     setBusinessIdentifier (aBusinessIdentifier.getValue ());
   }
@@ -129,7 +129,7 @@ public class DBProcessID implements Serializable {
   }
 
   @Transient
-  public void setDocumentTypeIdentifier (@Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID) {
+  public void setDocumentTypeIdentifier (@Nonnull final DocumentIdentifier aDocumentTypeID) {
     setDocumentIdentifierScheme (aDocumentTypeID.getScheme ());
     setDocumentIdentifier (aDocumentTypeID.getValue ());
   }
@@ -161,19 +161,28 @@ public class DBProcessID implements Serializable {
   @Transient
   @Nonnull
   public ParticipantIdentifierType asBusinessIdentifier () {
-    return new SimpleParticipantIdentifier (m_sParticipantIdentifierScheme, m_sParticipantIdentifier);
+    ParticipantIdentifierType id = new ParticipantIdentifierType();
+    id.setScheme(m_sParticipantIdentifierScheme);
+    id.setValue(m_sParticipantIdentifier);
+    return id;
   }
 
   @Transient
   @Nonnull
-  public DocumentIdentifierType asDocumentTypeIdentifier () {
-    return new SimpleDocumentTypeIdentifier (m_sDocumentTypeIdentifierScheme, m_sDocumentTypeIdentifier);
+  public DocumentIdentifier asDocumentTypeIdentifier () {
+    DocumentIdentifier id = new DocumentIdentifier();
+    id.setScheme(m_sDocumentTypeIdentifierScheme);
+    id.setValue(m_sDocumentTypeIdentifier);
+    return id;
   }
 
   @Transient
   @Nonnull
-  public ProcessIdentifierType asProcessIdentifier () {
-    return new SimpleProcessIdentifier (m_sProcessIdentifierScheme, m_sProcessIdentifier);
+  public ProcessIdentifier asProcessIdentifier () {
+    ProcessIdentifier id = new ProcessIdentifier();
+    id.setScheme(m_sProcessIdentifierScheme);
+    id.setValue(m_sProcessIdentifier);
+    return id;
   }
 
   @Override

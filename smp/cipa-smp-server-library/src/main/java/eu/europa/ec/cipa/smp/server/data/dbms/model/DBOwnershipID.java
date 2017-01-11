@@ -49,10 +49,11 @@ import com.helger.commons.equals.EqualsUtils;
 import com.helger.commons.hash.HashCodeGenerator;
 import com.helger.commons.string.ToStringGenerator;
 
-import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
+
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 /**
  * ID for the ownership
@@ -69,7 +70,7 @@ public class DBOwnershipID implements Serializable {
   @UsedViaReflection
   public DBOwnershipID () {}
 
-  public DBOwnershipID (final String sUserName, @Nonnull final IReadonlyParticipantIdentifier aBusinessIdentifier) {
+  public DBOwnershipID (final String sUserName, @Nonnull final ParticipantIdentifierType aBusinessIdentifier) {
     m_sUsername = sUserName;
     setBusinessIdentifier (aBusinessIdentifier);
   }
@@ -102,7 +103,7 @@ public class DBOwnershipID implements Serializable {
   }
 
   @Transient
-  public void setBusinessIdentifier (@Nonnull final IReadonlyParticipantIdentifier aPI) {
+  public void setBusinessIdentifier (@Nonnull final ParticipantIdentifierType aPI) {
     setBusinessIdentifierScheme (aPI.getScheme ());
     setBusinessIdentifier (aPI.getValue ());
   }
