@@ -95,10 +95,7 @@ public class DBServiceGroupID implements Serializable {
   @Transient
   @Nonnull
   public ParticipantIdentifierType asBusinessIdentifier() {
-      ParticipantIdentifierType id = new ParticipantIdentifierType();
-      id.setScheme(m_sParticipantIdentifierScheme);
-      id.setValue(m_sParticipantIdentifier);
-      return id;
+      return new ParticipantIdentifierType(m_sParticipantIdentifier, m_sParticipantIdentifierScheme);
   }
 
   @Override

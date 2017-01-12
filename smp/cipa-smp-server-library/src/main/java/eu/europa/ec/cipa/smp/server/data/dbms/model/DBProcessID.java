@@ -161,28 +161,19 @@ public class DBProcessID implements Serializable {
   @Transient
   @Nonnull
   public ParticipantIdentifierType asBusinessIdentifier () {
-    ParticipantIdentifierType id = new ParticipantIdentifierType();
-    id.setScheme(m_sParticipantIdentifierScheme);
-    id.setValue(m_sParticipantIdentifier);
-    return id;
+    return new ParticipantIdentifierType(m_sParticipantIdentifier, m_sParticipantIdentifierScheme);
   }
 
   @Transient
   @Nonnull
   public DocumentIdentifier asDocumentTypeIdentifier () {
-    DocumentIdentifier id = new DocumentIdentifier();
-    id.setScheme(m_sDocumentTypeIdentifierScheme);
-    id.setValue(m_sDocumentTypeIdentifier);
-    return id;
+    return new DocumentIdentifier(m_sDocumentTypeIdentifier, m_sDocumentTypeIdentifierScheme);
   }
 
   @Transient
   @Nonnull
   public ProcessIdentifier asProcessIdentifier () {
-    ProcessIdentifier id = new ProcessIdentifier();
-    id.setScheme(m_sProcessIdentifierScheme);
-    id.setValue(m_sProcessIdentifier);
-    return id;
+    return new ProcessIdentifier(m_sProcessIdentifier, m_sProcessIdentifierScheme);
   }
 
   @Override

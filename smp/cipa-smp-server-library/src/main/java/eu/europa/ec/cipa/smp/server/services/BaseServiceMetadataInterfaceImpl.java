@@ -37,22 +37,19 @@
  */
 package eu.europa.ec.cipa.smp.server.services;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.ws.rs.core.UriInfo;
-
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
-import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
+import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
+import eu.europa.ec.cipa.smp.server.data.IDataManager;
+import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
-import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
-import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import org.w3c.dom.Document;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * This class implements the read-only methods for the REST
@@ -72,19 +69,8 @@ public final class BaseServiceMetadataInterfaceImpl {
                                                                                 @Nullable final String sDocumentTypeID) throws Throwable {
     s_aLogger.info ("GET /" + sServiceGroupID + "/services/" + sDocumentTypeID);
 
-    final ParticipantIdentifierType aServiceGroupID = IdentifierUtils.createParticipantIdentifierFromURIPartOrNull(sServiceGroupID);
-    if (aServiceGroupID == null) {
-      // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return null;
-    }
-
-    final DocumentIdentifier aDocTypeID = IdentifierUtils.createDocumentTypeIdentifierFromURIPartOrNull (sDocumentTypeID);
-    if (aDocTypeID == null) {
-      // Invalid identifier
-      s_aLogger.info ("Failed to parse document type identifier '" + sDocumentTypeID + "'");
-      return null;
-    }
+    final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
+    final DocumentIdentifier aDocTypeID = Identifiers.asDocumentId (sDocumentTypeID);
 
     try {
       final IDataManager aDataManager = DataManagerFactory.getInstance ();

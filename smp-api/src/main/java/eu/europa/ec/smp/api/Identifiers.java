@@ -32,21 +32,14 @@ public class Identifiers {
         return new ProcessIdentifier(value, scheme);
     }
 
+
     private static String extract(String doubleColonDelimitedId, String groupName) {
-        if (doubleColonDelimitedId == null) {
-            throwException(doubleColonDelimitedId);
+        try {
+            Matcher m = IDENTIFIER_PATTERN.matcher(doubleColonDelimitedId);
+            m.matches();
+            return m.group(groupName);
+        }catch(Exception e){
+            throw new MalformedIdentifierException(doubleColonDelimitedId, e);
         }
-
-        Matcher m = IDENTIFIER_PATTERN.matcher(doubleColonDelimitedId);
-
-        if (doubleColonDelimitedId == null || !m.matches()) {
-            return throwException(doubleColonDelimitedId);
-        }
-
-        return m.group(groupName);
-    }
-
-    private static String throwException(String doubleColonDelimitedId) {
-        throw new IllegalArgumentException("Malformed identifier, scheme and id should be delimited by double colon: " + doubleColonDelimitedId);
     }
 }

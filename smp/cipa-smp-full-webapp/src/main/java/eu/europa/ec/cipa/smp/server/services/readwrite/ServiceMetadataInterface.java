@@ -58,6 +58,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import com.sun.jersey.spi.MessageBodyWorkers;
 
+import eu.europa.ec.smp.api.Identifiers;
 import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
@@ -145,20 +146,8 @@ public final class ServiceMetadataInterface {
                                    final String body) throws ParserConfigurationException, IOException, SAXException, JAXBException {
 
     final ServiceMetadata aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
-
-    final ParticipantIdentifierType aServiceGroupID = IdentifierUtils.createParticipantIdentifierFromURIPartOrNull(sServiceGroupID);
-    if (aServiceGroupID == null) {
-      // Invalid identifier
-      s_aLogger.info("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return Response.status(Status.BAD_REQUEST).build();
-    }
-
-    final DocumentIdentifier aDocTypeID =  IdentifierUtils.createDocumentTypeIdentifierFromURIPartOrNull(sDocumentTypeID);
-    if (aDocTypeID == null) {
-      // Invalid identifier
-      s_aLogger.info("Failed to parse document type identifier '" + sDocumentTypeID + "'");
-      return Response.status(Status.BAD_REQUEST).build();
-    }
+    final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
+    final DocumentIdentifier aDocTypeID =  Identifiers.asDocumentId(sDocumentTypeID);
 
     final ServiceInformationType aServiceInformationType = aServiceMetadata.getServiceInformation();
 
@@ -189,19 +178,8 @@ public final class ServiceMetadataInterface {
                                              @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
     s_aLogger.info ("DELETE /" + sServiceGroupID + "/services/" + sDocumentTypeID);
 
-    final ParticipantIdentifierType aServiceGroupID = IdentifierUtils.createParticipantIdentifierFromURIPartOrNull(sServiceGroupID);
-    if (aServiceGroupID == null) {
-      // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return Response.status (Status.BAD_REQUEST).build ();
-    }
-
-    final DocumentIdentifier aDocTypeID = IdentifierUtils.createDocumentTypeIdentifierFromURIPartOrNull(sDocumentTypeID);
-    if (aDocTypeID == null) {
-      // Invalid identifier
-      s_aLogger.info ("Failed to parse document type identifier '" + sDocumentTypeID + "'");
-      return null;
-    }
+    final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
+    final DocumentIdentifier aDocTypeID = Identifiers.asDocumentId(sDocumentTypeID);
 
     try {
       final IDataManager aDataManager = DataManagerFactory.getInstance ();

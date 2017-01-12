@@ -53,6 +53,7 @@ import javax.ws.rs.core.UriInfo;
 import com.sun.jersey.api.NotFoundException;
 
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
+import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.slf4j.Logger;
@@ -105,12 +106,7 @@ public final class ServiceGroupInterface {
                                     final ServiceGroup aServiceGroup) {
     s_aLogger.info ("PUT /" + sServiceGroupID + " ==> " + aServiceGroup);
 
-    final ParticipantIdentifierType aServiceGroupID = IdentifierUtils.createParticipantIdentifierFromURIPartOrNull(sServiceGroupID);
-    if (aServiceGroupID == null) {
-      // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return Response.status (Status.BAD_REQUEST).build ();
-    }
+    final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
 
     try {
       if (!IdentifierUtils.areIdentifiersEqual (aServiceGroupID, aServiceGroup.getParticipantIdentifier ())) {
@@ -135,12 +131,7 @@ public final class ServiceGroupInterface {
   public Response deleteServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupID) throws Throwable {
     s_aLogger.info ("DELETE /" + sServiceGroupID);
 
-    final ParticipantIdentifierType aServiceGroupID = IdentifierUtils.createParticipantIdentifierFromURIPartOrNull(sServiceGroupID);
-    if (aServiceGroupID == null) {
-      // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return Response.status (Status.BAD_REQUEST).build ();
-    }
+    final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
 
     try {
       final IDataManager aDataManager = DataManagerFactory.getInstance ();

@@ -131,19 +131,13 @@ public class DBServiceMetadataID implements Serializable {
   @Nonnull
   @Transient
   public ParticipantIdentifierType asBusinessIdentifier () {
-    ParticipantIdentifierType id = new ParticipantIdentifierType();
-    id.setScheme(m_sParticipantIdentifierScheme);
-    id.setValue(m_sParticipantIdentifier);
-    return id;
+    return new ParticipantIdentifierType(m_sParticipantIdentifier, m_sParticipantIdentifierScheme);
   }
 
   @Nonnull
   @Transient
   public DocumentIdentifier asDocumentTypeIdentifier () {
-    DocumentIdentifier id = new DocumentIdentifier();
-    id.setScheme(m_sDocumentTypeIdentifierScheme);
-    id.setValue(m_sDocumentTypeIdentifier);
-    return id;
+    return new DocumentIdentifier(m_sDocumentTypeIdentifier, m_sDocumentTypeIdentifierScheme);
   }
 
   @Override

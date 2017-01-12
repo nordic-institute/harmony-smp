@@ -44,10 +44,10 @@ import javax.annotation.Nullable;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
 
 import com.helger.commons.string.StringParser;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
+import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ObjectFactory;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
@@ -60,8 +60,6 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.sun.jersey.api.NotFoundException;
 
-
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
@@ -114,12 +112,7 @@ public final class BaseServiceGroupInterfaceImpl {
                                                                @Nonnull final Class<?> aServiceMetadataInterface) throws Throwable {
     s_aLogger.info ("GET /" + sServiceGroupID);
 
-    final ParticipantIdentifierType aServiceGroupID = IdentifierUtils.createParticipantIdentifierFromURIPartOrNull(sServiceGroupID);
-    if (aServiceGroupID == null) {
-      // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return null;
-    }
+    final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
 
     try {
       final ObjectFactory aObjFactory = new ObjectFactory ();
