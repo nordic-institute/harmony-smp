@@ -39,7 +39,6 @@ package eu.europa.ec.cipa.smp.server.services.readonly;
  */
 
 import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
-import org.busdox.servicemetadata.publishing._1.SignedServiceMetadataType;
 import org.w3c.dom.Document;
 
 import javax.ws.rs.GET;
@@ -49,7 +48,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
 
 /**
  * This class implements the REST interface for getting SignedServiceMetadata's.

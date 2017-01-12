@@ -51,6 +51,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
 import com.sun.jersey.api.NotFoundException;
+import eu.europa.ec.cipa.smp.server.exception.ErrorResponseBuilder;
 import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
@@ -91,9 +92,9 @@ public final class ServiceGroupInterface {
     {
       s_aLogger.error ("Error getting service group " + sServiceGroupId, ex);
       if (ex instanceof NotFoundException) {
-        return Response.status(Status.NOT_FOUND).build();
+        return ErrorResponseBuilder.status(Status.NOT_FOUND).build();
       } else {
-        return Response.serverError().build();
+        return ErrorResponseBuilder.status().build();
       }
     }
   }
@@ -107,13 +108,13 @@ public final class ServiceGroupInterface {
     if (aServiceGroupID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return Response.status (Status.BAD_REQUEST).build ();
+      return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
     }
 
     try {
       if (!IdentifierUtils.areIdentifiersEqual (aServiceGroupID, aServiceGroup.getParticipantIdentifier ())) {
         // Business identifier must equal path
-        return Response.status (Status.BAD_REQUEST).build ();
+        return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
       }
 
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
@@ -125,7 +126,7 @@ public final class ServiceGroupInterface {
     }
     catch (final Throwable ex) {
       s_aLogger.error ("Error saving service group " + aServiceGroupID, ex);
-      return Response.serverError ().build ();
+      return ErrorResponseBuilder.status().build();
     }
   }
 
@@ -137,7 +138,7 @@ public final class ServiceGroupInterface {
     if (aServiceGroupID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return Response.status (Status.BAD_REQUEST).build ();
+      return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
     }
 
     try {
@@ -150,7 +151,7 @@ public final class ServiceGroupInterface {
     }
     catch (final Throwable ex) {
       s_aLogger.error ("Error deleting service group " + aServiceGroupID, ex);
-      return Response.serverError ().build ();
+      return ErrorResponseBuilder.status().build();
     }
   }
 }
