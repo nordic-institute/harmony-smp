@@ -2,11 +2,11 @@ package eu.europa.ec.cipa.smp.server.conversion;
 
 import eu.europa.ec.cipa.smp.server.exception.XmlParsingException;
 import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
-import org.busdox.servicemetadata.publishing._1.RedirectType;
-import org.busdox.servicemetadata.publishing._1.ServiceEndpointList;
-import org.busdox.servicemetadata.publishing._1.ServiceInformationType;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.junit.Test;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.RedirectType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceEndpointList;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceInformationType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
  */
 public class ServiceMetadataConverterTest {
 
-    private static final String NS = "http://busdox.org/serviceMetadata/publishing/1.0/";
+    private static final String NS = "http://docs.oasis-open.org/bdxr/ns/SMP/2016/05";
     private static final String RES_PATH = "/eu/europa/ec/cipa/smp/server/conversion/";
 
     @Test
@@ -34,18 +34,18 @@ public class ServiceMetadataConverterTest {
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "ServiceMetadataWithServiceInformation.xml");
 
         //when
-        ServiceMetadataType serviceMetadata = ServiceMetadataConverter.unmarshal(inputDoc);
+        ServiceMetadata serviceMetadata = ServiceMetadataConverter.unmarshal(inputDoc);
 
         //then
         assertNotNull(serviceMetadata);
         assertNull(serviceMetadata.getRedirect());
         ServiceInformationType serviceInformation = serviceMetadata.getServiceInformation();
         assertNotNull(serviceInformation);
-        ServiceEndpointList serviceEndpointList = serviceInformation.getProcessList().getProcess().get(0).getServiceEndpointList();
-        String serviceDescription1 = serviceEndpointList.getEndpointAtIndex(0).getServiceDescription();
-        String serviceDescription2 = serviceEndpointList.getEndpointAtIndex(1).getServiceDescription();
-        assertEquals("invoice service AS2", serviceDescription1);
-        assertEquals("invoice service", serviceDescription2);
+        ServiceEndpointList serviceEndpointList = serviceInformation.getProcessList().getProcesses().get(0).getServiceEndpointList();
+        String serviceDescription1 = serviceEndpointList.getEndpoints().get(0).getServiceDescription();
+        String serviceDescription2 = serviceEndpointList.getEndpoints().get(1).getServiceDescription();
+        assertEquals("This is the epSOS Patient Service List for the Polish NCP", serviceDescription1);
+        assertEquals("This is the second epSOS Patient Service List for the Polish NCP", serviceDescription2);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class ServiceMetadataConverterTest {
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "ServiceMetadataWithRedirect.xml");
 
         //when
-        ServiceMetadataType serviceMetadata = ServiceMetadataConverter.unmarshal(inputDoc);
+        ServiceMetadata serviceMetadata = ServiceMetadataConverter.unmarshal(inputDoc);
 
         //then
         assertNotNull(serviceMetadata);
@@ -77,7 +77,7 @@ public class ServiceMetadataConverterTest {
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "ServiceMetadataMissingMandatoryFields.xml");
 
         //when
-        ServiceMetadataType serviceMetadata = ServiceMetadataConverter.unmarshal(inputDoc);
+        ServiceMetadata serviceMetadata = ServiceMetadataConverter.unmarshal(inputDoc);
 
         //then
         assertNotNull(serviceMetadata);

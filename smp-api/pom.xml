@@ -11,7 +11,6 @@
 
     <artifactId>smp-api</artifactId>
     <version>2.5.2-SNAPSHOT</version>
-    <!--<packaging>bundle</packaging>-->
     <name>smp-api</name>
 
     <scm/>
@@ -21,48 +20,32 @@
 
     <build>
         <plugins>
-
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <version>2.3</version>
-                <artifactId>jaxb2-maven-plugin</artifactId>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.13.0</version>
                 <executions>
                     <execution>
-                        <id>xjc</id>
                         <goals>
-                            <goal>xjc</goal>
+                            <goal>generate</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
-                    <xjbSources>
-                        <xjbSource>src/main/resources/commonServiceBinding.xjb</xjbSource>
-                    </xjbSources>
-                    <sources>
-                        <source>src/main/resources/bdx-smp-201605.xsd</source>
-                    </sources>
+                    <args>
+                        <!-- generates value constructors -->
+                        <arg>-Xvalue-constructor</arg>
+                    </args>
+                    <plugins>
+                        <!-- generates value constructors -->
+                        <plugin>
+                            <groupId>org.jvnet.jaxb2_commons</groupId>
+                            <artifactId>jaxb2-value-constructor</artifactId>
+                            <version>3.0</version>
+                        </plugin>
+                    </plugins>
                 </configuration>
             </plugin>
-
-            <!--
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Export-Package>
-                            eu.europa.ec.cipa.busdox.*,
-                            org.busdox.servicemetadata.publishing._1,
-                            org.busdox.transport.identifiers._1,
-                            org.w3._2000._09.xmldsig,
-                            org.w3._2009._02.ws_tra,
-                            org.busdox._2010._02.channel.fault
-                        </Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
--->
         </plugins>
     </build>
 </project>

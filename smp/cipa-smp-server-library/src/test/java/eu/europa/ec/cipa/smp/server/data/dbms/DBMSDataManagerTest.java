@@ -37,48 +37,28 @@
  */
 package eu.europa.ec.cipa.smp.server.data.dbms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.Date;
-
-import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
-import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
-import org.busdox.servicemetadata.publishing._1.EndpointType;
-import org.busdox.servicemetadata.publishing._1.ExtensionType;
-import org.busdox.servicemetadata.publishing._1.ObjectFactory;
-import org.busdox.servicemetadata.publishing._1.ProcessListType;
-import org.busdox.servicemetadata.publishing._1.ProcessType;
-import org.busdox.servicemetadata.publishing._1.ServiceEndpointList;
-import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
-import org.busdox.servicemetadata.publishing._1.ServiceInformationType;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
-import org.busdox.transport.identifiers._1.DocumentIdentifierType;
-import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TestRule;
-
 import com.helger.commons.annotations.DevelopersNote;
 import com.helger.commons.scopes.mock.ScopeTestRule;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.NotFoundException;
-
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
-import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
-import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
-import eu.europa.ec.cipa.smp.client.ESMPTransportProfile;
+import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
 import eu.europa.ec.cipa.smp.server.exception.UnknownUserException;
 import eu.europa.ec.cipa.smp.server.hook.DoNothingRegistrationHook;
+import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
+import eu.europa.ec.cipa.smp.server.util.SMPDBUtils;
+import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+import static org.junit.Assert.*;
 
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
@@ -105,17 +85,16 @@ public class DBMSDataManagerTest {
   private static final String ADDRESS = "http://test.eu/accesspoint.svc";
   private static final boolean REQUIRE_SIGNATURE = true;
   private static final String MINIMUM_AUTH_LEVEL = "1";
-  private static final Date ACTIVIATION_DATE = new Date ();
+  private static final Calendar ACTIVIATION_DATE = GregorianCalendar.getInstance();
   private static final String DESCRIPTION = "description123";
-  private static final Date EXPIRATION_DATE = new Date ();
+  private static final Calendar EXPIRATION_DATE = GregorianCalendar.getInstance();;
   private static final String TECH_CONTACT = "fake@peppol.eu";
   private static final String TECH_INFO = "http://fake.peppol.eu/";
-  private static final String TRANSPORT_PROFILE = ESMPTransportProfile.TRANSPORT_PROFILE_START.getID ();
+  private static final String TRANSPORT_PROFILE = "busdox-transport-start";
 
-  private static final ParticipantIdentifierType PARTY_ID = SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_IDENTIFIER1);
+  private static final ParticipantIdentifierType PARTY_ID = new ParticipantIdentifierType(PARTICIPANT_IDENTIFIER1,"iso6523-actorid-upis");
   private static final ParticipantIdentifierType SERVICEGROUP_ID = PARTY_ID;
-  private static final DocumentIdentifierType DOCTYPE_ID = new SimpleDocumentTypeIdentifier (DOCUMENT_SCHEME,
-                                                                                             TEST_DOCTYPE_ID);
+    private static final DocumentIdentifier DOCTYPE_ID = new DocumentIdentifier(TEST_DOCTYPE_ID, DOCUMENT_SCHEME);
   private static final BasicAuthClientCredentials CREDENTIALS = new BasicAuthClientCredentials (USERNAME, PASSWORD);
 
   private static DBMSDataManager s_aDataMgr;
@@ -135,18 +114,18 @@ public class DBMSDataManagerTest {
   @ClassRule
   public static TestRule s_aTestRule = new SMPTestRule ();
 
-  private ServiceGroupType m_aServiceGroup;
-  private ServiceMetadataType m_aServiceMetadata;
+  private ServiceGroup m_aServiceGroup;
+  private ServiceMetadata m_aServiceMetadata;
   private String m_sServiceMetadata;
 
   @Before
   public void beforeTest () throws Throwable {
-    final ExtensionType aExtension = ExtensionConverter.convert ("<root><any>value</any></root>");
+    final ExtensionType aExtension = SMPDBUtils.getAsExtensionSafe("<root><any>value</any></root>");
     assertNotNull (aExtension);
     assertNotNull (aExtension.getAny ());
 
     final ObjectFactory aObjFactory = new ObjectFactory ();
-    m_aServiceGroup = aObjFactory.createServiceGroupType ();
+    m_aServiceGroup = aObjFactory.createServiceGroup ();
     m_aServiceGroup.setParticipantIdentifier (PARTY_ID);
 
     // Be sure to delete if it exists.
@@ -158,37 +137,37 @@ public class DBMSDataManagerTest {
     // Create a new one
     s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
 
-    m_aServiceMetadata = aObjFactory.createServiceMetadataType ();
+    m_aServiceMetadata = aObjFactory.createServiceMetadata ();
     final ServiceInformationType aServiceInformation = aObjFactory.createServiceInformationType ();
     aServiceInformation.setDocumentIdentifier (DOCTYPE_ID);
     aServiceInformation.setParticipantIdentifier (PARTY_ID);
-    aServiceInformation.setExtension (aExtension);
+    aServiceInformation.getExtensions().add(aExtension);
     {
       final ProcessListType processList = aObjFactory.createProcessListType ();
       {
         final ProcessType process = aObjFactory.createProcessType ();
-        process.setProcessIdentifier (new SimpleProcessIdentifier (PROCESS_SCHEME, TEST_PROCESS_ID));
-        process.setExtension (aExtension);
+        process.setProcessIdentifier (new ProcessIdentifier(TEST_PROCESS_ID, PROCESS_SCHEME));
+        process.getExtensions().add(aExtension);
         {
           final ServiceEndpointList serviceEndpointList = aObjFactory.createServiceEndpointList ();
           {
             final EndpointType endpoint = aObjFactory.createEndpointType ();
-            endpoint.setCertificate (CERTIFICATE);
-            endpoint.setEndpointReference (W3CEndpointReferenceUtils.createEndpointReference (ADDRESS));
+            endpoint.setCertificate (CERTIFICATE.getBytes());
+            endpoint.setEndpointURI(ADDRESS);
             endpoint.setMinimumAuthenticationLevel (MINIMUM_AUTH_LEVEL);
             endpoint.setRequireBusinessLevelSignature (REQUIRE_SIGNATURE);
             endpoint.setServiceActivationDate (ACTIVIATION_DATE);
             endpoint.setServiceDescription (DESCRIPTION);
             endpoint.setServiceExpirationDate (EXPIRATION_DATE);
-            endpoint.setExtension (aExtension);
+            endpoint.getExtensions().add(aExtension);
             endpoint.setTechnicalContactUrl (TECH_CONTACT);
             endpoint.setTechnicalInformationUrl (TECH_INFO);
             endpoint.setTransportProfile (TRANSPORT_PROFILE);
-            serviceEndpointList.getEndpoint ().add (endpoint);
+            serviceEndpointList.getEndpoints().add (endpoint);
           }
           process.setServiceEndpointList (serviceEndpointList);
         }
-        processList.getProcess ().add (process);
+        processList.getProcesses().add (process);
       }
       aServiceInformation.setProcessList (processList);
     }
@@ -201,8 +180,8 @@ public class DBMSDataManagerTest {
     m_aServiceGroup.getParticipantIdentifier ().setValue (PARTICIPANT_IDENTIFIER2);
     s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
 
-    final ParticipantIdentifierType aParticipantIdentifier2 = SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_IDENTIFIER2);
-    final ServiceGroupType result = s_aDataMgr.getServiceGroup (aParticipantIdentifier2);
+    final ParticipantIdentifierType aParticipantIdentifier2 = new ParticipantIdentifierType(PARTICIPANT_IDENTIFIER2, "iso6523-actorid-upis");
+    final ServiceGroup result = s_aDataMgr.getServiceGroup (aParticipantIdentifier2);
     assertNotNull (result);
 
     assertNull (result.getServiceMetadataReferenceCollection ());
@@ -244,7 +223,7 @@ public class DBMSDataManagerTest {
 
   @Test
   public void testDeleteServiceGroupUnknownID () throws Throwable {
-    final ParticipantIdentifierType aServiceGroupID2 = SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_IDENTIFIER2);
+    final ParticipantIdentifierType aServiceGroupID2 = new ParticipantIdentifierType(PARTICIPANT_IDENTIFIER2, "iso6523-actorid-upis");
     try {
       s_aDataMgr.deleteServiceGroup (aServiceGroupID2, CREDENTIALS);
     }
@@ -279,17 +258,17 @@ public class DBMSDataManagerTest {
 
     // Retrieve from DB
     final String docDBServiceMetadata = s_aDataMgr.getService (SERVICEGROUP_ID, DOCTYPE_ID);
-    final ServiceMetadataType aDBServiceMetadata = ServiceMetadataConverter.unmarshal(docDBServiceMetadata);
+    final ServiceMetadata aDBServiceMetadata = ServiceMetadataConverter.unmarshal(docDBServiceMetadata);
     assertNotNull (aDBServiceMetadata);
 
     final ProcessListType aOrigProcessList = m_aServiceMetadata.getServiceInformation ().getProcessList ();
-    assertEquals (1, aOrigProcessList.getProcess ().size ());
-    final ProcessType aOrigProcess = aOrigProcessList.getProcess ().get (0);
-    assertEquals (1, aOrigProcess.getServiceEndpointList ().getEndpoint ().size ());
-    final EndpointType aOrigEndpoint = aOrigProcess.getServiceEndpointList ().getEndpoint ().get (0);
+    assertEquals (1, aOrigProcessList.getProcesses().size ());
+    final ProcessType aOrigProcess = aOrigProcessList.getProcesses().get (0);
+    assertEquals (1, aOrigProcess.getServiceEndpointList ().getEndpoints().size ());
+    final EndpointType aOrigEndpoint = aOrigProcess.getServiceEndpointList ().getEndpoints().get (0);
 
-    final ProcessType aDBProcess = aDBServiceMetadata.getServiceInformation ().getProcessList ().getProcess ().get (0);
-    final EndpointType aDBEndpoint = aDBProcess.getServiceEndpointList ().getEndpoint ().get (0);
+    final ProcessType aDBProcess = aDBServiceMetadata.getServiceInformation ().getProcessList ().getProcesses().get (0);
+    final EndpointType aDBEndpoint = aDBProcess.getServiceEndpointList ().getEndpoints().get (0);
 
     assertTrue (IdentifierUtils.areIdentifiersEqual (m_aServiceMetadata.getServiceInformation ()
                                                                        .getDocumentIdentifier (),
@@ -301,14 +280,13 @@ public class DBMSDataManagerTest {
                                                                        .getParticipantIdentifier ()));
     assertTrue (IdentifierUtils.areIdentifiersEqual (aOrigProcess.getProcessIdentifier (),
                                                      aDBProcess.getProcessIdentifier ()));
-    assertEquals (aOrigEndpoint.getCertificate (), aDBEndpoint.getCertificate ());
+    assertArrayEquals (aOrigEndpoint.getCertificate (), aDBEndpoint.getCertificate ());
     assertEquals (aOrigEndpoint.getMinimumAuthenticationLevel (), aDBEndpoint.getMinimumAuthenticationLevel ());
     assertEquals (aOrigEndpoint.getServiceDescription (), aDBEndpoint.getServiceDescription ());
     assertEquals (aOrigEndpoint.getTechnicalContactUrl (), aDBEndpoint.getTechnicalContactUrl ());
     assertEquals (aOrigEndpoint.getTechnicalInformationUrl (), aDBEndpoint.getTechnicalInformationUrl ());
     assertEquals (aOrigEndpoint.getTransportProfile (), aDBEndpoint.getTransportProfile ());
-    assertEquals (W3CEndpointReferenceUtils.getAddress (aOrigEndpoint.getEndpointReference ()),
-                  W3CEndpointReferenceUtils.getAddress (aDBEndpoint.getEndpointReference ()));
+    assertEquals (aOrigEndpoint.getEndpointURI(), aDBEndpoint.getEndpointURI());
   }
 
   @Test

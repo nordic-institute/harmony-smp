@@ -1,13 +1,10 @@
 package eu.europa.ec.cipa.smp.server.util;
 
 import org.apache.commons.io.IOUtils;
-import org.busdox.servicemetadata.publishing._1.ObjectFactory;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
-import org.w3c.dom.Document;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.w3c.dom.Node;
 
 import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.transform.Transformer;
@@ -37,12 +34,11 @@ public class XmlTestUtils {
         return stream.toString(UTF_8);
     }
 
-    public static String marshall(ServiceMetadataType serviceMetadata) throws JAXBException {
+    public static String marshall(ServiceMetadata serviceMetadata) throws JAXBException {
         StringWriter sw = new StringWriter();
-        JAXBContext jaxbContext = JAXBContext.newInstance(ServiceMetadataType.class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(ServiceMetadata.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-        JAXBElement<ServiceMetadataType> jaxbServiceMetadata = new ObjectFactory().createServiceMetadata(serviceMetadata);
-        jaxbMarshaller.marshal(jaxbServiceMetadata, sw);
+        jaxbMarshaller.marshal(serviceMetadata, sw);
         return sw.toString();
     }
 }

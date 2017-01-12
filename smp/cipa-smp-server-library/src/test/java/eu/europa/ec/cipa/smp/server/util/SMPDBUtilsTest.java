@@ -37,12 +37,13 @@
  */
 package eu.europa.ec.cipa.smp.server.util;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import org.junit.Test;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
+import org.w3c.dom.Element;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
@@ -68,5 +69,26 @@ public class SMPDBUtilsTest {
     assertEquals ("123456789012345678901234567890123456789012345678901234567890abcd\n"
                   + "123456789012345678901234567890123456789012345678901234567890abcd\n"
                   + "xyz", sFormatted);
+  }
+
+  @Test
+  public void testConvertFromString () {
+    // Use elements
+    final String sXML = "<any xmlns=\"urn:foo\"><child>text1</child><child2 /></any>";
+    final ExtensionType aExtension = SMPDBUtils.getAsExtensionSafe(sXML);
+    assertNotNull (aExtension);
+    assertNotNull (aExtension.getAny ());
+    assertTrue (aExtension.getAny () instanceof Element);
+
+    assertNull (SMPDBUtils.getAsExtensionSafe((String) null));
+    assertNull (SMPDBUtils.getAsExtensionSafe(""));
+
+    // Convert back to String
+    final String sXML2 = SMPDBUtils.convert(aExtension);
+    assertEquals (sXML, sXML2);
+
+    // Cannot convert non-element
+    ExtensionType extension = SMPDBUtils.getAsExtensionSafe("Plain text");
+    assertNull(extension);
   }
 }
