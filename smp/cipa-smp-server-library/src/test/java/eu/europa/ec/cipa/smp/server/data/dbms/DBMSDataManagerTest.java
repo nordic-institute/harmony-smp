@@ -46,6 +46,10 @@ import static org.junit.Assert.fail;
 import java.util.Date;
 
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
+import eu.europa.ec.cipa.smp.server.data.dbms.model.DBOwnership;
+import eu.europa.ec.cipa.smp.server.data.dbms.model.DBOwnershipID;
+import eu.europa.ec.cipa.smp.server.data.dbms.model.DBServiceGroup;
+import eu.europa.ec.cipa.smp.server.data.dbms.model.DBServiceGroupID;
 import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
 import org.busdox.servicemetadata.publishing._1.EndpointType;
 import org.busdox.servicemetadata.publishing._1.ExtensionType;
@@ -79,6 +83,8 @@ import eu.europa.ec.cipa.smp.client.ESMPTransportProfile;
 import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
 import eu.europa.ec.cipa.smp.server.exception.UnknownUserException;
 import eu.europa.ec.cipa.smp.server.hook.DoNothingRegistrationHook;
+
+import javax.persistence.EntityManager;
 
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
@@ -371,5 +377,85 @@ public class DBMSDataManagerTest {
       fail ();
     }
     catch (final UnauthorizedException ex) {}
+  }
+
+  @Test
+  public void testSaveServiceGroupByCertificate() throws Throwable {
+    String certificateIdentifierHeader = "CN=SMP_1000000181,O=DIGIT,C=DK:406b2abf0bd1d46ac4292efee597d414";
+    String participantId = PARTICIPANT_IDENTIFIER2 + "654987";
+
+    ServiceGroupType serviceGroup = createServiceGroup(participantId);
+
+    init();
+    BasicAuthClientCredentials auth = new BasicAuthClientCredentials(certificateIdentifierHeader, null);
+    s_aDataMgr.saveServiceGroup(serviceGroup, auth);
+
+    ServiceGroupType result = s_aDataMgr.getServiceGroup(serviceGroup.getParticipantIdentifier());
+    assertNotNull(result);
+
+    //Check ServiceGroup after creation
+    DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(result.getParticipantIdentifier());
+    DBServiceGroup aDBServiceGroup = s_aDataMgr.getCurrentEntityManager().find(DBServiceGroup.class, aDBServiceGroupID);
+    assertNotNull(aDBServiceGroup);
+
+    //Check Ownership
+    DBOwnershipID aDBOwnershipID = new DBOwnershipID(certificateIdentifierHeader, serviceGroup.getParticipantIdentifier());
+    DBOwnership dbOwnership = s_aDataMgr.getCurrentEntityManager().find(DBOwnership.class, aDBOwnershipID);
+    assertNotNull(dbOwnership);
+
+    assertNull(result.getServiceMetadataReferenceCollection());
+    assertEquals(PARTICIPANT_IDENTIFIER_SCHEME, result.getParticipantIdentifier().getScheme());
+    assertTrue(IdentifierUtils.areParticipantIdentifierValuesEqual(participantId,
+            result.getParticipantIdentifier().getValue()));
+
+    init();
+    EntityManager entityManager = s_aDataMgr.getCurrentEntityManager();
+    entityManager.remove(aDBServiceGroup);
+  }
+
+  @Test(expected = UnauthorizedException.class)
+  public void testSaveServiceGroupByCertificateNotOwner() throws Throwable {
+    String participantId = PARTICIPANT_IDENTIFIER2 + "951842";
+    String certificateIdentifierHeader = "CN=SMP_1000000181,O=DIGIT,C=DK:123456789";
+    ServiceGroupType serviceGroup = createServiceGroup(participantId);
+
+    s_aDataMgr.saveServiceGroup(serviceGroup, CREDENTIALS);
+
+    BasicAuthClientCredentials auth = new BasicAuthClientCredentials(certificateIdentifierHeader, null);
+    s_aDataMgr.saveServiceGroup(serviceGroup, auth);
+  }
+
+  @Test(expected = UnknownUserException.class)
+  public void testSaveServiceGroupByCertificateNotFound() throws Throwable {
+    String certificateIdentifierHeader = "CN=SMP_123456789,O=DIGIT,C=PT:123456789";
+
+    ServiceGroupType serviceGroup = createServiceGroup(certificateIdentifierHeader);
+    BasicAuthClientCredentials auth = new BasicAuthClientCredentials(certificateIdentifierHeader, null);
+    s_aDataMgr.saveServiceGroup(serviceGroup, auth);
+  }
+
+  @Test(expected = UnknownUserException.class)
+  public void testSaveServiceGroupByUserNotFound() throws Throwable {
+    String participantId = PARTICIPANT_IDENTIFIER2 + "123456789";
+    ServiceGroupType serviceGroup = createServiceGroup(participantId);
+
+    BasicAuthClientCredentials auth = new BasicAuthClientCredentials ("123456789", PASSWORD);
+    s_aDataMgr.saveServiceGroup(serviceGroup, auth);
+  }
+
+  @Before
+  public void init() throws Throwable {
+    if (!s_aDataMgr.getCurrentEntityManager().getTransaction().isActive()) {
+      s_aDataMgr.getCurrentEntityManager().getTransaction().begin();
+    }
+  }
+
+  private ServiceGroupType createServiceGroup(String participantId) {
+    final ObjectFactory aObjFactory = new ObjectFactory();
+    ServiceGroupType m_aServiceGroup = aObjFactory.createServiceGroupType();
+    m_aServiceGroup.setParticipantIdentifier(PARTY_ID);
+    m_aServiceGroup.getParticipantIdentifier().setValue(participantId);
+
+    return m_aServiceGroup;
   }
 }

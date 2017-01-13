@@ -70,4 +70,9 @@ public final class RequestHelper {
     final String sAuthHeader = CollectionHelper.getFirstElement (aHeaders);
     return HTTPBasicAuth.getBasicAuthClientCredentials (sAuthHeader);
   }
+
+  public static String getServiceGroupOwner(@Nonnull final HttpHeaders headers) {
+    List <String> aHeaders = headers.getRequestHeader ("ServiceGroup-Owner");
+    return CollectionHelper.getFirstElement (aHeaders);
+  }
 }

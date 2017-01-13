@@ -50,6 +50,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.NotFoundException;
 import eu.europa.ec.cipa.smp.server.exception.ErrorResponseBuilder;
 import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
@@ -118,7 +119,15 @@ public final class ServiceGroupInterface {
       }
 
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
-      aDataManager.saveServiceGroup (aServiceGroup, RequestHelper.getAuth (headers));
+
+      String serviceGroupOwner = RequestHelper.getServiceGroupOwner(headers);
+      BasicAuthClientCredentials auth;
+      if (serviceGroupOwner == null) {
+        auth = RequestHelper.getAuth(headers);
+      } else {
+        auth = new BasicAuthClientCredentials(serviceGroupOwner, null);
+      }
+      aDataManager.saveServiceGroup(aServiceGroup, auth);
 
       s_aLogger.info ("Finished saveServiceGroup(" + sServiceGroupID + "," + aServiceGroup + ")");
 
