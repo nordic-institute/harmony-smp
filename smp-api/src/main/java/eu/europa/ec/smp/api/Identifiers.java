@@ -8,6 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * Factory and utility methods for API classes generated from OASIS XSD.
+ *
  * Created by gutowpa on 12/01/2017.
  */
 public class Identifiers {
