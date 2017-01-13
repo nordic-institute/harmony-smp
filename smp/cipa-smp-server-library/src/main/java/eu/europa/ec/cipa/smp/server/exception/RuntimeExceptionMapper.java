@@ -38,11 +38,9 @@
 package eu.europa.ec.cipa.smp.server.exception;
 
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
-
-import com.helger.commons.lang.StackTraceHelper;
-import com.helger.commons.mime.CMimeType;
 
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
@@ -50,8 +48,6 @@ import com.helger.commons.mime.CMimeType;
 @Provider
 public final class RuntimeExceptionMapper implements ExceptionMapper <RuntimeException> {
   public Response toResponse (final RuntimeException ex) {
-    final String sText = StackTraceHelper.getStackAsString (ex);
-
-    return Response.serverError ().entity (sText).type (CMimeType.TEXT_PLAIN.getAsString ()).build ();
+    return ErrorResponseBuilder.status().build();
   }
 }

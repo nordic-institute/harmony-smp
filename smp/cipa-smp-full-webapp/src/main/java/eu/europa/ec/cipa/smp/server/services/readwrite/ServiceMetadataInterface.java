@@ -37,9 +37,24 @@
  */
 package eu.europa.ec.cipa.smp.server.services.readwrite;
 
+import com.sun.jersey.api.NotFoundException;
+import com.sun.jersey.spi.MessageBodyWorkers;
+import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
+import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
+import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
+import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
+import eu.europa.ec.cipa.smp.server.data.IDataManager;
+import eu.europa.ec.cipa.smp.server.exception.ErrorResponseBuilder;
+import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
 import eu.europa.ec.cipa.smp.server.util.RequestHelper;
+import org.busdox.servicemetadata.publishing._1.ServiceInformationType;
+import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -102,7 +117,7 @@ public final class ServiceMetadataInterface {
   public Document getServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
                                           @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
     // Delegate to common implementation
-    return BaseServiceMetadataInterfaceImpl.getServiceRegistration (uriInfo, sServiceGroupID, sDocumentTypeID);
+    return BaseServiceMetadataInterfaceImpl.getServiceRegistration(uriInfo, sServiceGroupID, sDocumentTypeID);
   }
 
   @PUT
@@ -151,24 +166,24 @@ public final class ServiceMetadataInterface {
 
     final ServiceInformationType aServiceInformationType = aServiceMetadata.getServiceInformation();
 
-    // Business identifiers from path (ServiceGroupID) and from service
-    // metadata (body) must equal path
-    if (!IdentifierUtils.areIdentifiersEqual(aServiceInformationType.getParticipantIdentifier(), aServiceGroupID)) {
-      s_aLogger.info("Save service metadata was called with bad parameters. serviceInfo:" +
-              IdentifierUtils.getIdentifierURIEncoded(aServiceInformationType.getParticipantIdentifier()) +
-              " param:" +
-              aServiceGroupID);
-      return Response.status(Status.BAD_REQUEST).build();
-    }
+      // Business identifiers from path (ServiceGroupID) and from service
+      // metadata (body) must equal path
+      if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getParticipantIdentifier (), aServiceGroupID)) {
+        s_aLogger.info ("Save service metadata was called with bad parameters. serviceInfo:" +
+                        IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getParticipantIdentifier ()) +
+                        " param:" +
+                        aServiceGroupID);
+        return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
+      }
 
-    if (!IdentifierUtils.areIdentifiersEqual(aServiceInformationType.getDocumentIdentifier(), aDocTypeID)) {
-      s_aLogger.info("Save service metadata was called with bad parameters. serviceInfo:" +
-              IdentifierUtils.getIdentifierURIEncoded(aServiceInformationType.getDocumentIdentifier()) +
-              " param:" +
-              aDocTypeID);
-      // Document type must equal path
-      return Response.status(Status.BAD_REQUEST).build();
-    }
+      if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getDocumentIdentifier (), aDocTypeID)) {
+        s_aLogger.info ("Save service metadata was called with bad parameters. serviceInfo:" +
+                        IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getDocumentIdentifier ()) +
+                        " param:" +
+                        aDocTypeID);
+        // Document type must equal path
+        return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
+      }
 
     return null;
   }
