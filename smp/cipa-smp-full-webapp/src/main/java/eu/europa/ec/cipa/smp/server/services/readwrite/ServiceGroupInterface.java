@@ -119,15 +119,7 @@ public final class ServiceGroupInterface {
       }
 
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
-
-      String serviceGroupOwner = RequestHelper.getServiceGroupOwner(headers);
-      BasicAuthClientCredentials auth;
-      if (serviceGroupOwner == null) {
-        auth = RequestHelper.getAuth(headers);
-      } else {
-        auth = new BasicAuthClientCredentials(serviceGroupOwner, null);
-      }
-      aDataManager.saveServiceGroup(aServiceGroup, auth);
+      aDataManager.saveServiceGroup(aServiceGroup, RequestHelper.getAuth(headers));
 
       s_aLogger.info ("Finished saveServiceGroup(" + sServiceGroupID + "," + aServiceGroup + ")");
 
