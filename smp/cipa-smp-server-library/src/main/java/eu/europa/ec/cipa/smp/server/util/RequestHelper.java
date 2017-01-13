@@ -63,16 +63,17 @@ public final class RequestHelper {
   public static BasicAuthClientCredentials getAuth (@Nonnull final HttpHeaders headers) throws UnauthorizedException {
     List <String> aHeaders = headers.getRequestHeader ("ServiceGroup-Owner");
 
-    if (CollectionHelper.isEmpty(aHeaders)) {
-      aHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+    if (!CollectionHelper.isEmpty(aHeaders)) {
+      return new BasicAuthClientCredentials(CollectionHelper.getFirstElement(aHeaders));
     }
 
-    if (CollectionHelper.isEmpty(aHeaders))
+    aHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+    if (CollectionHelper.isEmpty(aHeaders)) {
       throw new UnauthorizedException("Missing required HTTP header '" +
               HttpHeaders.AUTHORIZATION +
               "' for user authentication");
+    }
 
-    final String sAuthHeader = CollectionHelper.getFirstElement (aHeaders);
-    return HTTPBasicAuth.getBasicAuthClientCredentials(sAuthHeader);
+    return HTTPBasicAuth.getBasicAuthClientCredentials(CollectionHelper.getFirstElement (aHeaders));
   }
 }
