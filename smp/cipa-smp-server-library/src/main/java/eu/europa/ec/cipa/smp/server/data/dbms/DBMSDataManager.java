@@ -129,9 +129,11 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         }
 
         // Check that the password is correct
-        if ((aDBUser.getPassword()== null && aCredentials.getPassword()== null) ||
-                (aDBUser.getPassword()!= null && ! aDBUser.getPassword().equals(aCredentials.getPassword()))){
-            throw new UnauthorizedException("Illegal password for user '" + sUsername + "'");
+        if (!isNullPasswordAllowed(aDBUser.getPassword(),aCredentials.getPassword())){
+            if(aCredentials.getPassword()== null || aDBUser.getPassword()== null ||
+                    !aDBUser.getPassword().equals(aCredentials.getPassword())) {
+                throw new UnauthorizedException("Illegal password for user '" + sUsername + "'");
+            }
         }
 
         if (s_aLogger.isDebugEnabled()) {
@@ -139,6 +141,10 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         }
 
         return aDBUser;
+    }
+
+    private boolean isNullPasswordAllowed(String requestPassword, String databasePassword){
+       return (requestPassword == null && databasePassword == null);
     }
 
     /**
