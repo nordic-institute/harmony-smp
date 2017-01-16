@@ -208,14 +208,21 @@ public class DBMSDataManagerTest {
 
   private void createUser() throws Throwable {
       String username = "CN=SMP_1000000181,O=DIGIT,C=DK:123456789";
+      String password = "123456789";
       DBUser aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, username);
+      init();
       if(aDBUser == null){
-          init();
           aDBUser = new DBUser();
           aDBUser.setUsername(username);
-          aDBUser.setPassword("123456789");
+          aDBUser.setPassword(password);
           s_aDataMgr.getCurrentEntityManager().persist(aDBUser);
           s_aDataMgr.getCurrentEntityManager().getTransaction().commit();
+      }else{
+          if(!aDBUser.getPassword().equals(password)){
+              aDBUser.setPassword(password);
+              s_aDataMgr.getCurrentEntityManager().merge(aDBUser);
+              s_aDataMgr.getCurrentEntityManager().getTransaction().commit();
+          }
       }
   }
 
