@@ -48,6 +48,7 @@ import com.helger.db.jpa.JPAExecutionResult;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.NotFoundException;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
+import eu.europa.ec.cipa.smp.server.authentication.DefaultBasicAuth;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
@@ -122,15 +123,22 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         final DBUser aDBUser = getEntityManager().find(DBUser.class, sUsername);
 
         // Check that the user exists
-        if (aDBUser == null)
+        if (aDBUser == null) {
             throw new UnknownUserException(sUsername);
+        }
 
+        //This verification is done only for HTTP AUTH, no validation for users coming from the HEADER "ServiceGroup-Owner"
         // Check that the password is correct
-        if (aCredentials.getPassword()== null || !aDBUser.getPassword().equals(aCredentials.getPassword()))
-            throw new UnauthorizedException("Illegal password for user '" + sUsername + "'");
+        if(!(aCredentials instanceof DefaultBasicAuth && ((DefaultBasicAuth)aCredentials).isServiceGroupOwner())){
+            if (aCredentials.getPassword()== null || !aDBUser.getPassword().equals(aCredentials.getPassword())) {
+                throw new UnauthorizedException("Illegal password for user '" + sUsername + "'");
+            }
+        }
 
-        if (s_aLogger.isDebugEnabled())
+        if (s_aLogger.isDebugEnabled()) {
             s_aLogger.debug("Verified credentials of user '" + sUsername + "' successfully");
+        }
+
         return aDBUser;
     }
 

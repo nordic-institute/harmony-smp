@@ -43,13 +43,13 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.Arrays;
 import java.util.Date;
 
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
-import eu.europa.ec.cipa.smp.server.data.dbms.model.DBOwnership;
-import eu.europa.ec.cipa.smp.server.data.dbms.model.DBOwnershipID;
-import eu.europa.ec.cipa.smp.server.data.dbms.model.DBServiceGroup;
-import eu.europa.ec.cipa.smp.server.data.dbms.model.DBServiceGroupID;
+import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
+import eu.europa.ec.cipa.smp.server.util.DefaultHttpHeader;
+import eu.europa.ec.cipa.smp.server.util.RequestHelper;
 import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
 import org.busdox.servicemetadata.publishing._1.EndpointType;
 import org.busdox.servicemetadata.publishing._1.ExtensionType;
@@ -62,6 +62,7 @@ import org.busdox.servicemetadata.publishing._1.ServiceInformationType;
 import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -144,9 +145,12 @@ public class DBMSDataManagerTest {
   private ServiceGroupType m_aServiceGroup;
   private ServiceMetadataType m_aServiceMetadata;
   private String m_sServiceMetadata;
+  private boolean isServiceGroupToDelete = false;
 
   @Before
   public void beforeTest () throws Throwable {
+    createUser();
+
     final ExtensionType aExtension = ExtensionConverter.convert ("<root><any>value</any></root>");
     assertNotNull (aExtension);
     assertNotNull (aExtension.getAny ());
@@ -200,6 +204,19 @@ public class DBMSDataManagerTest {
     }
     m_aServiceMetadata.setServiceInformation (aServiceInformation);
     m_sServiceMetadata = XmlTestUtils.marshall(m_aServiceMetadata);
+  }
+
+  private void createUser() throws Throwable {
+      String username = "CN=SMP_1000000181,O=DIGIT,C=DK:123456789";
+      DBUser aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, username);
+      if(aDBUser == null){
+          init();
+          aDBUser = new DBUser();
+          aDBUser.setUsername(username);
+          aDBUser.setPassword("123456789");
+          s_aDataMgr.getCurrentEntityManager().persist(aDBUser);
+          s_aDataMgr.getCurrentEntityManager().getTransaction().commit();
+      }
   }
 
   @Test
@@ -381,36 +398,31 @@ public class DBMSDataManagerTest {
 
   @Test
   public void testSaveServiceGroupByCertificate() throws Throwable {
-    String certificateIdentifierHeader = "CN=SMP_1000000181,O=DIGIT,C=DK:406b2abf0bd1d46ac4292efee597d414";
-    String participantId = PARTICIPANT_IDENTIFIER2 + "654987";
+      // # Authentication from header #
+      String username = "CN=SMP_1000000181,O=DIGIT,C=DK:123456789";
+      DefaultHttpHeader defaultHttpHeader = new DefaultHttpHeader();
+      defaultHttpHeader.addRequestHeader("ServiceGroup-Owner", Arrays.asList(new String[]{username}));
+      BasicAuthClientCredentials auth = RequestHelper.getAuth(defaultHttpHeader);
 
-    ServiceGroupType serviceGroup = createServiceGroup(participantId);
+      // # Delete after leaving test #
+      isServiceGroupToDelete = true;
 
-    init();
-    BasicAuthClientCredentials auth = new BasicAuthClientCredentials(certificateIdentifierHeader, null);
-    s_aDataMgr.saveServiceGroup(serviceGroup, auth);
+      // # Save ServiceGroup #
+      init();
+      String participantId = PARTICIPANT_IDENTIFIER2 + "654987";
+      m_aServiceGroup = createServiceGroup(participantId);
+      s_aDataMgr.saveServiceGroup(m_aServiceGroup, auth);
 
-    ServiceGroupType result = s_aDataMgr.getServiceGroup(serviceGroup.getParticipantIdentifier());
-    assertNotNull(result);
+      // # Check ServiceGroup after save #
+      ServiceGroupType result = s_aDataMgr.getServiceGroup(m_aServiceGroup.getParticipantIdentifier());
+      assertNotNull(result);
+      assertNull(result.getServiceMetadataReferenceCollection());
+      assertEquals(PARTICIPANT_IDENTIFIER_SCHEME, result.getParticipantIdentifier().getScheme());
+      assertTrue(IdentifierUtils.areParticipantIdentifierValuesEqual(participantId,
+              result.getParticipantIdentifier().getValue()));
 
-    //Check ServiceGroup after creation
-    DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(result.getParticipantIdentifier());
-    DBServiceGroup aDBServiceGroup = s_aDataMgr.getCurrentEntityManager().find(DBServiceGroup.class, aDBServiceGroupID);
-    assertNotNull(aDBServiceGroup);
-
-    //Check Ownership
-    DBOwnershipID aDBOwnershipID = new DBOwnershipID(certificateIdentifierHeader, serviceGroup.getParticipantIdentifier());
-    DBOwnership dbOwnership = s_aDataMgr.getCurrentEntityManager().find(DBOwnership.class, aDBOwnershipID);
-    assertNotNull(dbOwnership);
-
-    assertNull(result.getServiceMetadataReferenceCollection());
-    assertEquals(PARTICIPANT_IDENTIFIER_SCHEME, result.getParticipantIdentifier().getScheme());
-    assertTrue(IdentifierUtils.areParticipantIdentifierValuesEqual(participantId,
-            result.getParticipantIdentifier().getValue()));
-
-    init();
-    EntityManager entityManager = s_aDataMgr.getCurrentEntityManager();
-    entityManager.remove(aDBServiceGroup);
+      // # Check Ownership #
+      assertNotNull( s_aDataMgr.getCurrentEntityManager().find(DBOwnership.class, new DBOwnershipID(auth.getUserName(), m_aServiceGroup.getParticipantIdentifier())));
   }
 
   @Test(expected = UnauthorizedException.class)
@@ -421,7 +433,7 @@ public class DBMSDataManagerTest {
 
     s_aDataMgr.saveServiceGroup(serviceGroup, CREDENTIALS);
 
-    BasicAuthClientCredentials auth = new BasicAuthClientCredentials(certificateIdentifierHeader, null);
+    BasicAuthClientCredentials auth = new BasicAuthClientCredentials(certificateIdentifierHeader, "100password");
     s_aDataMgr.saveServiceGroup(serviceGroup, auth);
   }
 
@@ -430,7 +442,7 @@ public class DBMSDataManagerTest {
     String certificateIdentifierHeader = "CN=SMP_123456789,O=DIGIT,C=PT:123456789";
 
     ServiceGroupType serviceGroup = createServiceGroup(certificateIdentifierHeader);
-    BasicAuthClientCredentials auth = new BasicAuthClientCredentials(certificateIdentifierHeader, null);
+    BasicAuthClientCredentials auth = new BasicAuthClientCredentials(certificateIdentifierHeader, "100password");
     s_aDataMgr.saveServiceGroup(serviceGroup, auth);
   }
 
@@ -456,5 +468,18 @@ public class DBMSDataManagerTest {
     m_aServiceGroup.getParticipantIdentifier().setValue(participantId);
 
     return m_aServiceGroup;
+  }
+
+  @After
+  public void deleteData() throws Throwable {
+    if(isServiceGroupToDelete){
+      init();
+      EntityManager entityManager = s_aDataMgr.getCurrentEntityManager();
+      DBServiceGroup aDBServiceGroup = entityManager.find(DBServiceGroup.class, new DBServiceGroupID(m_aServiceGroup.getParticipantIdentifier()));
+      if (aDBServiceGroup != null) {
+          entityManager.remove(aDBServiceGroup);
+          isServiceGroupToDelete = false;
+      }
+    }
   }
 }

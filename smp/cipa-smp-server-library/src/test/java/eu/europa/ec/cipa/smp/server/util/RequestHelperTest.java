@@ -1,6 +1,7 @@
 package eu.europa.ec.cipa.smp.server.util;
 
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
+import eu.europa.ec.cipa.smp.server.authentication.DefaultBasicAuth;
 import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
 import org.junit.Test;
 
@@ -21,6 +22,8 @@ public class RequestHelperTest {
         BasicAuthClientCredentials retrivedAuth = RequestHelper.getAuth(defaultHttpHeader);
         assertNotNull(retrivedAuth.getUserName());
         assertEquals(username, retrivedAuth.getUserName());
+        assertEquals(retrivedAuth.getClass(), DefaultBasicAuth.class);
+        assertEquals(((DefaultBasicAuth)retrivedAuth).isServiceGroupOwner(),true);
     }
 
     @Test(expected = UnauthorizedException.class)
@@ -40,9 +43,13 @@ public class RequestHelperTest {
         defaultHttpHeader.addRequestHeader("Authorization", Arrays.asList(new String[]{username}));
 
         BasicAuthClientCredentials retrivedAuth = RequestHelper.getAuth(defaultHttpHeader);
+        if(retrivedAuth instanceof DefaultBasicAuth){
+            assertEquals(((DefaultBasicAuth)retrivedAuth).isServiceGroupOwner(),false);
+        }
         assertNotNull(retrivedAuth.getUserName());
         assertEquals("smp_demo_user", retrivedAuth.getUserName());
         assertEquals("12345678_dumy_password", retrivedAuth.getPassword());
+        assertNotEquals(retrivedAuth.getClass(), DefaultBasicAuth.class);
     }
 
     @Test(expected = UnauthorizedException.class)
