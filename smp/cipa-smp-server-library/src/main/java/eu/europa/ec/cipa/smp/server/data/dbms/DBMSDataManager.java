@@ -126,7 +126,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
             throw new UnknownUserException(sUsername);
 
         // Check that the password is correct
-        if (aCredentials.getPassword() != null && !aDBUser.getPassword().equals(aCredentials.getPassword()))
+        if (aCredentials.getPassword()== null || !aDBUser.getPassword().equals(aCredentials.getPassword()))
             throw new UnauthorizedException("Illegal password for user '" + sUsername + "'");
 
         if (s_aLogger.isDebugEnabled())
