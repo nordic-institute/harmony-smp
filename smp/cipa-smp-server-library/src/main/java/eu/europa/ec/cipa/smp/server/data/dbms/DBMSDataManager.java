@@ -48,7 +48,6 @@ import com.helger.db.jpa.JPAExecutionResult;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.NotFoundException;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.smp.server.authentication.DefaultBasicAuth;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
@@ -66,7 +65,9 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
@@ -117,7 +118,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
      *                               password
      */
     @Nonnull
-    private DBUser _verifyUser(@Nonnull final BasicAuthClientCredentials aCredentials) throws UnknownUserException,
+    public DBUser _verifyUser(@Nonnull final BasicAuthClientCredentials aCredentials) throws UnknownUserException,
             UnauthorizedException {
         final String sUsername = aCredentials.getUserName();
         final DBUser aDBUser = getEntityManager().find(DBUser.class, sUsername);
@@ -127,12 +128,10 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
             throw new UnknownUserException(sUsername);
         }
 
-        //This verification is done only for HTTP AUTH, no validation for users coming from the HEADER "ServiceGroup-Owner"
         // Check that the password is correct
-        if(!(aCredentials instanceof DefaultBasicAuth && ((DefaultBasicAuth)aCredentials).isServiceGroupOwner())){
-            if (aCredentials.getPassword()== null || !aDBUser.getPassword().equals(aCredentials.getPassword())) {
-                throw new UnauthorizedException("Illegal password for user '" + sUsername + "'");
-            }
+        if ((aDBUser.getPassword()== null && aCredentials.getPassword()== null) ||
+                (aDBUser.getPassword()!= null && ! aDBUser.getPassword().equals(aCredentials.getPassword()))){
+            throw new UnauthorizedException("Illegal password for user '" + sUsername + "'");
         }
 
         if (s_aLogger.isDebugEnabled()) {

@@ -40,7 +40,6 @@ package eu.europa.ec.cipa.smp.server.util;
 import com.helger.commons.collections.CollectionHelper;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import com.helger.web.http.basicauth.HTTPBasicAuth;
-import eu.europa.ec.cipa.smp.server.authentication.DefaultBasicAuth;
 import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
 
 import javax.annotation.Nonnull;
@@ -64,7 +63,7 @@ public final class RequestHelper {
         List<String> aHeaders = headers.getRequestHeader("ServiceGroup-Owner");
 
         if (!CollectionHelper.isEmpty(aHeaders)) {
-            return new DefaultBasicAuth(CollectionHelper.getFirstElement(aHeaders), true);
+            return new BasicAuthClientCredentials(CollectionHelper.getFirstElement(aHeaders));
         }
 
         aHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
