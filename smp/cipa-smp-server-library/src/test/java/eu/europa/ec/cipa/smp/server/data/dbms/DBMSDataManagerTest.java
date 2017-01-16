@@ -443,8 +443,7 @@ public class DBMSDataManagerTest {
     s_aDataMgr.saveServiceGroup(serviceGroup, auth);
   }
 
-  @Before
-  public void init() throws Throwable {
+  private void init() throws Throwable {
     if (!s_aDataMgr.getCurrentEntityManager().getTransaction().isActive()) {
       s_aDataMgr.getCurrentEntityManager().getTransaction().begin();
     }
