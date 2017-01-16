@@ -37,7 +37,6 @@
  */
 package eu.europa.ec.cipa.smp.server.services.readwrite;
 
-import com.sun.jersey.api.NotFoundException;
 import com.sun.jersey.spi.MessageBodyWorkers;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
@@ -45,15 +44,19 @@ import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifi
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
-import eu.europa.ec.cipa.smp.server.exception.ErrorResponseBuilder;
+import eu.europa.ec.cipa.smp.server.exception.BadRequestException;
+import eu.europa.ec.cipa.smp.server.exception.ErrorResponse;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
 import eu.europa.ec.cipa.smp.server.util.RequestHelper;
+import org.busdox.servicemetadata.publishing._1.EndpointType;
+import org.busdox.servicemetadata.publishing._1.ProcessListType;
+import org.busdox.servicemetadata.publishing._1.ProcessType;
+import org.busdox.servicemetadata.publishing._1.ServiceEndpointList;
 import org.busdox.servicemetadata.publishing._1.ServiceInformationType;
 import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -65,11 +68,8 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
+import java.util.Date;
 
 /**
  * This class implements the REST interface for getting SignedServiceMetadata's.
@@ -106,20 +106,15 @@ public final class ServiceMetadataInterface {
 
     s_aLogger.info ("PUT /" + sServiceGroupID + "/services/" + sDocumentTypeID + " ==> " + body);
 
-    try{
+    validateErrors(sServiceGroupID, sDocumentTypeID, body);
 
-      Response errorResponse = getValidationErrors(sServiceGroupID, sDocumentTypeID, body);
-      if(errorResponse != null){
-        return errorResponse;
-      }
+    final ServiceMetadataType aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
 
-      final ServiceMetadataType aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
+    // Main save
+    final IDataManager aDataManager = DataManagerFactory.getInstance ();
+    aDataManager.saveService (aServiceMetadata, body, RequestHelper.getAuth (headers));
 
-      // Main save
-      final IDataManager aDataManager = DataManagerFactory.getInstance ();
-      aDataManager.saveService (aServiceMetadata, body, RequestHelper.getAuth (headers));
-
-      s_aLogger.info ("Finished saveServiceRegistration(" +
+    s_aLogger.info ("Finished saveServiceRegistration(" +
                       sServiceGroupID +
                       "," +
                       sDocumentTypeID +
@@ -127,17 +122,12 @@ public final class ServiceMetadataInterface {
                       aServiceMetadata +
                       ")");
 
-      return Response.ok ().build ();
-    }
-    catch (final Throwable ex) {
-      s_aLogger.error ("Error in saving Service metadata.", ex);
-      throw ex;
-    }
+    return Response.ok ().build ();
   }
 
-  private Response getValidationErrors(final String sServiceGroupID,
-                                   final String sDocumentTypeID,
-                                   final String body) throws ParserConfigurationException, IOException, SAXException, JAXBException {
+  private void validateErrors(final String sServiceGroupID,
+                              final String sDocumentTypeID,
+                              final String body) throws Exception {
 
     final ServiceMetadataType aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
 
@@ -145,14 +135,14 @@ public final class ServiceMetadataInterface {
     if (aServiceGroupID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
+      throw new BadRequestException(ErrorResponse.BusinessCode.XSD_INVALID, "Failed to parse participant identifier '" + sServiceGroupID + "'");
     }
 
     final SimpleDocumentTypeIdentifier aDocTypeID = SimpleDocumentTypeIdentifier.createFromURIPartOrNull(sDocumentTypeID);
     if (aDocTypeID == null) {
       // Invalid identifier
       s_aLogger.info("Failed to parse document type identifier '" + sDocumentTypeID + "'");
-      return Response.status(Status.BAD_REQUEST).build();
+      throw new BadRequestException(ErrorResponse.BusinessCode.XSD_INVALID, "Failed to parse participant identifier '" + sServiceGroupID + "'");
     }
 
     final ServiceInformationType aServiceInformationType = aServiceMetadata.getServiceInformation();
@@ -164,7 +154,11 @@ public final class ServiceMetadataInterface {
                         IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getParticipantIdentifier ()) +
                         " param:" +
                         aServiceGroupID);
-        return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
+        throw new BadRequestException(ErrorResponse.BusinessCode.WRONG_FIELD, "Save service metadata was called with bad parameters. serviceInfo:" +
+                                                      IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getParticipantIdentifier ()) +
+                                                      " param:" +
+                                                      aServiceGroupID);
+
       }
 
       if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getDocumentIdentifier (), aDocTypeID)) {
@@ -173,10 +167,63 @@ public final class ServiceMetadataInterface {
                         " param:" +
                         aDocTypeID);
         // Document type must equal path
-        return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
+        throw new BadRequestException(ErrorResponse.BusinessCode.WRONG_FIELD, "Save service metadata was called with bad parameters. serviceInfo:" +
+                                                      IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getDocumentIdentifier ()) +
+                                                      " param:" +
+                                                      aDocTypeID);
       }
 
-    return null;
+      validateData(aServiceMetadata);
+  }
+
+  private void validateData(ServiceMetadataType aServiceMetadata) throws Exception {
+    ProcessListType processList;
+    if(aServiceMetadata.getServiceInformation() == null) {
+      return;
+    }
+    processList = aServiceMetadata.getServiceInformation().getProcessList();
+    if (processList == null) {
+      return;
+    }
+
+    ProcessType process;
+    for(int i = 0; i < processList.getProcessCount(); i++) {
+      process = processList.getProcessAtIndex(i);
+      if(process == null) {
+        return;
+      }
+      ServiceEndpointList serviceEndpointList = process.getServiceEndpointList();
+      if(serviceEndpointList == null) {
+        return;
+      }
+
+      EndpointType endpoint;
+      for(int j = 0; j < serviceEndpointList.getEndpointCount(); j++) {
+        endpoint = serviceEndpointList.getEndpointAtIndex(j);
+
+        if(endpoint == null) {
+          return;
+        }
+
+        if(endpoint.getEndpointReference() == null) {
+          throw new BadRequestException(ErrorResponse.BusinessCode.MISSING_FIELD, "Endpoint reference is missing");
+        }
+
+        Date activationDate = endpoint.getServiceActivationDate();
+        if(activationDate == null) {
+          throw new BadRequestException(ErrorResponse.BusinessCode.MISSING_FIELD, "Endpoint Activation date is missing");
+        }
+
+        Date expirationDate = endpoint.getServiceExpirationDate();
+        if(expirationDate == null) {
+          throw new BadRequestException(ErrorResponse.BusinessCode.MISSING_FIELD, "Endpoint Expiration date is missing");
+        }
+
+        if(activationDate.after(expirationDate)) {
+          throw new BadRequestException(ErrorResponse.BusinessCode.OUT_OF_RANGE, "Expiration date is before Activation date");
+        }
+      }
+    }
   }
 
   @DELETE
@@ -188,27 +235,21 @@ public final class ServiceMetadataInterface {
     if (aServiceGroupID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
+      throw new BadRequestException(ErrorResponse.BusinessCode.XSD_INVALID, "Failed to parse participant identifier '" + sServiceGroupID + "'");
     }
 
     final SimpleDocumentTypeIdentifier aDocTypeID = SimpleDocumentTypeIdentifier.createFromURIPartOrNull (sDocumentTypeID);
     if (aDocTypeID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse document type identifier '" + sDocumentTypeID + "'");
-      return null;
+      throw new BadRequestException(ErrorResponse.BusinessCode.XSD_INVALID, "Failed to parse document type identifier '" + sDocumentTypeID + "'");
     }
 
-    try {
-      final IDataManager aDataManager = DataManagerFactory.getInstance ();
-      aDataManager.deleteService (aServiceGroupID, aDocTypeID, RequestHelper.getAuth (headers));
+    final IDataManager aDataManager = DataManagerFactory.getInstance ();
+    aDataManager.deleteService (aServiceGroupID, aDocTypeID, RequestHelper.getAuth (headers));
 
-      s_aLogger.info ("Finished deleteServiceRegistration(" + sServiceGroupID + "," + sDocumentTypeID);
+    s_aLogger.info ("Finished deleteServiceRegistration(" + sServiceGroupID + "," + sDocumentTypeID);
 
-      return Response.ok ().build ();
-    }
-    catch (final Throwable ex) {
-      s_aLogger.error ("Error in deleting Service metadata.", ex);
-      throw ex;
-    }
+    return Response.ok ().build ();
   }
 }

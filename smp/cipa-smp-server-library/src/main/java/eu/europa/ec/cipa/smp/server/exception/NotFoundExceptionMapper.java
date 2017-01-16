@@ -41,7 +41,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import com.sun.jersey.api.NotFoundException;
 
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
@@ -49,6 +48,9 @@ import com.sun.jersey.api.NotFoundException;
 @Provider
 public class NotFoundExceptionMapper implements ExceptionMapper <NotFoundException> {
   public Response toResponse (final NotFoundException aEx) {
-    return aEx.getResponse ();
+    return ErrorResponseBuilder.status(Response.Status.NOT_FOUND)
+            .businessCode(ErrorResponse.BusinessCode.NOT_FOUND)
+            .errorDescription(aEx.getMessage())
+            .build();
   }
 }

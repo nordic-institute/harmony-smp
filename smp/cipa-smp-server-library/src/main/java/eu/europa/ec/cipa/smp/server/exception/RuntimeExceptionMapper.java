@@ -48,6 +48,9 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public final class RuntimeExceptionMapper implements ExceptionMapper <RuntimeException> {
   public Response toResponse (final RuntimeException ex) {
-    return ErrorResponseBuilder.status().build();
+    String errorDescription = ex.getMessage()!=null?ex.getMessage():"Some unexpected technical error occurred";
+    return ErrorResponseBuilder.status(Status.INTERNAL_SERVER_ERROR)
+            .errorDescription(errorDescription)
+            .build();
   }
 }

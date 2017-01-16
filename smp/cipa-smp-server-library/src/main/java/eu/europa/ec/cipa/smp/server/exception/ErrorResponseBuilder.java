@@ -13,7 +13,7 @@ import java.util.UUID;
  */
 public class ErrorResponseBuilder {
     private Status status = Status.INTERNAL_SERVER_ERROR;
-    private String strBusinessCode = "TECHNICAL";
+    private ErrorResponse.BusinessCode businessCode = ErrorResponse.BusinessCode.TECHNICAL;
     private String strErrorDescription = "Unexpected technical error occurred.";
 
     private static final SimpleDateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSz");
@@ -34,27 +34,23 @@ public class ErrorResponseBuilder {
         return new ErrorResponseBuilder(status);
     }
 
-    public static ErrorResponseBuilder status() {
-        return new ErrorResponseBuilder(Status.INTERNAL_SERVER_ERROR);
-    }
-
     private String buildBody() {
         StringBuilder response = new StringBuilder();
         response.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         response.append("<ErrorResponse xmlns=\"ec:services:SMP:1.0\">");
-        response.append("<BusinessCode>").append(strBusinessCode).append("</BusinessCode>");
+        response.append("<BusinessCode>").append(businessCode.toString()).append("</BusinessCode>");
         response.append("<ErrorDescription>").append(strErrorDescription).append("</ErrorDescription>");
         response.append("<ErrorUniqueId>").append(getErrorUniqueId()).append("</ErrorUniqueId>");
         response.append("</ErrorResponse>");
         return String.valueOf(response);
     }
 
-    ErrorResponseBuilder businessCode(String newBusinessCode) {
-        this.strBusinessCode = newBusinessCode;
+    public ErrorResponseBuilder businessCode(ErrorResponse.BusinessCode newBusinessCode) {
+        this.businessCode = newBusinessCode;
         return this;
     }
 
-    ErrorResponseBuilder errorDescription(String newErrorDescription) {
+    public ErrorResponseBuilder errorDescription(String newErrorDescription) {
         this.strErrorDescription = newErrorDescription;
         return this;
     }

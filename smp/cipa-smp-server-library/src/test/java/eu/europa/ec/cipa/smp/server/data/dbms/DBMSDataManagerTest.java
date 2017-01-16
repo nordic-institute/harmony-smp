@@ -46,6 +46,8 @@ import static org.junit.Assert.fail;
 import java.util.Date;
 
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
+import eu.europa.ec.cipa.smp.server.exception.NotFoundException;
+import eu.europa.ec.cipa.smp.server.exception.UnknownUserException;
 import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
 import org.busdox.servicemetadata.publishing._1.EndpointType;
 import org.busdox.servicemetadata.publishing._1.ExtensionType;
@@ -66,7 +68,6 @@ import org.junit.rules.TestRule;
 import com.helger.commons.annotations.DevelopersNote;
 import com.helger.commons.scopes.mock.ScopeTestRule;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
-import com.sun.jersey.api.NotFoundException;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
@@ -77,7 +78,6 @@ import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
 import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
 import eu.europa.ec.cipa.smp.client.ESMPTransportProfile;
 import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
-import eu.europa.ec.cipa.smp.server.exception.UnknownUserException;
 import eu.europa.ec.cipa.smp.server.hook.DoNothingRegistrationHook;
 
 /**

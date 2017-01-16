@@ -47,6 +47,7 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
 import com.helger.commons.string.StringParser;
+import eu.europa.ec.cipa.smp.server.exception.NotFoundException;
 import org.busdox.servicemetadata.publishing._1.ObjectFactory;
 import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
 import org.busdox.servicemetadata.publishing._1.ServiceMetadataReferenceCollectionType;
@@ -56,8 +57,6 @@ import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import com.sun.jersey.api.NotFoundException;
 
 import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
@@ -128,7 +127,7 @@ public final class BaseServiceGroupInterfaceImpl {
       final ServiceGroupType aServiceGroup = aDataManager.getServiceGroup (aServiceGroupID);
       if (aServiceGroup == null) {
         // No such service group
-        throw new NotFoundException ("serviceGroup", aUriInfo.getAbsolutePath ());
+        throw new NotFoundException("ServiceGroup '" + aServiceGroupID.getScheme() + "::" + aServiceGroupID.getValue() + "' is not found");
       }
 
       // Then add the service metadata references

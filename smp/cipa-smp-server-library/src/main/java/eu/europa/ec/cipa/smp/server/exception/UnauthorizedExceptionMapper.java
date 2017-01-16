@@ -48,6 +48,9 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class UnauthorizedExceptionMapper implements ExceptionMapper <UnauthorizedException> {
   public Response toResponse (final UnauthorizedException e) {
-    return ErrorResponseBuilder.status(Status.FORBIDDEN).build();
+    return ErrorResponseBuilder.status(Status.UNAUTHORIZED)
+            .businessCode(ErrorResponse.BusinessCode.UNAUTHORIZED)
+            .errorDescription(e.getMessage())
+            .build();
   }
 }
