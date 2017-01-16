@@ -507,6 +507,26 @@ public class DBMSDataManagerTest {
        DBUser user = s_aDataMgr._verifyUser(auth);
   }
 
+  @Test
+  public void verifyUserNullAllowed() throws Throwable {
+      // # Look for user
+      DBUser aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, CREDENTIALS.getUserName());
+      assertNotNull(aDBUser);
+
+      // # Set password to null and save
+      aDBUser.setPassword(null);
+      s_aDataMgr.getCurrentEntityManager().merge(aDBUser);
+
+      // # Check if password is null
+      aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, CREDENTIALS.getUserName());
+      assertNull(aDBUser.getPassword());
+
+      // # Validate authentication with null password in the request and database
+      BasicAuthClientCredentials auth = new BasicAuthClientCredentials(CREDENTIALS.getUserName(),null);
+      DBUser user = s_aDataMgr._verifyUser(auth);
+      assertNotNull(user);
+  }
+
   @Test(expected = NullPointerException.class)
   public void verifyNullUser() throws Throwable {
         BasicAuthClientCredentials auth = new BasicAuthClientCredentials(null, "WrongPass");
