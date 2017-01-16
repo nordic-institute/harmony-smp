@@ -525,6 +525,9 @@ public class DBMSDataManagerTest {
       BasicAuthClientCredentials auth = new BasicAuthClientCredentials(CREDENTIALS.getUserName(),null);
       DBUser user = s_aDataMgr._verifyUser(auth);
       assertNotNull(user);
+
+      aDBUser.setPassword(CREDENTIALS.getPassword());
+      s_aDataMgr.getCurrentEntityManager().merge(aDBUser);
   }
 
   @Test(expected = NullPointerException.class)
