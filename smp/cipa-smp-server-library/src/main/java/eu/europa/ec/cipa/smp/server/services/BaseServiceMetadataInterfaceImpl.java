@@ -42,6 +42,8 @@ import javax.annotation.Nullable;
 import javax.ws.rs.core.UriInfo;
 
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
+import eu.europa.ec.cipa.smp.server.exception.BadRequestException;
+import eu.europa.ec.cipa.smp.server.exception.ErrorResponse;
 import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
 import org.slf4j.Logger;
@@ -71,31 +73,39 @@ public final class BaseServiceMetadataInterfaceImpl {
                                                                                 @Nullable final String sDocumentTypeID) throws Throwable {
     s_aLogger.info ("GET /" + sServiceGroupID + "/services/" + sDocumentTypeID);
 
+    if(sServiceGroupID == null) {
+      s_aLogger.info ("sServiceGroupID is null");
+      throw new BadRequestException(ErrorResponse.BusinessCode.MISSING_FIELD, "sServiceGroupID is NULL and it shouldn't");
+    }
+
     final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
     if (aServiceGroupID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return null;
+      throw new BadRequestException(ErrorResponse.BusinessCode.OTHER_ERROR, "Failed to parse participant identifier '" + sServiceGroupID + "'");
+    }
+
+    if(sDocumentTypeID == null) {
+      s_aLogger.info ("sDocumentTypeID is null");
+      throw new BadRequestException(ErrorResponse.BusinessCode.MISSING_FIELD, "sDocumentTypeID is NULL and it shouldn't");
     }
 
     final DocumentIdentifierType aDocTypeID = IdentifierUtils.createDocumentTypeIdentifierFromURIPartOrNull (sDocumentTypeID);
     if (aDocTypeID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse document type identifier '" + sDocumentTypeID + "'");
-      return null;
+      throw new BadRequestException(ErrorResponse.BusinessCode.OTHER_ERROR, "Failed to parse document type identifier '" + sDocumentTypeID + "'");
     }
 
-    try {
-      final IDataManager aDataManager = DataManagerFactory.getInstance ();
-      String sServiceMetadata = aDataManager.getService (aServiceGroupID, aDocTypeID);
-      Document aSignedServiceMetadata = ServiceMetadataConverter.toSignedServiceMetadatadaDocument(sServiceMetadata);
+    final IDataManager aDataManager = DataManagerFactory.getInstance ();
+    String sServiceMetadata = aDataManager.getService (aServiceGroupID, aDocTypeID);
+    if (sServiceMetadata == null) {
+      s_aLogger.error("ServiceMetadata was not found");
+      throw new BadRequestException(ErrorResponse.BusinessCode.NOT_FOUND, "ServiceMetadata was not found");
+    }
+    Document aSignedServiceMetadata = ServiceMetadataConverter.toSignedServiceMetadatadaDocument(sServiceMetadata);
 
-      s_aLogger.info ("Finished getServiceRegistration(" + sServiceGroupID + "," + sDocumentTypeID + ")");
-      return aSignedServiceMetadata;
-    }
-    catch (final Throwable ex) {
-      s_aLogger.error ("Error in returning service metadata.", ex);
-      throw ex;
-    }
+    s_aLogger.info ("Finished getServiceRegistration(" + sServiceGroupID + "," + sDocumentTypeID + ")");
+    return aSignedServiceMetadata;
   }
 }

@@ -47,6 +47,8 @@ import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBElement;
 
 import com.helger.commons.string.StringParser;
+import eu.europa.ec.cipa.smp.server.exception.BadRequestException;
+import eu.europa.ec.cipa.smp.server.exception.ErrorResponse;
 import eu.europa.ec.cipa.smp.server.exception.NotFoundException;
 import org.busdox.servicemetadata.publishing._1.ObjectFactory;
 import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
@@ -112,11 +114,16 @@ public final class BaseServiceGroupInterfaceImpl {
                                                                @Nonnull final Class<?> aServiceMetadataInterface) throws Throwable {
     s_aLogger.info ("GET /" + sServiceGroupID);
 
+    if(sServiceGroupID == null) {
+      s_aLogger.info ("sServiceGroupID is null");
+      throw new BadRequestException(ErrorResponse.BusinessCode.MISSING_FIELD, "sServiceGroupID is NULL and it shouldn't");
+    }
+
     final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
     if (aServiceGroupID == null) {
       // Invalid identifier
       s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return null;
+      throw new BadRequestException(ErrorResponse.BusinessCode.OTHER_ERROR, "Failed to parse participant identifier '" + sServiceGroupID + "'");
     }
 
     try {
@@ -127,7 +134,7 @@ public final class BaseServiceGroupInterfaceImpl {
       final ServiceGroupType aServiceGroup = aDataManager.getServiceGroup (aServiceGroupID);
       if (aServiceGroup == null) {
         // No such service group
-        throw new NotFoundException("ServiceGroup '" + aServiceGroupID.getScheme() + "::" + aServiceGroupID.getValue() + "' is not found");
+        throw new NotFoundException("ServiceGroup '" + aServiceGroupID.getScheme() + "::" + aServiceGroupID.getValue() + "' was not found");
       }
 
       // Then add the service metadata references
