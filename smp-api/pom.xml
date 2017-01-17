@@ -14,6 +14,7 @@
     <name>smp-api</name>
 
     <dependencies>
+        <!-- Generated equals() methods need it in runtime -->
         <dependency>
             <groupId>org.jvnet.jaxb2_commons</groupId>
             <artifactId>jaxb2-basics</artifactId>
@@ -42,9 +43,8 @@
                 </executions>
                 <configuration>
                     <args>
-                        <!-- generates value constructors -->
-                        <arg>-Xvalue-constructor</arg>
-                        <arg>-Xequals</arg>
+                        <arg>-Xvalue-constructor</arg><!-- generates value constructors -->
+                        <arg>-Xequals</arg><!-- generates equals() metods -->
                     </args>
                     <plugins>
                         <!-- generates value constructors -->

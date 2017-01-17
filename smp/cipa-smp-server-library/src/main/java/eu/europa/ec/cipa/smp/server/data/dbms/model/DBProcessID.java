@@ -37,30 +37,22 @@
  */
 package eu.europa.ec.cipa.smp.server.data.dbms.model;
 
-import java.io.Serializable;
+import com.helger.commons.annotations.UsedViaReflection;
+import com.helger.commons.equals.EqualsUtils;
+import com.helger.commons.hash.HashCodeGenerator;
+import com.helger.commons.string.ToStringGenerator;
+import eu.europa.ec.cipa.busdox.identifier.IReadonlyProcessIdentifier;
+import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
+import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessIdentifier;
 
 import javax.annotation.Nonnull;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
-
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessIdentifier;
-
-import com.helger.commons.annotations.UsedViaReflection;
-import com.helger.commons.equals.EqualsUtils;
-import com.helger.commons.hash.HashCodeGenerator;
-import com.helger.commons.string.ToStringGenerator;
-
-import eu.europa.ec.cipa.busdox.identifier.IReadonlyDocumentTypeIdentifier;
-
-import eu.europa.ec.cipa.busdox.identifier.IReadonlyProcessIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
+import java.io.Serializable;
 
 /**
  * The ID of a single process.

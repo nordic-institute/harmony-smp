@@ -37,58 +37,31 @@
  */
 package eu.europa.ec.cipa.smp.server.data.dbms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.Arrays;
-import java.util.Date;
-
-import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
-import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
-import eu.europa.ec.cipa.smp.server.util.DefaultHttpHeader;
-import eu.europa.ec.cipa.smp.server.util.RequestHelper;
-import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
-import org.busdox.servicemetadata.publishing._1.EndpointType;
-import org.busdox.servicemetadata.publishing._1.ExtensionType;
-import org.busdox.servicemetadata.publishing._1.ObjectFactory;
-import org.busdox.servicemetadata.publishing._1.ProcessListType;
-import org.busdox.servicemetadata.publishing._1.ProcessType;
-import org.busdox.servicemetadata.publishing._1.ServiceEndpointList;
-import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
-import org.busdox.servicemetadata.publishing._1.ServiceInformationType;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
-import org.busdox.transport.identifiers._1.DocumentIdentifierType;
-import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
-import org.junit.*;
-import org.junit.rules.TestRule;
-
 import com.helger.commons.annotations.DevelopersNote;
 import com.helger.commons.scopes.mock.ScopeTestRule;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import com.sun.jersey.api.NotFoundException;
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
+import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
 import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
 import eu.europa.ec.cipa.smp.server.exception.UnknownUserException;
 import eu.europa.ec.cipa.smp.server.hook.DoNothingRegistrationHook;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.cipa.smp.server.util.SMPDBUtils;
 import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import static org.junit.Assert.*;
-
-import javax.persistence.EntityManager;
 
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
@@ -420,7 +393,7 @@ public class DBMSDataManagerTest {
       // # Authentication #
       String password = "123456789";
       BasicAuthClientCredentials auth =CREDENTIALS;
-      ServiceGroupType result = s_aDataMgr.getServiceGroup(m_aServiceGroup.getParticipantIdentifier());
+      ServiceGroup result = s_aDataMgr.getServiceGroup(m_aServiceGroup.getParticipantIdentifier());
 
       // # Delete after leaving test #
       isServiceGroupToDelete = true;
@@ -444,7 +417,7 @@ public class DBMSDataManagerTest {
   public void testSaveServiceGroupByCertificateNotOwner() throws Throwable {
     String participantId = PARTICIPANT_IDENTIFIER2 + "951842";
     String certificateIdentifierHeader = "CN=SMP_1000000181,O=DIGIT,C=DK:123456789";
-    ServiceGroupType serviceGroup = createServiceGroup(participantId);
+    ServiceGroup serviceGroup = createServiceGroup(participantId);
 
     s_aDataMgr.saveServiceGroup(serviceGroup, CREDENTIALS);
 
@@ -456,7 +429,7 @@ public class DBMSDataManagerTest {
   public void testSaveServiceGroupByCertificateNotFound() throws Throwable {
     String certificateIdentifierHeader = "CN=SMP_123456789,O=DIGIT,C=PT:123456789";
 
-    ServiceGroupType serviceGroup = createServiceGroup(certificateIdentifierHeader);
+    ServiceGroup serviceGroup = createServiceGroup(certificateIdentifierHeader);
     BasicAuthClientCredentials auth = new BasicAuthClientCredentials(certificateIdentifierHeader, "100password");
     s_aDataMgr.saveServiceGroup(serviceGroup, auth);
   }
@@ -464,7 +437,7 @@ public class DBMSDataManagerTest {
   @Test(expected = UnknownUserException.class)
   public void testSaveServiceGroupByUserNotFound() throws Throwable {
     String participantId = PARTICIPANT_IDENTIFIER2 + "123456789";
-    ServiceGroupType serviceGroup = createServiceGroup(participantId);
+    ServiceGroup serviceGroup = createServiceGroup(participantId);
 
     BasicAuthClientCredentials auth = new BasicAuthClientCredentials ("123456789", PASSWORD);
     s_aDataMgr.saveServiceGroup(serviceGroup, auth);
@@ -526,9 +499,9 @@ public class DBMSDataManagerTest {
         DBUser user = s_aDataMgr._verifyUser(auth);
   }
 
-  private ServiceGroupType createServiceGroup(String participantId) {
+  private ServiceGroup createServiceGroup(String participantId) {
     final ObjectFactory aObjFactory = new ObjectFactory();
-    ServiceGroupType m_aServiceGroup = aObjFactory.createServiceGroupType();
+    ServiceGroup m_aServiceGroup = aObjFactory.createServiceGroup();
     m_aServiceGroup.setParticipantIdentifier(PARTY_ID);
     m_aServiceGroup.getParticipantIdentifier().setValue(participantId);
 

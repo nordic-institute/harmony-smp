@@ -37,15 +37,8 @@
  */
 package eu.europa.ec.cipa.smp.server.data.dbms.model;
 
+import javax.persistence.*;
 import java.io.Serializable;
-
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
 /**
  * Define the ownership of a service group -&gt; relates DB user to DB service

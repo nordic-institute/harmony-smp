@@ -37,23 +37,20 @@
  */
 package eu.europa.ec.cipa.smp.server.data.dbms.model;
 
-import java.io.Serializable;
+import com.helger.commons.annotations.UsedViaReflection;
+import com.helger.commons.equals.EqualsUtils;
+import com.helger.commons.hash.HashCodeGenerator;
+import com.helger.commons.string.ToStringGenerator;
+import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
+import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
+import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 import javax.annotation.Nonnull;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
-
-import com.helger.commons.annotations.UsedViaReflection;
-import com.helger.commons.equals.EqualsUtils;
-import com.helger.commons.hash.HashCodeGenerator;
-import com.helger.commons.string.ToStringGenerator;
-
-
-import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import java.io.Serializable;
 
 /**
  * ID for the ownership
