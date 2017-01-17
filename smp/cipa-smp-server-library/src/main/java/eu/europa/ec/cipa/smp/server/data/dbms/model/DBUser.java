@@ -72,7 +72,7 @@ public class DBUser implements Serializable {
     m_sUserName = sUserName;
   }
 
-  @Column (name = "password", nullable = false, length = 256)
+  @Column (name = "password",length = 256)
   public String getPassword () {
     return m_sPassword;
   }

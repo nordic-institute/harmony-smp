@@ -42,6 +42,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.persistence.EntityManager;
 
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
@@ -190,4 +191,9 @@ public interface IDataManager {
   @Nullable
   ServiceMetadata getRedirection (@Nonnull ParticipantIdentifierType aServiceGroupID,
                                       @Nonnull DocumentIdentifier aDocTypeID) throws Throwable;
+
+  /**
+   * Creates Entity Manager
+   **/
+  EntityManager getCurrentEntityManager();
 }
