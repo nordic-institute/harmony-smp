@@ -37,22 +37,19 @@
  */
 package eu.europa.ec.cipa.smp.server.data.dbms.model;
 
-import java.io.Serializable;
+import com.helger.commons.annotations.UsedViaReflection;
+import com.helger.commons.equals.EqualsUtils;
+import com.helger.commons.hash.HashCodeGenerator;
+import com.helger.commons.string.ToStringGenerator;
+import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
+import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 import javax.annotation.Nonnull;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
-
-import com.helger.commons.annotations.UsedViaReflection;
-import com.helger.commons.equals.EqualsUtils;
-import com.helger.commons.hash.HashCodeGenerator;
-import com.helger.commons.string.ToStringGenerator;
-
-import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
+import java.io.Serializable;
 
 /**
  * ServiceGroupId == participant ID
@@ -68,7 +65,7 @@ public class DBServiceGroupID implements Serializable {
   @UsedViaReflection
   public DBServiceGroupID () {}
 
-  public DBServiceGroupID (@Nonnull final IReadonlyParticipantIdentifier aBusinessID) {
+  public DBServiceGroupID (@Nonnull final ParticipantIdentifierType aBusinessID) {
     setBusinessIdentifierScheme (aBusinessID.getScheme ());
     setBusinessIdentifier (aBusinessID.getValue ());
   }
@@ -93,8 +90,8 @@ public class DBServiceGroupID implements Serializable {
 
   @Transient
   @Nonnull
-  public SimpleParticipantIdentifier asBusinessIdentifier () {
-    return new SimpleParticipantIdentifier (m_sParticipantIdentifierScheme, m_sParticipantIdentifier);
+  public ParticipantIdentifierType asBusinessIdentifier() {
+      return new ParticipantIdentifierType(m_sParticipantIdentifier, m_sParticipantIdentifierScheme);
   }
 
   @Override

@@ -37,36 +37,27 @@
  */
 package eu.europa.ec.cipa.smp.server.services.readwrite;
 
-import com.sun.jersey.api.NotFoundException;
 import com.sun.jersey.spi.MessageBodyWorkers;
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.exception.ErrorResponseBuilder;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
+import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.cipa.smp.server.util.RequestHelper;
-import org.busdox.servicemetadata.publishing._1.ServiceInformationType;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
+import eu.europa.ec.smp.api.Identifiers;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceInformationType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 import javax.ws.rs.core.Response.Status;
-import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -113,7 +104,7 @@ public final class ServiceMetadataInterface {
         return errorResponse;
       }
 
-      final ServiceMetadataType aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
+      final ServiceMetadata aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
 
       // Main save
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
@@ -139,21 +130,9 @@ public final class ServiceMetadataInterface {
                                    final String sDocumentTypeID,
                                    final String body) throws ParserConfigurationException, IOException, SAXException, JAXBException {
 
-    final ServiceMetadataType aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
-
-    final SimpleParticipantIdentifier aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull(sServiceGroupID);
-    if (aServiceGroupID == null) {
-      // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
-    }
-
-    final SimpleDocumentTypeIdentifier aDocTypeID = SimpleDocumentTypeIdentifier.createFromURIPartOrNull(sDocumentTypeID);
-    if (aDocTypeID == null) {
-      // Invalid identifier
-      s_aLogger.info("Failed to parse document type identifier '" + sDocumentTypeID + "'");
-      return Response.status(Status.BAD_REQUEST).build();
-    }
+    final ServiceMetadata aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
+    final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
+    final DocumentIdentifier aDocTypeID =  Identifiers.asDocumentId(sDocumentTypeID);
 
     final ServiceInformationType aServiceInformationType = aServiceMetadata.getServiceInformation();
 
@@ -184,19 +163,8 @@ public final class ServiceMetadataInterface {
                                              @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
     s_aLogger.info ("DELETE /" + sServiceGroupID + "/services/" + sDocumentTypeID);
 
-    final SimpleParticipantIdentifier aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
-    if (aServiceGroupID == null) {
-      // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
-    }
-
-    final SimpleDocumentTypeIdentifier aDocTypeID = SimpleDocumentTypeIdentifier.createFromURIPartOrNull (sDocumentTypeID);
-    if (aDocTypeID == null) {
-      // Invalid identifier
-      s_aLogger.info ("Failed to parse document type identifier '" + sDocumentTypeID + "'");
-      return null;
-    }
+    final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
+    final DocumentIdentifier aDocTypeID = Identifiers.asDocumentId(sDocumentTypeID);
 
     try {
       final IDataManager aDataManager = DataManagerFactory.getInstance ();

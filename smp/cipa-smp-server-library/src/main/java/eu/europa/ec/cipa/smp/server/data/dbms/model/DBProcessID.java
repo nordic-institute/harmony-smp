@@ -37,30 +37,22 @@
  */
 package eu.europa.ec.cipa.smp.server.data.dbms.model;
 
-import java.io.Serializable;
+import com.helger.commons.annotations.UsedViaReflection;
+import com.helger.commons.equals.EqualsUtils;
+import com.helger.commons.hash.HashCodeGenerator;
+import com.helger.commons.string.ToStringGenerator;
+import eu.europa.ec.cipa.busdox.identifier.IReadonlyProcessIdentifier;
+import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
+import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessIdentifier;
 
 import javax.annotation.Nonnull;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
-
-import org.busdox.transport.identifiers._1.DocumentIdentifierType;
-import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
-import org.busdox.transport.identifiers._1.ProcessIdentifierType;
-
-import com.helger.commons.annotations.UsedViaReflection;
-import com.helger.commons.equals.EqualsUtils;
-import com.helger.commons.hash.HashCodeGenerator;
-import com.helger.commons.string.ToStringGenerator;
-
-import eu.europa.ec.cipa.busdox.identifier.IReadonlyDocumentTypeIdentifier;
-import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
-import eu.europa.ec.cipa.busdox.identifier.IReadonlyProcessIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
+import java.io.Serializable;
 
 /**
  * The ID of a single process.
@@ -105,7 +97,7 @@ public class DBProcessID implements Serializable {
   }
 
   @Transient
-  public void setBusinessIdentifier (@Nonnull final IReadonlyParticipantIdentifier aBusinessIdentifier) {
+  public void setBusinessIdentifier (@Nonnull final ParticipantIdentifierType aBusinessIdentifier) {
     setBusinessIdentifierScheme (aBusinessIdentifier.getScheme ());
     setBusinessIdentifier (aBusinessIdentifier.getValue ());
   }
@@ -129,7 +121,7 @@ public class DBProcessID implements Serializable {
   }
 
   @Transient
-  public void setDocumentTypeIdentifier (@Nonnull final IReadonlyDocumentTypeIdentifier aDocumentTypeID) {
+  public void setDocumentTypeIdentifier (@Nonnull final DocumentIdentifier aDocumentTypeID) {
     setDocumentIdentifierScheme (aDocumentTypeID.getScheme ());
     setDocumentIdentifier (aDocumentTypeID.getValue ());
   }
@@ -161,19 +153,19 @@ public class DBProcessID implements Serializable {
   @Transient
   @Nonnull
   public ParticipantIdentifierType asBusinessIdentifier () {
-    return new SimpleParticipantIdentifier (m_sParticipantIdentifierScheme, m_sParticipantIdentifier);
+    return new ParticipantIdentifierType(m_sParticipantIdentifier, m_sParticipantIdentifierScheme);
   }
 
   @Transient
   @Nonnull
-  public DocumentIdentifierType asDocumentTypeIdentifier () {
-    return new SimpleDocumentTypeIdentifier (m_sDocumentTypeIdentifierScheme, m_sDocumentTypeIdentifier);
+  public DocumentIdentifier asDocumentTypeIdentifier () {
+    return new DocumentIdentifier(m_sDocumentTypeIdentifier, m_sDocumentTypeIdentifierScheme);
   }
 
   @Transient
   @Nonnull
-  public ProcessIdentifierType asProcessIdentifier () {
-    return new SimpleProcessIdentifier (m_sProcessIdentifierScheme, m_sProcessIdentifier);
+  public ProcessIdentifier asProcessIdentifier () {
+    return new ProcessIdentifier(m_sProcessIdentifier, m_sProcessIdentifierScheme);
   }
 
   @Override

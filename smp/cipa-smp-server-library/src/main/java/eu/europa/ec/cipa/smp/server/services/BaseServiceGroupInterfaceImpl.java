@@ -44,23 +44,22 @@ import javax.annotation.Nullable;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
 
 import com.helger.commons.string.StringParser;
-import org.busdox.servicemetadata.publishing._1.ObjectFactory;
-import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataReferenceCollectionType;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataReferenceType;
-import org.busdox.transport.identifiers._1.DocumentIdentifierType;
-import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
+import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
+import eu.europa.ec.smp.api.Identifiers;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ObjectFactory;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import com.sun.jersey.api.NotFoundException;
 
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
@@ -107,25 +106,20 @@ public final class BaseServiceGroupInterfaceImpl {
    *         in case of an error
    */
   @Nullable
-  public static JAXBElement <ServiceGroupType> getServiceGroup(@Nonnull final UriInfo aUriInfo,
+  public static ServiceGroup getServiceGroup(@Nonnull final UriInfo aUriInfo,
                                                                @Nonnull HttpHeaders httpHeaders,
                                                                @Nullable final String sServiceGroupID,
                                                                @Nonnull final Class<?> aServiceMetadataInterface) throws Throwable {
     s_aLogger.info ("GET /" + sServiceGroupID);
 
-    final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
-    if (aServiceGroupID == null) {
-      // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      return null;
-    }
+    final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
 
     try {
       final ObjectFactory aObjFactory = new ObjectFactory ();
 
       // Retrieve the service group   
       final IDataManager aDataManager = DataManagerFactory.getInstance ();
-      final ServiceGroupType aServiceGroup = aDataManager.getServiceGroup (aServiceGroupID);
+      final ServiceGroup aServiceGroup = aDataManager.getServiceGroup (aServiceGroupID);
       if (aServiceGroup == null) {
         // No such service group
         throw new NotFoundException ("serviceGroup", aUriInfo.getAbsolutePath ());
@@ -133,10 +127,10 @@ public final class BaseServiceGroupInterfaceImpl {
 
       // Then add the service metadata references
       final ServiceMetadataReferenceCollectionType aCollectionType = aObjFactory.createServiceMetadataReferenceCollectionType ();
-      final List <ServiceMetadataReferenceType> aMetadataReferences = aCollectionType.getServiceMetadataReference ();
+      final List <ServiceMetadataReferenceType> aMetadataReferences = aCollectionType.getServiceMetadataReferences();
 
-      final List <DocumentIdentifierType> aDocTypeIds = aDataManager.getDocumentTypes (aServiceGroupID);
-      for (final DocumentIdentifierType aDocTypeId : aDocTypeIds) {
+      final List <DocumentIdentifier> aDocTypeIds = aDataManager.getDocumentTypes (aServiceGroupID);
+      for (final DocumentIdentifier aDocTypeId : aDocTypeIds) {
         final ServiceMetadataReferenceType aMetadataReference = aObjFactory.createServiceMetadataReferenceType ();
         UriBuilder uriBuilder = aUriInfo.getBaseUriBuilder();
         if (configFile.getString ("contextPath.output", "false").equals ("false")) {
@@ -159,7 +153,7 @@ public final class BaseServiceGroupInterfaceImpl {
       /*
        * Finally return it
        */
-      return aObjFactory.createServiceGroup (aServiceGroup);
+      return aServiceGroup;
     }
     catch (final NotFoundException ex) {
       // No logging needed here - already logged in DB

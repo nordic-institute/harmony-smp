@@ -38,19 +38,10 @@
 package eu.europa.ec.cipa.smp.server.data.dbms.model;
 
 import eu.europa.ec.cipa.smp.server.util.XMLUtils;
-import org.busdox.servicemetadata.publishing._1.ExtensionType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
 
 import javax.annotation.Nullable;
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**

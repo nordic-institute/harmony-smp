@@ -38,6 +38,9 @@ package eu.europa.ec.cipa.smp.server.services.readonly;
  * under either the MPL or the EUPL License.
  */
 
+import eu.europa.ec.cipa.smp.server.services.BaseServiceGroupInterfaceImpl;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -46,11 +49,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.JAXBElement;
-
-import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
-
-import eu.europa.ec.cipa.smp.server.services.BaseServiceGroupInterfaceImpl;
 
 /**
  * This class implements the REST interface for getting ServiceGroup's.
@@ -69,7 +67,7 @@ public final class ServiceGroupInterface {
 
   @GET
   @Produces (MediaType.TEXT_XML)
-  public JAXBElement <ServiceGroupType> getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId) throws Throwable {
+  public ServiceGroup getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId) throws Throwable {
     // Delegate to common implementation
     return BaseServiceGroupInterfaceImpl.getServiceGroup (uriInfo, headers, sServiceGroupId, ServiceMetadataInterface.class);
   }

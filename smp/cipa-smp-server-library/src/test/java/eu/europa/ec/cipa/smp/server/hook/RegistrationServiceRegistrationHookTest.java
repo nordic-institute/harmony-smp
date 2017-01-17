@@ -41,6 +41,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 /**
  * Test class for class {@link RegistrationServiceRegistrationHook}.
@@ -52,7 +53,7 @@ public final class RegistrationServiceRegistrationHookTest {
   @Ignore ("Potentially modifies the DNS!")
   public void testCreateAndDelete () {
     final RegistrationServiceRegistrationHook aHook = new RegistrationServiceRegistrationHook ();
-    final SimpleParticipantIdentifier aPI = SimpleParticipantIdentifier.createWithDefaultScheme ("0088:12345test");
+    final ParticipantIdentifierType aPI = new ParticipantIdentifierType("0088:12345test", "iso6523-actorid-upis");
     aHook.create (aPI);
     aHook.delete (aPI);
     // Throws ExceptionInInitializerError:
