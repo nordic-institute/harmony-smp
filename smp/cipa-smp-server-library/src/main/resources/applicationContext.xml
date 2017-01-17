@@ -5,14 +5,24 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
 	   					   http://www.springframework.org/schema/beans/spring-beans.xsd
 	   					   http://www.springframework.org/schema/context
-                           http://www.springframework.org/schema/context/spring-context.xsd" >
+                           http://www.springframework.org/schema/context/spring-context.xsd">
     <context:annotation-config/>
 
-    <context:component-scan base-package="eu.europa" />
+    <context:component-scan base-package="eu.europa"/>
 
     <bean id="configFile"
           class="eu.europa.ec.cipa.peppol.utils.ConfigFile">
         <constructor-arg type="java.lang.String" value="smp.config.properties"/>
+    </bean>
+
+    <bean id="certificateAuthenticationInterceptor" class="eu.europa.ec.cipa.smp.server.security.CertificateAuthenticationInterceptor" />
+
+    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
+        <property name="interceptors">
+            <list>
+                <ref bean="certificateAuthenticationInterceptor" />
+            </list>
+        </property>
     </bean>
 
 </beans>
