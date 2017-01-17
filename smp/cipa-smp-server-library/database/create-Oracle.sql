@@ -69,7 +69,7 @@ documentIdentifier));
 
 CREATE TABLE smp_user (
 username VARCHAR(256), 
-password VARCHAR(256) NOT NULL, 
+password VARCHAR(256),
 PRIMARY KEY (username));
 
 CREATE TABLE smp_service_metadata_red (
