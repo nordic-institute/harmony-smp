@@ -118,7 +118,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
      *                               password
      */
     @Nonnull
-    public DBUser _verifyUser(@Nonnull final BasicAuthClientCredentials aCredentials) throws UnknownUserException,
+    protected DBUser _verifyUser(@Nonnull final BasicAuthClientCredentials aCredentials) throws UnknownUserException,
             UnauthorizedException {
         final String sUsername = aCredentials.getUserName();
         final DBUser aDBUser = getEntityManager().find(DBUser.class, sUsername);
