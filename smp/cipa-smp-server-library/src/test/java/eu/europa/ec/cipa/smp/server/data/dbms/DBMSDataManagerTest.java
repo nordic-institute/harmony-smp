@@ -90,7 +90,7 @@ public class DBMSDataManagerTest {
   private static final Calendar EXPIRATION_DATE = GregorianCalendar.getInstance();;
   private static final String TECH_CONTACT = "fake@peppol.eu";
   private static final String TECH_INFO = "http://fake.peppol.eu/";
-  private static final String TRANSPORT_PROFILE = "busdox-transport-start";
+  private static final String TRANSPORT_PROFILE = "bdxr-transport-ebms3-as4";
 
   private static final ParticipantIdentifierType PARTY_ID = new ParticipantIdentifierType(PARTICIPANT_IDENTIFIER1,"iso6523-actorid-upis");
   private static final ParticipantIdentifierType SERVICEGROUP_ID = PARTY_ID;

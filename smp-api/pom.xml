@@ -13,9 +13,12 @@
     <version>2.5.2-SNAPSHOT</version>
     <name>smp-api</name>
 
-    <scm/>
-
     <dependencies>
+        <dependency>
+            <groupId>org.jvnet.jaxb2_commons</groupId>
+            <artifactId>jaxb2-basics</artifactId>
+            <version>0.11.0</version>
+        </dependency>
         <dependency>
             <groupId>pl.pragmatists</groupId>
             <artifactId>JUnitParams</artifactId>
@@ -41,6 +44,7 @@
                     <args>
                         <!-- generates value constructors -->
                         <arg>-Xvalue-constructor</arg>
+                        <arg>-Xequals</arg>
                     </args>
                     <plugins>
                         <!-- generates value constructors -->
@@ -48,6 +52,12 @@
                             <groupId>org.jvnet.jaxb2_commons</groupId>
                             <artifactId>jaxb2-value-constructor</artifactId>
                             <version>3.0</version>
+                        </plugin>
+                        <!-- generates equals() methods -->
+                        <plugin>
+                            <groupId>org.jvnet.jaxb2_commons</groupId>
+                            <artifactId>jaxb2-basics</artifactId>
+                            <version>0.11.0</version>
                         </plugin>
                     </plugins>
                 </configuration>

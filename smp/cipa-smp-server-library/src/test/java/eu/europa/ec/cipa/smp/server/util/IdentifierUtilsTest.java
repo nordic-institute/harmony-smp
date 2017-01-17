@@ -55,19 +55,19 @@ import static org.junit.Assert.*;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class IdentifierUtilsTest {
-  private static final String [] PARTICIPANT_SCHEME_VALID = { "busdox-actorid-upis",
-                                                             "BUSDOX-ACTORID-UPIS",
+  private static final String [] PARTICIPANT_SCHEME_VALID = { "bdxr-actorid-upis",
+                                                             "bdxr-ACTORID-UPIS",
                                                              CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME,
                                                              "any-actorid-any",
                                                              "any-ACTORID-any" };
   private static final String [] PARTIFCIPANT_SCHEME_INVALID = { null,
                                                                 "",
-                                                                "busdox_actorid_upis",
-                                                                "busdox-notactorid-upis",
+                                                                "bdxr_actorid_upis",
+                                                                "bdxr-notactorid-upis",
                                                                 "-actorid-upis",
                                                                 "actorid-upis",
-                                                                "busdox-actorid-",
-                                                                "busdox-actorid",
+                                                                "bdxr-actorid-",
+                                                                "bdxr-actorid",
                                                                 "any-domain_actorid_any-type",
                                                                 "any-nonactoid-anybutmuchtoooooooooooooooooooooooolong" };
 
