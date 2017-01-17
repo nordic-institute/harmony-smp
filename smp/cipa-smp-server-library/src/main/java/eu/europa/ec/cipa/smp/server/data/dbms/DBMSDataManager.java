@@ -65,7 +65,9 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 /**
@@ -116,22 +118,33 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
      *                               password
      */
     @Nonnull
-    private DBUser _verifyUser(@Nonnull final BasicAuthClientCredentials aCredentials) throws UnknownUserException,
+    protected DBUser _verifyUser(@Nonnull final BasicAuthClientCredentials aCredentials) throws UnknownUserException,
             UnauthorizedException {
         final String sUsername = aCredentials.getUserName();
         final DBUser aDBUser = getEntityManager().find(DBUser.class, sUsername);
 
         // Check that the user exists
-        if (aDBUser == null)
+        if (aDBUser == null) {
             throw new UnknownUserException(sUsername);
+        }
 
         // Check that the password is correct
-        if (!aDBUser.getPassword().equals(aCredentials.getPassword()))
-            throw new UnauthorizedException("Illegal password for user '" + sUsername + "'");
+        if (!isNullPasswordAllowed(aDBUser.getPassword(),aCredentials.getPassword())){
+            if(aCredentials.getPassword()== null || aDBUser.getPassword()== null ||
+                    !aDBUser.getPassword().equals(aCredentials.getPassword())) {
+                throw new UnauthorizedException("Illegal password for user '" + sUsername + "'");
+            }
+        }
 
-        if (s_aLogger.isDebugEnabled())
+        if (s_aLogger.isDebugEnabled()) {
             s_aLogger.debug("Verified credentials of user '" + sUsername + "' successfully");
+        }
+
         return aDBUser;
+    }
+
+    private boolean isNullPasswordAllowed(String requestPassword, String databasePassword){
+       return (requestPassword == null && databasePassword == null);
     }
 
     /**
@@ -497,5 +510,9 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         final ServiceInformationType aServiceInformation = aServiceMetadata.getServiceInformation();
         aDBServiceMetadata.setExtension(aServiceInformation.getExtension());
         aDBServiceMetadata.setXmlContent(sXmlContent);
+    }
+
+    public EntityManager getCurrentEntityManager() {
+        return getEntityManager();
     }
 }

@@ -42,6 +42,7 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.persistence.EntityManager;
 
 import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
 import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
@@ -190,4 +191,9 @@ public interface IDataManager {
   @Nullable
   ServiceMetadataType getRedirection (@Nonnull ParticipantIdentifierType aServiceGroupID,
                                       @Nonnull DocumentIdentifierType aDocTypeID) throws Throwable;
+
+  /**
+   * Creates Entity Manager
+   **/
+  EntityManager getCurrentEntityManager();
 }
