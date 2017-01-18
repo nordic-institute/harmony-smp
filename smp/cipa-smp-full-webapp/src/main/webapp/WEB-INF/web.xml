@@ -74,9 +74,16 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+
+
     <filter>
         <filter-name>RestFilter</filter-name>
         <filter-class>com.sun.jersey.spi.container.servlet.ServletContainer</filter-class>
+        <!-- Register resources and providers under my.package. -->
+        <init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+            <param-value>eu.europa.ec.cipa.smp.server.security.CertificateAuthenticationFilter</param-value>
+        </init-param>
         <init-param>
             <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
             <param-value>eu.europa.ec.cipa.smp.server.util.SignatureFilter</param-value>
@@ -86,7 +93,6 @@
             <param-value>/(images|js|styles|web)/.*</param-value>
         </init-param>
     </filter>
-
     <filter-mapping>
         <filter-name>RestFilter</filter-name>
         <url-pattern>/*</url-pattern>

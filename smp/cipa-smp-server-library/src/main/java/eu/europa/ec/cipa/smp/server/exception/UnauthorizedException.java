@@ -55,4 +55,16 @@ public class UnauthorizedException extends RuntimeException {
     // Always log!
     s_aLogger.warn (sMsg);
   }
+
+  public UnauthorizedException (final String sMsg, final Throwable throwable) {
+    super (sMsg,throwable);
+    // Always log!
+    s_aLogger.warn (sMsg);
+  }
+  public UnauthorizedException (final Throwable throwable) {
+    super (throwable);
+    // Always log!
+    s_aLogger.warn (throwable.getMessage());
+  }
+
 }

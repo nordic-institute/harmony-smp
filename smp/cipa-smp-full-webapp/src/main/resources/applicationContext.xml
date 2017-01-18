@@ -15,14 +15,4 @@
         <constructor-arg type="java.lang.String" value="smp.config.properties"/>
     </bean>
 
-    <bean id="certificateAuthenticationInterceptor" class="eu.europa.ec.cipa.smp.server.security.CertificateAuthenticationInterceptor" />
-
-    <bean class="org.springframework.web.servlet.handler.BeanNameUrlHandlerMapping">
-        <property name="interceptors">
-            <list>
-                <ref bean="certificateAuthenticationInterceptor" />
-            </list>
-        </property>
-    </bean>
-
 </beans>
