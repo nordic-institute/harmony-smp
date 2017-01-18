@@ -318,7 +318,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     }
 
     private void _removeServiceGroup(DBServiceGroup dbServiceGroup){
-        getEntityManager().createQuery("DELETE FROM DBOwnership o WHERE o.businessidentifierscheme = :schme and o.businessidentifier = :id")
+        getEntityManager().createQuery("DELETE FROM DBOwnership o WHERE o.id.businessIdentifierScheme = :scheme and o.id.businessIdentifier = :id")
                 .setParameter("scheme", dbServiceGroup.getId().getBusinessIdentifierScheme())
                 .setParameter("id", dbServiceGroup.getId().getBusinessIdentifier())
                 .executeUpdate();

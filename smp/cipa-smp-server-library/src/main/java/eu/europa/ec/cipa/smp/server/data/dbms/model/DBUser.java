@@ -76,9 +76,13 @@ public class DBUser implements Serializable {
     m_sPassword = sPassword;
   }
 
-  @Column (name = "isadmin", nullable = false)
+  @Column(name = "isadmin", nullable = false)
   public boolean isAdmin() {
     return m_bIsAdmin;
+  }
+
+  public void setAdmin(boolean isAdmin) {
+    m_bIsAdmin = isAdmin;
   }
 
   @OneToMany (fetch = FetchType.LAZY, mappedBy = "user")
