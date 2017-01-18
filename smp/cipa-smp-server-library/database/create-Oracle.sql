@@ -70,7 +70,9 @@ documentIdentifier));
 CREATE TABLE smp_user (
 username VARCHAR(256), 
 password VARCHAR(256),
-PRIMARY KEY (username));
+isadmin NUMBER(1) DEFAULT 0 NOT NULL,
+PRIMARY KEY (username),
+CONSTRAINT check_is_admin_value CHECK (isadmin = 0 OR isadmin = 1));
 
 CREATE TABLE smp_service_metadata_red (
 certificateUID VARCHAR(256) NOT NULL, 

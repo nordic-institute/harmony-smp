@@ -52,6 +52,7 @@ import java.util.Set;
 public class DBUser implements Serializable {
   private String m_sUserName;
   private String m_sPassword;
+  private boolean m_bIsAdmin;
   private Set <DBOwnership> m_aOwnerships = new HashSet <DBOwnership> ();
 
   public DBUser () {}
@@ -73,6 +74,11 @@ public class DBUser implements Serializable {
 
   public void setPassword (final String sPassword) {
     m_sPassword = sPassword;
+  }
+
+  @Column (name = "isadmin", nullable = false)
+  public boolean isAdmin() {
+    return m_bIsAdmin;
   }
 
   @OneToMany (fetch = FetchType.LAZY, mappedBy = "user")
