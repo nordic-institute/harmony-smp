@@ -253,9 +253,8 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
                 if (aDBServiceGroup != null) {
                     // The business did exist. So it must be owned by the passed user.
-                    if ( !_isAdmin(aCredentials.getUserName())) {
-                        _verifyOwnership(aServiceGroup.getParticipantIdentifier(), aCredentials);
-                    }
+
+                    _verifyOwnership(aServiceGroup.getParticipantIdentifier(), aCredentials);
 
                     // Simply update the extension
                     if(aServiceGroup.getExtensions().size() > 0) {
