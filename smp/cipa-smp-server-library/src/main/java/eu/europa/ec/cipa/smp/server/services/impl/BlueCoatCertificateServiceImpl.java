@@ -42,7 +42,7 @@ public class BlueCoatCertificateServiceImpl implements IBlueCoatCertificateServi
     public void validateBlueCoatClientCertificate(final CertificateDetails certificate) throws TechnicalException {
         Date today = Calendar.getInstance().getTime();
         Boolean isCertValid = null;
-        if (!today.after(certificate.getValidFrom().getTime()) || !today.before(certificate.getValidTo().getTime())) {
+        if ((certificate.getValidFrom()!= null && !today.after(certificate.getValidFrom().getTime())) || (certificate.getValidTo()!= null &&!today.before(certificate.getValidTo().getTime()))) {
             DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
             logger.info(String.format("SEC_CERTIFICATE_EXPIRED | Date: %s, Certificate valid from: %s, Certificate valid to: %s", df.format(today), df.format(certificate.getValidFrom().getTime()), df.format(certificate.getValidTo().getTime())));
             throw new CertificateRevokedException("The certificate is revoked.");
