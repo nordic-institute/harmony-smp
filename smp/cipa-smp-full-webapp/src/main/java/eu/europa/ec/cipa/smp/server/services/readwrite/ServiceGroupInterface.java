@@ -37,16 +37,15 @@
  */
 package eu.europa.ec.cipa.smp.server.services.readwrite;
 
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
-import eu.europa.ec.cipa.smp.server.exception.BadRequestException;
-import eu.europa.ec.cipa.smp.server.exception.ErrorResponse.BusinessCode;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.BadRequestException;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceGroupInterfaceImpl;
+import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.cipa.smp.server.util.RequestHelper;
-import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
-import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
+import eu.europa.ec.smp.api.Identifiers;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,6 +60,9 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
+
+import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.OTHER_ERROR;
+import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.WRONG_FIELD;
 
 /**
  * This class implements the REST interface for getting ServiceGroup's. PUT and
@@ -81,31 +83,24 @@ public final class ServiceGroupInterface {
 
   @GET
   @Produces (MediaType.TEXT_XML)
-  public Response getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId) throws Throwable {
+  public ServiceGroup getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId) throws Throwable {
     // Delegate to common implementation
-      return Response.ok(BaseServiceGroupInterfaceImpl.getServiceGroup (uriInfo, headers, sServiceGroupId, ServiceMetadataInterface.class)).build();
+    return BaseServiceGroupInterfaceImpl.getServiceGroup (uriInfo, headers, sServiceGroupId, ServiceMetadataInterface.class);
   }
 
   @PUT
   public Response saveServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupID,
-                                    final ServiceGroupType aServiceGroup) throws Throwable{
+                                    final ServiceGroup aServiceGroup) throws Throwable{
     s_aLogger.info ("PUT /" + sServiceGroupID + " ==> " + aServiceGroup);
 
-    final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
-    if (aServiceGroupID == null) {
-      // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      throw new BadRequestException(BusinessCode.OTHER_ERROR, "Failed to parse participant identifier '" + sServiceGroupID + "'");
-    }
-
+    final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
     if (!IdentifierUtils.areIdentifiersEqual (aServiceGroupID, aServiceGroup.getParticipantIdentifier ())) {
       // Business identifier must equal path
-      s_aLogger.info ("Service Group Ids don't match between parameter and XML provided");
-      throw new BadRequestException(BusinessCode.WRONG_FIELD, "Service Group Ids don't match between parameter and XML provided");
+      throw new BadRequestException(WRONG_FIELD, "Service Group Ids don't match between URL parameter and XML body");
     }
 
     final IDataManager aDataManager = DataManagerFactory.getInstance ();
-    aDataManager.saveServiceGroup (aServiceGroup, RequestHelper.getAuth (headers));
+    aDataManager.saveServiceGroup(aServiceGroup, RequestHelper.getAuth(headers));
 
     s_aLogger.info ("Finished saveServiceGroup(" + sServiceGroupID + "," + aServiceGroup + ")");
 
@@ -116,11 +111,10 @@ public final class ServiceGroupInterface {
   public Response deleteServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupID) throws Throwable {
     s_aLogger.info ("DELETE /" + sServiceGroupID);
 
-    final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
+    final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
     if (aServiceGroupID == null) {
       // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      throw new BadRequestException(BusinessCode.OTHER_ERROR, "Failed to parse participant identifier '" + sServiceGroupID + "'");
+      throw new BadRequestException(OTHER_ERROR, "Failed to parse participant identifier '" + sServiceGroupID + "'");
     }
 
     final IDataManager aDataManager = DataManagerFactory.getInstance ();

@@ -37,23 +37,20 @@
  */
 package eu.europa.ec.cipa.smp.server.services;
 
+import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
+import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
+import eu.europa.ec.cipa.smp.server.data.IDataManager;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
+import eu.europa.ec.smp.api.Identifiers;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.ws.rs.core.UriInfo;
-
-import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
-import eu.europa.ec.cipa.smp.server.exception.BadRequestException;
-import eu.europa.ec.cipa.smp.server.exception.ErrorResponse;
-import org.busdox.transport.identifiers._1.DocumentIdentifierType;
-import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
-import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
-import eu.europa.ec.cipa.smp.server.data.IDataManager;
-import org.w3c.dom.Document;
 
 /**
  * This class implements the read-only methods for the REST
@@ -73,36 +70,15 @@ public final class BaseServiceMetadataInterfaceImpl {
                                                                                 @Nullable final String sDocumentTypeID) throws Throwable {
     s_aLogger.info ("GET /" + sServiceGroupID + "/services/" + sDocumentTypeID);
 
-    if(sServiceGroupID == null) {
-      s_aLogger.info ("sServiceGroupID is null");
-      throw new BadRequestException(ErrorResponse.BusinessCode.MISSING_FIELD, "sServiceGroupID is NULL and it shouldn't");
-    }
-
-    final ParticipantIdentifierType aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
-    if (aServiceGroupID == null) {
-      // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      throw new BadRequestException(ErrorResponse.BusinessCode.OTHER_ERROR, "Failed to parse participant identifier '" + sServiceGroupID + "'");
-    }
-
-    if(sDocumentTypeID == null) {
-      s_aLogger.info ("sDocumentTypeID is null");
-      throw new BadRequestException(ErrorResponse.BusinessCode.MISSING_FIELD, "sDocumentTypeID is NULL and it shouldn't");
-    }
-
-    final DocumentIdentifierType aDocTypeID = IdentifierUtils.createDocumentTypeIdentifierFromURIPartOrNull (sDocumentTypeID);
-    if (aDocTypeID == null) {
-      // Invalid identifier
-      s_aLogger.info ("Failed to parse document type identifier '" + sDocumentTypeID + "'");
-      throw new BadRequestException(ErrorResponse.BusinessCode.OTHER_ERROR, "Failed to parse document type identifier '" + sDocumentTypeID + "'");
-    }
+    final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
+    final DocumentIdentifier aDocTypeID = Identifiers.asDocumentId (sDocumentTypeID);
 
     final IDataManager aDataManager = DataManagerFactory.getInstance ();
     String sServiceMetadata = aDataManager.getService (aServiceGroupID, aDocTypeID);
-    if (sServiceMetadata == null) {
-      s_aLogger.error("ServiceMetadata was not found");
-      throw new BadRequestException(ErrorResponse.BusinessCode.NOT_FOUND, "ServiceMetadata was not found");
+    if(sServiceMetadata == null) {
+      throw new NotFoundException("Service '" + sServiceGroupID + "/services/" + sDocumentTypeID + "' was not found");
     }
+
     Document aSignedServiceMetadata = ServiceMetadataConverter.toSignedServiceMetadatadaDocument(sServiceMetadata);
 
     s_aLogger.info ("Finished getServiceRegistration(" + sServiceGroupID + "," + sDocumentTypeID + ")");

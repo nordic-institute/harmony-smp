@@ -38,38 +38,33 @@
 package eu.europa.ec.cipa.smp.server.services.readwrite;
 
 import com.sun.jersey.spi.MessageBodyWorkers;
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
-import eu.europa.ec.cipa.smp.server.exception.BadRequestException;
-import eu.europa.ec.cipa.smp.server.exception.ErrorResponse;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.BadRequestException;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
+import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.cipa.smp.server.util.RequestHelper;
-import org.busdox.servicemetadata.publishing._1.EndpointType;
-import org.busdox.servicemetadata.publishing._1.ProcessListType;
-import org.busdox.servicemetadata.publishing._1.ProcessType;
-import org.busdox.servicemetadata.publishing._1.ServiceEndpointList;
-import org.busdox.servicemetadata.publishing._1.ServiceInformationType;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
+import eu.europa.ec.smp.api.Identifiers;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.EndpointType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessListType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceEndpointList;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceInformationType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import java.util.Date;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
+import java.util.Calendar;
+
+import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.OUT_OF_RANGE;
+import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.WRONG_FIELD;
+import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.XSD_INVALID;
 
 /**
  * This class implements the REST interface for getting SignedServiceMetadata's.
@@ -108,7 +103,7 @@ public final class ServiceMetadataInterface {
 
     validateErrors(sServiceGroupID, sDocumentTypeID, body);
 
-    final ServiceMetadataType aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
+    final ServiceMetadata aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
 
     // Main save
     final IDataManager aDataManager = DataManagerFactory.getInstance ();
@@ -129,20 +124,17 @@ public final class ServiceMetadataInterface {
                               final String sDocumentTypeID,
                               final String body) throws Exception {
 
-    final ServiceMetadataType aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
-
-    final SimpleParticipantIdentifier aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull(sServiceGroupID);
+    final ServiceMetadata aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
+    final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
     if (aServiceGroupID == null) {
       // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      throw new BadRequestException(ErrorResponse.BusinessCode.XSD_INVALID, "Failed to parse participant identifier '" + sServiceGroupID + "'");
+      throw new BadRequestException(XSD_INVALID, "Failed to parse participant identifier '" + sServiceGroupID + "'");
     }
 
-    final SimpleDocumentTypeIdentifier aDocTypeID = SimpleDocumentTypeIdentifier.createFromURIPartOrNull(sDocumentTypeID);
+    final DocumentIdentifier aDocTypeID =  Identifiers.asDocumentId(sDocumentTypeID);
     if (aDocTypeID == null) {
       // Invalid identifier
-      s_aLogger.info("Failed to parse document type identifier '" + sDocumentTypeID + "'");
-      throw new BadRequestException(ErrorResponse.BusinessCode.XSD_INVALID, "Failed to parse participant identifier '" + sServiceGroupID + "'");
+      throw new BadRequestException(XSD_INVALID, "Failed to parse participant identifier '" + sServiceGroupID + "'");
     }
 
     final ServiceInformationType aServiceInformationType = aServiceMetadata.getServiceInformation();
@@ -154,10 +146,10 @@ public final class ServiceMetadataInterface {
                         IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getParticipantIdentifier ()) +
                         " param:" +
                         aServiceGroupID);
-        throw new BadRequestException(ErrorResponse.BusinessCode.WRONG_FIELD, "Save service metadata was called with bad parameters. serviceInfo:" +
+        throw new BadRequestException(WRONG_FIELD, "Save service metadata was called with bad parameters. serviceInfo:" +
                                                       IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getParticipantIdentifier ()) +
                                                       " param:" +
-                                                      aServiceGroupID);
+                                                      aServiceGroupID.getValue());
 
       }
 
@@ -167,28 +159,27 @@ public final class ServiceMetadataInterface {
                         " param:" +
                         aDocTypeID);
         // Document type must equal path
-        throw new BadRequestException(ErrorResponse.BusinessCode.WRONG_FIELD, "Save service metadata was called with bad parameters. serviceInfo:" +
+        throw new BadRequestException(WRONG_FIELD, "Save service metadata was called with bad parameters. serviceInfo:" +
                                                       IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getDocumentIdentifier ()) +
                                                       " param:" +
-                                                      aDocTypeID);
+                                                      aDocTypeID.getValue());
       }
 
       validateData(aServiceMetadata);
   }
 
-  private void validateData(ServiceMetadataType aServiceMetadata) throws Exception {
-    ProcessListType processList;
+  private void validateData(ServiceMetadata aServiceMetadata) throws Exception {
     if(aServiceMetadata.getServiceInformation() == null) {
       return;
     }
-    processList = aServiceMetadata.getServiceInformation().getProcessList();
+    ProcessListType processList = aServiceMetadata.getServiceInformation().getProcessList();
     if (processList == null) {
       return;
     }
 
     ProcessType process;
-    for(int i = 0; i < processList.getProcessCount(); i++) {
-      process = processList.getProcessAtIndex(i);
+    for(int i = 0; i < processList.getProcesses().size(); i++) {
+      process = processList.getProcesses().get(i);
       if(process == null) {
         return;
       }
@@ -198,29 +189,18 @@ public final class ServiceMetadataInterface {
       }
 
       EndpointType endpoint;
-      for(int j = 0; j < serviceEndpointList.getEndpointCount(); j++) {
-        endpoint = serviceEndpointList.getEndpointAtIndex(j);
+      for(int j = 0; j < serviceEndpointList.getEndpoints().size(); j++) {
+        endpoint = serviceEndpointList.getEndpoints().get(j);
 
         if(endpoint == null) {
           return;
         }
 
-        if(endpoint.getEndpointReference() == null) {
-          throw new BadRequestException(ErrorResponse.BusinessCode.MISSING_FIELD, "Endpoint reference is missing");
-        }
+        Calendar activationDate = endpoint.getServiceActivationDate();
+        Calendar expirationDate = endpoint.getServiceExpirationDate();
 
-        Date activationDate = endpoint.getServiceActivationDate();
-        if(activationDate == null) {
-          throw new BadRequestException(ErrorResponse.BusinessCode.MISSING_FIELD, "Endpoint Activation date is missing");
-        }
-
-        Date expirationDate = endpoint.getServiceExpirationDate();
-        if(expirationDate == null) {
-          throw new BadRequestException(ErrorResponse.BusinessCode.MISSING_FIELD, "Endpoint Expiration date is missing");
-        }
-
-        if(activationDate.after(expirationDate)) {
-          throw new BadRequestException(ErrorResponse.BusinessCode.OUT_OF_RANGE, "Expiration date is before Activation date");
+        if(activationDate != null && expirationDate != null && activationDate.after(expirationDate)) {
+          throw new BadRequestException(OUT_OF_RANGE, "Expiration date is before Activation date");
         }
       }
     }
@@ -231,18 +211,16 @@ public final class ServiceMetadataInterface {
                                              @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
     s_aLogger.info ("DELETE /" + sServiceGroupID + "/services/" + sDocumentTypeID);
 
-    final SimpleParticipantIdentifier aServiceGroupID = SimpleParticipantIdentifier.createFromURIPartOrNull (sServiceGroupID);
+    final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
     if (aServiceGroupID == null) {
       // Invalid identifier
-      s_aLogger.info ("Failed to parse participant identifier '" + sServiceGroupID + "'");
-      throw new BadRequestException(ErrorResponse.BusinessCode.XSD_INVALID, "Failed to parse participant identifier '" + sServiceGroupID + "'");
+      throw new BadRequestException(XSD_INVALID, "Failed to parse participant identifier '" + sServiceGroupID + "'");
     }
 
-    final SimpleDocumentTypeIdentifier aDocTypeID = SimpleDocumentTypeIdentifier.createFromURIPartOrNull (sDocumentTypeID);
+    final DocumentIdentifier aDocTypeID = Identifiers.asDocumentId(sDocumentTypeID);
     if (aDocTypeID == null) {
       // Invalid identifier
-      s_aLogger.info ("Failed to parse document type identifier '" + sDocumentTypeID + "'");
-      throw new BadRequestException(ErrorResponse.BusinessCode.XSD_INVALID, "Failed to parse document type identifier '" + sDocumentTypeID + "'");
+      throw new BadRequestException(XSD_INVALID, "Failed to parse document type identifier '" + sDocumentTypeID + "'");
     }
 
     final IDataManager aDataManager = DataManagerFactory.getInstance ();

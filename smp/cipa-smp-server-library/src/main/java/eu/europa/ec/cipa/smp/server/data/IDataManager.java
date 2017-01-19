@@ -42,11 +42,12 @@ import java.util.List;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.persistence.EntityManager;
 
-import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
-import org.busdox.transport.identifiers._1.DocumentIdentifierType;
-import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
@@ -79,7 +80,7 @@ public interface IDataManager {
    * @throws Throwable
    */
   @Nullable
-  ServiceGroupType getServiceGroup (@Nonnull ParticipantIdentifierType aServiceGroupID) throws Throwable;
+  ServiceGroup getServiceGroup (@Nonnull ParticipantIdentifierType aServiceGroupID) throws Throwable;
 
   /**
    * Persists the service group in the underlying data layer. This operation
@@ -91,7 +92,7 @@ public interface IDataManager {
    *        The credentials to use.
    * @throws Throwable
    */
-  void saveServiceGroup (@Nonnull ServiceGroupType aServiceGroup, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
+  void saveServiceGroup (@Nonnull ServiceGroup aServiceGroup, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
 
   /**
    * Deletes the service group having the specified id.
@@ -115,7 +116,7 @@ public interface IDataManager {
    */
   @Nonnull
   @ReturnsMutableCopy
-  List <DocumentIdentifierType> getDocumentTypes (@Nonnull ParticipantIdentifierType aServiceGroupID) throws Throwable;
+  List <DocumentIdentifier> getDocumentTypes (@Nonnull ParticipantIdentifierType aServiceGroupID) throws Throwable;
 
   /**
    * Gets the list of service metadata objects corresponding to a given service
@@ -128,7 +129,7 @@ public interface IDataManager {
    */
   @Nonnull
   @ReturnsMutableCopy
-  Collection <ServiceMetadataType> getServices (@Nonnull ParticipantIdentifierType aServiceGroupID) throws Throwable;
+  Collection <ServiceMetadata> getServices (@Nonnull ParticipantIdentifierType aServiceGroupID) throws Throwable;
 
   /**
    * Gets the service metadata corresponding to the service group id and
@@ -143,7 +144,7 @@ public interface IDataManager {
    */
   @Nullable
   String getService (@Nonnull ParticipantIdentifierType aServiceGroupID,
-                       @Nonnull DocumentIdentifierType aDocType) throws Throwable;
+                       @Nonnull DocumentIdentifier aDocType) throws Throwable;
 
   /**
    * Saves the given service metadata in the underlying data layer.
@@ -156,7 +157,7 @@ public interface IDataManager {
    *        The credentials to use.
    * @throws Throwable
    */
-  void saveService (@Nonnull ServiceMetadataType aServiceMetadata, @Nonnull final String sXmlContent, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
+  void saveService (@Nonnull ServiceMetadata aServiceMetadata, @Nonnull final String sXmlContent, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
 
   /**
    * Deletes a service metadata object given by its service group id and
@@ -171,7 +172,7 @@ public interface IDataManager {
    * @throws Throwable
    */
   void deleteService (@Nonnull ParticipantIdentifierType aServiceGroupID,
-                      @Nonnull DocumentIdentifierType aDocType,
+                      @Nonnull DocumentIdentifier aDocType,
                       @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
 
   /**
@@ -188,6 +189,11 @@ public interface IDataManager {
    * @throws Throwable
    */
   @Nullable
-  ServiceMetadataType getRedirection (@Nonnull ParticipantIdentifierType aServiceGroupID,
-                                      @Nonnull DocumentIdentifierType aDocTypeID) throws Throwable;
+  ServiceMetadata getRedirection (@Nonnull ParticipantIdentifierType aServiceGroupID,
+                                      @Nonnull DocumentIdentifier aDocTypeID) throws Throwable;
+
+  /**
+   * Creates Entity Manager
+   **/
+  EntityManager getCurrentEntityManager();
 }

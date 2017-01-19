@@ -1,0 +1,1 @@
+ALTER TABLE `smp_user` MODIFY password varchar(256) NULL DEFAULT NULL;

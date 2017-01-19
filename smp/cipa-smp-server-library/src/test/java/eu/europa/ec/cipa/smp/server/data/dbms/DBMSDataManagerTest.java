@@ -37,48 +37,32 @@
  */
 package eu.europa.ec.cipa.smp.server.data.dbms;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.util.Date;
-
-import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
-import eu.europa.ec.cipa.smp.server.exception.NotFoundException;
-import eu.europa.ec.cipa.smp.server.exception.UnknownUserException;
-import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
-import org.busdox.servicemetadata.publishing._1.EndpointType;
-import org.busdox.servicemetadata.publishing._1.ExtensionType;
-import org.busdox.servicemetadata.publishing._1.ObjectFactory;
-import org.busdox.servicemetadata.publishing._1.ProcessListType;
-import org.busdox.servicemetadata.publishing._1.ProcessType;
-import org.busdox.servicemetadata.publishing._1.ServiceEndpointList;
-import org.busdox.servicemetadata.publishing._1.ServiceGroupType;
-import org.busdox.servicemetadata.publishing._1.ServiceInformationType;
-import org.busdox.servicemetadata.publishing._1.ServiceMetadataType;
-import org.busdox.transport.identifiers._1.DocumentIdentifierType;
-import org.busdox.transport.identifiers._1.ParticipantIdentifierType;
-import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.Test;
-import org.junit.rules.TestRule;
-
 import com.helger.commons.annotations.DevelopersNote;
 import com.helger.commons.scopes.mock.ScopeTestRule;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
-import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
-import eu.europa.ec.cipa.peppol.wsaddr.W3CEndpointReferenceUtils;
-import eu.europa.ec.cipa.smp.client.ESMPTransportProfile;
-import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
+import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
+import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
 import eu.europa.ec.cipa.smp.server.hook.DoNothingRegistrationHook;
+import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
+import eu.europa.ec.cipa.smp.server.util.SMPDBUtils;
+import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.ClassRule;
+import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
+
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
+import static org.junit.Assert.*;
 
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
@@ -105,17 +89,16 @@ public class DBMSDataManagerTest {
   private static final String ADDRESS = "http://test.eu/accesspoint.svc";
   private static final boolean REQUIRE_SIGNATURE = true;
   private static final String MINIMUM_AUTH_LEVEL = "1";
-  private static final Date ACTIVIATION_DATE = new Date ();
+  private static final Calendar ACTIVIATION_DATE = GregorianCalendar.getInstance();
   private static final String DESCRIPTION = "description123";
-  private static final Date EXPIRATION_DATE = new Date ();
+  private static final Calendar EXPIRATION_DATE = GregorianCalendar.getInstance();;
   private static final String TECH_CONTACT = "fake@peppol.eu";
   private static final String TECH_INFO = "http://fake.peppol.eu/";
-  private static final String TRANSPORT_PROFILE = ESMPTransportProfile.TRANSPORT_PROFILE_START.getID ();
+  private static final String TRANSPORT_PROFILE = "bdxr-transport-ebms3-as4";
 
-  private static final ParticipantIdentifierType PARTY_ID = SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_IDENTIFIER1);
+  private static final ParticipantIdentifierType PARTY_ID = new ParticipantIdentifierType(PARTICIPANT_IDENTIFIER1,"iso6523-actorid-upis");
   private static final ParticipantIdentifierType SERVICEGROUP_ID = PARTY_ID;
-  private static final DocumentIdentifierType DOCTYPE_ID = new SimpleDocumentTypeIdentifier (DOCUMENT_SCHEME,
-                                                                                             TEST_DOCTYPE_ID);
+    private static final DocumentIdentifier DOCTYPE_ID = new DocumentIdentifier(TEST_DOCTYPE_ID, DOCUMENT_SCHEME);
   private static final BasicAuthClientCredentials CREDENTIALS = new BasicAuthClientCredentials (USERNAME, PASSWORD);
 
   private static DBMSDataManager s_aDataMgr;
@@ -135,18 +118,22 @@ public class DBMSDataManagerTest {
   @ClassRule
   public static TestRule s_aTestRule = new SMPTestRule ();
 
-  private ServiceGroupType m_aServiceGroup;
-  private ServiceMetadataType m_aServiceMetadata;
+  private ServiceGroup m_aServiceGroup;
+  private ServiceMetadata m_aServiceMetadata;
   private String m_sServiceMetadata;
+  private boolean isServiceGroupToDelete = false;
+  private boolean isServiceMetadataToDelete = false;
 
   @Before
   public void beforeTest () throws Throwable {
-    final ExtensionType aExtension = ExtensionConverter.convert ("<root><any>value</any></root>");
+    createOrUpdatedDBUser();
+
+    final ExtensionType aExtension = SMPDBUtils.getAsExtensionSafe("<root><any>value</any></root>");
     assertNotNull (aExtension);
     assertNotNull (aExtension.getAny ());
 
     final ObjectFactory aObjFactory = new ObjectFactory ();
-    m_aServiceGroup = aObjFactory.createServiceGroupType ();
+    m_aServiceGroup = aObjFactory.createServiceGroup ();
     m_aServiceGroup.setParticipantIdentifier (PARTY_ID);
 
     // Be sure to delete if it exists.
@@ -158,37 +145,37 @@ public class DBMSDataManagerTest {
     // Create a new one
     s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
 
-    m_aServiceMetadata = aObjFactory.createServiceMetadataType ();
+    m_aServiceMetadata = aObjFactory.createServiceMetadata ();
     final ServiceInformationType aServiceInformation = aObjFactory.createServiceInformationType ();
     aServiceInformation.setDocumentIdentifier (DOCTYPE_ID);
     aServiceInformation.setParticipantIdentifier (PARTY_ID);
-    aServiceInformation.setExtension (aExtension);
+    aServiceInformation.getExtensions().add(aExtension);
     {
       final ProcessListType processList = aObjFactory.createProcessListType ();
       {
         final ProcessType process = aObjFactory.createProcessType ();
-        process.setProcessIdentifier (new SimpleProcessIdentifier (PROCESS_SCHEME, TEST_PROCESS_ID));
-        process.setExtension (aExtension);
+        process.setProcessIdentifier (new ProcessIdentifier(TEST_PROCESS_ID, PROCESS_SCHEME));
+        process.getExtensions().add(aExtension);
         {
           final ServiceEndpointList serviceEndpointList = aObjFactory.createServiceEndpointList ();
           {
             final EndpointType endpoint = aObjFactory.createEndpointType ();
-            endpoint.setCertificate (CERTIFICATE);
-            endpoint.setEndpointReference (W3CEndpointReferenceUtils.createEndpointReference (ADDRESS));
+            endpoint.setCertificate (CERTIFICATE.getBytes());
+            endpoint.setEndpointURI(ADDRESS);
             endpoint.setMinimumAuthenticationLevel (MINIMUM_AUTH_LEVEL);
             endpoint.setRequireBusinessLevelSignature (REQUIRE_SIGNATURE);
             endpoint.setServiceActivationDate (ACTIVIATION_DATE);
             endpoint.setServiceDescription (DESCRIPTION);
             endpoint.setServiceExpirationDate (EXPIRATION_DATE);
-            endpoint.setExtension (aExtension);
+            endpoint.getExtensions().add(aExtension);
             endpoint.setTechnicalContactUrl (TECH_CONTACT);
             endpoint.setTechnicalInformationUrl (TECH_INFO);
             endpoint.setTransportProfile (TRANSPORT_PROFILE);
-            serviceEndpointList.getEndpoint ().add (endpoint);
+            serviceEndpointList.getEndpoints().add (endpoint);
           }
           process.setServiceEndpointList (serviceEndpointList);
         }
-        processList.getProcess ().add (process);
+        processList.getProcesses().add (process);
       }
       aServiceInformation.setProcessList (processList);
     }
@@ -196,13 +183,32 @@ public class DBMSDataManagerTest {
     m_sServiceMetadata = XmlTestUtils.marshall(m_aServiceMetadata);
   }
 
+  private final void createOrUpdatedDBUser() throws Throwable {
+      String username = "CN=SMP_1000000181,O=DIGIT,C=DK:123456789";
+      String password = "123456789";
+      DBUser aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, username);
+
+      if(aDBUser == null){
+          aDBUser = new DBUser();
+          aDBUser.setUsername(username);
+          aDBUser.setPassword(password);
+          s_aDataMgr.getCurrentEntityManager().persist(aDBUser);
+      }else{
+          if(!aDBUser.getPassword().equals(password)){
+              aDBUser.setPassword(password);
+              s_aDataMgr.getCurrentEntityManager().merge(aDBUser);
+          }
+      }
+  }
+
   @Test
   public void testCreateServiceGroup () throws Throwable {
     m_aServiceGroup.getParticipantIdentifier ().setValue (PARTICIPANT_IDENTIFIER2);
+
     s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
 
-    final ParticipantIdentifierType aParticipantIdentifier2 = SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_IDENTIFIER2);
-    final ServiceGroupType result = s_aDataMgr.getServiceGroup (aParticipantIdentifier2);
+    final ParticipantIdentifierType aParticipantIdentifier2 = new ParticipantIdentifierType(PARTICIPANT_IDENTIFIER2, "iso6523-actorid-upis");
+    final ServiceGroup result = s_aDataMgr.getServiceGroup (aParticipantIdentifier2);
     assertNotNull (result);
 
     assertNull (result.getServiceMetadataReferenceCollection ());
@@ -217,8 +223,8 @@ public class DBMSDataManagerTest {
 
     m_aServiceGroup.getParticipantIdentifier ().setValue (PARTICIPANT_IDENTIFIER2);
     try {
-      s_aDataMgr.saveServiceGroup (m_aServiceGroup, aCredentials);
-      fail ();
+        s_aDataMgr.saveServiceGroup (m_aServiceGroup, aCredentials);
+        fail ();
     }
     catch (final UnauthorizedException ex) {}
   }
@@ -229,24 +235,23 @@ public class DBMSDataManagerTest {
 
     m_aServiceGroup.getParticipantIdentifier ().setValue (PARTICIPANT_IDENTIFIER2);
     try {
-      s_aDataMgr.saveServiceGroup (m_aServiceGroup, aCredentials);
-      fail ();
+        s_aDataMgr.saveServiceGroup (m_aServiceGroup, aCredentials);
+        fail ();
     }
     catch (final UnknownUserException ex) {}
   }
 
   @Test
   public void testDeleteServiceGroup () throws Throwable {
-    s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, CREDENTIALS);
-
-    assertNull (s_aDataMgr.getServiceGroup (SERVICEGROUP_ID));
+      s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, CREDENTIALS);
+      assertNull (s_aDataMgr.getServiceGroup (SERVICEGROUP_ID));
   }
 
   @Test
   public void testDeleteServiceGroupUnknownID () throws Throwable {
-    final ParticipantIdentifierType aServiceGroupID2 = SimpleParticipantIdentifier.createWithDefaultScheme (PARTICIPANT_IDENTIFIER2);
+    final ParticipantIdentifierType aServiceGroupID2 = new ParticipantIdentifierType(PARTICIPANT_IDENTIFIER2, "iso6523-actorid-upis");
     try {
-      s_aDataMgr.deleteServiceGroup (aServiceGroupID2, CREDENTIALS);
+        s_aDataMgr.deleteServiceGroup (aServiceGroupID2, CREDENTIALS);
     }
     catch (final NotFoundException ex) {}
     assertNull (s_aDataMgr.getServiceGroup (aServiceGroupID2));
@@ -256,8 +261,9 @@ public class DBMSDataManagerTest {
   public void testDeleteServiceGroupUnknownUser () throws Throwable {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
     try {
-      s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, aCredentials);
-      fail ();
+        s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, aCredentials);
+        s_aDataMgr.getCurrentEntityManager().getTransaction().commit();
+        fail ();
     }
     catch (final UnknownUserException ex) {}
   }
@@ -266,8 +272,8 @@ public class DBMSDataManagerTest {
   public void testDeleteServiceGroupWrongPass () throws Throwable {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WrongPassword");
     try {
-      s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, aCredentials);
-      fail ();
+        s_aDataMgr.deleteServiceGroup (SERVICEGROUP_ID, aCredentials);
+        fail ();
     }
     catch (final UnauthorizedException ex) {}
   }
@@ -279,17 +285,17 @@ public class DBMSDataManagerTest {
 
     // Retrieve from DB
     final String docDBServiceMetadata = s_aDataMgr.getService (SERVICEGROUP_ID, DOCTYPE_ID);
-    final ServiceMetadataType aDBServiceMetadata = ServiceMetadataConverter.unmarshal(docDBServiceMetadata);
+    final ServiceMetadata aDBServiceMetadata = ServiceMetadataConverter.unmarshal(docDBServiceMetadata);
     assertNotNull (aDBServiceMetadata);
 
     final ProcessListType aOrigProcessList = m_aServiceMetadata.getServiceInformation ().getProcessList ();
-    assertEquals (1, aOrigProcessList.getProcess ().size ());
-    final ProcessType aOrigProcess = aOrigProcessList.getProcess ().get (0);
-    assertEquals (1, aOrigProcess.getServiceEndpointList ().getEndpoint ().size ());
-    final EndpointType aOrigEndpoint = aOrigProcess.getServiceEndpointList ().getEndpoint ().get (0);
+    assertEquals (1, aOrigProcessList.getProcesses().size ());
+    final ProcessType aOrigProcess = aOrigProcessList.getProcesses().get (0);
+    assertEquals (1, aOrigProcess.getServiceEndpointList ().getEndpoints().size ());
+    final EndpointType aOrigEndpoint = aOrigProcess.getServiceEndpointList ().getEndpoints().get (0);
 
-    final ProcessType aDBProcess = aDBServiceMetadata.getServiceInformation ().getProcessList ().getProcess ().get (0);
-    final EndpointType aDBEndpoint = aDBProcess.getServiceEndpointList ().getEndpoint ().get (0);
+    final ProcessType aDBProcess = aDBServiceMetadata.getServiceInformation ().getProcessList ().getProcesses().get (0);
+    final EndpointType aDBEndpoint = aDBProcess.getServiceEndpointList ().getEndpoints().get (0);
 
     assertTrue (IdentifierUtils.areIdentifiersEqual (m_aServiceMetadata.getServiceInformation ()
                                                                        .getDocumentIdentifier (),
@@ -301,22 +307,23 @@ public class DBMSDataManagerTest {
                                                                        .getParticipantIdentifier ()));
     assertTrue (IdentifierUtils.areIdentifiersEqual (aOrigProcess.getProcessIdentifier (),
                                                      aDBProcess.getProcessIdentifier ()));
-    assertEquals (aOrigEndpoint.getCertificate (), aDBEndpoint.getCertificate ());
+    assertArrayEquals (aOrigEndpoint.getCertificate (), aDBEndpoint.getCertificate ());
     assertEquals (aOrigEndpoint.getMinimumAuthenticationLevel (), aDBEndpoint.getMinimumAuthenticationLevel ());
     assertEquals (aOrigEndpoint.getServiceDescription (), aDBEndpoint.getServiceDescription ());
     assertEquals (aOrigEndpoint.getTechnicalContactUrl (), aDBEndpoint.getTechnicalContactUrl ());
     assertEquals (aOrigEndpoint.getTechnicalInformationUrl (), aDBEndpoint.getTechnicalInformationUrl ());
     assertEquals (aOrigEndpoint.getTransportProfile (), aDBEndpoint.getTransportProfile ());
-    assertEquals (W3CEndpointReferenceUtils.getAddress (aOrigEndpoint.getEndpointReference ()),
-                  W3CEndpointReferenceUtils.getAddress (aDBEndpoint.getEndpointReference ()));
+    assertEquals (aOrigEndpoint.getEndpointURI(), aDBEndpoint.getEndpointURI());
+
+    isServiceMetadataToDelete = true;
   }
 
   @Test
   public void testCreateServiceMetadataUnknownUser () throws Throwable {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
     try {
-      s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, aCredentials);
-      fail ();
+        s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, aCredentials);
+        fail ();
     }
     catch (final UnknownUserException ex) {}
   }
@@ -325,8 +332,9 @@ public class DBMSDataManagerTest {
   public void testCreateServiceMetadataWrongPass () throws Throwable {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WrongPassword");
     try {
-      s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, aCredentials);
-      fail ();
+        s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, aCredentials);
+        s_aDataMgr.getCurrentEntityManager().getTransaction().commit();
+        fail ();
     }
     catch (final UnauthorizedException ex) {}
   }
@@ -334,8 +342,9 @@ public class DBMSDataManagerTest {
   @Test
   public void testPrintServiceMetadata () throws Throwable {
     // Ensure something is present :)
-    s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, CREDENTIALS);
-    System.out.println (s_aDataMgr.getService (SERVICEGROUP_ID, DOCTYPE_ID));
+      isServiceMetadataToDelete = true;
+      s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, CREDENTIALS);
+      System.out.println (s_aDataMgr.getService (SERVICEGROUP_ID, DOCTYPE_ID));
   }
 
   @Test
@@ -372,4 +381,164 @@ public class DBMSDataManagerTest {
     }
     catch (final UnauthorizedException ex) {}
   }
+
+  @Test(expected = UnauthorizedException.class )
+  public void testDeleteServiceMetadataNullPass () throws Throwable {
+     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, null);
+     s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, aCredentials);
+     fail ();
+  }
+
+  @Test
+  public void testSaveServiceGroup() throws Throwable {
+      // # Authentication #
+      String password = "123456789";
+      BasicAuthClientCredentials auth =CREDENTIALS;
+      ServiceGroup result = s_aDataMgr.getServiceGroup(m_aServiceGroup.getParticipantIdentifier());
+
+      // # Delete after leaving test #
+      isServiceGroupToDelete = true;
+
+      // # Save ServiceGroup #
+      String participantId = PARTICIPANT_IDENTIFIER2 + "654987";
+      m_aServiceGroup = createServiceGroup(participantId);
+      s_aDataMgr.saveServiceGroup(m_aServiceGroup, auth);
+
+      // # Check ServiceGroup after save #
+      assertNotNull(result);
+      assertNull(result.getServiceMetadataReferenceCollection());
+      assertEquals(PARTICIPANT_IDENTIFIER_SCHEME, result.getParticipantIdentifier().getScheme());
+      assertTrue(IdentifierUtils.areParticipantIdentifierValuesEqual(participantId,
+              result.getParticipantIdentifier().getValue()));
+      // # Check Ownership #
+      assertNotNull( s_aDataMgr.getCurrentEntityManager().find(DBOwnership.class, new DBOwnershipID(auth.getUserName(), m_aServiceGroup.getParticipantIdentifier())));
+  }
+
+  @Test(expected = UnauthorizedException.class)
+  public void testSaveServiceGroupByCertificateNotOwner() throws Throwable {
+    String participantId = PARTICIPANT_IDENTIFIER2 + "951842";
+    String certificateIdentifierHeader = "CN=SMP_1000000181,O=DIGIT,C=DK:123456789";
+    ServiceGroup serviceGroup = createServiceGroup(participantId);
+
+    s_aDataMgr.saveServiceGroup(serviceGroup, CREDENTIALS);
+
+    BasicAuthClientCredentials auth = new BasicAuthClientCredentials(certificateIdentifierHeader, "100password");
+    s_aDataMgr.saveServiceGroup(serviceGroup, auth);
+  }
+
+  @Test(expected = UnknownUserException.class)
+  public void testSaveServiceGroupByCertificateNotFound() throws Throwable {
+    String certificateIdentifierHeader = "CN=SMP_123456789,O=DIGIT,C=PT:123456789";
+
+    ServiceGroup serviceGroup = createServiceGroup(certificateIdentifierHeader);
+    BasicAuthClientCredentials auth = new BasicAuthClientCredentials(certificateIdentifierHeader, "100password");
+    s_aDataMgr.saveServiceGroup(serviceGroup, auth);
+  }
+
+  @Test(expected = UnknownUserException.class)
+  public void testSaveServiceGroupByUserNotFound() throws Throwable {
+    String participantId = PARTICIPANT_IDENTIFIER2 + "123456789";
+    ServiceGroup serviceGroup = createServiceGroup(participantId);
+
+    BasicAuthClientCredentials auth = new BasicAuthClientCredentials ("123456789", PASSWORD);
+    s_aDataMgr.saveServiceGroup(serviceGroup, auth);
+  }
+
+  @Test
+  public void verifyUser() throws Throwable {
+    BasicAuthClientCredentials auth = CREDENTIALS;
+    DBUser user = s_aDataMgr._verifyUser(auth);
+    assertNotNull(user);
+    assertNotNull(user.getUsername(),CREDENTIALS.getUserName());
+    assertNotNull(user.getPassword(),CREDENTIALS.getPassword());
+  }
+
+  @Test(expected = UnauthorizedException.class)
+  public void verifyUserNullPassword() throws Throwable {
+       BasicAuthClientCredentials auth = new BasicAuthClientCredentials(CREDENTIALS.getUserName(), null);
+       DBUser user = s_aDataMgr._verifyUser(auth);
+  }
+
+  @Test(expected = UnknownUserException.class)
+  public void verifyUserNotFound() throws Throwable {
+        BasicAuthClientCredentials auth = new BasicAuthClientCredentials("UserNotFound", null);
+        DBUser user = s_aDataMgr._verifyUser(auth);
+  }
+
+  @Test(expected = UnauthorizedException.class)
+  public void verifyUserWrongPassword() throws Throwable {
+       BasicAuthClientCredentials auth = new BasicAuthClientCredentials(CREDENTIALS.getUserName(), "WrongPass");
+       DBUser user = s_aDataMgr._verifyUser(auth);
+  }
+
+  @Test
+  public void verifyUserNullAllowed() throws Throwable {
+      // # Look for user
+      DBUser aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, CREDENTIALS.getUserName());
+      assertNotNull(aDBUser);
+
+      // # Set password to null and save
+      aDBUser.setPassword(null);
+      s_aDataMgr.getCurrentEntityManager().merge(aDBUser);
+
+      // # Check if password is null
+      aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, CREDENTIALS.getUserName());
+      assertNull(aDBUser.getPassword());
+
+      // # Validate authentication with null password in the request and database
+      BasicAuthClientCredentials auth = new BasicAuthClientCredentials(CREDENTIALS.getUserName(),null);
+      DBUser user = s_aDataMgr._verifyUser(auth);
+      assertNotNull(user);
+
+      aDBUser.setPassword(CREDENTIALS.getPassword());
+      s_aDataMgr.getCurrentEntityManager().merge(aDBUser);
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void verifyNullUser() throws Throwable {
+        BasicAuthClientCredentials auth = new BasicAuthClientCredentials(null, "WrongPass");
+        DBUser user = s_aDataMgr._verifyUser(auth);
+  }
+
+  private ServiceGroup createServiceGroup(String participantId) {
+    final ObjectFactory aObjFactory = new ObjectFactory();
+    ServiceGroup m_aServiceGroup = aObjFactory.createServiceGroup();
+    m_aServiceGroup.setParticipantIdentifier(PARTY_ID);
+    m_aServiceGroup.getParticipantIdentifier().setValue(participantId);
+
+    return m_aServiceGroup;
+  }
+
+  @After
+  public void deleteServiceGroup() throws Throwable {
+      if (isServiceGroupToDelete) {
+          DBServiceGroup aDBServiceGroup = s_aDataMgr.getCurrentEntityManager().find(DBServiceGroup.class, new DBServiceGroupID(m_aServiceGroup.getParticipantIdentifier()));
+          if (aDBServiceGroup != null) {
+              s_aDataMgr.getCurrentEntityManager().remove(aDBServiceGroup);
+              isServiceGroupToDelete = false;
+          }
+      }
+  }
+
+    @After
+    public void deleteServiceMetadata() throws Throwable {
+        if (isServiceMetadataToDelete) {
+            DBServiceMetadata serviceMetadata = s_aDataMgr.getCurrentEntityManager().find(DBServiceMetadata.class, new DBServiceMetadataID(SERVICEGROUP_ID, DOCTYPE_ID));
+            if (serviceMetadata != null) {
+                s_aDataMgr.getCurrentEntityManager().remove(serviceMetadata);
+                isServiceMetadataToDelete = false;
+            }
+        }
+    }
+
+  @After
+  public void deleteUser() throws Throwable {
+      String[] usernames = new String[]{PARTICIPANT_IDENTIFIER2 + "654987","CN=SMP_1000000181,O=DIGIT,C=DK:123456789"};
+      for(String username : Arrays.asList(usernames)){
+        DBUser aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, username);
+        if(aDBUser != null) {
+            s_aDataMgr.getCurrentEntityManager().remove(aDBUser);
+        }
+      }
+    }
 }

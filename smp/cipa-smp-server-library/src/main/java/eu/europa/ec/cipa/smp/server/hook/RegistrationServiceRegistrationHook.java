@@ -49,6 +49,7 @@ import javax.net.ssl.TrustManager;
 
 import org.busdox.servicemetadata.managebusinessidentifierservice._1.NotFoundFault;
 import org.busdox.servicemetadata.managebusinessidentifierservice._1.UnauthorizedFault;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -155,8 +156,8 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     }
   }
 
-  public void create (final IParticipantIdentifier aPI) throws HookException {
-    m_aBusinessIdentifier = new SimpleParticipantIdentifier (aPI);
+  public void create (final ParticipantIdentifierType aPI) throws HookException {
+    m_aBusinessIdentifier = new SimpleParticipantIdentifier (aPI.getScheme(), aPI.getValue());
     m_eAction = EAction.CREATE;
     s_aLogger.info ("Trying to create business " + m_aBusinessIdentifier + " in Business Identifier Manager Service");
 
@@ -184,8 +185,8 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     }
   }
 
-  public void delete (final IParticipantIdentifier aPI) throws HookException {
-    m_aBusinessIdentifier = new SimpleParticipantIdentifier (aPI);
+  public void delete (final ParticipantIdentifierType aPI) throws HookException {
+    m_aBusinessIdentifier = new SimpleParticipantIdentifier (aPI.getScheme(), aPI.getValue());
     m_eAction = EAction.DELETE;
     s_aLogger.info ("Trying to delete business " + m_aBusinessIdentifier + " in Business Identifier Manager Service");
 

@@ -42,6 +42,7 @@ import javax.annotation.concurrent.Immutable;
 import com.helger.commons.state.ESuccess;
 
 import eu.europa.ec.cipa.busdox.identifier.IParticipantIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 /**
  * An extension of the RegistrationHook class that does nothing.
@@ -50,9 +51,9 @@ import eu.europa.ec.cipa.busdox.identifier.IParticipantIdentifier;
  */
 @Immutable
 public final class DoNothingRegistrationHook extends AbstractRegistrationHook {
-  public void create (final IParticipantIdentifier aPI) {}
+  public void create (final ParticipantIdentifierType aPI) {}
 
-  public void delete (final IParticipantIdentifier aPI) {}
+  public void delete (final ParticipantIdentifierType aPI) {}
 
   public void postUpdate (final ESuccess eSuccess) {}
 }

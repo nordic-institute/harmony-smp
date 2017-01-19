@@ -79,7 +79,7 @@ CREATE TABLE smp_process (
 DROP TABLE IF EXISTS smp_user;
 CREATE TABLE smp_user (
   username varchar(256) NOT NULL,
-  password varchar(256) NOT NULL,
+  password varchar(256),
   PRIMARY KEY  (username)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 

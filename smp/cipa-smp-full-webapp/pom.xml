@@ -26,9 +26,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>eu.europa.ec.cipa</groupId>
-      <artifactId>cipa-smp-server-library</artifactId>
-      <version>${project.version}</version>
+        <groupId>eu.europa.ec.cipa</groupId>
+        <artifactId>cipa-smp-server-library</artifactId>
+        <version>${project.version}</version>
     </dependency>
 
     <dependency>

@@ -37,16 +37,10 @@
  */
 package eu.europa.ec.cipa.smp.server.data.dbms.model;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
 
 /**
  * Represents a single user within the SMP database.
@@ -72,7 +66,7 @@ public class DBUser implements Serializable {
     m_sUserName = sUserName;
   }
 
-  @Column (name = "password", nullable = false, length = 256)
+  @Column (name = "password",length = 256)
   public String getPassword () {
     return m_sPassword;
   }
