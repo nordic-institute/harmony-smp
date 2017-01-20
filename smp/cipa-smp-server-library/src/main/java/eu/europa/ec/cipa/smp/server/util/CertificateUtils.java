@@ -106,9 +106,10 @@ public class CertificateUtils {
      * @return Certificate Id
      * @throws AuthenticationException Certificate Authentication Exception
      */
-    public final static String getCommonNameFromCalculateHeaderCertificateId(final String certHeaderValue) throws AuthenticationException {
+    public final static CertificateDetails getCommonNameFromCalculateHeaderCertificateId(final String certHeaderValue) throws AuthenticationException {
         CertificateDetails certificateDetails = calculateCertificateIdFromHeader(certHeaderValue);
-        return returnCertificateId(certificateDetails.getSubject(), certificateDetails.getSerial());
+        certificateDetails.setCertificateId(returnCertificateId(certificateDetails.getSubject(), certificateDetails.getSerial()));
+        return certificateDetails;
     }
 
     /**

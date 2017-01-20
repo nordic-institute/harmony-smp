@@ -73,7 +73,8 @@ public class BlueCoatClientCertificateAuthentication implements Authentication {
      */
     private String calculateCertificateIdFromHeader(final String certHeaderValue) throws AuthenticationException {
         try {
-            return CertificateUtils.getCommonNameFromCalculateHeaderCertificateId(certHeaderValue);
+            certificate = CertificateUtils.getCommonNameFromCalculateHeaderCertificateId(certHeaderValue);
+            return certificate.getCertificateId();
         } catch (final Exception exc) {
             throw new AuthenticationException("Impossible to determine the certificate identifier from " + certHeaderValue, exc);
         }
@@ -87,6 +88,6 @@ public class BlueCoatClientCertificateAuthentication implements Authentication {
      * @throws AuthenticationException Certificate Authentication Exception
      */
     private List<? extends GrantedAuthority> retrieveAuthorities(String certHeaderValue) throws AuthenticationException {
-      throw new NotImplementedException("NotImplementedException");
+        throw new NotImplementedException("NotImplementedException");
     }
 }

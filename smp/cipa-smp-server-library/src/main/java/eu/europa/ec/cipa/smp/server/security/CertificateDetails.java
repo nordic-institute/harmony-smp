@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.util.Calendar;
 
 public class CertificateDetails implements Serializable {
+    private String certificateId;
     private String serial;
     private String subject;
     private Calendar validFrom;
@@ -72,13 +73,17 @@ public class CertificateDetails implements Serializable {
         this.rootCertificateDN = rootCertificateDN;
     }
 
+    public String getCertificateId() {return certificateId;}
+
+    public void setCertificateId(String certificateId) {this.certificateId = certificateId;}
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         CertificateDetails that = (CertificateDetails) o;
-
+        if (certificateId != null ? !certificateId.equals(that.certificateId) : that.certificateId != null) return false;
         if (serial != null ? !serial.equals(that.serial) : that.serial != null) return false;
         if (subject != null ? !subject.equals(that.subject) : that.subject != null) return false;
         if (validFrom != null ? !validFrom.equals(that.validFrom) : that.validFrom != null) return false;
@@ -91,7 +96,8 @@ public class CertificateDetails implements Serializable {
 
     @Override
     public int hashCode() {
-        int result = serial != null ? serial.hashCode() : 0;
+        int result = certificateId != null ? certificateId.hashCode() : 0;
+        result = 31 * result + (serial != null ? serial.hashCode() : 0);
         result = 31 * result + (subject != null ? subject.hashCode() : 0);
         result = 31 * result + (validFrom != null ? validFrom.hashCode() : 0);
         result = 31 * result + (validTo != null ? validTo.hashCode() : 0);

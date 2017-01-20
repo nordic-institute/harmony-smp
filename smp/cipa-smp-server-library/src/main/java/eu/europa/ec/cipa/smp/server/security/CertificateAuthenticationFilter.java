@@ -54,8 +54,11 @@ public class CertificateAuthenticationFilter implements ContainerRequestFilter {
                     if (certHeaderValue != null && !certHeaderValue.isEmpty()) {
                         Authentication authentication = new BlueCoatClientCertificateAuthentication(certHeaderValue.get(0));
                         authenticate(authentication, webRequest);
+                    } else {
+                        //TODO other authentication ways
+                        throw new AuthenticationException("There is no client certificate in the request");
                     }
-                    throw new AuthenticationException("There is no client certificate in the request");
+                    break;
                 case "https":
                     break;
                 default:

@@ -2,6 +2,7 @@ package eu.europa.ec.cipa.smp.server.services.impl;
 
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
+import eu.europa.ec.cipa.smp.server.data.dbms.model.DBUser;
 import eu.europa.ec.cipa.smp.server.exception.CertificateNotFoundException;
 import eu.europa.ec.cipa.smp.server.exception.CertificateRevokedException;
 import eu.europa.ec.cipa.smp.server.exception.common.TechnicalException;
@@ -43,30 +44,24 @@ public class BlueCoatCertificateServiceImpl implements IBlueCoatCertificateServi
 
     public void validateBlueCoatClientCertificate(final CertificateDetails certificate) throws TechnicalException {
         Date today = Calendar.getInstance().getTime();
-        Boolean isCertValid = null;
-        if ((certificate.getValidFrom()!= null && !today.after(certificate.getValidFrom().getTime())) || (certificate.getValidTo()!= null &&!today.before(certificate.getValidTo().getTime()))) {
+        if ((certificate.getValidFrom() != null && !today.after(certificate.getValidFrom().getTime())) || (certificate.getValidTo() != null && !today.before(certificate.getValidTo().getTime()))) {
             DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
             logger.info(String.format("SEC_CERTIFICATE_EXPIRED | Date: %s, Certificate valid from: %s, Certificate valid to: %s", df.format(today), df.format(certificate.getValidFrom().getTime()), df.format(certificate.getValidTo().getTime())));
             throw new CertificateRevokedException("The certificate is revoked.");
         } else {
             logger.info(String.format("Certificate Issuer: %s, Subject: %s", certificate.getIssuer(), certificate.getSubject()));
-            isCertValid = isCertificateTrusted(certificate);
-
-            if (isCertValid == null) {
-                logger.info(String.format("SEC_UNKNOWN_CERTIFICATE | Certificate Issuer: %s, Subject: %s", certificate.getIssuer(), certificate.getSubject()));
-                throw new CertificateNotFoundException("Certificate not found");
-            }
+            databaseCertificateChecking(certificate);
         }
     }
 
-    private Boolean isCertificateTrusted(CertificateDetails certificate) throws TechnicalException {
-        final IDataManager aDataManager = DataManagerFactory.getInstance ();
-          // CertificateDomainBO certDomainBO = bdmslService.findDomain(certificate.getIssuer());
-//        if (certDomainBO != null && certDomainBO.isRootCA()) {
-//            return isCertificateValidForCertificateCRLs(certDomainBO, certificate);
-//        }
+    private void databaseCertificateChecking(CertificateDetails certificate) throws TechnicalException {
+        final IDataManager aDataManager = DataManagerFactory.getInstance();
+        final DBUser dbUser = aDataManager.getCurrentEntityManager().find(DBUser.class, certificate.getCertificateId());
 
-        //Null means it is not rootCA, validation should be ignored.
-        return null;
+        //TODO I believe checking only the username is not enough. WE should have more validation here
+        if (dbUser == null) {
+            logger.error(String.format("SEC_UNKNOWN_CERTIFICATE | Certificate Issuer: %s, Subject: %s", certificate.getIssuer(), certificate.getSubject()));
+            throw new CertificateNotFoundException("Certificate not found");
+        }
     }
 }
