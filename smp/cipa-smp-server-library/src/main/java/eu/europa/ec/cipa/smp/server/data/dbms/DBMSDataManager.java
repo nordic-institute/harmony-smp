@@ -154,13 +154,17 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
      *
      * @param aServiceGroupID The service group to be verified
      * @param aCredentials    The credentials to be checked
-     * @return The non-<code>null</code> ownership object
      * @throws UnauthorizedException If the participant identifier is not owned by the user specified in
      *                               the credentials
      */
     @Nonnull
-    private DBOwnership _verifyOwnership(@Nonnull final ParticipantIdentifierType aServiceGroupID,
+    private void _verifyOwnership(@Nonnull final ParticipantIdentifierType aServiceGroupID,
                                          @Nonnull final BasicAuthClientCredentials aCredentials) throws UnauthorizedException {
+
+        if (_isAdmin(aCredentials.getUserName())){
+            return;
+        }
+
         final DBOwnershipID aOwnershipID = new DBOwnershipID(aCredentials.getUserName(), aServiceGroupID);
         final DBOwnership aOwnership = getEntityManager().find(DBOwnership.class, aOwnershipID);
         if (aOwnership == null) {
@@ -176,7 +180,11 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                     " is owned by user '" +
                     aCredentials.getUserName() +
                     "'");
-        return aOwnership;
+    }
+
+    private boolean _isAdmin(@Nonnull String username) {
+        final DBUser aDBUser = getEntityManager().find(DBUser.class, username);
+        return aDBUser.isAdmin();
     }
 
     @Nonnull
@@ -237,10 +245,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         ret = doInTransaction(new Runnable() {
             public void run() {
                 final DBUser aDBUser = _verifyUser(aCredentials);
-
                 final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(aServiceGroup.getParticipantIdentifier());
-                final DBOwnershipID aDBOwnershipID = new DBOwnershipID(aCredentials.getUserName(),
-                        aServiceGroup.getParticipantIdentifier());
 
                 // Check if the passed service group ID is already in use
                 final EntityManager aEM = getEntityManager();
@@ -248,13 +253,8 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
                 if (aDBServiceGroup != null) {
                     // The business did exist. So it must be owned by the passed user.
-                    if (aEM.find(DBOwnership.class, aDBOwnershipID) == null) {
-                        throw new UnauthorizedException("The passed service group " +
-                                IdentifierUtils.getIdentifierURIEncoded(aServiceGroup.getParticipantIdentifier()) +
-                                " is not owned by '" +
-                                aCredentials.getUserName() +
-                                "'");
-                    }
+
+                    _verifyOwnership(aServiceGroup.getParticipantIdentifier(), aCredentials);
 
                     // Simply update the extension
                     if(aServiceGroup.getExtensions().size() > 0) {
@@ -273,6 +273,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                     aEM.persist(aDBServiceGroup);
 
                     // Save the ownership information
+                    final DBOwnershipID aDBOwnershipID = new DBOwnershipID(aCredentials.getUserName(), aServiceGroup.getParticipantIdentifier());
                     final DBOwnership aDBOwnership = new DBOwnership(aDBOwnershipID, aDBUser, aDBServiceGroup);
                     aEM.persist(aDBOwnership);
                 }
@@ -302,12 +303,10 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                     return EChange.UNCHANGED;
                 }
 
-                // Check the ownership afterwards, so that only existing serviceGroups
-                // are checked
-                final DBOwnership aDBOwnership = _verifyOwnership(aServiceGroupID, aCredentials);
+                // Check the ownership afterwards, so that only existing serviceGroups are checked
+                _verifyOwnership(aServiceGroupID, aCredentials);
 
-                aEM.remove(aDBOwnership);
-                aEM.remove(aDBServiceGroup);
+                _removeServiceGroup(aDBServiceGroup);
                 return EChange.CHANGED;
             }
         });
@@ -315,6 +314,15 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
             throw ret.getThrowable();
         if (ret.get().isUnchanged())
             throw new NotFoundException(IdentifierUtils.getIdentifierURIEncoded(aServiceGroupID));
+    }
+
+    private void _removeServiceGroup(DBServiceGroup dbServiceGroup){
+        getEntityManager().createQuery("DELETE FROM DBOwnership o WHERE o.id.businessIdentifierScheme = :scheme and o.id.businessIdentifier = :id")
+                .setParameter("scheme", dbServiceGroup.getId().getBusinessIdentifierScheme())
+                .setParameter("id", dbServiceGroup.getId().getBusinessIdentifier())
+                .executeUpdate();
+
+        getEntityManager().remove(dbServiceGroup);
     }
 
     @Nonnull
