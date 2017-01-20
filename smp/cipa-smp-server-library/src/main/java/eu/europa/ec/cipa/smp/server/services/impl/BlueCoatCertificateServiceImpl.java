@@ -1,5 +1,7 @@
 package eu.europa.ec.cipa.smp.server.services.impl;
 
+import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
+import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.exception.CertificateNotFoundException;
 import eu.europa.ec.cipa.smp.server.exception.CertificateRevokedException;
 import eu.europa.ec.cipa.smp.server.exception.common.TechnicalException;
@@ -58,7 +60,8 @@ public class BlueCoatCertificateServiceImpl implements IBlueCoatCertificateServi
     }
 
     private Boolean isCertificateTrusted(CertificateDetails certificate) throws TechnicalException {
-        //  CertificateDomainBO certDomainBO = bdmslService.findDomain(certificate.getIssuer());
+        final IDataManager aDataManager = DataManagerFactory.getInstance ();
+          // CertificateDomainBO certDomainBO = bdmslService.findDomain(certificate.getIssuer());
 //        if (certDomainBO != null && certDomainBO.isRootCA()) {
 //            return isCertificateValidForCertificateCRLs(certDomainBO, certificate);
 //        }

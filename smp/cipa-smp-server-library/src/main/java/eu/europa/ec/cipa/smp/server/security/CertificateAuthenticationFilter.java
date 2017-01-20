@@ -2,10 +2,8 @@ package eu.europa.ec.cipa.smp.server.security;
 
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
-import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 import eu.europa.ec.cipa.smp.server.exception.AuthenticationException;
 import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
-import eu.europa.ec.cipa.smp.server.util.CertificateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +32,7 @@ public class CertificateAuthenticationFilter implements ContainerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(CertificateAuthenticationFilter.class);
 
     private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
+    private static final String AUTHORIZATION_HEADER_KEY = "Authorization";
 
     @Context
     private HttpServletRequest webRequest;
@@ -45,45 +44,49 @@ public class CertificateAuthenticationFilter implements ContainerRequestFilter {
     public ContainerRequest filter(ContainerRequest containerRequest) {
         try {
             final HttpSession session = webRequest.getSession();
-
             logger.info("user: no-user-yet-logged");
             logger.info("sessionId: " + session.getId());
 
-            System.out.println(" ##### doFilter #######" + containerRequest.getRequestHeaders());
-            String baseURIScheme = containerRequest.getBaseUri().getScheme();
+            String baseURIScheme = containerRequest.getBaseUri().getScheme().toLowerCase();
             List<String> certHeaderValue = containerRequest.getRequestHeader(CLIENT_CERT_HEADER_KEY);
-            List<String> htppBasicAuthentication = containerRequest.getRequestHeader(CLIENT_CERT_HEADER_KEY);
-            if ("http".equalsIgnoreCase(baseURIScheme)) {
-                if (certHeaderValue != null && !certHeaderValue.isEmpty()) {
-                    CertificateDetails certificateDetails = CertificateUtils.calculateCertificateIdFromHeader(certHeaderValue.get(0));
-                    Authentication authentication = new BlueCoatClientCertificateAuthentication(certHeaderValue.get(0));
-                    authenticate(authentication, webRequest);
-                }
+            switch (baseURIScheme) {
+                case "http":
+                    if (certHeaderValue != null && !certHeaderValue.isEmpty()) {
+                        Authentication authentication = new BlueCoatClientCertificateAuthentication(certHeaderValue.get(0));
+                        authenticate(authentication, webRequest);
+                    }
+                    throw new AuthenticationException("There is no client certificate in the request");
+                case "https":
+                    break;
+                default:
+                    throw new AuthenticationException("The request must use HTTP or HTTPS protocol");
             }
             return containerRequest;
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             throw new UnauthorizedException(e);
         }
     }
 
     private void authenticate(Authentication authentication, HttpServletRequest httpRequest) throws AuthenticationException {
-        logger.info(String.format("RemoteHost: %s, RequestURL: %s",httpRequest.getRemoteHost(), httpRequest.getRequestURL().toString()));
+        logger.info(String.format("RemoteHost: %s, RequestURL: %s", httpRequest.getRemoteHost(), httpRequest.getRequestURL().toString()));
         Authentication authenticationResult;
         try {
             ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
             authenticationProvider = (CustomAuthenticationProvider) context.getBean("customAuthenticationProvider");
             authenticationResult = authenticationProvider.authenticate(authentication);
-        } catch (org.springframework.security.core.AuthenticationException exc) {
+        } catch (Exception exc) {
+            logger.error(exc.getMessage(), exc);
             throw new AuthenticationException("Error while authenticating " + authentication.getName(), exc);
         }
 
         logger.info(String.format("user: %s ", authenticationResult.getName()));
 
         if (authenticationResult.isAuthenticated()) {
-            logger.info(String.format("SEC_AUTHORIZED_ACCESS | RemoteHost: %s, RequestURL: %s",httpRequest.getRemoteHost(), httpRequest.getRequestURL().toString()));
+            logger.info(String.format("SEC_AUTHORIZED_ACCESS | RemoteHost: %s, RequestURL: %s", httpRequest.getRemoteHost(), httpRequest.getRequestURL().toString()));
             SecurityContextHolder.getContext().setAuthentication(authenticationResult);
         } else {
-            logger.info(String.format("SEC_UNAUTHORIZED_ACCESS | RemoteHost: %s, RequestURL: %s",httpRequest.getRemoteHost(), httpRequest.getRequestURL().toString()));
+            logger.info(String.format("SEC_UNAUTHORIZED_ACCESS | RemoteHost: %s, RequestURL: %s", httpRequest.getRemoteHost(), httpRequest.getRequestURL().toString()));
             throw new AuthenticationException("The certificate is not valid or is not present or the Admin credentials are invalid");
         }
     }
