@@ -3,22 +3,27 @@ package eu.europa.ec.cipa.smp.server.errors.exceptions;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by migueti on 16/01/2017.
  */
 public class UnauthorizedExceptionTest {
 
-    @Test
-    public void testCreateNewException() {
+    @Test(expected = UnauthorizedException.class)
+    public void testUnauthorizedExceptionThrown() {
         // given
 
         // when
-        UnauthorizedException exception = new UnauthorizedException("New Unauthorized Exception");
+        try {
+            throwUnauthorizedException();
+        } catch(UnauthorizedException ex) {
+            // then
+            assertEquals("Exception thrown", ex.getMessage());
+            throw ex;
+        }
+    }
 
-        // then
-        assertNotNull(exception);
-        assertEquals("New Unauthorized Exception", exception.getMessage());
+    private void throwUnauthorizedException() {
+        throw new UnauthorizedException("Exception thrown");
     }
 }

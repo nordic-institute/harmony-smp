@@ -24,7 +24,7 @@ public abstract class ParentExceptionTest {
 
     private final Pattern PATTERN = Pattern.compile(".*?(:).*?(:).*?(:)([A-Z0-9]{8}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{12})",Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
-    public String checkXmlError(ErrorResponse errorResponse, ErrorBusinessCode errorBusinessCode, String errorDescription) throws ParserConfigurationException, IOException, SAXException {
+    protected String checkXmlError(ErrorResponse errorResponse, ErrorBusinessCode errorBusinessCode, String errorDescription) throws ParserConfigurationException, IOException, SAXException {
         assertNotNull(errorResponse);
 
         assertEquals(errorBusinessCode.toString(), errorResponse.getBusinessCode());
@@ -36,28 +36,5 @@ public abstract class ParentExceptionTest {
             errorUniqueId = matcher.group(4);
         }
         return errorUniqueId;
-
-        /*assertTrue(errorResponse..length() > 0);
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        Document doc = db.parse(new ByteArrayInputStream(errorResponse.getBytes("UTF-8")));
-        Element docElement = doc.getDocumentElement();
-        NodeList childs = docElement.getChildNodes();
-        Node businessCodeNode = childs.item(0);
-        Node errorDescriptionNode = childs.item(1);
-        Node errorUniqueIdNode = childs.item(2);
-        assertEquals("ErrorResponse", docElement.getNodeName());
-        assertEquals("BusinessCode", businessCodeNode.getNodeName());
-        assertEquals(errorBusinessCode.toString(), businessCodeNode.getTextContent());
-        assertEquals("ErrorDescription", errorDescriptionNode.getNodeName());
-        assertEquals(errorDescription, errorDescriptionNode.getTextContent());
-        assertEquals("ErrorUniqueId", errorUniqueIdNode.getNodeName());
-
-        String errorUniqueId = null;
-        Matcher matcher = PATTERN.matcher(errorUniqueIdNode.getTextContent());
-        if (matcher.find()) {
-            errorUniqueId = matcher.group(4);
-        }
-        return errorUniqueId;*/
     }
 }

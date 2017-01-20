@@ -107,7 +107,7 @@ public final class BaseServiceGroupInterfaceImpl {
                                                                @Nonnull HttpHeaders httpHeaders,
                                                                @Nullable final String sServiceGroupID,
                                                                @Nonnull final Class<?> aServiceMetadataInterface) throws Throwable {
-    s_aLogger.info ("GET /" + sServiceGroupID);
+    s_aLogger.info (String.format("GET /%s",sServiceGroupID));
 
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
 
@@ -118,7 +118,7 @@ public final class BaseServiceGroupInterfaceImpl {
     final ServiceGroup aServiceGroup = aDataManager.getServiceGroup (aServiceGroupID);
     if (aServiceGroup == null) {
       // No such service group
-      throw new NotFoundException("ServiceGroup '" + aServiceGroupID.getScheme() + "::" + aServiceGroupID.getValue() + "' was not found");
+      throw new NotFoundException(String.format("ServiceGroup '%s::%s' was not found", aServiceGroupID.getScheme(), aServiceGroupID.getValue()));
     }
 
     // Then add the service metadata references
@@ -144,7 +144,7 @@ public final class BaseServiceGroupInterfaceImpl {
     }
     aServiceGroup.setServiceMetadataReferenceCollection (aCollectionType);
 
-    s_aLogger.info ("Finished getServiceGroup(" + sServiceGroupID + ")");
+    s_aLogger.info (String.format("Finished getServiceGroup(%s)", sServiceGroupID));
 
     /*
      * Finally return it

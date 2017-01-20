@@ -99,7 +99,7 @@ public final class ServiceMetadataInterface {
                                            @PathParam ("DocumentTypeId") final String sDocumentTypeID,
                                            final String body) throws Throwable {
 
-    s_aLogger.info ("PUT /" + sServiceGroupID + "/services/" + sDocumentTypeID + " ==> " + body);
+    s_aLogger.info (String.format("PUT /%s/services/%s ==> %s", sServiceGroupID, sDocumentTypeID, body));
 
     validateErrors(sServiceGroupID, sDocumentTypeID, body);
 
@@ -109,66 +109,44 @@ public final class ServiceMetadataInterface {
     final IDataManager aDataManager = DataManagerFactory.getInstance ();
     aDataManager.saveService (aServiceMetadata, body, RequestHelper.getAuth (headers));
 
-    s_aLogger.info ("Finished saveServiceRegistration(" +
-                      sServiceGroupID +
-                      "," +
-                      sDocumentTypeID +
-                      "," +
-                      aServiceMetadata +
-                      ")");
+    s_aLogger.info (String.format("Finished saveServiceRegistration(%s,%s,%s)", sServiceGroupID, sDocumentTypeID, aServiceMetadata));
 
     return Response.ok ().build ();
   }
 
   private void validateErrors(final String sServiceGroupID,
                               final String sDocumentTypeID,
-                              final String body) throws Exception {
+                              final String body) {
 
     final ServiceMetadata aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
-    if (aServiceGroupID == null) {
-      // Invalid identifier
-      throw new BadRequestException(XSD_INVALID, "Failed to parse participant identifier '" + sServiceGroupID + "'");
-    }
-
     final DocumentIdentifier aDocTypeID =  Identifiers.asDocumentId(sDocumentTypeID);
-    if (aDocTypeID == null) {
-      // Invalid identifier
-      throw new BadRequestException(XSD_INVALID, "Failed to parse participant identifier '" + sServiceGroupID + "'");
-    }
-
     final ServiceInformationType aServiceInformationType = aServiceMetadata.getServiceInformation();
 
       // Business identifiers from path (ServiceGroupID) and from service
       // metadata (body) must equal path
       if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getParticipantIdentifier (), aServiceGroupID)) {
-        s_aLogger.info ("Save service metadata was called with bad parameters. serviceInfo:" +
-                        IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getParticipantIdentifier ()) +
-                        " param:" +
-                        aServiceGroupID);
-        throw new BadRequestException(WRONG_FIELD, "Save service metadata was called with bad parameters. serviceInfo:" +
-                                                      IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getParticipantIdentifier ()) +
-                                                      " param:" +
-                                                      aServiceGroupID.getValue());
+        String errorMessage = String.format("Save service metadata was called with bad parameters. serviceInfo: %s param: %s",
+                IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getParticipantIdentifier ()),
+                aServiceGroupID);
+        s_aLogger.info (errorMessage);
+        throw new BadRequestException(WRONG_FIELD, errorMessage);
 
       }
 
       if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getDocumentIdentifier (), aDocTypeID)) {
-        s_aLogger.info ("Save service metadata was called with bad parameters. serviceInfo:" +
-                        IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getDocumentIdentifier ()) +
-                        " param:" +
-                        aDocTypeID);
+        String errorMessage = String.format("Save service metadata was called with bad parameters. serviceInfo: %s param: %s",
+                IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getDocumentIdentifier ()),
+                aDocTypeID);
+        s_aLogger.info (errorMessage);
         // Document type must equal path
-        throw new BadRequestException(WRONG_FIELD, "Save service metadata was called with bad parameters. serviceInfo:" +
-                                                      IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getDocumentIdentifier ()) +
-                                                      " param:" +
-                                                      aDocTypeID.getValue());
+        throw new BadRequestException(WRONG_FIELD, errorMessage);
       }
 
       validateData(aServiceMetadata);
   }
 
-  private void validateData(ServiceMetadata aServiceMetadata) throws Exception {
+  private void validateData(ServiceMetadata aServiceMetadata) {
     if(aServiceMetadata.getServiceInformation() == null) {
       return;
     }
@@ -177,25 +155,13 @@ public final class ServiceMetadataInterface {
       return;
     }
 
-    ProcessType process;
-    for(int i = 0; i < processList.getProcesses().size(); i++) {
-      process = processList.getProcesses().get(i);
-      if(process == null) {
-        return;
-      }
+    for(ProcessType process : processList.getProcesses()) {
       ServiceEndpointList serviceEndpointList = process.getServiceEndpointList();
       if(serviceEndpointList == null) {
         return;
       }
 
-      EndpointType endpoint;
-      for(int j = 0; j < serviceEndpointList.getEndpoints().size(); j++) {
-        endpoint = serviceEndpointList.getEndpoints().get(j);
-
-        if(endpoint == null) {
-          return;
-        }
-
+      for(EndpointType endpoint : serviceEndpointList.getEndpoints()) {
         Calendar activationDate = endpoint.getServiceActivationDate();
         Calendar expirationDate = endpoint.getServiceExpirationDate();
 
@@ -209,24 +175,16 @@ public final class ServiceMetadataInterface {
   @DELETE
   public Response deleteServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
                                              @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
-    s_aLogger.info ("DELETE /" + sServiceGroupID + "/services/" + sDocumentTypeID);
+    s_aLogger.info (String.format("DELETE /%s/services/%s", sServiceGroupID, sDocumentTypeID));
 
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
-    if (aServiceGroupID == null) {
-      // Invalid identifier
-      throw new BadRequestException(XSD_INVALID, "Failed to parse participant identifier '" + sServiceGroupID + "'");
-    }
 
     final DocumentIdentifier aDocTypeID = Identifiers.asDocumentId(sDocumentTypeID);
-    if (aDocTypeID == null) {
-      // Invalid identifier
-      throw new BadRequestException(XSD_INVALID, "Failed to parse document type identifier '" + sDocumentTypeID + "'");
-    }
 
     final IDataManager aDataManager = DataManagerFactory.getInstance ();
     aDataManager.deleteService (aServiceGroupID, aDocTypeID, RequestHelper.getAuth (headers));
 
-    s_aLogger.info ("Finished deleteServiceRegistration(" + sServiceGroupID + "," + sDocumentTypeID);
+    s_aLogger.info (String.format("Finished deleteServiceRegistration(%s,%s)", sServiceGroupID, sDocumentTypeID));
 
     return Response.ok ().build ();
   }

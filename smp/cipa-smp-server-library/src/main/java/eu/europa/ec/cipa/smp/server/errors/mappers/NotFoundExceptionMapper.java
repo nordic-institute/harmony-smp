@@ -37,6 +37,7 @@
  */
 package eu.europa.ec.cipa.smp.server.errors.mappers;
 
+import ec.services.smp._1.ErrorResponse;
 import eu.europa.ec.cipa.smp.server.errors.ErrorResponseBuilder;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
 import org.slf4j.Logger;
@@ -59,10 +60,12 @@ public class NotFoundExceptionMapper implements ExceptionMapper <NotFoundExcepti
 
   @Override
   public Response toResponse (final NotFoundException e) {
-    s_aLogger.warn (e.getMessage());
-    return ErrorResponseBuilder.status(Status.NOT_FOUND)
+    Response response = ErrorResponseBuilder.status(Status.NOT_FOUND)
             .businessCode(NOT_FOUND)
             .errorDescription(e.getMessage())
             .build();
+    ErrorResponse errorResponse = (ErrorResponse) response.getEntity();
+    s_aLogger.warn (String.format("%s : %s", errorResponse.getErrorUniqueId(), e.getMessage()));
+    return response;
   }
 }

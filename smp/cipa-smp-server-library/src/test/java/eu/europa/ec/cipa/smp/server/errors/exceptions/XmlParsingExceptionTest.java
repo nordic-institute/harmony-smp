@@ -3,23 +3,27 @@ package eu.europa.ec.cipa.smp.server.errors.exceptions;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by migueti on 16/01/2017.
  */
 public class XmlParsingExceptionTest {
 
-    @Test
-    public void testCreateNewException() {
+    @Test(expected = XmlParsingException.class)
+    public void testXmlParsingExceptionThrown() {
         // given
-        Exception parent = new Exception("Parent Exception");
 
         // when
-        XmlParsingException exception = new XmlParsingException(parent);
+        try {
+            throwXmlParsingException();
+        } catch(XmlParsingException ex) {
+            // then
+            assertEquals("java.lang.Exception: Parent Exception", ex.getMessage());
+            throw ex;
+        }
+    }
 
-        // then
-        assertNotNull(exception);
-        assertEquals("java.lang.Exception: Parent Exception", exception.getMessage());
+    private void throwXmlParsingException() {
+        throw new XmlParsingException(new Exception("Parent Exception"));
     }
 }

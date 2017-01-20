@@ -37,6 +37,7 @@
  */
 package eu.europa.ec.cipa.smp.server.errors.mappers;
 
+import ec.services.smp._1.ErrorResponse;
 import eu.europa.ec.cipa.smp.server.errors.ErrorResponseBuilder;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
 import org.slf4j.Logger;
@@ -57,9 +58,11 @@ public class UnknownUserExceptionMapper implements ExceptionMapper <UnknownUserE
 
   @Override
   public Response toResponse (final UnknownUserException e) {
-    s_aLogger.warn(e.getMessage());
-    return ErrorResponseBuilder.status(FORBIDDEN)
+    Response response = ErrorResponseBuilder.status(FORBIDDEN)
             .errorDescription(e.getMessage())
             .build();
+    ErrorResponse errorResponse = (ErrorResponse) response.getEntity();
+    s_aLogger.warn (String.format("%s : %s", errorResponse.getErrorUniqueId(), e.getMessage()));
+    return response;
   }
 }

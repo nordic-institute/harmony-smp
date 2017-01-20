@@ -61,7 +61,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.OTHER_ERROR;
 import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.WRONG_FIELD;
 
 /**
@@ -91,7 +90,7 @@ public final class ServiceGroupInterface {
   @PUT
   public Response saveServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupID,
                                     final ServiceGroup aServiceGroup) throws Throwable{
-    s_aLogger.info ("PUT /" + sServiceGroupID + " ==> " + aServiceGroup);
+    s_aLogger.info (String.format("PUT /%s ==> %s", sServiceGroupID, aServiceGroup));
 
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
     if (!IdentifierUtils.areIdentifiersEqual (aServiceGroupID, aServiceGroup.getParticipantIdentifier ())) {
@@ -102,7 +101,7 @@ public final class ServiceGroupInterface {
     final IDataManager aDataManager = DataManagerFactory.getInstance ();
     aDataManager.saveServiceGroup(aServiceGroup, RequestHelper.getAuth(headers));
 
-    s_aLogger.info ("Finished saveServiceGroup(" + sServiceGroupID + "," + aServiceGroup + ")");
+    s_aLogger.info (String.format("Finished saveServiceGroup(%s,%s)", sServiceGroupID, aServiceGroup));
 
     return Response.ok ().build ();
   }
@@ -112,15 +111,11 @@ public final class ServiceGroupInterface {
     s_aLogger.info ("DELETE /" + sServiceGroupID);
 
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
-    if (aServiceGroupID == null) {
-      // Invalid identifier
-      throw new BadRequestException(OTHER_ERROR, "Failed to parse participant identifier '" + sServiceGroupID + "'");
-    }
 
     final IDataManager aDataManager = DataManagerFactory.getInstance ();
     aDataManager.deleteServiceGroup (aServiceGroupID, RequestHelper.getAuth (headers));
 
-    s_aLogger.info ("Finished deleteServiceGroup(" + sServiceGroupID + ")");
+    s_aLogger.info (String.format("Finished deleteServiceGroup(%s)", sServiceGroupID));
 
     return Response.ok ().build ();
   }

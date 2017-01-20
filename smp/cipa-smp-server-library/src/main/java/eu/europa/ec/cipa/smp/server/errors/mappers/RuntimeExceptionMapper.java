@@ -37,6 +37,7 @@
  */
 package eu.europa.ec.cipa.smp.server.errors.mappers;
 
+import ec.services.smp._1.ErrorResponse;
 import eu.europa.ec.cipa.smp.server.errors.ErrorResponseBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,9 +57,11 @@ public final class RuntimeExceptionMapper implements ExceptionMapper <RuntimeExc
 
   @Override
   public Response toResponse (final RuntimeException e) {
-    s_aLogger.error (e.getMessage());
-    return ErrorResponseBuilder.status(INTERNAL_SERVER_ERROR)
+    Response response = ErrorResponseBuilder.status(INTERNAL_SERVER_ERROR)
             .errorDescription("Technical error occurred: " + e.getMessage())
             .build();
+    ErrorResponse errorResponse = (ErrorResponse) response.getEntity();
+    s_aLogger.error (String.format("%s : %s", errorResponse.getErrorUniqueId(), e.getMessage()));
+    return response;
   }
 }

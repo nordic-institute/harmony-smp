@@ -1,5 +1,6 @@
 package eu.europa.ec.cipa.smp.server.errors.mappers;
 
+import ec.services.smp._1.ErrorResponse;
 import eu.europa.ec.cipa.smp.server.errors.ErrorResponseBuilder;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.XmlParsingException;
 import org.slf4j.Logger;
@@ -21,10 +22,12 @@ public class XmlParsingExceptionMapper implements ExceptionMapper<XmlParsingExce
 
     @Override
     public Response toResponse(XmlParsingException e) {
-        s_aLogger.warn (e.getMessage());
-        return ErrorResponseBuilder.status(BAD_REQUEST)
+        Response response = ErrorResponseBuilder.status(BAD_REQUEST)
                 .businessCode(XSD_INVALID)
                 .errorDescription(e.getMessage())
                 .build();
+        ErrorResponse errorResponse = (ErrorResponse) response.getEntity();
+        s_aLogger.warn (String.format("%s : %s", errorResponse.getErrorUniqueId(), e.getMessage()));
+        return response;
     }
 }

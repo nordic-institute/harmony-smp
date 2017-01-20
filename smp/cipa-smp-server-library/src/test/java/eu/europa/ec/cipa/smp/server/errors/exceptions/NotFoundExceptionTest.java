@@ -3,22 +3,27 @@ package eu.europa.ec.cipa.smp.server.errors.exceptions;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by migueti on 16/01/2017.
  */
 public class NotFoundExceptionTest {
 
-    @Test
-    public void testCreateNewException() {
+    @Test(expected = NotFoundException.class)
+    public void testNotFoundExceptionThrown() {
         // given
 
         // when
-        NotFoundException exception = new NotFoundException("New Not Found Exception");
+        try {
+            throwNotFoundException();
+        } catch (NotFoundException ex) {
+            // then
+            assertEquals("Exception thrown", ex.getMessage());
+            throw ex;
+        }
+    }
 
-        // then
-        assertNotNull(exception);
-        assertEquals("New Not Found Exception", exception.getMessage());
+    private void throwNotFoundException() {
+        throw new NotFoundException("Exception thrown");
     }
 }

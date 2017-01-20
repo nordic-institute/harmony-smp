@@ -1,7 +1,8 @@
 package eu.europa.ec.cipa.smp.server.errors.mappers;
 
-import eu.europa.ec.cipa.smp.server.errors.exceptions.BadRequestException;
+import ec.services.smp._1.ErrorResponse;
 import eu.europa.ec.cipa.smp.server.errors.ErrorResponseBuilder;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,10 +21,12 @@ public class BadRequestExceptionMapper implements ExceptionMapper<BadRequestExce
 
     @Override
     public Response toResponse(BadRequestException e) {
-        s_aLogger.warn (e.getMessage());
-        return ErrorResponseBuilder.status(BAD_REQUEST)
+        Response response = ErrorResponseBuilder.status(BAD_REQUEST)
                 .businessCode(e.getErrorBusinessCode())
                 .errorDescription(e.getMessage())
                 .build();
+        ErrorResponse errorResponse = (ErrorResponse) response.getEntity();
+        s_aLogger.warn (String.format("%s : %s", errorResponse.getErrorUniqueId(), e.getMessage()));
+        return response;
     }
 }

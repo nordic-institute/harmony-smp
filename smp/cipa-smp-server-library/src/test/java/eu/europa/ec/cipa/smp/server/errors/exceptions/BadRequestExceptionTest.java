@@ -1,37 +1,32 @@
 package eu.europa.ec.cipa.smp.server.errors.exceptions;
 
-import org.junit.Before;
 import org.junit.Test;
 
 import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.XSD_INVALID;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 /**
  * Created by migueti on 16/01/2017.
  */
 public class BadRequestExceptionTest {
 
-    private BadRequestException exception;
-
-    @Before
-    public void setup() {
+    @Test(expected = BadRequestException.class)
+    public void testBadRequestExceptionThrown() {
         // given
 
         // when
-        exception = new BadRequestException(XSD_INVALID, "New Bad Request Exception");
+        try {
+            throwBadRequestException();
+        } catch(BadRequestException ex) {
+            // then
+            assertEquals(XSD_INVALID, ex.getErrorBusinessCode());
+            assertEquals("Exception thrown", ex.getMessage());
+            throw ex;
+        }
     }
 
-    @Test
-    public void testCreateNewException() {
-        // then
-        assertNotNull(exception);
-        assertEquals("New Bad Request Exception", exception.getMessage());
+    private void throwBadRequestException() {
+        throw new BadRequestException(XSD_INVALID, "Exception thrown");
     }
 
-    @Test
-    public void testGetBusinnessCode() {
-        // then
-        assertEquals(XSD_INVALID, exception.getErrorBusinessCode());
-    }
 }

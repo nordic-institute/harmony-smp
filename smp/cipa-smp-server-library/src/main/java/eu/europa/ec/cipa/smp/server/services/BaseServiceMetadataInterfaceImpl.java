@@ -68,7 +68,7 @@ public final class BaseServiceMetadataInterfaceImpl {
   public static Document getServiceRegistration (@Nonnull final UriInfo uriInfo,
                                                                                 @Nullable final String sServiceGroupID,
                                                                                 @Nullable final String sDocumentTypeID) throws Throwable {
-    s_aLogger.info ("GET /" + sServiceGroupID + "/services/" + sDocumentTypeID);
+    s_aLogger.info (String.format("GET /%s/services/%s", sServiceGroupID, sDocumentTypeID));
 
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
     final DocumentIdentifier aDocTypeID = Identifiers.asDocumentId (sDocumentTypeID);
@@ -76,12 +76,12 @@ public final class BaseServiceMetadataInterfaceImpl {
     final IDataManager aDataManager = DataManagerFactory.getInstance ();
     String sServiceMetadata = aDataManager.getService (aServiceGroupID, aDocTypeID);
     if(sServiceMetadata == null) {
-      throw new NotFoundException("Service '" + sServiceGroupID + "/services/" + sDocumentTypeID + "' was not found");
+      throw new NotFoundException(String.format("Service '%s/services/%s' was not found", sServiceGroupID, sDocumentTypeID));
     }
 
     Document aSignedServiceMetadata = ServiceMetadataConverter.toSignedServiceMetadatadaDocument(sServiceMetadata);
 
-    s_aLogger.info ("Finished getServiceRegistration(" + sServiceGroupID + "," + sDocumentTypeID + ")");
+    s_aLogger.info (String.format("Finished getServiceRegistration(%s,%s)", sServiceGroupID, sDocumentTypeID));
     return aSignedServiceMetadata;
   }
 }

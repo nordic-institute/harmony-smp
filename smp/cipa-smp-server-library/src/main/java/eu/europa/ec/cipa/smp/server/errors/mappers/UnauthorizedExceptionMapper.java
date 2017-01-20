@@ -37,6 +37,7 @@
  */
 package eu.europa.ec.cipa.smp.server.errors.mappers;
 
+import ec.services.smp._1.ErrorResponse;
 import eu.europa.ec.cipa.smp.server.errors.ErrorResponseBuilder;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
 import org.slf4j.Logger;
@@ -58,10 +59,12 @@ public class UnauthorizedExceptionMapper implements ExceptionMapper <Unauthorize
 
   @Override
   public Response toResponse (final UnauthorizedException e) {
-    s_aLogger.warn (e.getMessage());
-    return ErrorResponseBuilder.status(Status.UNAUTHORIZED)
+    Response response = ErrorResponseBuilder.status(Status.UNAUTHORIZED)
             .businessCode(UNAUTHORIZED)
             .errorDescription(e.getMessage())
             .build();
+    ErrorResponse errorResponse = (ErrorResponse) response.getEntity();
+    s_aLogger.warn (String.format("%s : %s", errorResponse.getErrorUniqueId(), e.getMessage()));
+    return response;
   }
 }
