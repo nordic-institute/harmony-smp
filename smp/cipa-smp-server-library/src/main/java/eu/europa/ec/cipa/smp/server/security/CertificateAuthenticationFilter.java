@@ -48,9 +48,9 @@ public class CertificateAuthenticationFilter implements ContainerRequestFilter {
             logger.info("sessionId: " + session.getId());
 
             String baseURIScheme = containerRequest.getBaseUri().getScheme().toLowerCase();
-            List<String> certHeaderValue = containerRequest.getRequestHeader(CLIENT_CERT_HEADER_KEY);
             switch (baseURIScheme) {
                 case "http":
+                    List<String> certHeaderValue = containerRequest.getRequestHeader(CLIENT_CERT_HEADER_KEY);
                     if (certHeaderValue != null && !certHeaderValue.isEmpty()) {
                         Authentication authentication = new BlueCoatClientCertificateAuthentication(certHeaderValue.get(0));
                         authenticate(authentication, webRequest);
@@ -83,14 +83,14 @@ public class CertificateAuthenticationFilter implements ContainerRequestFilter {
             throw new AuthenticationException("Error while authenticating " + authentication.getName(), exc);
         }
 
-        logger.info(String.format("user: %s ", authenticationResult.getName()));
+        logger.info(String.format("Authentication Request for User: %s ", authenticationResult.getName()));
 
         if (authenticationResult.isAuthenticated()) {
             logger.info(String.format("SEC_AUTHORIZED_ACCESS | RemoteHost: %s, RequestURL: %s", httpRequest.getRemoteHost(), httpRequest.getRequestURL().toString()));
             SecurityContextHolder.getContext().setAuthentication(authenticationResult);
         } else {
             logger.info(String.format("SEC_UNAUTHORIZED_ACCESS | RemoteHost: %s, RequestURL: %s", httpRequest.getRemoteHost(), httpRequest.getRequestURL().toString()));
-            throw new AuthenticationException("The certificate is not valid or is not present or the Admin credentials are invalid");
+            throw new AuthenticationException("The certificate is not valid or is not present or the Admin credentials are invalid.");
         }
     }
 }

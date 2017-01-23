@@ -36,7 +36,7 @@ public class BlueCoatCertificateServiceImpl implements IBlueCoatCertificateServi
             validateBlueCoatClientCertificate(certificate);
             return true;
         } catch (Exception exc) {
-            logger.error(String.format("SEC_UNAUTHORIZED_ACCESS | %s", certificate.getSubject()));
+            logger.error(String.format("SEC_UNAUTHORIZED_ACCESS | Certificate Subject %s", certificate.getSubject()));
             logger.error(exc.getMessage(), exc);
             return false;
         }
@@ -58,7 +58,7 @@ public class BlueCoatCertificateServiceImpl implements IBlueCoatCertificateServi
         final IDataManager aDataManager = DataManagerFactory.getInstance();
         final DBUser dbUser = aDataManager.getCurrentEntityManager().find(DBUser.class, certificate.getCertificateId());
 
-        //TODO I believe checking only the username is not enough. WE should have more validation here
+        //TODO I think checking only the username might be not enough. WE should have more validation here
         if (dbUser == null) {
             logger.error(String.format("SEC_UNKNOWN_CERTIFICATE | Certificate Issuer: %s, Subject: %s", certificate.getIssuer(), certificate.getSubject()));
             throw new CertificateNotFoundException("Certificate not found");

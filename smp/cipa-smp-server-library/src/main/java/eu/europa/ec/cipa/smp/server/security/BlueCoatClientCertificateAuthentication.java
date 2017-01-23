@@ -81,7 +81,7 @@ public class BlueCoatClientCertificateAuthentication implements Authentication {
     }
 
     /**
-     * Retrieves suthorities from Certificate's Header
+     * Retrieves authorities from Certificate's Header
      *
      * @param certHeaderValue Certificate's Header
      * @return List of Granted Authorities
