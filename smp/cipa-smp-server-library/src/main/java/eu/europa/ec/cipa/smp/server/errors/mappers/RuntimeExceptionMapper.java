@@ -62,6 +62,7 @@ public final class RuntimeExceptionMapper implements ExceptionMapper <RuntimeExc
             .build();
     ErrorResponse errorResponse = (ErrorResponse) response.getEntity();
     s_aLogger.error (String.format("%s : %s", errorResponse.getErrorUniqueId(), e.getMessage()));
+    s_aLogger.error ("exception: ", e);
     return response;
   }
 }

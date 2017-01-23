@@ -66,6 +66,7 @@ public class NotFoundExceptionMapper implements ExceptionMapper <NotFoundExcepti
             .build();
     ErrorResponse errorResponse = (ErrorResponse) response.getEntity();
     s_aLogger.warn (String.format("%s : %s", errorResponse.getErrorUniqueId(), e.getMessage()));
+    s_aLogger.warn ("exception: ", e);
     return response;
   }
 }
