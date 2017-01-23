@@ -1,4 +1,4 @@
-package eu.europa.ec.cipa.smp.server.exception;
+package eu.europa.ec.cipa.smp.server.errors.exceptions;
 
 /**
  * Occurs when tried to parse malformed XML message.

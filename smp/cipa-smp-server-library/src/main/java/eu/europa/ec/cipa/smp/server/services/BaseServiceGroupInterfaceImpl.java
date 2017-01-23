@@ -37,33 +37,30 @@
  */
 package eu.europa.ec.cipa.smp.server.services;
 
-import java.util.List;
+import com.helger.commons.string.StringParser;
+import eu.europa.ec.cipa.peppol.utils.ConfigFile;
+import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
+import eu.europa.ec.cipa.smp.server.data.IDataManager;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
+import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
+import eu.europa.ec.smp.api.Identifiers;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ObjectFactory;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
-
-import com.helger.commons.string.StringParser;
-import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
-import eu.europa.ec.smp.api.Identifiers;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ObjectFactory;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
-import com.sun.jersey.api.NotFoundException;
-
-import eu.europa.ec.cipa.peppol.utils.ConfigFile;
-import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
-import eu.europa.ec.cipa.smp.server.data.IDataManager;
-import org.springframework.util.StringUtils;
+import java.util.List;
 
 /**
  * This class implements the read-only methods for the REST ServiceGroup
@@ -110,59 +107,49 @@ public final class BaseServiceGroupInterfaceImpl {
                                                                @Nonnull HttpHeaders httpHeaders,
                                                                @Nullable final String sServiceGroupID,
                                                                @Nonnull final Class<?> aServiceMetadataInterface) throws Throwable {
-    s_aLogger.info ("GET /" + sServiceGroupID);
+    s_aLogger.info (String.format("GET /%s",sServiceGroupID));
 
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
 
-    try {
-      final ObjectFactory aObjFactory = new ObjectFactory ();
+    final ObjectFactory aObjFactory = new ObjectFactory ();
 
-      // Retrieve the service group   
-      final IDataManager aDataManager = DataManagerFactory.getInstance ();
-      final ServiceGroup aServiceGroup = aDataManager.getServiceGroup (aServiceGroupID);
-      if (aServiceGroup == null) {
-        // No such service group
-        throw new NotFoundException ("serviceGroup", aUriInfo.getAbsolutePath ());
+    // Retrieve the service group
+    final IDataManager aDataManager = DataManagerFactory.getInstance ();
+    final ServiceGroup aServiceGroup = aDataManager.getServiceGroup (aServiceGroupID);
+    if (aServiceGroup == null) {
+      // No such service group
+      throw new NotFoundException(String.format("ServiceGroup '%s::%s' was not found", aServiceGroupID.getScheme(), aServiceGroupID.getValue()));
+    }
+
+    // Then add the service metadata references
+    final ServiceMetadataReferenceCollectionType aCollectionType = aObjFactory.createServiceMetadataReferenceCollectionType ();
+    final List <ServiceMetadataReferenceType> aMetadataReferences = aCollectionType.getServiceMetadataReferences();
+
+    final List <DocumentIdentifier> aDocTypeIds = aDataManager.getDocumentTypes (aServiceGroupID);
+    for (final DocumentIdentifier aDocTypeId : aDocTypeIds) {
+      final ServiceMetadataReferenceType aMetadataReference = aObjFactory.createServiceMetadataReferenceType ();
+      UriBuilder uriBuilder = aUriInfo.getBaseUriBuilder();
+      if (configFile.getString ("contextPath.output", "false").equals ("false")) {
+        uriBuilder.replacePath ("");
       }
+      applyReverseProxyParams(uriBuilder, httpHeaders);
+      String metadataHref = uriBuilder
+              .path (aServiceMetadataInterface)
+              .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID),
+                                 IdentifierUtils.getIdentifierURIPercentEncoded (aDocTypeId))
+              .toString();
 
-      // Then add the service metadata references
-      final ServiceMetadataReferenceCollectionType aCollectionType = aObjFactory.createServiceMetadataReferenceCollectionType ();
-      final List <ServiceMetadataReferenceType> aMetadataReferences = aCollectionType.getServiceMetadataReferences();
-
-      final List <DocumentIdentifier> aDocTypeIds = aDataManager.getDocumentTypes (aServiceGroupID);
-      for (final DocumentIdentifier aDocTypeId : aDocTypeIds) {
-        final ServiceMetadataReferenceType aMetadataReference = aObjFactory.createServiceMetadataReferenceType ();
-        UriBuilder uriBuilder = aUriInfo.getBaseUriBuilder();
-        if (configFile.getString ("contextPath.output", "false").equals ("false")) {
-          uriBuilder.replacePath ("");
-        }
-        applyReverseProxyParams(uriBuilder, httpHeaders);
-        String metadataHref = uriBuilder
-                .path (aServiceMetadataInterface)
-                .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID),
-                                   IdentifierUtils.getIdentifierURIPercentEncoded (aDocTypeId))
-                .toString();
-
-        aMetadataReference.setHref (metadataHref);
-        aMetadataReferences.add (aMetadataReference);
-      }
-      aServiceGroup.setServiceMetadataReferenceCollection (aCollectionType);
-
-      s_aLogger.info ("Finished getServiceGroup(" + sServiceGroupID + ")");
-
-      /*
-       * Finally return it
-       */
-      return aServiceGroup;
+      aMetadataReference.setHref (metadataHref);
+      aMetadataReferences.add (aMetadataReference);
     }
-    catch (final NotFoundException ex) {
-      // No logging needed here - already logged in DB
-      throw ex;
-    }
-    catch (final Throwable ex) {
-      s_aLogger.error ("Error getting service group " + aServiceGroupID, ex);
-      throw ex;
-    }
+    aServiceGroup.setServiceMetadataReferenceCollection (aCollectionType);
+
+    s_aLogger.info (String.format("Finished getServiceGroup(%s)", sServiceGroupID));
+
+    /*
+     * Finally return it
+     */
+    return aServiceGroup;
   }
 
   private static void applyReverseProxyParams(UriBuilder uriBuilder, HttpHeaders httpHeaders) {

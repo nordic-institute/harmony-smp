@@ -35,11 +35,11 @@
   </con:settings>
   <con:interface xsi:type="con:RestService" wadlVersion="http://wadl.dev.java.net/2009/02" name="SMP" type="rest" basePath="" id="b21f11f2-5b00-44e4-a963-71e94f13b839" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <con:settings/>
-    <con:definitionCache type="TEXT" rootPart=""/>
-    <con:endpoints>
+    
+    <con:definitionCache type="TEXT" rootPart=""/><con:endpoints>
       <con:endpoint>http://localhost:8080</con:endpoint>
     </con:endpoints>
-    <con:resource name="ServiceGroup" path="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112" id="2ff08415-f133-4c23-bf64-91204b94f5c1">
+    <con:resource name="ServiceGroup" path="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000120" id="2ff08415-f133-4c23-bf64-91204b94f5c1">
       <con:settings/>
       <con:parameters/>
       <con:method name="Get" method="GET" id="36ced4c8-0e92-4686-a5f4-e9c9870b721f">
@@ -77,10 +77,10 @@
         </con:representation>
         <con:representation type="FAULT">
           <con:mediaType>text/xml</con:mediaType>
-          <con:status>404</con:status>
+          <con:status>404 500 400</con:status>
           <con:params/>
         </con:representation>
-        <con:request name="Get" mediaType="application/xml" id="a9f15369-89e3-4e53-a448-a9881605a8b0">
+        <con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="Get" mediaType="application/xml" id="a9f15369-89e3-4e53-a448-a9881605a8b0">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
@@ -278,13 +278,13 @@
           <con:params/>
           <con:element>data</con:element>
         </con:representation>
-        <con:request name="Put" mediaType="text/xml" postQueryString="false" id="e50d78e0-763f-4bfd-aa1c-f4dcc7595a2a">
+        <con:representation type="FAULT"><con:mediaType>text/xml</con:mediaType><con:status>500 400</con:status><con:params/><con:element xmlns:ec="ec:services:SMP:1.0">ec:ErrorResponse</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="Put" mediaType="text/xml" postQueryString="false" id="e50d78e0-763f-4bfd-aa1c-f4dcc7595a2a">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
           <con:endpoint>http://localhost:8080</con:endpoint>
           <con:request><![CDATA[<ServiceGroup xmlns="http://busdox.org/serviceMetadata/publishing/1.0/" xmlns:ids="http://busdox.org/transport/identifiers/1.0/">
-   <ids:ParticipantIdentifier scheme="iso6523-actorid-upis">0088:5798000000112</ids:ParticipantIdentifier>
+   <ids:ParticipantIdentifier scheme="iso6523-actorid-upis">0088:5798000000120</ids:ParticipantIdentifier>
    <ServiceMetadataReferenceCollection>
       <ServiceMetadataReference href="http://serviceMetadata.eu/busdox-actoridupis%3A%3A0088%3A5798000000112/services/busdox-docidqns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-12%3A%3AInvoice%23%23UBL-2.0"/>
    </ServiceMetadataReferenceCollection>
@@ -419,7 +419,7 @@
           <con:params/>
           <con:element>data</con:element>
         </con:representation>
-        <con:request name="Delete" mediaType="application/xml" id="a97cde56-8e9c-4d6f-b950-faf82b0268e9" postQueryString="false">
+        <con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/xml</con:mediaType><con:status>500 404</con:status><con:params/><con:element xmlns:ec="ec:services:SMP:1.0">ec:ErrorResponse</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="Delete" mediaType="application/xml" id="a97cde56-8e9c-4d6f-b950-faf82b0268e9" postQueryString="false">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
@@ -438,7 +438,7 @@
         </con:request>
       </con:method>
     </con:resource>
-    <con:resource name="SignedServiceMetadata" path="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0" id="05ed7407-d19e-43be-97e0-969414c666fd">
+    <con:resource name="SignedServiceMetadata" path="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000120/services/iso6523-actorid-upis::services:extended:epsos::107" id="05ed7407-d19e-43be-97e0-969414c666fd">
       <con:settings/>
       <con:parameters/>
       <con:method name="Get" method="GET" id="6168176b-9b10-487e-bedb-5f48e97fd78a">
@@ -486,13 +486,13 @@
           <con:params/>
           <con:element>html</con:element>
         </con:representation>
-        <con:request name="Get" mediaType="application/xml" id="798e6729-3cf8-44b5-8fc7-f19165c82521">
+        <con:representation type="FAULT"><con:mediaType>text/xml</con:mediaType><con:status>500 400</con:status><con:params/><con:element xmlns:ec="ec:services:SMP:1.0">ec:ErrorResponse</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="Get" mediaType="application/xml" id="798e6729-3cf8-44b5-8fc7-f19165c82521">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
           <con:endpoint>http://localhost:8080</con:endpoint>
           <con:request/>
-          <con:credentials>
+          <con:originalUri>http://localhost/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000120/services/iso6523-actorid-upis%23services:extended:epsos::107</con:originalUri><con:credentials>
             <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
             <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
             <con:authType>Global HTTP Settings</con:authType>
@@ -626,7 +626,7 @@
         </con:representation>
         <con:representation type="FAULT">
           <con:mediaType>text/html; charset=UTF-8</con:mediaType>
-          <con:status>500</con:status>
+          <con:status>500 404</con:status>
           <con:params/>
           <con:element>html</con:element>
         </con:representation>
@@ -684,36 +684,13 @@
           <con:params/>
           <con:element>data</con:element>
         </con:representation>
-        <con:request name="Put" mediaType="text/xml" postQueryString="false" id="74cb305c-6d80-4836-a6eb-4c6cc61f0dab">
+        <con:representation type="FAULT"><con:mediaType>text/xml</con:mediaType><con:status>400</con:status><con:params/><con:element xmlns:ec="ec:services:SMP:1.0">ec:ErrorResponse</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>200</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="Put" mediaType="text/xml" postQueryString="false" id="74cb305c-6d80-4836-a6eb-4c6cc61f0dab">
           <con:settings>
             <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
           </con:settings>
           <con:endpoint>http://localhost:8080</con:endpoint>
-          <con:request><![CDATA[<ServiceMetadata xmlns="http://busdox.org/serviceMetadata/publishing/1.0/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wsswssecurity- utility-1.0.xsd" xmlns:ids="http://busdox.org/transport/identifiers/1.0/">
-   <ServiceInformation>
-      <ids:ParticipantIdentifier scheme="iso6523-actorid-upis">0088:5798000000112</ids:ParticipantIdentifier>
-      <ids:DocumentIdentifier scheme="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice##urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:#urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</ids:DocumentIdentifier>
-      <ProcessList>
-         <Process>
-            <ids:ProcessIdentifier scheme="cenbii-procid-ubl">urn:www.cenbii.eu:profile:bii04:ver1.0</ids:ProcessIdentifier>
-            <ServiceEndpointList>
-               <Endpoint transportProfile="busdox-transport-start">
-                  <EndpointReference xmlns="http://www.w3.org/2005/08/addressing">
-                     <Address>http://busdox.org/otherService/</Address>
-                  </EndpointReference>
-                  <RequireBusinessLevelSignature>false</RequireBusinessLevelSignature>
-                  <ServiceActivationDate>2003-01-01T00:00:00</ServiceActivationDate>
-                  <ServiceExpirationDate>2020-05-01T00:00:00</ServiceExpirationDate>
-                  <Certificate>CERTIFICATEA</Certificate>
-                  <ServiceDescription>invoice service AS2</ServiceDescription>
-                  <TechnicalContactUrl>https://example.com</TechnicalContactUrl>
-               </Endpoint>
-            </ServiceEndpointList>
-         </Process>
-      </ProcessList>
-   </ServiceInformation>
-</ServiceMetadata>]]></con:request>
-          <con:credentials>
+          <con:request/>
+          <con:originalUri>http://localhost/</con:originalUri><con:credentials>
             <con:username>user</con:username>
             <con:password>user</con:password>
             <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
@@ -960,7 +937,7 @@ The verification is done from the SMP_SERVICE_GROUP table.</con:description>
       <con:settings/>
       <con:testStep type="restrequest" name="Get ServiceGroup" id="d9c8939b-59a8-43b0-bde0-056e55181117">
         <con:settings/>
-        <con:config service="SMP" methodName="Get" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <con:config service="SMP" methodName="Get" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000120" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <con:restRequest name="Get ServiceGroup" mediaType="application/xml" id="44412828-f8e2-4a35-8cbb-210c5c72cdca">
             <con:settings>
               <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
@@ -1269,7 +1246,7 @@ The verification is done via the SMP_ENDPOINT table.</con:description>
       <con:settings/>
       <con:testStep type="restrequest" name="Get SignedServiceMetadata" id="a8a3b291-da04-452a-adc5-90f7c7256db3">
         <con:settings/>
-        <con:config service="SMP" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0" methodName="Get" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <con:config service="SMP" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000120/services/iso6523-actorid-upis::services:extended:epsos::107" methodName="Get" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <con:restRequest name="Get SignedServiceMetadata" mediaType="application/xml" id="a14d5055-96e4-422a-a5a7-2b8942b66ceb">
             <con:settings>
               <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
@@ -1638,21 +1615,17 @@ The verification is done via the SMP_SERVICE_GROUP table.</con:description>
       <con:settings/>
       <con:testStep type="restrequest" name="Put ServiceGroup" id="971d5a09-57af-4c71-8695-2222a71904dd">
         <con:settings/>
-        <con:config service="SMP" methodName="Put" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <con:config service="SMP" methodName="Put" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000120" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <con:restRequest name="Put ServiceGroup" mediaType="text/xml" postQueryString="false" accept="" id="4c29e283-20f2-43a0-a5bb-b02dee7a7e5b">
             <con:settings>
               <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
             </con:settings>
             <con:encoding>UTF-8</con:encoding>
             <con:endpoint>${#Project#url}</con:endpoint>
-            <con:request><![CDATA[<ServiceGroup xmlns="http://busdox.org/serviceMetadata/publishing/1.0/" xmlns:ids="http://busdox.org/transport/identifiers/1.0/">
-   <ids:ParticipantIdentifier scheme="iso6523-actorid-upis">0088:5798000000112</ids:ParticipantIdentifier>
-   <ServiceMetadataReferenceCollection>
-      <ServiceMetadataReference href="http://serviceMetadata.eu/busdox-actoridupis%3A%3A0088%3A5798000000112/services/busdox-docidqns%3A%3Aurn%3Aoasis%3Anames%3Aspecification%3Aubl%3Aschema%3Axsd%3AInvoice-12%3A%3AInvoice%23%23UBL-2.0"/>
-   </ServiceMetadataReferenceCollection>
-   <Extension>
-      <ex:Test xmlns:ex="http://test.eu">Test</ex:Test>
-   </Extension>
+            <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+    <ParticipantIdentifier scheme="iso6523-actorid-upis">0088:5798000000120</ParticipantIdentifier>
+    <ServiceMetadataReferenceCollection/>
 </ServiceGroup>]]></con:request>
             <con:originalUri>http://wltdgt02.cc.cec.eu.int/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000001</con:originalUri>
             <con:assertion type="Valid HTTP Status Codes" id="d56a48bf-d491-476a-8ff9-28865f47f677" name="Valid HTTP Status Codes">
@@ -1851,7 +1824,7 @@ The verification is done via the SMP_SERVICE_GROUP table.</con:description>
       <con:settings/>
       <con:testStep type="restrequest" name="Delete ServiceGroup" id="1360fe12-efd4-4714-9f30-6081693504ea">
         <con:settings/>
-        <con:config service="SMP" methodName="Delete" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <con:config service="SMP" methodName="Delete" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000120" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <con:restRequest name="Delete ServiceGroup" mediaType="application/xml" accept="" id="47caba16-8d14-452c-b317-bb65af1103ed" postQueryString="false">
             <con:settings>
               <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
@@ -2087,47 +2060,48 @@ The verification is done via the SMP_SERVICE_METADATA and SMP_ENDPOINT tables.</
       <con:settings/>
       <con:testStep type="restrequest" name="Put SignedServiceMetadata" id="4ad1f272-2da4-494a-9a26-d026580c6d5a">
         <con:settings/>
-        <con:config service="SMP" methodName="Put" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <con:config service="SMP" methodName="Put" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000120/services/iso6523-actorid-upis::services:extended:epsos::107" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <con:restRequest name="Put SignedServiceMetadata" mediaType="text/xml" postQueryString="false" accept="" id="19511fa8-c914-4823-a63d-455b672fcd27">
             <con:settings>
               <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
             </con:settings>
             <con:encoding>UTF-8</con:encoding>
             <con:endpoint>${#Project#url}</con:endpoint>
-            <con:request><![CDATA[<ServiceMetadata xmlns="http://busdox.org/serviceMetadata/publishing/1.0/" xmlns:wsu="http://docs.oasis-open.org/wss/2004/01/oasis-200401-wsswssecurity- utility-1.0.xsd" xmlns:ids="http://busdox.org/transport/identifiers/1.0/">
-   <ServiceInformation>
-      <ids:ParticipantIdentifier scheme="iso6523-actorid-upis">0088:5798000000112</ids:ParticipantIdentifier>
-      <ids:DocumentIdentifier scheme="busdox-docid-qns">urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice##urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:#urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</ids:DocumentIdentifier>
-      <ProcessList>
-         <Process>
-            <ids:ProcessIdentifier scheme="cenbii-procid-ubl">urn:www.cenbii.eu:profile:bii04:ver1.0</ids:ProcessIdentifier>
-            <ServiceEndpointList>
-               <Endpoint transportProfile="busdox-transport-as2-ver1p0">
-                  <EndpointReference xmlns="http://www.w3.org/2005/08/addressing">
-                     <Address>http://d02di1010873.net1.cec.eu.int:7080/cipa-dispatcher/AS2Receiver/</Address>
-                  </EndpointReference>
-                  <RequireBusinessLevelSignature>false</RequireBusinessLevelSignature>
-                  <ServiceActivationDate>2003-01-01T00:00:00</ServiceActivationDate>
-                  <ServiceExpirationDate>2020-05-01T00:00:00</ServiceExpirationDate>
-                  <Certificate>CERTIFICATEA</Certificate>
-                  <ServiceDescription>invoice service AS2</ServiceDescription>
-                  <TechnicalContactUrl>https://example.com</TechnicalContactUrl>
-               </Endpoint>
-               <Endpoint transportProfile="busdox-transport-as2-ver1p0">
-                  <EndpointReference xmlns="http://www.w3.org/2005/08/addressing">
-                     <Address>http://busdox.org/otherService/as2</Address>
-                  </EndpointReference>
-                  <RequireBusinessLevelSignature>false</RequireBusinessLevelSignature>
-                  <ServiceActivationDate>2009-05-01T09:00:00</ServiceActivationDate>
-                  <ServiceExpirationDate>2016-05-01T09:00:00</ServiceExpirationDate>
-                  <Certificate>CERTIFICATEA</Certificate>
-                  <ServiceDescription>invoice service</ServiceDescription>
-                  <TechnicalContactUrl>https://example.com</TechnicalContactUrl>
-               </Endpoint>
-            </ServiceEndpointList>
-         </Process>
-      </ProcessList>
-   </ServiceInformation>
+            <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?><ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+    <ServiceInformation>
+        <ParticipantIdentifier scheme="iso6523-actorid-upis">0088:5798000000120</ParticipantIdentifier>
+        <DocumentIdentifier scheme="iso6523-actorid-upis">services:extended:epsos::107</DocumentIdentifier>
+        <ProcessList>
+            <Process>
+                <ProcessIdentifier scheme="cenbii-procid-ubl">urn:epsosPatientService::List</ProcessIdentifier>
+                <ServiceEndpointList>
+                    <Endpoint transportProfile="urn:ihe:iti:2013:xcpd">
+                        <EndpointURI>http://poland.pl/ncp/patient/list</EndpointURI>
+                        <RequireBusinessLevelSignature>false</RequireBusinessLevelSignature>
+                        <MinimumAuthenticationLevel>urn:epSOS:loa:1</MinimumAuthenticationLevel>
+                        <ServiceActivationDate>2016-06-06T11:06:02.000+02:00</ServiceActivationDate>
+                        <ServiceExpirationDate>2026-06-06T11:06:02+02:00</ServiceExpirationDate>
+                        <Certificate>MIID7jCCA1egAwIBAgICA+YwDQYJKoZIhvcNAQENBQAwOjELMAkGA1UEBhMCRlIxEzARBgNVBAoMCklIRSBFdXJvcGUxFjAUBgNVBAMMDUlIRSBFdXJvcGUgQ0EwHhcNMTYwNjAxMTQzNTUzWhcNMjYwNjAxMTQzNTUzWjCBgzELMAkGA1UEBhMCUFQxDDAKBgNVBAoMA01vSDENMAsGA1UECwwEU1BNUzENMAsGA1UEKgwESm9hbzEOMAwGA1UEBRMFQ3VuaGExHTAbBgNVBAMMFHFhZXBzb3MubWluLXNhdWRlLnB0MRkwFwYDVQQMDBBTZXJ2aWNlIFByb3ZpZGVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1eN4qPSSRZqjVFG9TlcPlxf2WiSimQK9L1nf9Z/s0ezeGQjCukDeDq/Wzqd9fpHhaMMq+XSSOtyEtIr5K/As4kFrViONUUkG12J6UllSWogp0NYFwA4wIqKSFiTnQS5/nRTs05oONCCGILCyJNNeO53JzPlaq3/QbPLssuSAr6XucPE8wBBGM8b/TsB2G/zjG8yuSTgGbhaZekq/Vnf9ftj1fr/vJDDAQgH6Yvzd88Z0DACJPHfW1p4F/OWLI386Bq7g/bo1DUPAyEwlf+CkLgJWRKki3yJlOCIZ9enMA5O7rfeG3rXdgYGmWS7tNEgKXxgC+heiYvi7ZWd7M+/SUwIDAQABo4IBMzCCAS8wPgYDVR0fBDcwNTAzoDGgL4YtaHR0cHM6Ly9nYXplbGxlLmloZS5uZXQvcGtpL2NybC82NDMvY2FjcmwuY3JsMDwGCWCGSAGG+EIBBAQvFi1odHRwczovL2dhemVsbGUuaWhlLm5ldC9wa2kvY3JsLzY0My9jYWNybC5jcmwwPAYJYIZIAYb4QgEDBC8WLWh0dHBzOi8vZ2F6ZWxsZS5paGUubmV0L3BraS9jcmwvNjQzL2NhY3JsLmNybDAfBgNVHSMEGDAWgBTsMw4TyCJeouFrr0N7el3Sd3MdfjAdBgNVHQ4EFgQU1GQ/K1ykIwWFgiONzWJLQzufF/8wDAYDVR0TAQH/BAIwADAOBgNVHQ8BAf8EBAMCBSAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDQYJKoZIhvcNAQENBQADgYEAZ7t1Qkr9wz3q6+WcF6p/YX7Jr0CzVe7w58FvJFk2AsHeYkSlOyO5hxNpQbs1L1v6JrcqziNFrh2QKGT2v6iPdWtdCT8HBLjmuvVWxxnfzYjdQ0J+kdKMAEV6EtWU78OqL60CCtUZKXE/NKJUq7TTUCFP2fwiARy/t1dTD2NZo8c=</Certificate>
+                        <ServiceDescription>This is the epSOS Patient Service List for the Polish NCP</ServiceDescription>
+                        <TechnicalContactUrl>http://poland.pl/contact</TechnicalContactUrl>
+                        <TechnicalInformationUrl>http://poland.pl/contact</TechnicalInformationUrl>
+                    </Endpoint>
+                </ServiceEndpointList>
+            </Process>
+        </ProcessList>
+        <Extension><Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2001/04/xmldsig-more#rsa-sha256"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><DigestValue>CJeDJ72nQkwsZ2XWc8eput8pcBzfHSwO6uHr77/xbQo=</DigestValue></Reference></SignedInfo><SignatureValue>WlCUwlHJy9sehansEjFXSPkAobodbeM8OxXfLjQVYs7Vh085dESYaAbcDoDZ6t8IaHbsRtkiCgZG
+            yVRvOwB42EVRkhyWu0zVnlowfieBgvMqtZdYMbx6Z7Npwvo0UDcYI/HnHnzsyHhklKKNGPymXJXH
+            waEt4QJw+ne2n7Tb0Qg=</SignatureValue><KeyInfo><X509Data><X509SubjectName>CN=Sample National Infrastructure,OU=Sante,C=PT</X509SubjectName><X509Certificate>MIICAzCCAWygAwIBAgIEWCRzHjANBgkqhkiG9w0BAQsFADBGMQswCQYDVQQGEwJQVDEOMAwGA1UE
+            CwwFU2FudGUxJzAlBgNVBAMMHlNhbXBsZSBOYXRpb25hbCBJbmZyYXN0cnVjdHVyZTAeFw0xNjEx
+            MTAxMzE2NTBaFw0yNjExMTAxMzE2NTBaMEYxCzAJBgNVBAYTAlBUMQ4wDAYDVQQLDAVTYW50ZTEn
+            MCUGA1UEAwweU2FtcGxlIE5hdGlvbmFsIEluZnJhc3RydWN0dXJlMIGfMA0GCSqGSIb3DQEBAQUA
+            A4GNADCBiQKBgQCywt50WXEWIiWytRGcMqzeMM/EyxruNthPdiUEUTbs9un7lzGGjpfFMTgd83wJ
+            haB6FgpaVd8V2w/JBdkim5Ltuhu2vA0d6hHOsa58neIfe4z1ZhswwNmB0+mDTjwnd/gg8IJyQhhY
+            c5G4x7m0ZGdDKZDizjtDTEPTsl8D4FzBFwIDAQABMA0GCSqGSIb3DQEBCwUAA4GBACKxUpAx0PYm
+            ZZi4DfAzBkQ0+CvQw/l6Yo8wonVdpcQXO3khpWIcXhgYhTLHwm8IwJLEyFatmMyCKklSA3CLebJU
+            L4XH1GcdCg6oPKPUc+ovbgN7/iR265Elp4qHfpVteBijBTyZReH4oAK9hRhK1gLwtjI7vpjVaPXv
+            vkV1fbrz</X509Certificate></X509Data></KeyInfo></Signature></Extension>
+    </ServiceInformation>
 </ServiceMetadata>]]></con:request>
             <con:originalUri>http://wltdgt02.cc.cec.eu.int/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0</con:originalUri>
             <con:assertion type="GroovyScriptAssertion" id="e1f0e18d-d0c5-41e6-8890-22f6a3fd2834" name="Script Assertion">
@@ -2377,7 +2351,7 @@ The verification is done via the SMP_SERVICE_METADATA and SMP_ENDPOINT tables.</
       <con:settings/>
       <con:testStep type="restrequest" name="Delete SignedServiceMetadata" id="9f926e65-3988-46f6-ba11-6df48a0e8485">
         <con:settings/>
-        <con:config service="SMP" methodName="Delete" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <con:config service="SMP" methodName="Delete" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000120/services/iso6523-actorid-upis::services:extended:epsos::107" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <con:restRequest name="Delete SignedServiceMetadata" mediaType="application/xml" id="6a2e1d86-7380-4478-9eec-cf4bd98dcc1b" postQueryString="false">
             <con:settings>
               <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
@@ -3003,7 +2977,7 @@ sql.close()]]></script>
       </con:testStep>
       <con:testStep type="restrequest" name="Get SignedServiceMetadata" id="bca0ed64-cc39-4186-a261-7f13a1469a0d">
         <con:settings/>
-        <con:config service="SMP" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112/services/busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:Invoice-12::Invoice%23%23urn:www.cenbii.eu:transaction:biicoretrdm010:ver1.0:%23urn:www.peppol.eu:bis:peppol4a:ver1.0::2.0" methodName="Get" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <con:config service="SMP" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000120/services/iso6523-actorid-upis::services:extended:epsos::107" methodName="Get" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <con:restRequest name="Get SignedServiceMetadata" mediaType="application/xml" id="6ce8d408-7471-42cd-9756-81bd417dc4f1">
             <con:settings>
               <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
@@ -3294,7 +3268,7 @@ sql.close()</script>
       </con:testStep>
       <con:testStep type="restrequest" name="Get ServiceGroup" id="3f18fec3-5761-4789-8de4-c57c27f7e168">
         <con:settings/>
-        <con:config service="SMP" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000112" methodName="Get" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+        <con:config service="SMP" resourcePath="/cipa-smp-full-webapp/iso6523-actorid-upis::0088:5798000000120" methodName="Get" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
           <con:restRequest name="Get ServiceGroup" mediaType="application/xml" id="7f336710-cd21-4adc-8365-1243714f55f5">
             <con:settings>
               <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
@@ -3488,7 +3462,7 @@ testStep.run(testRunner, testStepContext);</con:tearDownScript>
     </con:property>
     <con:property>
       <con:name>url</con:name>
-      <con:value>http://wltdgt02.cc.cec.eu.int:2061</con:value>
+      <con:value>http://localhost:7001</con:value>
     </con:property>
     <con:property>
       <con:name>username</con:name>

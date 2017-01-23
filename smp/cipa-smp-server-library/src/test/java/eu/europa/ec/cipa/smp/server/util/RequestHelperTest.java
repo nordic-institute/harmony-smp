@@ -1,7 +1,7 @@
 package eu.europa.ec.cipa.smp.server.util;
 
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
-import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
 import org.junit.Test;
 
 import java.util.Arrays;

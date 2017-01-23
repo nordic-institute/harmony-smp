@@ -46,13 +46,13 @@ import com.helger.db.jpa.IEntityManagerProvider;
 import com.helger.db.jpa.JPAEnabledManager;
 import com.helger.db.jpa.JPAExecutionResult;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
-import com.sun.jersey.api.NotFoundException;
 
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
-import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
-import eu.europa.ec.cipa.smp.server.exception.UnknownUserException;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
 import eu.europa.ec.cipa.smp.server.hook.IRegistrationHook;
 import eu.europa.ec.cipa.smp.server.hook.RegistrationHookFactory;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
