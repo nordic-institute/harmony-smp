@@ -80,6 +80,7 @@ DROP TABLE IF EXISTS smp_user;
 CREATE TABLE smp_user (
   username varchar(256) NOT NULL,
   password varchar(256),
+  isadmin tinyint(1) DEFAULT 0 NOT NULL,
   PRIMARY KEY  (username)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -135,3 +136,25 @@ CHANGE COLUMN extension extension TEXT NULL DEFAULT NULL ;
 
 ALTER TABLE smp_service_metadata
 CHANGE COLUMN extension extension TEXT NULL DEFAULT NULL ;
+
+
+DROP TRIGGER IF EXISTS smp_user_check_is_admin_value_before_insert;
+DROP TRIGGER IF EXISTS smp_user_check_is_admin_value_before_update;
+delimiter //
+CREATE TRIGGER smp_user_check_is_admin_value_before_insert BEFORE INSERT ON smp_user
+FOR EACH ROW
+BEGIN
+	IF NEW.ISADMIN <> 0 AND NEW.ISADMIN <> 1 THEN
+		SIGNAL SQLSTATE '99999'
+		SET MESSAGE_TEXT = '0 or 1 are the only allowed values for ISADMIN column';
+	END IF;
+END //
+CREATE TRIGGER smp_user_check_is_admin_value_before_update BEFORE UPDATE ON smp_user
+FOR EACH ROW
+BEGIN
+	IF NEW.ISADMIN <> 0 AND NEW.ISADMIN <> 1 THEN
+		SIGNAL SQLSTATE '99999'
+		SET MESSAGE_TEXT = '0 or 1 are the only allowed values for ISADMIN column';
+	END IF;
+END //
+delimiter ;
