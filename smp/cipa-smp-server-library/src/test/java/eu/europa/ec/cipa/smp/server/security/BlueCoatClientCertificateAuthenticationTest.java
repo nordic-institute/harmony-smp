@@ -1,5 +1,6 @@
 package eu.europa.ec.cipa.smp.server.security;
 
+import eu.europa.ec.cipa.smp.server.AbstractTest;
 import eu.europa.ec.cipa.smp.server.exception.AuthenticationException;
 import org.junit.Assert;
 import org.junit.Test;
@@ -15,7 +16,7 @@ import java.util.Locale;
 /**
  * Created by feriaad on 22/06/2015.
  */
-public class BlueCoatClientCertificateAuthenticationTest {
+public class BlueCoatClientCertificateAuthenticationTest  extends AbstractTest {
 
     @Test
     public void testRead() throws Exception {

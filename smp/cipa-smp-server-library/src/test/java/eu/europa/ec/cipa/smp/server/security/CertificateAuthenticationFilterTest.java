@@ -2,6 +2,7 @@ package eu.europa.ec.cipa.smp.server.security;
 
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
+import eu.europa.ec.cipa.smp.server.AbstractTest;
 import eu.europa.ec.cipa.smp.server.exception.AuthenticationException;
 import eu.europa.ec.cipa.smp.server.exception.UnauthorizedException;
 import org.slf4j.Logger;
@@ -24,6 +25,6 @@ import java.util.List;
 /**
  * Created by rodrfla on 21/01/2017.
  */
-public class CertificateAuthenticationFilterTest {
+public class CertificateAuthenticationFilterTest  extends AbstractTest {
 
 }
