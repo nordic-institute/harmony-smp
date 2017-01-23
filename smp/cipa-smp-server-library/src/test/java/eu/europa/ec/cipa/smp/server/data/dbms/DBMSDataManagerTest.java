@@ -59,7 +59,7 @@ import org.junit.rules.TestRule;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 
 import java.util.Arrays;
-import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import static org.junit.Assert.*;
@@ -91,10 +91,10 @@ public class DBMSDataManagerTest {
   private static final String ADDRESS = "http://test.eu/accesspoint.svc";
     private static final boolean REQUIRE_SIGNATURE = true;
     private static final String MINIMUM_AUTH_LEVEL = "1";
-    private static final Calendar ACTIVIATION_DATE = GregorianCalendar.getInstance();
+    private static final Date ACTIVATION_DATE = GregorianCalendar.getInstance().getTime();
     private static final String DESCRIPTION = "description123";
     private static final String DESCRIPTION_2 = "new description";
-    private static final Calendar EXPIRATION_DATE = GregorianCalendar.getInstance();;
+    private static final Date EXPIRATION_DATE = GregorianCalendar.getInstance().getTime();
     private static final String TECH_CONTACT = "fake@peppol.eu";
     private static final String TECH_INFO = "http://fake.peppol.eu/";
     private static final String TRANSPORT_PROFILE = "bdxr-transport-ebms3-as4";
@@ -169,7 +169,7 @@ public class DBMSDataManagerTest {
             endpoint.setEndpointURI(ADDRESS);
             endpoint.setMinimumAuthenticationLevel (MINIMUM_AUTH_LEVEL);
             endpoint.setRequireBusinessLevelSignature (REQUIRE_SIGNATURE);
-            endpoint.setServiceActivationDate (ACTIVIATION_DATE);
+            endpoint.setServiceActivationDate (ACTIVATION_DATE);
             endpoint.setServiceDescription (DESCRIPTION);
             endpoint.setServiceExpirationDate (EXPIRATION_DATE);
             endpoint.getExtensions().add(aExtension);
