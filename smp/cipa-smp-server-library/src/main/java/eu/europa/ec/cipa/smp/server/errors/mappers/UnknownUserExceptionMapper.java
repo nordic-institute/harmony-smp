@@ -35,36 +35,35 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.smp.server.exception;
+package eu.europa.ec.cipa.smp.server.errors.mappers;
 
+import ec.services.smp._1.ErrorResponse;
+import eu.europa.ec.cipa.smp.server.errors.ErrorResponseBuilder;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.Response;
+import javax.ws.rs.ext.ExceptionMapper;
+import javax.ws.rs.ext.Provider;
+
+import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+
 /**
- * Exception to be thrown if there is an ownership mismatch between object. This
- * exception is only thrown if the provided user credentials are valid.
- * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public class UnauthorizedException extends RuntimeException {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (UnauthorizedException.class);
+@Provider
+public class UnknownUserExceptionMapper implements ExceptionMapper <UnknownUserException> {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (UnknownUserExceptionMapper.class);
 
-  public UnauthorizedException (final String sMsg) {
-    super (sMsg);
-
-    // Always log!
-    s_aLogger.warn (sMsg);
+  @Override
+  public Response toResponse (final UnknownUserException e) {
+    Response response = ErrorResponseBuilder.status(FORBIDDEN)
+            .errorDescription(e.getMessage())
+            .build();
+    ErrorResponse errorResponse = (ErrorResponse) response.getEntity();
+    s_aLogger.warn (String.format("%s : %s", errorResponse.getErrorUniqueId(), e.getMessage()));
+    s_aLogger.warn ("exception: ", e);
+    return response;
   }
-
-  public UnauthorizedException (final String sMsg, final Throwable throwable) {
-    super (sMsg,throwable);
-    // Always log!
-    s_aLogger.warn (sMsg);
-  }
-  public UnauthorizedException (final Throwable throwable) {
-    super (throwable);
-    // Always log!
-    s_aLogger.warn (throwable.getMessage());
-  }
-
 }

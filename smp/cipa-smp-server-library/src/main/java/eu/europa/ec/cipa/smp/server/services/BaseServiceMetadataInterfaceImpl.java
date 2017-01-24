@@ -40,6 +40,7 @@ package eu.europa.ec.cipa.smp.server.services;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
 import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
@@ -67,22 +68,20 @@ public final class BaseServiceMetadataInterfaceImpl {
   public static Document getServiceRegistration (@Nonnull final UriInfo uriInfo,
                                                                                 @Nullable final String sServiceGroupID,
                                                                                 @Nullable final String sDocumentTypeID) throws Throwable {
-    s_aLogger.info ("GET /" + sServiceGroupID + "/services/" + sDocumentTypeID);
+    s_aLogger.info (String.format("GET /%s/services/%s", sServiceGroupID, sDocumentTypeID));
 
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
     final DocumentIdentifier aDocTypeID = Identifiers.asDocumentId (sDocumentTypeID);
 
-    try {
-      final IDataManager aDataManager = DataManagerFactory.getInstance ();
-      String sServiceMetadata = aDataManager.getService (aServiceGroupID, aDocTypeID);
-      Document aSignedServiceMetadata = ServiceMetadataConverter.toSignedServiceMetadatadaDocument(sServiceMetadata);
+    final IDataManager aDataManager = DataManagerFactory.getInstance ();
+    String sServiceMetadata = aDataManager.getService (aServiceGroupID, aDocTypeID);
+    if(sServiceMetadata == null) {
+      throw new NotFoundException(String.format("Service '%s/services/%s' was not found", sServiceGroupID, sDocumentTypeID));
+    }
 
-      s_aLogger.info ("Finished getServiceRegistration(" + sServiceGroupID + "," + sDocumentTypeID + ")");
-      return aSignedServiceMetadata;
-    }
-    catch (final Throwable ex) {
-      s_aLogger.error ("Error in returning service metadata.", ex);
-      throw ex;
-    }
+    Document aSignedServiceMetadata = ServiceMetadataConverter.toSignedServiceMetadatadaDocument(sServiceMetadata);
+
+    s_aLogger.info (String.format("Finished getServiceRegistration(%s,%s)", sServiceGroupID, sDocumentTypeID));
+    return aSignedServiceMetadata;
   }
 }

@@ -37,10 +37,9 @@
  */
 package eu.europa.ec.cipa.smp.server.services.readwrite;
 
-import com.sun.jersey.api.NotFoundException;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
-import eu.europa.ec.cipa.smp.server.exception.ErrorResponseBuilder;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.BadRequestException;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceGroupInterfaceImpl;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.cipa.smp.server.util.RequestHelper;
@@ -50,9 +49,19 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+
+import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.WRONG_FIELD;
 
 /**
  * This class implements the REST interface for getting ServiceGroup's. PUT and
@@ -73,46 +82,28 @@ public final class ServiceGroupInterface {
 
   @GET
   @Produces (MediaType.TEXT_XML)
-  public Response getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId){
+  public ServiceGroup getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId) throws Throwable {
     // Delegate to common implementation
-    try{
-      return Response.ok(BaseServiceGroupInterfaceImpl.getServiceGroup (uriInfo, headers, sServiceGroupId, ServiceMetadataInterface.class)).build();
-    }
-    catch(Throwable ex)
-    {
-      s_aLogger.error ("Error getting service group " + sServiceGroupId, ex);
-      if (ex instanceof NotFoundException) {
-        return ErrorResponseBuilder.status(Status.NOT_FOUND).build();
-      } else {
-        return ErrorResponseBuilder.status().build();
-      }
-    }
+    return BaseServiceGroupInterfaceImpl.getServiceGroup (uriInfo, headers, sServiceGroupId, ServiceMetadataInterface.class);
   }
 
   @PUT
   public Response saveServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupID,
-                                    final ServiceGroup aServiceGroup) {
-    s_aLogger.info ("PUT /" + sServiceGroupID + " ==> " + aServiceGroup);
+                                    final ServiceGroup aServiceGroup) throws Throwable{
+    s_aLogger.info (String.format("PUT /%s ==> %s", sServiceGroupID, aServiceGroup));
 
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
-
-    try {
-      if (!IdentifierUtils.areIdentifiersEqual (aServiceGroupID, aServiceGroup.getParticipantIdentifier ())) {
-        // Business identifier must equal path
-        return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
-      }
-
-      final IDataManager aDataManager = DataManagerFactory.getInstance ();
-      aDataManager.saveServiceGroup(aServiceGroup, RequestHelper.getAuth(headers));
-
-      s_aLogger.info ("Finished saveServiceGroup(" + sServiceGroupID + "," + aServiceGroup + ")");
-
-      return Response.ok ().build ();
+    if (!IdentifierUtils.areIdentifiersEqual (aServiceGroupID, aServiceGroup.getParticipantIdentifier ())) {
+      // Business identifier must equal path
+      throw new BadRequestException(WRONG_FIELD, "Service Group Ids don't match between URL parameter and XML body");
     }
-    catch (final Throwable ex) {
-      s_aLogger.error ("Error saving service group " + aServiceGroupID, ex);
-      return ErrorResponseBuilder.status().build();
-    }
+
+    final IDataManager aDataManager = DataManagerFactory.getInstance ();
+    aDataManager.saveServiceGroup(aServiceGroup, RequestHelper.getAuth(headers));
+
+    s_aLogger.info (String.format("Finished saveServiceGroup(%s,%s)", sServiceGroupID, aServiceGroup));
+
+    return Response.ok ().build ();
   }
 
   @DELETE
@@ -121,17 +112,11 @@ public final class ServiceGroupInterface {
 
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
 
-    try {
-      final IDataManager aDataManager = DataManagerFactory.getInstance ();
-      aDataManager.deleteServiceGroup (aServiceGroupID, RequestHelper.getAuth (headers));
+    final IDataManager aDataManager = DataManagerFactory.getInstance ();
+    aDataManager.deleteServiceGroup (aServiceGroupID, RequestHelper.getAuth (headers));
 
-      s_aLogger.info ("Finished deleteServiceGroup(" + sServiceGroupID + ")");
+    s_aLogger.info (String.format("Finished deleteServiceGroup(%s)", sServiceGroupID));
 
-      return Response.ok ().build ();
-    }
-    catch (final Throwable ex) {
-      s_aLogger.error ("Error deleting service group " + aServiceGroupID, ex);
-      return ErrorResponseBuilder.status().build();
-    }
+    return Response.ok ().build ();
   }
 }

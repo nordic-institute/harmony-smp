@@ -41,26 +41,30 @@ import com.sun.jersey.spi.MessageBodyWorkers;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
-import eu.europa.ec.cipa.smp.server.exception.ErrorResponseBuilder;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.BadRequestException;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.cipa.smp.server.util.RequestHelper;
 import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.EndpointType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessListType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceEndpointList;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceInformationType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import javax.ws.rs.core.Response.Status;
-import javax.xml.bind.JAXBException;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
+import java.util.Calendar;
+
+import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.OUT_OF_RANGE;
+import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.WRONG_FIELD;
+import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.XSD_INVALID;
 
 /**
  * This class implements the REST interface for getting SignedServiceMetadata's.
@@ -95,88 +99,93 @@ public final class ServiceMetadataInterface {
                                            @PathParam ("DocumentTypeId") final String sDocumentTypeID,
                                            final String body) throws Throwable {
 
-    s_aLogger.info ("PUT /" + sServiceGroupID + "/services/" + sDocumentTypeID + " ==> " + body);
+    s_aLogger.info (String.format("PUT /%s/services/%s ==> %s", sServiceGroupID, sDocumentTypeID, body));
 
-    try{
+    validateErrors(sServiceGroupID, sDocumentTypeID, body);
 
-      Response errorResponse = getValidationErrors(sServiceGroupID, sDocumentTypeID, body);
-      if(errorResponse != null){
-        return errorResponse;
-      }
+    final ServiceMetadata aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
 
-      final ServiceMetadata aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
+    // Main save
+    final IDataManager aDataManager = DataManagerFactory.getInstance ();
+    aDataManager.saveService (aServiceMetadata, body, RequestHelper.getAuth (headers));
 
-      // Main save
-      final IDataManager aDataManager = DataManagerFactory.getInstance ();
-      aDataManager.saveService (aServiceMetadata, body, RequestHelper.getAuth (headers));
+    s_aLogger.info (String.format("Finished saveServiceRegistration(%s,%s,%s)", sServiceGroupID, sDocumentTypeID, aServiceMetadata));
 
-      s_aLogger.info ("Finished saveServiceRegistration(" +
-                      sServiceGroupID +
-                      "," +
-                      sDocumentTypeID +
-                      "," +
-                      aServiceMetadata +
-                      ")");
-
-      return Response.ok ().build ();
-    }
-    catch (final Throwable ex) {
-      s_aLogger.error ("Error in saving Service metadata.", ex);
-      throw ex;
-    }
+    return Response.ok ().build ();
   }
 
-  private Response getValidationErrors(final String sServiceGroupID,
-                                   final String sDocumentTypeID,
-                                   final String body) throws ParserConfigurationException, IOException, SAXException, JAXBException {
+  private void validateErrors(final String sServiceGroupID,
+                              final String sDocumentTypeID,
+                              final String body) {
 
     final ServiceMetadata aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
     final DocumentIdentifier aDocTypeID =  Identifiers.asDocumentId(sDocumentTypeID);
-
     final ServiceInformationType aServiceInformationType = aServiceMetadata.getServiceInformation();
 
       // Business identifiers from path (ServiceGroupID) and from service
       // metadata (body) must equal path
       if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getParticipantIdentifier (), aServiceGroupID)) {
-        s_aLogger.info ("Save service metadata was called with bad parameters. serviceInfo:" +
-                        IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getParticipantIdentifier ()) +
-                        " param:" +
-                        aServiceGroupID);
-        return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
+        String errorMessage = String.format("Save service metadata was called with bad parameters. serviceInfo: %s param: %s",
+                IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getParticipantIdentifier ()),
+                aServiceGroupID);
+        s_aLogger.info (errorMessage);
+        throw new BadRequestException(WRONG_FIELD, errorMessage);
+
       }
 
       if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getDocumentIdentifier (), aDocTypeID)) {
-        s_aLogger.info ("Save service metadata was called with bad parameters. serviceInfo:" +
-                        IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getDocumentIdentifier ()) +
-                        " param:" +
-                        aDocTypeID);
+        String errorMessage = String.format("Save service metadata was called with bad parameters. serviceInfo: %s param: %s",
+                IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getDocumentIdentifier ()),
+                aDocTypeID);
+        s_aLogger.info (errorMessage);
         // Document type must equal path
-        return ErrorResponseBuilder.status(Status.BAD_REQUEST).build();
+        throw new BadRequestException(WRONG_FIELD, errorMessage);
       }
 
-    return null;
+      validateData(aServiceMetadata);
+  }
+
+  private void validateData(ServiceMetadata aServiceMetadata) {
+    if(aServiceMetadata.getServiceInformation() == null) {
+      return;
+    }
+    ProcessListType processList = aServiceMetadata.getServiceInformation().getProcessList();
+    if (processList == null) {
+      return;
+    }
+
+    for(ProcessType process : processList.getProcesses()) {
+      ServiceEndpointList serviceEndpointList = process.getServiceEndpointList();
+      if(serviceEndpointList == null) {
+        return;
+      }
+
+      for(EndpointType endpoint : serviceEndpointList.getEndpoints()) {
+        Calendar activationDate = endpoint.getServiceActivationDate();
+        Calendar expirationDate = endpoint.getServiceExpirationDate();
+
+        if(activationDate != null && expirationDate != null && activationDate.after(expirationDate)) {
+          throw new BadRequestException(OUT_OF_RANGE, "Expiration date is before Activation date");
+        }
+      }
+    }
   }
 
   @DELETE
   public Response deleteServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
                                              @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
-    s_aLogger.info ("DELETE /" + sServiceGroupID + "/services/" + sDocumentTypeID);
+    s_aLogger.info (String.format("DELETE /%s/services/%s", sServiceGroupID, sDocumentTypeID));
 
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
+
     final DocumentIdentifier aDocTypeID = Identifiers.asDocumentId(sDocumentTypeID);
 
-    try {
-      final IDataManager aDataManager = DataManagerFactory.getInstance ();
-      aDataManager.deleteService (aServiceGroupID, aDocTypeID, RequestHelper.getAuth (headers));
+    final IDataManager aDataManager = DataManagerFactory.getInstance ();
+    aDataManager.deleteService (aServiceGroupID, aDocTypeID, RequestHelper.getAuth (headers));
 
-      s_aLogger.info ("Finished deleteServiceRegistration(" + sServiceGroupID + "," + sDocumentTypeID);
+    s_aLogger.info (String.format("Finished deleteServiceRegistration(%s,%s)", sServiceGroupID, sDocumentTypeID));
 
-      return Response.ok ().build ();
-    }
-    catch (final Throwable ex) {
-      s_aLogger.error ("Error in deleting Service metadata.", ex);
-      throw ex;
-    }
+    return Response.ok ().build ();
   }
 }
