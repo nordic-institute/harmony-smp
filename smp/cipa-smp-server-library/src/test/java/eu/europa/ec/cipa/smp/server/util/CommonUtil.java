@@ -18,6 +18,7 @@ import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -70,9 +71,13 @@ public class CommonUtil {
             subject = tSubject;
         }
         DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
-        Date validFrom = df.parse("Jun 01 10:37:53 2015 CEST");
-        Date validTo = df.parse("Jun 01 10:37:53 2035 CEST");
-        return createHeaderCertificateForBlueCoat(serial, issuer, subject, validFrom, validTo);
+
+        Calendar validFrom = Calendar.getInstance();
+        validFrom.set(validFrom.get(Calendar.YEAR) - 2, 1, 1);
+        Calendar validTo = Calendar.getInstance();
+        validTo.set(validTo.get(Calendar.YEAR) + 3, 1, 1);
+
+        return createHeaderCertificateForBlueCoat(serial, issuer, subject, validFrom.getTime(), validTo.getTime());
     }
 
     public static String createHeaderCertificateForBlueCoat(String serialNumber, String issuer, String subject, Date startDate, Date expiryDate) throws Exception {

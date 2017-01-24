@@ -5,6 +5,7 @@ import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.DBMSDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.DBUser;
 import eu.europa.ec.cipa.smp.server.hook.DoNothingRegistrationHook;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.rules.TestRule;
@@ -53,6 +54,21 @@ public class AbstractTest {
                 }
             }
         }
-
     }
+
+    @After
+    public final void after() throws Throwable {
+        removeDBUser();
+    }
+
+    public static void removeDBUser() throws Throwable {
+        String[][] usernames = new String[][]{{"CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", "123ABCD"}, {"CN=EHEALTH_SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", "123ABCD"}};
+        for (int i = 0; i < usernames.length; i++) {
+            DBUser aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, usernames[i][0]);
+            if (aDBUser != null) {
+                s_aDataMgr.getCurrentEntityManager().remove(aDBUser);
+            }
+        }
+    }
+
 }

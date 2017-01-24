@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -24,17 +25,19 @@ public class BlueCoatClientCertificateAuthenticationTest  extends AbstractTest {
         String issuer = "CN=PEPPOL SERVICE METADATA PUBLISHER TEST CA,OU=FOR TEST PURPOSES ONLY,O=NATIONAL IT AND TELECOM AGENCY,C=DK";
         String subject = "O=DG-DIGIT,CN=SMP_1000000007,C=BE";
         DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
-        Date validFrom = df.parse("Jun 01 10:37:53 2015 CEST");
-        Date validTo = df.parse("Jun 01 10:37:53 2035 CEST");
+        Calendar validFrom = Calendar.getInstance();
+        validFrom.set(validFrom.get(Calendar.YEAR) - 2, 1, 1);
+        Calendar validTo = Calendar.getInstance();
+        validTo.set(validTo.get(Calendar.YEAR) + 3, 1, 1);
 
-        String certHeaderValue = "serial=" + serial + "&subject=" + subject + "&validFrom="+ df.format(validFrom) +"&validTo=" + df.format(validTo) +"&issuer=" + issuer;
+        String certHeaderValue = "serial=" + serial + "&subject=" + subject + "&validFrom="+ df.format(validFrom.getTime()) +"&validTo=" + df.format(validTo.getTime()) +"&issuer=" + issuer;
         BlueCoatClientCertificateAuthentication bcAuth = new BlueCoatClientCertificateAuthentication(certHeaderValue);
 
         Assert.assertEquals(serial, ((CertificateDetails) bcAuth.getCredentials()).getSerial());
         Assert.assertEquals(issuer, ((CertificateDetails) bcAuth.getCredentials()).getIssuer());
         Assert.assertEquals("CN=SMP_1000000007,O=DG-DIGIT,C=BE", ((CertificateDetails) bcAuth.getCredentials()).getSubject());
-        Assert.assertEquals(validFrom, ((CertificateDetails) bcAuth.getCredentials()).getValidFrom().getTime());
-        Assert.assertEquals(validTo, ((CertificateDetails) bcAuth.getCredentials()).getValidTo().getTime());
+        Assert.assertEquals(validFrom.getTime(), ((CertificateDetails) bcAuth.getCredentials()).getValidFrom().getTime());
+        Assert.assertEquals(validTo.getTime(), ((CertificateDetails) bcAuth.getCredentials()).getValidTo().getTime());
 
         Assert.assertEquals("CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", bcAuth.getPrincipal().toString());
         Assert.assertNull((List)bcAuth.getAuthorities());
@@ -52,17 +55,20 @@ public class BlueCoatClientCertificateAuthenticationTest  extends AbstractTest {
         String issuer = "C=DK, CN=PEPPOL SERVICE METADATA PUBLISHER TEST CA, O=NATIONAL IT AND TELECOM AGENCY, OU=FOR TEST PURPOSES ONLY";
         String subject = "C=BE, O=DG-DIGIT, CN=SMP_1000000007";
         DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
-        Date validFrom = df.parse("Jun 01 10:37:53 2015 CEST");
-        Date validTo = df.parse("Jun 01 10:37:53 2035 CEST");
 
-        String certHeaderValue = "serial=" + serial + "&subject=" + subject + "&validFrom="+ df.format(validFrom) +"&validTo=" + df.format(validTo) +"&issuer=" + issuer;
+        Calendar validFrom = Calendar.getInstance();
+        validFrom.set(validFrom.get(Calendar.YEAR) - 2, 1, 1);
+        Calendar validTo = Calendar.getInstance();
+        validTo.set(validTo.get(Calendar.YEAR) + 3, 1, 1);
+
+        String certHeaderValue = "serial=" + serial + "&subject=" + subject + "&validFrom="+ df.format(validFrom.getTime()) +"&validTo=" + df.format(validTo.getTime()) +"&issuer=" + issuer;
         BlueCoatClientCertificateAuthentication bcAuth = new BlueCoatClientCertificateAuthentication(certHeaderValue);
 
         Assert.assertEquals(serial, ((CertificateDetails) bcAuth.getCredentials()).getSerial());
         Assert.assertEquals(issuer, ((CertificateDetails) bcAuth.getCredentials()).getIssuer());
         Assert.assertEquals("CN=SMP_1000000007,O=DG-DIGIT,C=BE", ((CertificateDetails) bcAuth.getCredentials()).getSubject());
-        Assert.assertEquals(validFrom, ((CertificateDetails) bcAuth.getCredentials()).getValidFrom().getTime());
-        Assert.assertEquals(validTo, ((CertificateDetails) bcAuth.getCredentials()).getValidTo().getTime());
+        Assert.assertEquals(validFrom.getTime(), ((CertificateDetails) bcAuth.getCredentials()).getValidFrom().getTime());
+        Assert.assertEquals(validTo.getTime(), ((CertificateDetails) bcAuth.getCredentials()).getValidTo().getTime());
 
         Assert.assertEquals("CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", bcAuth.getPrincipal().toString());
         Assert.assertNull((List)bcAuth.getAuthorities());
@@ -79,19 +85,22 @@ public class BlueCoatClientCertificateAuthenticationTest  extends AbstractTest {
         // different order for the issuer certificate with extra spaces
         String issuer = "CN=PEPPOL SERVICE METADATA PUBLISHER TEST CA,  C=DK, O=NATIONAL IT AND TELECOM AGENCY,    OU=FOR TEST PURPOSES ONLY";
         String subject = "C=BE, O=DG-DIGIT, CN=SMP_1000000007";
+
         DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
-        Date validFrom = df.parse("Jun 01 10:37:53 2015 CEST");
-        Date validTo = df.parse("Jun 01 10:37:53 2035 CEST");
+        Calendar validFrom = Calendar.getInstance();
+        validFrom.set(validFrom.get(Calendar.YEAR) - 2, 1, 1);
+        Calendar validTo = Calendar.getInstance();
+        validTo.set(validTo.get(Calendar.YEAR) + 3, 1, 1);
 
         // case insensitivity test
-        String certHeaderValue = "iSsUeR=" + issuer  + "&VaLiDFrOm="+ df.format(validFrom) + "&sUbJecT=" + subject + "&VALidTo=" + df.format(validTo)  + "&serIAL=" + serial;
+        String certHeaderValue = "iSsUeR=" + issuer  + "&VaLiDFrOm="+ df.format(validFrom.getTime()) + "&sUbJecT=" + subject + "&VALidTo=" + df.format(validTo.getTime())  + "&serIAL=" + serial;
         BlueCoatClientCertificateAuthentication bcAuth = new BlueCoatClientCertificateAuthentication(certHeaderValue);
 
         Assert.assertEquals(serial, ((CertificateDetails) bcAuth.getCredentials()).getSerial());
         Assert.assertEquals(issuer, ((CertificateDetails) bcAuth.getCredentials()).getIssuer());
         Assert.assertEquals("CN=SMP_1000000007,O=DG-DIGIT,C=BE", ((CertificateDetails) bcAuth.getCredentials()).getSubject());
-        Assert.assertEquals(validFrom, ((CertificateDetails) bcAuth.getCredentials()).getValidFrom().getTime());
-        Assert.assertEquals(validTo, ((CertificateDetails) bcAuth.getCredentials()).getValidTo().getTime());
+        Assert.assertEquals(validFrom.getTime(), ((CertificateDetails) bcAuth.getCredentials()).getValidFrom().getTime());
+        Assert.assertEquals(validTo.getTime(), ((CertificateDetails) bcAuth.getCredentials()).getValidTo().getTime());
 
         Assert.assertEquals("CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", bcAuth.getPrincipal().toString());
         Assert.assertNull((List)bcAuth.getAuthorities());

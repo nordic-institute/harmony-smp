@@ -4,7 +4,9 @@ import eu.europa.ec.cipa.smp.server.AbstractTest;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.DBUser;
 import eu.europa.ec.cipa.smp.server.services.IBlueCoatCertificateService;
 import eu.europa.ec.cipa.smp.server.util.CertificateUtils;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.text.DateFormat;
@@ -16,20 +18,6 @@ import java.util.Locale;
  * Created by rodrfla on 21/01/2017.
  */
 public class CustomAuthenticationProviderTest extends AbstractTest {
-
-
-    @After
-    public final void after() throws Throwable {
-        removeDBUser();
-    }
-
-    public static void removeDBUser() throws Throwable {
-        String username = "CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD";
-        DBUser aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, username);
-        if (aDBUser != null) {
-            s_aDataMgr.getCurrentEntityManager().remove(aDBUser);
-        }
-    }
 
     @Test
     public void authenticationForBlueCoat() throws Exception {
