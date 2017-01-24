@@ -23,9 +23,10 @@ public class BlueCoatClientCertificateAuthenticationTest  extends AbstractTest {
         String serial = "123ABCD";
         String issuer = "CN=PEPPOL SERVICE METADATA PUBLISHER TEST CA,OU=FOR TEST PURPOSES ONLY,O=NATIONAL IT AND TELECOM AGENCY,C=DK";
         String subject = "O=DG-DIGIT,CN=SMP_1000000007,C=BE";
-        DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
+        DateFormat df = new SimpleDateFormat("MMM d kk:mm:ss yyyy zzz", Locale.US);
         Calendar validFrom = Calendar.getInstance();
         validFrom.set(validFrom.get(Calendar.YEAR) - 2, 1, 1);
+
         Calendar validTo = Calendar.getInstance();
         validTo.set(validTo.get(Calendar.YEAR) + 3, 1, 1);
         String certHeaderValue = "serial=" + serial + "&subject=" + subject + "&validFrom="+ df.format(validFrom.getTime()) +"&validTo=" + df.format(validTo.getTime()) +"&issuer=" + issuer;
@@ -52,7 +53,7 @@ public class BlueCoatClientCertificateAuthenticationTest  extends AbstractTest {
         String serial = "123ABCD";
         String issuer = "C=DK, CN=PEPPOL SERVICE METADATA PUBLISHER TEST CA, O=NATIONAL IT AND TELECOM AGENCY, OU=FOR TEST PURPOSES ONLY";
         String subject = "C=BE, O=DG-DIGIT, CN=SMP_1000000007";
-        DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
+        DateFormat df = new SimpleDateFormat("MMM d kk:mm:ss yyyy zzz", Locale.US);
         Calendar validFrom = Calendar.getInstance();
         validFrom.set(validFrom.get(Calendar.YEAR) - 2, 1, 1);
         Calendar validTo = Calendar.getInstance();
@@ -81,7 +82,7 @@ public class BlueCoatClientCertificateAuthenticationTest  extends AbstractTest {
         // different order for the issuer certificate with extra spaces
         String issuer = "CN=PEPPOL SERVICE METADATA PUBLISHER TEST CA,  C=DK, O=NATIONAL IT AND TELECOM AGENCY,    OU=FOR TEST PURPOSES ONLY";
         String subject = "C=BE, O=DG-DIGIT, CN=SMP_1000000007";
-        DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
+        DateFormat df = new SimpleDateFormat("MMM d kk:mm:ss yyyy zzz", Locale.US);
         Calendar validFrom = Calendar.getInstance();
         validFrom.set(validFrom.get(Calendar.YEAR) - 2, 1, 1);
         Calendar validTo = Calendar.getInstance();
