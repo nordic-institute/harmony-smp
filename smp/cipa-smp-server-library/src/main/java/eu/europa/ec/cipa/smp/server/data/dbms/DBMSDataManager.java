@@ -239,8 +239,9 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return ret.getOrThrow();
     }
 
-    public void saveServiceGroup(@Nonnull final ServiceGroup aServiceGroup,
+    public boolean saveServiceGroup(@Nonnull final ServiceGroup aServiceGroup,
                                  @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
+        final boolean[] result = new boolean[0];
         JPAExecutionResult<?> ret;
         ret = doInTransaction(new Runnable() {
             public void run() {
@@ -261,6 +262,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                         aDBServiceGroup.setExtension(aServiceGroup.getExtensions().get(0));
                     }
                     aEM.merge(aDBServiceGroup);
+                    result[0] = false;
                 } else {
                     // It's a new service group
                     m_aHook.create(aServiceGroup.getParticipantIdentifier());
@@ -276,11 +278,14 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                     final DBOwnershipID aDBOwnershipID = new DBOwnershipID(aCredentials.getUserName(), aServiceGroup.getParticipantIdentifier());
                     final DBOwnership aDBOwnership = new DBOwnership(aDBOwnershipID, aDBUser, aDBServiceGroup);
                     aEM.persist(aDBOwnership);
+                    result[0] = true;
                 }
             }
         });
-        if (ret.hasThrowable())
+        if (ret.hasThrowable()) {
             throw ret.getThrowable();
+        }
+        return result[0];
     }
 
     public void deleteServiceGroup(@Nonnull final ParticipantIdentifierType aServiceGroupID,
@@ -402,9 +407,10 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return ret.getOrThrow();
     }
 
-    public void saveService(@Nonnull final ServiceMetadata aServiceMetadata,
+    public boolean saveService(@Nonnull final ServiceMetadata aServiceMetadata,
                             @Nonnull final String sXmlContent,
                             @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable{
+        boolean result = true;
         final ParticipantIdentifierType aServiceGroupID = aServiceMetadata.getServiceInformation()
                 .getParticipantIdentifier();
         final DocumentIdentifier aDocTypeID = aServiceMetadata.getServiceInformation().getDocumentIdentifier();
@@ -413,7 +419,9 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         _verifyOwnership(aServiceGroupID, aCredentials);
 
         // Delete an eventually contained previous service in a separate transaction
-        _deleteService(aServiceGroupID, aDocTypeID);
+        if (_deleteService(aServiceGroupID, aDocTypeID) == EChange.CHANGED) {
+            result = false;
+        }
 
         // Create a new entry
         JPAExecutionResult<?> ret;
@@ -437,8 +445,10 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 aEM.persist(aDBServiceMetadata);
             }
         });
-        if (ret.hasThrowable())
+        if (ret.hasThrowable()) {
             throw ret.getThrowable();
+        }
+        return result;
     }
 
     @Nonnull

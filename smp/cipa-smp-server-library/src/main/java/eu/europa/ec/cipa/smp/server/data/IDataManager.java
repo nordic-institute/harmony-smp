@@ -90,9 +90,10 @@ public interface IDataManager {
    *        The service group to save.
    * @param aCredentials
    *        The credentials to use.
+   * @return true, if ServiceGroup was added; false, if ServiceGroup was updated
    * @throws Throwable
    */
-  void saveServiceGroup (@Nonnull ServiceGroup aServiceGroup, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
+  boolean saveServiceGroup (@Nonnull ServiceGroup aServiceGroup, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
 
   /**
    * Deletes the service group having the specified id.
@@ -155,9 +156,10 @@ public interface IDataManager {
    *        The service metadata XML content to save.
    * @param aCredentials
    *        The credentials to use.
+   * @return true, if ServiceMetadata was added; false, if ServiceMetadata was updated
    * @throws Throwable
    */
-  void saveService (@Nonnull ServiceMetadata aServiceMetadata, @Nonnull final String sXmlContent, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
+  boolean saveService (@Nonnull ServiceMetadata aServiceMetadata, @Nonnull final String sXmlContent, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
 
   /**
    * Deletes a service metadata object given by its service group id and
