@@ -4,6 +4,7 @@ import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.AuthenticationException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
+import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,7 +61,8 @@ public class CertificateAuthenticationFilter implements ContainerRequestFilter {
                     }
                     break;
                 case "https":
-                    break;
+                    //TODO HTTPS protocol not implemented yet
+                    throw new NotImplementedException("HTTPS protocol not implemented yet");
                 default:
                     throw new AuthenticationException("The request must use HTTP or HTTPS protocol");
             }
