@@ -2,9 +2,8 @@ package eu.europa.ec.cipa.smp.server.security;
 
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerRequestFilter;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.AuthenticationException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
-import eu.europa.ec.cipa.smp.server.exception.AuthenticationException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +67,7 @@ public class CertificateAuthenticationFilter implements ContainerRequestFilter {
             return containerRequest;
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            throw new UnauthorizedException(e);
+            throw new UnauthorizedException(e.getMessage(), e);
         }
     }
 

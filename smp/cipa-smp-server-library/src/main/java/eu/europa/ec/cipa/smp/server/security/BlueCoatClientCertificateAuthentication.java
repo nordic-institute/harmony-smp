@@ -1,6 +1,6 @@
 package eu.europa.ec.cipa.smp.server.security;
 
-import eu.europa.ec.cipa.smp.server.exception.AuthenticationException;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.AuthenticationException;
 import eu.europa.ec.cipa.smp.server.util.CertificateUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.springframework.security.core.Authentication;

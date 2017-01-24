@@ -32,11 +32,10 @@ public class CustomAuthenticationProviderTest extends AbstractTest {
         DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
         String headerCertificate = "serial=" + serial + "&subject=" + subject + "&validFrom=" + df.format(validFrom.getTime()) + "&validTo=" + df.format(validTo.getTime()) + "&issuer=" + issuer;
         CertificateDetails certificateDetails = CertificateUtils.getCommonNameFromCalculateHeaderCertificateId(headerCertificate);
-
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
         IBlueCoatCertificateService blueCoatCertificateService = (IBlueCoatCertificateService) context.getBean("blueCoatCertificateServiceImpl");
-
         boolean isValid = blueCoatCertificateService.isBlueCoatClientCertificateValid(certificateDetails);
+
         Assert.assertTrue(isValid);
     }
 
@@ -45,7 +44,6 @@ public class CustomAuthenticationProviderTest extends AbstractTest {
         String serial = "123ABCD";
         String issuer = "CN=ENTITY SERVICE METADATA PUBLISHER TEST CA,OU=FOR TEST PURPOSES ONLY,O=NATIONAL IT AND TELECOM AGENCY,C=DK";
         String subject = "O=DG-DIGIT,CN=SMP_10951843963,C=BE";
-
         Calendar validFrom = Calendar.getInstance();
         validFrom.set(validFrom.get(Calendar.YEAR) - 2, 1, 1);
         Calendar validTo = Calendar.getInstance();
@@ -56,8 +54,8 @@ public class CustomAuthenticationProviderTest extends AbstractTest {
 
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
         IBlueCoatCertificateService blueCoatCertificateService = (IBlueCoatCertificateService) context.getBean("blueCoatCertificateServiceImpl");
-
         boolean isValid = blueCoatCertificateService.isBlueCoatClientCertificateValid(certificateDetails);
+
         Assert.assertFalse(isValid);
     }
 
@@ -66,7 +64,6 @@ public class CustomAuthenticationProviderTest extends AbstractTest {
         String serial = "123ABCD";
         String issuer = "CN=ENTITY SERVICE METADATA PUBLISHER TEST CA,OU=FOR TEST PURPOSES ONLY,O=NATIONAL IT AND TELECOM AGENCY,C=DK";
         String subject = "O=DG-DIGIT,CN=SMP_10951843963,C=BE";
-
         Calendar validFrom = Calendar.getInstance();
         validFrom.set(validFrom.get(Calendar.YEAR) - 3, 1, 1);
         Calendar validTo = Calendar.getInstance();
@@ -77,8 +74,8 @@ public class CustomAuthenticationProviderTest extends AbstractTest {
 
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
         IBlueCoatCertificateService blueCoatCertificateService = (IBlueCoatCertificateService) context.getBean("blueCoatCertificateServiceImpl");
-
         boolean isValid = blueCoatCertificateService.isBlueCoatClientCertificateValid(certificateDetails);
+
         Assert.assertFalse(isValid);
     }
 
@@ -87,7 +84,6 @@ public class CustomAuthenticationProviderTest extends AbstractTest {
         String serial = "123ABCD";
         String issuer = "CN=ENTITY SERVICE METADATA PUBLISHER TEST CA,OU=FOR TEST PURPOSES ONLY,O=NATIONAL IT AND TELECOM AGENCY,C=DK";
         String subject = "O=DG-DIGIT,CN=SMP_10951843963,C=BE";
-
         Calendar validFrom = Calendar.getInstance();
         validFrom.set(validFrom.get(Calendar.YEAR) + 3, 1, 1);
         Calendar validTo = Calendar.getInstance();
@@ -98,8 +94,8 @@ public class CustomAuthenticationProviderTest extends AbstractTest {
 
         ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
         IBlueCoatCertificateService blueCoatCertificateService = (IBlueCoatCertificateService) context.getBean("blueCoatCertificateServiceImpl");
-
         boolean isValid = blueCoatCertificateService.isBlueCoatClientCertificateValid(certificateDetails);
+
         Assert.assertFalse(isValid);
     }
 }

@@ -1,6 +1,5 @@
 package eu.europa.ec.cipa.smp.server.services;
 
-import eu.europa.ec.cipa.smp.server.exception.common.TechnicalException;
 import eu.europa.ec.cipa.smp.server.security.CertificateDetails;
 
 /**
@@ -10,5 +9,5 @@ public interface IBlueCoatCertificateService {
 
     boolean isBlueCoatClientCertificateValid(final CertificateDetails certificate);
 
-    void validateBlueCoatClientCertificate(final CertificateDetails certificate) throws TechnicalException;
+    void validateBlueCoatClientCertificate(final CertificateDetails certificate) throws Exception;
 }

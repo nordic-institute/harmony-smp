@@ -3,9 +3,8 @@ package eu.europa.ec.cipa.smp.server.services.impl;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.DBUser;
-import eu.europa.ec.cipa.smp.server.exception.CertificateNotFoundException;
-import eu.europa.ec.cipa.smp.server.exception.CertificateRevokedException;
-import eu.europa.ec.cipa.smp.server.exception.common.TechnicalException;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.CertificateNotFoundException;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.CertificateRevokedException;
 import eu.europa.ec.cipa.smp.server.security.CertificateDetails;
 import eu.europa.ec.cipa.smp.server.services.IBlueCoatCertificateService;
 import org.slf4j.Logger;
@@ -44,12 +43,12 @@ public class BlueCoatCertificateServiceImpl implements IBlueCoatCertificateServi
         }
     }
 
-    public void validateBlueCoatClientCertificate(final CertificateDetails certificate) throws TechnicalException {
+    public void validateBlueCoatClientCertificate(final CertificateDetails certificate) throws Exception {
         dateCertificateChecking(certificate);
         databaseCertificateChecking(certificate);
     }
 
-    private void dateCertificateChecking(CertificateDetails certificate) throws TechnicalException {
+    private void dateCertificateChecking(CertificateDetails certificate) throws CertificateRevokedException {
         Date today = Calendar.getInstance().getTime();
         if ((certificate.getValidFrom() != null && !today.after(certificate.getValidFrom().getTime())) ||
                 (certificate.getValidTo() != null && !today.before(certificate.getValidTo().getTime()))) {
@@ -59,7 +58,7 @@ public class BlueCoatCertificateServiceImpl implements IBlueCoatCertificateServi
         }
     }
 
-    private void databaseCertificateChecking(CertificateDetails certificate) throws TechnicalException {
+    private void databaseCertificateChecking(CertificateDetails certificate) throws CertificateNotFoundException {
         logger.info(String.format("Checking Certificate into the DB. Issuer: %s, Subject: %s", certificate.getIssuer(), certificate.getSubject()));
 
         String errorMessage = String.format("SEC_UNKNOWN_CERTIFICATE | Certificate Issuer: %s, Subject: %s", certificate.getIssuer(), certificate.getSubject());

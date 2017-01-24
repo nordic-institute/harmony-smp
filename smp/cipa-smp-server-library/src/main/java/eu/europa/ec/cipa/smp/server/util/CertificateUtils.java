@@ -1,6 +1,6 @@
 package eu.europa.ec.cipa.smp.server.util;
 
-import eu.europa.ec.cipa.smp.server.exception.AuthenticationException;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.AuthenticationException;
 import eu.europa.ec.cipa.smp.server.security.CertificateDetails;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;

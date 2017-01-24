@@ -2,8 +2,8 @@ package eu.europa.ec.cipa.smp.server.services;
 
 
 import eu.europa.ec.cipa.smp.server.AbstractTest;
-import eu.europa.ec.cipa.smp.server.exception.CertificateNotFoundException;
-import eu.europa.ec.cipa.smp.server.exception.CertificateRevokedException;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.CertificateNotFoundException;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.CertificateRevokedException;
 import eu.europa.ec.cipa.smp.server.security.CertificateDetails;
 import eu.europa.ec.cipa.smp.server.util.CommonUtil;
 import org.apache.commons.lang3.time.DateUtils;
