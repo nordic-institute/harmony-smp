@@ -38,7 +38,6 @@ public class CertificateAuthenticationFilter implements ContainerRequestFilter {
     @Context
     private HttpServletRequest webRequest;
 
-    @Autowired
     private CustomAuthenticationProvider authenticationProvider;
 
     @Override
