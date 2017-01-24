@@ -29,6 +29,8 @@
         <jdbc.password>smp</jdbc.password>
         <target-database>MySQL</target-database>
         <jdbc.read-connections.max>10</jdbc.read-connections.max>
+        <javax.annotation.version>1.2-b02</javax.annotation.version>
+        <javax.ws.rs.version>2.0.1</javax.ws.rs.version>
     </properties>
 
     <dependencies>
@@ -140,12 +142,12 @@
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
-            <version>2.0.1</version>
+            <version>${javax.ws.rs.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
-            <version>1.2-b02</version>
+            <version>${javax.annotation.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
