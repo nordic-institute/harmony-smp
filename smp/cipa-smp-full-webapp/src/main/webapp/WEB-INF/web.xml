@@ -79,7 +79,7 @@
     <filter>
         <filter-name>RestFilter</filter-name>
         <filter-class>com.sun.jersey.spi.container.servlet.ServletContainer</filter-class>
-        <!-- Register resources and providers under my.package. -->
+        <!-- Register resources and providers -->
         <init-param>
             <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
             <param-value>eu.europa.ec.cipa.smp.server.security.CertificateAuthenticationFilter</param-value>
