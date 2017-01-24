@@ -241,7 +241,8 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
     public boolean saveServiceGroup(@Nonnull final ServiceGroup aServiceGroup,
                                  @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
-        final boolean[] result = new boolean[0];
+        // changed to Boolean because this variable needs to be updated inside a inner class
+        final Boolean[] result = new Boolean[1];
         JPAExecutionResult<?> ret;
         ret = doInTransaction(new Runnable() {
             public void run() {

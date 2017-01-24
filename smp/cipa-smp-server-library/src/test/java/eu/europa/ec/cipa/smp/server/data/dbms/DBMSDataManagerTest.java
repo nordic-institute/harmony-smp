@@ -208,6 +208,8 @@ public class DBMSDataManagerTest {
   public void testCreateServiceGroup () throws Throwable {
     m_aServiceGroup.getParticipantIdentifier ().setValue (PARTICIPANT_IDENTIFIER2);
 
+    s_aDataMgr.deleteServiceGroup(PARTY_ID, ADMIN_CREDENTIALS);
+
     boolean bSaveServiceGroup = s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
 
     final ParticipantIdentifierType aParticipantIdentifier2 = new ParticipantIdentifierType(PARTICIPANT_IDENTIFIER2, "iso6523-actorid-upis");
@@ -224,6 +226,8 @@ public class DBMSDataManagerTest {
     @Test
     public void testUpdateServiceByAdmin () throws Throwable {
         //given
+        s_aDataMgr.deleteServiceGroup(PARTY_ID, ADMIN_CREDENTIALS);
+
         ServiceGroup sg = new ServiceGroup();
         sg.setParticipantIdentifier(PARTY_ID);
         boolean bSaveServiceGroup = s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
@@ -363,6 +367,7 @@ public class DBMSDataManagerTest {
     @Test
     public void testUpdateServiceMetadataByAdmin () throws Throwable {
         // given
+        s_aDataMgr.deleteService(PARTY_ID, DOCTYPE_ID, ADMIN_CREDENTIALS);
         boolean bSaveService = s_aDataMgr.saveService(m_aServiceMetadata, m_sServiceMetadata, CREDENTIALS);
         String strMetadata = s_aDataMgr.getService(PARTY_ID, DOCTYPE_ID);
         ServiceMetadata metadata = ServiceMetadataConverter.unmarshal(strMetadata);
@@ -479,6 +484,7 @@ public class DBMSDataManagerTest {
       // # Save ServiceGroup #
       String participantId = PARTICIPANT_IDENTIFIER2 + "654987";
       m_aServiceGroup = createServiceGroup(participantId);
+      s_aDataMgr.deleteServiceGroup(PARTY_ID, ADMIN_CREDENTIALS);
       boolean bSaveServiceGroup = s_aDataMgr.saveServiceGroup(m_aServiceGroup, auth);
 
       // # Check ServiceGroup after save #
