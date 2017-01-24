@@ -17,28 +17,6 @@ import java.util.Locale;
  */
 public class CustomAuthenticationProviderTest extends AbstractTest {
 
-    @Before
-    public void before() throws Throwable {
-        createDBCertificated();
-    }
-
-    private static void createDBCertificated() throws Throwable {
-        String username = "CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD";
-        String password = "123ABCD";
-        DBUser aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, username);
-
-        if (aDBUser == null) {
-            aDBUser = new DBUser();
-            aDBUser.setUsername(username);
-            aDBUser.setPassword(password);
-            s_aDataMgr.getCurrentEntityManager().persist(aDBUser);
-        } else {
-            if (!aDBUser.getPassword().equals(password)) {
-                aDBUser.setPassword(password);
-                s_aDataMgr.getCurrentEntityManager().merge(aDBUser);
-            }
-        }
-    }
 
     @After
     public final void after() throws Throwable {
