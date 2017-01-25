@@ -406,7 +406,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     public boolean saveService(@Nonnull final ServiceMetadata aServiceMetadata,
                             @Nonnull final String sXmlContent,
                             @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable{
-        boolean result = true;
+        boolean newServiceCreated = true;
         final ParticipantIdentifierType aServiceGroupID = aServiceMetadata.getServiceInformation()
                 .getParticipantIdentifier();
         final DocumentIdentifier aDocTypeID = aServiceMetadata.getServiceInformation().getDocumentIdentifier();
@@ -416,7 +416,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
         // Delete an eventually contained previous service in a separate transaction
         if (_deleteService(aServiceGroupID, aDocTypeID) == EChange.CHANGED) {
-            result = false;
+            newServiceCreated = false;
         }
 
         // Create a new entry
@@ -444,7 +444,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         if (ret.hasThrowable()) {
             throw ret.getThrowable();
         }
-        return result;
+        return newServiceCreated;
     }
 
     @Nonnull
