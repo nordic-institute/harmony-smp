@@ -240,17 +240,15 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     }
 
     public boolean saveServiceGroup(@Nonnull final ServiceGroup aServiceGroup,
-                                 @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
-        // changed to Boolean because this variable needs to be updated inside a inner class
-        final Boolean[] result = new Boolean[1];
-        JPAExecutionResult<?> ret;
-        ret = doInTransaction(new Runnable() {
-            public void run() {
+                                    @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
+        JPAExecutionResult<Boolean> ret;
+        final EntityManager aEM = getEntityManager();
+        ret = doInTransaction(aEM, false, new Callable<Boolean>() {
+            public Boolean call() {
                 final DBUser aDBUser = _verifyUser(aCredentials);
                 final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(aServiceGroup.getParticipantIdentifier());
 
                 // Check if the passed service group ID is already in use
-                final EntityManager aEM = getEntityManager();
                 DBServiceGroup aDBServiceGroup = aEM.find(DBServiceGroup.class, aDBServiceGroupID);
 
                 if (aDBServiceGroup != null) {
@@ -263,7 +261,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                         aDBServiceGroup.setExtension(aServiceGroup.getExtensions().get(0));
                     }
                     aEM.merge(aDBServiceGroup);
-                    result[0] = false;
+                    return false;
                 } else {
                     // It's a new service group
                     m_aHook.create(aServiceGroup.getParticipantIdentifier());
@@ -279,14 +277,11 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                     final DBOwnershipID aDBOwnershipID = new DBOwnershipID(aCredentials.getUserName(), aServiceGroup.getParticipantIdentifier());
                     final DBOwnership aDBOwnership = new DBOwnership(aDBOwnershipID, aDBUser, aDBServiceGroup);
                     aEM.persist(aDBOwnership);
-                    result[0] = true;
+                    return true;
                 }
             }
         });
-        if (ret.hasThrowable()) {
-            throw ret.getThrowable();
-        }
-        return result[0];
+        return ret.getOrThrow();
     }
 
     public void deleteServiceGroup(@Nonnull final ParticipantIdentifierType aServiceGroupID,
