@@ -1,6 +1,7 @@
 package eu.europa.ec.cipa.smp.server.security;
 
 import eu.europa.ec.cipa.smp.server.services.IBlueCoatCertificateService;
+import eu.europa.ec.cipa.smp.server.util.CertificateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,15 +23,17 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        try {
-           if (authentication instanceof BlueCoatClientCertificateAuthentication) {
-                logger.debug("Authenticating using the decoded certificate in the http header");
-                authentication.setAuthenticated(blueCoatCertificateService.isBlueCoatClientCertificateValid((CertificateDetails) authentication.getCredentials()));
+        synchronized (CustomAuthenticationProvider.class) {
+            try {
+                if (authentication instanceof BlueCoatClientCertificateAuthentication) {
+                    logger.debug("Authenticating using the decoded certificate in the http header");
+                    authentication.setAuthenticated(blueCoatCertificateService.isBlueCoatClientCertificateValid((CertificateDetails) authentication.getCredentials()));
+                }
+            } catch (final Exception exception) {
+                throw new AuthenticationServiceException("Couldn't authenticate the principal " + authentication.getPrincipal(), exception);
             }
-        } catch (final Exception exception) {
-            throw new AuthenticationServiceException("Couldn't authenticate the principal " + authentication.getPrincipal(), exception);
+            return authentication;
         }
-        return authentication;
     }
 
     @Override

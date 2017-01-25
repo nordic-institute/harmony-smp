@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.Priority;
 import javax.servlet.http.HttpServletRequest;
@@ -27,7 +26,6 @@ import java.util.List;
 @Provider
 @PreMatching
 @Priority(value = Priorities.AUTHENTICATION)
-@Component(value = "requestAuthenticationFilter")
 public class RequestAuthenticationFilter implements ContainerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(RequestAuthenticationFilter.class);
 
@@ -38,6 +36,11 @@ public class RequestAuthenticationFilter implements ContainerRequestFilter {
     private HttpServletRequest webRequest;
 
     private CustomAuthenticationProvider authenticationProvider;
+
+    {
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
+        authenticationProvider = (CustomAuthenticationProvider) context.getBean("customAuthenticationProvider");
+    }
 
     @Override
     public ContainerRequest filter(ContainerRequest containerRequest) {
@@ -75,8 +78,6 @@ public class RequestAuthenticationFilter implements ContainerRequestFilter {
         logger.info(String.format("RemoteHost: %s, RequestURL: %s", httpRequest.getRemoteHost(), httpRequest.getRequestURL().toString()));
         Authentication authenticationResult;
         try {
-            ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
-            authenticationProvider = (CustomAuthenticationProvider) context.getBean("customAuthenticationProvider");
             authenticationResult = authenticationProvider.authenticate(authentication);
         } catch (Exception exc) {
             logger.error(exc.getMessage(), exc);
