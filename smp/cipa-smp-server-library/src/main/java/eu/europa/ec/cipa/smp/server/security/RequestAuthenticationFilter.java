@@ -30,7 +30,6 @@ public class RequestAuthenticationFilter implements ContainerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(RequestAuthenticationFilter.class);
 
     private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
-    private static final String AUTHORIZATION_HEADER_KEY = "Authorization";
 
     @Context
     private HttpServletRequest webRequest;
