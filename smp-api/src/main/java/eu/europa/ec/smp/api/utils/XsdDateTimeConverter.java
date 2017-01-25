@@ -1,4 +1,4 @@
-package eu.europa.ec.smp.api;
+package eu.europa.ec.smp.api.utils;
 
 /**
  * Created by migueti on 23/01/2017.

@@ -1,5 +1,6 @@
 package eu.europa.ec.smp.api;
 
+import eu.europa.ec.smp.api.exceptions.XsdInvalidException;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
@@ -14,7 +15,7 @@ import java.net.URL;
 /**
  * Created by migueti on 19/01/2017.
  */
-public class ServiceMetadataValidator {
+public class ServiceMetadataValidator implements IServiceMetadataValidator {
 
     public boolean validateXSD(String xmlBody) throws XsdInvalidException {
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -25,7 +26,7 @@ public class ServiceMetadataValidator {
             validator.validate(new StreamSource(new StringReader(xmlBody)));
             return true;
         } catch (SAXException | IOException e) {
-            throw new XsdInvalidException(e.getMessage());
+            throw new XsdInvalidException(e.getMessage(), e);
         }
     }
 }

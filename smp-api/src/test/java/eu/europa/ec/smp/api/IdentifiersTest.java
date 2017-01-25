@@ -1,5 +1,6 @@
 package eu.europa.ec.smp.api;
 
+import eu.europa.ec.smp.api.exceptions.MalformedIdentifierException;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Test;

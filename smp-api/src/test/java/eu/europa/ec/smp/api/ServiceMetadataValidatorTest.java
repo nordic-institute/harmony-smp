@@ -1,5 +1,6 @@
 package eu.europa.ec.smp.api;
 
+import eu.europa.ec.smp.api.exceptions.XsdInvalidException;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

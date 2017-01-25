@@ -1,5 +1,6 @@
-package eu.europa.ec.smp.api;
+package eu.europa.ec.smp.api.utils;
 
+import eu.europa.ec.smp.api.utils.XsdDateTimeConverter;
 import org.junit.Test;
 
 import java.util.Calendar;

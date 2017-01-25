@@ -1,5 +1,6 @@
 package eu.europa.ec.smp.api;
 
+import eu.europa.ec.smp.api.exceptions.MalformedIdentifierException;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessIdentifier;

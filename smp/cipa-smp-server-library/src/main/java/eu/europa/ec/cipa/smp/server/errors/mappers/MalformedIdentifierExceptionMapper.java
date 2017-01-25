@@ -2,7 +2,7 @@ package eu.europa.ec.cipa.smp.server.errors.mappers;
 
 import ec.services.smp._1.ErrorResponse;
 import eu.europa.ec.cipa.smp.server.errors.ErrorResponseBuilder;
-import eu.europa.ec.smp.api.MalformedIdentifierException;
+import eu.europa.ec.smp.api.exceptions.MalformedIdentifierException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

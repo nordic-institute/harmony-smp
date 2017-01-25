@@ -1,4 +1,4 @@
-package eu.europa.ec.smp.api;
+package eu.europa.ec.smp.api.exceptions;
 
 import org.junit.Test;
 
