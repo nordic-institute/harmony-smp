@@ -239,16 +239,16 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return ret.getOrThrow();
     }
 
-    public void saveServiceGroup(@Nonnull final ServiceGroup aServiceGroup,
-                                 @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
-        JPAExecutionResult<?> ret;
-        ret = doInTransaction(new Runnable() {
-            public void run() {
+    public boolean saveServiceGroup(@Nonnull final ServiceGroup aServiceGroup,
+                                    @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
+        JPAExecutionResult<Boolean> ret;
+        final EntityManager aEM = getEntityManager();
+        ret = doInTransaction(aEM, false, new Callable<Boolean>() {
+            public Boolean call() {
                 final DBUser aDBUser = _verifyUser(aCredentials);
                 final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(aServiceGroup.getParticipantIdentifier());
 
                 // Check if the passed service group ID is already in use
-                final EntityManager aEM = getEntityManager();
                 DBServiceGroup aDBServiceGroup = aEM.find(DBServiceGroup.class, aDBServiceGroupID);
 
                 if (aDBServiceGroup != null) {
@@ -261,6 +261,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                         aDBServiceGroup.setExtension(aServiceGroup.getExtensions().get(0));
                     }
                     aEM.merge(aDBServiceGroup);
+                    return false;
                 } else {
                     // It's a new service group
                     m_aHook.create(aServiceGroup.getParticipantIdentifier());
@@ -276,11 +277,11 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                     final DBOwnershipID aDBOwnershipID = new DBOwnershipID(aCredentials.getUserName(), aServiceGroup.getParticipantIdentifier());
                     final DBOwnership aDBOwnership = new DBOwnership(aDBOwnershipID, aDBUser, aDBServiceGroup);
                     aEM.persist(aDBOwnership);
+                    return true;
                 }
             }
         });
-        if (ret.hasThrowable())
-            throw ret.getThrowable();
+        return ret.getOrThrow();
     }
 
     public void deleteServiceGroup(@Nonnull final ParticipantIdentifierType aServiceGroupID,
@@ -402,9 +403,10 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return ret.getOrThrow();
     }
 
-    public void saveService(@Nonnull final ServiceMetadata aServiceMetadata,
+    public boolean saveService(@Nonnull final ServiceMetadata aServiceMetadata,
                             @Nonnull final String sXmlContent,
                             @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable{
+        boolean newServiceCreated = true;
         final ParticipantIdentifierType aServiceGroupID = aServiceMetadata.getServiceInformation()
                 .getParticipantIdentifier();
         final DocumentIdentifier aDocTypeID = aServiceMetadata.getServiceInformation().getDocumentIdentifier();
@@ -413,7 +415,9 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         _verifyOwnership(aServiceGroupID, aCredentials);
 
         // Delete an eventually contained previous service in a separate transaction
-        _deleteService(aServiceGroupID, aDocTypeID);
+        if (_deleteService(aServiceGroupID, aDocTypeID) == EChange.CHANGED) {
+            newServiceCreated = false;
+        }
 
         // Create a new entry
         JPAExecutionResult<?> ret;
@@ -437,8 +441,10 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 aEM.persist(aDBServiceMetadata);
             }
         });
-        if (ret.hasThrowable())
+        if (ret.hasThrowable()) {
             throw ret.getThrowable();
+        }
+        return newServiceCreated;
     }
 
     @Nonnull

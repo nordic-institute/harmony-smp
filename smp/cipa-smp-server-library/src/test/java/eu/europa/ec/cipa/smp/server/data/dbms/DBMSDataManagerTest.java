@@ -208,10 +208,13 @@ public class DBMSDataManagerTest {
   public void testCreateServiceGroup () throws Throwable {
     m_aServiceGroup.getParticipantIdentifier ().setValue (PARTICIPANT_IDENTIFIER2);
 
-    s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
+    s_aDataMgr.deleteServiceGroup(PARTY_ID, ADMIN_CREDENTIALS);
+
+    boolean bNewServiceGroupCreated = s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
 
     final ParticipantIdentifierType aParticipantIdentifier2 = new ParticipantIdentifierType(PARTICIPANT_IDENTIFIER2, "iso6523-actorid-upis");
     final ServiceGroup result = s_aDataMgr.getServiceGroup (aParticipantIdentifier2);
+    assertTrue(bNewServiceGroupCreated);
     assertNotNull (result);
 
     assertNull (result.getServiceMetadataReferenceCollection ());
@@ -223,9 +226,11 @@ public class DBMSDataManagerTest {
     @Test
     public void testUpdateServiceByAdmin () throws Throwable {
         //given
+        s_aDataMgr.deleteServiceGroup(PARTY_ID, ADMIN_CREDENTIALS);
+
         ServiceGroup sg = new ServiceGroup();
         sg.setParticipantIdentifier(PARTY_ID);
-        s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
+        boolean bNewServiceGroupCreated = s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
         ServiceGroup serviceGroup = s_aDataMgr.getServiceGroup(PARTY_ID);
         assertNull(serviceGroup.getExtensions().get(0));
 
@@ -233,9 +238,11 @@ public class DBMSDataManagerTest {
         ExtensionType extension = new ExtensionType();
         extension.setExtensionID("the id");
         sg.getExtensions().add(0, extension);
-        s_aDataMgr.saveServiceGroup(sg, ADMIN_CREDENTIALS);
+        boolean bNewServiceGroupUpdated = s_aDataMgr.saveServiceGroup(sg, ADMIN_CREDENTIALS);
 
         //then
+        assertTrue(bNewServiceGroupCreated);
+        assertFalse(bNewServiceGroupUpdated);
         ServiceGroup newGroup = s_aDataMgr.getServiceGroup(PARTY_ID);
         assertEquals(1, newGroup.getExtensions().size());
         assertEquals("the id", newGroup.getExtensions().get(0).getExtensionID());
@@ -319,7 +326,7 @@ public class DBMSDataManagerTest {
   @Test
   public void testCreateServiceMetadata () throws Throwable {
     // Save to DB
-    s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, CREDENTIALS);
+    boolean bNewServiceMetadataCreated = s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, CREDENTIALS);
 
     // Retrieve from DB
     final String docDBServiceMetadata = s_aDataMgr.getService (SERVICEGROUP_ID, DOCTYPE_ID);
@@ -335,6 +342,7 @@ public class DBMSDataManagerTest {
     final ProcessType aDBProcess = aDBServiceMetadata.getServiceInformation ().getProcessList ().getProcesses().get (0);
     final EndpointType aDBEndpoint = aDBProcess.getServiceEndpointList ().getEndpoints().get (0);
 
+    assertTrue(bNewServiceMetadataCreated);
     assertTrue (IdentifierUtils.areIdentifiersEqual (m_aServiceMetadata.getServiceInformation ()
                                                                        .getDocumentIdentifier (),
                                                      aDBServiceMetadata.getServiceInformation ()
@@ -359,7 +367,8 @@ public class DBMSDataManagerTest {
     @Test
     public void testUpdateServiceMetadataByAdmin () throws Throwable {
         // given
-        s_aDataMgr.saveService(m_aServiceMetadata, m_sServiceMetadata, CREDENTIALS);
+        s_aDataMgr.deleteService(PARTY_ID, DOCTYPE_ID, ADMIN_CREDENTIALS);
+        boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(m_aServiceMetadata, m_sServiceMetadata, CREDENTIALS);
         String strMetadata = s_aDataMgr.getService(PARTY_ID, DOCTYPE_ID);
         ServiceMetadata metadata = ServiceMetadataConverter.unmarshal(strMetadata);
         EndpointType endpoint = metadata.getServiceInformation().getProcessList().getProcesses().get(0).getServiceEndpointList().getEndpoints().get(0);
@@ -367,9 +376,11 @@ public class DBMSDataManagerTest {
 
         //when
         m_sServiceMetadata = m_sServiceMetadata.replaceAll(DESCRIPTION, DESCRIPTION_2);
-        s_aDataMgr.saveService(m_aServiceMetadata, m_sServiceMetadata, ADMIN_CREDENTIALS );
+        boolean bNewServiceMetadataUpdated = s_aDataMgr.saveService(m_aServiceMetadata, m_sServiceMetadata, ADMIN_CREDENTIALS );
 
         //then
+        assertTrue(bNewServiceMetadataCreated);
+        assertFalse(bNewServiceMetadataUpdated);
         String strNewMetadata = s_aDataMgr.getService(PARTY_ID, DOCTYPE_ID);
         ServiceMetadata newMetadata = ServiceMetadataConverter.unmarshal(strNewMetadata);
         EndpointType newEndpoint = newMetadata.getServiceInformation().getProcessList().getProcesses().get(0).getServiceEndpointList().getEndpoints().get(0);
@@ -379,12 +390,13 @@ public class DBMSDataManagerTest {
     @Test
     public void testDeleteServiceMetadataByAdmin () throws Throwable {
         // given
-        s_aDataMgr.saveService(m_aServiceMetadata, m_sServiceMetadata, CREDENTIALS);
+        boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(m_aServiceMetadata, m_sServiceMetadata, CREDENTIALS);
 
         //when
         s_aDataMgr.deleteService(PARTY_ID, DOCTYPE_ID, ADMIN_CREDENTIALS);
 
         //then
+        assertTrue(bNewServiceMetadataCreated);
         assertNull(s_aDataMgr.getService(PARTY_ID, DOCTYPE_ID));
     }
 
@@ -472,7 +484,8 @@ public class DBMSDataManagerTest {
       // # Save ServiceGroup #
       String participantId = PARTICIPANT_IDENTIFIER2 + "654987";
       m_aServiceGroup = createServiceGroup(participantId);
-      s_aDataMgr.saveServiceGroup(m_aServiceGroup, auth);
+      s_aDataMgr.deleteServiceGroup(PARTY_ID, ADMIN_CREDENTIALS);
+      boolean bNewServiceGroupCreated = s_aDataMgr.saveServiceGroup(m_aServiceGroup, auth);
 
       // # Check ServiceGroup after save #
       assertNotNull(result);
@@ -482,6 +495,7 @@ public class DBMSDataManagerTest {
               result.getParticipantIdentifier().getValue()));
       // # Check Ownership #
       assertNotNull( s_aDataMgr.getCurrentEntityManager().find(DBOwnership.class, new DBOwnershipID(auth.getUserName(), m_aServiceGroup.getParticipantIdentifier())));
+      assertTrue(bNewServiceGroupCreated);
   }
 
   @Test(expected = UnauthorizedException.class)
