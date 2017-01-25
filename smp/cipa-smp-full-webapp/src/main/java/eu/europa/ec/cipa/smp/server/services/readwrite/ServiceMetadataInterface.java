@@ -107,11 +107,11 @@ public final class ServiceMetadataInterface {
 
     // Main save
     final IDataManager aDataManager = DataManagerFactory.getInstance ();
-    boolean result = aDataManager.saveService (aServiceMetadata, body, RequestHelper.getAuth (headers));
+    boolean bServiceCreated = aDataManager.saveService (aServiceMetadata, body, RequestHelper.getAuth (headers));
 
     s_aLogger.info (String.format("Finished saveServiceRegistration(%s,%s,%s)", sServiceGroupID, sDocumentTypeID, aServiceMetadata));
 
-    return result ? Response.created(this.uriInfo.getRequestUri()).build() : Response.ok ().build ();
+    return bServiceCreated ? Response.created(uriInfo.getRequestUri()).build() : Response.ok ().build ();
   }
 
   private void validateErrors(final String sServiceGroupID,

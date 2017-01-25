@@ -99,11 +99,11 @@ public final class ServiceGroupInterface {
     }
 
     final IDataManager aDataManager = DataManagerFactory.getInstance ();
-    boolean result = aDataManager.saveServiceGroup(aServiceGroup, RequestHelper.getAuth(headers));
+    boolean bServiceGroupCreated = aDataManager.saveServiceGroup(aServiceGroup, RequestHelper.getAuth(headers));
 
     s_aLogger.info (String.format("Finished saveServiceGroup(%s,%s)", sServiceGroupID, aServiceGroup));
 
-    return result ? Response.created(this.uriInfo.getRequestUri()).build() : Response.ok ().build ();
+    return bServiceGroupCreated ? Response.created(uriInfo.getRequestUri()).build() : Response.ok ().build ();
   }
 
   @DELETE
