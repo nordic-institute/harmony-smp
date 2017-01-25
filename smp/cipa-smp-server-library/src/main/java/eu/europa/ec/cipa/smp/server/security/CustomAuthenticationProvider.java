@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  */
 @Component(value = "customAuthenticationProvider")
 public class CustomAuthenticationProvider implements AuthenticationProvider {
-    private static final Logger logger = LoggerFactory.getLogger(CertificateAuthenticationFilter.class);
+    private static final Logger logger = LoggerFactory.getLogger(CustomAuthenticationProvider.class);
 
     @Autowired
     private IBlueCoatCertificateService blueCoatCertificateService;

@@ -82,7 +82,7 @@
         <!-- Register resources and providers -->
         <init-param>
             <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-            <param-value>eu.europa.ec.cipa.smp.server.security.CertificateAuthenticationFilter</param-value>
+            <param-value>eu.europa.ec.cipa.smp.server.security.RequestAuthenticationFilter</param-value>
         </init-param>
         <init-param>
             <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>

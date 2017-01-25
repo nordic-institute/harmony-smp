@@ -7,7 +7,6 @@ import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
 import org.apache.commons.lang.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,9 +27,9 @@ import java.util.List;
 @Provider
 @PreMatching
 @Priority(value = Priorities.AUTHENTICATION)
-@Component(value = "certificateAuthenticationFilter")
-public class CertificateAuthenticationFilter implements ContainerRequestFilter {
-    private static final Logger logger = LoggerFactory.getLogger(CertificateAuthenticationFilter.class);
+@Component(value = "requestAuthenticationFilter")
+public class RequestAuthenticationFilter implements ContainerRequestFilter {
+    private static final Logger logger = LoggerFactory.getLogger(RequestAuthenticationFilter.class);
 
     private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
     private static final String AUTHORIZATION_HEADER_KEY = "Authorization";
