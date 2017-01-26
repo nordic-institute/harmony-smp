@@ -2,7 +2,7 @@
 <ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xsi:schemaLocation="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
-    <Fail></Fail>
+    <ElementAdded></ElementAdded>
     <Redirect href="">
         <CertificateUID/>
     </Redirect>

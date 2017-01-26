@@ -46,7 +46,7 @@ import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.cipa.smp.server.util.RequestHelper;
 import eu.europa.ec.smp.api.Identifiers;
-import eu.europa.ec.smp.api.BdxSmpOasisValidator;
+import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.EndpointType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
@@ -110,7 +110,6 @@ public final class ServiceMetadataInterface {
 
     s_aLogger.info (String.format("PUT /%s/services/%s ==> %s", sServiceGroupID, sDocumentTypeID, body));
 
-    //BdxSmpOasisValidator bdxSmpOasisValidator = new BdxSmpOasisValidator();
     BdxSmpOasisValidator.validateXSD(body);
 
     validateErrors(sServiceGroupID, sDocumentTypeID, body);
