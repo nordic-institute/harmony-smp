@@ -3,12 +3,11 @@ package eu.europa.ec.smp.api.validators;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
+import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URL;
 
 import static org.junit.Assert.assertEquals;
@@ -19,6 +18,8 @@ import static org.junit.Assert.fail;
  */
 @RunWith(JUnitParamsRunner.class)
 public class BdxSmpOasisValidatorTest {
+
+    private static final String UTF_8 = "UTF-8";
 
     private static Object[] positiveCases() {
         return new Object[][] {
@@ -66,15 +67,8 @@ public class BdxSmpOasisValidatorTest {
         fail();
     }
 
-    public static String loadXMLFile(String path) throws IOException {
+    public String loadXMLFile(String path) throws IOException {
         URL fileUrl = BdxSmpOasisValidatorTest.class.getResource("/XMLValidation/"+path);
-        BufferedReader in = new BufferedReader(new InputStreamReader(fileUrl.openStream()));
-        StringBuilder result = new StringBuilder();
-        String line;
-        while((line = in.readLine()) != null) {
-            result.append(line);
-        }
-        in.close();
-        return result.toString();
+        return IOUtils.toString(fileUrl.openStream(), UTF_8);
     }
 }
