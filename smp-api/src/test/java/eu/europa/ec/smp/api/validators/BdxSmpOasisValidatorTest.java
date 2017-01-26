@@ -21,15 +21,8 @@ public class BdxSmpOasisValidatorTest {
 
     private static final String UTF_8 = "UTF-8";
 
-    private static Object[] positiveCases() {
-        return new Object[][] {
-                {"ServiceMetadata_OK.xml"},
-                {"ServiceGroup_OK.xml"}
-        };
-    }
-
     @Test
-    @Parameters(method = "positiveCases")
+    @Parameters({"ServiceMetadata_OK.xml","ServiceGroup_OK.xml"})
     public void testValidatePositive(String xmlFilename) throws IOException, XmlInvalidAgainstSchemaException {
         // given
         String xmlBody = loadXMLFile(xmlFilename);

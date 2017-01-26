@@ -5,10 +5,6 @@ package eu.europa.ec.smp.api.exceptions;
  */
 public class XmlInvalidAgainstSchemaException extends Exception {
 
-    public XmlInvalidAgainstSchemaException(String message) {
-        super(message);
-    }
-
     public XmlInvalidAgainstSchemaException(String message, Exception e) {
         super(message, e);
     }

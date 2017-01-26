@@ -17,12 +17,28 @@ import java.net.URL;
  */
 public class BdxSmpOasisValidator {
 
-    public static void validateXSD(String xmlBody) throws XmlInvalidAgainstSchemaException {
-        SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+    private static final SchemaFactory schemaFactory;
+    private static final URL xsdFilePath;
+    private static final Schema schema;
+    private static final Validator validator;
+
+    static {
+        schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         try {
-            URL xsdFilePath = BdxSmpOasisValidator.class.getResource("/bdx-smp-201605.xsd");
-            Schema schema = schemaFactory.newSchema(xsdFilePath);
-            Validator validator = schema.newValidator();
+            xsdFilePath = BdxSmpOasisValidator.class.getResource("/bdx-smp-201605.xsd");
+            schema = schemaFactory.newSchema(xsdFilePath);
+            validator = schema.newValidator();
+        } catch (SAXException e) {
+            try {
+                throw new XmlInvalidAgainstSchemaException(e.getMessage(), e);
+            } catch (XmlInvalidAgainstSchemaException xmlInvalidExc) {
+                throw new RuntimeException(xmlInvalidExc);
+            }
+        }
+    }
+
+    public static void validateXSD(String xmlBody) throws XmlInvalidAgainstSchemaException {
+        try {
             validator.validate(new StreamSource(new StringReader(xmlBody)));
         } catch (SAXException | IOException e) {
             throw new XmlInvalidAgainstSchemaException(e.getMessage(), e);
