@@ -37,6 +37,7 @@
  */
 package eu.europa.ec.cipa.smp.server.services.readwrite;
 
+import eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.BadRequestException;
@@ -44,6 +45,7 @@ import eu.europa.ec.cipa.smp.server.services.BaseServiceGroupInterfaceImpl;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.cipa.smp.server.util.RequestHelper;
 import eu.europa.ec.smp.api.Identifiers;
+import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.slf4j.Logger;
@@ -89,8 +91,12 @@ public final class ServiceGroupInterface {
 
   @PUT
   public Response saveServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupID,
-                                    final ServiceGroup aServiceGroup) throws Throwable{
-    s_aLogger.info (String.format("PUT /%s ==> %s", sServiceGroupID, aServiceGroup));
+                                    final String body) throws Throwable{
+    s_aLogger.info (String.format("PUT /%s ==> %s", sServiceGroupID, body));
+
+    BdxSmpOasisValidator.validateXSD(body);
+
+    final ServiceGroup aServiceGroup = ServiceGroupConverter.unmarshal(body);
 
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
     if (!IdentifierUtils.areIdentifiersEqual (aServiceGroupID, aServiceGroup.getParticipantIdentifier ())) {
