@@ -48,23 +48,26 @@ public class RequestAuthenticationFilter implements ContainerRequestFilter {
             logger.info("user: no-user-yet-logged");
             logger.info("sessionId: " + session.getId());
 
-            String baseURIScheme = containerRequest.getBaseUri().getScheme().toLowerCase();
-            switch (baseURIScheme) {
-                case "http":
-                    List<String> certHeaderValue = containerRequest.getRequestHeader(CLIENT_CERT_HEADER_KEY);
-                    if (certHeaderValue != null && !certHeaderValue.isEmpty()) {
-                        Authentication authentication = new BlueCoatClientCertificateAuthentication(certHeaderValue.get(0));
-                        authenticate(authentication, webRequest);
-                    } else {
-                        //TODO other authentication ways
-                        throw new AuthenticationException("There is no client certificate in the request");
-                    }
-                    break;
-                case "https":
-                    //TODO HTTPS protocol not implemented yet
-                    throw new NotImplementedException("HTTPS protocol not implemented yet");
-                default:
-                    throw new AuthenticationException("The request must use HTTP or HTTPS protocol");
+            boolean isGet = containerRequest.getMethod().equalsIgnoreCase("get");
+            if (!isGet) {
+                String baseURIScheme = containerRequest.getBaseUri().getScheme().toLowerCase();
+                switch (baseURIScheme) {
+                    case "http":
+                        List<String> certHeaderValue = containerRequest.getRequestHeader(CLIENT_CERT_HEADER_KEY);
+                        if (certHeaderValue != null && !certHeaderValue.isEmpty()) {
+                            Authentication authentication = new BlueCoatClientCertificateAuthentication(certHeaderValue.get(0));
+                            authenticate(authentication, webRequest);
+                        } else {
+                            //TODO other authentication ways
+                            throw new AuthenticationException("There is no client certificate in the request");
+                        }
+                        break;
+                    case "https":
+                        //TODO HTTPS protocol not implemented yet
+                        throw new NotImplementedException("HTTPS protocol not implemented yet");
+                    default:
+                        throw new AuthenticationException("The request must use HTTP or HTTPS protocol");
+                }
             }
             return containerRequest;
         } catch (Exception e) {
