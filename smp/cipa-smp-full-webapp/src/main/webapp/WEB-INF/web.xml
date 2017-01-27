@@ -42,7 +42,39 @@
          xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          id="SMP_WebApp" version="2.5">
+
     <display-name>PEPPOL SMP REST service (read &amp; write)</display-name>
+
+
+    <!--
+        - Location of the XML file that defines the root application context
+        - Applied by ContextLoaderListener.
+    -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/spring-security.xml</param-value>
+    </context-param>
+
+    <filter>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>springSecurityFilterChain</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!--
+      - Loads the root application context of this web app at startup.
+      - The application context is then available via
+      - WebApplicationContextUtils.getWebApplicationContext(servletContext).
+    -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
+
+
 
     <listener>
         <listener-class>eu.europa.ec.cipa.smp.server.util.LogStartupListener</listener-class>
@@ -106,7 +138,7 @@
         <param-value>false</param-value>
     </context-param>
 
-    <!-- To be activated only if deployed in the EC's data centre -->
+    <!-- To be activated only if deployed in the EC's data centre
     <security-constraint>
         <web-resource-collection>
             <web-resource-name>cipa-smp-full-webapp</web-resource-name>
@@ -126,4 +158,5 @@
         <auth-method>BASIC</auth-method>
         <realm-name>myrealm</realm-name>
     </login-config>
+    -->
 </web-app>

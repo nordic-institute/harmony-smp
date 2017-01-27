@@ -1,7 +1,18 @@
 <?xml version="1.0" encoding="windows-1252"?>
 <weblogic-web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.bea.com/ns/weblogic/weblogic-web-app http://www.bea.com/ns/weblogic/weblogic-web-app/1.0/weblogic-web-app.xsd" xmlns="http://www.bea.com/ns/weblogic/weblogic-web-app">
+	<!--
 	<security-role-assignment>
 		<role-name>DIGIT_CIPA_ADM</role-name>
 		<principal-name>DIGIT_CIPA_ADM</principal-name>
 	</security-role-assignment>
+	-->
+    <container-descriptor>
+        <prefer-application-packages>
+            <package-name>org.slf4j.*</package-name>
+            <package-name>org.apache.commons.*</package-name>
+        </prefer-application-packages>
+        <prefer-application-resources>
+            <resource-name>org/slf4j/impl/StaticLoggerBinder.class</resource-name>
+        </prefer-application-resources>
+    </container-descriptor>
 </weblogic-web-app>

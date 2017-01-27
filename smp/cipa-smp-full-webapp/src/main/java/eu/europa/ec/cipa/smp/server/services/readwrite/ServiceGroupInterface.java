@@ -40,6 +40,7 @@ package eu.europa.ec.cipa.smp.server.services.readwrite;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.BadRequestException;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceGroupInterfaceImpl;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.cipa.smp.server.util.RequestHelper;
@@ -48,20 +49,16 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 
 import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.WRONG_FIELD;
+import static eu.europa.ec.cipa.smp.server.security.UserRole.ROLE_SMP_ADMIN;
 
 /**
  * This class implements the REST interface for getting ServiceGroup's. PUT and
@@ -91,6 +88,7 @@ public final class ServiceGroupInterface {
   public Response saveServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupID,
                                     final ServiceGroup aServiceGroup) throws Throwable{
     s_aLogger.info (String.format("PUT /%s ==> %s", sServiceGroupID, aServiceGroup));
+    verifySMPAdminCredentials();
 
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
     if (!IdentifierUtils.areIdentifiersEqual (aServiceGroupID, aServiceGroup.getParticipantIdentifier ())) {
@@ -109,6 +107,7 @@ public final class ServiceGroupInterface {
   @DELETE
   public Response deleteServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupID) throws Throwable {
     s_aLogger.info ("DELETE /" + sServiceGroupID);
+    verifySMPAdminCredentials();
 
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
 
@@ -119,4 +118,21 @@ public final class ServiceGroupInterface {
 
     return Response.ok ().build ();
   }
+
+  //TODO: Use @Secured annotation instead of this garbage after the application is migrated to Spring
+  @Deprecated
+  private void verifySMPAdminCredentials() {
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if (auth == null || auth instanceof AnonymousAuthenticationToken) {
+      throw new UnauthorizedException("User is not authenticated");
+    }
+    boolean isSmpAdin = false;
+    for (GrantedAuthority authority : auth.getAuthorities()) {
+      isSmpAdin |= ROLE_SMP_ADMIN.name().equals(authority.getAuthority());
+    }
+    if (!isSmpAdin) {
+      throw new UnauthorizedException("Authenticated user does not have 'SMP Admin' permission.");
+    }
+  }
+
 }

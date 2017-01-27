@@ -45,7 +45,9 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<slf4j.version>1.7.10</slf4j.version>
-		<spring.version>4.0.1.RELEASE</spring.version>
+		<!--<spring.version>4.0.1.RELEASE</spring.version>-->
+		<spring.version>4.3.5.RELEASE</spring.version>
+		<spring.security.version>4.2.1.RELEASE</spring.security.version>
 		<cxf.version>3.1.1</cxf.version>
 		<cxf.security.version>3.1.1</cxf.security.version>
 		<build.helper.maven.version>1.9.1</build.helper.maven.version>
@@ -241,19 +243,24 @@
 				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-jdbc</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-core</artifactId>
-				<version>${spring.version}</version>
+				<version>${spring.security.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-web</artifactId>
-				<version>${spring.version}</version>
+				<version>${spring.security.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-config</artifactId>
-				<version>${spring.version}</version>
+				<version>${spring.security.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
