@@ -31,9 +31,11 @@
 
     <!-- Spring Security -->
 
+    <b:bean id="jerseyBasicAuthEntryPoint" class="eu.europa.ec.cipa.smp.server.errors.SpringSecurityBasicAuthenticationEntryPoint"/>
+
     <http>
         <csrf disabled="true"/>
-        <http-basic/>
+        <http-basic entry-point-ref="jerseyBasicAuthEntryPoint"/>
         <anonymous granted-authority="ROLE_ANONYMOUS"/>
     </http>
 
