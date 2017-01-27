@@ -62,9 +62,9 @@ public class AbstractTest {
     }
 
     private static void removeDBUser() throws Throwable {
-        String[][] usernames = new String[][]{{"CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", "123ABCD"}, {"CN=EHEALTH_SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", "123ABCD"}};
+        String[]usernames = new String[]{"CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD","CN=EHEALTH_SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD"};
         for (int i = 0; i < usernames.length; i++) {
-            DBUser aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, usernames[i][0]);
+            DBUser aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, usernames[i]);
             if (aDBUser != null) {
                 s_aDataMgr.getCurrentEntityManager().remove(aDBUser);
             }
