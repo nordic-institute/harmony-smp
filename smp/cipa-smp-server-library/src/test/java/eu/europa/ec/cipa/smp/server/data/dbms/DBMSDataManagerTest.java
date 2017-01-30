@@ -42,6 +42,7 @@ import com.helger.commons.scopes.mock.ScopeTestRule;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 
 import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
+import eu.europa.ec.cipa.smp.server.AbstractTest;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
@@ -70,7 +71,7 @@ import static org.junit.Assert.*;
 // @Ignore
 // ("Cannot be enabled by default, because it would fail without the correct configuration")
 @DevelopersNote ("You need to adjust your local config.properties file to run this test")
-public class DBMSDataManagerTest {
+public class DBMSDataManagerTest extends AbstractTest {
     private static final String PARTICIPANT_IDENTIFIER_SCHEME = CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME;
   private static final String DOCUMENT_SCHEME = CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME;
   private static final String PROCESS_SCHEME = CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME;
@@ -103,24 +104,6 @@ public class DBMSDataManagerTest {
     private static final ParticipantIdentifierType SERVICEGROUP_ID = PARTY_ID;
     private static final DocumentIdentifier DOCTYPE_ID = new DocumentIdentifier(TEST_DOCTYPE_ID, DOCUMENT_SCHEME);
   private static final BasicAuthClientCredentials CREDENTIALS = new BasicAuthClientCredentials (USERNAME, PASSWORD);
-
-
-    private static DBMSDataManager s_aDataMgr;
-
-  private static final class SMPTestRule extends ScopeTestRule {
-    @Override
-    public void before () {
-      super.before ();
-      if (s_aDataMgr == null) {
-        // Do it only once :)
-        // SMPEntityManagerFactory.getInstance ();
-        s_aDataMgr = new DBMSDataManager (new DoNothingRegistrationHook ());
-      }
-    }
-  }
-
-  @ClassRule
-  public static TestRule s_aTestRule = new SMPTestRule ();
 
   private ServiceGroup m_aServiceGroup;
   private ServiceMetadata m_aServiceMetadata;
