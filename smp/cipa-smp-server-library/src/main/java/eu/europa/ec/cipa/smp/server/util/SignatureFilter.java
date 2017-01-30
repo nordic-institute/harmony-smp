@@ -41,6 +41,8 @@ import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Priority;
+import javax.ws.rs.Priorities;
 import javax.ws.rs.core.Response.Status;
 
 import org.slf4j.Logger;
@@ -63,6 +65,7 @@ import eu.europa.ec.cipa.peppol.utils.ConfigFile;
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
+@Priority(value = 2000)
 public final class SignatureFilter implements ContainerResponseFilter {
   public static final String CONFIG_XMLDSIG_KEYSTORE_CLASSPATH = "xmldsig.keystore.classpath";
   public static final String CONFIG_XMLDSIG_KEYSTORE_PASSWORD = "xmldsig.keystore.password";

@@ -44,6 +44,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 
+import eu.europa.ec.cipa.smp.server.data.dbms.model.DBUser;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
@@ -198,4 +201,10 @@ public interface IDataManager {
    * Creates Entity Manager
    **/
   EntityManager getCurrentEntityManager();
+
+
+  /**
+   * Checks if user exists in the database and if password matches
+   **/
+  DBUser _verifyUser(@Nonnull final BasicAuthClientCredentials aCredentials) throws UnknownUserException, UnauthorizedException;
 }
