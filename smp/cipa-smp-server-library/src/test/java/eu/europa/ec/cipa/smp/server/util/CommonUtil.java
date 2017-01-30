@@ -59,10 +59,10 @@ public class CommonUtil {
     }
 
     public static String createHeaderCertificateForBlueCoat() throws Exception {
-        return createHeaderCertificateForBlueCoat(null);
+        return createHeaderCertificateForBlueCoat(null,false);
     }
 
-    public static String createHeaderCertificateForBlueCoat(String tSubject) throws Exception {
+    public static String createHeaderCertificateForBlueCoat(String tSubject, boolean isPolicyParamIncluded) throws Exception {
         String serial = "123ABCD";
         // different order for the issuer certificate with extra spaces
         String issuer = "CN=PEPPOL SERVICE METADATA PUBLISHER TEST CA,  C=DK, O=NATIONAL IT AND TELECOM AGENCY,    OU=FOR TEST PURPOSES ONLY";
@@ -71,17 +71,20 @@ public class CommonUtil {
             subject = tSubject;
         }
         DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
-
-        Calendar validFrom = Calendar.getInstance();
-        validFrom.set(validFrom.get(Calendar.YEAR) - 2, 1, 1);
-        Calendar validTo = Calendar.getInstance();
-        validTo.set(validTo.get(Calendar.YEAR) + 3, 1, 1);
-
-        return createHeaderCertificateForBlueCoat(serial, issuer, subject, validFrom.getTime(), validTo.getTime());
+        Date validFrom = df.parse("Jun 01 10:37:53 2015 CEST");
+        Date validTo = df.parse("Jun 01 10:37:53 2035 CEST");
+        if (!isPolicyParamIncluded) {
+            return createHeaderCertificateForBlueCoat(serial, issuer, subject, validFrom, validTo);
+        }
+        return createHeaderCertificateForBlueCoatWithPolicyOids(serial, issuer, subject, validFrom, validTo, "&policy_oids=5.0.6.0.4.1.0000.66.99");
     }
 
     public static String createHeaderCertificateForBlueCoat(String serialNumber, String issuer, String subject, Date startDate, Date expiryDate) throws Exception {
         DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
         return "serial=" + serialNumber + "&subject=" + subject + "&validFrom=" + df.format(startDate) + "&validTo=" + df.format(expiryDate) + "&issuer=" + issuer;
+    }
+
+    public static String createHeaderCertificateForBlueCoatWithPolicyOids(String serialNumber, String issuer, String subject, Date startDate, Date expiryDate, String policy_oids) throws Exception {
+        return createHeaderCertificateForBlueCoat(serialNumber, issuer, subject, startDate, expiryDate) + policy_oids;
     }
 }
