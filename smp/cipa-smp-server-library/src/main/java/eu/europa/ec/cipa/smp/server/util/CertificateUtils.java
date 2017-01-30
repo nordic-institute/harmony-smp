@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -23,13 +24,6 @@ import java.util.Map;
  * Created by migueti on 06/12/2016.
  */
 public class CertificateUtils {
-
-    private final static String HEADER_ATTRIBUTE_SEPARATOR = "&";
-    private final static String[] HEADER_ATTRIBUTE_SUBJECT = {"subject"};
-    private final static String[] HEADER_ATTRIBUTE_SERIAL = {"serial", "sno"};
-    private final static String[] HEADER_ATTRIBUTE_VALID_FROM = {"validFrom"};
-    private final static String[] HEADER_ATTRIBUTE_VALID_TO = {"validTo"};
-    private final static String[] HEADER_ATTRIBUTE_ISSUER = {"issuer"};
 
     /**
      * Left pads a String with 0's
@@ -159,11 +153,18 @@ public class CertificateUtils {
      * @throws AuthenticationException Certificate Authentication Exception
      */
     private static CertificateDetails parseClientCertHeader(CertificateDetails certificate, String clientCertHeaderDecoded) throws AuthenticationException {
+        final String HEADER_ATTRIBUTE_SEPARATOR = "&";
+        final String[] HEADER_ATTRIBUTE_SUBJECT = {"subject"};
+        final String[] HEADER_ATTRIBUTE_SERIAL = {"serial", "sno"};
+        final String[] HEADER_ATTRIBUTE_VALID_FROM = {"validFrom"};
+        final String[] HEADER_ATTRIBUTE_VALID_TO = {"validTo"};
+        final String[] HEADER_ATTRIBUTE_ISSUER = {"issuer"};
+        final String[] HEADER_ATTRIBUTE_POLICY_OIDS = {"policy_oids"};
+
         String[] split = clientCertHeaderDecoded.split(HEADER_ATTRIBUTE_SEPARATOR);
 
-        if (split.length != 5) {
-            throw new AuthenticationException(
-                    "Invalid BlueCoat Client Certificate Header Received ");
+        if (split.length < 5 || split.length > 6) {
+            throw new AuthenticationException(String.format("Invalid BlueCoat Client Certificate Header Received [%s] ", Arrays.toString(split)));
         }
         DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
         for (final String attribute : split) {
@@ -173,6 +174,8 @@ public class CertificateUtils {
                 certificate.setSerial(attribute.substring(attribute.indexOf('=') + 1));
             } else if (isIn(attribute, HEADER_ATTRIBUTE_SUBJECT)) {
                 certificate.setSubject(attribute.substring(attribute.indexOf('=') + 1));
+            } else if (isIn(attribute, HEADER_ATTRIBUTE_POLICY_OIDS)) {
+                certificate.setPolicyOids(attribute.substring(attribute.indexOf('=') + 1));
             } else if (isIn(attribute, HEADER_ATTRIBUTE_VALID_FROM)) {
                 try {
                     certificate.setValidFrom(DateUtils.toCalendar(df.parse(attribute.substring(attribute.indexOf('=') + 1))));

@@ -16,6 +16,7 @@ public class CertificateDetails implements Serializable {
     private String issuer;
     private String pemEncoding;
     private String rootCertificateDN;
+    private String policyOids;
 
     public String getSerial() {
         return serial;
@@ -77,6 +78,10 @@ public class CertificateDetails implements Serializable {
 
     public void setCertificateId(String certificateId) {this.certificateId = certificateId;}
 
+    public String getPolicyOids() {return policyOids;}
+
+    public void setPolicyOids(String policyOids) {this.policyOids = policyOids;}
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -90,6 +95,7 @@ public class CertificateDetails implements Serializable {
         if (validTo != null ? !validTo.equals(that.validTo) : that.validTo != null) return false;
         if (issuer != null ? !issuer.equals(that.issuer) : that.issuer != null) return false;
         if (pemEncoding != null ? !pemEncoding.equals(that.pemEncoding) : that.pemEncoding != null) return false;
+        if (policyOids != null ? !policyOids.equals(that.policyOids) : that.policyOids != null) return false;
         return !(rootCertificateDN != null ? !rootCertificateDN.equals(that.rootCertificateDN) : that.rootCertificateDN != null);
 
     }
@@ -103,6 +109,7 @@ public class CertificateDetails implements Serializable {
         result = 31 * result + (validTo != null ? validTo.hashCode() : 0);
         result = 31 * result + (issuer != null ? issuer.hashCode() : 0);
         result = 31 * result + (pemEncoding != null ? pemEncoding.hashCode() : 0);
+        result = 31 * result + (policyOids != null ? policyOids.hashCode() : 0);
         result = 31 * result + (rootCertificateDN != null ? rootCertificateDN.hashCode() : 0);
         return result;
     }
