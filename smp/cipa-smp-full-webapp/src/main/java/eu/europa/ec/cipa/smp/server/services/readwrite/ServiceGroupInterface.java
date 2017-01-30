@@ -104,7 +104,7 @@ public final class ServiceGroupInterface {
     }
 
     final IDataManager aDataManager = DataManagerFactory.getInstance ();
-    boolean bServiceGroupCreated = aDataManager.saveServiceGroup(aServiceGroup, RequestHelper.getAuth(headers));
+    boolean bServiceGroupCreated = aDataManager.saveServiceGroup(aServiceGroup, RequestHelper.getAuth(headers, true));
 
     s_aLogger.info (String.format("Finished saveServiceGroup(%s,%s)", sServiceGroupID, aServiceGroup));
 
@@ -119,7 +119,7 @@ public final class ServiceGroupInterface {
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
 
     final IDataManager aDataManager = DataManagerFactory.getInstance ();
-    aDataManager.deleteServiceGroup (aServiceGroupID, RequestHelper.getAuth (headers));
+    aDataManager.deleteServiceGroup (aServiceGroupID, RequestHelper.getAuth (headers, false));
 
     s_aLogger.info (String.format("Finished deleteServiceGroup(%s)", sServiceGroupID));
 

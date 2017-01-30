@@ -41,6 +41,10 @@ import com.helger.commons.collections.CollectionHelper;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import com.helger.web.http.basicauth.HTTPBasicAuth;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
+import eu.europa.ec.cipa.smp.server.security.BlueCoatClientCertificateAuthentication;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
@@ -55,18 +59,23 @@ import java.util.List;
  */
 @Immutable
 public final class RequestHelper {
-    private RequestHelper() {
-    }
 
     @Nonnull
-    public static BasicAuthClientCredentials getAuth(@Nonnull final HttpHeaders headers) throws UnauthorizedException {
+    public static BasicAuthClientCredentials getAuth(@Nonnull final HttpHeaders headers, boolean overrideByServiceGroupOwnershipHeader) throws UnauthorizedException {
         List<String> aHeaders = headers.getRequestHeader("ServiceGroup-Owner");
-
-        if (!CollectionHelper.isEmpty(aHeaders)) {
+        if (overrideByServiceGroupOwnershipHeader && !CollectionHelper.isEmpty(aHeaders)) {
             return new BasicAuthClientCredentials(CollectionHelper.getFirstElement(aHeaders));
         }
 
-        aHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth instanceof BlueCoatClientCertificateAuthentication) {
+            return new BasicAuthClientCredentials(auth.getName());
+        }
+
+        if (auth instanceof UsernamePasswordAuthenticationToken) {
+            aHeaders = headers.getRequestHeader(HttpHeaders.AUTHORIZATION);
+        }
+
         if (CollectionHelper.isEmpty(aHeaders)) {
             throw new UnauthorizedException("Missing required HTTP header '" +
                     HttpHeaders.AUTHORIZATION +

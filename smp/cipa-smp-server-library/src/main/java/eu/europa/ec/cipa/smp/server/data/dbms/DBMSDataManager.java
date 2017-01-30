@@ -71,6 +71,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 /**
  * A Hibernate implementation of the DataManager interface.
  *
@@ -132,7 +134,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
         // Check that the password is correct
         if (!isNullPasswordAllowed(aDBUser.getPassword(),aCredentials.getPassword())){
-            if(aCredentials.getPassword()== null || aDBUser.getPassword()== null ||
+            if(aCredentials.getPassword()== null || isBlank(aDBUser.getPassword()) ||
                     !aDBUser.getPassword().equals(aCredentials.getPassword())) {
                 throw new UnauthorizedException("Illegal password for user '" + sUsername + "'");
             }
@@ -146,7 +148,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     }
 
     private boolean isNullPasswordAllowed(String requestPassword, String databasePassword){
-       return (requestPassword == null && databasePassword == null);
+       return (isBlank(requestPassword) && isBlank(databasePassword));
     }
 
     /**
