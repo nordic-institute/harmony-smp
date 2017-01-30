@@ -16,3 +16,15 @@ smp/cipa-smp-full-webapp/target/
 smp/cipa-smp-readonly-webapp/target/
 smp/cipa-smp-server-library/target/
 smp/.idea/
+smp-api/target/
+smp-api/.idea/copyright/profiles_settings.xml
+smp-api/.idea/libraries/Maven__junit_junit_4_12.xml
+smp-api/.idea/libraries/
+smp-api/.idea/
+*.iml
+addons/cipa-sml-util/.idea/
+addons/cipa-sml-util/target/
+addons/cipa-sml-migration/target/test-classes/global-truststore.jks
+addons/cipa-sml-migration/target/classes/
+addons/cipa-sml-migration/target/
+addons/cipa-sml-migration/.idea/

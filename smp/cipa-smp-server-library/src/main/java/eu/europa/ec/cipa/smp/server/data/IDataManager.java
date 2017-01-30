@@ -44,6 +44,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 
+import eu.europa.ec.cipa.smp.server.data.dbms.model.DBUser;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
@@ -90,9 +93,10 @@ public interface IDataManager {
    *        The service group to save.
    * @param aCredentials
    *        The credentials to use.
+   * @return true, if ServiceGroup was added; false, if ServiceGroup was updated
    * @throws Throwable
    */
-  void saveServiceGroup (@Nonnull ServiceGroup aServiceGroup, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
+  boolean saveServiceGroup (@Nonnull ServiceGroup aServiceGroup, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
 
   /**
    * Deletes the service group having the specified id.
@@ -155,9 +159,10 @@ public interface IDataManager {
    *        The service metadata XML content to save.
    * @param aCredentials
    *        The credentials to use.
+   * @return true, if ServiceMetadata was added; false, if ServiceMetadata was updated
    * @throws Throwable
    */
-  void saveService (@Nonnull ServiceMetadata aServiceMetadata, @Nonnull final String sXmlContent, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
+  boolean saveService (@Nonnull ServiceMetadata aServiceMetadata, @Nonnull final String sXmlContent, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
 
   /**
    * Deletes a service metadata object given by its service group id and
@@ -196,4 +201,10 @@ public interface IDataManager {
    * Creates Entity Manager
    **/
   EntityManager getCurrentEntityManager();
+
+
+  /**
+   * Checks if user exists in the database and if password matches
+   **/
+  DBUser _verifyUser(@Nonnull final BasicAuthClientCredentials aCredentials) throws UnknownUserException, UnauthorizedException;
 }

@@ -40,12 +40,16 @@ package eu.europa.ec.cipa.smp.server.errors.exceptions;
 /**
  * Exception to be thrown if there is an ownership mismatch between object. This
  * exceptions is only thrown if the provided user credentials are valid.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public class UnauthorizedException extends RuntimeException {
 
-  public UnauthorizedException (final String sMsg) {
-    super (sMsg);
-  }
+    public UnauthorizedException(final String sMsg) {
+        super(sMsg);
+    }
+
+    public UnauthorizedException(String message, Throwable throwable) {
+        super(message, throwable);
+    }
 }
