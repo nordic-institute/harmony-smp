@@ -1,7 +1,8 @@
-package eu.europa.ec.cipa.smp.server.errors;
+package eu.europa.ec.cipa.smp.server.errors.mappers;
 
 import com.helger.web.mock.MockHttpServletRequest;
 import com.helger.web.mock.MockHttpServletResponse;
+import eu.europa.ec.cipa.smp.server.errors.SpringSecurityBasicAuthenticationEntryPoint;
 import org.junit.Test;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
