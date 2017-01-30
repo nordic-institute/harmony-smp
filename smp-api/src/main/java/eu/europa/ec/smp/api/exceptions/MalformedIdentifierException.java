@@ -1,4 +1,4 @@
-package eu.europa.ec.smp.api;
+package eu.europa.ec.smp.api.exceptions;
 
 /**
  * Thrown when used identifier does not fulfill requirements specified in OASIS SMP specs:

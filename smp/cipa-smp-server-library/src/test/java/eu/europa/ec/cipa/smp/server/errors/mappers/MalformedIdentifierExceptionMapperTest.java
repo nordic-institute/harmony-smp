@@ -2,8 +2,7 @@ package eu.europa.ec.cipa.smp.server.errors.mappers;
 
 import ec.services.smp._1.ErrorResponse;
 import eu.europa.ec.cipa.smp.server.errors.ParentExceptionTest;
-import eu.europa.ec.cipa.smp.server.errors.mappers.MalformedIdentifierExceptionMapper;
-import eu.europa.ec.smp.api.MalformedIdentifierException;
+import eu.europa.ec.smp.api.exceptions.MalformedIdentifierException;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
