@@ -58,8 +58,7 @@ public class RequestAuthenticationFilter implements ContainerRequestFilter {
                             Authentication authentication = new BlueCoatClientCertificateAuthentication(certHeaderValue.get(0));
                             authenticate(authentication, webRequest);
                         } else {
-                            //TODO other authentication ways
-                            throw new AuthenticationException("There is no client certificate in the request");
+                            logger.debug("Skipping 2-way-SSL auth. No 'Client-Cert' HTTP header present.");
                         }
                         break;
                     case "https":
