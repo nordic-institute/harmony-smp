@@ -4,13 +4,14 @@ import org.junit.Test;
 
 import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.XSD_INVALID;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Created by migueti on 16/01/2017.
  */
 public class BadRequestExceptionTest {
 
-    @Test(expected = BadRequestException.class)
+    @Test
     public void testBadRequestExceptionThrown() {
         // given
 
@@ -21,8 +22,9 @@ public class BadRequestExceptionTest {
             // then
             assertEquals(XSD_INVALID, ex.getErrorBusinessCode());
             assertEquals("Exception thrown", ex.getMessage());
-            throw ex;
+            return;
         }
+        fail();
     }
 
     private void throwBadRequestException() {

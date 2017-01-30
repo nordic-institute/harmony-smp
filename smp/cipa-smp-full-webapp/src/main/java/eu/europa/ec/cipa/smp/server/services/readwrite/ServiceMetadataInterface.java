@@ -46,6 +46,7 @@ import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.cipa.smp.server.util.RequestHelper;
 import eu.europa.ec.smp.api.Identifiers;
+import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.EndpointType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
@@ -58,13 +59,21 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import java.util.Calendar;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
+import java.util.Date;
 
 import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.OUT_OF_RANGE;
 import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.WRONG_FIELD;
-import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.XSD_INVALID;
 
 /**
  * This class implements the REST interface for getting SignedServiceMetadata's.
@@ -100,6 +109,8 @@ public final class ServiceMetadataInterface {
                                            final String body) throws Throwable {
 
     s_aLogger.info (String.format("PUT /%s/services/%s ==> %s", sServiceGroupID, sDocumentTypeID, body));
+
+    BdxSmpOasisValidator.validateXSD(body);
 
     validateErrors(sServiceGroupID, sDocumentTypeID, body);
 
@@ -162,11 +173,15 @@ public final class ServiceMetadataInterface {
       }
 
       for(EndpointType endpoint : serviceEndpointList.getEndpoints()) {
-        Calendar activationDate = endpoint.getServiceActivationDate();
-        Calendar expirationDate = endpoint.getServiceExpirationDate();
+        Date activationDate = endpoint.getServiceActivationDate();
+        Date expirationDate = endpoint.getServiceExpirationDate();
 
         if(activationDate != null && expirationDate != null && activationDate.after(expirationDate)) {
           throw new BadRequestException(OUT_OF_RANGE, "Expiration date is before Activation date");
+        }
+
+        if(expirationDate != null && expirationDate.before(new Date())) {
+          throw new BadRequestException(OUT_OF_RANGE, "Expiration date has passed");
         }
       }
     }

@@ -1,0 +1,67 @@
+package eu.europa.ec.smp.api.validators;
+
+import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import org.apache.commons.io.IOUtils;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+import java.io.IOException;
+import java.net.URL;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+/**
+ * Created by migueti on 20/01/2017.
+ */
+@RunWith(JUnitParamsRunner.class)
+public class BdxSmpOasisValidatorTest {
+
+    private static final String UTF_8 = "UTF-8";
+
+    @Test
+    @Parameters({"ServiceMetadata_OK.xml","ServiceGroup_OK.xml"})
+    public void testValidatePositive(String xmlFilename) throws IOException, XmlInvalidAgainstSchemaException {
+        // given
+        String xmlBody = loadXMLFile(xmlFilename);
+
+        // when
+        BdxSmpOasisValidator.validateXSD(xmlBody);
+
+        // then
+        // no exception occur
+    }
+
+    private static Object[] negativeCases() {
+        return new Object[][] {
+                {"ServiceMetadata_ElementAdded.xml",    "cvc-complex-type.2.4.a: Invalid content was found starting with element 'ElementAdded'. One of '{\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\":ServiceInformation, \"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\":Redirect}' is expected."},
+                {"ServiceMetadata_ElementMissing.xml",  "cvc-complex-type.2.4.b: The content of element 'Redirect' is not complete. One of '{\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\":CertificateUID}' is expected."},
+                {"ServiceGroup_MissingAssignment.xml",  "Attribute name \"missingAssignment\" associated with an element type \"ServiceMetadataReferenceCollection\" must be followed by the ' = ' character."},
+                {"ServiceGroup_UnexpectedAttribute.xml","cvc-complex-type.3.2.2: Attribute 'unexpectedAttribute' is not allowed to appear in element 'ServiceMetadataReferenceCollection'."}
+        };
+    }
+
+    @Test
+    @Parameters(method = "negativeCases")
+    public void testValidateNegative(String xmlFilename, String output) throws IOException {
+        // given
+        String xmlBody = loadXMLFile(xmlFilename);
+
+        // when
+        try {
+            BdxSmpOasisValidator.validateXSD(xmlBody);
+        } catch (XmlInvalidAgainstSchemaException e) {
+            // then
+            assertEquals(output, e.getMessage());
+            return;
+        }
+        fail();
+    }
+
+    public String loadXMLFile(String path) throws IOException {
+        URL fileUrl = BdxSmpOasisValidatorTest.class.getResource("/XMLValidation/"+path);
+        return IOUtils.toString(fileUrl.openStream(), UTF_8);
+    }
+}

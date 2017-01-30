@@ -3,13 +3,14 @@ package eu.europa.ec.cipa.smp.server.errors.exceptions;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * Created by migueti on 16/01/2017.
  */
 public class UnauthorizedExceptionTest {
 
-    @Test(expected = UnauthorizedException.class)
+    @Test
     public void testUnauthorizedExceptionThrown() {
         // given
 
@@ -19,8 +20,9 @@ public class UnauthorizedExceptionTest {
         } catch(UnauthorizedException ex) {
             // then
             assertEquals("Exception thrown", ex.getMessage());
-            throw ex;
+            return;
         }
+        fail();
     }
 
     private void throwUnauthorizedException() {
