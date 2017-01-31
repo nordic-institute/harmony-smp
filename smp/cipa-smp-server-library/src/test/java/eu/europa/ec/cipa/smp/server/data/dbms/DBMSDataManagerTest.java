@@ -403,14 +403,17 @@ public class DBMSDataManagerTest extends AbstractTest {
       assertEquals(extension.getExtensionReason(), extensionDB.getExtensionReason());
       assertEquals(extension.getExtensionReasonCode(), extensionDB.getExtensionReasonCode());
       assertEquals(extension.getExtensionVersionID(), extensionDB.getExtensionVersionID());
-
-      isServiceMetadataToDelete = true;
   }
 
     @Test
     public void testUpdateServiceMetadataByAdmin() throws Throwable {
         // given
-        s_aDataMgr.deleteService(PARTY_ID, DOCTYPE_ID, ADMIN_CREDENTIALS);
+        try {
+            s_aDataMgr.deleteService(PARTY_ID, DOCTYPE_ID, ADMIN_CREDENTIALS);
+        } catch (NotFoundException e) {
+            // since service couldn't exist...
+        }
+
         boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
         String strMetadata = s_aDataMgr.getService(PARTY_ID, DOCTYPE_ID);
         ServiceMetadata metadata = ServiceMetadataConverter.unmarshal(strMetadata);
