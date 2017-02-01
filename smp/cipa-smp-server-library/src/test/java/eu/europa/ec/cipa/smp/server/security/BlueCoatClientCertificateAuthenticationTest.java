@@ -116,7 +116,6 @@ public class BlueCoatClientCertificateAuthenticationTest  extends AbstractTest {
         Assert.assertEquals("CN=SMP_1000000007,O=DG-DIGIT,C=BE", ((CertificateDetails)auth.getDetails()).getSubject());
     }
 
-
     /**
      * Test the construction of the Authenticator from real values from the BlueCoat proxy
      * @throws UnsupportedEncodingException
