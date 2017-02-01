@@ -4,6 +4,7 @@ package eu.europa.ec.cipa.smp.server.services;
 import eu.europa.ec.cipa.smp.server.AbstractTest;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.CertificateNotFoundException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.CertificateRevokedException;
+import eu.europa.ec.cipa.smp.server.security.BlueCoatClientCertificateAuthentication;
 import eu.europa.ec.cipa.smp.server.security.CertificateDetails;
 import eu.europa.ec.cipa.smp.server.util.CommonUtil;
 import org.apache.commons.lang3.time.DateUtils;
@@ -77,6 +78,14 @@ public class BlueCoatCertificateServiceImplTest extends AbstractTest {
         certificateDetails.setSubject("C=BE,O=DG-DIGIT,CN=SMP_1000000007");
 
         Assert.assertTrue(blueCoatCertificateService.isBlueCoatClientCertificateValid(certificateDetails));
+    }
+
+    @Test
+    public void testIsBlueCoatClientCertificateValidSubjectNotOk() throws Exception {
+        certificateDetails.setCertificateId("C=BE,O=DG-DIGIT");
+        certificateDetails.setSubject("C=BE,O=DG-DIGIT");
+
+        Assert.assertFalse(blueCoatCertificateService.isBlueCoatClientCertificateValid(certificateDetails));
     }
 
     /**
@@ -251,5 +260,14 @@ public class BlueCoatCertificateServiceImplTest extends AbstractTest {
 
         certificateDetails = CommonUtil.createCertificateForBlueCoat(serial, issuer, subject, startDate.getTime(), nextYearToday.getTime());
         Assert.assertFalse(blueCoatCertificateService.isBlueCoatClientCertificateValid(certificateDetails));
+    }
+
+    @Test
+    public void testIsBlueCoatClientCertificateValidOk() throws Exception {
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+        String certHeader = "sno=f7%3A1e%3Ae8%3Ab1%3A1c%3Ab3%3Ab7%3A87&amp;subject=C%3DBE%2C+O%3DEuropean+Commission%2C+OU%3DCEF_eDelivery.europa.eu%2C+OU%3DeHealth%2C+OU%3DSMP_TEST%2C+CN%3DEHEALTH_SMP_EC%2FemailAddress%3DCEF-EDELIVERY-SUPPORT%40ec.europa.eu&amp;validfrom=Dec++6+17%3A41%3A42+2016+GMT&amp;validto=Jul++9+23%3A59%3A00+2019+GMT&amp;issuer=C%3DDE%2C+O%3DT-Systems+International+GmbH%2C+OU%3DT-Systems+Trust+Center%2C+ST%3DNordrhein+Westfalen%2FpostalCode%3D57250%2C+L%3DNetphen%2Fstreet%3DUntere+Industriestr.+20%2C+CN%3DShared+Business+CA+4&amp;policy_oids=1.3.6.1.4.1.7879.13.25";
+        BlueCoatClientCertificateAuthentication auth = new BlueCoatClientCertificateAuthentication(certHeader);
+
+        Assert.assertTrue(blueCoatCertificateService.isBlueCoatClientCertificateValid(((CertificateDetails) auth.getDetails())));
     }
 }

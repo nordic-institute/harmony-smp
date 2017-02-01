@@ -3,10 +3,12 @@ package eu.europa.ec.cipa.smp.server.services.impl;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.DBUser;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.AuthenticationException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.CertificateNotFoundException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.CertificateRevokedException;
 import eu.europa.ec.cipa.smp.server.security.CertificateDetails;
 import eu.europa.ec.cipa.smp.server.services.IBlueCoatCertificateService;
+import eu.europa.ec.cipa.smp.server.util.CertificateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
@@ -58,7 +60,7 @@ public class BlueCoatCertificateServiceImpl implements IBlueCoatCertificateServi
         }
     }
 
-    private void databaseCertificateChecking(CertificateDetails certificate) throws CertificateNotFoundException {
+    private void databaseCertificateChecking(CertificateDetails certificate) throws CertificateNotFoundException, AuthenticationException {
         logger.info(String.format("Checking Certificate into the DB. Issuer: %s, Subject: %s", certificate.getIssuer(), certificate.getSubject()));
 
         String errorMessage = String.format("SEC_UNKNOWN_CERTIFICATE | Certificate Issuer: %s, Subject: %s", certificate.getIssuer(), certificate.getSubject());
@@ -68,12 +70,12 @@ public class BlueCoatCertificateServiceImpl implements IBlueCoatCertificateServi
         }
 
         final IDataManager aDataManager = DataManagerFactory.getInstance();
-        final DBUser dbUser = aDataManager.getCurrentEntityManager().find(DBUser.class, certificate.getCertificateId());
+        final DBUser dbUser = aDataManager.getCurrentEntityManager().find(DBUser.class, CertificateUtils.orderSubjectByDefaultMetadata(certificate.getCertificateId()));
 
         //TODO I think checking only the username might be not enough. WE should have more validation here
         if (dbUser == null) {
             logger.error(errorMessage);
-            throw new CertificateNotFoundException(String.format("Certificate %s not found",certificate.getCertificateId()));
+            throw new CertificateNotFoundException(String.format("Certificate %s not found", certificate.getCertificateId()));
         }
     }
 }
