@@ -153,16 +153,22 @@ public interface IDataManager {
   /**
    * Saves the given service metadata in the underlying data layer.
    * 
-   * @param aServiceMetadata
-   *        The service metadata to save.
+   * @param aServiceGroupID
+   *        The service group id to save.
+   * @param aDocTypeID
+   *        The document id to save.
    * @param sXmlContent
    *        The service metadata XML content to save.
    * @param aCredentials
    *        The credentials to use.
    * @return true, if ServiceMetadata was added; false, if ServiceMetadata was updated
    * @throws Throwable
+   *        A throwable is thrown if an error occurs.
    */
-  boolean saveService (@Nonnull ServiceMetadata aServiceMetadata, @Nonnull final String sXmlContent, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
+  boolean saveService(@Nonnull final ParticipantIdentifierType aServiceGroupID,
+                             @Nonnull final DocumentIdentifier aDocTypeID,
+                             @Nonnull final String sXmlContent,
+                             @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable;
 
   /**
    * Deletes a service metadata object given by its service group id and

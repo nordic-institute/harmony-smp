@@ -112,56 +112,52 @@ public final class ServiceMetadataInterface {
 
     BdxSmpOasisValidator.validateXSD(body);
 
-    validateErrors(sServiceGroupID, sDocumentTypeID, body);
-
+    final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
+    final DocumentIdentifier aDocTypeID = Identifiers.asDocumentId(sDocumentTypeID);
     final ServiceMetadata aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
+
+    validateErrors(aServiceGroupID, aDocTypeID, aServiceMetadata);
 
     // Main save
     final IDataManager aDataManager = DataManagerFactory.getInstance ();
-    boolean bServiceCreated = aDataManager.saveService (aServiceMetadata, body, RequestHelper.getAuth (headers, false));
+    boolean bServiceCreated = aDataManager.saveService (aServiceGroupID, aDocTypeID, body, RequestHelper.getAuth (headers, false));
 
     s_aLogger.info (String.format("Finished saveServiceRegistration(%s,%s,%s)", sServiceGroupID, sDocumentTypeID, aServiceMetadata));
 
     return bServiceCreated ? Response.created(uriInfo.getRequestUri()).build() : Response.ok ().build ();
   }
 
-  private void validateErrors(final String sServiceGroupID,
-                              final String sDocumentTypeID,
-                              final String body) {
+  private void validateErrors(final ParticipantIdentifierType aServiceGroupID,
+                              final DocumentIdentifier aDocTypeID,
+                              final ServiceMetadata aServiceMetadata) {
 
-    final ServiceMetadata aServiceMetadata = ServiceMetadataConverter.unmarshal(body);
-    final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
-    final DocumentIdentifier aDocTypeID =  Identifiers.asDocumentId(sDocumentTypeID);
     final ServiceInformationType aServiceInformationType = aServiceMetadata.getServiceInformation();
 
+    if (aServiceInformationType != null) {
       // Business identifiers from path (ServiceGroupID) and from service
       // metadata (body) must equal path
-      if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getParticipantIdentifier (), aServiceGroupID)) {
+      if (!IdentifierUtils.areIdentifiersEqual(aServiceInformationType.getParticipantIdentifier(), aServiceGroupID)) {
         String errorMessage = String.format("Save service metadata was called with bad parameters. serviceInfo: %s param: %s",
-                IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getParticipantIdentifier ()),
+                IdentifierUtils.getIdentifierURIEncoded(aServiceInformationType.getParticipantIdentifier()),
                 aServiceGroupID);
-        s_aLogger.info (errorMessage);
+        s_aLogger.info(errorMessage);
         throw new BadRequestException(WRONG_FIELD, errorMessage);
-
       }
 
-      if (!IdentifierUtils.areIdentifiersEqual (aServiceInformationType.getDocumentIdentifier (), aDocTypeID)) {
+      if (!IdentifierUtils.areIdentifiersEqual(aServiceInformationType.getDocumentIdentifier(), aDocTypeID)) {
         String errorMessage = String.format("Save service metadata was called with bad parameters. serviceInfo: %s param: %s",
-                IdentifierUtils.getIdentifierURIEncoded (aServiceInformationType.getDocumentIdentifier ()),
+                IdentifierUtils.getIdentifierURIEncoded(aServiceInformationType.getDocumentIdentifier()),
                 aDocTypeID);
-        s_aLogger.info (errorMessage);
+        s_aLogger.info(errorMessage);
         // Document type must equal path
         throw new BadRequestException(WRONG_FIELD, errorMessage);
       }
-
-      validateData(aServiceMetadata);
+      validateServiceInformationData(aServiceInformationType);
+    }
   }
 
-  private void validateData(ServiceMetadata aServiceMetadata) {
-    if(aServiceMetadata.getServiceInformation() == null) {
-      return;
-    }
-    ProcessListType processList = aServiceMetadata.getServiceInformation().getProcessList();
+  private void validateServiceInformationData(ServiceInformationType aServiceInformationType) {
+    ProcessListType processList = aServiceInformationType.getProcessList();
     if (processList == null) {
       return;
     }

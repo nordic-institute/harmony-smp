@@ -406,14 +406,11 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return ret.getOrThrow();
     }
 
-    public boolean saveService(@Nonnull final ServiceMetadata aServiceMetadata,
-                            @Nonnull final String sXmlContent,
-                            @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable{
+    public boolean saveService(@Nonnull final ParticipantIdentifierType aServiceGroupID,
+                               @Nonnull final DocumentIdentifier aDocTypeID,
+                               @Nonnull final String sXmlContent,
+                               @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable{
         boolean newServiceCreated = true;
-        final ParticipantIdentifierType aServiceGroupID = aServiceMetadata.getServiceInformation()
-                .getParticipantIdentifier();
-        final DocumentIdentifier aDocTypeID = aServiceMetadata.getServiceInformation().getDocumentIdentifier();
-
         _verifyUser(aCredentials);
         _verifyOwnership(aServiceGroupID, aCredentials);
 
@@ -423,26 +420,26 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         }
 
         // Create a new entry
-        JPAExecutionResult<?> ret;
-        ret = doInTransaction(new Runnable() {
-            public void run() {
-                final EntityManager aEM = getEntityManager();
+        JPAExecutionResult<?> ret = doInTransaction(new Runnable() {
+                public void run() {
+                    final EntityManager aEM = getEntityManager();
 
-                // Check if an existing service is already contained
-                // This should have been deleted previously!
-                final DBServiceMetadataID aDBServiceMetadataID = new DBServiceMetadataID(aServiceGroupID, aDocTypeID);
-                DBServiceMetadata aDBServiceMetadata = aEM.find(DBServiceMetadata.class, aDBServiceMetadataID);
-                if (aDBServiceMetadata != null)
-                    throw new IllegalStateException("No DB ServiceMeta data with ID " +
-                            IdentifierUtils.getIdentifierURIEncoded(aServiceGroupID) +
-                            " should be present!");
+                    // Check if an existing service is already contained
+                    // This should have been deleted previously!
+                    final DBServiceMetadataID aDBServiceMetadataID = new DBServiceMetadataID(aServiceGroupID, aDocTypeID);
+                    DBServiceMetadata aDBServiceMetadata = aEM.find(DBServiceMetadata.class, aDBServiceMetadataID);
+                    if (aDBServiceMetadata != null) {
+                        throw new IllegalStateException("No DB ServiceMeta data with ID " +
+                                IdentifierUtils.getIdentifierURIEncoded(aServiceGroupID) +
+                                " should be present!");
+                    }
 
-                // Create a new entry
-                aDBServiceMetadata = new DBServiceMetadata();
-                aDBServiceMetadata.setId(aDBServiceMetadataID);
-                _convertFromServiceToDB(aServiceMetadata, sXmlContent, aDBServiceMetadata);
-                aEM.persist(aDBServiceMetadata);
-            }
+                    // Create a new entry
+                    aDBServiceMetadata = new DBServiceMetadata();
+                    aDBServiceMetadata.setId(aDBServiceMetadataID);
+                    _convertFromServiceToDB(aServiceGroupID, aDocTypeID, sXmlContent, aDBServiceMetadata);
+                    aEM.persist(aDBServiceMetadata);
+                }
         });
         if (ret.hasThrowable()) {
             throw ret.getThrowable();
@@ -525,13 +522,19 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return ret.getOrThrow();
     }
 
-    private static void _convertFromServiceToDB(@Nonnull final ServiceMetadata aServiceMetadata,
+    private static void _convertFromServiceToDB(@Nonnull final ParticipantIdentifierType aServiceGroupID,
+                                                @Nonnull final DocumentIdentifier aDocTypeID,
                                                 @Nonnull final String sXmlContent,
                                                 @Nonnull final DBServiceMetadata aDBServiceMetadata) {
         // Update it.
+        ServiceMetadata aServiceMetadata = ServiceMetadataConverter.unmarshal(sXmlContent);
         final ServiceInformationType aServiceInformation = aServiceMetadata.getServiceInformation();
-        if(aServiceInformation.getExtensions().size() > 0) {
+        if(aServiceInformation != null && aServiceInformation.getExtensions().size() > 0) {
             aDBServiceMetadata.setExtension(aServiceInformation.getExtensions().get(0));
+        }
+        final RedirectType aRedirect = aServiceMetadata.getRedirect();
+        if(aRedirect != null && aRedirect.getExtensions().size() > 0) {
+            aDBServiceMetadata.setExtension(aRedirect.getExtensions().get(0));
         }
         aDBServiceMetadata.setXmlContent(sXmlContent);
     }
