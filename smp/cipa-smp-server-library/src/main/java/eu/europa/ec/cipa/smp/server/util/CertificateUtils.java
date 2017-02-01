@@ -2,6 +2,7 @@ package eu.europa.ec.cipa.smp.server.util;
 
 import eu.europa.ec.cipa.smp.server.errors.exceptions.AuthenticationException;
 import eu.europa.ec.cipa.smp.server.security.CertificateDetails;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -114,10 +115,13 @@ public class CertificateUtils {
      * @throws AuthenticationException Certificate Authentication Exception
      */
     public final static CertificateDetails calculateCertificateIdFromHeader(final String certHeaderValue) throws AuthenticationException {
+        String clientCertHeaderDecoded = null;
         synchronized (CertificateUtils.class) {
             try {
                 CertificateDetails certificate = new CertificateDetails();
-                String clientCertHeaderDecoded = URLDecoder.decode(certHeaderValue, StandardCharsets.UTF_8.name());
+                clientCertHeaderDecoded = URLDecoder.decode(certHeaderValue, StandardCharsets.UTF_8.name());
+                clientCertHeaderDecoded = StringEscapeUtils.unescapeHtml(clientCertHeaderDecoded);
+
                 certificate = parseClientCertHeader(certificate, clientCertHeaderDecoded);
                 certificate.setSerial(certificate.getSerial().replaceAll(":", ""));
                 // in the database, the subject is stored in a different way than the one in the
@@ -141,7 +145,7 @@ public class CertificateUtils {
 
                 return certificate;
             } catch (final Exception exc) {
-                throw new AuthenticationException("Impossible to determine the certificate identifier from " + certHeaderValue, exc);
+                throw new AuthenticationException(String.format("Impossible to determine the certificate identifier from encoded = %s and decoded = %s", certHeaderValue, clientCertHeaderDecoded), exc);
             }
         }
     }
@@ -163,7 +167,7 @@ public class CertificateUtils {
 
         String[] split = clientCertHeaderDecoded.split(HEADER_ATTRIBUTE_SEPARATOR);
 
-        if (split.length < 5 || split.length > 6) {
+        if (split.length < 5) {
             throw new AuthenticationException(String.format("Invalid BlueCoat Client Certificate Header Received [%s] ", Arrays.toString(split)));
         }
         DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
@@ -214,5 +218,21 @@ public class CertificateUtils {
             }
         }
         return false;
+    }
+
+    public static String orderSubjectByDefaultMetadata(String subject) throws AuthenticationException {
+        try {
+            LdapName ldapName = new LdapName(subject);
+
+            // Make a map from type to name
+            final Map<String, Rdn> parts = new HashMap<>();
+            for (final Rdn rdn : ldapName.getRdns()) {
+                parts.put(rdn.getType(), rdn);
+            }
+
+            return parts.get("CN").toString() + "," + parts.get("O").toString() + "," + parts.get("C").toString();
+        } catch (Exception exc) {
+            throw new AuthenticationException("Impossible to identify authorities for certificate " + subject, exc);
+        }
     }
 }
