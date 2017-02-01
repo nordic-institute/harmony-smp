@@ -37,16 +37,14 @@
  */
 package eu.europa.ec.cipa.smp.server.hook;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-
+import com.helger.commons.lang.GenericReflection;
+import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.helger.commons.lang.GenericReflection;
-
-import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger

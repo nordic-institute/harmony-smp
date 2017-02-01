@@ -37,40 +37,40 @@
  */
 package eu.europa.ec.cipa.smp.server.hook;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.KeyStore;
+import com.helger.commons.random.VerySecureRandom;
+import com.helger.commons.state.ESuccess;
+import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
+import eu.europa.ec.bdmsl.ws.soap.ManageBusinessIdentifierService;
+import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
+import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
+import eu.europa.ec.cipa.peppol.security.DoNothingTrustManager;
+import eu.europa.ec.cipa.peppol.security.HostnameVerifierAlwaysTrue;
+import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
+import eu.europa.ec.cipa.smp.server.util.ConfigFile;
+import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-
-import org.busdox.servicemetadata.managebusinessidentifierservice._1.NotFoundFault;
-import org.busdox.servicemetadata.managebusinessidentifierservice._1.UnauthorizedFault;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.helger.commons.random.VerySecureRandom;
-import com.helger.commons.state.ESuccess;
-
-import eu.europa.ec.cipa.busdox.identifier.IParticipantIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
-import eu.europa.ec.cipa.peppol.security.DoNothingTrustManager;
-import eu.europa.ec.cipa.peppol.security.HostnameVerifierAlwaysTrue;
-import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
-import eu.europa.ec.cipa.peppol.utils.ConfigFile;
-import eu.europa.ec.cipa.sml.client.ManageParticipantIdentifierServiceCaller;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.handler.MessageContext;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.KeyStore;
+import java.util.Map;
 
 /**
  * An implementation of the RegistrationHook that informs the SML of updates to
  * this SMP's identifiers.<br>
  * The design of this hook is very bogus! It relies on the postUpdate always
  * being called in order in this Thread.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @NotThreadSafe
@@ -118,11 +118,21 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     DELETE
   }
 
-  private SimpleParticipantIdentifier m_aBusinessIdentifier;
+  private ParticipantIdentifierType m_aBusinessIdentifier;
   private EAction m_eAction;
 
   public RegistrationServiceRegistrationHook () {
     resetQueue ();
+  }
+
+
+  protected IManageParticipantIdentifierWS getSmlCaller () {
+    final ManageBusinessIdentifierService aService = new ManageBusinessIdentifierService ();
+    final IManageParticipantIdentifierWS aPort = aService.getManageBusinessIdentifierServicePort ();
+    Map<String, Object> requestContext = ((BindingProvider) aPort).getRequestContext();
+    requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, s_aSMLEndpointURL.toString());
+    requestContext.put(MessageContext.HTTP_REQUEST_HEADERS, s_sSMPClientCertificate);
+    return aPort;
   }
 
   private static void _setupSSLSocketFactory () {
@@ -157,15 +167,13 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
   }
 
   public void create (final ParticipantIdentifierType aPI) throws HookException {
-    m_aBusinessIdentifier = new SimpleParticipantIdentifier (aPI.getScheme(), aPI.getValue());
     m_eAction = EAction.CREATE;
     s_aLogger.info ("Trying to create business " + m_aBusinessIdentifier + " in Business Identifier Manager Service");
 
     try {
       _setupSSLSocketFactory ();
-      final ManageParticipantIdentifierServiceCaller aSMLCaller
-              = new ManageParticipantIdentifierServiceCaller (s_aSMLEndpointURL, s_sSMPClientCertificate);
-      aSMLCaller.create (s_sSMPID, m_aBusinessIdentifier);
+      final IManageParticipantIdentifierWS aSMLCaller = getSmlCaller();
+      aSMLCaller.create (toBusdoxParticipantId(aPI));
       s_aLogger.info ("Succeeded in creating business " +
                       m_aBusinessIdentifier +
                       " using Business Identifier Manager Service");
@@ -185,15 +193,25 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     }
   }
 
+  private ServiceMetadataPublisherServiceForParticipantType toBusdoxParticipantId(ParticipantIdentifierType aPI) {
+    ServiceMetadataPublisherServiceForParticipantType busdoxIdentifier = new ServiceMetadataPublisherServiceForParticipantType();
+    busdoxIdentifier.setServiceMetadataPublisherID(s_sSMPID);
+    org.busdox.transport.identifiers._1.ParticipantIdentifierType parId = new org.busdox.transport.identifiers._1.ParticipantIdentifierType();
+    parId.setScheme(aPI.getScheme());
+    parId.setValue(aPI.getValue());
+    busdoxIdentifier.setParticipantIdentifier(parId);
+    return busdoxIdentifier;
+  }
+
   public void delete (final ParticipantIdentifierType aPI) throws HookException {
-    m_aBusinessIdentifier = new SimpleParticipantIdentifier (aPI.getScheme(), aPI.getValue());
+    m_aBusinessIdentifier = new ParticipantIdentifierType (aPI.getScheme(), aPI.getValue());
     m_eAction = EAction.DELETE;
     s_aLogger.info ("Trying to delete business " + m_aBusinessIdentifier + " in Business Identifier Manager Service");
 
     try {
       _setupSSLSocketFactory ();
-      final ManageParticipantIdentifierServiceCaller aSMPCaller = new ManageParticipantIdentifierServiceCaller (s_aSMLEndpointURL, s_sSMPClientCertificate);
-      aSMPCaller.delete (m_aBusinessIdentifier);
+      final IManageParticipantIdentifierWS aSMLCaller = getSmlCaller();
+      aSMLCaller.delete (toBusdoxParticipantId(m_aBusinessIdentifier));
       s_aLogger.info ("Succeded in deleting business " +
                       m_aBusinessIdentifier +
                       " using Business Identifier Manager Service");
@@ -215,7 +233,7 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     if (eSuccess.isFailure ())
       try {
         _setupSSLSocketFactory ();
-        final ManageParticipantIdentifierServiceCaller aSMLCaller = new ManageParticipantIdentifierServiceCaller (s_aSMLEndpointURL, s_sSMPClientCertificate);
+        final IManageParticipantIdentifierWS aSMLCaller = getSmlCaller();
 
         switch (m_eAction) {
           case CREATE:
@@ -223,14 +241,14 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
             s_aLogger.warn ("CREATE failed in database, so deleting " +
                             m_aBusinessIdentifier.getURIEncoded () +
                             " from SML.");
-            aSMLCaller.delete (m_aBusinessIdentifier);
+            aSMLCaller.delete (toBusdoxParticipantId(m_aBusinessIdentifier));
             break;
           case DELETE:
             // Undo delete
             s_aLogger.warn ("DELETE failed in database, so creating " +
                             m_aBusinessIdentifier.getURIEncoded () +
                             " in SML.");
-            aSMLCaller.create (s_sSMPID, m_aBusinessIdentifier);
+            aSMLCaller.create (toBusdoxParticipantId(m_aBusinessIdentifier));
             break;
         }
       }

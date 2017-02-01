@@ -41,9 +41,7 @@ import com.helger.commons.annotations.UsedViaReflection;
 import com.helger.commons.equals.EqualsUtils;
 import com.helger.commons.hash.HashCodeGenerator;
 import com.helger.commons.string.ToStringGenerator;
-import eu.europa.ec.cipa.busdox.identifier.IReadonlyProcessIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
+import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessIdentifier;
@@ -53,6 +51,8 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 import java.io.Serializable;
+
+import static eu.europa.ec.cipa.smp.server.data.dbms.model.CommonColumnsLengths.*;
 
 /**
  * The ID of a single process.
@@ -72,13 +72,13 @@ public class DBProcessID implements Serializable {
   @UsedViaReflection
   public DBProcessID () {}
 
-  public DBProcessID (@Nonnull final DBServiceMetadataID aSMID, @Nonnull final IReadonlyProcessIdentifier aPrI) {
+  public DBProcessID (@Nonnull final DBServiceMetadataID aSMID, @Nonnull final DocumentIdentifier aPrI) {
     setBusinessIdentifier (aSMID.asBusinessIdentifier ());
     setDocumentTypeIdentifier (aSMID.asDocumentTypeIdentifier ());
     setProcessIdentifier (aPrI);
   }
 
-  @Column (name = "businessIdentifierScheme", nullable = false, length = CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH)
+  @Column (name = "businessIdentifierScheme", nullable = false, length = MAX_IDENTIFIER_SCHEME_LENGTH)
   public String getBusinessIdentifierScheme () {
     return m_sParticipantIdentifierScheme;
   }
@@ -87,7 +87,7 @@ public class DBProcessID implements Serializable {
     m_sParticipantIdentifierScheme = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifierScheme);
   }
 
-  @Column (name = "businessIdentifier", nullable = false, length = CIdentifier.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)
+  @Column (name = "businessIdentifier", nullable = false, length = MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)
   public String getBusinessIdentifier () {
     return m_sParticipantIdentifier;
   }
@@ -102,7 +102,7 @@ public class DBProcessID implements Serializable {
     setBusinessIdentifier (aBusinessIdentifier.getValue ());
   }
 
-  @Column (name = "documentIdentifierScheme", nullable = false, length = CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH)
+  @Column (name = "documentIdentifierScheme", nullable = false, length = MAX_IDENTIFIER_SCHEME_LENGTH)
   public String getDocumentIdentifierScheme () {
     return m_sDocumentTypeIdentifierScheme;
   }
@@ -111,7 +111,7 @@ public class DBProcessID implements Serializable {
     m_sDocumentTypeIdentifierScheme = sDocumentIdentifierScheme;
   }
 
-  @Column (name = "documentIdentifier", nullable = false, length = CIdentifier.MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH)
+  @Column (name = "documentIdentifier", nullable = false, length = MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH)
   public String getDocumentIdentifier () {
     return m_sDocumentTypeIdentifier;
   }
@@ -126,7 +126,7 @@ public class DBProcessID implements Serializable {
     setDocumentIdentifier (aDocumentTypeID.getValue ());
   }
 
-  @Column (name = "processIdentifierType", nullable = false, length = CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH)
+  @Column (name = "processIdentifierType", nullable = false, length = MAX_IDENTIFIER_SCHEME_LENGTH)
   public String getProcessIdentifierScheme () {
     return m_sProcessIdentifierScheme;
   }
@@ -135,7 +135,7 @@ public class DBProcessID implements Serializable {
     m_sProcessIdentifierScheme = sProcessIdentifierScheme;
   }
 
-  @Column (name = "processIdentifier", nullable = false, length = CIdentifier.MAX_PROCESS_IDENTIFIER_VALUE_LENGTH)
+  @Column (name = "processIdentifier", nullable = false, length = MAX_PROCESS_IDENTIFIER_VALUE_LENGTH)
   public String getProcessIdentifier () {
     return m_sProcessIdentifier;
   }
@@ -145,7 +145,7 @@ public class DBProcessID implements Serializable {
   }
 
   @Transient
-  public void setProcessIdentifier (@Nonnull final IReadonlyProcessIdentifier aProcessID) {
+  public void setProcessIdentifier (@Nonnull final DocumentIdentifier aProcessID) {
     setProcessIdentifierScheme (aProcessID.getScheme ());
     setProcessIdentifier (aProcessID.getValue ());
   }

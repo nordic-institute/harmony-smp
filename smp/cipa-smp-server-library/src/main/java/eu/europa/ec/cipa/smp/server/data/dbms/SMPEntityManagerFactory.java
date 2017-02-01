@@ -37,19 +37,16 @@
  */
 package eu.europa.ec.cipa.smp.server.data.dbms;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-
-import org.eclipse.persistence.config.PersistenceUnitProperties;
-
 import com.helger.commons.annotations.ReturnsMutableCopy;
 import com.helger.commons.annotations.UsedViaReflection;
 import com.helger.db.jpa.AbstractGlobalEntityManagerFactory;
-
-import eu.europa.ec.cipa.peppol.utils.ConfigFile;
+import eu.europa.ec.cipa.smp.server.util.ConfigFile;
+import org.eclipse.persistence.config.PersistenceUnitProperties;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import javax.annotation.Nonnull;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Specific SMP JPA entity manager factory
