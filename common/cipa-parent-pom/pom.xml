@@ -80,6 +80,7 @@
 		<jersey.version>1.17.1</jersey.version>
 		<metro.version>2.2.1-1</metro.version>
 		<commons-io.version>2.4</commons-io.version>
+		<junitparams.version>1.0.5</junitparams.version>
 	</properties>
 
 	<!-- Where are we looking for JARs? -->
@@ -391,6 +392,12 @@
 				<artifactId>servlet-api</artifactId>
 				<version>${servlet-api.version}</version>
 				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>pl.pragmatists</groupId>
+				<artifactId>JUnitParams</artifactId>
+				<version>${junitparams.version}</version>
+				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.glassfish.metro</groupId>

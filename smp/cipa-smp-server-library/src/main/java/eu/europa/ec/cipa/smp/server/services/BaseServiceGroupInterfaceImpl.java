@@ -43,6 +43,7 @@ import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
+import eu.europa.ec.cipa.smp.server.util.XForwardedHttpHeadersHandler;
 import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ObjectFactory;
@@ -71,7 +72,6 @@ import java.util.List;
  */
 public final class BaseServiceGroupInterfaceImpl {
   private static final Logger s_aLogger = LoggerFactory.getLogger (BaseServiceGroupInterfaceImpl.class);
-  public static final int UNSET_URI_PORT = -1;
 
   private static ConfigFile configFile;
 
@@ -132,7 +132,7 @@ public final class BaseServiceGroupInterfaceImpl {
       if (configFile.getString ("contextPath.output", "false").equals ("false")) {
         uriBuilder.replacePath ("");
       }
-      applyReverseProxyParams(uriBuilder, httpHeaders);
+      XForwardedHttpHeadersHandler.applyReverseProxyParams(uriBuilder, httpHeaders);
       String metadataHref = uriBuilder
               .path (aServiceMetadataInterface)
               .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID),
@@ -152,31 +152,4 @@ public final class BaseServiceGroupInterfaceImpl {
     return aServiceGroup;
   }
 
-  private static void applyReverseProxyParams(UriBuilder uriBuilder, HttpHeaders httpHeaders) {
-    String host = getHeader(httpHeaders, "X-Forwarded-Host");
-    if( ! StringUtils.isEmpty(host)) {
-      uriBuilder.host(host);
-
-      String port = getHeader(httpHeaders, "X-Forwarded-Port");
-      if (StringParser.isUnsignedInt(port)) {
-        uriBuilder.port(Integer.parseInt(port));
-      } else {
-        uriBuilder.port(UNSET_URI_PORT);
-      }
-
-      String protocol = getHeader(httpHeaders, "X-Forwarded-Proto");
-      if( ! StringUtils.isEmpty(protocol)){
-        uriBuilder.scheme(protocol);
-      }
-    }
-  }
-
-  private static String getHeader(HttpHeaders httpHeaders, String headerKey) {
-    List<String> headerValues = httpHeaders.getRequestHeader(headerKey);
-    if(headerValues != null && headerValues.size() > 0){
-      return headerValues.get(0);
-    }else {
-      return null;
-    }
-  }
 }
