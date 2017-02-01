@@ -38,12 +38,7 @@ public class AbstractTest {
     }
 
     private static void createDBCertificated() throws Throwable {
-        String[][] usernames = new String[][]{{"CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", "123ABCD"},
-                {"CN=EHEALTH_SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", "123ABCD"},
-                {"CN=SMP_1000000007,O=DG-DIGIT,C=BE", "123ABCD"},
-                {"CN=EHEALTH_SMP_1000000007,O=DG-DIGIT,C=BE", "123ABCD"},
-                {"CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", "123ABCD"},
-                {"CN=EHEALTH_SMP_EC/emailAddress\\=CEF-EDELIVERY-SUPPORT@ec.europa.eu,O=European Commission,C=BE:f71ee8b11cb3b787","12345"}};
+        String[][] usernames = new String[][]{{"CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", "123ABCD"}, {"CN=EHEALTH_SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", "123ABCD"}};
 
         for (int i = 0; i < usernames.length; i++) {
             DBUser aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, usernames[i][0]);
@@ -67,7 +62,7 @@ public class AbstractTest {
     }
 
     private static void removeDBUser() throws Throwable {
-        String[] usernames = new String[]{"CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", "CN=EHEALTH_SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD"};
+        String[]usernames = new String[]{"CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD","CN=EHEALTH_SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD"};
         for (int i = 0; i < usernames.length; i++) {
             DBUser aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, usernames[i]);
             if (aDBUser != null) {
