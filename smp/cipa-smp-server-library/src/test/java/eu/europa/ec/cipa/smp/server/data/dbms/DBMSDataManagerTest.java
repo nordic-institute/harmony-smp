@@ -303,7 +303,7 @@ public class DBMSDataManagerTest extends AbstractTest {
   }
 
   @Test
-  public void testCreateServiceMetadataServiceInformation() throws Throwable {
+  public void testCreateServiceMetadata() throws Throwable {
     // Save to DB
     boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(SERVICEGROUP_ID, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
 
@@ -408,12 +408,7 @@ public class DBMSDataManagerTest extends AbstractTest {
     @Test
     public void testUpdateServiceMetadataByAdmin() throws Throwable {
         // given
-        try {
-            s_aDataMgr.deleteService(PARTY_ID, DOCTYPE_ID, ADMIN_CREDENTIALS);
-        } catch (NotFoundException e) {
-            // since service couldn't exist...
-        }
-
+        s_aDataMgr.deleteService(PARTY_ID, DOCTYPE_ID, ADMIN_CREDENTIALS);
         boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
         String strMetadata = s_aDataMgr.getService(PARTY_ID, DOCTYPE_ID);
         ServiceMetadata metadata = ServiceMetadataConverter.unmarshal(strMetadata);
