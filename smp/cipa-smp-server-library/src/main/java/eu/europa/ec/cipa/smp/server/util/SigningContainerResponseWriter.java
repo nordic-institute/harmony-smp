@@ -116,7 +116,7 @@ final class SigningContainerResponseWriter implements ContainerResponseWriter {
     // that, and also specify the SHA1 digest algorithm and
     // the ENVELOPED Transform)
     final Reference aReference = aSignatureFactory.newReference ("",
-                                                                 aSignatureFactory.newDigestMethod (DigestMethod.SHA1,
+                                                                 aSignatureFactory.newDigestMethod (DigestMethod.SHA256,
                                                                                                     null),
                                                                  Collections.singletonList (aSignatureFactory.newTransform (Transform.ENVELOPED,
                                                                                                                             (TransformParameterSpec) null)),
@@ -124,9 +124,10 @@ final class SigningContainerResponseWriter implements ContainerResponseWriter {
                                                                  null);
 
     // Create the SignedInfo.
+    final String RSA_SHA256 = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
     final SignedInfo aSingedInfo = aSignatureFactory.newSignedInfo (aSignatureFactory.newCanonicalizationMethod (CanonicalizationMethod.INCLUSIVE,
                                                                                                                  (C14NMethodParameterSpec) null),
-                                                                    aSignatureFactory.newSignatureMethod (SignatureMethod.RSA_SHA1,
+                                                                    aSignatureFactory.newSignatureMethod (RSA_SHA256,
                                                                                                           null),
                                                                     Collections.singletonList (aReference));
 
