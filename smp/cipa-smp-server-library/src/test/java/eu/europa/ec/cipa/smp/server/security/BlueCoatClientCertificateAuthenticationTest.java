@@ -169,11 +169,29 @@ public class BlueCoatClientCertificateAuthenticationTest  extends AbstractTest {
 
     @Test
     public void calculateCertificateIdForEhealthAlreadyDecoded() throws Exception {
-        String certHeader = "sno=48:b6:81:ee:8e:0d:cc:08&subject=C=BE, O=European Commission, OU=CEF_eDelivery.europa.eu, OU=eHealth, CN=EHEALTH_SMP_TEST_BRAZIL&validfrom=Feb  1 14:20:18 2017 GMT&validto=Jul  9 23:59:00 2019 GMT&issuer=C=DE, O=T-Systems International GmbH, OU=T-Systems Trust Center, ST=Nordrhein Westfalen/postalCode=57250, L=Netphen/street=Untere Industriestr. 20, CN=Shared Business CA 4&policy_oids=1.3.6.1.4.1.7879.13.25";
+        String certHeader = "serial=48:b6:81:ee:8e:0d:cc:08&subject=C=BE, O=European Commission, OU=CEF_eDelivery.europa.eu, OU=eHealth, CN=EHEALTH_SMP_TEST_BRAZIL&validfrom=Feb  1 14:20:18 2017 GMT&validto=Jul  9 23:59:00 2019 GMT&issuer=C=DE, O=T-Systems International GmbH, OU=T-Systems Trust Center, ST=Nordrhein Westfalen/postalCode=57250, L=Netphen/street=Untere Industriestr. 20, CN=Shared Business CA 4&policy_oids=1.3.6.1.4.1.7879.13.25";
         BlueCoatClientCertificateAuthentication auth = new BlueCoatClientCertificateAuthentication(certHeader);
         Assert.assertEquals("CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08", auth.getName());
         Assert.assertEquals("CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08", ((CertificateDetails)auth.getDetails()).getCertificateId());
         Assert.assertEquals("CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE", ((CertificateDetails)auth.getDetails()).getSubject());
+    }
+
+    @Test
+    public void calculateCertificateIdForEhealthWithEmailAlreadyDecoded() throws Exception {
+        String certHeader = "serial=48:b6:81:ee:8e:0d:cc:08&subject=EMAILADDRESS=receiver@test.be,C=BE, O=European Commission, OU=CEF_eDelivery.europa.eu, OU=eHealth, CN=EHEALTH_SMP_TEST_BRAZIL&validfrom=Feb  1 14:20:18 2017 GMT&validto=Jul  9 23:59:00 2019 GMT&issuer=C=DE, O=T-Systems International GmbH, OU=T-Systems Trust Center, ST=Nordrhein Westfalen/postalCode=57250, L=Netphen/street=Untere Industriestr. 20, CN=Shared Business CA 4&policy_oids=1.3.6.1.4.1.7879.13.25";
+        BlueCoatClientCertificateAuthentication auth = new BlueCoatClientCertificateAuthentication(certHeader);
+        Assert.assertEquals("CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08", auth.getName());
+        Assert.assertEquals("CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08", ((CertificateDetails)auth.getDetails()).getCertificateId());
+        Assert.assertEquals("CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE", ((CertificateDetails)auth.getDetails()).getSubject());
+    }
+
+    @Test
+    public void calculateCertificateIdForPeppol() throws Exception {
+        String certHeader = "sno=0001&amp;subject=EMAILADDRESS=receiver@test.be%2C+CN=SMP_receiverCN%2C+OU=B4%2C+O=DIGIT%2C+L=Brussels%2C+ST=BE%2C+C=BE&amp;validfrom=Jun 1 10:37:53 2015 CEST&amp;validto=Jun 1 10:37:53 2035 CEST&amp;issuer=EMAILADDRESS=root@test.be%2C+CN=rootCN%2C+OU=B4%2C+O=DIGIT%2C+L=Brussels%2C+ST=BE%2C+C=BE";
+        BlueCoatClientCertificateAuthentication auth = new BlueCoatClientCertificateAuthentication(certHeader);
+        Assert.assertEquals("CN=SMP_receiverCN,O=DIGIT,C=BE:0000000000000001", auth.getName());
+        Assert.assertEquals("CN=SMP_receiverCN,O=DIGIT,C=BE:0000000000000001", ((CertificateDetails)auth.getDetails()).getCertificateId());
+        Assert.assertEquals("CN=SMP_receiverCN,O=DIGIT,C=BE", ((CertificateDetails)auth.getDetails()).getSubject());
     }
 
     @Test(expected = AuthenticationException.class)
