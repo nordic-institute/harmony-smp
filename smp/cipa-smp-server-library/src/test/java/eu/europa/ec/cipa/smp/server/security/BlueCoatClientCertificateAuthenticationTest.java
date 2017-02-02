@@ -158,6 +158,24 @@ public class BlueCoatClientCertificateAuthenticationTest  extends AbstractTest {
         Assert.assertEquals("CN=EHEALTH_SMP_TEST_BRAZIL/emailAddress\\=CEF-EDELIVERY-SUPPORT@ec.europa.eu,O=European Commission,C=BE", ((CertificateDetails)auth.getDetails()).getSubject());
     }
 
+    @Test
+    public void calculateCertificateIdForEhealthWithoutEmail() throws Exception {
+        String certHeader = "sno=48%3Ab6%3A81%3Aee%3A8e%3A0d%3Acc%3A08&amp;subject=C%3DBE%2C+O%3DEuropean+Commission%2C+OU%3DCEF_eDelivery.europa.eu%2C+OU%3DeHealth%2C+ST%3DNordrhein+Westfalen%2FpostalCode%3D57250%2C+L%3DNetphen%2Fstreet%3DUntere+Industriestr.+20%2C+CN%3DEHEALTH_SMP_TEST_BRAZIL&amp;validfrom=Feb++1+14%3A20%3A18+2017+GMT&amp;validto=Jul++9+23%3A59%3A00+2019+GMT&amp;issuer=C%3DDE%2C+O%3DT-Systems+International+GmbH%2C+OU%3DT-Systems+Trust+Center%2C+ST%3DNordrhein+Westfalen%2FpostalCode%3D57250%2C+L%3DNetphen%2Fstreet%3DUntere+Industriestr.+20%2C+CN%3DShared+Business+CA+4&amp;policy_oids=1.3.6.1.4.1.7879.13.25";
+        BlueCoatClientCertificateAuthentication auth = new BlueCoatClientCertificateAuthentication(certHeader);
+        Assert.assertEquals("CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08", auth.getName());
+        Assert.assertEquals("CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08", ((CertificateDetails)auth.getDetails()).getCertificateId());
+        Assert.assertEquals("CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE", ((CertificateDetails)auth.getDetails()).getSubject());
+    }
+
+    @Test
+    public void calculateCertificateIdForEhealthAlreadyDecoded() throws Exception {
+        String certHeader = "sno=48:b6:81:ee:8e:0d:cc:08&subject=C=BE, O=European Commission, OU=CEF_eDelivery.europa.eu, OU=eHealth, CN=EHEALTH_SMP_TEST_BRAZIL&validfrom=Feb  1 14:20:18 2017 GMT&validto=Jul  9 23:59:00 2019 GMT&issuer=C=DE, O=T-Systems International GmbH, OU=T-Systems Trust Center, ST=Nordrhein Westfalen/postalCode=57250, L=Netphen/street=Untere Industriestr. 20, CN=Shared Business CA 4&policy_oids=1.3.6.1.4.1.7879.13.25";
+        BlueCoatClientCertificateAuthentication auth = new BlueCoatClientCertificateAuthentication(certHeader);
+        Assert.assertEquals("CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08", auth.getName());
+        Assert.assertEquals("CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08", ((CertificateDetails)auth.getDetails()).getCertificateId());
+        Assert.assertEquals("CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE", ((CertificateDetails)auth.getDetails()).getSubject());
+    }
+
     @Test(expected = AuthenticationException.class)
     public void calculateCertificateIdImpossibleToDetermineTheCertificateIdentifier() throws Exception {
         String certHeader = "snf=53%3Aef%3A79%3Ac3%3A54%3A98%3Abb%3A63%3A38%3A35%3A9a%3A19%3A5d%3A2d%3Ad8%3A8c&subject=C%3DBE%2C+O%3DDG-DIGIT%2C+CN%3DSMP_1000000007&validfrom=Oct+21+00%3A00%3A00+2014+GMT&validto=Oct+20+23%3A59%3A59+2016+GMT&issuer=C%3DDK%2C+O%3DNATIONAL+IT+AND+TELECOM+AGENCY%2C+OU%3DFOR+TEST+PURPOSES+ONLY%2C+CN%3DPEPPOL+SERVICE+METADATA+PUBLISHER+TEST+CA";
