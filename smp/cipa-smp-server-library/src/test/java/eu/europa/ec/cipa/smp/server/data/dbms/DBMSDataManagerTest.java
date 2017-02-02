@@ -343,6 +343,13 @@ public class DBMSDataManagerTest extends AbstractTest {
     isServiceMetadataToDelete = true;
   }
 
+  @Test(expected = NotFoundException.class)
+  public void testCreateServiceMetadataNonExistingServiceGroup() throws Throwable {
+      final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
+      s_aDataMgr.saveService(serviceGroupNonExisting, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
+
+  }
+
   @Test
   public void testCreateServiceMetadataRedirect() throws Throwable {
       final String PARTICIPANT_IDENTIFIER3 = "0010:599900000000C";
@@ -510,6 +517,12 @@ public class DBMSDataManagerTest extends AbstractTest {
      final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, null);
      s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, aCredentials);
      fail ();
+  }
+
+  @Test(expected = NotFoundException.class)
+  public void testDeleteServiceMetadataNonExistingServiceGroup() throws Throwable {
+      final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
+      s_aDataMgr.deleteService(serviceGroupNonExisting, DOCTYPE_ID, CREDENTIALS);
   }
 
   @Test

@@ -424,6 +424,12 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 public void run() {
                     final EntityManager aEM = getEntityManager();
 
+                    final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(aServiceGroupID);
+                    DBServiceGroup aDBServiceGroup = aEM.find(DBServiceGroup.class, aDBServiceGroupID);
+                    if(aDBServiceGroup == null) {
+                        throw new NotFoundException(String.format("ServiceGroup '%s::%s' was not found", aServiceGroupID.getScheme(), aServiceGroupID.getValue()));
+                    }
+
                     // Check if an existing service is already contained
                     // This should have been deleted previously!
                     final DBServiceMetadataID aDBServiceMetadataID = new DBServiceMetadataID(aServiceGroupID, aDocTypeID);
