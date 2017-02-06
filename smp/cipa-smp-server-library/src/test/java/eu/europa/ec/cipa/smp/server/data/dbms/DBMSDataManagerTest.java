@@ -81,6 +81,8 @@ public class DBMSDataManagerTest extends AbstractTest {
   private static final String USERNAME = "peppol_user";
   private static final String PASSWORD = "Test1234";
   private static final String ADMIN_USERNAME = "the_admin";
+  private static final String NOADMIN_USERNAME = "CN=SMP_1000000181,O=DIGIT,C=DK:123456789";
+  private static final String NOADMIN_PASSWORD = "123456789";
     public static final BasicAuthClientCredentials ADMIN_CREDENTIALS = new BasicAuthClientCredentials(ADMIN_USERNAME, null);
 
     private static final String CERTIFICATE = "VGhpcyBpcyBzdXJlbHkgbm90IGEgdmFsaWQgY2VydGlmaWNhdGUsIGJ1dCBpdCBo\n"
@@ -109,7 +111,7 @@ public class DBMSDataManagerTest extends AbstractTest {
 
   @Before
   public void beforeTest () throws Throwable {
-    createOrUpdatedDBUser("CN=SMP_1000000181,O=DIGIT,C=DK:123456789", "123456789", false);
+    createOrUpdatedDBUser(NOADMIN_USERNAME, NOADMIN_PASSWORD, false);
     createOrUpdatedDBUser(ADMIN_USERNAME, null, true);
 
     final ExtensionType aExtension = SMPDBUtils.getAsExtensionSafe("<root><any>value</any></root>");
@@ -347,7 +349,19 @@ public class DBMSDataManagerTest extends AbstractTest {
   public void testCreateServiceMetadataNonExistingServiceGroup() throws Throwable {
       final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
       s_aDataMgr.saveService(serviceGroupNonExisting, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
+  }
 
+  @Test(expected = NotFoundException.class)
+  public void testCreateServiceMetadataByAdminNonExistingServiceGroup() throws Throwable {
+      final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
+      s_aDataMgr.saveService(serviceGroupNonExisting, DOCTYPE_ID, m_sServiceMetadata, ADMIN_CREDENTIALS);
+  }
+
+  @Test(expected = NotFoundException.class)
+  public void testCreateServiceMetadataByNoAdminNonExistingServiceGroup() throws Throwable {
+      final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
+      final BasicAuthClientCredentials noAdminCredentials = new BasicAuthClientCredentials (NOADMIN_USERNAME, NOADMIN_PASSWORD);
+      s_aDataMgr.saveService(serviceGroupNonExisting, DOCTYPE_ID, m_sServiceMetadata, noAdminCredentials);
   }
 
   @Test
@@ -525,10 +539,22 @@ public class DBMSDataManagerTest extends AbstractTest {
       s_aDataMgr.deleteService(serviceGroupNonExisting, DOCTYPE_ID, CREDENTIALS);
   }
 
+  @Test(expected = NotFoundException.class)
+  public void testDeleteServiceMetadataByAdminNonExistingServiceGroup() throws Throwable {
+      final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
+      s_aDataMgr.deleteService(serviceGroupNonExisting, DOCTYPE_ID, ADMIN_CREDENTIALS);
+  }
+
+  @Test(expected = NotFoundException.class)
+  public void testDeleteServiceMetadataByNoAdminNonExistingServiceGroup() throws Throwable {
+      final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
+      final BasicAuthClientCredentials noAdminCredentials = new BasicAuthClientCredentials (NOADMIN_USERNAME, NOADMIN_PASSWORD);
+      s_aDataMgr.deleteService(serviceGroupNonExisting, DOCTYPE_ID, noAdminCredentials);
+  }
+
   @Test
   public void testSaveServiceGroup() throws Throwable {
       // # Authentication #
-      String password = "123456789";
       BasicAuthClientCredentials auth =CREDENTIALS;
       ServiceGroup result = s_aDataMgr.getServiceGroup(m_aServiceGroup.getParticipantIdentifier());
 
@@ -555,7 +581,7 @@ public class DBMSDataManagerTest extends AbstractTest {
   @Test(expected = UnauthorizedException.class)
   public void testSaveServiceGroupByCertificateNotOwner() throws Throwable {
     String participantId = PARTICIPANT_IDENTIFIER2 + "951842";
-    String certificateIdentifierHeader = "CN=SMP_1000000181,O=DIGIT,C=DK:123456789";
+    String certificateIdentifierHeader = NOADMIN_USERNAME;
     ServiceGroup serviceGroup = createServiceGroup(participantId);
 
     s_aDataMgr.saveServiceGroup(serviceGroup, CREDENTIALS);
@@ -671,7 +697,7 @@ public class DBMSDataManagerTest extends AbstractTest {
 
   @After
   public void deleteUser() throws Throwable {
-      String[] usernames = new String[]{PARTICIPANT_IDENTIFIER2 + "654987","CN=SMP_1000000181,O=DIGIT,C=DK:123456789", ADMIN_USERNAME};
+      String[] usernames = new String[]{PARTICIPANT_IDENTIFIER2 + "654987",NOADMIN_USERNAME, ADMIN_USERNAME};
       for(String username : Arrays.asList(usernames)){
         DBUser aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, username);
         if(aDBUser != null) {

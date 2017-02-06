@@ -190,6 +190,20 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return aDBUser.isAdmin();
     }
 
+    /**
+     * Checks if exists a ServiceGroup with that ServiceGroupId
+     * @param aServiceGroupID Service Group Id
+     * @throws NotFoundException NotFoundException is thrown if Service Group does not exist
+     */
+    private void _verifyServiceGroup(ParticipantIdentifierType aServiceGroupID) throws NotFoundException {
+        final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(aServiceGroupID);
+        DBServiceGroup aDBServiceGroup = getEntityManager().find(DBServiceGroup.class, aDBServiceGroupID);
+        if(aDBServiceGroup == null) {
+            throw new NotFoundException(String.format("ServiceGroup '%s::%s' was not found", aServiceGroupID.getScheme(), aServiceGroupID.getValue()));
+        }
+    }
+
+
     @Nonnull
     @ReturnsMutableCopy
     public Collection<ParticipantIdentifierType> getServiceGroupList(@Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
@@ -412,6 +426,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                                @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable{
         boolean newServiceCreated = true;
         _verifyUser(aCredentials);
+        _verifyServiceGroup(aServiceGroupID);
         _verifyOwnership(aServiceGroupID, aCredentials);
 
         // Delete an eventually contained previous service in a separate transaction
@@ -423,12 +438,6 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         JPAExecutionResult<?> ret = doInTransaction(new Runnable() {
                 public void run() {
                     final EntityManager aEM = getEntityManager();
-
-                    final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(aServiceGroupID);
-                    DBServiceGroup aDBServiceGroup = aEM.find(DBServiceGroup.class, aDBServiceGroupID);
-                    if(aDBServiceGroup == null) {
-                        throw new NotFoundException(String.format("ServiceGroup '%s::%s' was not found", aServiceGroupID.getScheme(), aServiceGroupID.getValue()));
-                    }
 
                     // Check if an existing service is already contained
                     // This should have been deleted previously!
@@ -484,6 +493,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                               @Nonnull final DocumentIdentifier aDocTypeID,
                               @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
         _verifyUser(aCredentials);
+        _verifyServiceGroup(aServiceGroupID);
         _verifyOwnership(aServiceGroupID, aCredentials);
 
         final EChange eChange = _deleteService(aServiceGroupID, aDocTypeID);
