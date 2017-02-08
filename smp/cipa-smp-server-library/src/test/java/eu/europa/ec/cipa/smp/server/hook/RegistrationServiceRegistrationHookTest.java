@@ -39,8 +39,6 @@ package eu.europa.ec.cipa.smp.server.hook;
 
 import org.junit.Ignore;
 import org.junit.Test;
-
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 /**

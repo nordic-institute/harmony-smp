@@ -35,52 +35,51 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.smp.server.util;
+package eu.europa.ec.cipa.smp.server.security;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.PresentForCodeCoverage;
-import com.helger.commons.charset.CCharset;
-import com.helger.commons.codec.URLCodec;
-import com.helger.commons.messagedigest.EMessageDigestAlgorithm;
-import com.helger.commons.messagedigest.MessageDigestGeneratorHelper;
-import com.helger.commons.string.StringHelper;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import com.helger.commons.GlobalDebug;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.nio.charset.Charset;
-import java.util.Locale;
-
-import static eu.europa.ec.cipa.smp.server.data.dbms.model.CommonColumnsLengths.DNS_HASHED_IDENTIFIER_PREFIX;
+import javax.net.ssl.X509TrustManager;
+import java.security.cert.X509Certificate;
+import java.util.Arrays;
 
 /**
- * Utility methods for assembling URLs and URL elements required for BusDox.
+ * A trust manager that accepts all certificates.
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-@Immutable
-public final class BusdoxURLUtils {
-  public static final Charset URL_CHARSET = CCharset.CHARSET_UTF_8_OBJ;
-  public static final Locale URL_LOCALE = Locale.US;
+@Deprecated
+public final class DoNothingTrustManager implements X509TrustManager {
+  private static final Logger s_aLogger = LoggerFactory.getLogger (DoNothingTrustManager.class);
+  private final boolean m_bDebug;
 
-  @PresentForCodeCoverage
-  private static final BusdoxURLUtils s_aInstance = new BusdoxURLUtils ();
+  public DoNothingTrustManager() {
+    this (GlobalDebug.isDebugMode ());
+  }
 
-  private BusdoxURLUtils() {}
+  public DoNothingTrustManager(final boolean bDebug) {
+    m_bDebug = bDebug;
+  }
 
-  /**
-   * Escape the passed URL to use the percentage maskings.
-   *
-   * @param sURL
-   *        The input URL or URL part. May be <code>null</code>.
-   * @return <code>null</code> if the input string was <code>null</code>.
-   */
+  public boolean isDebug () {
+    return m_bDebug;
+  }
+
   @Nullable
-  public static String createPercentEncodedURL (@Nullable final String sURL) {
-    if (sURL != null)
-      return new URLCodec ().encodeText (sURL);
+  public X509Certificate [] getAcceptedIssuers () {
     return null;
   }
 
+  public void checkServerTrusted (final X509Certificate [] aChain, final String sAuthType) {
+    if (m_bDebug)
+      s_aLogger.info ("checkServerTrusted (" + Arrays.toString (aChain) + ", " + sAuthType + ")");
+  }
+
+  public void checkClientTrusted (final X509Certificate [] aChain, final String sAuthType) {
+    if (m_bDebug)
+      s_aLogger.info ("checkClientTrusted (" + Arrays.toString (aChain) + ", " + sAuthType + ")");
+  }
 }

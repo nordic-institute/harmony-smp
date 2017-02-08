@@ -43,10 +43,11 @@ import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
 import eu.europa.ec.bdmsl.ws.soap.ManageBusinessIdentifierService;
 import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
 import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
-import eu.europa.ec.cipa.peppol.security.DoNothingTrustManager;
-import eu.europa.ec.cipa.peppol.security.HostnameVerifierAlwaysTrue;
-import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
+
+import eu.europa.ec.cipa.smp.server.security.DoNothingTrustManager;
+import eu.europa.ec.cipa.smp.server.security.HostnameVerifierAlwaysTrue;
 import eu.europa.ec.cipa.smp.server.util.ConfigFile;
+import eu.europa.ec.cipa.smp.server.security.KeyStoreUtils;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.slf4j.Logger;
@@ -154,11 +155,11 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
       // Assign key manager and empty trust manager to SSL context
       final SSLContext aSSLCtx = SSLContext.getInstance ("TLS");
       aSSLCtx.init (aKeyManagerFactory.getKeyManagers (),
-                    new TrustManager [] { new DoNothingTrustManager () },
+                    new TrustManager [] { new DoNothingTrustManager() },
                     VerySecureRandom.getInstance ());
       HttpsURLConnection.setDefaultSSLSocketFactory (aSSLCtx.getSocketFactory ());
       if (sRegLocatorUrl.contains ("localhost")) {
-        HttpsURLConnection.setDefaultHostnameVerifier (new HostnameVerifierAlwaysTrue ());
+        HttpsURLConnection.setDefaultHostnameVerifier (new HostnameVerifierAlwaysTrue());
       }
     }
     catch (final Exception ex) {
@@ -239,14 +240,14 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
           case CREATE:
             // Undo create
             s_aLogger.warn ("CREATE failed in database, so deleting " +
-                            m_aBusinessIdentifier.getURIEncoded () +
+                            m_aBusinessIdentifier.getScheme()+"::"+m_aBusinessIdentifier.getValue() +
                             " from SML.");
             aSMLCaller.delete (toBusdoxParticipantId(m_aBusinessIdentifier));
             break;
           case DELETE:
             // Undo delete
             s_aLogger.warn ("DELETE failed in database, so creating " +
-                            m_aBusinessIdentifier.getURIEncoded () +
+                    m_aBusinessIdentifier.getScheme()+"::"+m_aBusinessIdentifier.getValue() +
                             " in SML.");
             aSMLCaller.create (toBusdoxParticipantId(m_aBusinessIdentifier));
             break;

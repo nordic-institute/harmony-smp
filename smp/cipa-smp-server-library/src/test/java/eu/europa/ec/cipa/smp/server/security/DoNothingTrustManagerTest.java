@@ -35,52 +35,23 @@
  * the provisions above, a recipient may use your version of this file
  * under either the MPL or the EUPL License.
  */
-package eu.europa.ec.cipa.smp.server.util;
+package eu.europa.ec.cipa.smp.server.security;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.PresentForCodeCoverage;
-import com.helger.commons.charset.CCharset;
-import com.helger.commons.codec.URLCodec;
-import com.helger.commons.messagedigest.EMessageDigestAlgorithm;
-import com.helger.commons.messagedigest.MessageDigestGeneratorHelper;
-import com.helger.commons.string.StringHelper;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.junit.Test;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-import java.nio.charset.Charset;
-import java.util.Locale;
-
-import static eu.europa.ec.cipa.smp.server.data.dbms.model.CommonColumnsLengths.DNS_HASHED_IDENTIFIER_PREFIX;
+import static org.junit.Assert.assertNull;
 
 /**
- * Utility methods for assembling URLs and URL elements required for BusDox.
- *
+ * Test class for class {@link DoNothingTrustManager}.
+ * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-@Immutable
-public final class BusdoxURLUtils {
-  public static final Charset URL_CHARSET = CCharset.CHARSET_UTF_8_OBJ;
-  public static final Locale URL_LOCALE = Locale.US;
-
-  @PresentForCodeCoverage
-  private static final BusdoxURLUtils s_aInstance = new BusdoxURLUtils ();
-
-  private BusdoxURLUtils() {}
-
-  /**
-   * Escape the passed URL to use the percentage maskings.
-   *
-   * @param sURL
-   *        The input URL or URL part. May be <code>null</code>.
-   * @return <code>null</code> if the input string was <code>null</code>.
-   */
-  @Nullable
-  public static String createPercentEncodedURL (@Nullable final String sURL) {
-    if (sURL != null)
-      return new URLCodec ().encodeText (sURL);
-    return null;
+public final class DoNothingTrustManagerTest {
+  @Test
+  public void testAll () {
+    final DoNothingTrustManager tm = new DoNothingTrustManager ();
+    assertNull (tm.getAcceptedIssuers ());
+    tm.checkClientTrusted (null, null);
+    tm.checkServerTrusted (null, null);
   }
-
 }

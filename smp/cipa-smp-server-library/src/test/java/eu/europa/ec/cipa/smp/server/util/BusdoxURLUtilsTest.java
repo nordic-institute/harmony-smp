@@ -37,18 +37,10 @@
  */
 package eu.europa.ec.cipa.smp.server.util;
 
-import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import eu.europa.ec.cipa.busdox.identifier.IReadonlyParticipantIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
-import eu.europa.ec.cipa.peppol.sml.ESML;
 import org.junit.Test;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 /**
  * Test class for class {@link BusdoxURLUtils}.
@@ -66,90 +58,4 @@ public final class BusdoxURLUtilsTest {
     assertEquals ("a%2Fb", BusdoxURLUtils.createPercentEncodedURL ("a/b"));
   }
 
-  @Test
-  @SuppressFBWarnings ("NP_NONNULL_PARAM_VIOLATION")
-  public void testGetDNSNameOfParticipant () {
-    assertEquals ("B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis.sml.peppolcentral.org",
-                  BusdoxURLUtils.getDNSNameOfParticipant (SimpleParticipantIdentifier.createWithDefaultScheme ("0088:123abc"),
-                                                          ESML.PRODUCTION));
-    // Same value but different casing
-    assertEquals ("B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis.sml.peppolcentral.org",
-                  BusdoxURLUtils.getDNSNameOfParticipant (SimpleParticipantIdentifier.createWithDefaultScheme ("0088:123ABC"),
-                                                          ESML.PRODUCTION));
-    // Wildcard
-    assertEquals ("*.iso6523-actorid-upis.sml.peppolcentral.org",
-                  BusdoxURLUtils.getDNSNameOfParticipant (SimpleParticipantIdentifier.createWithDefaultScheme ("*"),
-                                                          ESML.PRODUCTION));
-
-    // Empty DNS zone
-    assertEquals ("B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis",
-                  BusdoxURLUtils.getDNSNameOfParticipant (SimpleParticipantIdentifier.createWithDefaultScheme ("0088:123ABC"),
-                                                          (String) null));
-    assertEquals ("B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis",
-                  BusdoxURLUtils.getDNSNameOfParticipant (SimpleParticipantIdentifier.createWithDefaultScheme ("0088:123ABC"),
-                                                          ""));
-
-    System.out.println (BusdoxURLUtils.getDNSNameOfParticipant (SimpleParticipantIdentifier.createWithDefaultScheme ("9915:b"),
-                                                                ESML.PRODUCTION));
-
-    // Test invalid
-    try {
-      BusdoxURLUtils.getDNSNameOfParticipant (null, "anyzone.org.");
-      fail ();
-    }
-    catch (final NullPointerException ex) {
-      // expected
-    }
-
-    try {
-      // Invalid scheme
-      BusdoxURLUtils.getDNSNameOfParticipant (new SimpleParticipantIdentifier (null, "0088:123"), "anyzone.org.");
-      fail ();
-    }
-    catch (final IllegalArgumentException ex) {
-      // expected
-    }
-
-    try {
-      // Invalid scheme
-      BusdoxURLUtils.getDNSNameOfParticipant (new SimpleParticipantIdentifier ("invalid.scheme", "0088:123"),
-                                              "anyzone.org.");
-      fail ();
-    }
-    catch (final IllegalArgumentException ex) {
-      // expected
-    }
-
-    try {
-      // Invalid value
-      BusdoxURLUtils.getDNSNameOfParticipant (SimpleParticipantIdentifier.createWithDefaultScheme (null),
-                                              "anyzone.org.");
-      fail ();
-    }
-    catch (final IllegalArgumentException ex) {
-      // expected
-    }
-
-    try {
-      // Invalid DNS zone (missing dot)
-      BusdoxURLUtils.getDNSNameOfParticipant (SimpleParticipantIdentifier.createWithDefaultScheme ("0088:valid"),
-                                              "anyzone");
-      fail ();
-    }
-    catch (final IllegalArgumentException ex) {
-      // expected
-    }
-  }
-
-  @Test
-  public void testGetSMPURIOfParticipant () throws URISyntaxException, MalformedURLException {
-    final IReadonlyParticipantIdentifier aPI = SimpleParticipantIdentifier.createWithDefaultScheme ("0088:123ABC");
-    final URI aURI = BusdoxURLUtils.getSMPURIOfParticipant (aPI, ESML.PRODUCTION);
-    assertEquals (new URI ("http://B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis.sml.peppolcentral.org"),
-                  aURI);
-
-    final URL aURL = BusdoxURLUtils.getSMPURLOfParticipant (aPI, ESML.PRODUCTION);
-    assertEquals (new URL ("http://B-f5e78500450d37de5aabe6648ac3bb70.iso6523-actorid-upis.sml.peppolcentral.org"),
-                  aURL);
-  }
 }

@@ -39,6 +39,7 @@ package eu.europa.ec.cipa.smp.server.jetty;
 
 import java.io.File;
 
+import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
@@ -48,8 +49,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.helger.commons.SystemProperties;
-
-import eu.europa.ec.cipa.peppol.utils.ConfigFile;
 
 /**
  * Run this as an application and your SML will be up and running on port 8080
@@ -70,7 +69,7 @@ public final class RunInJettySMPFull {
       throw new IllegalStateException ("Security Manager is set but not supported - aborting!");
 
     // Proxy configuration is simply applied by setting system properties
-    final ConfigFile aCF = new ConfigFile ("private-configProxy.properties", "configProxy.properties");
+    final ConfigFile aCF = new ConfigFile("private-configProxy.properties", "configProxy.properties");
     for (final String sKey : aCF.getAllKeys ()) {
       final String sValue = aCF.getString (sKey);
       System.setProperty (sKey, sValue);

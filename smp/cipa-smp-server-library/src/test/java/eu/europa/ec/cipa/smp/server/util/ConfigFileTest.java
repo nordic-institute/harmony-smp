@@ -65,7 +65,7 @@ public final class ConfigFileTest {
     assertTrue (aCF.getBoolean ("element3a", true));
 
     // All keys
-    assertEquals (5, aCF.getAllKeys ().size ());
+    assertEquals (22, aCF.getAllKeys ().size ());
 
     assertNotNull (aCF.toString ());
   }

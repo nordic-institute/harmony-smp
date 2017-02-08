@@ -43,7 +43,7 @@ import com.helger.commons.io.streams.StringInputStream;
 import com.sun.jersey.spi.container.ContainerRequest;
 import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.ContainerResponseFilter;
-import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
+import eu.europa.ec.cipa.smp.server.security.KeyStoreUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
