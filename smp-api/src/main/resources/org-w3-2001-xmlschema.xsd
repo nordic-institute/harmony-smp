@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+This file specifies the custom output package for the default one:
+"org.w3._2001.xmlschema" -> "org.w3._2001.xmlschema.custom"
+There was a collision issue between generated class-names and other dependencies (genarated classes names are Adapter1.java Adapter2.java, ...)
+
+Solution described here:
+https://jaxb.java.net/guide/Customizing_Java_packages.html#Tip__get_rid_of_the_org_w3__2001_xmlschema_package
+-->
+<schema xmlns="http://www.w3.org/2001/XMLSchema"
+        targetNamespace="http://www.w3.org/2001/XMLSchema"
+        xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+        jaxb:version="2.0">
+    <annotation><appinfo>
+        <jaxb:schemaBindings>
+            <jaxb:package name="org.w3._2001.xmlschema.custom"/>
+        </jaxb:schemaBindings>
+    </appinfo></annotation>
+</schema>
