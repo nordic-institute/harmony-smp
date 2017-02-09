@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>eu.europa.ec.cipa</groupId>
-	<artifactId>cipa-builder</artifactId>
-	<packaging>pom</packaging>
-	<name>CIPA Builder POM</name>
-	<version>3.2.0-SNAPSHOT</version>
+    <groupId>eu.europa.ec</groupId>
+    <artifactId>smp</artifactId>
+    <packaging>pom</packaging>
+    <name>SMP Builder POM</name>
+    <version>2.5.2-SNAPSHOT</version>
 
 	<modules>
-		<module>common/cipa-parent-pom</module>
+		<module>smp-parent-pom</module>
 		<module>smp-api</module>
-		<module>smp/cipa-smp-full-webapp</module>
-		<module>smp/cipa-smp-server-library</module>
+		<module>smp-server-library</module>
+		<module>smp-webapp</module>
 	</modules>
 
-	<!-- Where to deploy binaries -->
+	<!-- Where to deploy binaries
 	<distributionManagement>
 		<repository>
 			<id>joinup-releases</id>
@@ -25,4 +25,5 @@
 			<url>https://joinup.ec.europa.eu/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
+	-->
 </project>
