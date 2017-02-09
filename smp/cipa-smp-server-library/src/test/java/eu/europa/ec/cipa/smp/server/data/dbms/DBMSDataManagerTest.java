@@ -79,6 +79,8 @@ public class DBMSDataManagerTest extends AbstractTest {
   private static final String USERNAME = "peppol_user";
   private static final String PASSWORD = "Test1234";
   private static final String ADMIN_USERNAME = "the_admin";
+  private static final String NOADMIN_USERNAME = "CN=SMP_1000000181,O=DIGIT,C=DK:123456789";
+  private static final String NOADMIN_PASSWORD = "123456789";
     public static final BasicAuthClientCredentials ADMIN_CREDENTIALS = new BasicAuthClientCredentials(ADMIN_USERNAME, null);
 
     private static final String CERTIFICATE = "VGhpcyBpcyBzdXJlbHkgbm90IGEgdmFsaWQgY2VydGlmaWNhdGUsIGJ1dCBpdCBo\n"
@@ -107,7 +109,7 @@ public class DBMSDataManagerTest extends AbstractTest {
 
   @Before
   public void beforeTest () throws Throwable {
-    createOrUpdatedDBUser("CN=SMP_1000000181,O=DIGIT,C=DK:123456789", "123456789", false);
+    createOrUpdatedDBUser(NOADMIN_USERNAME, NOADMIN_PASSWORD, false);
     createOrUpdatedDBUser(ADMIN_USERNAME, null, true);
 
     final ExtensionType aExtension = SMPDBUtils.getAsExtensionSafe("<root><any>value</any></root>");
@@ -301,9 +303,9 @@ public class DBMSDataManagerTest extends AbstractTest {
   }
 
   @Test
-  public void testCreateServiceMetadata () throws Throwable {
+  public void testCreateServiceMetadata() throws Throwable {
     // Save to DB
-    boolean bNewServiceMetadataCreated = s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, CREDENTIALS);
+    boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(SERVICEGROUP_ID, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
 
     // Retrieve from DB
     final String docDBServiceMetadata = s_aDataMgr.getService (SERVICEGROUP_ID, DOCTYPE_ID);
@@ -341,11 +343,92 @@ public class DBMSDataManagerTest extends AbstractTest {
     isServiceMetadataToDelete = true;
   }
 
+  @Test(expected = NotFoundException.class)
+  public void testCreateServiceMetadataNonExistingServiceGroup() throws Throwable {
+      final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
+      s_aDataMgr.saveService(serviceGroupNonExisting, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
+  }
+
+  @Test(expected = NotFoundException.class)
+  public void testCreateServiceMetadataByAdminNonExistingServiceGroup() throws Throwable {
+      final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
+      s_aDataMgr.saveService(serviceGroupNonExisting, DOCTYPE_ID, m_sServiceMetadata, ADMIN_CREDENTIALS);
+  }
+
+  @Test(expected = NotFoundException.class)
+  public void testCreateServiceMetadataByNoAdminNonExistingServiceGroup() throws Throwable {
+      final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
+      final BasicAuthClientCredentials noAdminCredentials = new BasicAuthClientCredentials (NOADMIN_USERNAME, NOADMIN_PASSWORD);
+      s_aDataMgr.saveService(serviceGroupNonExisting, DOCTYPE_ID, m_sServiceMetadata, noAdminCredentials);
+  }
+
+  @Test
+  public void testCreateServiceMetadataRedirect() throws Throwable {
+      final String PARTICIPANT_IDENTIFIER3 = "0010:599900000000C";
+      final ParticipantIdentifierType PARTY_ID3 = new ParticipantIdentifierType(PARTICIPANT_IDENTIFIER3,"iso6523-actorid-upis");
+      final ObjectFactory aObjFactory = new ObjectFactory ();
+      m_aServiceGroup = aObjFactory.createServiceGroup ();
+      m_aServiceGroup.setParticipantIdentifier (PARTY_ID3);
+
+      // Be sure to delete if it exists.
+      try {
+          s_aDataMgr.deleteServiceGroup (PARTY_ID3, CREDENTIALS);
+      }
+      catch (final Exception ex) {}
+
+      // Create a new one
+      s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
+
+      ServiceMetadata m_aServiceMetadataRedirect = aObjFactory.createServiceMetadata();
+      RedirectType redirect = aObjFactory.createRedirectType();
+      redirect.setCertificateUID("certificateUID");
+      redirect.setHref("href");
+
+      ExtensionType extension = aObjFactory.createExtensionType();
+      extension.setExtensionAgencyID("agencyId");
+      extension.setExtensionAgencyName("agencyName");
+      extension.setExtensionAgencyURI("uri");
+      extension.setExtensionID("id");
+      extension.setExtensionName("name");
+      extension.setExtensionReason("reason");
+      extension.setExtensionReasonCode("reasonCode");
+      extension.setExtensionVersionID("versionId");
+
+      redirect.getExtensions().add(extension);
+      m_aServiceMetadataRedirect.setRedirect(redirect);
+
+      String m_sServiceMetadataRedirect = XmlTestUtils.marshall(m_aServiceMetadataRedirect);
+
+      // Save to DB
+      boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(PARTY_ID3, DOCTYPE_ID, m_sServiceMetadataRedirect, CREDENTIALS);
+
+      // Retrieve from DB
+      assertTrue(bNewServiceMetadataCreated);
+      final String docDBServiceMetadata = s_aDataMgr.getService (PARTY_ID3, DOCTYPE_ID);
+      final ServiceMetadata aDBServiceMetadata = ServiceMetadataConverter.unmarshal(docDBServiceMetadata);
+      assertNotNull (aDBServiceMetadata);
+
+      RedirectType redirectDB = aDBServiceMetadata.getRedirect();
+      assertNotNull(redirectDB);
+      assertEquals(redirect.getHref(), redirectDB.getHref());
+      assertEquals(redirect.getCertificateUID(), redirectDB.getCertificateUID());
+      ExtensionType extensionDB = redirectDB.getExtensions().get(0);
+      assertNotNull(extensionDB);
+      assertEquals(extension.getExtensionAgencyID(), extensionDB.getExtensionAgencyID());
+      assertEquals(extension.getExtensionAgencyName(), extensionDB.getExtensionAgencyName());
+      assertEquals(extension.getExtensionAgencyURI(), extensionDB.getExtensionAgencyURI());
+      assertEquals(extension.getExtensionID(), extensionDB.getExtensionID());
+      assertEquals(extension.getExtensionName(), extensionDB.getExtensionName());
+      assertEquals(extension.getExtensionReason(), extensionDB.getExtensionReason());
+      assertEquals(extension.getExtensionReasonCode(), extensionDB.getExtensionReasonCode());
+      assertEquals(extension.getExtensionVersionID(), extensionDB.getExtensionVersionID());
+  }
+
     @Test
-    public void testUpdateServiceMetadataByAdmin () throws Throwable {
+    public void testUpdateServiceMetadataByAdmin() throws Throwable {
         // given
         s_aDataMgr.deleteService(PARTY_ID, DOCTYPE_ID, ADMIN_CREDENTIALS);
-        boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(m_aServiceMetadata, m_sServiceMetadata, CREDENTIALS);
+        boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
         String strMetadata = s_aDataMgr.getService(PARTY_ID, DOCTYPE_ID);
         ServiceMetadata metadata = ServiceMetadataConverter.unmarshal(strMetadata);
         EndpointType endpoint = metadata.getServiceInformation().getProcessList().getProcesses().get(0).getServiceEndpointList().getEndpoints().get(0);
@@ -353,7 +436,7 @@ public class DBMSDataManagerTest extends AbstractTest {
 
         //when
         m_sServiceMetadata = m_sServiceMetadata.replaceAll(DESCRIPTION, DESCRIPTION_2);
-        boolean bNewServiceMetadataUpdated = s_aDataMgr.saveService(m_aServiceMetadata, m_sServiceMetadata, ADMIN_CREDENTIALS );
+        boolean bNewServiceMetadataUpdated = s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata, ADMIN_CREDENTIALS );
 
         //then
         assertTrue(bNewServiceMetadataCreated);
@@ -365,9 +448,9 @@ public class DBMSDataManagerTest extends AbstractTest {
     }
 
     @Test
-    public void testDeleteServiceMetadataByAdmin () throws Throwable {
+    public void testDeleteServiceMetadataByAdmin() throws Throwable {
         // given
-        boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(m_aServiceMetadata, m_sServiceMetadata, CREDENTIALS);
+        boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
 
         //when
         s_aDataMgr.deleteService(PARTY_ID, DOCTYPE_ID, ADMIN_CREDENTIALS);
@@ -378,20 +461,20 @@ public class DBMSDataManagerTest extends AbstractTest {
     }
 
   @Test
-  public void testCreateServiceMetadataUnknownUser () throws Throwable {
+  public void testCreateServiceMetadataUnknownUser() throws Throwable {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
     try {
-        s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, aCredentials);
+        s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata, aCredentials);
         fail ();
     }
     catch (final UnknownUserException ex) {}
   }
 
   @Test
-  public void testCreateServiceMetadataWrongPass () throws Throwable {
+  public void testCreateServiceMetadataWrongPass() throws Throwable {
     final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WrongPassword");
     try {
-        s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, aCredentials);
+        s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata, aCredentials);
         s_aDataMgr.getCurrentEntityManager().getTransaction().commit();
         fail ();
     }
@@ -399,17 +482,17 @@ public class DBMSDataManagerTest extends AbstractTest {
   }
 
   @Test
-  public void testPrintServiceMetadata () throws Throwable {
+  public void testPrintServiceMetadata() throws Throwable {
     // Ensure something is present :)
       isServiceMetadataToDelete = true;
-      s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, CREDENTIALS);
+      s_aDataMgr.saveService(SERVICEGROUP_ID, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
       System.out.println (s_aDataMgr.getService (SERVICEGROUP_ID, DOCTYPE_ID));
   }
 
   @Test
-  public void testDeleteServiceMetadata () throws Throwable {
+  public void testDeleteServiceMetadata() throws Throwable {
     // Ensure something is present :)
-    s_aDataMgr.saveService (m_aServiceMetadata, m_sServiceMetadata, CREDENTIALS);
+    s_aDataMgr.saveService(SERVICEGROUP_ID, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
 
     // First deletion succeeds
     s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, CREDENTIALS);
@@ -448,10 +531,28 @@ public class DBMSDataManagerTest extends AbstractTest {
      fail ();
   }
 
+  @Test(expected = NotFoundException.class)
+  public void testDeleteServiceMetadataNonExistingServiceGroup() throws Throwable {
+      final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
+      s_aDataMgr.deleteService(serviceGroupNonExisting, DOCTYPE_ID, CREDENTIALS);
+  }
+
+  @Test(expected = NotFoundException.class)
+  public void testDeleteServiceMetadataByAdminNonExistingServiceGroup() throws Throwable {
+      final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
+      s_aDataMgr.deleteService(serviceGroupNonExisting, DOCTYPE_ID, ADMIN_CREDENTIALS);
+  }
+
+  @Test(expected = NotFoundException.class)
+  public void testDeleteServiceMetadataByNoAdminNonExistingServiceGroup() throws Throwable {
+      final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
+      final BasicAuthClientCredentials noAdminCredentials = new BasicAuthClientCredentials (NOADMIN_USERNAME, NOADMIN_PASSWORD);
+      s_aDataMgr.deleteService(serviceGroupNonExisting, DOCTYPE_ID, noAdminCredentials);
+  }
+
   @Test
   public void testSaveServiceGroup() throws Throwable {
       // # Authentication #
-      String password = "123456789";
       BasicAuthClientCredentials auth =CREDENTIALS;
       ServiceGroup result = s_aDataMgr.getServiceGroup(m_aServiceGroup.getParticipantIdentifier());
 
@@ -478,7 +579,7 @@ public class DBMSDataManagerTest extends AbstractTest {
   @Test(expected = UnauthorizedException.class)
   public void testSaveServiceGroupByCertificateNotOwner() throws Throwable {
     String participantId = PARTICIPANT_IDENTIFIER2 + "951842";
-    String certificateIdentifierHeader = "CN=SMP_1000000181,O=DIGIT,C=DK:123456789";
+    String certificateIdentifierHeader = NOADMIN_USERNAME;
     ServiceGroup serviceGroup = createServiceGroup(participantId);
 
     s_aDataMgr.saveServiceGroup(serviceGroup, CREDENTIALS);
@@ -594,7 +695,7 @@ public class DBMSDataManagerTest extends AbstractTest {
 
   @After
   public void deleteUser() throws Throwable {
-      String[] usernames = new String[]{PARTICIPANT_IDENTIFIER2 + "654987","CN=SMP_1000000181,O=DIGIT,C=DK:123456789", ADMIN_USERNAME};
+      String[] usernames = new String[]{PARTICIPANT_IDENTIFIER2 + "654987",NOADMIN_USERNAME, ADMIN_USERNAME};
       for(String username : Arrays.asList(usernames)){
         DBUser aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, username);
         if(aDBUser != null) {

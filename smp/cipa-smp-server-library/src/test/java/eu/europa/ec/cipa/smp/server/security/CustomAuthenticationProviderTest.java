@@ -18,7 +18,6 @@ import java.util.Locale;
  * Created by rodrfla on 21/01/2017.
  */
 public class CustomAuthenticationProviderTest extends AbstractTest {
-
     @Test
     public void authenticationForBlueCoat() throws Exception {
         String serial = "123ABCD";

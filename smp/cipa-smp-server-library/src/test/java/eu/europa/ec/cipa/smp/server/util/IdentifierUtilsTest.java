@@ -66,7 +66,7 @@ public final class IdentifierUtilsTest {
                                                                 "bdxr-actorid",
                                                                 "any-domain_actorid_any-type",
                                                                 "any-nonactoid-anybutmuchtoooooooooooooooooooooooolong" };
-  
+
 
   @Test
   public void testAreIdentifiersEqualPariticpantIdentifier () {

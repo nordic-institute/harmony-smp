@@ -59,7 +59,7 @@ public final class CIdentifier {
    * schemes (participant, document type and process).
    */
   @Nonnegative
-  public static final int MAX_IDENTIFIER_SCHEME_LENGTH = 25;
+  public static final int MAX_IDENTIFIER_SCHEME_LENGTH = 100;
 
   /**
    * Participant identifier value maximum length (excluding the scheme)
