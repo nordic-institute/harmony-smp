@@ -1,12 +1,12 @@
-ALTER TABLE smp_endpoint DROP FOREIGN KEY FK_smp_endpoint_documentIdentifierScheme
-ALTER TABLE smp_ownership DROP FOREIGN KEY FK_smp_ownership_username
-ALTER TABLE smp_ownership DROP FOREIGN KEY FK_smp_ownership_businessIdentifier
-ALTER TABLE smp_process DROP FOREIGN KEY FK_smp_process_documentIdentifierScheme
-ALTER TABLE smp_service_metadata DROP FOREIGN KEY FK_smp_service_metadata_businessIdentifier
-DROP TABLE smp_endpoint
-DROP TABLE smp_ownership
-DROP TABLE smp_process
-DROP TABLE smp_service_group
-DROP TABLE smp_service_metadata
-DROP TABLE smp_user
-DROP TABLE smp_service_metadata_redirection
+ALTER TABLE smp_endpoint DROP FOREIGN KEY FK_smp_endpoint_documentIdentifierScheme;
+ALTER TABLE smp_ownership DROP FOREIGN KEY FK_smp_ownership_username;
+ALTER TABLE smp_ownership DROP FOREIGN KEY FK_smp_ownership_businessIdentifier;
+ALTER TABLE smp_process DROP FOREIGN KEY FK_smp_process_documentIdentifierScheme;
+ALTER TABLE smp_service_metadata DROP FOREIGN KEY FK_smp_service_metadata_businessIdentifier;
+DROP TABLE smp_endpoint;
+DROP TABLE smp_ownership;
+DROP TABLE smp_process;
+DROP TABLE smp_service_metadata;
+DROP TABLE smp_user;
+DROP TABLE smp_service_metadata_red;
+DROP TABLE smp_service_group;
