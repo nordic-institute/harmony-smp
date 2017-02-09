@@ -43,7 +43,7 @@ public class AbstractTest {
                 {"CN=SMP_1000000007,O=DG-DIGIT,C=BE", "123ABCD"},
                 {"CN=EHEALTH_SMP_1000000007,O=DG-DIGIT,C=BE", "123ABCD"},
                 {"CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", "123ABCD"},
-                {"CN=EHEALTH_SMP_EC/emailAddress\\=CEF-EDELIVERY-SUPPORT@ec.europa.eu,O=European Commission,C=BE:f71ee8b11cb3b787","12345"}};
+                {"CN=EHEALTH_SMP_EC/emailAddress\\=CEF-EDELIVERY-SUPPORT@ec.europa.eu,O=European Commission,C=BE:f71ee8b11cb3b787", "12345"}};
 
         for (int i = 0; i < usernames.length; i++) {
             DBUser aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, usernames[i][0]);
@@ -53,7 +53,7 @@ public class AbstractTest {
                 aDBUser.setPassword(usernames[i][1]);
                 s_aDataMgr.getCurrentEntityManager().persist(aDBUser);
             } else {
-                if (!aDBUser.getPassword().equals(usernames[i][1])) {
+                if (aDBUser.getPassword() != null && !aDBUser.getPassword().equals(usernames[i][1])) {
                     aDBUser.setPassword(usernames[i][1]);
                     s_aDataMgr.getCurrentEntityManager().merge(aDBUser);
                 }
