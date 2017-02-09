@@ -10,7 +10,6 @@
     </parent>
 
     <artifactId>smp-api</artifactId>
-    <!--<version>2.5.2-SNAPSHOT</version>-->
     <name>smp-api</name>
 
     <dependencies>
