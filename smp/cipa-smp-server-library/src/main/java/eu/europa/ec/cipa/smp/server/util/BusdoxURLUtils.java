@@ -37,22 +37,14 @@
  */
 package eu.europa.ec.cipa.smp.server.util;
 
-import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.PresentForCodeCoverage;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.codec.URLCodec;
-import com.helger.commons.messagedigest.EMessageDigestAlgorithm;
-import com.helger.commons.messagedigest.MessageDigestGeneratorHelper;
-import com.helger.commons.string.StringHelper;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.nio.charset.Charset;
 import java.util.Locale;
-
-import static eu.europa.ec.cipa.smp.server.data.dbms.model.CommonColumnsLengths.DNS_HASHED_IDENTIFIER_PREFIX;
 
 /**
  * Utility methods for assembling URLs and URL elements required for BusDox.

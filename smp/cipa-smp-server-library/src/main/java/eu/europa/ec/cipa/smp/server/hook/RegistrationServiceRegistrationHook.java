@@ -64,6 +64,9 @@ import javax.xml.ws.handler.MessageContext;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyStore;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -76,6 +79,7 @@ import java.util.Map;
  */
 @NotThreadSafe
 public final class RegistrationServiceRegistrationHook extends AbstractRegistrationHook {
+  private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
   private static final String CONFIG_HOOK_REG_LOCATOR_URL = "regServiceRegistrationHook.regLocatorUrl";
   private static final String CONFIG_HOOK_ID = "regServiceRegistrationHook.id";
   private static final String CONFIG_HOOK_KEYSTORE_CLASSPATH = "regServiceRegistrationHook.keystore.classpath";
@@ -114,11 +118,12 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     s_aLogger.info ("This SMP has the ID: " + s_sSMPID);
   }
 
-  private static enum EAction {
+  private enum EAction {
     CREATE,
     DELETE
   }
 
+  //TODO: Get rid of these two stinky and not thread-safe guys (even if there is a ThreadLocal queue-something implemented, this is super stinky) Will cause problems after we switch to Spring:
   private ParticipantIdentifierType m_aBusinessIdentifier;
   private EAction m_eAction;
 
@@ -128,11 +133,14 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
 
 
   protected IManageParticipantIdentifierWS getSmlCaller () {
+    Map<String, List<String>> customHeaders = new HashMap<>();
+    customHeaders.put(CLIENT_CERT_HEADER_KEY, Arrays.asList(s_sSMPClientCertificate));
+
     final ManageBusinessIdentifierService aService = new ManageBusinessIdentifierService ();
     final IManageParticipantIdentifierWS aPort = aService.getManageBusinessIdentifierServicePort ();
     Map<String, Object> requestContext = ((BindingProvider) aPort).getRequestContext();
     requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, s_aSMLEndpointURL.toString());
-    requestContext.put(MessageContext.HTTP_REQUEST_HEADERS, s_sSMPClientCertificate);
+    requestContext.put(MessageContext.HTTP_REQUEST_HEADERS, customHeaders);
     return aPort;
   }
 
@@ -167,17 +175,17 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     }
   }
 
-  public void create (final ParticipantIdentifierType aPI) throws HookException {
-    m_eAction = EAction.CREATE;
-    s_aLogger.info ("Trying to create business " + m_aBusinessIdentifier + " in Business Identifier Manager Service");
+  public void create (final ParticipantIdentifierType participantId) throws HookException {
+    m_aBusinessIdentifier = participantId; // TODO: Oh my God, this is not thread safe !!! (Will not be when we migrate to Spring)
+    m_eAction = EAction.CREATE; //TODO: and this as well !!!
+
+    s_aLogger.info ("Trying to create business " + participantId + " in Business Identifier Manager Service");
 
     try {
       _setupSSLSocketFactory ();
       final IManageParticipantIdentifierWS aSMLCaller = getSmlCaller();
-      aSMLCaller.create (toBusdoxParticipantId(aPI));
-      s_aLogger.info ("Succeeded in creating business " +
-                      m_aBusinessIdentifier +
-                      " using Business Identifier Manager Service");
+      aSMLCaller.create (toBusdoxParticipantId(participantId));
+      s_aLogger.info ("Succeeded in creating business " +toString(participantId) + " using Business Identifier Manager Service");
       getQueueInstance ().set (this);
     }
     catch (final UnauthorizedFault ex) {
@@ -186,9 +194,7 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
       throw new HookException (sMsg, ex);
     }
     catch (final Throwable t) {
-      final String sMsg = "Could not create business " +
-                          m_aBusinessIdentifier +
-                          " in Business Identifier Manager Service";
+      final String sMsg = "Could not create business " +toString(participantId) + " in Business Identifier Manager Service";
       s_aLogger.warn (sMsg, t);
       throw new HookException (sMsg, t);
     }
@@ -204,27 +210,24 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     return busdoxIdentifier;
   }
 
-  public void delete (final ParticipantIdentifierType aPI) throws HookException {
-    m_aBusinessIdentifier = new ParticipantIdentifierType (aPI.getScheme(), aPI.getValue());
-    m_eAction = EAction.DELETE;
-    s_aLogger.info ("Trying to delete business " + m_aBusinessIdentifier + " in Business Identifier Manager Service");
+  public void delete (final ParticipantIdentifierType participantId) throws HookException {
+    m_aBusinessIdentifier = participantId; // TODO: Oh my God, this is not thread safe !!! (Will not be when we migrate to Spring)
+    m_eAction = EAction.DELETE; //TODO: and this as well !!!
+
+    s_aLogger.info ("Trying to delete business " + toString(participantId) + " in Business Identifier Manager Service");
 
     try {
       _setupSSLSocketFactory ();
       final IManageParticipantIdentifierWS aSMLCaller = getSmlCaller();
-      aSMLCaller.delete (toBusdoxParticipantId(m_aBusinessIdentifier));
-      s_aLogger.info ("Succeded in deleting business " +
-                      m_aBusinessIdentifier +
-                      " using Business Identifier Manager Service");
+      aSMLCaller.delete (toBusdoxParticipantId(participantId));
+      s_aLogger.info ("Succeded in deleting business " + toString(participantId) + " using Business Identifier Manager Service");
       getQueueInstance ().set (this);
     }
     catch (final NotFoundFault e) {
-      s_aLogger.warn ("The business " + m_aBusinessIdentifier + " was not present in the SML. Just ignore.");
+      s_aLogger.warn ("The business " + toString(participantId) + " was not present in the SML. Just ignore.");
     }
     catch (final Throwable t) {
-      final String sMsg = "Could not delete business " +
-                          m_aBusinessIdentifier +
-                          " in Business Identifier Manager Service";
+      final String sMsg = "Could not delete business " + toString(participantId) + " in Business Identifier Manager Service";
       s_aLogger.warn (sMsg, t);
       throw new HookException (sMsg, t);
     }
@@ -239,22 +242,24 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
         switch (m_eAction) {
           case CREATE:
             // Undo create
-            s_aLogger.warn ("CREATE failed in database, so deleting " +
-                            m_aBusinessIdentifier.getScheme()+"::"+m_aBusinessIdentifier.getValue() +
-                            " from SML.");
+            s_aLogger.warn ("CREATE failed in database, so deleting " + toString(m_aBusinessIdentifier) + " from SML.");
             aSMLCaller.delete (toBusdoxParticipantId(m_aBusinessIdentifier));
             break;
           case DELETE:
             // Undo delete
             s_aLogger.warn ("DELETE failed in database, so creating " +
-                    m_aBusinessIdentifier.getScheme()+"::"+m_aBusinessIdentifier.getValue() +
-                            " in SML.");
+                    m_aBusinessIdentifier.getScheme() + toString(m_aBusinessIdentifier) + " in SML.");
             aSMLCaller.create (toBusdoxParticipantId(m_aBusinessIdentifier));
             break;
         }
       }
       catch (final Throwable t) {
-        throw new HookException ("Unable to rollback update business " + m_aBusinessIdentifier, t);
+        throw new HookException ("Unable to rollback update business " + toString(m_aBusinessIdentifier), t);
       }
   }
+
+  private String toString(ParticipantIdentifierType id){
+    return id.getScheme()+"::"+id.getValue();
+  }
+
 }
