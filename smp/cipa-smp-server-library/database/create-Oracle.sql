@@ -8,10 +8,10 @@ serviceDescription CLOB NOT NULL,
 serviceExpirationDate DATE NOT NULL, 
 technicalContactUrl VARCHAR(256) NOT NULL,
 technicalInformationUrl VARCHAR(256), 
-documentIdentifierScheme VARCHAR(25) NOT NULL,
+documentIdentifierScheme VARCHAR(100) NOT NULL,
 processIdentifier VARCHAR(200) NOT NULL, 
 businessIdentifier VARCHAR(50) NOT NULL, 
-businessIdentifierScheme VARCHAR(25) NOT NULL, 
+businessIdentifierScheme VARCHAR(100) NOT NULL,
 endpointReference VARCHAR(256) NOT NULL, 
 documentIdentifier VARCHAR(500) NOT NULL, 
 processIdentifierType VARCHAR(25) NOT NULL, 
@@ -30,15 +30,15 @@ transportProfile)
 CREATE TABLE smp_ownership (
 username VARCHAR(256) NOT NULL, 
 businessIdentifier VARCHAR(50) NOT NULL, 
-businessIdentifierScheme VARCHAR(25) NOT NULL, 
+businessIdentifierScheme VARCHAR(100) NOT NULL,
 PRIMARY KEY (username, businessIdentifier, businessIdentifierScheme));
 
 CREATE TABLE smp_process (
 extension CLOB, 
-documentIdentifierScheme VARCHAR(25) NOT NULL, 
+documentIdentifierScheme VARCHAR(100) NOT NULL,
 processIdentifier VARCHAR(200) NOT NULL, 
 businessIdentifier VARCHAR(50) NOT NULL, 
-businessIdentifierScheme VARCHAR(25) NOT NULL,
+businessIdentifierScheme VARCHAR(100) NOT NULL,
 documentIdentifier VARCHAR(500) NOT NULL, 
 processIdentifierType VARCHAR(25) NOT NULL, 
 PRIMARY KEY (
@@ -51,14 +51,14 @@ documentIdentifier, processIdentifierType));
 CREATE TABLE smp_service_group (
 extension CLOB, 
 businessIdentifier VARCHAR(50) NOT NULL, 
-businessIdentifierScheme VARCHAR(25) NOT NULL, 
+businessIdentifierScheme VARCHAR(100) NOT NULL,
 PRIMARY KEY (businessIdentifier, businessIdentifierScheme));
 
 CREATE TABLE smp_service_metadata (
 extension CLOB, 
-documentIdentifierScheme VARCHAR(25) NOT NULL, 
+documentIdentifierScheme VARCHAR(100) NOT NULL,
 businessIdentifier VARCHAR(50) NOT NULL, 
-businessIdentifierScheme VARCHAR(25) NOT NULL, 
+businessIdentifierScheme VARCHAR(100) NOT NULL,
 documentIdentifier VARCHAR(500) NOT NULL,
 xmlcontent CLOB,
 PRIMARY KEY (
@@ -78,9 +78,9 @@ CREATE TABLE smp_service_metadata_red (
 certificateUID VARCHAR(256) NOT NULL, 
 extension CLOB, 
 redirectionUrl VARCHAR(256) NOT NULL, 
-documentIdentifierScheme VARCHAR(25) NOT NULL, 
+documentIdentifierScheme VARCHAR(100) NOT NULL,
 businessIdentifier VARCHAR(50) NOT NULL, 
-businessIdentifierScheme VARCHAR(25) NOT NULL, 
+businessIdentifierScheme VARCHAR(100) NOT NULL,
 documentIdentifier VARCHAR(500) NOT NULL, 
 PRIMARY KEY (
 documentIdentifierScheme, 

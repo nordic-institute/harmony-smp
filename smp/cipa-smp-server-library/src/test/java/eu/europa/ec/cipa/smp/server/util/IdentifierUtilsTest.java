@@ -247,8 +247,9 @@ public final class IdentifierUtilsTest {
 
     assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifier ("doctype::invoice"));
     assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifier ("doctype::order "));
+    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifier ("68ecvAXQsbA1mkXJ5Em7HI40uU6VLaHnNZiqv2C7tjt7eNIlHOt5r0Rh3zuLfW07z309yhqsT33p0XbF9UPF4pjY8U6aAu89QDeV::order "));
 
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifier ("doctypethatiswaytoolongforwhatisexpected::order"));
+    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifier ("doctypethatiswaytoolongforwhatisexpectedandnowitsmorethanthatbecauseitwasincreasedmoreduetosomelimitations::order"));
     assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifier ("doctype::" +
                                                                 StringHelper.getRepeated ('a',
                                                                                           CIdentifier.MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH + 1)));
@@ -285,8 +286,10 @@ public final class IdentifierUtilsTest {
     assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::990976098897"));
     assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::9909:976098896"));
     assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::9908:976098896"));
+    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummymaxkbiqaxhsjssbshkzkhofqcnoxglrjwoqfvruxyffjanjsgkcknunaewvzjsowxrzjjgqyqboyvexpjba::9908:976098896"));
 
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummythatiswaytoolongforwhatisexpected::9908:976098896"));
+
+    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummythatiswaytoolongforwhatisexpectedandnowitsmorethanthatbecauseitwasincreasedmoreduetosomelimitations::9908:976098896"));
     assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::" +
                                                                StringHelper.getRepeated ('a',
                                                                                          CIdentifier.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH + 1)));
@@ -315,8 +318,10 @@ public final class IdentifierUtilsTest {
 
     assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifier ("process::proc1"));
     assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifier ("process::proc2 "));
+    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifier ("processxsmqqifmgyxpumuuxqixpifecilcsmnpcfxkbcknubaaicgyufrqouuvpgugrgcgoxejhxbrwxgkgrmlqguohyzjomqph::proc2 "));
 
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifier ("processany-actorid-dummythatiswaytoolongforwhatisexpected::proc2"));
+
+    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifier ("processany-actorid-dummythatiswaytoolongforwhatisexpectedandnowitsmorethanthatbecauseitwasincreasedmoreduetosomelimitations::proc2"));
     assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifier ("process::" +
                                                            StringHelper.getRepeated ('a',
                                                                                      CIdentifier.MAX_PROCESS_IDENTIFIER_VALUE_LENGTH + 1)));
