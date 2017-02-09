@@ -8,23 +8,10 @@
 	<version>3.2.0-SNAPSHOT</version>
 
 	<modules>
-		<module>common/cipa-commons-busdox</module>
 		<module>common/cipa-parent-pom</module>
-		<module>common/cipa-edelivery-common</module>
-		<module>common/cipa-peppol-types</module>
-		<module>bdmsl/cipa-bdmsl-webapp</module>
-		<module>bdmsl/cipa-bdmsl-client</module>
-		<module>connector/cipa-dispatcher</module>
-		<module>as2/mendelson-as2-war</module>
-		<module>as4/Domibus-MSH</module>
-		<module>as4/dynamic-discovery</module>
 		<module>smp-api</module>
 		<module>smp/cipa-smp-full-webapp</module>
-		<module>smp/cipa-smp-readonly-webapp</module>
 		<module>smp/cipa-smp-server-library</module>
-		<module>sml/cipa-sml-client-library</module>
-		<module>sml/cipa-sml-server-library</module>
-		<module>sml/cipa-sml-webapp</module>
 	</modules>
 
 	<!-- Where to deploy binaries -->
