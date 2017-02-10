@@ -1,9 +1,0 @@
-#
-# Resolver records for locator mockup
-#
-
-c1.DE.test.civil-law.community.eu.: res://eu.domibus.discovery.cpp.CPPTest/c1_end_entity_buyer.cpp.res.xml
-c1.DE.test.civil-law.community.eu.: res://eu.domibus.discovery.cpp.CPPTest/c1_end_entity_buyer.cpp.res.xml
-
-c4.DE.test.civil-law.community.eu.: res://eu.domibus.discovery.cpp.CPPTest/c4_end_entity_seller.cpp.res.xml
-c4.DE.test.civil-law.community.eu.: res://eu.domibus.discovery.cpp.CPPTest/c4_end_entity_seller.cpp.res.xml

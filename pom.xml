@@ -1,33 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>eu.europa.ec.cipa</groupId>
-	<artifactId>cipa-builder</artifactId>
-	<packaging>pom</packaging>
-	<name>CIPA Builder POM</name>
-	<version>3.2.0-SNAPSHOT</version>
+    <groupId>eu.europa.ec</groupId>
+    <artifactId>smp</artifactId>
+    <packaging>pom</packaging>
+    <name>SMP Builder POM</name>
+    <version>3.0.0-SNAPSHOT</version>
 
 	<modules>
-		<module>common/cipa-commons-busdox</module>
-		<module>common/cipa-parent-pom</module>
-		<module>common/cipa-edelivery-common</module>
-		<module>common/cipa-peppol-types</module>
-		<module>bdmsl/cipa-bdmsl-webapp</module>
-		<module>bdmsl/cipa-bdmsl-client</module>
-		<module>connector/cipa-dispatcher</module>
-		<module>as2/mendelson-as2-war</module>
-		<module>as4/Domibus-MSH</module>
-		<module>as4/dynamic-discovery</module>
+		<module>smp-parent-pom</module>
 		<module>smp-api</module>
-		<module>smp/cipa-smp-full-webapp</module>
-		<module>smp/cipa-smp-readonly-webapp</module>
-		<module>smp/cipa-smp-server-library</module>
-		<module>sml/cipa-sml-client-library</module>
-		<module>sml/cipa-sml-server-library</module>
-		<module>sml/cipa-sml-webapp</module>
+		<module>smp-server-library</module>
+		<module>smp-webapp</module>
 	</modules>
 
-	<!-- Where to deploy binaries -->
+	<!-- Where to deploy binaries
 	<distributionManagement>
 		<repository>
 			<id>joinup-releases</id>
@@ -38,4 +25,5 @@
 			<url>https://joinup.ec.europa.eu/nexus/content/repositories/snapshots/</url>
 		</snapshotRepository>
 	</distributionManagement>
+	-->
 </project>
