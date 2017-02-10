@@ -39,8 +39,6 @@ package eu.europa.ec.cipa.smp.server.data.dbms;
 
 import com.helger.commons.annotations.DevelopersNote;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
-
-import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
 import eu.europa.ec.cipa.smp.server.AbstractTest;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
@@ -68,9 +66,9 @@ import static org.junit.Assert.*;
 // ("Cannot be enabled by default, because it would fail without the correct configuration")
 @DevelopersNote ("You need to adjust your local config.properties file to run this test")
 public class DBMSDataManagerTest extends AbstractTest {
-    private static final String PARTICIPANT_IDENTIFIER_SCHEME = CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME;
-  private static final String DOCUMENT_SCHEME = CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME;
-  private static final String PROCESS_SCHEME = CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME;
+    private static final String PARTICIPANT_IDENTIFIER_SCHEME = CommonColumnsLengths.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME;
+  private static final String DOCUMENT_SCHEME = CommonColumnsLengths.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME;
+  private static final String PROCESS_SCHEME = CommonColumnsLengths.DEFAULT_PROCESS_IDENTIFIER_SCHEME;
 
   private static final String PARTICIPANT_IDENTIFIER1 = "0010:599900000000A";
   private static final String PARTICIPANT_IDENTIFIER2 = "0010:599900000000B";

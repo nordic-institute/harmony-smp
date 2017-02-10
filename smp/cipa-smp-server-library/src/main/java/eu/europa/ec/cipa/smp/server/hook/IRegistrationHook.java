@@ -37,12 +37,10 @@
  */
 package eu.europa.ec.cipa.smp.server.hook;
 
-import javax.annotation.Nonnull;
-
 import com.helger.commons.state.ESuccess;
-
-import eu.europa.ec.cipa.busdox.identifier.IParticipantIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger

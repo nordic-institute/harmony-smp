@@ -40,9 +40,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>eu.europa.ec.cipa</groupId>
-            <artifactId>cipa-sml-client-library</artifactId>
-            <version>3.2.0-SNAPSHOT</version> <!-- 7.10.2016 Gutowski: Versioning is messed up -->
+            <groupId>eu.europa.ec.bdmsl</groupId>
+            <artifactId>bdmsl-client</artifactId>
         </dependency>
         <dependency>
             <groupId>com.helger</groupId>
@@ -190,6 +189,17 @@
             <testResource>
                 <directory>src/test/resources</directory>
                 <filtering>true</filtering>
+                <excludes>
+                    <exclude>**/*.jks</exclude>
+                </excludes>
+            </testResource>
+            <testResource>
+                <directory>src/test/resources</directory>
+                <filtering>false</filtering>
+                <!-- With filtering=true Maven was introducing changes in keystore binary files [sic!] -->
+                <includes>
+                    <include>**/*.jks</include>
+                </includes>
             </testResource>
         </testResources>
         <plugins>

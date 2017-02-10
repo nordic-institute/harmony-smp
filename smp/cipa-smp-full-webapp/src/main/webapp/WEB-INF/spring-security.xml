@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
-    <b:bean id="configFile" class="eu.europa.ec.cipa.peppol.utils.ConfigFile">
+    <b:bean id="configFile" class="eu.europa.ec.cipa.smp.server.util.ConfigFile">
         <b:constructor-arg type="java.lang.String" value="smp.config.properties"/>
     </b:bean>
 

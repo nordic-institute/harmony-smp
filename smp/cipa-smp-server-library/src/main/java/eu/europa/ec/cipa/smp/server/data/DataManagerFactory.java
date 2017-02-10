@@ -37,17 +37,15 @@
  */
 package eu.europa.ec.cipa.smp.server.data;
 
-import javax.annotation.Nonnull;
-import javax.annotation.concurrent.Immutable;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.lang.GenericReflection;
-
-import eu.europa.ec.cipa.peppol.utils.ConfigFile;
+import eu.europa.ec.cipa.smp.server.util.ConfigFile;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
 /**
  * Factory for creating new DataManagers. This implementation retrieves the name

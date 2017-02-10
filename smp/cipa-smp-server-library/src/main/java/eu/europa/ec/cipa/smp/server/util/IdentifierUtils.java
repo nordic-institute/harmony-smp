@@ -39,15 +39,8 @@ package eu.europa.ec.cipa.smp.server.util;
 
 import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.annotations.PresentForCodeCoverage;
-import com.helger.commons.charset.CCharset;
-import com.helger.commons.collections.ArrayHelper;
 import com.helger.commons.equals.EqualsUtils;
-import com.helger.commons.exceptions.InitializationException;
-import com.helger.commons.regex.RegExHelper;
 import com.helger.commons.string.StringHelper;
-import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
-import eu.europa.ec.cipa.peppol.uri.BusdoxURLUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessIdentifier;
@@ -55,10 +48,9 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessIdentifier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.nio.charset.Charset;
-import java.util.List;
 import java.util.Locale;
-import java.util.concurrent.atomic.AtomicBoolean;
+
+import static eu.europa.ec.cipa.smp.server.data.dbms.model.CommonColumnsLengths.URL_SCHEME_VALUE_SEPARATOR;
 
 /**
  * This class contains several identifier related utility methods.
@@ -175,7 +167,7 @@ public final class IdentifierUtils {
       throw new IllegalArgumentException ("Passed identifier has a null value: " + aIdentifier);
 
     // Combine scheme and value
-    return sScheme + CIdentifier.URL_SCHEME_VALUE_SEPARATOR + sValue;
+    return sScheme + URL_SCHEME_VALUE_SEPARATOR + sValue;
   }
 
   @Nonnull
@@ -192,7 +184,7 @@ public final class IdentifierUtils {
       throw new IllegalArgumentException ("Passed identifier has a null value: " + aIdentifier);
 
     // Combine scheme and value
-    return sScheme + CIdentifier.URL_SCHEME_VALUE_SEPARATOR + sValue;
+    return sScheme + URL_SCHEME_VALUE_SEPARATOR + sValue;
   }
 
   /**
@@ -214,6 +206,20 @@ public final class IdentifierUtils {
     return BusdoxURLUtils.createPercentEncodedURL (sURIEncoded);
   }
 
+  /**
+   * Central method for unifying participant identifier values for storage in a
+   * DB, as participant identifier values need to be handled case-insensitive.
+   * This method can be applied both to participant identifier schemes and
+   * business identifier values.
+   *
+   * @param sValue
+   *        The DB identifier value to unify. May be <code>null</code>.
+   * @return <code>null</code> if the passed value is <code>null</code>
+   */
+  @Nullable
+  public static String getUnifiedParticipantDBValue (@Nullable final String sValue) {
+    return sValue == null ? null : sValue.toLowerCase (Locale.US);
+  }
 
 
 

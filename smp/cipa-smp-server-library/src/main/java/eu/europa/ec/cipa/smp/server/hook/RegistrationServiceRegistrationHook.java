@@ -37,44 +37,49 @@
  */
 package eu.europa.ec.cipa.smp.server.hook;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.security.KeyStore;
+import com.helger.commons.random.VerySecureRandom;
+import com.helger.commons.state.ESuccess;
+import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
+import eu.europa.ec.bdmsl.ws.soap.ManageBusinessIdentifierService;
+import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
+import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
+
+import eu.europa.ec.cipa.smp.server.security.DoNothingTrustManager;
+import eu.europa.ec.cipa.smp.server.security.HostnameVerifierAlwaysTrue;
+import eu.europa.ec.cipa.smp.server.util.ConfigFile;
+import eu.europa.ec.cipa.smp.server.security.KeyStoreUtils;
+import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
-
-import org.busdox.servicemetadata.managebusinessidentifierservice._1.NotFoundFault;
-import org.busdox.servicemetadata.managebusinessidentifierservice._1.UnauthorizedFault;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.helger.commons.random.VerySecureRandom;
-import com.helger.commons.state.ESuccess;
-
-import eu.europa.ec.cipa.busdox.identifier.IParticipantIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
-import eu.europa.ec.cipa.peppol.security.DoNothingTrustManager;
-import eu.europa.ec.cipa.peppol.security.HostnameVerifierAlwaysTrue;
-import eu.europa.ec.cipa.peppol.security.KeyStoreUtils;
-import eu.europa.ec.cipa.peppol.utils.ConfigFile;
-import eu.europa.ec.cipa.sml.client.ManageParticipantIdentifierServiceCaller;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import javax.xml.ws.BindingProvider;
+import javax.xml.ws.handler.MessageContext;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.KeyStore;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An implementation of the RegistrationHook that informs the SML of updates to
  * this SMP's identifiers.<br>
  * The design of this hook is very bogus! It relies on the postUpdate always
  * being called in order in this Thread.
- * 
+ *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @NotThreadSafe
 public final class RegistrationServiceRegistrationHook extends AbstractRegistrationHook {
+  private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
   private static final String CONFIG_HOOK_REG_LOCATOR_URL = "regServiceRegistrationHook.regLocatorUrl";
   private static final String CONFIG_HOOK_ID = "regServiceRegistrationHook.id";
   private static final String CONFIG_HOOK_KEYSTORE_CLASSPATH = "regServiceRegistrationHook.keystore.classpath";
@@ -113,16 +118,30 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     s_aLogger.info ("This SMP has the ID: " + s_sSMPID);
   }
 
-  private static enum EAction {
+  private enum EAction {
     CREATE,
     DELETE
   }
 
-  private SimpleParticipantIdentifier m_aBusinessIdentifier;
+  //TODO: Get rid of these two stinky and not thread-safe guys (even if there is a ThreadLocal queue-something implemented, this is super stinky) Will cause problems after we switch to Spring:
+  private ParticipantIdentifierType m_aBusinessIdentifier;
   private EAction m_eAction;
 
   public RegistrationServiceRegistrationHook () {
     resetQueue ();
+  }
+
+
+  protected IManageParticipantIdentifierWS getSmlCaller () {
+    Map<String, List<String>> customHeaders = new HashMap<>();
+    customHeaders.put(CLIENT_CERT_HEADER_KEY, Arrays.asList(s_sSMPClientCertificate));
+
+    final ManageBusinessIdentifierService aService = new ManageBusinessIdentifierService ();
+    final IManageParticipantIdentifierWS aPort = aService.getManageBusinessIdentifierServicePort ();
+    Map<String, Object> requestContext = ((BindingProvider) aPort).getRequestContext();
+    requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, s_aSMLEndpointURL.toString());
+    requestContext.put(MessageContext.HTTP_REQUEST_HEADERS, customHeaders);
+    return aPort;
   }
 
   private static void _setupSSLSocketFactory () {
@@ -144,11 +163,11 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
       // Assign key manager and empty trust manager to SSL context
       final SSLContext aSSLCtx = SSLContext.getInstance ("TLS");
       aSSLCtx.init (aKeyManagerFactory.getKeyManagers (),
-                    new TrustManager [] { new DoNothingTrustManager () },
+                    new TrustManager [] { new DoNothingTrustManager() },
                     VerySecureRandom.getInstance ());
       HttpsURLConnection.setDefaultSSLSocketFactory (aSSLCtx.getSocketFactory ());
       if (sRegLocatorUrl.contains ("localhost")) {
-        HttpsURLConnection.setDefaultHostnameVerifier (new HostnameVerifierAlwaysTrue ());
+        HttpsURLConnection.setDefaultHostnameVerifier (new HostnameVerifierAlwaysTrue());
       }
     }
     catch (final Exception ex) {
@@ -156,19 +175,17 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     }
   }
 
-  public void create (final ParticipantIdentifierType aPI) throws HookException {
-    m_aBusinessIdentifier = new SimpleParticipantIdentifier (aPI.getScheme(), aPI.getValue());
-    m_eAction = EAction.CREATE;
-    s_aLogger.info ("Trying to create business " + m_aBusinessIdentifier + " in Business Identifier Manager Service");
+  public void create (final ParticipantIdentifierType participantId) throws HookException {
+    m_aBusinessIdentifier = participantId; // TODO: Oh my God, this is not thread safe !!! (Will not be when we migrate to Spring)
+    m_eAction = EAction.CREATE; //TODO: and this as well !!!
+
+    s_aLogger.info ("Trying to create business " + participantId + " in Business Identifier Manager Service");
 
     try {
       _setupSSLSocketFactory ();
-      final ManageParticipantIdentifierServiceCaller aSMLCaller
-              = new ManageParticipantIdentifierServiceCaller (s_aSMLEndpointURL, s_sSMPClientCertificate);
-      aSMLCaller.create (s_sSMPID, m_aBusinessIdentifier);
-      s_aLogger.info ("Succeeded in creating business " +
-                      m_aBusinessIdentifier +
-                      " using Business Identifier Manager Service");
+      final IManageParticipantIdentifierWS aSMLCaller = getSmlCaller();
+      aSMLCaller.create (toBusdoxParticipantId(participantId));
+      s_aLogger.info ("Succeeded in creating business " +toString(participantId) + " using Business Identifier Manager Service");
       getQueueInstance ().set (this);
     }
     catch (final UnauthorizedFault ex) {
@@ -177,35 +194,40 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
       throw new HookException (sMsg, ex);
     }
     catch (final Throwable t) {
-      final String sMsg = "Could not create business " +
-                          m_aBusinessIdentifier +
-                          " in Business Identifier Manager Service";
+      final String sMsg = "Could not create business " +toString(participantId) + " in Business Identifier Manager Service";
       s_aLogger.warn (sMsg, t);
       throw new HookException (sMsg, t);
     }
   }
 
-  public void delete (final ParticipantIdentifierType aPI) throws HookException {
-    m_aBusinessIdentifier = new SimpleParticipantIdentifier (aPI.getScheme(), aPI.getValue());
-    m_eAction = EAction.DELETE;
-    s_aLogger.info ("Trying to delete business " + m_aBusinessIdentifier + " in Business Identifier Manager Service");
+  private ServiceMetadataPublisherServiceForParticipantType toBusdoxParticipantId(ParticipantIdentifierType aPI) {
+    ServiceMetadataPublisherServiceForParticipantType busdoxIdentifier = new ServiceMetadataPublisherServiceForParticipantType();
+    busdoxIdentifier.setServiceMetadataPublisherID(s_sSMPID);
+    org.busdox.transport.identifiers._1.ParticipantIdentifierType parId = new org.busdox.transport.identifiers._1.ParticipantIdentifierType();
+    parId.setScheme(aPI.getScheme());
+    parId.setValue(aPI.getValue());
+    busdoxIdentifier.setParticipantIdentifier(parId);
+    return busdoxIdentifier;
+  }
+
+  public void delete (final ParticipantIdentifierType participantId) throws HookException {
+    m_aBusinessIdentifier = participantId; // TODO: Oh my God, this is not thread safe !!! (Will not be when we migrate to Spring)
+    m_eAction = EAction.DELETE; //TODO: and this as well !!!
+
+    s_aLogger.info ("Trying to delete business " + toString(participantId) + " in Business Identifier Manager Service");
 
     try {
       _setupSSLSocketFactory ();
-      final ManageParticipantIdentifierServiceCaller aSMPCaller = new ManageParticipantIdentifierServiceCaller (s_aSMLEndpointURL, s_sSMPClientCertificate);
-      aSMPCaller.delete (m_aBusinessIdentifier);
-      s_aLogger.info ("Succeded in deleting business " +
-                      m_aBusinessIdentifier +
-                      " using Business Identifier Manager Service");
+      final IManageParticipantIdentifierWS aSMLCaller = getSmlCaller();
+      aSMLCaller.delete (toBusdoxParticipantId(participantId));
+      s_aLogger.info ("Succeded in deleting business " + toString(participantId) + " using Business Identifier Manager Service");
       getQueueInstance ().set (this);
     }
     catch (final NotFoundFault e) {
-      s_aLogger.warn ("The business " + m_aBusinessIdentifier + " was not present in the SML. Just ignore.");
+      s_aLogger.warn ("The business " + toString(participantId) + " was not present in the SML. Just ignore.");
     }
     catch (final Throwable t) {
-      final String sMsg = "Could not delete business " +
-                          m_aBusinessIdentifier +
-                          " in Business Identifier Manager Service";
+      final String sMsg = "Could not delete business " + toString(participantId) + " in Business Identifier Manager Service";
       s_aLogger.warn (sMsg, t);
       throw new HookException (sMsg, t);
     }
@@ -215,27 +237,29 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     if (eSuccess.isFailure ())
       try {
         _setupSSLSocketFactory ();
-        final ManageParticipantIdentifierServiceCaller aSMLCaller = new ManageParticipantIdentifierServiceCaller (s_aSMLEndpointURL, s_sSMPClientCertificate);
+        final IManageParticipantIdentifierWS aSMLCaller = getSmlCaller();
 
         switch (m_eAction) {
           case CREATE:
             // Undo create
-            s_aLogger.warn ("CREATE failed in database, so deleting " +
-                            m_aBusinessIdentifier.getURIEncoded () +
-                            " from SML.");
-            aSMLCaller.delete (m_aBusinessIdentifier);
+            s_aLogger.warn ("CREATE failed in database, so deleting " + toString(m_aBusinessIdentifier) + " from SML.");
+            aSMLCaller.delete (toBusdoxParticipantId(m_aBusinessIdentifier));
             break;
           case DELETE:
             // Undo delete
             s_aLogger.warn ("DELETE failed in database, so creating " +
-                            m_aBusinessIdentifier.getURIEncoded () +
-                            " in SML.");
-            aSMLCaller.create (s_sSMPID, m_aBusinessIdentifier);
+                    m_aBusinessIdentifier.getScheme() + toString(m_aBusinessIdentifier) + " in SML.");
+            aSMLCaller.create (toBusdoxParticipantId(m_aBusinessIdentifier));
             break;
         }
       }
       catch (final Throwable t) {
-        throw new HookException ("Unable to rollback update business " + m_aBusinessIdentifier, t);
+        throw new HookException ("Unable to rollback update business " + toString(m_aBusinessIdentifier), t);
       }
   }
+
+  private String toString(ParticipantIdentifierType id){
+    return id.getScheme()+"::"+id.getValue();
+  }
+
 }

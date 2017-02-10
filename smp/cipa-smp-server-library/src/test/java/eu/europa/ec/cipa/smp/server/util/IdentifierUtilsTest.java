@@ -37,27 +37,23 @@
  */
 package eu.europa.ec.cipa.smp.server.util;
 
-import com.helger.commons.string.StringHelper;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.identifier.doctype.SimpleDocumentTypeIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.issuingagency.EPredefinedIdentifierIssuingAgency;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.process.SimpleProcessIdentifier;
+import eu.europa.ec.cipa.smp.server.data.dbms.model.CommonColumnsLengths;
 import org.junit.Test;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 import static org.junit.Assert.*;
 
 /**
- * Test class for class {@link eu.europa.ec.cipa.peppol.identifier.IdentifierUtils}.
+ * Test class for class {@link IdentifierUtils}.
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class IdentifierUtilsTest {
   private static final String [] PARTICIPANT_SCHEME_VALID = { "bdxr-actorid-upis",
                                                              "bdxr-ACTORID-UPIS",
-                                                             CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME,
+                                                             CommonColumnsLengths.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME,
                                                              "any-actorid-any",
                                                              "any-ACTORID-any" };
   private static final String [] PARTIFCIPANT_SCHEME_INVALID = { null,
@@ -71,34 +67,20 @@ public final class IdentifierUtilsTest {
                                                                 "any-domain_actorid_any-type",
                                                                 "any-nonactoid-anybutmuchtoooooooooooooooooooooooolong" };
 
-  @Test
-  public void testIsValidParticipantIdentifierScheme () {
-    // valid
-    for (final String scheme : PARTICIPANT_SCHEME_VALID)
-      assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifierScheme (scheme));
-
-    // invalid
-    for (final String scheme : PARTIFCIPANT_SCHEME_INVALID)
-      assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifierScheme (scheme));
-  }
 
   @Test
   public void testAreIdentifiersEqualPariticpantIdentifier () {
-    final SimpleParticipantIdentifier aPI1 = SimpleParticipantIdentifier.createWithDefaultScheme ("0088:123abc");
-    final SimpleParticipantIdentifier aPI2 = SimpleParticipantIdentifier.createWithDefaultScheme ("0088:123ABC");
-    final SimpleParticipantIdentifier aPI3a = SimpleParticipantIdentifier.createWithDefaultScheme ("0088:123456");
-    final SimpleParticipantIdentifier aPI3b = new SimpleParticipantIdentifier ("my-actorid-scheme", "0088:12345");
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aPI1, aPI1));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aPI1, aPI2));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aPI2, aPI1));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aPI1, aPI3a));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aPI1, aPI3b));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aPI2, aPI3a));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aPI2, aPI3b));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aPI3a, aPI3b));
+    final ParticipantIdentifierType aPI1 = new ParticipantIdentifierType(null, "0088:123abc");
+
+    final ParticipantIdentifierType aPI3a = new ParticipantIdentifierType("iso6523-actorid-upis","0088:123456");
+    final ParticipantIdentifierType aPI3b = new ParticipantIdentifierType ("my-actorid-scheme", "0088:12345");
+    assertTrue (IdentifierUtils.areIdentifiersEqual (aPI1, aPI1));
+    assertFalse (IdentifierUtils.areIdentifiersEqual (aPI1, aPI3a));
+    assertFalse (IdentifierUtils.areIdentifiersEqual (aPI1, aPI3b));
+    assertFalse (IdentifierUtils.areIdentifiersEqual (aPI3a, aPI3b));
 
     try {
-      eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aPI1, null);
+      IdentifierUtils.areIdentifiersEqual (aPI1, null);
       fail ("null parameter not allowed");
     }
     catch (final NullPointerException ex) {
@@ -106,7 +88,7 @@ public final class IdentifierUtilsTest {
     }
 
     try {
-      eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (null, aPI1);
+      IdentifierUtils.areIdentifiersEqual (null, aPI1);
       fail ("null parameter not allowed");
     }
     catch (final NullPointerException ex) {
@@ -116,21 +98,21 @@ public final class IdentifierUtilsTest {
 
   @Test
   public void testAreIdentifiersEqualDocumentIdentifier () {
-    final SimpleDocumentTypeIdentifier aDI1 = SimpleDocumentTypeIdentifier.createWithDefaultScheme ("urn:doc:anydoc");
-    final SimpleDocumentTypeIdentifier aDI2 = SimpleDocumentTypeIdentifier.createWithDefaultScheme ("urn:doc:anydoc");
-    final SimpleDocumentTypeIdentifier aDI3a = SimpleDocumentTypeIdentifier.createWithDefaultScheme ("urn:doc:anyotherdoc");
-    final SimpleDocumentTypeIdentifier aDI3b = new SimpleDocumentTypeIdentifier ("my-docid-test", "urn:doc:anyotherdoc");
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI1, aDI1));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI1, aDI2));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI2, aDI1));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI1, aDI3a));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI1, aDI3b));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI2, aDI3a));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI2, aDI3b));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI3a, aDI3b));
+    final DocumentIdentifier aDI1 = new DocumentIdentifier(null, "urn:doc:anydoc");
+    final DocumentIdentifier aDI2 = new DocumentIdentifier(null, "urn:doc:anydoc");
+    final DocumentIdentifier aDI3a = new DocumentIdentifier(null, "urn:doc:anyotherdoc");
+    final DocumentIdentifier aDI3b = new DocumentIdentifier ("my-docid-test", "urn:doc:anyotherdoc");
+    assertTrue (IdentifierUtils.areIdentifiersEqual (aDI1, aDI1));
+    assertTrue (IdentifierUtils.areIdentifiersEqual (aDI1, aDI2));
+    assertTrue (IdentifierUtils.areIdentifiersEqual (aDI2, aDI1));
+    assertFalse (IdentifierUtils.areIdentifiersEqual (aDI1, aDI3a));
+    assertFalse (IdentifierUtils.areIdentifiersEqual (aDI1, aDI3b));
+    assertFalse (IdentifierUtils.areIdentifiersEqual (aDI2, aDI3a));
+    assertFalse (IdentifierUtils.areIdentifiersEqual (aDI2, aDI3b));
+    assertFalse (IdentifierUtils.areIdentifiersEqual (aDI3a, aDI3b));
 
     try {
-      eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI1, null);
+      IdentifierUtils.areIdentifiersEqual (aDI1, null);
       fail ("null parameter not allowed");
     }
     catch (final NullPointerException ex) {
@@ -138,39 +120,7 @@ public final class IdentifierUtilsTest {
     }
 
     try {
-      eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (null, aDI1);
-      fail ("null parameter not allowed");
-    }
-    catch (final NullPointerException ex) {
-      // expected
-    }
-  }
-
-  @Test
-  public void testAreIdentifiersEqualProcessIdentifier () {
-    final SimpleProcessIdentifier aDI1 = SimpleProcessIdentifier.createWithDefaultScheme ("urn:doc:anydoc");
-    final SimpleProcessIdentifier aDI2 = SimpleProcessIdentifier.createWithDefaultScheme ("urn:doc:anydoc");
-    final SimpleProcessIdentifier aDI3a = SimpleProcessIdentifier.createWithDefaultScheme ("urn:doc:anyotherdoc");
-    final SimpleProcessIdentifier aDI3b = new SimpleProcessIdentifier ("my-procid-test", "urn:doc:anyotherdoc");
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI1, aDI1));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI1, aDI2));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI2, aDI1));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI1, aDI3a));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI1, aDI3b));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI2, aDI3a));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI2, aDI3b));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI3a, aDI3b));
-
-    try {
-      eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (aDI1, null);
-      fail ("null parameter not allowed");
-    }
-    catch (final NullPointerException ex) {
-      // expected
-    }
-
-    try {
-      eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.areIdentifiersEqual (null, aDI1);
+      IdentifierUtils.areIdentifiersEqual (null, aDI1);
       fail ("null parameter not allowed");
     }
     catch (final NullPointerException ex) {
@@ -181,14 +131,14 @@ public final class IdentifierUtilsTest {
   @Test
   @SuppressFBWarnings ("NP_NONNULL_PARAM_VIOLATION")
   public void getIdentifierURIEncoded () {
-    final SimpleParticipantIdentifier aPI = SimpleParticipantIdentifier.createWithDefaultScheme ("0088:123abc");
-    assertEquals ("iso6523-actorid-upis::0088:123abc", eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.getIdentifierURIEncoded (aPI));
+    final ParticipantIdentifierType aPI = new ParticipantIdentifierType("0088:123abc", "iso6523-actorid-upis");
+    assertEquals ("iso6523-actorid-upis::0088:123abc", IdentifierUtils.getIdentifierURIEncoded (aPI));
 
-    final SimpleDocumentTypeIdentifier aDI = SimpleDocumentTypeIdentifier.createWithDefaultScheme ("urn:doc:anydoc");
-    assertEquals ("busdox-docid-qns::urn:doc:anydoc", eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.getIdentifierURIEncoded (aDI));
+    final DocumentIdentifier aDI = new DocumentIdentifier("urn:doc:anydoc", "busdox-docid-qns");
+    assertEquals ("busdox-docid-qns::urn:doc:anydoc", IdentifierUtils.getIdentifierURIEncoded (aDI));
 
     try {
-      eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.getIdentifierURIEncoded (new SimpleParticipantIdentifier (null, "0088:12345"));
+      IdentifierUtils.getIdentifierURIEncoded (new ParticipantIdentifierType (null, "0088:12345"));
       fail ("Empty scheme should trigger an error!");
     }
     catch (final IllegalArgumentException ex) {
@@ -196,7 +146,7 @@ public final class IdentifierUtilsTest {
     }
 
     try {
-      eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.getIdentifierURIEncoded (new SimpleParticipantIdentifier ("", "0088:12345"));
+      IdentifierUtils.getIdentifierURIEncoded (new ParticipantIdentifierType ("0088:12345", ""));
       fail ("Empty scheme should trigger an error!");
     }
     catch (final IllegalArgumentException ex) {
@@ -204,7 +154,7 @@ public final class IdentifierUtilsTest {
     }
 
     try {
-      eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.getIdentifierURIEncoded (SimpleParticipantIdentifier.createWithDefaultScheme (null));
+      IdentifierUtils.getIdentifierURIEncoded (new ParticipantIdentifierType("iso6523-actorid-upis",null));
       fail ("null value should trigger an error!");
     }
     catch (final IllegalArgumentException ex) {
@@ -212,170 +162,15 @@ public final class IdentifierUtilsTest {
     }
   }
 
-  @Test
-  public void testGetIdentifierURIPercentEncoded () {
-    SimpleParticipantIdentifier aPI = SimpleParticipantIdentifier.createWithDefaultScheme ("0088:123abc");
-    assertEquals ("iso6523-actorid-upis%3A%3A0088%3A123abc", eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.getIdentifierURIPercentEncoded (aPI));
-    aPI = SimpleParticipantIdentifier.createWithDefaultScheme (EPredefinedIdentifierIssuingAgency.GLN.createIdentifierValue ("123abc"));
-    assertEquals ("iso6523-actorid-upis%3A%3A0088%3A123abc", eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.getIdentifierURIPercentEncoded (aPI));
-    aPI = EPredefinedIdentifierIssuingAgency.GLN.createParticipantIdentifier ("123abc");
-    assertEquals ("iso6523-actorid-upis%3A%3A0088%3A123abc", eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.getIdentifierURIPercentEncoded (aPI));
-
-    // Different value
-    aPI = SimpleParticipantIdentifier.createWithDefaultScheme ("0088/123abc");
-    assertEquals ("iso6523-actorid-upis%3A%3A0088%2F123abc", eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.getIdentifierURIPercentEncoded (aPI));
-  }
-
-  @Test
-  public void testIsValidDocumentTypeIdentifierValue () {
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifierValue (null));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifierValue (""));
-
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifierValue ("invoice"));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifierValue ("order "));
-
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifierValue (StringHelper.getRepeated ('a',
-                                                                                              CIdentifier.MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH)));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifierValue (StringHelper.getRepeated ('a',
-                                                                                               CIdentifier.MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH + 1)));
-  }
-
-  @Test
-  public void testIsValidDocumentTypeIdentifier () {
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifier (null));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifier (""));
-
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifier ("doctype::invoice"));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifier ("doctype::order "));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifier ("68ecvAXQsbA1mkXJ5Em7HI40uU6VLaHnNZiqv2C7tjt7eNIlHOt5r0Rh3zuLfW07z309yhqsT33p0XbF9UPF4pjY8U6aAu89QDeV::order "));
-
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifier ("doctypethatiswaytoolongforwhatisexpectedandnowitsmorethanthatbecauseitwasincreasedmoreduetosomelimitations::order"));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifier ("doctype::" +
-                                                                StringHelper.getRepeated ('a',
-                                                                                          CIdentifier.MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH + 1)));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifier ("doctype:order"));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidDocumentTypeIdentifier ("doctypeorder"));
-  }
-
-  @Test
-  public void testIsValidParticipantIdentifierValue () {
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifierValue (null));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifierValue (""));
-
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifierValue ("9908:976098897"));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifierValue ("9908:976098897 "));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifierValue ("990:976098897"));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifierValue ("990976098897"));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifierValue ("9909:976098896"));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifierValue ("9908:976098896"));
-
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifierValue (StringHelper.getRepeated ('a',
-                                                                                             CIdentifier.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifierValue (StringHelper.getRepeated ('a',
-                                                                                              CIdentifier.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH + 1)));
-  }
-
-  @Test
-  public void testIsValidParticipantIdentifier () {
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier (null));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier (""));
-
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::9908:976098897"));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::9908:976098897 "));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::990:976098897"));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::990976098897"));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::9909:976098896"));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::9908:976098896"));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummymaxkbiqaxhsjssbshkzkhofqcnoxglrjwoqfvruxyffjanjsgkcknunaewvzjsowxrzjjgqyqboyvexpjba::9908:976098896"));
-
-
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummythatiswaytoolongforwhatisexpectedandnowitsmorethanthatbecauseitwasincreasedmoreduetosomelimitations::9908:976098896"));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy::" +
-                                                               StringHelper.getRepeated ('a',
-                                                                                         CIdentifier.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH + 1)));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy:9908:976098896"));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidParticipantIdentifier ("any-actorid-dummy9908:976098896"));
-  }
-
-  @Test
-  public void testIsValidProcessIdentifierValue () {
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifierValue (null));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifierValue (""));
-
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifierValue ("proc1"));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifierValue ("proc2 "));
-
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifierValue (StringHelper.getRepeated ('a',
-                                                                                         CIdentifier.MAX_PROCESS_IDENTIFIER_VALUE_LENGTH)));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifierValue (StringHelper.getRepeated ('a',
-                                                                                          CIdentifier.MAX_PROCESS_IDENTIFIER_VALUE_LENGTH + 1)));
-  }
-
-  @Test
-  public void testIsValidProcessIdentifier () {
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifier (null));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifier (""));
-
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifier ("process::proc1"));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifier ("process::proc2 "));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifier ("processxsmqqifmgyxpumuuxqixpifecilcsmnpcfxkbcknubaaicgyufrqouuvpgugrgcgoxejhxbrwxgkgrmlqguohyzjomqph::proc2 "));
-
-
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifier ("processany-actorid-dummythatiswaytoolongforwhatisexpectedandnowitsmorethanthatbecauseitwasincreasedmoreduetosomelimitations::proc2"));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifier ("process::" +
-                                                           StringHelper.getRepeated ('a',
-                                                                                     CIdentifier.MAX_PROCESS_IDENTIFIER_VALUE_LENGTH + 1)));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifier ("process:proc2"));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.isValidProcessIdentifier ("processproc2"));
-  }
 
   @Test
   public void testGetUnifiedParticipantDBValue () {
-    assertNull (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.getUnifiedParticipantDBValue (null));
-    assertEquals ("", eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.getUnifiedParticipantDBValue (""));
-    assertEquals ("abc", eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.getUnifiedParticipantDBValue ("abc"));
-    assertEquals ("abc", eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.getUnifiedParticipantDBValue ("ABC"));
-    assertEquals ("abc", eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.getUnifiedParticipantDBValue ("AbC"));
+    assertNull (IdentifierUtils.getUnifiedParticipantDBValue (null));
+    assertEquals ("", IdentifierUtils.getUnifiedParticipantDBValue (""));
+    assertEquals ("abc", IdentifierUtils.getUnifiedParticipantDBValue ("abc"));
+    assertEquals ("abc", IdentifierUtils.getUnifiedParticipantDBValue ("ABC"));
+    assertEquals ("abc", IdentifierUtils.getUnifiedParticipantDBValue ("AbC"));
   }
 
-  @Test
-  public void testHasDefaultParticipantIdentifierScheme () {
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.hasDefaultParticipantIdentifierScheme (SimpleParticipantIdentifier.createWithDefaultScheme ("abc")));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.hasDefaultParticipantIdentifierScheme (new SimpleParticipantIdentifier ("dummy-actorid-upis",
-                                                                                                         "abc")));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.hasDefaultParticipantIdentifierScheme (CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME +
-                                                                       "::abc"));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.hasDefaultParticipantIdentifierScheme (CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME +
-                                                                        ":abc"));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.hasDefaultParticipantIdentifierScheme (CIdentifier.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME +
-                                                                        "abc"));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.hasDefaultParticipantIdentifierScheme ("dummy-actorid-upis::abc"));
-  }
 
-  @Test
-  public void testHasDefaultDocumentTypeIdentifierScheme () {
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.hasDefaultDocumentTypeIdentifierScheme (SimpleDocumentTypeIdentifier.createWithDefaultScheme ("abc")));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.hasDefaultDocumentTypeIdentifierScheme (new SimpleDocumentTypeIdentifier ("doctype",
-                                                                                                           "abc")));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.hasDefaultDocumentTypeIdentifierScheme (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME +
-                                                                        "::abc"));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.hasDefaultDocumentTypeIdentifierScheme (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME +
-                                                                         ":abc"));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.hasDefaultDocumentTypeIdentifierScheme (CIdentifier.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME +
-                                                                         "abc"));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.hasDefaultDocumentTypeIdentifierScheme ("doctype::abc"));
-  }
-
-  @Test
-  public void testHasDefaultProcessIdentifierScheme () {
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.hasDefaultProcessIdentifierScheme (SimpleProcessIdentifier.createWithDefaultScheme ("abc")));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.hasDefaultProcessIdentifierScheme (new SimpleProcessIdentifier ("proctype", "abc")));
-    assertTrue (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.hasDefaultProcessIdentifierScheme (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME +
-                                                                   "::abc"));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.hasDefaultProcessIdentifierScheme (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME +
-                                                                    ":abc"));
-    assertFalse (eu.europa.ec.cipa.peppol.identifier.IdentifierUtils.hasDefaultProcessIdentifierScheme (CIdentifier.DEFAULT_PROCESS_IDENTIFIER_SCHEME +
-                                                                    "abc"));
-    assertFalse (IdentifierUtils.hasDefaultProcessIdentifierScheme ("proctype::abc"));
-  }
 }

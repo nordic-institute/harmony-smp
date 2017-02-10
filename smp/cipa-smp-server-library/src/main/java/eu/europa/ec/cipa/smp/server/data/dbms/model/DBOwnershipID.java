@@ -41,9 +41,7 @@ import com.helger.commons.annotations.UsedViaReflection;
 import com.helger.commons.equals.EqualsUtils;
 import com.helger.commons.hash.HashCodeGenerator;
 import com.helger.commons.string.ToStringGenerator;
-import eu.europa.ec.cipa.peppol.identifier.CIdentifier;
-import eu.europa.ec.cipa.peppol.identifier.IdentifierUtils;
-import eu.europa.ec.cipa.peppol.identifier.participant.SimpleParticipantIdentifier;
+import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 import javax.annotation.Nonnull;
@@ -51,6 +49,9 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 import java.io.Serializable;
+
+import static eu.europa.ec.cipa.smp.server.data.dbms.model.CommonColumnsLengths.MAX_IDENTIFIER_SCHEME_LENGTH;
+import static eu.europa.ec.cipa.smp.server.data.dbms.model.CommonColumnsLengths.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH;
 
 /**
  * ID for the ownership
@@ -81,7 +82,7 @@ public class DBOwnershipID implements Serializable {
     m_sUsername = sUserName;
   }
 
-  @Column (name = "businessIdentifierScheme", nullable = false, length = CIdentifier.MAX_IDENTIFIER_SCHEME_LENGTH)
+  @Column (name = "businessIdentifierScheme", nullable = false, length = MAX_IDENTIFIER_SCHEME_LENGTH)
   public String getBusinessIdentifierScheme () {
     return m_sParticipantIdentifierScheme;
   }
@@ -90,7 +91,7 @@ public class DBOwnershipID implements Serializable {
     m_sParticipantIdentifierScheme = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifierScheme);
   }
 
-  @Column (name = "businessIdentifier", nullable = false, length = CIdentifier.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)
+  @Column (name = "businessIdentifier", nullable = false, length = MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)
   public String getBusinessIdentifier () {
     return m_sParticipantIdentifier;
   }
@@ -107,8 +108,8 @@ public class DBOwnershipID implements Serializable {
 
   @Transient
   @Nonnull
-  public SimpleParticipantIdentifier asBusinessIdentifier () {
-    return new SimpleParticipantIdentifier (m_sParticipantIdentifierScheme, m_sParticipantIdentifier);
+  public ParticipantIdentifierType asBusinessIdentifier () {
+    return new ParticipantIdentifierType(m_sParticipantIdentifierScheme, m_sParticipantIdentifier);
   }
 
   @Override
