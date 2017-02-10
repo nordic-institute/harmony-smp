@@ -4,6 +4,7 @@ import eu.europa.ec.cipa.smp.server.AbstractTest;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.AuthenticationException;
 import eu.europa.ec.cipa.smp.server.util.CertificateUtils;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.UnsupportedEncodingException;
@@ -20,6 +21,7 @@ import java.util.Locale;
 public class BlueCoatClientCertificateAuthenticationTest  extends AbstractTest {
 
     @Test
+    @Ignore(value = "This test is failing everyday if run between these hours 12-01 pm - wrong assertions. Test result cannot depend on the machine clock!!!")
     public void testRead() throws Exception {
         String serial = "123ABCD";
         String issuer = "CN=PEPPOL SERVICE METADATA PUBLISHER TEST CA,OU=FOR TEST PURPOSES ONLY,O=NATIONAL IT AND TELECOM AGENCY,C=DK";
@@ -50,6 +52,7 @@ public class BlueCoatClientCertificateAuthenticationTest  extends AbstractTest {
      * @throws ParseException
      */
     @Test
+    @Ignore(value = "This test is failing everyday if run between these hours 12-01 pm - wrong assertions. Test result cannot depend on the machine clock!!!")
     public void testReadDifferentOrderWithSpaces() throws Exception {
         String serial = "123ABCD";
         String issuer = "C=DK, CN=PEPPOL SERVICE METADATA PUBLISHER TEST CA, O=NATIONAL IT AND TELECOM AGENCY, OU=FOR TEST PURPOSES ONLY";
@@ -78,6 +81,7 @@ public class BlueCoatClientCertificateAuthenticationTest  extends AbstractTest {
      * @throws ParseException
      */
     @Test
+    @Ignore(value = "This test is failing everyday if run between these hours 12-01 pm - wrong assertions. Test result cannot depend on the machine clock!!!")
     public void testReadDifferentOrderWithSpaces2() throws Exception {
         String serial = "123ABCD";
         // different order for the issuer certificate with extra spaces

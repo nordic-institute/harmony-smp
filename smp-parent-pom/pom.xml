@@ -109,6 +109,26 @@
 	</pluginRepositories>
 	<repositories>
 		<repository>
+			<id>cefdigital-releases</id>
+			<url>https://ec.europa.eu/cefdigital/artifact/content/repositories/eDelivery/</url>
+			<releases>
+				<enabled>true</enabled>
+			</releases>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+		<repository>
+			<id>cefdigital-snapshots</id>
+			<url>https://ec.europa.eu/cefdigital/artifact/content/repositories/eDelivery-snapshots/</url>
+			<releases>
+				<enabled>false</enabled>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+		<repository>
 			<id>webgate-digit</id>
 			<url>https://webgate.ec.europa.eu/CITnet/nexus/content/repositories/thirdparty</url>
 			<releases>
