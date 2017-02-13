@@ -55,8 +55,8 @@ import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
 import eu.europa.ec.cipa.smp.server.hook.IRegistrationHook;
 import eu.europa.ec.cipa.smp.server.hook.RegistrationHookFactory;
+import eu.europa.ec.cipa.smp.server.util.ExtensionUtils;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
-import eu.europa.ec.cipa.smp.server.util.XMLUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
@@ -247,7 +247,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 // Convert service group DB to service group service
                 final ServiceGroup aServiceGroup = m_aObjFactory.createServiceGroup();
                 aServiceGroup.setParticipantIdentifier(aServiceGroupID);
-                aServiceGroup.getExtensions().add((ExtensionType) XMLUtils.unmarshallBLOB(aDBServiceGroup.getExtension(), ExtensionType.class));
+                aServiceGroup.getExtensions().addAll(ExtensionUtils.unmarshalExtensions(aDBServiceGroup.getExtension()));
                 // This is set by the REST interface:
                 // ret.setServiceMetadataReferenceCollection(value)
                 return aServiceGroup;
@@ -274,9 +274,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                     _verifyOwnership(aServiceGroup.getParticipantIdentifier(), aCredentials);
 
                     // Simply update the extension
-                    if(aServiceGroup.getExtensions().size() > 0) {
-                        aDBServiceGroup.setExtension(aServiceGroup.getExtensions().get(0));
-                    }
+                    aDBServiceGroup.setExtensionList(aServiceGroup.getExtensions());
                     aEM.merge(aDBServiceGroup);
                     return false;
                 } else {
@@ -285,9 +283,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
                     // Did not exist. Create it.
                     aDBServiceGroup = new DBServiceGroup(aDBServiceGroupID);
-                    if(aServiceGroup.getExtensions().size() > 0) {
-                        aDBServiceGroup.setExtension(aServiceGroup.getExtensions().get(0));
-                    }
+                    aDBServiceGroup.setExtensionList(aServiceGroup.getExtensions());
                     aEM.persist(aDBServiceGroup);
 
                     // Save the ownership information
@@ -529,7 +525,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 final RedirectType aRedirect = m_aObjFactory.createRedirectType();
                 aRedirect.setCertificateUID(aDBServiceMetadataRedirection.getCertificateUid());
                 aRedirect.setHref(aDBServiceMetadataRedirection.getRedirectionUrl());
-                aRedirect.getExtensions().add((ExtensionType) XMLUtils.unmarshallBLOB(aDBServiceMetadataRedirection.getExtension(), ExtensionType.class));
+                aRedirect.getExtensions().addAll(ExtensionUtils.unmarshalExtensions(aDBServiceMetadataRedirection.getExtension()));
                 aServiceMetadata.setRedirect(aRedirect);
 
                 return aServiceMetadata;
@@ -546,11 +542,11 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         ServiceMetadata aServiceMetadata = ServiceMetadataConverter.unmarshal(sXmlContent);
         final ServiceInformationType aServiceInformation = aServiceMetadata.getServiceInformation();
         if(aServiceInformation != null && aServiceInformation.getExtensions().size() > 0) {
-            aDBServiceMetadata.setExtension(aServiceInformation.getExtensions().get(0));
+            aDBServiceMetadata.setExtensionList(aServiceInformation.getExtensions());
         }
         final RedirectType aRedirect = aServiceMetadata.getRedirect();
         if(aRedirect != null && aRedirect.getExtensions().size() > 0) {
-            aDBServiceMetadata.setExtension(aRedirect.getExtensions().get(0));
+            aDBServiceMetadata.setExtensionList(aRedirect.getExtensions());
         }
         aDBServiceMetadata.setXmlContent(sXmlContent);
     }

@@ -37,13 +37,14 @@
  */
 package eu.europa.ec.cipa.smp.server.data.dbms.model;
 
-import eu.europa.ec.cipa.smp.server.util.XMLUtils;
+import eu.europa.ec.cipa.smp.server.util.ExtensionUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -96,8 +97,16 @@ public class DBServiceGroup implements Serializable {
   }
 
   @Transient
-  public void setExtension (@Nullable final ExtensionType aExtension) {
-    setExtension(XMLUtils.marshallObjectNoNameSpaces(aExtension, ExtensionType.class, XMLUtils.EXT_TYPE_QNAME));
+  public void setExtensionList(@Nullable final List<ExtensionType> extensionList) {
+    if (extensionList == null || extensionList.isEmpty()) {
+      setExtension(null);
+      return;
+    }
+    StringBuilder stringBuilder = new StringBuilder();
+    for(ExtensionType aExtension : extensionList) {
+      stringBuilder.append(ExtensionUtils.marshalExtension(aExtension, ExtensionUtils.EXT_TYPE_QNAME));
+    }
+    setExtension(stringBuilder.toString());
   }
 
   @OneToMany (fetch = FetchType.LAZY, mappedBy = "serviceGroup", cascade = { CascadeType.ALL })
