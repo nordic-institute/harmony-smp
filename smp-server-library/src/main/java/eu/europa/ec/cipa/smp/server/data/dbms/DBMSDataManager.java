@@ -309,8 +309,6 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
             public EChange call() {
                 _verifyUser(aCredentials);
 
-                m_aHook.delete(aServiceGroupID);
-
                 // Check if the service group is existing
                 final EntityManager aEM = getEntityManager();
                 final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(aServiceGroupID);
@@ -325,6 +323,9 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 _verifyOwnership(aServiceGroupID, aCredentials);
 
                 _removeServiceGroup(aDBServiceGroup);
+
+                m_aHook.delete(aServiceGroupID);
+
                 return EChange.CHANGED;
             }
         });
