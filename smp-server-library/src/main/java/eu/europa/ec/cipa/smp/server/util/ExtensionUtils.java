@@ -13,11 +13,13 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -53,12 +55,17 @@ public class ExtensionUtils {
         JAXBContext jaxbContext = JAXBContext.newInstance(ExtensionType.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
         JAXBElement aJaxbElement = new JAXBElement(EXT_TYPE_QNAME, ExtensionType.class, extension);
+        jaxbMarshaller.setProperty("com.sun.xml.bind.xmlDeclaration", Boolean.FALSE);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         XMLOutputFactory xof = XMLOutputFactory.newFactory();
-        PrettyPrintXMLStreamWriter xsw = new PrettyPrintXMLStreamWriter(xof.createXMLStreamWriter(baos), 4);
-        jaxbMarshaller.setProperty("com.sun.xml.bind.xmlDeclaration", Boolean.FALSE);
-        jaxbMarshaller.marshal(aJaxbElement, xsw);
-        xsw.close();
+        XMLStreamWriter xmlStreamWriter = xof.createXMLStreamWriter(baos);
+        PrettyPrintXMLStreamWriter xsw = new PrettyPrintXMLStreamWriter(xmlStreamWriter, 4);
+        try {
+            jaxbMarshaller.marshal(aJaxbElement, xsw);
+        } finally {
+            xmlStreamWriter.close();
+            xsw.close();
+        }
         return baos.toString();
     }
 
@@ -71,7 +78,7 @@ public class ExtensionUtils {
         if (wrappedExtensions.getValue() != null && wrappedExtensions.getValue().extensions != null) {
             return wrappedExtensions.getValue().extensions;
         } else {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
     }
 }

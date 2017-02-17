@@ -26,25 +26,29 @@ public class ExtensionUtilsTest {
 
     @Test
     public void testMarshalOneExtension() throws JAXBException, XMLStreamException, IOException, SAXException {
+        // given
         List<ExtensionType> list = createListExtensions(1);
+        String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionMarshal.xml");
+        XMLUnit.setIgnoreWhitespace(true);
 
+        // when
         String xmlResult = ExtensionUtils.marshalExtensions(list);
 
-        String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionMarshal.xml");
-
-        XMLUnit.setIgnoreWhitespace(true);
+        // then
         assertXMLEqual(inputDoc, xmlResult);
     }
 
     @Test
     public void testMarshalTwoExtensions() throws JAXBException, XMLStreamException, IOException, SAXException {
+        // given
         List<ExtensionType> list = createListExtensions(2);
+        String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionMarshalMore.xml");
+        XMLUnit.setIgnoreWhitespace(true);
 
+        // when
         String xmlResult = ExtensionUtils.marshalExtensions(list);
 
-        String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionMarshalMore.xml");
-
-        XMLUnit.setIgnoreWhitespace(true);
+        // then
         String wrappedXmlResult = String.format(WRAPPED_FORMAT, xmlResult);
         String wrappedInputDoc = String.format(WRAPPED_FORMAT, inputDoc);
         assertXMLEqual(wrappedInputDoc, wrappedXmlResult);
@@ -52,20 +56,25 @@ public class ExtensionUtilsTest {
 
     @Test
     public void testUnmarshal() throws IOException, JAXBException {
-
+        // given
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionMarshal.xml");
 
+        // when
         List<ExtensionType> extensions = ExtensionUtils.unmarshalExtensions(inputDoc);
 
+        // then
         checkExtensions(extensions, 1);
     }
 
     @Test
     public void testUnmarshalTwoExtensions() throws IOException, JAXBException {
+        // given
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionMarshalMore.xml");
 
+        // when
         List<ExtensionType> extensions = ExtensionUtils.unmarshalExtensions(inputDoc);
 
+        // then
         checkExtensions(extensions, 2);
     }
 
