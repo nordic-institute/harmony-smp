@@ -1,1 +1,18 @@
-<?xml version="1.0" ?><ns3:ExtensionType xmlns:ns3="http://docs.oasis-open.org/bdxr/bdx-smp/v1.0/" xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ExtensionID>id1</ExtensionID><ExtensionName>name1</ExtensionName><ExtensionAgencyName>agencyName1</ExtensionAgencyName><ExtensionAgencyURI>agencyUri1</ExtensionAgencyURI><ExtensionVersionID>versionId1</ExtensionVersionID><ExtensionReasonCode>reasonCode1</ExtensionReasonCode><ExtensionReason>reason1</ExtensionReason></ns3:ExtensionType><?xml version="1.0" ?><ns3:ExtensionType xmlns:ns3="http://docs.oasis-open.org/bdxr/bdx-smp/v1.0/" xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ExtensionID>id2</ExtensionID><ExtensionName>name2</ExtensionName><ExtensionAgencyName>agencyName2</ExtensionAgencyName><ExtensionAgencyURI>agencyUri2</ExtensionAgencyURI><ExtensionVersionID>versionId2</ExtensionVersionID><ExtensionReasonCode>reasonCode2</ExtensionReasonCode><ExtensionReason>reason2</ExtensionReason></ns3:ExtensionType>
+<Extension xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+    <ExtensionID>id1</ExtensionID>
+    <ExtensionName>name1</ExtensionName>
+    <ExtensionAgencyName>agencyName1</ExtensionAgencyName>
+    <ExtensionAgencyURI>agencyUri1</ExtensionAgencyURI>
+    <ExtensionVersionID>versionId1</ExtensionVersionID>
+    <ExtensionReasonCode>reasonCode1</ExtensionReasonCode>
+    <ExtensionReason>reason1</ExtensionReason>
+</Extension>
+<Extension xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+    <ExtensionID>id2</ExtensionID>
+    <ExtensionName>name2</ExtensionName>
+    <ExtensionAgencyName>agencyName2</ExtensionAgencyName>
+    <ExtensionAgencyURI>agencyUri2</ExtensionAgencyURI>
+    <ExtensionVersionID>versionId2</ExtensionVersionID>
+    <ExtensionReasonCode>reasonCode2</ExtensionReasonCode>
+    <ExtensionReason>reason2</ExtensionReason>
+</Extension>

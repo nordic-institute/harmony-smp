@@ -1,99 +1,77 @@
 package eu.europa.ec.cipa.smp.server.util;
 
+import org.apache.cxf.staxutils.PrettyPrintXMLStreamWriter;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by migueti on 13/02/2017.
  */
 public class ExtensionUtils {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ExtensionUtils.class);
+    private static final String WRAPPED_FORMAT = "<ExtensionsWrapper xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">%s</ExtensionsWrapper>";
 
-    public static final QName EXT_TYPE_QNAME = new QName("http://docs.oasis-open.org/bdxr/bdx-smp/v1.0/", "ExtensionType");
+    @XmlRootElement(name = "ExtensionsWrapper")
+    private static class ExtensionsWrapper {
+        @XmlElement(name = "Extension")
+        List<ExtensionType> extensions;
+    }
 
-    public static String marshalExtension(ExtensionType extension, QName qName) {
-        if (extension == null || qName == null) {
+    private static final QName EXT_TYPE_QNAME = new QName("http://docs.oasis-open.org/bdxr/ns/SMP/2016/05", "Extension");
+
+    public static String marshalExtensions(List<ExtensionType> extensions) throws JAXBException, XMLStreamException {
+        if (extensions == null) {
             return null;
         }
-        try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(ExtensionType.class);
-            Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-            JAXBElement aJaxbElement = new JAXBElement(qName, ExtensionType.class, extension);
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            XMLOutputFactory xof = XMLOutputFactory.newFactory();
-            XMLStreamWriter xsw = xof.createXMLStreamWriter(baos);
-            jaxbMarshaller.marshal(aJaxbElement, xsw);
-            xsw.close();
-            return baos.toString();
-        } catch (JAXBException | XMLStreamException jEx) {
-            LOGGER.error(jEx.getMessage());
+        StringBuilder stringBuilder = new StringBuilder();
+        for (ExtensionType aExtension : extensions) {
+            stringBuilder.append(ExtensionUtils.marshalExtension(aExtension));
         }
-        return null;
+        return stringBuilder.toString();
     }
 
-    public static List<ExtensionType> unmarshalExtensions(String xml) {
-        InputStream inStream;
-        List<ExtensionType> result = new ArrayList<>();
-        List<String> listExtensions = parseXml(xml);
-        for(String extension : listExtensions) {
-            if (isHexBinary(xml)) {
-                inStream = new ByteArrayInputStream(DatatypeConverter.parseHexBinary(extension));
-            } else {
-                inStream = new ByteArrayInputStream(extension.getBytes());
-            }
-            JAXBElement element = null;
-            try {
-                JAXBContext jaxbContext = JAXBContext.newInstance(ExtensionType.class);
-                Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-                element = jaxbUnmarshaller.unmarshal(new StreamSource(inStream), ExtensionType.class);
-            } catch (JAXBException e) {
-                LOGGER.error(e.getMessage());
-            }
-            if (element != null) {
-                result.add((ExtensionType) element.getValue());
-            }
+    private static String marshalExtension(ExtensionType extension) throws JAXBException, XMLStreamException {
+        if(extension == null) {
+            return null;
         }
-        return result;
+        JAXBContext jaxbContext = JAXBContext.newInstance(ExtensionType.class);
+        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+        JAXBElement aJaxbElement = new JAXBElement(EXT_TYPE_QNAME, ExtensionType.class, extension);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        XMLOutputFactory xof = XMLOutputFactory.newFactory();
+        PrettyPrintXMLStreamWriter xsw = new PrettyPrintXMLStreamWriter(xof.createXMLStreamWriter(baos), 4);
+        jaxbMarshaller.setProperty("com.sun.xml.bind.xmlDeclaration", Boolean.FALSE);
+        jaxbMarshaller.marshal(aJaxbElement, xsw);
+        xsw.close();
+        return baos.toString();
     }
 
-    private static List<String> parseXml(String xml) {
-        List<String> result = new ArrayList<>();
-        if(xml != null) {
-            Pattern p = Pattern.compile("(<)(\\?)(xml)( )(version)(=).*?(\\?)(>)",Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-            String[] extensions =  xml.split(p.pattern());
-            for(String extension : extensions) {
-                if(!extension.isEmpty()) {
-                    result.add(extension);
-                }
-            }
+    public static List<ExtensionType> unmarshalExtensions(String xml) throws JAXBException {
+        String wrappedExtensionsStr = String.format(WRAPPED_FORMAT, xml);
+        InputStream inStream = new ByteArrayInputStream(wrappedExtensionsStr.getBytes());
+        JAXBContext jaxbContext = JAXBContext.newInstance(ExtensionsWrapper.class);
+        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+        JAXBElement<ExtensionsWrapper> wrappedExtensions = jaxbUnmarshaller.unmarshal(new StreamSource(inStream), ExtensionsWrapper.class);
+        if (wrappedExtensions.getValue() != null && wrappedExtensions.getValue().extensions != null) {
+            return wrappedExtensions.getValue().extensions;
+        } else {
+            return new ArrayList<>();
         }
-        return result;
-    }
-
-    private static boolean isHexBinary(String value) {
-        final Pattern pat = Pattern.compile("-?[0-9a-fA-F]+");
-        Matcher m = pat.matcher(value);
-        return m.matches();
     }
 }
