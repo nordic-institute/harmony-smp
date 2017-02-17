@@ -41,6 +41,7 @@
 
     <authentication-manager>
         <authentication-provider>
+            <password-encoder hash="bcrypt"/>
             <jdbc-user-service data-source-ref="dataSource"
                                users-by-username-query="SELECT username, password, 1 FROM smp_user WHERE username = ?"
                                authorities-by-username-query="SELECT all_roles.username, all_roles.authority from ( SELECT username, 'ROLE_SERVICEGROUP_ADMIN' AS AUTHORITY FROM smp_user UNION ALL SELECT username, 'ROLE_SMP_ADMIN' AS AUTHORITY FROM smp_user WHERE isadmin = 1 ) all_roles WHERE username = ?"/>
