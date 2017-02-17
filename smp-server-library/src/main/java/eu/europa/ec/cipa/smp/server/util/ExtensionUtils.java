@@ -58,13 +58,19 @@ public class ExtensionUtils {
         jaxbMarshaller.setProperty("com.sun.xml.bind.xmlDeclaration", Boolean.FALSE);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         XMLOutputFactory xof = XMLOutputFactory.newFactory();
-        XMLStreamWriter xmlStreamWriter = xof.createXMLStreamWriter(baos);
-        PrettyPrintXMLStreamWriter xsw = new PrettyPrintXMLStreamWriter(xmlStreamWriter, 4);
+        XMLStreamWriter xmlStreamWriter = null;
+        PrettyPrintXMLStreamWriter xsw = null;
         try {
+            xmlStreamWriter = xof.createXMLStreamWriter(baos);
+            xsw = new PrettyPrintXMLStreamWriter(xmlStreamWriter, 4);
             jaxbMarshaller.marshal(aJaxbElement, xsw);
         } finally {
-            xmlStreamWriter.close();
-            xsw.close();
+            if(xmlStreamWriter != null) {
+                xmlStreamWriter.close();
+            }
+            if (xsw != null) {
+                xsw.close();
+            }
         }
         return baos.toString();
     }
