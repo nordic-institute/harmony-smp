@@ -38,8 +38,6 @@
 package eu.europa.ec.cipa.smp.server.data.dbms.model;
 
 import com.helger.commons.annotations.UsedViaReflection;
-import eu.europa.ec.cipa.smp.server.util.XMLUtils;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
 
 import javax.annotation.Nullable;
 import javax.persistence.*;
@@ -117,11 +115,6 @@ public class DBProcess implements Serializable {
 
   public void setExtension (@Nullable final String sExtension) {
     m_sExtension = sExtension;
-  }
-
-  @Transient
-  public void setExtension (@Nullable final ExtensionType aExtension) {
-    setExtension(XMLUtils.marshallObjectNoNameSpaces(aExtension, ExtensionType.class, XMLUtils.EXT_TYPE_QNAME));
   }
 
   @OneToMany (fetch = FetchType.LAZY, mappedBy = "process", cascade = { CascadeType.ALL })
