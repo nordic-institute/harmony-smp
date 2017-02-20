@@ -37,10 +37,6 @@
  */
 package eu.europa.ec.cipa.smp.server.data.dbms.model;
 
-import eu.europa.ec.cipa.smp.server.util.XMLUtils;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
-
-import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -102,11 +98,6 @@ public class DBServiceMetadataRedirection implements Serializable {
 
   public void setExtension (final String sExtension) {
     m_sExtension = sExtension;
-  }
-
-  @Transient
-  public void setExtension(@Nullable final ExtensionType aExtension) {
-    setExtension(XMLUtils.marshallObjectNoNameSpaces(aExtension, ExtensionType.class, XMLUtils.EXT_TYPE_QNAME));
   }
 
   @Column (name = "certificateUID", nullable = false, length = 256)

@@ -2,7 +2,6 @@ package eu.europa.ec.cipa.smp.server.security;
 
 import eu.europa.ec.cipa.smp.server.AbstractTest;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.AuthenticationException;
-import eu.europa.ec.cipa.smp.server.util.CertificateUtils;
 import org.junit.Assert;
 import org.junit.Test;
 

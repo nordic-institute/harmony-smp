@@ -71,6 +71,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.OUT_OF_RANGE;
 import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.WRONG_FIELD;
@@ -168,7 +170,12 @@ public final class ServiceMetadataInterface {
         return;
       }
 
+      Set<String> transportProfiles = new HashSet<>();
       for(EndpointType endpoint : serviceEndpointList.getEndpoints()) {
+        if(!transportProfiles.add(endpoint.getTransportProfile())) {
+          throw new BadRequestException(WRONG_FIELD, "Transport Profile already exists for the same process");
+        }
+
         Date activationDate = endpoint.getServiceActivationDate();
         Date expirationDate = endpoint.getServiceExpirationDate();
 

@@ -136,7 +136,7 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     Map<String, List<String>> customHeaders = new HashMap<>();
     customHeaders.put(CLIENT_CERT_HEADER_KEY, Arrays.asList(s_sSMPClientCertificate));
 
-    final ManageBusinessIdentifierService aService = new ManageBusinessIdentifierService ();
+    final ManageBusinessIdentifierService aService = new ManageBusinessIdentifierService((URL) null);
     final IManageParticipantIdentifierWS aPort = aService.getManageBusinessIdentifierServicePort ();
     Map<String, Object> requestContext = ((BindingProvider) aPort).getRequestContext();
     requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, s_aSMLEndpointURL.toString());

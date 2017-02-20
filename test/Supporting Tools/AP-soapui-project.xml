@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project activeEnvironment="Default" name="AP" resourceRoot="" soapui-version="5.0.0" abortOnError="false" runType="SEQUENTIAL" xmlns:con="http://eviware.com/soapui/config"><con:settings/><con:requirements/><con:properties/><con:wssContainer/><con:databaseConnectionContainer/><con:oAuth2ProfileContainer/><con:reporting><con:xmlTemplates/><con:parameters/></con:reporting><con:sensitiveInformation/></con:soapui-project>
