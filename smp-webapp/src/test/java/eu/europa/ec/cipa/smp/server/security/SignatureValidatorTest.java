@@ -23,7 +23,7 @@ public class SignatureValidatorTest extends AbstractTest {
 
     @Test
     public void validateSignature() throws Throwable {
-        //given
+        //Given
         String serviceGroupId = "ehealth-actorid-qns::urn:australia:ncpb";
         String documentTypeId = "ehealth-resid-qns::urn::epsos##services:extended:epsos::107";
         ServiceMetadataInterface serviceMetadataInterface = new ServiceMetadataInterface();
@@ -39,6 +39,7 @@ public class SignatureValidatorTest extends AbstractTest {
         SignatureUtil.sign("", serviceInfExtension, C14N_METHOD);
         String signedByCustomizedSignature = SignatureUtil.marshall(docPutRequest);
 
+        //When
         //Save ServiceMetadata
         serviceMetadataInterface.saveServiceRegistration(serviceGroupId, documentTypeId, SignatureUtil.marshall(docPutRequest));
 
@@ -48,18 +49,17 @@ public class SignatureValidatorTest extends AbstractTest {
         //Validate Customized Signature
         Element smNode = SignatureUtil.findFirstElementByName(response, "ServiceMetadata");
         Document docUnwrapped = SignatureUtil.buildDocWithGivenRoot(smNode);
-        Element siSigPointer = SignatureUtil.findServiceInfoSig(docUnwrapped);
-        SignatureUtil.validateSignature(siSigPointer);
+        Element adminSignature = SignatureUtil.findServiceInfoSig(docUnwrapped);
 
         //Validate Default Signature
         SignatureSigner signatureValidator = new SignatureSigner(SignatureUtil.loadPrivateKey(), (X509Certificate) SignatureUtil.loadCertificate());
         signatureValidator.signXML(response.getDocumentElement());
 
-        //Validate Default Signature
-        Element smpSigPointer = SignatureUtil.findSignatureByParentNode(response.getDocumentElement());
-        SignatureUtil.validateSignature(smpSigPointer);
-
+        //Then
         //Check signed document
+        SignatureUtil.validateSignature(adminSignature);
+        Element defaultSignature = SignatureUtil.findSignatureByParentNode(response.getDocumentElement());
+        SignatureUtil.validateSignature(defaultSignature);
         Assert.assertEquals(signedByCustomizedSignature, SignatureUtil.loadDocumentAsString("/expected_output/PUT_ServiceMetadata_request.xml"));
         Assert.assertEquals(SignatureUtil.marshall(response), SignatureUtil.loadDocumentAsString("/expected_output/GET_SignedServiceMetadata_response.xml"));
     }
@@ -82,6 +82,7 @@ public class SignatureValidatorTest extends AbstractTest {
         SignatureUtil.sign("", serviceInfExtension, C14N_METHOD);
         String signedByCustomizedSignature = SignatureUtil.marshall(docPutRequest);
 
+        //When
         //Save ServiceMetadata
         serviceMetadataInterface.saveServiceRegistration(serviceGroupId, documentTypeId, SignatureUtil.marshall(docPutRequest));
 
@@ -91,18 +92,17 @@ public class SignatureValidatorTest extends AbstractTest {
         //Validate Customized Signature
         Element smNode = SignatureUtil.findFirstElementByName(response, "ServiceMetadata");
         Document docUnwrapped = SignatureUtil.buildDocWithGivenRoot(smNode);
-        Element siSigPointer = SignatureUtil.findServiceInfoSig(docUnwrapped);
-        SignatureUtil.validateSignature(siSigPointer);
+        Element adminSignature = SignatureUtil.findServiceInfoSig(docUnwrapped);
 
         //Validate Default Signature
         SignatureSigner signatureValidator = new SignatureSigner(SignatureUtil.loadPrivateKey(), (X509Certificate) SignatureUtil.loadCertificate());
         signatureValidator.signXML(response.getDocumentElement());
 
-        //Validate Default Signature
+        //Then
+        //Check signed document
+        SignatureUtil.validateSignature(adminSignature);
         Element smpSigPointer = SignatureUtil.findSignatureByParentNode(response.getDocumentElement());
         SignatureUtil.validateSignature(smpSigPointer);
-
-        //Check signed document
         Assert.assertEquals(signedByCustomizedSignature, SignatureUtil.loadDocumentAsString("/expected_output/PUT_ServiceMetadata_request_linarized.xml"));
         Assert.assertEquals(SignatureUtil.marshall(response), SignatureUtil.loadDocumentAsString("/expected_output/GET_SignedServiceMetadata_response_linarized.xml"));
     }
