@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
     <ServiceInformation>
-        <ParticipantIdentifier scheme="ehealth-actorid-qns">urn:brazil:ncpb</ParticipantIdentifier>
+        <ParticipantIdentifier scheme="ehealth-actorid-qns">urn:australia:ncpb</ParticipantIdentifier>
         <DocumentIdentifier scheme="ehealth-resid-qns">urn::epsos##services:extended:epsos::107</DocumentIdentifier>
         <ProcessList>
             <Process>
@@ -20,9 +20,9 @@
                 </ServiceEndpointList>
             </Process>
         </ProcessList>
-        <Extension><Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><DigestValue>zWzUuiwKLAUd/MN/GlBA4PldgbX6IKZNZ+NQ74m+1TM=</DigestValue></Reference></SignedInfo><SignatureValue>hEzoJ+jfSC0IQSV/nXZX0aaF7fWweLMPm/cbwDke13edubWpNDPvHt6lU/yrMOPWRx4wKW5IKYvZ
-trdlWVDPs53DNuXRtv+j38w4OY1wLnxm/ylSpwYqg5ZfO1K90oOMUvnVVoA5pCMdmry16P8FzSgO
-/x8ry6c/bsf3Aor/G5A=</SignatureValue><KeyInfo><X509Data><X509SubjectName>CN=Sample National Infrastructure,OU=Sante,C=PT</X509SubjectName><X509Certificate>MIICAzCCAWygAwIBAgIEWCRzHjANBgkqhkiG9w0BAQsFADBGMQswCQYDVQQGEwJQVDEOMAwGA1UE
+        <Extension><Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><DigestValue>ktNWJpYkSpjbs9tfoWJhd3fXu2FX4dYwqmHSRCDSpnA=</DigestValue></Reference></SignedInfo><SignatureValue>HYfVB7GzX7olZC5/+k5E6lgudABa/ZP/jSEVFhSCohUAghVXjZdJScTsa0t5essJr41HuZmV/ufL
+GD8BJN6GXzTDYXwZcFrWU8JZZ7Bm9gdly+hKz+6E8M6rXZp07K3xHi8WEcgBD0eXnVD3b4b8vmTz
+QVOEOW8r4V0wyizZjYw=</SignatureValue><KeyInfo><X509Data><X509SubjectName>CN=Sample National Infrastructure,OU=Sante,C=PT</X509SubjectName><X509Certificate>MIICAzCCAWygAwIBAgIEWCRzHjANBgkqhkiG9w0BAQsFADBGMQswCQYDVQQGEwJQVDEOMAwGA1UE
 CwwFU2FudGUxJzAlBgNVBAMMHlNhbXBsZSBOYXRpb25hbCBJbmZyYXN0cnVjdHVyZTAeFw0xNjEx
 MTAxMzE2NTBaFw0yNjExMTAxMzE2NTBaMEYxCzAJBgNVBAYTAlBUMQ4wDAYDVQQLDAVTYW50ZTEn
 MCUGA1UEAwweU2FtcGxlIE5hdGlvbmFsIEluZnJhc3RydWN0dXJlMIGfMA0GCSqGSIb3DQEBAQUA
