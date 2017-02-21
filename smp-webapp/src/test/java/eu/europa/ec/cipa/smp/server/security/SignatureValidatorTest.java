@@ -82,7 +82,6 @@ public class SignatureValidatorTest extends AbstractTest {
         SignatureUtil.sign("", serviceInfExtension, C14N_METHOD);
         String signedByCustomizedSignature = SignatureUtil.marshall(docPutRequest);
 
-        //when
         //Save ServiceMetadata
         serviceMetadataInterface.saveServiceRegistration(serviceGroupId, documentTypeId, SignatureUtil.marshall(docPutRequest));
 
@@ -104,7 +103,7 @@ public class SignatureValidatorTest extends AbstractTest {
         SignatureUtil.validateSignature(smpSigPointer);
 
         //Check signed document
-      //  Assert.assertEquals(signedByCustomizedSignature, SignatureUtil.loadDocumentAsString("/expected_output/PUT_ServiceMetadata_request_linarized.xml"));
-       // Assert.assertEquals(SignatureUtil.marshall(response), SignatureUtil.loadDocumentAsString("/expected_output/GET_SignedServiceMetadata_response_linarized.xml"));
+        Assert.assertEquals(signedByCustomizedSignature, SignatureUtil.loadDocumentAsString("/expected_output/PUT_ServiceMetadata_request_linarized.xml"));
+        Assert.assertEquals(SignatureUtil.marshall(response), SignatureUtil.loadDocumentAsString("/expected_output/GET_SignedServiceMetadata_response_linarized.xml"));
     }
 }
