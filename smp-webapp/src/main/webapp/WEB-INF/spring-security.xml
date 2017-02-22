@@ -4,30 +4,6 @@
          xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
-    <b:bean id="configFile" class="eu.europa.ec.cipa.smp.server.util.ConfigFile">
-        <b:constructor-arg type="java.lang.String" value="smp.config.properties"/>
-    </b:bean>
-
-    <!-- TODO: Refactor datasource creation once the application is rewritten into Spring -->
-    <b:bean id="jdbcDriver" factory-bean="configFile" factory-method="getString">
-        <b:constructor-arg value="jdbc.driver"/>
-    </b:bean>
-    <b:bean id="jdbcUrl" factory-bean="configFile" factory-method="getString">
-        <b:constructor-arg value="jdbc.url"/>
-    </b:bean>
-    <b:bean id="jdbcUser" factory-bean="configFile" factory-method="getString">
-        <b:constructor-arg value="jdbc.user"/>
-    </b:bean>
-    <b:bean id="jdbcPass" factory-bean="configFile" factory-method="getString">
-        <b:constructor-arg value="jdbc.password"/>
-    </b:bean>
-    <b:bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <b:property name="driverClassName" ref="jdbcDriver"/>
-        <b:property name="url" ref="jdbcUrl"/>
-        <b:property name="username" ref="jdbcUser"/>
-        <b:property name="password" ref="jdbcPass"/>
-    </b:bean>
-
 
     <!-- Spring Security -->
 
@@ -39,7 +15,7 @@
         <anonymous granted-authority="ROLE_ANONYMOUS"/>
     </http>
 
-    <authentication-manager>
+    <authentication-manager alias="smpAuthenticationManager">
         <authentication-provider>
             <password-encoder hash="bcrypt"/>
             <jdbc-user-service data-source-ref="dataSource"
