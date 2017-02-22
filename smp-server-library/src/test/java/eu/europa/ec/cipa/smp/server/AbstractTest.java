@@ -5,6 +5,7 @@ import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.DBMSDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.DBUser;
 import eu.europa.ec.cipa.smp.server.hook.DoNothingRegistrationHook;
+import static eu.europa.ec.cipa.smp.server.security.BCryptPasswordHash.hashPassword;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -38,12 +39,14 @@ public class AbstractTest {
     }
 
     private static void createDBCertificated() throws Throwable {
-        String[][] usernames = new String[][]{{"CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", "123ABCD"},
-                {"CN=EHEALTH_SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", "123ABCD"},
-                {"CN=SMP_1000000007,O=DG-DIGIT,C=BE", "123ABCD"},
-                {"CN=EHEALTH_SMP_1000000007,O=DG-DIGIT,C=BE", "123ABCD"},
-                {"CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", "123ABCD"},
-                {"CN=EHEALTH_SMP_EC/emailAddress\\=CEF-EDELIVERY-SUPPORT@ec.europa.eu,O=European Commission,C=BE:f71ee8b11cb3b787", "12345"}};
+        String passHash1 = hashPassword("123ABCD");
+        String passHash2 = hashPassword("12345");
+        String[][] usernames = new String[][]{{"CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", passHash1},
+                {"CN=EHEALTH_SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", passHash1},
+                {"CN=SMP_1000000007,O=DG-DIGIT,C=BE", passHash1},
+                {"CN=EHEALTH_SMP_1000000007,O=DG-DIGIT,C=BE", passHash1},
+                {"CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", passHash1},
+                {"CN=EHEALTH_SMP_EC/emailAddress\\=CEF-EDELIVERY-SUPPORT@ec.europa.eu,O=European Commission,C=BE:f71ee8b11cb3b787", passHash2}};
 
         for (int i = 0; i < usernames.length; i++) {
             DBUser aDBUser = s_aDataMgr.getCurrentEntityManager().find(DBUser.class, usernames[i][0]);

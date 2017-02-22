@@ -45,6 +45,7 @@ import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
+import eu.europa.ec.cipa.smp.server.security.BCryptPasswordHash;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.cipa.smp.server.util.SMPDBUtils;
 import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
@@ -81,6 +82,7 @@ public class DBMSDataManagerTest extends AbstractTest {
   private static final String ADMIN_USERNAME = "the_admin";
   private static final String NOADMIN_USERNAME = "CN=SMP_1000000181,O=DIGIT,C=DK:123456789";
   private static final String NOADMIN_PASSWORD = "123456789";
+  private static final String NOADMIN_PASSWORD_HASH = BCryptPasswordHash.hashPassword(NOADMIN_PASSWORD);
     public static final BasicAuthClientCredentials ADMIN_CREDENTIALS = new BasicAuthClientCredentials(ADMIN_USERNAME, null);
 
     private static final String CERTIFICATE = "VGhpcyBpcyBzdXJlbHkgbm90IGEgdmFsaWQgY2VydGlmaWNhdGUsIGJ1dCBpdCBo\n"
@@ -109,7 +111,7 @@ public class DBMSDataManagerTest extends AbstractTest {
 
   @Before
   public void beforeTest () throws Throwable {
-    createOrUpdatedDBUser(NOADMIN_USERNAME, NOADMIN_PASSWORD, false);
+    createOrUpdatedDBUser(NOADMIN_USERNAME, NOADMIN_PASSWORD_HASH, false);
     createOrUpdatedDBUser(ADMIN_USERNAME, null, true);
 
     final ExtensionType aExtension = SMPDBUtils.getAsExtensionSafe("<root><any>value</any></root>");
