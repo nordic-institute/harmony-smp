@@ -17,7 +17,7 @@ public class X509KeySelector extends KeySelector {
     }
 
     public KeySelectorResult select(KeyInfo keyInfo,
-                                    Purpose purpose,
+                                    KeySelector.Purpose purpose,
                                     AlgorithmMethod method,
                                     XMLCryptoContext context)
             throws KeySelectorException {

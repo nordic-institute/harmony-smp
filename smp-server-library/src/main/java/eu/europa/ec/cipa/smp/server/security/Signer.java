@@ -20,13 +20,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class SignatureSigner {
+public class Signer {
 
     private final PrivateKey privateKey;
     private final X509Certificate certificate;
 
-    public SignatureSigner(@Nonnull final PrivateKey privateKey,
-                           @Nonnull final X509Certificate certificate) {
+    public Signer(@Nonnull final PrivateKey privateKey,
+                  @Nonnull final X509Certificate certificate) {
         this.privateKey = privateKey;
         this.certificate = certificate;
 

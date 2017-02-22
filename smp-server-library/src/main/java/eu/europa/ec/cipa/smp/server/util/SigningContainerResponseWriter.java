@@ -44,7 +44,7 @@ import com.helger.commons.xml.serialize.*;
 import com.helger.commons.xml.transform.XMLTransformerFactory;
 import com.sun.jersey.spi.container.ContainerResponse;
 import com.sun.jersey.spi.container.ContainerResponseWriter;
-import eu.europa.ec.cipa.smp.server.security.SignatureSigner;
+import eu.europa.ec.cipa.smp.server.security.Signer;
 import org.w3c.dom.Document;
 
 import javax.annotation.Nonnull;
@@ -62,7 +62,7 @@ final class SigningContainerResponseWriter implements ContainerResponseWriter {
   private final ContainerResponseWriter m_aCRW;
   private NonBlockingByteArrayOutputStream m_aBAOS;
   private ContainerResponse m_aResponse;
-  private final SignatureSigner signatureSigner;
+  private final Signer signatureSigner;
 
   SigningContainerResponseWriter (@Nonnull final ContainerResponseWriter crw,
                                   @Nonnull final PrivateKeyEntry aKeyEntry,
@@ -71,7 +71,7 @@ final class SigningContainerResponseWriter implements ContainerResponseWriter {
     if (aKeyEntry == null) {
       throw new InvalidParameterException("Private key must be not null.");
     }
-    signatureSigner = new SignatureSigner(aKeyEntry.getPrivateKey(),aCert);
+    signatureSigner = new Signer(aKeyEntry.getPrivateKey(),aCert);
   }
 
   public OutputStream writeStatusAndHeaders (final long nContentLength, final ContainerResponse aResponse) throws IOException {
