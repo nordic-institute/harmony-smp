@@ -1,19 +1,17 @@
 package eu.europa.ec.cipa.smp.server.services.readwrite;
 
+import eu.europa.ec.cipa.smp.server.AbstractTest;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
 import eu.europa.ec.cipa.smp.server.security.BlueCoatClientCertificateAuthentication;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
-import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
 import org.junit.Test;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static eu.europa.ec.cipa.smp.server.security.UserRole.ROLE_ANONYMOUS;
@@ -22,7 +20,7 @@ import static eu.europa.ec.cipa.smp.server.security.UserRole.ROLE_SMP_ADMIN;
 /**
  * Created by gutowpa on 30/01/2017.
  */
-public class ServiceGroupInterfaceTest {
+public class ServiceGroupInterfaceTest extends AbstractTest {
 
     private static final String ANY_VALUE = "just any random value";
 
@@ -64,7 +62,8 @@ public class ServiceGroupInterfaceTest {
         new ServiceGroupInterface().saveServiceGroup(ANY_VALUE, ANY_VALUE);
     }
 
-    @Test(expected = XmlInvalidAgainstSchemaException.class) // WHITE-BOX test. XML validation error means that security checkup passed positively
+    @Test(expected = XmlInvalidAgainstSchemaException.class)
+    // WHITE-BOX test. XML validation error means that security checkup passed positively
     public void testSMPAdminAuthenticated() throws Throwable {
         //given
         List<GrantedAuthority> authorities = Arrays.<GrantedAuthority>asList(new SimpleGrantedAuthority(ROLE_SMP_ADMIN.name()));
