@@ -18,15 +18,17 @@ public class BCryptPasswordHashTest {
     private static final String PASSWORD = "this_is_sample_password";
 
     private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
+    private PrintStream initialPrintStream;
 
     @Before
     public void setUpStreams() {
+        initialPrintStream = System.out;
         System.setOut(new PrintStream(outContent));
     }
 
     @After
     public void cleanUpStreams() {
-        System.setOut(null);
+        System.setOut(initialPrintStream);
     }
 
     @Test
