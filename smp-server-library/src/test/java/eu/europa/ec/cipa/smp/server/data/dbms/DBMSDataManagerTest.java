@@ -213,7 +213,8 @@ public class DBMSDataManagerTest extends AbstractTest {
         sg.setParticipantIdentifier(PARTY_ID);
         boolean bNewServiceGroupCreated = s_aDataMgr.saveServiceGroup (m_aServiceGroup, CREDENTIALS);
         ServiceGroup serviceGroup = s_aDataMgr.getServiceGroup(PARTY_ID);
-        assertNull(serviceGroup.getExtensions().get(0));
+        assertNotNull(serviceGroup.getExtensions());
+        assertEquals(0,serviceGroup.getExtensions().size());
 
         //when
         ExtensionType extension = new ExtensionType();

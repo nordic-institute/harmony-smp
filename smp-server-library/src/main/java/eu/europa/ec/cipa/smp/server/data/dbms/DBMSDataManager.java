@@ -54,8 +54,8 @@ import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
 import eu.europa.ec.cipa.smp.server.hook.IRegistrationHook;
 import eu.europa.ec.cipa.smp.server.hook.RegistrationHookFactory;
+import eu.europa.ec.cipa.smp.server.util.ExtensionUtils;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
-import eu.europa.ec.cipa.smp.server.util.XMLUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +64,8 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -245,7 +247,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 // Convert service group DB to service group service
                 final ServiceGroup aServiceGroup = m_aObjFactory.createServiceGroup();
                 aServiceGroup.setParticipantIdentifier(aServiceGroupID);
-                aServiceGroup.getExtensions().add((ExtensionType) XMLUtils.unmarshallBLOB(aDBServiceGroup.getExtension(), ExtensionType.class));
+                aServiceGroup.getExtensions().addAll(ExtensionUtils.unmarshalExtensions(aDBServiceGroup.getExtension()));
                 // This is set by the REST interface:
                 // ret.setServiceMetadataReferenceCollection(value)
                 return aServiceGroup;
@@ -259,7 +261,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         JPAExecutionResult<Boolean> ret;
         final EntityManager aEM = getEntityManager();
         ret = doInTransaction(aEM, false, new Callable<Boolean>() {
-            public Boolean call() {
+            public Boolean call() throws JAXBException, XMLStreamException {
                 final DBUser aDBUser = _verifyUser(aCredentials);
                 final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(aServiceGroup.getParticipantIdentifier());
 
@@ -272,9 +274,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                     _verifyOwnership(aServiceGroup.getParticipantIdentifier(), aCredentials);
 
                     // Simply update the extension
-                    if(aServiceGroup.getExtensions().size() > 0) {
-                        aDBServiceGroup.setExtension(aServiceGroup.getExtensions().get(0));
-                    }
+                    aDBServiceGroup.setExtension(ExtensionUtils.marshalExtensions(aServiceGroup.getExtensions()));
                     aEM.merge(aDBServiceGroup);
                     return false;
                 } else {
@@ -283,9 +283,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
                     // Did not exist. Create it.
                     aDBServiceGroup = new DBServiceGroup(aDBServiceGroupID);
-                    if(aServiceGroup.getExtensions().size() > 0) {
-                        aDBServiceGroup.setExtension(aServiceGroup.getExtensions().get(0));
-                    }
+                    aDBServiceGroup.setExtension(ExtensionUtils.marshalExtensions(aServiceGroup.getExtensions()));
                     aEM.persist(aDBServiceGroup);
 
                     // Save the ownership information
@@ -451,7 +449,11 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                     // Create a new entry
                     aDBServiceMetadata = new DBServiceMetadata();
                     aDBServiceMetadata.setId(aDBServiceMetadataID);
-                    _convertFromServiceToDB(aServiceGroupID, aDocTypeID, sXmlContent, aDBServiceMetadata);
+                    try {
+                        _convertFromServiceToDB(aServiceGroupID, aDocTypeID, sXmlContent, aDBServiceMetadata);
+                    } catch (JAXBException | XMLStreamException e) {
+                        throw new IllegalStateException("Problems converting from Service to DB", e);
+                    }
                     aEM.persist(aDBServiceMetadata);
                 }
         });
@@ -528,7 +530,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 final RedirectType aRedirect = m_aObjFactory.createRedirectType();
                 aRedirect.setCertificateUID(aDBServiceMetadataRedirection.getCertificateUid());
                 aRedirect.setHref(aDBServiceMetadataRedirection.getRedirectionUrl());
-                aRedirect.getExtensions().add((ExtensionType) XMLUtils.unmarshallBLOB(aDBServiceMetadataRedirection.getExtension(), ExtensionType.class));
+                aRedirect.getExtensions().addAll(ExtensionUtils.unmarshalExtensions(aDBServiceMetadataRedirection.getExtension()));
                 aServiceMetadata.setRedirect(aRedirect);
 
                 return aServiceMetadata;
@@ -540,16 +542,16 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     private static void _convertFromServiceToDB(@Nonnull final ParticipantIdentifierType aServiceGroupID,
                                                 @Nonnull final DocumentIdentifier aDocTypeID,
                                                 @Nonnull final String sXmlContent,
-                                                @Nonnull final DBServiceMetadata aDBServiceMetadata) {
+                                                @Nonnull final DBServiceMetadata aDBServiceMetadata) throws JAXBException, XMLStreamException {
         // Update it.
         ServiceMetadata aServiceMetadata = ServiceMetadataConverter.unmarshal(sXmlContent);
         final ServiceInformationType aServiceInformation = aServiceMetadata.getServiceInformation();
         if(aServiceInformation != null && aServiceInformation.getExtensions().size() > 0) {
-            aDBServiceMetadata.setExtension(aServiceInformation.getExtensions().get(0));
+            aDBServiceMetadata.setExtension(ExtensionUtils.marshalExtensions(aServiceInformation.getExtensions()));
         }
         final RedirectType aRedirect = aServiceMetadata.getRedirect();
         if(aRedirect != null && aRedirect.getExtensions().size() > 0) {
-            aDBServiceMetadata.setExtension(aRedirect.getExtensions().get(0));
+            aDBServiceMetadata.setExtension(ExtensionUtils.marshalExtensions(aRedirect.getExtensions()));
         }
         aDBServiceMetadata.setXmlContent(sXmlContent);
     }

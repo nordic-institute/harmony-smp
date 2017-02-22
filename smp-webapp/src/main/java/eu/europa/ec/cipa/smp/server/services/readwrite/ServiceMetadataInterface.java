@@ -206,4 +206,8 @@ public final class ServiceMetadataInterface {
 
     return Response.ok ().build ();
   }
+
+  public void setHeaders(HttpHeaders headers) {
+    this.headers = headers;
+  }
 }
