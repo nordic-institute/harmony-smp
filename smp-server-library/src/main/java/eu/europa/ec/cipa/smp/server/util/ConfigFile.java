@@ -56,10 +56,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Used for accessing configuration files based on properties. By default first
@@ -216,6 +213,10 @@ public class ConfigFile {
 
   public final int getInt (@Nonnull final String sKey, final int nDefault) {
     return StringParser.parseInt (getString (sKey), nDefault);
+  }
+
+  public final List<String> getStringList(@Nonnull final String sKey){
+    return Arrays.asList(getString(sKey, "").split(";"));
   }
 
   /**

@@ -47,6 +47,7 @@ import com.helger.db.jpa.JPAEnabledManager;
 import com.helger.db.jpa.JPAExecutionResult;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 
+import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
@@ -62,6 +63,8 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -232,23 +235,30 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return ret.getOrThrow();
     }
 
+    //TODO: Remove once migrated to Spring...
+    private static CaseSensitivityNormalizer getCaseSensitivityNormalizer() {
+        WebApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
+        return ctx.getBean(CaseSensitivityNormalizer.class);
+    }
+
     @Nullable
     public ServiceGroup getServiceGroup(@Nonnull final ParticipantIdentifierType aServiceGroupID) throws Throwable {
+        final ParticipantIdentifierType normalizedServiceGroupID = getCaseSensitivityNormalizer().normalize(aServiceGroupID);
         JPAExecutionResult<ServiceGroup> ret;
         ret = doInTransaction(new Callable<ServiceGroup>() {
             @Nullable
             public ServiceGroup call() throws Exception {
-                final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(aServiceGroupID);
+                final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(normalizedServiceGroupID);
                 final DBServiceGroup aDBServiceGroup = getEntityManager().find(DBServiceGroup.class, aDBServiceGroupID);
                 if (aDBServiceGroup == null) {
                     s_aLogger.warn("No such service group to retrieve: " +
-                            IdentifierUtils.getIdentifierURIEncoded(aServiceGroupID));
+                            IdentifierUtils.getIdentifierURIEncoded(normalizedServiceGroupID));
                     return null;
                 }
 
                 // Convert service group DB to service group service
                 final ServiceGroup aServiceGroup = m_aObjFactory.createServiceGroup();
-                aServiceGroup.setParticipantIdentifier(aServiceGroupID);
+                aServiceGroup.setParticipantIdentifier(normalizedServiceGroupID);
                 aServiceGroup.getExtensions().addAll(ExtensionUtils.unmarshalExtensions(aDBServiceGroup.getExtension()));
                 // This is set by the REST interface:
                 // ret.setServiceMetadataReferenceCollection(value)
