@@ -59,12 +59,11 @@ import eu.europa.ec.cipa.smp.server.hook.RegistrationHookFactory;
 import eu.europa.ec.cipa.smp.server.util.ExtensionUtils;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -140,7 +139,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         // Check that the password is correct
         if (!isNullPasswordAllowed(aDBUser.getPassword(),aCredentials.getPassword())){
             if(aCredentials.getPassword()== null || isBlank(aDBUser.getPassword()) ||
-                    !aDBUser.getPassword().equals(aCredentials.getPassword())) {
+                    ! BCrypt.checkpw(aCredentials.getPassword(), aDBUser.getPassword())) {
                 throw new UnauthorizedException("Illegal password for user '" + sUsername + "'");
             }
         }

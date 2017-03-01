@@ -1,0 +1,49 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+    <bean id="configFile" class="eu.europa.ec.cipa.smp.server.util.ConfigFile">
+        <constructor-arg type="java.lang.String" value="smp.config.properties"/>
+    </bean>
+
+    <!-- TODO: Refactor datasource creation once the application is rewritten into Spring -->
+    <bean id="jdbcDriver" factory-bean="configFile" factory-method="getString">
+        <constructor-arg value="jdbc.driver"/>
+    </bean>
+    <bean id="jdbcUrl" factory-bean="configFile" factory-method="getString">
+        <constructor-arg value="jdbc.url"/>
+    </bean>
+    <bean id="jdbcUser" factory-bean="configFile" factory-method="getString">
+        <constructor-arg value="jdbc.user"/>
+    </bean>
+    <bean id="jdbcPass" factory-bean="configFile" factory-method="getString">
+        <constructor-arg value="jdbc.password"/>
+    </bean>
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" ref="jdbcDriver"/>
+        <property name="url" ref="jdbcUrl"/>
+        <property name="username" ref="jdbcUser"/>
+        <property name="password" ref="jdbcPass"/>
+    </bean>
+
+    <bean id="smpEntityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="packagesToScan" value="eu.europa.ec.cipa.smp.server.data.dbms.model"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+        </property>
+        <property name="jpaProperties">
+            <props/>
+        </property>
+    </bean>
+
+    <tx:annotation-driven transaction-manager="smpTransactionManager"/>
+    <bean id="smpTransactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+        <property name="entityManagerFactory" ref="smpEntityManagerFactory"/>
+    </bean>
+
+</beans>

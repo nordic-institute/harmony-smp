@@ -6,30 +6,6 @@
 						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd
                         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
-    <b:bean id="configFile" class="eu.europa.ec.cipa.smp.server.util.ConfigFile">
-        <b:constructor-arg type="java.lang.String" value="smp.config.properties"/>
-    </b:bean>
-
-    <!-- TODO: Refactor datasource creation once the application is rewritten into Spring -->
-    <b:bean id="jdbcDriver" factory-bean="configFile" factory-method="getString">
-        <b:constructor-arg value="jdbc.driver"/>
-    </b:bean>
-    <b:bean id="jdbcUrl" factory-bean="configFile" factory-method="getString">
-        <b:constructor-arg value="jdbc.url"/>
-    </b:bean>
-    <b:bean id="jdbcUser" factory-bean="configFile" factory-method="getString">
-        <b:constructor-arg value="jdbc.user"/>
-    </b:bean>
-    <b:bean id="jdbcPass" factory-bean="configFile" factory-method="getString">
-        <b:constructor-arg value="jdbc.password"/>
-    </b:bean>
-    <b:bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <b:property name="driverClassName" ref="jdbcDriver"/>
-        <b:property name="url" ref="jdbcUrl"/>
-        <b:property name="username" ref="jdbcUser"/>
-        <b:property name="password" ref="jdbcPass"/>
-    </b:bean>
-
 
     <!-- move to spring-context.xml when previous ticket is merged -->
     <context:annotation-config/>
@@ -47,8 +23,9 @@
         <anonymous granted-authority="ROLE_ANONYMOUS"/>
     </http>
 
-    <authentication-manager>
+    <authentication-manager alias="smpAuthenticationManager">
         <authentication-provider>
+            <password-encoder hash="bcrypt"/>
             <jdbc-user-service data-source-ref="dataSource"
                                users-by-username-query="SELECT username, password, 1 FROM smp_user WHERE username = ?"
                                authorities-by-username-query="SELECT all_roles.username, all_roles.authority from ( SELECT username, 'ROLE_SERVICEGROUP_ADMIN' AS AUTHORITY FROM smp_user UNION ALL SELECT username, 'ROLE_SMP_ADMIN' AS AUTHORITY FROM smp_user WHERE isadmin = 1 ) all_roles WHERE username = ?"/>
