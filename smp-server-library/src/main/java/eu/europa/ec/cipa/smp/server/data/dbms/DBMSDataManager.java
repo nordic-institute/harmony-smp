@@ -46,7 +46,6 @@ import com.helger.db.jpa.IEntityManagerProvider;
 import com.helger.db.jpa.JPAEnabledManager;
 import com.helger.db.jpa.JPAExecutionResult;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
-
 import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
@@ -61,9 +60,9 @@ import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
