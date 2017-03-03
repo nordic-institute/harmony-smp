@@ -60,9 +60,11 @@ import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.context.ContextLoader;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -85,13 +87,14 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     private static final Logger s_aLogger = LoggerFactory.getLogger(DBMSDataManager.class);
 
     private final IRegistrationHook m_aHook;
+    private CaseSensitivityNormalizer caseSensitivityNormalizer;
     private final ObjectFactory m_aObjFactory = new ObjectFactory();
 
     public DBMSDataManager() {
-        this(RegistrationHookFactory.createInstance());
+        this(RegistrationHookFactory.createInstance(), new CaseSensitivityNormalizer());
     }
 
-    public DBMSDataManager(@Nonnull final IRegistrationHook aHook) {
+    public DBMSDataManager(@Nonnull final IRegistrationHook aHook, CaseSensitivityNormalizer caseSensitivityNormalizer) {
         super(new IEntityManagerProvider() {
             // This additional indirection level is required!!!
             // So that for every request the correct getInstance is invoked!
@@ -110,6 +113,18 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         setUseTransactionsForSelect(true);
 
         m_aHook = aHook;
+        this.caseSensitivityNormalizer = caseSensitivityNormalizer;
+    }
+
+    public void setCaseSensitivityNormalizer(CaseSensitivityNormalizer caseSensitivityNormalizer) {
+        this.caseSensitivityNormalizer = caseSensitivityNormalizer;
+    }
+
+    //TODO: Remove once migrated to Spring...
+    private CaseSensitivityNormalizer getCaseSensitivityNormalizer() {
+        //WebApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
+        //return ctx.getBean(CaseSensitivityNormalizer.class);
+        return caseSensitivityNormalizer;
     }
 
     /**
@@ -233,11 +248,6 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return ret.getOrThrow();
     }
 
-    //TODO: Remove once migrated to Spring...
-    private static CaseSensitivityNormalizer getCaseSensitivityNormalizer() {
-        WebApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
-        return ctx.getBean(CaseSensitivityNormalizer.class);
-    }
 
     @Nullable
     public ServiceGroup getServiceGroup(@Nonnull final ParticipantIdentifierType aServiceGroupID) throws Throwable {

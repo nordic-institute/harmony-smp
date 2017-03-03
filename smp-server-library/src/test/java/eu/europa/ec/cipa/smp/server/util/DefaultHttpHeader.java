@@ -28,6 +28,11 @@ public class DefaultHttpHeader implements HttpHeaders {
     }
 
     @Override
+    public String getHeaderString(String s) {
+        return null;
+    }
+
+    @Override
     public MultivaluedMap<String, String> getRequestHeaders() {
         return null;
     }
@@ -55,5 +60,15 @@ public class DefaultHttpHeader implements HttpHeaders {
     @Override
     public Map<String, Cookie> getCookies() {
         return null;
+    }
+
+    @Override
+    public Date getDate() {
+        return null;
+    }
+
+    @Override
+    public int getLength() {
+        return 0;
     }
 }

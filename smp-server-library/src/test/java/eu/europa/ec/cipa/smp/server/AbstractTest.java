@@ -1,6 +1,7 @@
 package eu.europa.ec.cipa.smp.server;
 
 import com.helger.commons.scopes.mock.ScopeTestRule;
+import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.DBMSDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
@@ -33,7 +34,8 @@ public class AbstractTest {
             if (s_aDataMgr == null) {
                 // Do it only once :)
                 // SMPEntityManagerFactory.getInstance ();
-                s_aDataMgr = new DBMSDataManager(new DoNothingRegistrationHook());
+                //s_aDataMgr = new DBMSDataManager(new DoNothingRegistrationHook());
+                s_aDataMgr = DataManagerFactory.getInstance();
             }
         }
     }

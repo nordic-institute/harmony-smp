@@ -52,7 +52,17 @@ import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.Arrays;
 import java.util.Date;
@@ -66,6 +76,8 @@ import static org.junit.Assert.*;
 // @Ignore
 // ("Cannot be enabled by default, because it would fail without the correct configuration")
 @DevelopersNote ("You need to adjust your local config.properties file to run this test")
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration("classpath:applicationContext.xml")
 public class DBMSDataManagerTest extends AbstractTest {
     private static final String PARTICIPANT_IDENTIFIER_SCHEME = CommonColumnsLengths.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME;
   private static final String DOCUMENT_SCHEME = CommonColumnsLengths.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME;
@@ -557,7 +569,6 @@ public class DBMSDataManagerTest extends AbstractTest {
   public void testSaveServiceGroup() throws Throwable {
       // # Authentication #
       BasicAuthClientCredentials auth =CREDENTIALS;
-      ServiceGroup result = s_aDataMgr.getServiceGroup(m_aServiceGroup.getParticipantIdentifier());
 
       // # Delete after leaving test #
       isServiceGroupToDelete = true;
@@ -566,7 +577,12 @@ public class DBMSDataManagerTest extends AbstractTest {
       String participantId = PARTICIPANT_IDENTIFIER2 + "654987";
       m_aServiceGroup = createServiceGroup(participantId);
       s_aDataMgr.deleteServiceGroup(PARTY_ID, ADMIN_CREDENTIALS);
+
+      //when
       boolean bNewServiceGroupCreated = s_aDataMgr.saveServiceGroup(m_aServiceGroup, auth);
+
+      //then
+      ServiceGroup result = s_aDataMgr.getServiceGroup(m_aServiceGroup.getParticipantIdentifier());
 
       // # Check ServiceGroup after save #
       assertNotNull(result);
