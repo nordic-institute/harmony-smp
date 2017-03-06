@@ -49,8 +49,7 @@ public class IdentifiersTest {
                 {"ehealth-resid-qns::urn:ehealth:ncp::vpngateway","ehealth-resid-qns","urn:ehealth:ncp::vpngateway"},
                 {"ehealth-resid-qns::urn:ehealth:VPN::VPNGatewayClient##epsos-106","ehealth-resid-qns","urn:ehealth:VPN::VPNGatewayClient##epsos-106"},
                 {"ehealth-resid-qns::urn:ehealth:ISM::InternationalSearchMask##epsos-107","ehealth-resid-qns","urn:ehealth:ISM::InternationalSearchMask##epsos-107"},
-                {"ehealth-resid-qns::urn:ehealth:ncp::pt:ism","ehealth-resid-qns","urn:ehealth:ncp::pt:ism"},
-                {"busdox-docid-qns::urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0::2.1", "busdox-docid-qns", "urn:oasis:names:specification:ubl:schema:xsd:CreditNote-2::CreditNote##urn:www.cenbii.eu:transaction:biitrns014:ver2.0:extended:urn:www.peppol.eu:bis:peppol5a:ver2.0::2.1"}
+                {"ehealth-resid-qns::urn:ehealth:ncp::pt:ism","ehealth-resid-qns","urn:ehealth:ncp::pt:ism"}
         };
     }
 
