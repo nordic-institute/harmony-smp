@@ -2,9 +2,11 @@ package eu.europa.ec.cipa.smp.server.security;
 
 
 import eu.europa.ec.cipa.smp.server.AbstractTest;
+import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.services.readwrite.ServiceMetadataInterface;
 import eu.europa.ec.cipa.smp.server.util.DefaultHttpHeader;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Document;
@@ -17,7 +19,7 @@ import java.util.Arrays;
 /**
  * Created by rodrfla on 08/02/2017.
  */
-public class SignatureValidatorTest extends AbstractTest {
+public class SignatureValidatorTest extends AbstractTest{
 
     private static final String C14N_METHOD = CanonicalizationMethod.INCLUSIVE;
 

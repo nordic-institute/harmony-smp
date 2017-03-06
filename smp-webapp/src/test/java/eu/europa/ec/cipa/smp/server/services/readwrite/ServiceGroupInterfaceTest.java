@@ -1,6 +1,5 @@
 package eu.europa.ec.cipa.smp.server.services.readwrite;
 
-import eu.europa.ec.cipa.smp.server.AbstractTest;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
 import eu.europa.ec.cipa.smp.server.security.BlueCoatClientCertificateAuthentication;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
@@ -20,7 +19,7 @@ import static eu.europa.ec.cipa.smp.server.security.UserRole.ROLE_SMP_ADMIN;
 /**
  * Created by gutowpa on 30/01/2017.
  */
-public class ServiceGroupInterfaceTest extends AbstractTest {
+public class ServiceGroupInterfaceTest{
 
     private static final String ANY_VALUE = "just any random value";
 
