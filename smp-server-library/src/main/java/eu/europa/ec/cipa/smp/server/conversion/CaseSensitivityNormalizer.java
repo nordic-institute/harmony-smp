@@ -23,7 +23,7 @@ public class CaseSensitivityNormalizer {
     private List<String> caseSensitiveDocumentSchemes;
 
     @Autowired
-    ConfigFile config;
+    protected ConfigFile config;
 
     @PostConstruct
     public void init() {
@@ -37,9 +37,9 @@ public class CaseSensitivityNormalizer {
         }
     }
 
-    public ParticipantIdentifierType normalize(ParticipantIdentifierType participantId) {
-        String scheme = participantId.getScheme();
-        String value = participantId.getValue();
+    public ParticipantIdentifierType normalize(final ParticipantIdentifierType participantIdentifier) {
+        String scheme = participantIdentifier.getScheme();
+        String value = participantIdentifier.getValue();
         if (!caseSensitiveParticipantSchemes.contains(scheme.toLowerCase())) {
             scheme = scheme.toLowerCase();
             value = value.toLowerCase();
@@ -47,7 +47,7 @@ public class CaseSensitivityNormalizer {
         return new ParticipantIdentifierType(value, scheme);
     }
 
-    public DocumentIdentifier normalize(DocumentIdentifier documentIdentifier) {
+    public DocumentIdentifier normalize(final DocumentIdentifier documentIdentifier) {
         String scheme = documentIdentifier.getScheme();
         String value = documentIdentifier.getValue();
         if (!caseSensitiveDocumentSchemes.contains(scheme.toLowerCase())) {

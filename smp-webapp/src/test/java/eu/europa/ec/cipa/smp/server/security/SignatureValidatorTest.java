@@ -2,11 +2,9 @@ package eu.europa.ec.cipa.smp.server.security;
 
 
 import eu.europa.ec.cipa.smp.server.AbstractTest;
-import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.services.readwrite.ServiceMetadataInterface;
 import eu.europa.ec.cipa.smp.server.util.DefaultHttpHeader;
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.w3c.dom.Document;

@@ -1,15 +1,10 @@
 package eu.europa.ec.cipa.smp.server;
 
 import com.helger.commons.scopes.mock.ScopeTestRule;
-import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
-import eu.europa.ec.cipa.smp.server.data.dbms.DBMSDataManager;
-import eu.europa.ec.cipa.smp.server.hook.DoNothingRegistrationHook;
 import org.junit.ClassRule;
 import org.junit.rules.TestRule;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 /**
  * Created by rodrfla on 23/01/2017.

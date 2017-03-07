@@ -71,6 +71,10 @@ import java.util.*;
 @Immutable
 @Deprecated
 public class ConfigFile {
+
+  public static final String LIST_SEPARATOR = "\\|";
+  public static final String EMPTY_STRING = "";
+
   private static final class SingletonHolder {
     static final ConfigFile s_aInstance = new ConfigFile ();
   }
@@ -215,8 +219,13 @@ public class ConfigFile {
     return StringParser.parseInt (getString (sKey), nDefault);
   }
 
-  public final List<String> getStringList(@Nonnull final String sKey){
-    return Arrays.asList(getString(sKey, "").split(";"));
+  public List<String> getStringList(@Nonnull final String sKey) {
+    List<String> stringsList = Arrays.asList(getString(sKey, EMPTY_STRING).split(LIST_SEPARATOR));
+    if (stringsList.size() == 1 && stringsList.contains(EMPTY_STRING)) {
+      return Collections.emptyList(); //configured empty value
+    } else {
+      return stringsList;
+    }
   }
 
   /**

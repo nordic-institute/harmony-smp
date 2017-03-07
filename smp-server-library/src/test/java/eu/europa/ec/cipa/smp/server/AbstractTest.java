@@ -34,7 +34,6 @@ public class AbstractTest {
             if (s_aDataMgr == null) {
                 // Do it only once :)
                 // SMPEntityManagerFactory.getInstance ();
-                //s_aDataMgr = new DBMSDataManager(new DoNothingRegistrationHook());
                 s_aDataMgr = DataManagerFactory.getInstance();
             }
         }
