@@ -349,7 +349,7 @@ public class DBMSDataManagerTest extends AbstractTest {
   }
 
     @Test
-    public void testServiceMetadataCaseSensitivity() throws Throwable {
+    public void testServiceMetadataCaseInSensitivity() throws Throwable {
         //given
         String inParticipantValue = PARTICIPANT_IDENTIFIER1+"ABCxyz";
         String inParticipantScheme = "participant-SCHEME-with-lower-and-UPPER";
@@ -608,6 +608,7 @@ public class DBMSDataManagerTest extends AbstractTest {
       // # Save ServiceGroup #
       String participantId = PARTICIPANT_IDENTIFIER2 + "654987";
       m_aServiceGroup = createServiceGroup(participantId);
+      ParticipantIdentifierType participantIdedntifierLowerCase = new ParticipantIdentifierType(m_aServiceGroup.getParticipantIdentifier().getValue().toLowerCase(), m_aServiceGroup.getParticipantIdentifier().getScheme().toLowerCase());
       s_aDataMgr.deleteServiceGroup(PARTY_ID, ADMIN_CREDENTIALS);
 
       //when
@@ -623,12 +624,40 @@ public class DBMSDataManagerTest extends AbstractTest {
       assertTrue(IdentifierUtils.areParticipantIdentifierValuesEqual(participantId,
               result.getParticipantIdentifier().getValue()));
       // # Check Ownership #
-      assertNotNull( s_aDataMgr.getCurrentEntityManager().find(DBOwnership.class, new DBOwnershipID(auth.getUserName(), m_aServiceGroup.getParticipantIdentifier())));
+      assertNotNull( s_aDataMgr.getCurrentEntityManager().find(DBOwnership.class, new DBOwnershipID(auth.getUserName(), participantIdedntifierLowerCase)));
       assertTrue(bNewServiceGroupCreated);
 
       //Sorry for that - but this tests are so bad that one interact with each other ... started failing after fixed one issue
       s_aDataMgr.deleteServiceGroup(m_aServiceGroup.getParticipantIdentifier(), ADMIN_CREDENTIALS);
   }
+
+    @Test
+    public void testServiceGroupCaseSensitivity() throws Throwable {
+        //given
+        String participantId = PARTICIPANT_IDENTIFIER2 + "ABC";
+        String participantScheme = "case-SENSITIVE-participant-2";
+        m_aServiceGroup = createServiceGroup(participantId, participantScheme);
+        ParticipantIdentifierType participantIdentifier = m_aServiceGroup.getParticipantIdentifier();
+        ParticipantIdentifierType participantIdentifierUpper = new ParticipantIdentifierType(participantId.toUpperCase(), participantScheme.toUpperCase());
+
+        //when
+        s_aDataMgr.saveServiceGroup(m_aServiceGroup, CREDENTIALS);
+
+        //then
+        ServiceGroup result = s_aDataMgr.getServiceGroup(participantIdentifierUpper);
+        assertNull(result);
+
+        result = s_aDataMgr.getServiceGroup(participantIdentifier);
+        assertEquals(participantIdentifier.getValue(),result.getParticipantIdentifier().getValue());
+        assertEquals(participantIdentifier.getScheme(),result.getParticipantIdentifier().getScheme());
+
+        //when
+        s_aDataMgr.deleteServiceGroup(participantIdentifier, CREDENTIALS);
+
+        //then
+        result = s_aDataMgr.getServiceGroup(participantIdentifier);
+        assertNull(result);
+    }
 
     @Test
     public void testServiceGroupCaseInsensitivity() throws Throwable {

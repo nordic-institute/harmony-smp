@@ -161,16 +161,4 @@ public final class IdentifierUtilsTest {
       // expected
     }
   }
-
-
-  @Test
-  public void testGetUnifiedParticipantDBValue () {
-    assertNull (IdentifierUtils.getUnifiedParticipantDBValue (null));
-    assertEquals ("", IdentifierUtils.getUnifiedParticipantDBValue (""));
-    assertEquals ("abc", IdentifierUtils.getUnifiedParticipantDBValue ("abc"));
-    assertEquals ("abc", IdentifierUtils.getUnifiedParticipantDBValue ("ABC"));
-    assertEquals ("abc", IdentifierUtils.getUnifiedParticipantDBValue ("AbC"));
-  }
-
-
 }

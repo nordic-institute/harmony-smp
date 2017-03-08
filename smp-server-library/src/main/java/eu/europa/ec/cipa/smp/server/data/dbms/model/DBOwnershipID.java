@@ -41,7 +41,6 @@ import com.helger.commons.annotations.UsedViaReflection;
 import com.helger.commons.equals.EqualsUtils;
 import com.helger.commons.hash.HashCodeGenerator;
 import com.helger.commons.string.ToStringGenerator;
-import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 import javax.annotation.Nonnull;
@@ -88,7 +87,7 @@ public class DBOwnershipID implements Serializable {
   }
 
   public void setBusinessIdentifierScheme (final String sBusinessIdentifierScheme) {
-    m_sParticipantIdentifierScheme = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifierScheme);
+    m_sParticipantIdentifierScheme = sBusinessIdentifierScheme;
   }
 
   @Column (name = "businessIdentifier", nullable = false, length = MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)
@@ -97,7 +96,7 @@ public class DBOwnershipID implements Serializable {
   }
 
   public void setBusinessIdentifier (final String sBusinessIdentifier) {
-    m_sParticipantIdentifier = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifier);
+    m_sParticipantIdentifier = sBusinessIdentifier;
   }
 
   @Transient

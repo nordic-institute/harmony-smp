@@ -78,7 +78,7 @@ public class DBServiceGroupID implements Serializable {
   }
 
   public void setBusinessIdentifierScheme (final String sBusinessIdentifierScheme) {
-    m_sParticipantIdentifierScheme = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifierScheme);
+    m_sParticipantIdentifierScheme = sBusinessIdentifierScheme;
   }
 
   @Column (name = "businessIdentifier", nullable = false, length = MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)
@@ -87,7 +87,7 @@ public class DBServiceGroupID implements Serializable {
   }
 
   public void setBusinessIdentifier (final String sBusinessIdentifier) {
-    m_sParticipantIdentifier = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifier);
+    m_sParticipantIdentifier = sBusinessIdentifier;
   }
 
   @Transient

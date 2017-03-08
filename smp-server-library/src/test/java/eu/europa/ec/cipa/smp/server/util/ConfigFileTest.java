@@ -72,7 +72,7 @@ public final class ConfigFileTest {
     assertTrue (aCF.getStringList("anEmptyList").isEmpty());
 
     // All keys
-    assertEquals (24, aCF.getAllKeys ().size ());
+    assertEquals (26, aCF.getAllKeys ().size ());
 
     assertNotNull (aCF.toString ());
   }
