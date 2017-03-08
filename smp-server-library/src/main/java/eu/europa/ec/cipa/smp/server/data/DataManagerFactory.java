@@ -56,6 +56,7 @@ import javax.annotation.concurrent.Immutable;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
+@Deprecated
 public final class DataManagerFactory {
   private static final Logger s_aLogger = LoggerFactory.getLogger (DataManagerFactory.class);
   private static final String CONFIG_DATA_MANAGER_CLASS = "dataManager.class";

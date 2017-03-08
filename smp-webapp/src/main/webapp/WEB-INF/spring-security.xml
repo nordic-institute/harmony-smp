@@ -6,8 +6,7 @@
 						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
 
-    <b:bean id="jerseyBasicAuthEntryPoint"
-            class="eu.europa.ec.cipa.smp.server.errors.SpringSecurityBasicAuthenticationEntryPoint"/>
+    <b:bean id="jerseyBasicAuthEntryPoint" class="eu.europa.ec.cipa.smp.server.errors.SpringSecurityBasicAuthenticationEntryPoint"/>
 
     <http>
         <csrf disabled="true"/>
