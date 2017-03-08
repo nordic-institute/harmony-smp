@@ -363,6 +363,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     @Nonnull
     @ReturnsMutableCopy
     public List<DocumentIdentifier> getDocumentTypes(@Nonnull final ParticipantIdentifierType aServiceGroupID) throws Throwable {
+        final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(aServiceGroupID);
         JPAExecutionResult<List<DocumentIdentifier>> ret;
         ret = doSelect(new Callable<List<DocumentIdentifier>>() {
             @Nonnull
@@ -371,9 +372,9 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 final List<DBServiceMetadata> aServices = getEntityManager().createQuery("SELECT p FROM DBServiceMetadata p WHERE p.id.businessIdentifierScheme = :scheme AND p.id.businessIdentifier = :value",
                         DBServiceMetadata.class)
                         .setParameter("scheme",
-                                aServiceGroupID.getScheme())
+                                normalizedServiceGroupId.getScheme())
                         .setParameter("value",
-                                aServiceGroupID.getValue())
+                                normalizedServiceGroupId.getValue())
                         .getResultList();
 
                 final List<DocumentIdentifier> aList = new ArrayList<DocumentIdentifier>();
