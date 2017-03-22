@@ -21,6 +21,14 @@
         <ftp.host>wltdgt02.cc.cec.eu.int</ftp.host>
         <ftp.port>2059</ftp.port>
         <ftp.remotedir>/ec/test/server/weblogic/u010/home/digciedt/data/CIPA-EDEL_DEV/autodeploy</ftp.remotedir>
+
+        <!-- database -->
+        <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
+        <jdbc.url>jdbc:mysql://localhost:3306/smp</jdbc.url>
+        <jdbc.user>smp</jdbc.user>
+        <jdbc.password>smp</jdbc.password>
+        <target-database>MySQL</target-database>
+        <jdbc.read-connections.max>10</jdbc.read-connections.max>
     </properties>
 
   <dependencies>
@@ -65,26 +73,36 @@
   </dependencies>
 
   <build>
-    <resources>
-      <resource>
-        <directory>${basedir}/src/main/resources</directory>
-        <targetPath>${project.build.directory}/classes</targetPath>
-      </resource>
-      <resource>
-        <directory>${basedir}/src/test/resources</directory>
-        <targetPath>${project.build.directory}/test-classes</targetPath>
-      </resource>
-      <resource>
-        <directory>${basedir}/src/main/webapp</directory>
-        <targetPath>${project.build.directory}/webapp-classes</targetPath>
-      </resource>
-    </resources>
-    <testResources>
-      <testResource>
-        <directory>src/main/resources</directory>
-        <filtering>true</filtering>
-      </testResource>
-    </testResources>
+
+      <testResources>
+          <testResource>
+              <directory>src/test/resources</directory>
+              <filtering>true</filtering>
+              <excludes>
+                  <exclude>**/*.jks</exclude>
+              </excludes>
+          </testResource>
+          <testResource>
+              <directory>src/test/resources</directory>
+              <filtering>false</filtering>
+              <!-- With filtering=true Maven was introducing changes in keystore binary files [sic!] -->
+              <includes>
+                  <include>**/*.jks</include>
+              </includes>
+          </testResource>
+      </testResources>
+      <resources>
+          <resource>
+              <directory>${basedir}/src/main/resources</directory>
+              <targetPath>${project.build.directory}/classes</targetPath>
+              <filtering>true</filtering>
+          </resource>
+          <resource>
+              <directory>${basedir}/src/main/webapp</directory>
+              <targetPath>${project.build.directory}/webapp-classes</targetPath>
+          </resource>
+      </resources>
+
 
 
     <plugins>
