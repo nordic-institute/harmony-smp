@@ -30,13 +30,13 @@
 	<servers>
 		<server>
 			<id>edelivery-snapshots</id>
-			<username>j50b107</username>
-			<password>{AP1hP8sE97kHFzAatQGzaaiQPGFrOMDFUZFfG3xTxOs=}</password>
+			<username>gutowpa</username>
+			<password>{WK4k90jk1k8HenPqVQFBcnsO/ORv+9NDzrbDVXLFGmE=}</password>
 		</server>
 		<server>
 			<id>edelivery-releases</id>
-			<username>j50b107</username>
-			<password>{AP1hP8sE97kHFzAatQGzaaiQPGFrOMDFUZFfG3xTxOs=}</password>
+			<username>gutowpa</username>
+			<password>{WK4k90jk1k8HenPqVQFBcnsO/ORv+9NDzrbDVXLFGmE=}</password>
 		</server>
 		<server>
 			<id>cefdigital-snapshots</id>
