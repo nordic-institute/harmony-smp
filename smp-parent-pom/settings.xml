@@ -31,12 +31,12 @@
 		<server>
 			<id>edelivery-snapshots</id>
 			<username>gutowpa</username>
-			<password>{WK4k90jk1k8HenPqVQFBcnsO/ORv+9NDzrbDVXLFGmE=}</password>
+			<password>{2y/aQkOSNGYHhuusKhaDwLP/lm5YFzlJwyjUWXFDh74=}</password>
 		</server>
 		<server>
 			<id>edelivery-releases</id>
 			<username>gutowpa</username>
-			<password>{WK4k90jk1k8HenPqVQFBcnsO/ORv+9NDzrbDVXLFGmE=}</password>
+			<password>{2y/aQkOSNGYHhuusKhaDwLP/lm5YFzlJwyjUWXFDh74=}</password>
 		</server>
 		<server>
 			<id>cefdigital-snapshots</id>
