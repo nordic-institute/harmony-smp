@@ -44,6 +44,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
 
+import eu.europa.ec.cipa.smp.server.data.dbms.model.DBServiceMetadata;
+import eu.europa.ec.cipa.smp.server.data.dbms.model.DBServiceMetadataID;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.DBUser;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
@@ -120,7 +122,7 @@ public interface IDataManager {
    */
   @Nonnull
   @ReturnsMutableCopy
-  List <DocumentIdentifier> getDocumentTypes (@Nonnull ParticipantIdentifierType aServiceGroupID) throws Throwable;
+  List <DBServiceMetadataID> getDocumentTypes (@Nonnull ParticipantIdentifierType aServiceGroupID) throws Throwable;
 
   /**
    * Gets the list of service metadata objects corresponding to a given service
