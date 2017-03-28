@@ -18,6 +18,9 @@
 
     <!-- Default properties to copy the artifact on the DEV platform -->
     <properties>
+        <buildtimestamp>${maven.build.timestamp}</buildtimestamp>
+        <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+
         <ftp.host>wltdgt02.cc.cec.eu.int</ftp.host>
         <ftp.port>2059</ftp.port>
         <ftp.remotedir>/ec/test/server/weblogic/u010/home/digciedt/data/CIPA-EDEL_DEV/autodeploy</ftp.remotedir>
@@ -104,7 +107,6 @@
       </resources>
 
 
-
     <plugins>
         <plugin>
             <groupId>org.apache.maven.plugins</groupId>
@@ -112,6 +114,13 @@
             <version>2.0.2</version>
             <configuration>
                 <warName>${project.artifactId}</warName>
+                <webResources>
+                    <resource>
+                        <directory>${basedir}/src/main/webapp/web</directory>
+                        <targetPath>web</targetPath>
+                        <filtering>true</filtering>
+                    </resource>
+                </webResources>
             </configuration>
         </plugin>
         <plugin>
