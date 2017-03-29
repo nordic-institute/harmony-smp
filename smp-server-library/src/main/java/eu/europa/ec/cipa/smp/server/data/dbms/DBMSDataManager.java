@@ -362,13 +362,13 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
     @Nonnull
     @ReturnsMutableCopy
-    public List<DocumentIdentifier> getDocumentTypes(@Nonnull final ParticipantIdentifierType aServiceGroupID) throws Throwable {
+    public List<DBServiceMetadataID> getDocumentTypes(@Nonnull final ParticipantIdentifierType aServiceGroupID) throws Throwable {
         final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(aServiceGroupID);
-        JPAExecutionResult<List<DocumentIdentifier>> ret;
-        ret = doSelect(new Callable<List<DocumentIdentifier>>() {
+        JPAExecutionResult<List<DBServiceMetadataID>> ret;
+        ret = doSelect(new Callable<List<DBServiceMetadataID>>() {
             @Nonnull
             @ReturnsMutableCopy
-            public List<DocumentIdentifier> call() throws Exception {
+            public List<DBServiceMetadataID> call() throws Exception {
                 final List<DBServiceMetadata> aServices = getEntityManager().createQuery("SELECT p FROM DBServiceMetadata p WHERE p.id.businessIdentifierScheme = :scheme AND p.id.businessIdentifier = :value",
                         DBServiceMetadata.class)
                         .setParameter("scheme",
@@ -377,9 +377,9 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                                 normalizedServiceGroupId.getValue())
                         .getResultList();
 
-                final List<DocumentIdentifier> aList = new ArrayList<DocumentIdentifier>();
+                final List<DBServiceMetadataID> aList = new ArrayList<DBServiceMetadataID>();
                 for (final DBServiceMetadata aService : aServices)
-                    aList.add(aService.getId().asDocumentTypeIdentifier());
+                    aList.add(aService.getId());
                 return aList;
             }
         });

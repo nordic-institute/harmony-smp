@@ -40,6 +40,7 @@ package eu.europa.ec.cipa.smp.server.services;
 
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
+import eu.europa.ec.cipa.smp.server.data.dbms.model.DBServiceMetadataID;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
 import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
@@ -119,8 +120,8 @@ public final class BaseServiceGroupInterfaceImpl {
     final ServiceMetadataReferenceCollectionType aCollectionType = aObjFactory.createServiceMetadataReferenceCollectionType ();
     final List <ServiceMetadataReferenceType> aMetadataReferences = aCollectionType.getServiceMetadataReferences();
 
-    final List <DocumentIdentifier> aDocTypeIds = aDataManager.getDocumentTypes (aServiceGroupID);
-    for (final DocumentIdentifier aDocTypeId : aDocTypeIds) {
+    final List <DBServiceMetadataID> aDocTypeIds = aDataManager.getDocumentTypes (aServiceGroupID);
+    for (final DBServiceMetadataID aDocTypeId : aDocTypeIds) {
       final ServiceMetadataReferenceType aMetadataReference = aObjFactory.createServiceMetadataReferenceType ();
       UriBuilder uriBuilder = aUriInfo.getBaseUriBuilder();
       if (configFile.getString ("contextPath.output", "false").equals ("false")) {
@@ -129,8 +130,8 @@ public final class BaseServiceGroupInterfaceImpl {
       XForwardedHttpHeadersHandler.applyReverseProxyParams(uriBuilder, httpHeaders);
       String metadataHref = uriBuilder
               .path (aServiceMetadataInterface)
-              .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aServiceGroupID),
-                                 IdentifierUtils.getIdentifierURIPercentEncoded (aDocTypeId))
+              .buildFromEncoded (IdentifierUtils.getIdentifierURIPercentEncoded (aDocTypeId.asBusinessIdentifier()),
+                                 IdentifierUtils.getIdentifierURIPercentEncoded (aDocTypeId.asDocumentTypeIdentifier()))
               .toString();
 
       aMetadataReference.setHref (metadataHref);
