@@ -131,18 +131,25 @@ public class BlueCoatAuthenticationFilterTest {
         assertNotNull(auth);
         assertEquals(expName, auth.getName());
         assertEquals("N/A", auth.getCredentials());
+
+        Object details = auth.getDetails();
         assertTrue(auth.getPrincipal() instanceof PreAuthenticatedCertificatePrincipal);
         PreAuthenticatedCertificatePrincipal principal = (PreAuthenticatedCertificatePrincipal) auth.getPrincipal();
+        assertEquals(details, principal);
         assertEquals(expSubjectDN, principal.getSubjectDN());
         assertEquals(expIssuerDN, principal.getIssuerDN());
         assertEquals(expName, principal.getName());
     }
 
-    @Test(expected = BadCredentialsException.class)
+    @Test
     @Parameters(method = "negativeTestCases")
     @TestCaseName("{0}")
     public void invalidHeaderValueThrowsAuthException(String caseName, String header) throws IOException, ServletException {
+        //given-when
         runAuth(true, header);
+
+        //then
+        assertNull(SecurityContextHolder.getContext().getAuthentication());
     }
 
     @Test
