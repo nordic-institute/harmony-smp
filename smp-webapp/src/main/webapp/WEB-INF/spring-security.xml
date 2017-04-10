@@ -45,7 +45,7 @@
     <b:bean id="blueCoatReverseProxyAuthFilter"
             class="eu.europa.ec.cipa.smp.server.security.BlueCoatAuthenticationFilter">
         <b:property name="authenticationManager" ref="smpAuthenticationManager"/>
-        <b:property name="blueCoatEnabled" value="true"/>
+        <b:property name="blueCoatEnabled" ref="blueCoatEnabled"/>
     </b:bean>
 
 </b:beans>
