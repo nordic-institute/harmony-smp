@@ -24,7 +24,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
- * Created by gutowpa on 05/04/2017.
+ * Created by Pawel Gutowski on 05/04/2017.
  */
 @RunWith(JUnitParamsRunner.class)
 public class BlueCoatAuthenticationFilterTest {

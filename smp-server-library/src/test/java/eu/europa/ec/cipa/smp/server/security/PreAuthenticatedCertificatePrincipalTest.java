@@ -8,7 +8,7 @@ import java.math.BigInteger;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by gutowpa on 05/04/2017.
+ * Created by Pawel Gutowski on 05/04/2017.
  */
 public class PreAuthenticatedCertificatePrincipalTest {
 

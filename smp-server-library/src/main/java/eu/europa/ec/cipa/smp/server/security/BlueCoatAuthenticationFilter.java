@@ -32,7 +32,7 @@ import static java.util.regex.Pattern.CASE_INSENSITIVE;
  * authentication system is set up correctly as this filter does no authentication
  * whatsoever. All the protection is assumed to be provided externally and if this filter
  * is included inappropriately in a configuration, it would be possible to assume the
- * identity of a user merely by setting the correct header name.
+ * identity of a user merely by setting the header value.
  * <p>
  * If the header is missing from the request, {@code getPreAuthenticatedPrincipal} returns null value,
  * so other authentication mechanisms could still authenticate request.

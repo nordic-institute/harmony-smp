@@ -14,7 +14,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by gutowpa on 04/04/2017.
+ * PreAuthenticated token and user details. To be used with {@code {@link BlueCoatAuthenticationFilter}}
+ * and direct 2-way-SSL authentication, without reverse-proxy (not implemented yet).
+ *
+ * @author Pawel Gutowski
  */
 @ToString
 @EqualsAndHashCode
