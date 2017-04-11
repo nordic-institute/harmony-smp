@@ -6,6 +6,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -23,6 +24,7 @@ public class ServiceMetadataConverter {
 
     private static final String NS = "http://docs.oasis-open.org/bdxr/ns/SMP/2016/05";
     private static final String DOC_SIGNED_SERVICE_METADATA_EMPTY = "<SignedServiceMetadata xmlns=\""+NS+"\"/>";
+    private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
 
     static Unmarshaller jaxbUnmarshaller;
 
@@ -67,6 +69,7 @@ public class ServiceMetadataConverter {
     private static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setNamespaceAware(true);
+        dbf.setFeature(PARSER_DISALLOW_DTD_PARSING_FEATURE, true);
         return dbf.newDocumentBuilder();
     }
 

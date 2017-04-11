@@ -20,6 +20,8 @@ import java.io.InputStream;
  */
 public class ServiceGroupConverter {
 
+    private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
+
     static Unmarshaller jaxbUnmarshaller;
 
     private static Unmarshaller getUnmarshaller() throws JAXBException {
@@ -34,11 +36,11 @@ public class ServiceGroupConverter {
         }
     }
 
-    public static ServiceGroup unmarshal(String serviceGroupXml) throws JAXBException {
+    public static ServiceGroup unmarshal(String serviceGroupXml) {
         try {
             Document serviceGroupDoc = parse(serviceGroupXml);
             return getUnmarshaller().unmarshal(serviceGroupDoc, ServiceGroup.class).getValue();
-        } catch (ParserConfigurationException | IOException | SAXException e) {
+        } catch (ParserConfigurationException | IOException | SAXException | JAXBException e) {
             throw new XmlParsingException(e);
         }
     }
@@ -51,6 +53,7 @@ public class ServiceGroupConverter {
     private static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         documentBuilderFactory.setNamespaceAware(true);
+        documentBuilderFactory.setFeature(PARSER_DISALLOW_DTD_PARSING_FEATURE, true);
         return documentBuilderFactory.newDocumentBuilder();
     }
 }
