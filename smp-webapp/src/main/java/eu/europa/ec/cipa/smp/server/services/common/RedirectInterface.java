@@ -59,7 +59,7 @@ public final class RedirectInterface {
 
   static {
     try {
-      INDEX_HTML = new URI ("/web/index.html");
+      INDEX_HTML = new URI ("web/index.html");
     }
     catch (final URISyntaxException e) {
       throw new InitializationException ("Failed to build index URI");

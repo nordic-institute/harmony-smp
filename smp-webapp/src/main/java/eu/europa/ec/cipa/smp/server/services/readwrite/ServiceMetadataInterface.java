@@ -37,7 +37,6 @@
  */
 package eu.europa.ec.cipa.smp.server.services.readwrite;
 
-import com.sun.jersey.spi.MessageBodyWorkers;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
@@ -47,6 +46,7 @@ import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.cipa.smp.server.util.RequestHelper;
 import eu.europa.ec.smp.api.Identifiers;
 import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
+import org.glassfish.jersey.message.MessageBodyWorkers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.EndpointType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;

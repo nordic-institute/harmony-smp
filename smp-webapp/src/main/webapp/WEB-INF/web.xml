@@ -110,19 +110,28 @@
 
     <filter>
         <filter-name>RestFilter</filter-name>
-        <filter-class>com.sun.jersey.spi.container.servlet.ServletContainer</filter-class>
-        <!-- Register resources and providers -->
-        <init-param>
-            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-            <param-value>eu.europa.ec.cipa.smp.server.security.RequestAuthenticationFilter</param-value>
-        </init-param>
+        <filter-class>org.glassfish.jersey.servlet.ServletContainer</filter-class>
+        <!-- Register resources and providers
         <init-param>
             <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
             <param-value>eu.europa.ec.cipa.smp.server.util.SignatureFilter</param-value>
         </init-param>
+        -->
         <init-param>
-            <param-name>com.sun.jersey.config.property.WebPageContentRegex</param-name>
+            <param-name>jersey.config.server.provider.classnames</param-name>
+            <param-value>eu.europa.ec.cipa.smp.server.util.SignatureFilter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>jersey.config.servlet.filter.staticContentRegex</param-name>
             <param-value>/(images|js|styles|web)/.*</param-value>
+        </init-param>
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>eu.europa.ec.cipa.smp.server.services;eu.europa.ec.cipa.smp.server.errors.mappers</param-value>
+        </init-param>
+        <init-param>
+            <param-name>jersey.config.server.provider.scanning.recursive</param-name>
+            <param-value>true</param-value>
         </init-param>
     </filter>
     <filter-mapping>

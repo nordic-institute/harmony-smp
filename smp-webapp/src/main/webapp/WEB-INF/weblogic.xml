@@ -4,6 +4,30 @@
         <prefer-application-packages>
             <package-name>org.slf4j.*</package-name>
             <package-name>org.apache.commons.*</package-name>
+
+
+            <package-name>com.sun.jersey.*</package-name>
+            <package-name>org.glassfish.jersey.*</package-name>
+            <package-name>org.glassfish.hk2.*</package-name>
+            <package-name>org.jvnet.hk2.*</package-name>
+            <package-name>jersey.repackaged.org.objectweb.asm.*</package-name>
+
+            <package-name>com.sun.research.ws.wadl.*</package-name>
+            <package-name>com.sun.ws.rs.ext.*</package-name>
+
+            <package-name>org.codehaus.jackson.*</package-name>
+            <package-name>com.fasterxml.jackson.*</package-name>
+
+            <package-name>org.codehaus.jettison.*</package-name>
+
+            <package-name>javax.ws.rs.*</package-name>
+
+            <package-name>org.objectweb.asm.*</package-name>
+
+            <package-name>antlr.*</package-name>
+
+
+
         </prefer-application-packages>
         <prefer-application-resources>
             <resource-name>org/slf4j/impl/StaticLoggerBinder.class</resource-name>

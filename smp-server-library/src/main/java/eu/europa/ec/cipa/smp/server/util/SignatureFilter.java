@@ -40,10 +40,14 @@ package eu.europa.ec.cipa.smp.server.util;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.exceptions.InitializationException;
 import com.helger.commons.io.streams.StringInputStream;
-import com.sun.jersey.spi.container.ContainerRequest;
-import com.sun.jersey.spi.container.ContainerResponse;
-import com.sun.jersey.spi.container.ContainerResponseFilter;
+
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import eu.europa.ec.cipa.smp.server.security.KeyStoreUtils;
+import org.glassfish.jersey.server.ContainerRequest;
+import org.glassfish.jersey.server.ContainerResponse;
+import org.glassfish.jersey.server.spi.ContainerResponseWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -51,6 +55,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import javax.annotation.Nonnull;
 import javax.annotation.Priority;
 import javax.ws.rs.core.Response.Status;
+import java.io.IOException;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
@@ -141,21 +146,24 @@ public final class SignatureFilter implements ContainerResponseFilter {
   }
 
   @Nonnull
-  public ContainerResponse filter (@Nonnull final ContainerRequest aRequest, @Nonnull final ContainerResponse aResponse) {
+  public void filter(ContainerRequestContext aRequest, ContainerResponseContext aResponse) throws IOException {
     // Make sure that the signature is only added to GET/OK on service metadata.
-    if (aRequest.getMethod ().equals ("GET") && aResponse.getResponse ().getStatus () == Status.OK.getStatusCode ()) {
-      final String sRequestPath = aRequest.getPath (false);
+    if (aRequest.getMethod ().equals ("GET") && aResponse.getStatus () == Status.OK.getStatusCode ()) {
+      final String sRequestPath = aRequest.getUriInfo().getPath (false);
       // Only handle requests that contain "/services/" but don't end with it
       if (sRequestPath.contains ("/services/") && !sRequestPath.endsWith ("/services/")) {
-        if (s_aLogger.isDebugEnabled ())
-          s_aLogger.debug ("Will sign response to " + sRequestPath);
-
-        aResponse.setContainerResponseWriter (new SigningContainerResponseWriter (aResponse.getContainerResponseWriter (),
-                                                                                  m_aKeyEntry,
-                                                                                  m_aCert));
+        if (s_aLogger.isDebugEnabled ()) {
+          s_aLogger.debug("Will sign response to " + sRequestPath);
+        }
+        if(aResponse instanceof ContainerResponse) {
+          ContainerRequest r = ((ContainerResponse)aResponse).getRequestContext();
+          SigningContainerResponseWriter responseWriter = new SigningContainerResponseWriter(r.getResponseWriter(), m_aKeyEntry, m_aCert);
+          r.setWriter(responseWriter);
+        } else {
+          throw new IllegalStateException("Wrong Jersey REQUEST class - development issue");
+        }
       }
     }
-
-    return aResponse;
   }
+
 }
