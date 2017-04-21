@@ -69,7 +69,7 @@ import static eu.europa.ec.cipa.smp.server.security.UserRole.ROLE_SMP_ADMIN;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-@Path ("{ServiceGroupId}")
+@Path ("/{ServiceGroupId}")
 public final class ServiceGroupInterface {
   private static final Logger s_aLogger = LoggerFactory.getLogger (ServiceGroupInterface.class);
 

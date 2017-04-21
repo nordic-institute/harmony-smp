@@ -40,20 +40,18 @@ package eu.europa.ec.cipa.smp.server.util;
 import com.helger.commons.charset.CCharset;
 import com.helger.commons.exceptions.InitializationException;
 import com.helger.commons.io.streams.StringInputStream;
-
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
 import eu.europa.ec.cipa.smp.server.security.KeyStoreUtils;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.glassfish.jersey.server.ContainerResponse;
-import org.glassfish.jersey.server.spi.ContainerResponseWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Priority;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Response.Status;
 import java.io.IOException;
 import java.security.KeyStore;

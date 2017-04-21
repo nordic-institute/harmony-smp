@@ -42,7 +42,6 @@ import com.helger.commons.io.streams.StreamUtils;
 import com.helger.commons.xml.EXMLIncorrectCharacterHandling;
 import com.helger.commons.xml.serialize.*;
 import com.helger.commons.xml.transform.XMLTransformerFactory;
-
 import eu.europa.ec.cipa.smp.server.security.Signer;
 import org.glassfish.jersey.server.ContainerException;
 import org.glassfish.jersey.server.ContainerResponse;
@@ -53,7 +52,6 @@ import javax.annotation.Nonnull;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.security.InvalidParameterException;
 import java.security.KeyStore.PrivateKeyEntry;
