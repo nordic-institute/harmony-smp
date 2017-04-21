@@ -43,6 +43,11 @@
 			<artifactId>ojdbc6</artifactId>
 			<version>11.1.0.6.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+			<version>3.4</version>
+		</dependency>
 	</dependencies>
 
 	<build>
