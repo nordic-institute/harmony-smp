@@ -63,7 +63,6 @@
                     <dependency>
                         <groupId>com.oracle</groupId>
                         <artifactId>ojdbc6</artifactId>
-                        <version>11.1.0.6.0</version>
                     </dependency>
                 </dependencies>
             </plugin>

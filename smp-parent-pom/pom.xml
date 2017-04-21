@@ -398,6 +398,7 @@
 				<groupId>com.oracle</groupId>
 				<artifactId>ojdbc6</artifactId>
 				<version>${oracle.version}</version>
+				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>mysql</groupId>
@@ -459,6 +460,25 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<profiles>
+		<profile>
+			<!-- Oracle driver is needed only for integration tests - do not dowlnoad it from repo if tests are skipped -->
+			<id>Skip Oracle from tests</id>
+			<activation>
+				<property>
+					<name>skipTests</name>
+					<value>!true</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.oracle</groupId>
+					<artifactId>ojdbc6</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 
 	<!-- Build plugins -->
 	<build>
