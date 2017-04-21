@@ -42,7 +42,7 @@ import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.BadRequestException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
-import eu.europa.ec.cipa.smp.server.security.BlueCoatClientCertificateAuthentication;
+import eu.europa.ec.cipa.smp.server.security.PreAuthenticatedCertificatePrincipal;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceGroupInterfaceImpl;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.cipa.smp.server.util.RequestHelper;
@@ -133,7 +133,7 @@ public final class ServiceGroupInterface {
     if (auth == null || auth instanceof AnonymousAuthenticationToken) {
       throw new UnauthorizedException("User is not authenticated");
     }
-    if( auth instanceof BlueCoatClientCertificateAuthentication){
+    if( auth.getDetails() instanceof PreAuthenticatedCertificatePrincipal){
       //TODO: In SMP 4.0 authentication must be split from Authorization.
       //TODO: Thus it will be possible ( at least by configuration ! ) to be an "SMP Admin" authenticated by certificate.
       throw new UnauthorizedException("User authenticated with BlueCoat does not have 'SMP Admin' permission.");

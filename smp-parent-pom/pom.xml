@@ -82,6 +82,7 @@
 		<metro.version>2.2.1-1</metro.version>
 		<commons-io.version>2.4</commons-io.version>
 		<junitparams.version>1.0.5</junitparams.version>
+		<lombok.version>1.16.16</lombok.version>
 	</properties>
 
 	<!-- Where are we looking for JARs? -->
@@ -299,6 +300,12 @@
 				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>${lombok.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-test</artifactId>
 				<version>${spring.version}</version>
@@ -353,6 +360,7 @@
 				<groupId>javax</groupId>
 				<artifactId>javaee-api</artifactId>
 				<version>${javaee-api.version}</version>
+				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
