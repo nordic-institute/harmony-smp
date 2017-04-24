@@ -9,7 +9,6 @@
     <b:bean id="jerseyBasicAuthEntryPoint"
             class="eu.europa.ec.cipa.smp.server.errors.SpringSecurityBasicAuthenticationEntryPoint"/>
 
-    <http-firewall ref="encodedSlashesAllowedInUrlHttpFirewall"/>
 
     <http>
         <csrf disabled="true"/>
@@ -50,8 +49,10 @@
         <b:property name="blueCoatEnabled" ref="blueCoatEnabled"/>
     </b:bean>
 
-    <b:bean id="encodedSlashesAllowedInUrlHttpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall">
-        <b:property name="allowUrlEncodedSlash" value="true"/>
+    <!-- Slashes in participant or document identifiers are disallowed by default -->
+    <http-firewall ref="httpFirewall"/>
+    <b:bean id="httpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall">
+        <b:property name="allowUrlEncodedSlash" ref="encodedSlashesAllowedInUrl"/>
     </b:bean>
 
 </b:beans>

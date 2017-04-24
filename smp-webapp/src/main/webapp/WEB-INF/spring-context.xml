@@ -14,6 +14,10 @@
         <constructor-arg value="authentication.blueCoat.enabled"/>
     </bean>
 
+    <bean id="encodedSlashesAllowedInUrl" factory-bean="configFile" factory-method="getString">
+        <constructor-arg value="encodedSlashesAllowedInUrl"/>
+    </bean>
+
     <!-- TODO: Refactor datasource creation once the application is rewritten into Spring -->
     <bean id="jdbcDriver" factory-bean="configFile" factory-method="getString">
         <constructor-arg value="jdbc.driver"/>
