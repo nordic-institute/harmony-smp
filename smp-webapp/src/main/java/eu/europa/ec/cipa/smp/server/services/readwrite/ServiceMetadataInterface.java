@@ -37,7 +37,6 @@
  */
 package eu.europa.ec.cipa.smp.server.services.readwrite;
 
-import com.sun.jersey.spi.MessageBodyWorkers;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
@@ -47,29 +46,14 @@ import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.cipa.smp.server.util.RequestHelper;
 import eu.europa.ec.smp.api.Identifiers;
 import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.EndpointType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessListType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceEndpointList;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceInformationType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
+import org.glassfish.jersey.message.MessageBodyWorkers;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.*;
+import javax.ws.rs.core.*;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;

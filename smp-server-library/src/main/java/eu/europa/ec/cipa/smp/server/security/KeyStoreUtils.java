@@ -85,7 +85,7 @@ public final class KeyStoreUtils {
   public static final String KEYSTORE_TYPE_JCEKS = "JCEKS";
   public static final String KEYSTORE_TYPE_PKCS12 = "PKCS12";
 
-  private static final String [] keystoreTypes = { KEYSTORE_TYPE_PKCS12, KEYSTORE_TYPE_JKS, KEYSTORE_TYPE_JCEKS };
+  private static final String [] keystoreTypes = { KEYSTORE_TYPE_JKS, KEYSTORE_TYPE_PKCS12, KEYSTORE_TYPE_JCEKS };
 
   @PresentForCodeCoverage
   private static final KeyStoreUtils s_aInstance = new KeyStoreUtils ();
