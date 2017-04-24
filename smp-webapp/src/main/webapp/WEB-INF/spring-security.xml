@@ -9,6 +9,8 @@
     <b:bean id="jerseyBasicAuthEntryPoint"
             class="eu.europa.ec.cipa.smp.server.errors.SpringSecurityBasicAuthenticationEntryPoint"/>
 
+    <http-firewall ref="encodedSlashesAllowedInUrlHttpFirewall"/>
+
     <http>
         <csrf disabled="true"/>
         <http-basic entry-point-ref="jerseyBasicAuthEntryPoint"/>
@@ -46,6 +48,10 @@
             class="eu.europa.ec.cipa.smp.server.security.BlueCoatAuthenticationFilter">
         <b:property name="authenticationManager" ref="smpAuthenticationManager"/>
         <b:property name="blueCoatEnabled" ref="blueCoatEnabled"/>
+    </b:bean>
+
+    <b:bean id="encodedSlashesAllowedInUrlHttpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall">
+        <b:property name="allowUrlEncodedSlash" value="true"/>
     </b:bean>
 
 </b:beans>
