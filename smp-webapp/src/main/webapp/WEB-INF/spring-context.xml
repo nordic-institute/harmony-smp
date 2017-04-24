@@ -10,6 +10,10 @@
         <constructor-arg type="java.lang.String" value="smp.config.properties"/>
     </bean>
 
+    <bean id="blueCoatEnabled" factory-bean="configFile" factory-method="getString">
+        <constructor-arg value="authentication.blueCoat.enabled"/>
+    </bean>
+
     <!-- TODO: Refactor datasource creation once the application is rewritten into Spring -->
     <bean id="jdbcDriver" factory-bean="configFile" factory-method="getString">
         <constructor-arg value="jdbc.driver"/>

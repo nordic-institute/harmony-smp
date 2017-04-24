@@ -6,7 +6,8 @@
 						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
 
-    <b:bean id="jerseyBasicAuthEntryPoint" class="eu.europa.ec.cipa.smp.server.errors.SpringSecurityBasicAuthenticationEntryPoint"/>
+    <b:bean id="jerseyBasicAuthEntryPoint"
+            class="eu.europa.ec.cipa.smp.server.errors.SpringSecurityBasicAuthenticationEntryPoint"/>
 
     <http-firewall ref="encodedSlashesAllowedInUrlHttpFirewall"/>
 
@@ -14,16 +15,40 @@
         <csrf disabled="true"/>
         <http-basic entry-point-ref="jerseyBasicAuthEntryPoint"/>
         <anonymous granted-authority="ROLE_ANONYMOUS"/>
+        <custom-filter position="PRE_AUTH_FILTER" ref="blueCoatReverseProxyAuthFilter"/>
+        <intercept-url method="PUT" access=" ! isAnonymous()" pattern="/*"/>
+        <intercept-url method="DELETE" access=" ! isAnonymous()" pattern="/*"/>
     </http>
+
 
     <authentication-manager alias="smpAuthenticationManager">
         <authentication-provider>
             <password-encoder hash="bcrypt"/>
-            <jdbc-user-service data-source-ref="dataSource"
-                               users-by-username-query="SELECT username, password, 1 FROM smp_user WHERE username = ?"
+            <jdbc-user-service id="smpJdbcUserDetailsService"
+                               data-source-ref="dataSource"
+                               users-by-username-query="SELECT username, COALESCE(password, 'dummy'), 1 FROM smp_user WHERE username = ?"
                                authorities-by-username-query="SELECT all_roles.username, all_roles.authority from ( SELECT username, 'ROLE_SERVICEGROUP_ADMIN' AS AUTHORITY FROM smp_user UNION ALL SELECT username, 'ROLE_SMP_ADMIN' AS AUTHORITY FROM smp_user WHERE isadmin = 1 ) all_roles WHERE username = ?"/>
         </authentication-provider>
+
+        <authentication-provider ref="preauthAuthProvider"/>
+
     </authentication-manager>
+
+    <b:bean id="preauthAuthProvider"
+            class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
+        <b:property name="preAuthenticatedUserDetailsService">
+            <b:bean id="userDetailsServiceWrapper"
+                    class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper">
+                <b:property name="userDetailsService" ref="smpJdbcUserDetailsService"/>
+            </b:bean>
+        </b:property>
+    </b:bean>
+
+    <b:bean id="blueCoatReverseProxyAuthFilter"
+            class="eu.europa.ec.cipa.smp.server.security.BlueCoatAuthenticationFilter">
+        <b:property name="authenticationManager" ref="smpAuthenticationManager"/>
+        <b:property name="blueCoatEnabled" ref="blueCoatEnabled"/>
+    </b:bean>
 
     <b:bean id="encodedSlashesAllowedInUrlHttpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall">
         <b:property name="allowUrlEncodedSlash" value="true"/>

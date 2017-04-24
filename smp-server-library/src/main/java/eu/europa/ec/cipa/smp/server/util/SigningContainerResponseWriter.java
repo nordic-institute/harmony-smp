@@ -42,20 +42,21 @@ import com.helger.commons.io.streams.StreamUtils;
 import com.helger.commons.xml.EXMLIncorrectCharacterHandling;
 import com.helger.commons.xml.serialize.*;
 import com.helger.commons.xml.transform.XMLTransformerFactory;
-import com.sun.jersey.spi.container.ContainerResponse;
-import com.sun.jersey.spi.container.ContainerResponseWriter;
 import eu.europa.ec.cipa.smp.server.security.Signer;
+import org.glassfish.jersey.server.ContainerException;
+import org.glassfish.jersey.server.ContainerResponse;
+import org.glassfish.jersey.server.spi.ContainerResponseWriter;
 import org.w3c.dom.Document;
 
 import javax.annotation.Nonnull;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.security.InvalidParameterException;
 import java.security.KeyStore.PrivateKeyEntry;
 import java.security.cert.X509Certificate;
+import java.util.concurrent.TimeUnit;
 
 final class SigningContainerResponseWriter implements ContainerResponseWriter {
 
@@ -74,14 +75,16 @@ final class SigningContainerResponseWriter implements ContainerResponseWriter {
     signatureSigner = new Signer(aKeyEntry.getPrivateKey(),aCert);
   }
 
-  public OutputStream writeStatusAndHeaders (final long nContentLength, final ContainerResponse aResponse) throws IOException {
+  @Override
+  public OutputStream writeResponseStatusAndHeaders(long nContentLength, ContainerResponse aResponse) throws ContainerException {
     m_aResponse = aResponse;
     return m_aBAOS = new NonBlockingByteArrayOutputStream ();
   }
 
-  public void finish () throws IOException {
+  @Override
+  public void commit () {
     final byte [] aContent = m_aBAOS.toByteArray ();
-    final OutputStream aOS = m_aCRW.writeStatusAndHeaders (-1, m_aResponse);
+    final OutputStream aOS = m_aCRW.writeResponseStatusAndHeaders (-1, m_aResponse);
 
     // Do security work here wrapping content and writing out XMLDSIG stuff to
     // out
@@ -125,4 +128,25 @@ final class SigningContainerResponseWriter implements ContainerResponseWriter {
       }
     }
   }
+
+
+    @Override
+    public boolean suspend(long timeOut, TimeUnit timeUnit, TimeoutHandler timeoutHandler) {
+        return m_aCRW.suspend(timeOut, timeUnit, timeoutHandler);
+    }
+
+    @Override
+    public void setSuspendTimeout(long timeOut, TimeUnit timeUnit) throws IllegalStateException {
+      m_aCRW.setSuspendTimeout(timeOut, timeUnit);
+    }
+
+    @Override
+    public void failure(Throwable error) {
+      m_aCRW.failure(error);
+    }
+
+    @Override
+    public boolean enableResponseBuffering() {
+        return m_aCRW.enableResponseBuffering();
+    }
 }

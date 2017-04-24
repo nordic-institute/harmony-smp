@@ -3,11 +3,14 @@ package eu.europa.ec.cipa.smp.server.util;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.AuthenticationException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
-import eu.europa.ec.cipa.smp.server.security.BlueCoatClientCertificateAuthentication;
+import eu.europa.ec.cipa.smp.server.security.PreAuthenticatedCertificatePrincipal;
 import org.junit.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
+import java.security.Principal;
 import java.util.Arrays;
 
 import static org.junit.Assert.*;
@@ -55,13 +58,13 @@ public class RequestHelperTest {
     @Test
     public void getBlueCoatUsername() throws AuthenticationException {
         //given
-        String clientCertHeader = "serial=0000000000000123&subject=CN=SMP_7,O=DG-DIGIT,C=X&validFrom=Oct 21 02:00:00 2014 CEST&validTo=Oct 21 01:59:59 2018 CEST&issuer=CN=PEPPOL,O=X,C=Y";
-        DefaultHttpHeader defaultHttpHeader = new DefaultHttpHeader();
-        defaultHttpHeader.addRequestHeader("Client-Cert", Arrays.asList(clientCertHeader));
-        SecurityContextHolder.getContext().setAuthentication(new BlueCoatClientCertificateAuthentication(clientCertHeader));
+        Principal principal = new PreAuthenticatedCertificatePrincipal("CN=SMP_7,O=DG-DIGIT,C=X", "CN=PEPPOL,O=X,C=Y", "123");
+        PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(principal, "N/A");
+        authentication.setDetails(principal);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         //when
-        BasicAuthClientCredentials retrivedAuth = RequestHelper.getAuth(defaultHttpHeader, false);
+        BasicAuthClientCredentials retrivedAuth = RequestHelper.getAuth(new DefaultHttpHeader(), false);
 
         //then
         assertNotNull(retrivedAuth.getUserName());

@@ -11,6 +11,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.parsers.ParserConfigurationException;
@@ -111,4 +112,19 @@ public class ServiceMetadataConverterTest {
         ServiceMetadataConverter.toSignedServiceMetadatadaDocument("this is malformed XML body");
     }
 
+    @Test
+    public void testVulnerabilityParsingDTD() throws IOException {
+        //given
+        String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "ServiceMetadataWithDOCTYPE.xml");
+
+        //when then
+        try {
+            ServiceMetadataConverter.unmarshal(inputDoc);
+        }catch(XmlParsingException e){
+            assertTrue(e.getMessage().contains("DOCTYPE is disallowed"));
+            assertTrue(e.getCause() instanceof SAXParseException);
+            return;
+        }
+        fail("DOCTYPE declaration must be blocked to prevent from XXE attacks");
+    }
 }
