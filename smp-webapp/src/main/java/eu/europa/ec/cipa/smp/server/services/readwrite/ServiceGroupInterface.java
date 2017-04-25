@@ -136,7 +136,7 @@ public final class ServiceGroupInterface {
     if( auth.getDetails() instanceof PreAuthenticatedCertificatePrincipal){
       //TODO: In SMP 4.0 authentication must be split from Authorization.
       //TODO: Thus it will be possible ( at least by configuration ! ) to be an "SMP Admin" authenticated by certificate.
-      throw new UnauthorizedException("User authenticated with BlueCoat does not have 'SMP Admin' permission.");
+      throw new UnauthorizedException("User authenticated with Certificate does not have 'SMP Admin' permission.");
     }
     boolean isSmpAdmin = false;
     for (GrantedAuthority authority : auth.getAuthorities()) {
