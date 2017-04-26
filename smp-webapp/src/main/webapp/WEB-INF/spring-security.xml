@@ -14,7 +14,10 @@
         <csrf disabled="true"/>
         <http-basic entry-point-ref="jerseyBasicAuthEntryPoint"/>
         <anonymous granted-authority="ROLE_ANONYMOUS"/>
+
+        <custom-filter position="X509_FILTER" ref="x509AuthFilter"/>
         <custom-filter position="PRE_AUTH_FILTER" ref="blueCoatReverseProxyAuthFilter"/>
+
         <intercept-url method="PUT" access=" ! isAnonymous()" pattern="/*"/>
         <intercept-url method="DELETE" access=" ! isAnonymous()" pattern="/*"/>
     </http>
@@ -47,6 +50,11 @@
             class="eu.europa.ec.cipa.smp.server.security.BlueCoatAuthenticationFilter">
         <b:property name="authenticationManager" ref="smpAuthenticationManager"/>
         <b:property name="blueCoatEnabled" ref="blueCoatEnabled"/>
+    </b:bean>
+
+    <b:bean id="x509AuthFilter"
+            class="eu.europa.ec.cipa.smp.server.security.EDeliveryX509AuthenticationFilter">
+        <b:property name="authenticationManager" ref="smpAuthenticationManager"/>
     </b:bean>
 
     <!-- Slashes in participant or document identifiers are disallowed by default -->
