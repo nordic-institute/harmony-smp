@@ -205,27 +205,4 @@ public final class IdentifierUtils {
     final String sURIEncoded = getIdentifierURIEncoded (aIdentifier);
     return BusdoxURLUtils.createPercentEncodedURL (sURIEncoded);
   }
-
-  /**
-   * Central method for unifying participant identifier values for storage in a
-   * DB, as participant identifier values need to be handled case-insensitive.
-   * This method can be applied both to participant identifier schemes and
-   * business identifier values.
-   *
-   * @param sValue
-   *        The DB identifier value to unify. May be <code>null</code>.
-   * @return <code>null</code> if the passed value is <code>null</code>
-   */
-  @Nullable
-  public static String getUnifiedParticipantDBValue (@Nullable final String sValue) {
-    return sValue == null ? null : sValue.toLowerCase (Locale.US);
-  }
-
-
-
-
-
-
-
-
 }

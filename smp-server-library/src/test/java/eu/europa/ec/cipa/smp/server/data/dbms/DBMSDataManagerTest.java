@@ -45,6 +45,7 @@ import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
+import eu.europa.ec.cipa.smp.server.security.BCryptPasswordHash;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.cipa.smp.server.util.SMPDBUtils;
 import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
@@ -81,6 +82,7 @@ public class DBMSDataManagerTest extends AbstractTest {
   private static final String ADMIN_USERNAME = "the_admin";
   private static final String NOADMIN_USERNAME = "CN=SMP_1000000181,O=DIGIT,C=DK:123456789";
   private static final String NOADMIN_PASSWORD = "123456789";
+  private static final String NOADMIN_PASSWORD_HASH = BCryptPasswordHash.hashPassword(NOADMIN_PASSWORD);
     public static final BasicAuthClientCredentials ADMIN_CREDENTIALS = new BasicAuthClientCredentials(ADMIN_USERNAME, null);
 
     private static final String CERTIFICATE = "VGhpcyBpcyBzdXJlbHkgbm90IGEgdmFsaWQgY2VydGlmaWNhdGUsIGJ1dCBpdCBo\n"
@@ -109,7 +111,7 @@ public class DBMSDataManagerTest extends AbstractTest {
 
   @Before
   public void beforeTest () throws Throwable {
-    createOrUpdatedDBUser(NOADMIN_USERNAME, NOADMIN_PASSWORD, false);
+    createOrUpdatedDBUser(NOADMIN_USERNAME, NOADMIN_PASSWORD_HASH, false);
     createOrUpdatedDBUser(ADMIN_USERNAME, null, true);
 
     final ExtensionType aExtension = SMPDBUtils.getAsExtensionSafe("<root><any>value</any></root>");
@@ -344,7 +346,50 @@ public class DBMSDataManagerTest extends AbstractTest {
     isServiceMetadataToDelete = true;
   }
 
-  @Test(expected = NotFoundException.class)
+    @Test
+    public void testServiceMetadataCaseInSensitivity() throws Throwable {
+        //given
+        String inParticipantValue = PARTICIPANT_IDENTIFIER1+"ABCxyz";
+        String inParticipantScheme = "participant-SCHEME-with-lower-and-UPPER";
+        String inDocValue = TEST_DOCTYPE_ID+"ABCxyz";
+        String inDocScheme = "document-SCHEME-with-lower-and-UPPER";
+        ParticipantIdentifierType inParticipantId = new ParticipantIdentifierType(inParticipantValue, inParticipantScheme);
+        DocumentIdentifier inDocId = new DocumentIdentifier(inDocValue, inDocScheme);
+        ParticipantIdentifierType inParticipantIdUpper = new ParticipantIdentifierType(inParticipantValue.toUpperCase(), inParticipantScheme.toUpperCase());
+        DocumentIdentifier inDocIdUpper = new DocumentIdentifier(inDocValue.toUpperCase(), inDocScheme.toUpperCase());
+        m_aServiceMetadata.getServiceInformation().setParticipantIdentifier(inParticipantId);
+        m_aServiceMetadata.getServiceInformation().setDocumentIdentifier(inDocId);
+        m_sServiceMetadata = XmlTestUtils.marshall(m_aServiceMetadata);
+
+        m_aServiceGroup = createServiceGroup(inParticipantValue, inParticipantScheme);
+        s_aDataMgr.saveServiceGroup(m_aServiceGroup, CREDENTIALS);
+
+        //when
+        s_aDataMgr.saveService(inParticipantId, inDocId, m_sServiceMetadata, CREDENTIALS);
+
+        //then
+        String resultServiceMetadataStr = s_aDataMgr.getService (inParticipantId, inDocId);
+        String resultServiceMetadataStrFromUpperCaseId = s_aDataMgr.getService (inParticipantIdUpper, inDocIdUpper);
+
+        assertEquals(resultServiceMetadataStr, resultServiceMetadataStrFromUpperCaseId);
+        ServiceMetadata resultServiceMetadata = ServiceMetadataConverter.unmarshal(resultServiceMetadataStr);
+        ParticipantIdentifierType resultParticipantId = resultServiceMetadata.getServiceInformation().getParticipantIdentifier();
+        DocumentIdentifier resultDocId = resultServiceMetadata.getServiceInformation().getDocumentIdentifier();
+
+        assertEquals(inParticipantValue, resultParticipantId.getValue());
+        assertEquals(inParticipantScheme, resultParticipantId.getScheme());
+        assertEquals(inDocValue, resultDocId.getValue());
+        assertEquals(inDocScheme, resultDocId.getScheme());
+
+        //when
+        s_aDataMgr.deleteService(inParticipantId, inDocId, CREDENTIALS);
+
+        //then
+        resultServiceMetadataStr = s_aDataMgr.getService (inParticipantId, inDocId);
+        assertNull(resultServiceMetadataStr);
+    }
+
+    @Test(expected = NotFoundException.class)
   public void testCreateServiceMetadataNonExistingServiceGroup() throws Throwable {
       final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
       s_aDataMgr.saveService(serviceGroupNonExisting, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
@@ -428,7 +473,6 @@ public class DBMSDataManagerTest extends AbstractTest {
     @Test
     public void testUpdateServiceMetadataByAdmin() throws Throwable {
         // given
-        s_aDataMgr.deleteService(PARTY_ID, DOCTYPE_ID, ADMIN_CREDENTIALS);
         boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
         String strMetadata = s_aDataMgr.getService(PARTY_ID, DOCTYPE_ID);
         ServiceMetadata metadata = ServiceMetadataConverter.unmarshal(strMetadata);
@@ -555,7 +599,6 @@ public class DBMSDataManagerTest extends AbstractTest {
   public void testSaveServiceGroup() throws Throwable {
       // # Authentication #
       BasicAuthClientCredentials auth =CREDENTIALS;
-      ServiceGroup result = s_aDataMgr.getServiceGroup(m_aServiceGroup.getParticipantIdentifier());
 
       // # Delete after leaving test #
       isServiceGroupToDelete = true;
@@ -563,8 +606,14 @@ public class DBMSDataManagerTest extends AbstractTest {
       // # Save ServiceGroup #
       String participantId = PARTICIPANT_IDENTIFIER2 + "654987";
       m_aServiceGroup = createServiceGroup(participantId);
+      ParticipantIdentifierType participantIdedntifierLowerCase = new ParticipantIdentifierType(m_aServiceGroup.getParticipantIdentifier().getValue().toLowerCase(), m_aServiceGroup.getParticipantIdentifier().getScheme().toLowerCase());
       s_aDataMgr.deleteServiceGroup(PARTY_ID, ADMIN_CREDENTIALS);
+
+      //when
       boolean bNewServiceGroupCreated = s_aDataMgr.saveServiceGroup(m_aServiceGroup, auth);
+
+      //then
+      ServiceGroup result = s_aDataMgr.getServiceGroup(m_aServiceGroup.getParticipantIdentifier());
 
       // # Check ServiceGroup after save #
       assertNotNull(result);
@@ -573,9 +622,64 @@ public class DBMSDataManagerTest extends AbstractTest {
       assertTrue(IdentifierUtils.areParticipantIdentifierValuesEqual(participantId,
               result.getParticipantIdentifier().getValue()));
       // # Check Ownership #
-      assertNotNull( s_aDataMgr.getCurrentEntityManager().find(DBOwnership.class, new DBOwnershipID(auth.getUserName(), m_aServiceGroup.getParticipantIdentifier())));
+      assertNotNull( s_aDataMgr.getCurrentEntityManager().find(DBOwnership.class, new DBOwnershipID(auth.getUserName(), participantIdedntifierLowerCase)));
       assertTrue(bNewServiceGroupCreated);
+
+      //Sorry for that - but this tests are so bad that one interact with each other ... started failing after fixed one issue
+      s_aDataMgr.deleteServiceGroup(m_aServiceGroup.getParticipantIdentifier(), ADMIN_CREDENTIALS);
   }
+
+    @Test
+    public void testServiceGroupCaseSensitivity() throws Throwable {
+        //given
+        String participantId = PARTICIPANT_IDENTIFIER2 + "ABC";
+        String participantScheme = "case-SENSITIVE-participant-2";
+        m_aServiceGroup = createServiceGroup(participantId, participantScheme);
+        ParticipantIdentifierType participantIdentifier = m_aServiceGroup.getParticipantIdentifier();
+        ParticipantIdentifierType participantIdentifierUpper = new ParticipantIdentifierType(participantId.toUpperCase(), participantScheme.toUpperCase());
+
+        //when
+        s_aDataMgr.saveServiceGroup(m_aServiceGroup, CREDENTIALS);
+
+        //then
+        ServiceGroup result = s_aDataMgr.getServiceGroup(participantIdentifierUpper);
+        assertNull(result);
+
+        result = s_aDataMgr.getServiceGroup(participantIdentifier);
+        assertEquals(participantIdentifier.getValue(),result.getParticipantIdentifier().getValue());
+        assertEquals(participantIdentifier.getScheme(),result.getParticipantIdentifier().getScheme());
+
+        //when
+        s_aDataMgr.deleteServiceGroup(participantIdentifier, CREDENTIALS);
+
+        //then
+        result = s_aDataMgr.getServiceGroup(participantIdentifier);
+        assertNull(result);
+    }
+
+    @Test
+    public void testServiceGroupCaseInsensitivity() throws Throwable {
+        //given
+        String participantId = PARTICIPANT_IDENTIFIER2 + "ABC";
+        m_aServiceGroup = createServiceGroup(participantId);
+        ParticipantIdentifierType inputParticipantId = m_aServiceGroup.getParticipantIdentifier();
+
+        //when
+        s_aDataMgr.saveServiceGroup(m_aServiceGroup, CREDENTIALS);
+
+        //then
+        ServiceGroup result = s_aDataMgr.getServiceGroup(inputParticipantId);
+        assertNotNull(result);
+        assertNotEquals(inputParticipantId.getValue(), result.getParticipantIdentifier().getValue());
+        assertEquals(inputParticipantId.getValue().toLowerCase(),result.getParticipantIdentifier().getValue());
+
+        //when
+        s_aDataMgr.deleteServiceGroup(inputParticipantId, CREDENTIALS);
+
+        //then
+        result = s_aDataMgr.getServiceGroup(inputParticipantId);
+        assertNull(result);
+    }
 
   @Test(expected = UnauthorizedException.class)
   public void testSaveServiceGroupByCertificateNotOwner() throws Throwable {
@@ -666,10 +770,16 @@ public class DBMSDataManagerTest extends AbstractTest {
   private ServiceGroup createServiceGroup(String participantId) {
     final ObjectFactory aObjFactory = new ObjectFactory();
     ServiceGroup m_aServiceGroup = aObjFactory.createServiceGroup();
-    m_aServiceGroup.setParticipantIdentifier(PARTY_ID);
-    m_aServiceGroup.getParticipantIdentifier().setValue(participantId);
-
+    ParticipantIdentifierType participant = new ParticipantIdentifierType(participantId, PARTY_ID.getScheme());
+    m_aServiceGroup.setParticipantIdentifier(participant);
     return m_aServiceGroup;
+  }
+
+  private ServiceGroup createServiceGroup(String participantId, String participantScheme) {
+      ServiceGroup serviceGroup = createServiceGroup(participantId);
+      ParticipantIdentifierType participant = new ParticipantIdentifierType(participantId, participantScheme);
+      serviceGroup.setParticipantIdentifier(participant);
+      return serviceGroup;
   }
 
   @After

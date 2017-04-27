@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.europa.ec.cipa</groupId>
 	<artifactId>smp-parent-pom</artifactId>
-	<version>3.0.0-RC1</version>
+	<version>3.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>smp-parent-pom</name>
 	<description>The CIPA e-Delivery platform</description>
@@ -61,7 +61,7 @@
 		<javaee-api.version>7.0</javaee-api.version>
 		<commons-lang3.version>3.4</commons-lang3.version>
 		<junit.version>4.12</junit.version>
-		<mockito.version>1.10.19</mockito.version>
+		<mockito.version>2.7.14</mockito.version>
 		<log4j.version>1.2.17</log4j.version>
 		<slf4j.version>1.7.10</slf4j.version>
 		<guava.version>18.0</guava.version>
@@ -78,10 +78,11 @@
 		<ant-commons-net.version>1.6.5</ant-commons-net.version>
 		<jetty.version>8.1.15.v20140411</jetty.version>
 		<servlet-api.version>2.5</servlet-api.version>
-		<jersey.version>1.17.1</jersey.version>
+		<jersey.version>2.17</jersey.version>
 		<metro.version>2.2.1-1</metro.version>
 		<commons-io.version>2.4</commons-io.version>
 		<junitparams.version>1.0.5</junitparams.version>
+		<lombok.version>1.16.16</lombok.version>
 	</properties>
 
 	<!-- Where are we looking for JARs? -->
@@ -288,10 +289,21 @@
 				<artifactId>spring-security-config</artifactId>
 				<version>${spring.security.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>org.springframework.security</groupId>
+                <artifactId>spring-security-test</artifactId>
+                <version>${spring.security.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-webmvc</artifactId>
 				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>${lombok.version}</version>
+				<scope>provided</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -332,6 +344,7 @@
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
 				<version>${mockito.version}</version>
+				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>junit</groupId>
@@ -347,6 +360,7 @@
 				<groupId>javax</groupId>
 				<artifactId>javaee-api</artifactId>
 				<version>${javaee-api.version}</version>
+				<scope>compile</scope>
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
@@ -392,6 +406,7 @@
 				<groupId>com.oracle</groupId>
 				<artifactId>ojdbc6</artifactId>
 				<version>${oracle.version}</version>
+				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>mysql</groupId>
@@ -426,6 +441,16 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
+				<groupId>org.glassfish.jersey.core</groupId>
+				<artifactId>jersey-server</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.containers</groupId>
+				<artifactId>jersey-container-servlet-core</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.glassfish.metro</groupId>
 				<artifactId>webservices-rt</artifactId>
 				<version>${metro.version}</version>
@@ -453,6 +478,25 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+
+	<profiles>
+		<profile>
+			<!-- Oracle driver is needed only for integration tests - do not dowlnoad it from repo if tests are skipped -->
+			<id>Skip Oracle from tests</id>
+			<activation>
+				<property>
+					<name>skipTests</name>
+					<value>!true</value>
+				</property>
+			</activation>
+			<dependencies>
+				<dependency>
+					<groupId>com.oracle</groupId>
+					<artifactId>ojdbc6</artifactId>
+				</dependency>
+			</dependencies>
+		</profile>
+	</profiles>
 
 	<!-- Build plugins -->
 	<build>

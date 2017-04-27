@@ -37,7 +37,10 @@
  */
 package eu.europa.ec.cipa.smp.server.util;
 
+import org.junit.Assert;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -58,14 +61,18 @@ public final class ConfigFileTest {
     assertFalse (aCF.getBoolean ("element3", true));
     assertEquals ("abc", aCF.getString ("element4"));
 
+    List<String> listElements = aCF.getStringList("aList");
+    Assert.assertArrayEquals(new String [] {"elem1", "elem2", "elem3"}, listElements.toArray());
+
     // Non-existing elements
     assertNull (aCF.getString ("element1a"));
     assertNull (aCF.getCharArray ("element1a"));
     assertEquals (5, aCF.getInt ("element2a", 5));
     assertTrue (aCF.getBoolean ("element3a", true));
+    assertTrue (aCF.getStringList("anEmptyList").isEmpty());
 
     // All keys
-    assertEquals (22, aCF.getAllKeys ().size ());
+    assertEquals (26, aCF.getAllKeys ().size ());
 
     assertNotNull (aCF.toString ());
   }

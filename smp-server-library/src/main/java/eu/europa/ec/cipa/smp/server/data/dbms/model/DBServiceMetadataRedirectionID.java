@@ -40,7 +40,6 @@ package eu.europa.ec.cipa.smp.server.data.dbms.model;
 import com.helger.commons.equals.EqualsUtils;
 import com.helger.commons.hash.HashCodeGenerator;
 import com.helger.commons.string.ToStringGenerator;
-import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
@@ -79,7 +78,7 @@ public class DBServiceMetadataRedirectionID implements Serializable {
   }
 
   public void setBusinessIdentifierScheme (final String sBusinessIdentifierScheme) {
-    m_sParticipantIdentifierScheme = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifierScheme);
+    m_sParticipantIdentifierScheme = sBusinessIdentifierScheme;
   }
 
   @Column (name = "businessIdentifier", nullable = false, length = MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)
@@ -88,7 +87,7 @@ public class DBServiceMetadataRedirectionID implements Serializable {
   }
 
   public void setBusinessIdentifier (final String sBusinessIdentifier) {
-    m_sParticipantIdentifier = IdentifierUtils.getUnifiedParticipantDBValue (sBusinessIdentifier);
+    m_sParticipantIdentifier = sBusinessIdentifier;
   }
 
   @Column (name = "documentIdentifierScheme", nullable = false, length = MAX_IDENTIFIER_SCHEME_LENGTH)

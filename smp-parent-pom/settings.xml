@@ -7,7 +7,7 @@
 			<host>158.169.9.13</host>
 			<port>8012</port>
 			<username>j50b107</username>
-			<password>{VtY9+xpYtF0HPwkX8WuewigB168oiHNqHaZo7DHI1y4=}</password>
+			<password>{AP1hP8sE97kHFzAatQGzaaiQPGFrOMDFUZFfG3xTxOs=}</password>
 		</proxy>
 		<proxy>
 			<id>httpsProxy</id>
@@ -16,7 +16,7 @@
 			<host>158.169.9.13</host>
 			<port>8012</port>
 			<username>j50b107</username>
-			<password>{VtY9+xpYtF0HPwkX8WuewigB168oiHNqHaZo7DHI1y4=}</password>
+			<password>{AP1hP8sE97kHFzAatQGzaaiQPGFrOMDFUZFfG3xTxOs=}</password>
 		</proxy>
 	</proxies>
 	<mirrors>
@@ -30,53 +30,53 @@
 	<servers>
 		<server>
 			<id>edelivery-snapshots</id>
-			<username>feriaad</username>
-			<password>{rr82ZW4abmoHfePbkReOdVahK93skZJQ3o59tUPKPfg=}</password>
+			<username>gutowpa</username>
+			<password>{2y/aQkOSNGYHhuusKhaDwLP/lm5YFzlJwyjUWXFDh74=}</password>
 		</server>
 		<server>
 			<id>edelivery-releases</id>
-			<username>feriaad</username>
-			<password>{rr82ZW4abmoHfePbkReOdVahK93skZJQ3o59tUPKPfg=}</password>
+			<username>gutowpa</username>
+			<password>{2y/aQkOSNGYHhuusKhaDwLP/lm5YFzlJwyjUWXFDh74=}</password>
 		</server>
 		<server>
 			<id>cefdigital-snapshots</id>
-			<username>feriaad</username>
-			<password>{rr82ZW4abmoHfePbkReOdVahK93skZJQ3o59tUPKPfg=}</password>
+			<username>j50b107</username>
+			<password>{AP1hP8sE97kHFzAatQGzaaiQPGFrOMDFUZFfG3xTxOs=}</password>
 		</server>
 		<server>
 			<id>cefdigital-releases</id>
-			<username>feriaad</username>
-			<password>{rr82ZW4abmoHfePbkReOdVahK93skZJQ3o59tUPKPfg=}</password>
+			<username>j50b107</username>
+			<password>{AP1hP8sE97kHFzAatQGzaaiQPGFrOMDFUZFfG3xTxOs=}</password>
 		</server>
 		<server>
 			<id>webgate-digit</id>
-			<username>feriaad</username>
-			<password>{t1Dvle4YGQkHvSJT8dEOoP8mRVkbx71nfyi5yDnyLzI=}</password>
+			<username>j50b107</username>
+			<password>{AP1hP8sE97kHFzAatQGzaaiQPGFrOMDFUZFfG3xTxOs=}</password>
 		</server>
 		<server>
 			<id>webgate-digit-third-party</id>
-			<username>feriaad</username>
-			<password>{t1Dvle4YGQkHvSJT8dEOoP8mRVkbx71nfyi5yDnyLzI=}</password>
+			<username>j50b107</username>
+			<password>{AP1hP8sE97kHFzAatQGzaaiQPGFrOMDFUZFfG3xTxOs=}</password>
 		</server>
 		<server>
 			<id>webgate-digit-soapui</id>
-			<username>feriaad</username>
-			<password>{jrPCBl5o4NQHwDz3zZ9rjFYpWHQgiQwacNoDA3nNRyQ=}</password>
+			<username>j50b107</username>
+			<password>{AP1hP8sE97kHFzAatQGzaaiQPGFrOMDFUZFfG3xTxOs=}</password>
 		</server>
 		<server>
 		  <id>joinup-releases</id>
-		  <username>feriaad</username>
-		  <password>{788Ld8tT0dUH+IzZMvy6SbUdFcYCnwd5nSO8yf1PFvQ=}</password>
+		  <username>j50b107</username>
+		  <password>{AP1hP8sE97kHFzAatQGzaaiQPGFrOMDFUZFfG3xTxOs=}</password>
 		</server>
 		<server>
 		  <id>joinup-snapshots</id>
-		  <username>feriaad</username>
-		  <password>{788Ld8tT0dUH+IzZMvy6SbUdFcYCnwd5nSO8yf1PFvQ=}</password>
+		  <username>j50b107</username>
+		  <password>{AP1hP8sE97kHFzAatQGzaaiQPGFrOMDFUZFfG3xTxOs=}</password>
 		</server>
 		<server>
 		  <id>joinup-3rdparty</id>
-		  <username>feriaad</username>
-		  <password>{788Ld8tT0dUH+IzZMvy6SbUdFcYCnwd5nSO8yf1PFvQ=}</password>
+		  <username>j50b107</username>
+		  <password>{AP1hP8sE97kHFzAatQGzaaiQPGFrOMDFUZFfG3xTxOs=}</password>
 		</server>
   </servers>
 </settings>

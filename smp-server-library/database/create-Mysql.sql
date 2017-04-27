@@ -43,18 +43,18 @@
 
 DROP TABLE IF EXISTS smp_service_group;
 CREATE TABLE smp_service_group (
-  businessIdentifier varchar(256) NOT NULL,
-  businessIdentifierScheme varchar(256) NOT NULL,
+  businessIdentifier varchar(256) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  businessIdentifierScheme varchar(256) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   extension BLOB,
   PRIMARY KEY  (businessIdentifier,businessIdentifierScheme)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 DROP TABLE IF EXISTS smp_service_metadata;
 CREATE TABLE smp_service_metadata (
-  documentIdentifier varchar(256) NOT NULL,
-  documentIdentifierScheme varchar(256) NOT NULL,
-  businessIdentifier varchar(256) NOT NULL,
-  businessIdentifierScheme varchar(256) NOT NULL,
+  documentIdentifier varchar(256) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  documentIdentifierScheme varchar(256) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  businessIdentifier varchar(256) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  businessIdentifierScheme varchar(256) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   extension TEXT,
   xmlcontent TEXT,
   PRIMARY KEY  (documentIdentifier,documentIdentifierScheme,businessIdentifier,businessIdentifierScheme),
@@ -123,8 +123,8 @@ CREATE TABLE smp_endpoint (
 DROP TABLE IF EXISTS smp_ownership;
 CREATE TABLE smp_ownership (
   username varchar(256) NOT NULL,
-  businessIdentifier varchar(256) NOT NULL,
-  businessIdentifierScheme varchar(256) NOT NULL,
+  businessIdentifier varchar(256) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  businessIdentifierScheme varchar(256) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   KEY FK_ownership_1 (businessIdentifier,businessIdentifierScheme),
   KEY FK_ownership_2 (username),
   CONSTRAINT FK_ownership_2 FOREIGN KEY (username) REFERENCES smp_user (username) ON DELETE CASCADE ON UPDATE CASCADE,

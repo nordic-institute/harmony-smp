@@ -56,10 +56,7 @@ import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Used for accessing configuration files based on properties. By default first
@@ -74,6 +71,10 @@ import java.util.Set;
 @Immutable
 @Deprecated
 public class ConfigFile {
+
+  public static final String LIST_SEPARATOR = "\\|";
+  public static final String EMPTY_STRING = "";
+
   private static final class SingletonHolder {
     static final ConfigFile s_aInstance = new ConfigFile ();
   }
@@ -216,6 +217,15 @@ public class ConfigFile {
 
   public final int getInt (@Nonnull final String sKey, final int nDefault) {
     return StringParser.parseInt (getString (sKey), nDefault);
+  }
+
+  public List<String> getStringList(@Nonnull final String sKey) {
+    List<String> stringsList = Arrays.asList(getString(sKey, EMPTY_STRING).split(LIST_SEPARATOR));
+    if (stringsList.size() == 1 && stringsList.contains(EMPTY_STRING)) {
+      return Collections.emptyList(); //configured empty value
+    } else {
+      return stringsList;
+    }
   }
 
   /**

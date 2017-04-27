@@ -39,6 +39,8 @@ package eu.europa.ec.cipa.smp.server.data;
 
 import com.helger.commons.annotations.Nonempty;
 import com.helger.commons.lang.GenericReflection;
+import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
+import eu.europa.ec.cipa.smp.server.data.dbms.DBMSDataManager;
 import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,6 +56,7 @@ import javax.annotation.concurrent.Immutable;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
+@Deprecated
 public final class DataManagerFactory {
   private static final Logger s_aLogger = LoggerFactory.getLogger (DataManagerFactory.class);
   private static final String CONFIG_DATA_MANAGER_CLASS = "dataManager.class";
@@ -73,6 +76,12 @@ public final class DataManagerFactory {
     if (ret == null)
       throw new IllegalStateException ("Failed to instantiate IDataManager class '" + s_sDataManagerClassName + "'");
     s_aLogger.info ("IDataManager class '" + s_sDataManagerClassName + "' instantiated");
+
+    if(ret instanceof DBMSDataManager){
+      CaseSensitivityNormalizer caseSensitivityNormalizer = context.getBean(CaseSensitivityNormalizer.class);
+      ((DBMSDataManager)ret).setCaseSensitivityNormalizer(caseSensitivityNormalizer);
+    }
+
     s_aInstance = ret;
   }
 

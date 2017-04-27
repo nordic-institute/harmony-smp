@@ -37,122 +37,54 @@
  */
 package eu.europa.ec.cipa.smp.server.util;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.KeyStore.PrivateKeyEntry;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.xml.crypto.MarshalException;
-import javax.xml.crypto.dsig.CanonicalizationMethod;
-import javax.xml.crypto.dsig.DigestMethod;
-import javax.xml.crypto.dsig.Reference;
-import javax.xml.crypto.dsig.SignatureMethod;
-import javax.xml.crypto.dsig.SignedInfo;
-import javax.xml.crypto.dsig.Transform;
-import javax.xml.crypto.dsig.XMLSignature;
-import javax.xml.crypto.dsig.XMLSignatureException;
-import javax.xml.crypto.dsig.XMLSignatureFactory;
-import javax.xml.crypto.dsig.dom.DOMSignContext;
-import javax.xml.crypto.dsig.keyinfo.KeyInfo;
-import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
-import javax.xml.crypto.dsig.keyinfo.X509Data;
-import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
-import javax.xml.crypto.dsig.spec.TransformParameterSpec;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import com.helger.commons.io.streams.NonBlockingByteArrayOutputStream;
 import com.helger.commons.io.streams.StreamUtils;
 import com.helger.commons.xml.EXMLIncorrectCharacterHandling;
-import com.helger.commons.xml.serialize.DOMReader;
-import com.helger.commons.xml.serialize.EXMLSerializeIndent;
-import com.helger.commons.xml.serialize.IXMLWriterSettings;
-import com.helger.commons.xml.serialize.XMLWriter;
-import com.helger.commons.xml.serialize.XMLWriterSettings;
+import com.helger.commons.xml.serialize.*;
 import com.helger.commons.xml.transform.XMLTransformerFactory;
-import com.sun.jersey.spi.container.ContainerResponse;
-import com.sun.jersey.spi.container.ContainerResponseWriter;
+import eu.europa.ec.cipa.smp.server.security.Signer;
+import org.glassfish.jersey.server.ContainerException;
+import org.glassfish.jersey.server.ContainerResponse;
+import org.glassfish.jersey.server.spi.ContainerResponseWriter;
+import org.w3c.dom.Document;
+
+import javax.annotation.Nonnull;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.OutputStream;
+import java.security.InvalidParameterException;
+import java.security.KeyStore.PrivateKeyEntry;
+import java.security.cert.X509Certificate;
+import java.util.concurrent.TimeUnit;
 
 final class SigningContainerResponseWriter implements ContainerResponseWriter {
+
   private final ContainerResponseWriter m_aCRW;
-  private final PrivateKeyEntry m_aKeyEntry;
-  private final X509Certificate m_aCert;
   private NonBlockingByteArrayOutputStream m_aBAOS;
   private ContainerResponse m_aResponse;
+  private final Signer signatureSigner;
 
   SigningContainerResponseWriter (@Nonnull final ContainerResponseWriter crw,
                                   @Nonnull final PrivateKeyEntry aKeyEntry,
                                   @Nonnull final X509Certificate aCert) {
     m_aCRW = crw;
-    m_aKeyEntry = aKeyEntry;
-    m_aCert = aCert;
+    if (aKeyEntry == null) {
+      throw new InvalidParameterException("Private key must be not null.");
+    }
+    signatureSigner = new Signer(aKeyEntry.getPrivateKey(),aCert);
   }
 
-  public OutputStream writeStatusAndHeaders (final long nContentLength, final ContainerResponse aResponse) throws IOException {
+  @Override
+  public OutputStream writeResponseStatusAndHeaders(long nContentLength, ContainerResponse aResponse) throws ContainerException {
     m_aResponse = aResponse;
     return m_aBAOS = new NonBlockingByteArrayOutputStream ();
   }
 
-  private void _signXML (final Element aElementToSign) throws NoSuchAlgorithmException,
-                                                      InvalidAlgorithmParameterException,
-                                                      MarshalException,
-                                                      XMLSignatureException {
-    // Create a DOM XMLSignatureFactory that will be used to
-    // generate the enveloped signature.
-    final XMLSignatureFactory aSignatureFactory = XMLSignatureFactory.getInstance ("DOM");
-
-    // Create a Reference to the enveloped document (in this case,
-    // you are signing the whole document, so a URI of "" signifies
-    // that, and also specify the SHA1 digest algorithm and
-    // the ENVELOPED Transform)
-    final Reference aReference = aSignatureFactory.newReference ("",
-                                                                 aSignatureFactory.newDigestMethod (DigestMethod.SHA256,
-                                                                                                    null),
-                                                                 Collections.singletonList (aSignatureFactory.newTransform (Transform.ENVELOPED,
-                                                                                                                            (TransformParameterSpec) null)),
-                                                                 null,
-                                                                 null);
-
-    // Create the SignedInfo.
-    final String RSA_SHA256 = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
-    final SignedInfo aSingedInfo = aSignatureFactory.newSignedInfo (aSignatureFactory.newCanonicalizationMethod (CanonicalizationMethod.INCLUSIVE,
-                                                                                                                 (C14NMethodParameterSpec) null),
-                                                                    aSignatureFactory.newSignatureMethod (RSA_SHA256,
-                                                                                                          null),
-                                                                    Collections.singletonList (aReference));
-
-    // Create the KeyInfo containing the X509Data.
-    final KeyInfoFactory aKeyInfoFactory = aSignatureFactory.getKeyInfoFactory ();
-    final List <Object> aX509Content = new ArrayList <Object> ();
-    aX509Content.add (m_aCert.getSubjectX500Principal ().getName ());
-    aX509Content.add (m_aCert);
-    final X509Data aX509Data = aKeyInfoFactory.newX509Data (aX509Content);
-    final KeyInfo aKeyInfo = aKeyInfoFactory.newKeyInfo (Collections.singletonList (aX509Data));
-
-    // Create a DOMSignContext and specify the RSA PrivateKey and
-    // location of the resulting XMLSignature's parent element.
-    final DOMSignContext dsc = new DOMSignContext (m_aKeyEntry.getPrivateKey (), aElementToSign);
-
-    // Create the XMLSignature, but don't sign it yet.
-    final XMLSignature signature = aSignatureFactory.newXMLSignature (aSingedInfo, aKeyInfo);
-
-    // Marshal, generate, and sign the enveloped signature.
-    signature.sign (dsc);
-  }
-
-  public void finish () throws IOException {
+  @Override
+  public void commit () {
     final byte [] aContent = m_aBAOS.toByteArray ();
-    final OutputStream aOS = m_aCRW.writeStatusAndHeaders (-1, m_aResponse);
+    final OutputStream aOS = m_aCRW.writeResponseStatusAndHeaders (-1, m_aResponse);
 
     // Do security work here wrapping content and writing out XMLDSIG stuff to
     // out
@@ -168,7 +100,7 @@ final class SigningContainerResponseWriter implements ContainerResponseWriter {
 
     // Sign the document
     try {
-      _signXML (aDoc.getDocumentElement ());
+        signatureSigner.signXML(aDoc.getDocumentElement ());
     }
     catch (final Exception e) {
       throw new RuntimeException ("Error in signing xml", e);
@@ -196,4 +128,25 @@ final class SigningContainerResponseWriter implements ContainerResponseWriter {
       }
     }
   }
+
+
+    @Override
+    public boolean suspend(long timeOut, TimeUnit timeUnit, TimeoutHandler timeoutHandler) {
+        return m_aCRW.suspend(timeOut, timeUnit, timeoutHandler);
+    }
+
+    @Override
+    public void setSuspendTimeout(long timeOut, TimeUnit timeUnit) throws IllegalStateException {
+      m_aCRW.setSuspendTimeout(timeOut, timeUnit);
+    }
+
+    @Override
+    public void failure(Throwable error) {
+      m_aCRW.failure(error);
+    }
+
+    @Override
+    public boolean enableResponseBuffering() {
+        return m_aCRW.enableResponseBuffering();
+    }
 }
