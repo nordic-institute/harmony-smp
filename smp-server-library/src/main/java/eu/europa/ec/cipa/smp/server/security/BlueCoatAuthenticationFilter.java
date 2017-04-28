@@ -130,7 +130,7 @@ public class BlueCoatAuthenticationFilter extends AbstractPreAuthenticatedProces
     private String clearGarbage(String dirtyValue) {
         // BlueCoat introduces garbage by mixing fields
         // One that we noticed is the "E=a@b.pl" value added at the and of CN: "CN=common name/emailAddress\=a@b.pl"
-        String cleanValue = dirtyValue.replaceAll("/emailAddress\\\\=[^,]+", "");
+        String cleanValue = dirtyValue.replaceAll("/emailAddress[^,]+", "");
         return cleanValue;
     }
 
