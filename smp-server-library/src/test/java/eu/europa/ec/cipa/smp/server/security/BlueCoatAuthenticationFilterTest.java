@@ -80,6 +80,13 @@ public class BlueCoatAuthenticationFilterTest {
                         "CN=issuer common name,O=issuer org,C=DE",
                         "000000000000e666"
                 },
+                {
+                        "garbage is skipped - emailAddress added to the end of CN, but not at the end of subject",
+                        "sno=f7%3A1e%3Ae8%3Ab1%3A1c%3Ab3%3Ab7%3A87&subject=C=BE, O=European Commission, OU=CEF_eDelivery.europa.eu,+OU=eHealth,+OU=SMP_TEST,+CN=EHEALTH_SMP_EC/emailAddress=CEF-EDELIVERY-SUPPORT@ec.europa.eu&validfrom=Dec++6+17%3A41%3A42+2016+GMT&validto=Jul++9+23%3A59%3A00+2019+GMT&issuer=C%3DDE%2C+O%3DT-Systems+International+GmbH%2C+OU%3DT-Systems+Trust+Center%2C+ST%3DNordrhein+Westfalen%2FpostalCode%3D57250%2C+L%3DNetphen%2Fstreet%3DUntere+Industriestr.+20%2C+CN%3DShared+Business+CA+4&policy_oids=1.3.6.1.4.1.7879.13.25",
+                        "CN=EHEALTH_SMP_EC,O=European Commission,C=BE",
+                        "CN=Shared Business CA 4,O=T-Systems International GmbH,C=DE",
+                        "f71ee8b11cb3b787"
+                }
         };
     }
 
