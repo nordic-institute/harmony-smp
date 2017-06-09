@@ -18,7 +18,8 @@ import com.helger.commons.collections.CollectionHelper;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import com.helger.web.http.basicauth.HTTPBasicAuth;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
-import eu.europa.ec.cipa.smp.server.security.PreAuthenticatedCertificatePrincipal;
+
+import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
