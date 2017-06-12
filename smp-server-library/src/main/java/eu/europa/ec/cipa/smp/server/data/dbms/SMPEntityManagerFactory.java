@@ -65,6 +65,9 @@ public final class SMPEntityManagerFactory extends AbstractGlobalEntityManagerFa
     // (http://code.google.com/p/peppol-silicone/issues/detail?id=6)
     ret.put (PersistenceUnitProperties.CACHE_SHARED_DEFAULT, "false");
 
+    //Non-default name causes that WebLogic does not touch and especially does not load it. Hopefully.
+    ret.put(PersistenceUnitProperties.ECLIPSELINK_PERSISTENCE_XML, "META-INF/smp-persistence.xml");
+
     return ret;
   }
 
