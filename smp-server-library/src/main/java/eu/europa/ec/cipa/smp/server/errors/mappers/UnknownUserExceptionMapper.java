@@ -24,7 +24,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.USER_NOT_FOUND;
+import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
 
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
@@ -35,7 +36,8 @@ public class UnknownUserExceptionMapper implements ExceptionMapper <UnknownUserE
 
   @Override
   public Response toResponse (final UnknownUserException e) {
-    Response response = ErrorResponseBuilder.status(FORBIDDEN)
+    Response response = ErrorResponseBuilder.status(BAD_REQUEST)
+            .businessCode(USER_NOT_FOUND)
             .errorDescription(e.getMessage())
             .build();
     ErrorResponse errorResponse = (ErrorResponse) response.getEntity();

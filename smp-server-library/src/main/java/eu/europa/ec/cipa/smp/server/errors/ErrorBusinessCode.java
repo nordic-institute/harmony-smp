@@ -28,5 +28,6 @@ public enum ErrorBusinessCode {
         OTHER_ERROR,
         UNAUTHORIZED,
         NOT_FOUND,
+        USER_NOT_FOUND,
         TECHNICAL;
     }
