@@ -28,6 +28,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 
 import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.TECHNICAL;
+import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.USER_NOT_FOUND;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -47,8 +48,8 @@ public class UnknownUserExceptionMapperTest extends ParentExceptionTest {
 
         // then
         ErrorResponse entity = (ErrorResponse) response.getEntity();
-        assertEquals(Response.Status.FORBIDDEN.getStatusCode(), response.getStatus());
-        String errorUniqueId = checkXmlError(entity, TECHNICAL, "Unknown user 'testUser'");
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        String errorUniqueId = checkXmlError(entity, USER_NOT_FOUND, "Unknown user 'testUser'");
         assertNotNull(errorUniqueId);
     }
 }
