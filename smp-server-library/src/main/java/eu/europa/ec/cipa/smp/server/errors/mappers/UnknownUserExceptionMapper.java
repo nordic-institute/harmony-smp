@@ -15,7 +15,6 @@
 package eu.europa.ec.cipa.smp.server.errors.mappers;
 
 import ec.services.smp._1.ErrorResponse;
-import eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode;
 import eu.europa.ec.cipa.smp.server.errors.ErrorResponseBuilder;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
 import org.slf4j.Logger;
@@ -27,7 +26,6 @@ import javax.ws.rs.ext.Provider;
 
 import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.USER_NOT_FOUND;
 import static javax.ws.rs.core.Response.Status.BAD_REQUEST;
-import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger

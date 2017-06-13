@@ -18,16 +18,13 @@ package eu.europa.ec.cipa.smp.server.errors.mappers;
 import ec.services.smp._1.ErrorResponse;
 import eu.europa.ec.cipa.smp.server.errors.ParentExceptionTest;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
-import eu.europa.ec.cipa.smp.server.errors.mappers.UnknownUserExceptionMapper;
 import org.junit.Test;
 import org.xml.sax.SAXException;
 
 import javax.ws.rs.core.Response;
 import javax.xml.parsers.ParserConfigurationException;
-
 import java.io.IOException;
 
-import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.TECHNICAL;
 import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.USER_NOT_FOUND;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
