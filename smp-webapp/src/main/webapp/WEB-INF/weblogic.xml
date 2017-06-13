@@ -18,6 +18,10 @@
     <container-descriptor>
         <prefer-application-packages>
 
+            <!-- used by JDBC transaction manager -->
+            <package-name>javax.persistence.*</package-name>
+            <package-name>org.eclipse.persistence.*</package-name>
+
             <!-- used for logging -->
             <package-name>org.slf4j.*</package-name>
             <package-name>org.apache.commons.*</package-name>
