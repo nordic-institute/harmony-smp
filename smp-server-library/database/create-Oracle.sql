@@ -12,12 +12,6 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the Licence for the specific language governing permissions and limitations under the Licence.
 
-CREATE TABLE smp_ownership (
-  username                 VARCHAR(256) NOT NULL,
-  businessIdentifier       VARCHAR(50)  NOT NULL,
-  businessIdentifierScheme VARCHAR(100) NOT NULL,
-  PRIMARY KEY (username, businessIdentifier, businessIdentifierScheme)
-);
 
 CREATE TABLE smp_service_group (
   extension                CLOB,
@@ -37,7 +31,11 @@ CREATE TABLE smp_service_metadata (
     documentIdentifierScheme,
     businessIdentifier,
     businessIdentifierScheme,
-    documentIdentifier)
+    documentIdentifier),
+  CONSTRAINT
+    FK_service_metadata_service_group FOREIGN KEY (
+    businessIdentifier, businessIdentifierScheme)
+  REFERENCES smp_service_group (businessIdentifier, businessIdentifierScheme)
 );
 
 CREATE TABLE smp_user (
@@ -48,19 +46,13 @@ CREATE TABLE smp_user (
   CONSTRAINT check_is_admin_value CHECK (isadmin = 0 OR isadmin = 1)
 );
 
-
-ALTER TABLE smp_ownership
-  ADD CONSTRAINT
-  FK_smp_ownership_username FOREIGN KEY (username) REFERENCES smp_user (username);
-
-ALTER TABLE smp_ownership
-  ADD CONSTRAINT
-  FK_smp_ownership_businessId FOREIGN KEY (
+CREATE TABLE smp_ownership (
+  username                 VARCHAR(256) NOT NULL,
+  businessIdentifier       VARCHAR(50)  NOT NULL,
+  businessIdentifierScheme VARCHAR(100) NOT NULL,
+  PRIMARY KEY (username, businessIdentifier, businessIdentifierScheme),
+  CONSTRAINT FK_ownership_user FOREIGN KEY (username) REFERENCES smp_user (username),
+  CONSTRAINT FK_ownership_service_group FOREIGN KEY (
     businessIdentifier, businessIdentifierScheme)
-REFERENCES smp_service_group (businessIdentifier, businessIdentifierScheme);
-
-ALTER TABLE smp_service_metadata
-  ADD CONSTRAINT
-  FK_smp_service_meta_busId FOREIGN KEY (
-    businessIdentifier, businessIdentifierScheme)
-REFERENCES smp_service_group (businessIdentifier, businessIdentifierScheme);
+  REFERENCES smp_service_group (businessIdentifier, businessIdentifierScheme)
+);
