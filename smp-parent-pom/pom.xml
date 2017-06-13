@@ -180,6 +180,11 @@
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
+				<groupId>eu.europa.ec.edelivery</groupId>
+				<artifactId>edelivery-springsecurity-2-way-ssl-auth</artifactId>
+				<version>1.0</version>
+			</dependency>
+			<dependency>
 				<groupId>eu.europa.ec.bdmsl</groupId>
 				<artifactId>bdmsl-client</artifactId>
 				<version>${bdmsl.client.version}</version>

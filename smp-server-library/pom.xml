@@ -54,6 +54,10 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>eu.europa.ec.edelivery</groupId>
+            <artifactId>edelivery-springsecurity-2-way-ssl-auth</artifactId>
+        </dependency>
+        <dependency>
             <groupId>eu.europa.ec.bdmsl</groupId>
             <artifactId>bdmsl-client</artifactId>
         </dependency>

@@ -62,13 +62,13 @@
     </b:bean>
 
     <b:bean id="blueCoatReverseProxyAuthFilter"
-            class="eu.europa.ec.cipa.smp.server.security.BlueCoatAuthenticationFilter">
+            class="eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter">
         <b:property name="authenticationManager" ref="smpAuthenticationManager"/>
         <b:property name="blueCoatEnabled" ref="blueCoatEnabled"/>
     </b:bean>
 
     <b:bean id="x509AuthFilter"
-            class="eu.europa.ec.cipa.smp.server.security.EDeliveryX509AuthenticationFilter">
+            class="eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter">
         <b:property name="authenticationManager" ref="smpAuthenticationManager"/>
     </b:bean>
 

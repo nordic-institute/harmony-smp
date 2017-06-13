@@ -16,7 +16,7 @@
 package eu.europa.ec.cipa.smp.server.services.readwrite;
 
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
-import eu.europa.ec.cipa.smp.server.security.PreAuthenticatedCertificatePrincipal;
+import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import org.junit.Test;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;

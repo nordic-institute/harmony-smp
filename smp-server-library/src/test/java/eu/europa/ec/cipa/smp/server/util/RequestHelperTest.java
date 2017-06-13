@@ -18,10 +18,9 @@ package eu.europa.ec.cipa.smp.server.util;
 import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.AuthenticationException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
-import eu.europa.ec.cipa.smp.server.security.PreAuthenticatedCertificatePrincipal;
+import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
 import org.junit.Test;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 

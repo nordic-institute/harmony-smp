@@ -19,9 +19,9 @@ package eu.europa.ec.cipa.smp.server.security;
 import eu.europa.ec.cipa.smp.server.AbstractTest;
 import eu.europa.ec.cipa.smp.server.services.readwrite.ServiceMetadataInterface;
 import eu.europa.ec.cipa.smp.server.util.DefaultHttpHeader;
+import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.w3c.dom.Document;
@@ -30,7 +30,6 @@ import org.w3c.dom.Element;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
-import java.util.Arrays;
 
 /**
  * Created by rodrfla on 08/02/2017.
