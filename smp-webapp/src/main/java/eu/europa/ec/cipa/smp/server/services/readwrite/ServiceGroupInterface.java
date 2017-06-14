@@ -83,7 +83,7 @@ public final class ServiceGroupInterface {
     verifySMPAdminCredentials();
     BdxSmpOasisValidator.validateXSD(body);
     final ServiceGroup aServiceGroup = ServiceGroupConverter.unmarshal(body);
-    validateInput(sServiceGroupID, aServiceGroup);
+    validateIds(sServiceGroupID, aServiceGroup);
 
     // Service action
     final IDataManager aDataManager = DataManagerFactory.getInstance ();
@@ -94,7 +94,7 @@ public final class ServiceGroupInterface {
     return bServiceGroupCreated ? Response.created(uriInfo.getRequestUri()).build() : Response.ok ().build ();
   }
 
-  private void validateInput(@PathParam("ServiceGroupId") String sServiceGroupID, ServiceGroup aServiceGroup) {
+  private void validateIds(@PathParam("ServiceGroupId") String sServiceGroupID, ServiceGroup aServiceGroup) {
 
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
     if (!IdentifierUtils.areIdentifiersEqual (aServiceGroupID, aServiceGroup.getParticipantIdentifier ())) {
