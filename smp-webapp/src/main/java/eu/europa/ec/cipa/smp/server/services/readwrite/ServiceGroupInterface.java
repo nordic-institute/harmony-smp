@@ -20,6 +20,7 @@ import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.BadRequestException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceGroupInterfaceImpl;
+import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.cipa.smp.server.util.RequestHelper;
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
@@ -33,9 +34,13 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.WRONG_FIELD;
 import static eu.europa.ec.cipa.smp.server.security.UserRole.ROLE_SMP_ADMIN;
@@ -48,7 +53,11 @@ import static eu.europa.ec.cipa.smp.server.security.UserRole.ROLE_SMP_ADMIN;
  */
 @Path ("/{ServiceGroupId}")
 public final class ServiceGroupInterface {
+
   private static final Logger s_aLogger = LoggerFactory.getLogger (ServiceGroupInterface.class);
+
+  private static final String CONFIG_SERVICE_GROUP_SCHEME_REGEXP = "identifiersBehaviour.ParticipantIdentifierScheme.validationRegex";
+  private Pattern schemaPattern;
 
   @Context
   private HttpHeaders headers;
@@ -69,10 +78,23 @@ public final class ServiceGroupInterface {
                                     final String body) throws Throwable{
 
     s_aLogger.info (String.format("PUT /%s ==> %s", sServiceGroupID, body));
+
+    // Validations
     verifySMPAdminCredentials();
     BdxSmpOasisValidator.validateXSD(body);
-
     final ServiceGroup aServiceGroup = ServiceGroupConverter.unmarshal(body);
+    validateInput(sServiceGroupID, aServiceGroup);
+
+    // Service action
+    final IDataManager aDataManager = DataManagerFactory.getInstance ();
+    boolean bServiceGroupCreated = aDataManager.saveServiceGroup(aServiceGroup, RequestHelper.getAuth(headers, true));
+
+    s_aLogger.info (String.format("Finished saveServiceGroup(%s,%s)", sServiceGroupID, aServiceGroup));
+
+    return bServiceGroupCreated ? Response.created(uriInfo.getRequestUri()).build() : Response.ok ().build ();
+  }
+
+  private void validateInput(@PathParam("ServiceGroupId") String sServiceGroupID, ServiceGroup aServiceGroup) {
 
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
     if (!IdentifierUtils.areIdentifiersEqual (aServiceGroupID, aServiceGroup.getParticipantIdentifier ())) {
@@ -80,12 +102,10 @@ public final class ServiceGroupInterface {
       throw new BadRequestException(WRONG_FIELD, "Service Group Ids don't match between URL parameter and XML body");
     }
 
-    final IDataManager aDataManager = DataManagerFactory.getInstance ();
-    boolean bServiceGroupCreated = aDataManager.saveServiceGroup(aServiceGroup, RequestHelper.getAuth(headers, true));
-
-    s_aLogger.info (String.format("Finished saveServiceGroup(%s,%s)", sServiceGroupID, aServiceGroup));
-
-    return bServiceGroupCreated ? Response.created(uriInfo.getRequestUri()).build() : Response.ok ().build ();
+    String scheme = aServiceGroup.getParticipantIdentifier().getScheme();
+    if(!getSchemaPattern().matcher(scheme).matches()){
+      throw new BadRequestException(WRONG_FIELD, "Service Group scheme does not match allowed pattern: " + getSchemaPattern().pattern());
+    }
   }
 
   @DELETE
@@ -122,6 +142,23 @@ public final class ServiceGroupInterface {
     if (!isSmpAdmin) {
       throw new UnauthorizedException("Authenticated user does not have 'SMP Admin' permission.");
     }
+  }
+
+  private Pattern getSchemaPattern(){
+    if(schemaPattern == null){
+      synchronized (this){
+        WebApplicationContext ctx = ContextLoader.getCurrentWebApplicationContext();
+        ConfigFile configFile = ctx.getBean(ConfigFile.class);
+        String regex = configFile.getString(CONFIG_SERVICE_GROUP_SCHEME_REGEXP);
+        try {
+          schemaPattern = Pattern.compile(regex);
+        } catch (PatternSyntaxException | NullPointerException e){
+          throw new IllegalStateException("Contact Administrator. ServiceGroup schema pattern is wrongly configured: " + regex);
+        }
+      }
+    }
+
+    return schemaPattern;
   }
 
 }
