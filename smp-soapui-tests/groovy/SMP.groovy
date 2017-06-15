@@ -283,7 +283,7 @@ class SMP
 								assert(0), locateTest()+"Error: Extension returned is different from Extension pushed. For details, please refer to logs in red.";
 							}						
 						}else{
-							assert(responseDataTable[counter][0]==requestDataTable[counter][0]), locateTest()+"Error: in request, "+requestDataTable[counter][1]+"=\""+requestDataTable[counter][0]+"\""+" wheras in response, "+responseDataTable[counter][1]+"=\""+responseDataTable[counter][0]+"\".";
+							assert(responseDataTable[counter][0].toLowerCase()==requestDataTable[counter][0].toLowerCase()), locateTest()+"Error: in request, "+requestDataTable[counter][1]+"=\""+requestDataTable[counter][0]+"\""+" wheras in response, "+responseDataTable[counter][1]+"=\""+responseDataTable[counter][0]+"\".";
 						}
 						counter++;
 					}
@@ -340,8 +340,8 @@ class SMP
 				validResult =false;
 				
 				// TODO: Enable the extension signature validation.
-				//validResult = validateSignatureExtension(returnDOMDocument(tempoString));
-				//assert (validResult == true),locateTest()+"Error: Signature in the extension is not valid.";
+				validResult = validateSignatureExtension(returnDOMDocument(tempoString));
+				assert (validResult == true),locateTest()+"Error: Signature in the extension is not valid.";
 			break;
 			
 	        default:
@@ -524,8 +524,8 @@ class SMP
 			extraParts = extraParts.replace("%23","#");
 			Table1 = [];
 			Table1=extraParts.split('::',2);
-			tempoContainer[2] = Table1[0];
-			tempoContainer[3] = Table1[1];
+			tempoContainer[2] = Table1[0].replace("%2F","/");
+			tempoContainer[3] = Table1[1].replace("%2F","/");
 		}
 	}
 //=================================================================================
@@ -539,8 +539,8 @@ class SMP
 		def String outcome = "false";
 		def table1 = [];
 		def table2 = [];
-		table1=parseMetadata(metaData1);
-		table2=parseMetadata(metaData2);
+		table1=parseMetadata("<rootnode>"+metaData1+"</rootnode>");
+		table2=parseMetadata("<rootnode>"+metaData2+"</rootnode>");
 		outcome = compareTables(table1,table2);
 		return (outcome);
 	}
@@ -805,10 +805,15 @@ class SMP
 		
 		// Unmarshal the XMLSignature.
 		def XMLSignature signature = fac.unmarshalXMLSignature(valContext);
+		//displaySignatureInfo(signature,valContext);
+
 		try {
 			validFlag = signature.validate(valContext);
-		}catch(Exception ex) {
+		}catch(Exception ex) {			
 			assert (0),"-- validateSignatureExtension function -- Error occured while trying to validate the signature: "+ex;
+		}
+		if(validFlag==false){
+			printErrorSigValDetails(valContext,signature);
 		}
 		return (validFlag);
 	}
@@ -840,6 +845,28 @@ class SMP
 			}		
 		}
     }
+	
+	def printErrorSigValDetails(DOMValidateContext valContext, XMLSignature signature){
+        boolean sv = signature.getSignatureValue().validate(valContext);
+        log.info("signature validation status: " + sv);
+        if (sv == false) {
+            // Check the validation status of each Reference.
+            Iterator i1 = signature.getSignedInfo().getReferences().iterator();
+			//log.info i1.getAt(0);
+			//log.info i1.getAt(1);
+			//log.info i1.toString();
+            for (int j = 0; i1.hasNext(); j++) {
+                boolean refValid = ((org.jcp.xml.dsig.internal.dom.DOMReference) i1.next()).validate(valContext);
+                log.info("ref[" + j + "] validity status: " + refValid);
+            }
+        }
+    }
+	
+	def displaySignatureInfo(XMLSignature signature,DOMValidateContext valContext){
+		log.info"======== Signature ========";
+		log.info "- Signature Value: "+signature.getSignatureValue().getValue();
+		log.info"===========================";
+	}
 	
 	
 }
