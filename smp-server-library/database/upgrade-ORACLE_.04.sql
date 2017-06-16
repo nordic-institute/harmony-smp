@@ -1,1 +1,0 @@
-ALTER TABLE smp_user MODIFY (password null);
