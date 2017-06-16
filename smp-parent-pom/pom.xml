@@ -19,7 +19,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.europa.ec.cipa</groupId>
 	<artifactId>smp-parent-pom</artifactId>
-	<version>3.0.0-SNAPSHOT</version>
+	<version>3.0.0</version>
 	<packaging>pom</packaging>
 	<name>smp-parent-pom</name>
 	<description>The CIPA e-Delivery platform</description>
