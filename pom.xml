@@ -14,19 +14,36 @@
   ~ See the Licence for the specific language governing permissions and limitations under the Licence.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europa.ec</groupId>
     <artifactId>smp</artifactId>
     <packaging>pom</packaging>
-    <name>SMP Builder POM</name>
+    <name>SMP</name>
     <version>3.0.1-SNAPSHOT</version>
 
-	<modules>
-		<module>smp-parent-pom</module>
-		<module>smp-api</module>
-		<module>smp-server-library</module>
-		<module>smp-webapp</module>
-	</modules>
+    <modules>
+        <module>smp-parent-pom</module>
+        <module>smp-api</module>
+        <module>smp-server-library</module>
+        <module>smp-webapp</module>
+    </modules>
+
+    <properties>
+        <sonar.host.url>http://edelquality.westeurope.cloudapp.azure.com:9000/sonar/</sonar.host.url>
+        <!-- This class crashes sonar analysis. There is already a JIRA ticket for rewriting it. -->
+        <sonar.exclusions>**/DBMSDataManager.java</sonar.exclusions>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.2</version>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
