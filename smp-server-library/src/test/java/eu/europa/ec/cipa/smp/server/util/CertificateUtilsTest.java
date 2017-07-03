@@ -87,7 +87,7 @@ public class CertificateUtilsTest extends AbstractTest {
 
     @Test(expected = AuthenticationException.class)
     public void calculateCertificateIdFromHeaderWith4ParametersNotOk() throws Exception {
-        String certHeaderValue = CommonUtil.createHeaderCertificateForBlueCoat(null, false).replace("&validTo=Jun 1 10:37:53 2035 CEST", "");
+        String certHeaderValue = CommonUtil.createHeaderCertificateForBlueCoat(null, false).replaceFirst("&validTo=[^&]*", "");
         CertificateDetails certificateDetails = CertificateUtils.calculateCertificateIdFromHeader(certHeaderValue);
     }
 
