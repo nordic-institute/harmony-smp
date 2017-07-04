@@ -33,7 +33,7 @@ CREATE TABLE smp_service_metadata (
     businessIdentifierScheme,
     documentIdentifier),
   CONSTRAINT
-    FK_service_metadata_service_group FOREIGN KEY (
+    FK_srv_metadata_srv_group FOREIGN KEY (
     businessIdentifier, businessIdentifierScheme)
   REFERENCES smp_service_group (businessIdentifier, businessIdentifierScheme)
 );
