@@ -16,14 +16,12 @@ package eu.europa.ec.cipa.smp.server.errors.exceptions;
 
 import javax.annotation.Nullable;
 
-import com.helger.commons.exceptions.LoggedRuntimeException;
-
 /**
  * This exceptions is thrown if the provided user name does not exist.
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-public class UnknownUserException extends LoggedRuntimeException {
+public class UnknownUserException extends RuntimeException {
 
   private final String m_sUserName;
 

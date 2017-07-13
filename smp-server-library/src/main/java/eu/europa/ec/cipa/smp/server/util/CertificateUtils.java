@@ -15,11 +15,11 @@
 
 package eu.europa.ec.cipa.smp.server.util;
 
-import eu.europa.ec.cipa.smp.server.errors.exceptions.AuthenticationException;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.CertificateAuthenticationException;
 import eu.europa.ec.cipa.smp.server.security.CertificateDetails;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
@@ -114,9 +114,9 @@ public class CertificateUtils {
      *
      * @param certHeaderValue Certificate's header
      * @return Certificate Id
-     * @throws AuthenticationException Certificate Authentication Exception
+     * @throws CertificateAuthenticationException Certificate Authentication Exception
      */
-    public final static CertificateDetails getCommonNameFromCalculateHeaderCertificateId(final String certHeaderValue) throws AuthenticationException {
+    public final static CertificateDetails getCommonNameFromCalculateHeaderCertificateId(final String certHeaderValue) throws CertificateAuthenticationException {
         CertificateDetails certificateDetails = calculateCertificateIdFromHeader(certHeaderValue);
         certificateDetails.setCertificateId(returnCertificateId(certificateDetails.getSubject(), certificateDetails.getSerial()));
         return certificateDetails;
@@ -127,15 +127,15 @@ public class CertificateUtils {
      *
      * @param certHeaderValue Certificate's header
      * @return Certificate Id
-     * @throws AuthenticationException Certificate Authentication Exception
+     * @throws CertificateAuthenticationException Certificate Authentication Exception
      */
-    public final static CertificateDetails calculateCertificateIdFromHeader(final String certHeaderValue) throws AuthenticationException {
+    public final static CertificateDetails calculateCertificateIdFromHeader(final String certHeaderValue) throws CertificateAuthenticationException {
         String clientCertHeaderDecoded = null;
         synchronized (CertificateUtils.class) {
             try {
                 CertificateDetails certificate = new CertificateDetails();
                 clientCertHeaderDecoded = URLDecoder.decode(certHeaderValue, StandardCharsets.UTF_8.name());
-                clientCertHeaderDecoded = StringEscapeUtils.unescapeHtml(clientCertHeaderDecoded);
+                clientCertHeaderDecoded = StringEscapeUtils.unescapeHtml4(clientCertHeaderDecoded);
 
                 certificate = parseClientCertHeader(certificate, clientCertHeaderDecoded);
                 certificate.setSerial(certificate.getSerial().replaceAll(":", ""));
@@ -147,7 +147,7 @@ public class CertificateUtils {
                 try {
                     ldapName = new LdapName(subject);
                 } catch (InvalidNameException exc) {
-                    throw new AuthenticationException("Impossible to identify authorities for certificate " + subject, exc);
+                    throw new CertificateAuthenticationException("Impossible to identify authorities for certificate " + subject, exc);
                 }
                 // Make a map from type to name
                 final Map<String, Rdn> parts = new HashMap<>();
@@ -160,7 +160,7 @@ public class CertificateUtils {
 
                 return certificate;
             } catch (final Exception exc) {
-                throw new AuthenticationException(String.format("Impossible to determine the certificate identifier from encoded = %s and decoded = %s", certHeaderValue, clientCertHeaderDecoded), exc);
+                throw new CertificateAuthenticationException(String.format("Impossible to determine the certificate identifier from encoded = %s and decoded = %s", certHeaderValue, clientCertHeaderDecoded), exc);
             }
         }
     }
@@ -169,9 +169,9 @@ public class CertificateUtils {
      * Parses Client Certification Header
      *
      * @param clientCertHeaderDecoded Client Certification's Header
-     * @throws AuthenticationException Certificate Authentication Exception
+     * @throws CertificateAuthenticationException Certificate Authentication Exception
      */
-    private static CertificateDetails parseClientCertHeader(CertificateDetails certificate, String clientCertHeaderDecoded) throws AuthenticationException {
+    private static CertificateDetails parseClientCertHeader(CertificateDetails certificate, String clientCertHeaderDecoded) throws CertificateAuthenticationException {
         final String HEADER_ATTRIBUTE_SEPARATOR = "&";
         final String[] HEADER_ATTRIBUTE_SUBJECT = {"subject"};
         final String[] HEADER_ATTRIBUTE_SERIAL = {"serial", "sno"};
@@ -183,7 +183,7 @@ public class CertificateUtils {
         String[] split = clientCertHeaderDecoded.split(HEADER_ATTRIBUTE_SEPARATOR);
 
         if (split.length < 5) {
-            throw new AuthenticationException(String.format("Invalid BlueCoat Client Certificate Header Received [%s] ", Arrays.toString(split)));
+            throw new CertificateAuthenticationException(String.format("Invalid BlueCoat Client Certificate Header Received [%s] ", Arrays.toString(split)));
         }
         DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
         for (final String attribute : split) {
@@ -199,18 +199,18 @@ public class CertificateUtils {
                 try {
                     certificate.setValidFrom(DateUtils.toCalendar(df.parse(attribute.substring(attribute.indexOf('=') + 1))));
                 } catch (ParseException e) {
-                    throw new AuthenticationException(
+                    throw new CertificateAuthenticationException(
                             "Invalid BlueCoat Client Certificate Header Received (Unparsable Date for " + HEADER_ATTRIBUTE_VALID_FROM + ") ");
                 }
             } else if (isIn(attribute, HEADER_ATTRIBUTE_VALID_TO)) {
                 try {
                     certificate.setValidTo(DateUtils.toCalendar(df.parse(attribute.substring(attribute.indexOf('=') + 1))));
                 } catch (ParseException e) {
-                    throw new AuthenticationException(
+                    throw new CertificateAuthenticationException(
                             "Invalid BlueCoat Client Certificate Header Received (Unparsable Date for " + HEADER_ATTRIBUTE_VALID_TO + ") ");
                 }
             } else {
-                throw new AuthenticationException(
+                throw new CertificateAuthenticationException(
                         "Unknown BlueCoat Client Certificate Header Received: " + attribute);
             }
         }
@@ -235,7 +235,7 @@ public class CertificateUtils {
         return false;
     }
 
-    public static String orderSubjectByDefaultMetadata(String subject) throws AuthenticationException {
+    public static String orderSubjectByDefaultMetadata(String subject) throws CertificateAuthenticationException {
         try {
             LdapName ldapName = new LdapName(subject);
 
@@ -247,7 +247,7 @@ public class CertificateUtils {
 
             return parts.get("CN").toString() + "," + parts.get("O").toString() + "," + parts.get("C").toString();
         } catch (Exception exc) {
-            throw new AuthenticationException("Impossible to identify authorities for certificate " + subject, exc);
+            throw new CertificateAuthenticationException("Impossible to identify authorities for certificate " + subject, exc);
         }
     }
 }

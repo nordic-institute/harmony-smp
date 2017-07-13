@@ -16,7 +16,7 @@
 package eu.europa.ec.cipa.smp.server.util;
 
 import eu.europa.ec.cipa.smp.server.AbstractTest;
-import eu.europa.ec.cipa.smp.server.errors.exceptions.AuthenticationException;
+import eu.europa.ec.cipa.smp.server.errors.exceptions.CertificateAuthenticationException;
 import eu.europa.ec.cipa.smp.server.security.CertificateDetails;
 import org.junit.Assert;
 import org.junit.Test;
@@ -26,7 +26,7 @@ import java.math.BigInteger;
 /**
  * Created by migueti on 06/12/2016.
  */
-public class CertificateUtilsTest extends AbstractTest {
+public class CertificateUtilsTest {
 
     @Test
     public void testConvertBigIntToHexString() {
@@ -79,13 +79,13 @@ public class CertificateUtilsTest extends AbstractTest {
         Assert.assertEquals("5.0.6.0.4.1.0000.66.99", certificateDetails.getPolicyOids());
     }
 
-    @Test(expected = AuthenticationException.class)
+    @Test(expected = CertificateAuthenticationException.class)
     public void calculateCertificateIdFromHeaderWith7ParametersNotOk() throws Exception {
         String certHeaderValue = CommonUtil.createHeaderCertificateForBlueCoat(null, true) + "&oneMoreParameter=extra";
         CertificateDetails certificateDetails = CertificateUtils.calculateCertificateIdFromHeader(certHeaderValue);
     }
 
-    @Test(expected = AuthenticationException.class)
+    @Test(expected = CertificateAuthenticationException.class)
     public void calculateCertificateIdFromHeaderWith4ParametersNotOk() throws Exception {
         String certHeaderValue = CommonUtil.createHeaderCertificateForBlueCoat(null, false).replaceFirst("&validTo=[^&]*", "");
         CertificateDetails certificateDetails = CertificateUtils.calculateCertificateIdFromHeader(certHeaderValue);
@@ -97,12 +97,12 @@ public class CertificateUtilsTest extends AbstractTest {
             String certHeaderValue = CommonUtil.createHeaderCertificateForBlueCoat(null, false).replace("serial=123ABCD&", "");
             CertificateDetails certificateDetails = CertificateUtils.calculateCertificateIdFromHeader(certHeaderValue);
             Assert.fail("Serial not detected. Exception should be thrown.");
-        } catch (AuthenticationException exc) {
+        } catch (CertificateAuthenticationException exc) {
             Assert.assertTrue(exc.getMessage().startsWith("Impossible to determine the certificate identifier from"));
         }
     }
 
-    @Test(expected = AuthenticationException.class)
+    @Test(expected = CertificateAuthenticationException.class)
     public void calculateCertificateIdFromHeaderNotOk() throws Exception {
         String certHeaderValue = CommonUtil.createHeaderCertificateForBlueCoat("CM=SMP_123456789,O=DG-DIGIT,C=BE", false);
         CertificateDetails certificateDetails = CertificateUtils.calculateCertificateIdFromHeader(certHeaderValue);

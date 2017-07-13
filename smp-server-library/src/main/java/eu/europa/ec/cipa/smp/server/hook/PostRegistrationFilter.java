@@ -14,22 +14,15 @@
  */
 package eu.europa.ec.cipa.smp.server.hook;
 
-import java.io.IOException;
-
-import javax.annotation.Nonnull;
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
-
+import eu.europa.ec.cipa.smp.server.util.to_be_removed.ESuccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.helger.commons.state.ESuccess;
+import javax.annotation.Nonnull;
+import javax.servlet.*;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+import java.io.IOException;
 
 /**
  * Filter which handles post-registration hooks. If a registration was started

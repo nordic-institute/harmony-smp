@@ -87,14 +87,4 @@ public class DBServiceMetadata implements Serializable {
     m_sXmlContent = sXmlContent;
   }
 
-  @Lob
-  @Column (name = "extension", length = 65535)
-  public String getExtension () {
-    return m_sExtension;
-  }
-
-  public void setExtension (@Nullable final String sExtension) {
-    m_sExtension = sExtension;
-  }
-
 }

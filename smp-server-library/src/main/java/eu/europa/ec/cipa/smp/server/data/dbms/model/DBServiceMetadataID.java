@@ -14,10 +14,8 @@
  */
 package eu.europa.ec.cipa.smp.server.data.dbms.model;
 
-import com.helger.commons.annotations.UsedViaReflection;
-import com.helger.commons.equals.EqualsUtils;
-import com.helger.commons.hash.HashCodeGenerator;
-import com.helger.commons.string.ToStringGenerator;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
@@ -35,6 +33,8 @@ import static eu.europa.ec.cipa.smp.server.data.dbms.model.CommonColumnsLengths.
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Embeddable
+@ToString
+@EqualsAndHashCode
 public class DBServiceMetadataID implements Serializable {
   private String m_sParticipantIdentifierScheme;
   private String m_sParticipantIdentifier;
@@ -42,7 +42,6 @@ public class DBServiceMetadataID implements Serializable {
   private String m_sDocumentTypeIdentifier;
 
   @Deprecated
-  @UsedViaReflection
   public DBServiceMetadataID () {}
 
   public DBServiceMetadataID (@Nonnull final ParticipantIdentifierType aBusinessID,
@@ -111,34 +110,4 @@ public class DBServiceMetadataID implements Serializable {
     return new DocumentIdentifier(m_sDocumentTypeIdentifier, m_sDocumentTypeIdentifierScheme);
   }
 
-  @Override
-  public boolean equals (final Object o) {
-    if (this == o)
-      return true;
-    if (o == null || !getClass ().equals (o.getClass ()))
-      return false;
-    final DBServiceMetadataID rhs = (DBServiceMetadataID) o;
-    return EqualsUtils.equals (m_sParticipantIdentifierScheme, rhs.m_sParticipantIdentifierScheme) &&
-           EqualsUtils.equals (m_sParticipantIdentifier, rhs.m_sParticipantIdentifier) &&
-           EqualsUtils.equals (m_sDocumentTypeIdentifierScheme, rhs.m_sDocumentTypeIdentifierScheme) &&
-           EqualsUtils.equals (m_sDocumentTypeIdentifier, rhs.m_sDocumentTypeIdentifier);
-  }
-
-  @Override
-  public int hashCode () {
-    return new HashCodeGenerator (this).append (m_sParticipantIdentifierScheme)
-                                       .append (m_sParticipantIdentifier)
-                                       .append (m_sDocumentTypeIdentifierScheme)
-                                       .append (m_sDocumentTypeIdentifier)
-                                       .getHashCode ();
-  }
-
-  @Override
-  public String toString () {
-    return new ToStringGenerator (this).append ("participantIDScheme", m_sParticipantIdentifierScheme)
-                                       .append ("participantIDValue", m_sParticipantIdentifier)
-                                       .append ("documentTypeIDScheme", m_sDocumentTypeIdentifierScheme)
-                                       .append ("documentTypeIDValue", m_sDocumentTypeIdentifier)
-                                       .toString ();
-  }
 }

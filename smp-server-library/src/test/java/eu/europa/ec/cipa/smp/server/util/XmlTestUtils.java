@@ -15,13 +15,19 @@
 
 package eu.europa.ec.cipa.smp.server.util;
 
+import eu.europa.ec.cipa.smp.server.security.SignatureUtil;
 import org.apache.commons.io.IOUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -39,6 +45,17 @@ public class XmlTestUtils {
     public static String loadDocumentAsString(String docResourcePath) throws IOException {
         InputStream inputStream = XmlTestUtils.class.getResourceAsStream(docResourcePath);
         return IOUtils.toString(inputStream, UTF_8);
+    }
+
+    public static Document loadDocument(String docResourcePath) throws ParserConfigurationException, SAXException, IOException {
+        InputStream inputStreamm = SignatureUtil.class.getResourceAsStream(docResourcePath);
+        return getDocumentBuilder().parse(inputStreamm);
+    }
+
+    public static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        return dbf.newDocumentBuilder();
     }
 
     public static String marshal(Node doc) throws TransformerException, UnsupportedEncodingException {

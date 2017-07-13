@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.cipa</groupId>
         <artifactId>smp-parent-pom</artifactId>
-        <version>3.0.1-SNAPSHOT</version>
+        <version>4.0.0-SNAPSHOT</version>
         <relativePath>../smp-parent-pom/pom.xml</relativePath>
     </parent>
     <artifactId>smp-soapui-tests</artifactId>
@@ -58,7 +58,7 @@
                     <dependency>
                         <groupId>mysql</groupId>
                         <artifactId>mysql-connector-java</artifactId>
-                        <version>5.1.34</version>
+                        <version>${mysql.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>com.oracle</groupId>
