@@ -50,6 +50,14 @@ public class Identifiers {
         return new ProcessIdentifier(value, scheme);
     }
 
+    public static String asString(ParticipantIdentifierType participantId){
+        return String.format("%s::%s", participantId.getScheme(), participantId.getValue());
+    }
+
+    public static String asString(DocumentIdentifier docId){
+        return String.format("%s::%s", docId.getScheme(), docId.getValue());
+    }
+
 
     private static String extract(String doubleColonDelimitedId, String groupName) {
         try {

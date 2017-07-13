@@ -15,6 +15,7 @@
 
 package eu.europa.ec.cipa.smp.server.security;
 
+import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -170,16 +171,6 @@ public class SignatureUtil {
     }
 
 
-    public static Document loadDocument(String docResourcePath) throws ParserConfigurationException, SAXException, IOException {
-        InputStream inputStreamm = SignatureUtil.class.getResourceAsStream(docResourcePath);
-        return getDocumentBuilder().parse(inputStreamm);
-    }
-
-    public static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setNamespaceAware(true);
-        return dbf.newDocumentBuilder();
-    }
 
     public static Element findServiceInfoSig(Document doc) throws ParserConfigurationException, SAXException, IOException {
         Element extension = findExtensionInServiceInformation(doc);
@@ -187,7 +178,7 @@ public class SignatureUtil {
     }
 
     public static Document buildDocWithGivenRoot(Element smNode) throws ParserConfigurationException, TransformerException, IOException, SAXException {
-        Document docUnwrapped = SignatureUtil.getDocumentBuilder().newDocument();
+        Document docUnwrapped = XmlTestUtils.getDocumentBuilder().newDocument();
         Node sm = docUnwrapped.importNode(smNode, true);
         docUnwrapped.appendChild(sm);
 
@@ -209,7 +200,7 @@ public class SignatureUtil {
 
     public static Document parseDocument(String docContent) throws IOException, SAXException, ParserConfigurationException {
         InputStream inputStream = new ByteArrayInputStream(docContent.getBytes());
-        return SignatureUtil.getDocumentBuilder().parse(inputStream);
+        return XmlTestUtils.getDocumentBuilder().parse(inputStream);
     }
 
     public static Element findExtensionInServiceInformation(Document doc) throws ParserConfigurationException, SAXException, IOException {

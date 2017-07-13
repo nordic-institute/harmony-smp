@@ -25,6 +25,9 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
+import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
+import static eu.europa.ec.smp.api.Identifiers.asString;
+
 /**
  * Created by gutowpa on 23/02/2017.
  */
@@ -71,4 +74,9 @@ public class CaseSensitivityNormalizer {
         }
         return new DocumentIdentifier(value, scheme);
     }
+
+    public String normalizeParticipantId(String participantId) {
+        return asString(normalize(asParticipantId(participantId)));
+    }
+
 }

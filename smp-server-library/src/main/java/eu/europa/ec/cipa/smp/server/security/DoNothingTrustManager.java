@@ -14,7 +14,6 @@
  */
 package eu.europa.ec.cipa.smp.server.security;
 
-import com.helger.commons.GlobalDebug;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +33,7 @@ public final class DoNothingTrustManager implements X509TrustManager {
   private final boolean m_bDebug;
 
   public DoNothingTrustManager() {
-    this (GlobalDebug.isDebugMode ());
+    this (true);
   }
 
   public DoNothingTrustManager(final boolean bDebug) {

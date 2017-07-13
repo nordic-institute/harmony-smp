@@ -40,7 +40,6 @@ CREATE TABLE smp_service_metadata (
   businessIdentifierScheme VARCHAR(256)
                            CHARACTER SET utf8
                            COLLATE utf8_bin NOT NULL,
-  extension                TEXT             NULL DEFAULT NULL,
   xmlcontent               TEXT,
   PRIMARY KEY (documentIdentifier, documentIdentifierScheme, businessIdentifier, businessIdentifierScheme),
   KEY FK_service_metadata_service_group (businessIdentifier, businessIdentifierScheme),

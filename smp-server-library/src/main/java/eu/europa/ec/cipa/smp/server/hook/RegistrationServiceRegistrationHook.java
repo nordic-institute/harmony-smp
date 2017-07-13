@@ -14,22 +14,24 @@
  */
 package eu.europa.ec.cipa.smp.server.hook;
 
-import com.helger.commons.random.VerySecureRandom;
-import com.helger.commons.state.ESuccess;
+
 import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
 import eu.europa.ec.bdmsl.ws.soap.ManageBusinessIdentifierService;
 import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
 import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
-
 import eu.europa.ec.cipa.smp.server.security.DoNothingTrustManager;
 import eu.europa.ec.cipa.smp.server.security.HostnameVerifierAlwaysTrue;
-import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import eu.europa.ec.cipa.smp.server.security.KeyStoreUtils;
+import eu.europa.ec.cipa.smp.server.util.ConfigFile;
+import eu.europa.ec.cipa.smp.server.util.to_be_removed.ESuccess;
+import eu.europa.ec.cipa.smp.server.util.to_be_removed.VerySecureRandom;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Conditional;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.net.ssl.HttpsURLConnection;
@@ -55,7 +57,10 @@ import java.util.Map;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @NotThreadSafe
+@Component
+@Conditional(SMLHookConditionOn.class)
 public final class RegistrationServiceRegistrationHook extends AbstractRegistrationHook {
+
   private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
   private static final String CONFIG_HOOK_REG_LOCATOR_URL = "regServiceRegistrationHook.regLocatorUrl";
   private static final String CONFIG_HOOK_ID = "regServiceRegistrationHook.id";
@@ -64,19 +69,16 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
   private static final String CONFIG_HOOK_CLIENT_CERT = "regServiceRegistrationHook.clientCert";
 
   private static final Logger s_aLogger = LoggerFactory.getLogger (RegistrationServiceRegistrationHook.class);
-  private static final URL s_aSMLEndpointURL;
-  private static final String s_sSMPID;
-  private static final String s_sSMPClientCertificate;
+  private URL s_aSMLEndpointURL;
+  private String s_sSMPID;
+  private String s_sSMPClientCertificate;
 
-  private static ConfigFile configFile;
+  private ConfigFile configFile;
 
-  static {
-    /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
-        in the classpath (like smp.config.properties or sml.config.properties).
-        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
-        Needs to be properly refactored */
-    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"classpath:applicationContext.xml"});
-    configFile = (ConfigFile) context.getBean("configFile");
+  @Autowired
+  public void setConfigFile(ConfigFile configFile){
+
+    this.configFile = configFile;
 
     // SML endpoint (incl. the service name)
     final String sURL = configFile.getString (CONFIG_HOOK_REG_LOCATOR_URL);
@@ -121,7 +123,7 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     return aPort;
   }
 
-  private static void _setupSSLSocketFactory () {
+  private void _setupSSLSocketFactory () {
     // Keystore for SML access:
     try {
       final String sKeystorePath = configFile.getString (CONFIG_HOOK_KEYSTORE_CLASSPATH);
@@ -211,7 +213,7 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
   }
 
   public void postUpdate (final ESuccess eSuccess) throws HookException {
-    if (eSuccess.isFailure ())
+    if (eSuccess == ESuccess.FAILURE)
       try {
         _setupSSLSocketFactory ();
         final IManageParticipantIdentifierWS aSMLCaller = getSmlCaller();

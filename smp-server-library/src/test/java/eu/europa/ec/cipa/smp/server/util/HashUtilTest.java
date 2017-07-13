@@ -36,11 +36,10 @@
  */
 package eu.europa.ec.cipa.smp.server.util;
 
-import eu.europa.ec.cipa.smp.server.AbstractTest;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class HashUtilTest extends AbstractTest {
+public class HashUtilTest {
 
     @Test
     public void testNAPTRHash() throws Exception {
