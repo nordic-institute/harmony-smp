@@ -12,27 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-package eu.europa.ec.cipa.smp.server.hook;
 
-import com.helger.commons.state.ESuccess;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.springframework.context.annotation.Conditional;
-import org.springframework.stereotype.Component;
+package eu.europa.ec.edelivery.smp.config;
 
-import javax.annotation.concurrent.Immutable;
+import eu.europa.ec.cipa.smp.server.hook.IRegistrationHook;
+import org.springframework.context.annotation.*;
 
 /**
- * An extension of the RegistrationHook class that does nothing.
- * 
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * Created by gutowpa on 12/07/2017.
  */
-@Immutable
-@Component
-@Conditional(SMLHookConditionOff.class)
-public final class DoNothingRegistrationHook extends AbstractRegistrationHook {
-  public void create (final ParticipantIdentifierType aPI) {}
 
-  public void delete (final ParticipantIdentifierType aPI) {}
-
-  public void postUpdate (final ESuccess eSuccess) {}
+@Configuration
+@ImportResource("classpath:spring-context.xml")
+@ComponentScan(basePackages = {
+        "eu.europa.ec.cipa.smp.server.data.dbms",
+        "eu.europa.ec.cipa.smp.server.services",
+        "eu.europa.ec.cipa.smp.server.hook",
+        "eu.europa.ec.cipa.smp.server.conversion"})
+public class SmpAppConfig {
 }

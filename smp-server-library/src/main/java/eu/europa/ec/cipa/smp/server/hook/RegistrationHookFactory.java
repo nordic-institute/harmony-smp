@@ -38,15 +38,15 @@ public final class RegistrationHookFactory {
         in the classpath (like smp.config.properties or sml.config.properties).
         If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
         Needs to be properly refactored */
-      ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
-      configFile = (ConfigFile) context.getBean("configFile");
+    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
+    configFile = (ConfigFile) context.getBean("configFile");
   }
 
   private RegistrationHookFactory () {}
 
   /**
    * Create a new instance every time this method is invoked.
-   * 
+   *
    * @return A new instance of {@link IRegistrationHook} according to the
    *         configuration file.
    * @throws IllegalStateException

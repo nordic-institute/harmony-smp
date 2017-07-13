@@ -67,7 +67,8 @@ public class BaseServiceGroupInterfaceImplTest {
         HttpHeaders httpHeadersMock = Mockito.mock(HttpHeaders.class);
         
         //when
-        ServiceGroup serviceGroup = BaseServiceGroupInterfaceImpl.getServiceGroup(uriInfoMock, httpHeadersMock, PARTICIPANT_ID, DummyInterfaceClass.class);
+        //ServiceGroup serviceGroup = BaseServiceGroupInterfaceImpl.getServiceGroup(uriInfoMock, httpHeadersMock, PARTICIPANT_ID, DummyInterfaceClass.class);
+        ServiceGroup serviceGroup = new BaseServiceGroupInterfaceImpl().getServiceGroup(PARTICIPANT_ID);
 
         //then
         List<ServiceMetadataReferenceType> serviceMetadataReferences = serviceGroup.getServiceMetadataReferenceCollection().getServiceMetadataReferences();

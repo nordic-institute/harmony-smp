@@ -63,7 +63,8 @@ public final class ServiceMetadataInterface {
   public Document getServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
                                           @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
     // Delegate to common implementation
-    return BaseServiceMetadataInterfaceImpl.getServiceRegistration(uriInfo, sServiceGroupID, sDocumentTypeID);
+    //return BaseServiceMetadataInterfaceImpl.getServiceRegistration(uriInfo, sServiceGroupID, sDocumentTypeID);
+    return null;
   }
 
   @PUT

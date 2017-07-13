@@ -37,7 +37,9 @@ import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -56,13 +58,30 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
+@Service
 public final class DBMSDataManager extends JPAEnabledManager implements IDataManager {
     private static final Logger s_aLogger = LoggerFactory.getLogger(DBMSDataManager.class);
 
-    private final IRegistrationHook m_aHook;
+    @Autowired
+    private IRegistrationHook m_aHook;
+
+    @Autowired
     private CaseSensitivityNormalizer caseSensitivityNormalizer;
+
     private final ObjectFactory m_aObjFactory = new ObjectFactory();
 
+    public DBMSDataManager() {
+        super(new IEntityManagerProvider() {
+            // This additional indirection level is required!!!
+            // So that for every request the correct getInstance is invoked!
+            @Nonnull
+            public EntityManager getEntityManager() {
+                return SMPEntityManagerWrapper.getInstance().getEntityManager();
+            }
+        });
+    }
+
+    /*
     public DBMSDataManager() {
         this(RegistrationHookFactory.createInstance(), new CaseSensitivityNormalizer());
     }
@@ -88,6 +107,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         m_aHook = aHook;
         this.caseSensitivityNormalizer = caseSensitivityNormalizer;
     }
+    */
 
     public void setCaseSensitivityNormalizer(CaseSensitivityNormalizer caseSensitivityNormalizer) {
         this.caseSensitivityNormalizer = caseSensitivityNormalizer;

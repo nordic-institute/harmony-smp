@@ -17,17 +17,24 @@ package eu.europa.ec.cipa.smp.server.services;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
+import eu.europa.ec.cipa.smp.server.data.dbms.DBMSDataManager;
+import eu.europa.ec.cipa.smp.server.data.dbms.model.DBServiceMetadataID;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
 import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.ws.rs.core.UriInfo;
+import javax.xml.ws.WebServiceClient;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class implements the read-only methods for the REST
@@ -36,13 +43,17 @@ import javax.ws.rs.core.UriInfo;
  * 
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
+@Service
 public final class BaseServiceMetadataInterfaceImpl {
   private static final Logger s_aLogger = LoggerFactory.getLogger (BaseServiceMetadataInterfaceImpl.class);
 
   private BaseServiceMetadataInterfaceImpl () {}
 
+  @Autowired
+  private DBMSDataManager dataManager;
+
   @Nonnull
-  public static Document getServiceRegistration (@Nonnull final UriInfo uriInfo,
+  public Document getServiceRegistration (@Nonnull final UriInfo uriInfo,
                                                                                 @Nullable final String sServiceGroupID,
                                                                                 @Nullable final String sDocumentTypeID) throws Throwable {
     s_aLogger.info (String.format("GET /%s/services/%s", sServiceGroupID, sDocumentTypeID));
@@ -50,8 +61,8 @@ public final class BaseServiceMetadataInterfaceImpl {
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);
     final DocumentIdentifier aDocTypeID = Identifiers.asDocumentId (sDocumentTypeID);
 
-    final IDataManager aDataManager = DataManagerFactory.getInstance ();
-    String sServiceMetadata = aDataManager.getService (aServiceGroupID, aDocTypeID);
+    //final IDataManager aDataManager = DataManagerFactory.getInstance ();
+    String sServiceMetadata = dataManager.getService (aServiceGroupID, aDocTypeID);
     if(sServiceMetadata == null) {
       throw new NotFoundException(String.format("Service '%s/services/%s' was not found", sServiceGroupID, sDocumentTypeID));
     }
@@ -60,5 +71,22 @@ public final class BaseServiceMetadataInterfaceImpl {
 
     s_aLogger.info (String.format("Finished getServiceRegistration(%s,%s)", sServiceGroupID, sDocumentTypeID));
     return aSignedServiceMetadata;
+  }
+
+  public List<DocumentIdentifier> getMetadataIdentifiers(String serviceGroupId) {
+    ParticipantIdentifierType participantId = Identifiers.asParticipantId(serviceGroupId);
+    List<DBServiceMetadataID> metadataIds = null;
+    try {
+      metadataIds = dataManager.getDocumentTypes(participantId);
+    } catch (Throwable throwable) {
+      throw new RuntimeException(throwable);
+    }
+
+    List<DocumentIdentifier> documentIdentifierTypes = new ArrayList();
+    for (DBServiceMetadataID metadataId : metadataIds) {
+      DocumentIdentifier docId = new DocumentIdentifier(metadataId.getDocumentTypeIdentifier(), metadataId.getDocumentTypeIdentifierScheme());
+      documentIdentifierTypes.add(docId);
+    }
+    return documentIdentifierTypes;
   }
 }

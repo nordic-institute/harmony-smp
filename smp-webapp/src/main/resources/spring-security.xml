@@ -33,8 +33,8 @@
         <custom-filter position="X509_FILTER" ref="x509AuthFilter"/>
         <custom-filter position="PRE_AUTH_FILTER" ref="blueCoatReverseProxyAuthFilter"/>
 
-        <intercept-url method="PUT" access=" ! isAnonymous()" pattern="/*"/>
-        <intercept-url method="DELETE" access=" ! isAnonymous()" pattern="/*"/>
+        <intercept-url method="PUT" access=" ! isAnonymous()" pattern="/eu"/>
+        <intercept-url method="DELETE" access=" ! isAnonymous()" pattern="/eu"/>
     </http>
 
 
