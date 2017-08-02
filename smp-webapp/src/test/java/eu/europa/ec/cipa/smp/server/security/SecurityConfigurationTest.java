@@ -25,6 +25,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -45,10 +46,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Created by gutowpa on 20/02/2017.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/spring-context.xml", "file:src/main/webapp/WEB-INF/spring-security.xml", "classpath:/spring-security-test-context.xml"})
+@ContextConfiguration(locations = {"classpath:/spring-context.xml", "classpath:/spring-security.xml", "classpath:/spring-security-test-context.xml"})
 @WebAppConfiguration
 @Transactional
-@Rollback(false)
+@Rollback(true)
+@Sql("classpath:/integration_test_data.sql")
 public class SecurityConfigurationTest {
 
     public static final String RETURN_LOGGED_USER_PATH = "/getLoggedUsername";
@@ -61,36 +63,43 @@ public class SecurityConfigurationTest {
     public static final String TEST_USERNAME_BLUE_COAT = "CN=comon name,O=org,C=BE:0000000000000066";
 
     //both passwords represent the same value - clear and hashed
+    /*
     private DBUser userHashedPass = createUser(TEST_USERNAME_HASHED_PASS, "$2a$06$k.Q/6anG4Eq/nNTZ0C1UIuAKxpr6ra5oaMkMSrlESIyA5jKEsUdyS");
     private DBUser userClearPass = createUser(TEST_USERNAME_CLEAR_PASS, PASSWORD);
     private DBUser userBlueCoat = createUser(TEST_USERNAME_BLUE_COAT, null);
+    */
 
     @Autowired
     private WebApplicationContext context;
 
+    /*
     @PersistenceContext
     private EntityManager em;
+    */
 
     MockMvc mvc;
 
     @Before
     public void setup() {
+        /*
         em.persist(userHashedPass);
         em.persist(userClearPass);
         em.persist(userBlueCoat);
         em.flush();
-
+*/
         mvc = MockMvcBuilders.webAppContextSetup(context)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
     }
 
+    /*
     @After
     public void tearDown() {
         em.remove(userHashedPass);
         em.remove(userClearPass);
         em.remove(userBlueCoat);
     }
+    */
 
     @Test
     public void getMethodAccessiblePubliclyTest() throws Exception {
@@ -157,11 +166,13 @@ public class SecurityConfigurationTest {
                 .andExpect(content().string(TEST_USERNAME_BLUE_COAT));
     }
 
+    /*
     private DBUser createUser(String username, String pass) {
         DBUser user = new DBUser();
         user.setUsername(username);
         user.setPassword(pass);
         return user;
     }
+    */
 
 }

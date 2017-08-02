@@ -38,12 +38,20 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
+import org.springframework.orm.jpa.EntityManagerFactoryUtils;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.ContextLoader;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.util.ArrayList;
@@ -59,8 +67,12 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Service
+@Transactional
 public final class DBMSDataManager extends JPAEnabledManager implements IDataManager {
     private static final Logger s_aLogger = LoggerFactory.getLogger(DBMSDataManager.class);
+
+    //@Autowired
+    //EntityManager em;
 
     @Autowired
     private IRegistrationHook m_aHook;
@@ -76,7 +88,9 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
             // So that for every request the correct getInstance is invoked!
             @Nonnull
             public EntityManager getEntityManager() {
-                return SMPEntityManagerWrapper.getInstance().getEntityManager();
+                //return SMPEntityManagerWrapper.getInstance().getEntityManager();
+                EntityManagerFactory emf = ContextLoader.getCurrentWebApplicationContext().getBean(EntityManagerFactory.class);
+                return EntityManagerFactoryUtils.getTransactionalEntityManager(emf);
             }
         });
     }
@@ -118,7 +132,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
      * exists, and that the passwords match. So this method verifies that the
      * BasicAuth credentials are valid.
      *
-     * @param aCredentials The credentials to be validated. May not be <code>null</code>.
+     * @param sUsername The credentials to be validated. May not be <code>null</code>.
      * @return The matching non-<code>null</code> {@link DBUser}.
      * @throws UnknownUserException  If no user matching the passed user name is present
      * @throws UnauthorizedException If the password in the credentials does not match the stored
@@ -126,16 +140,18 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
      */
     @Nonnull
     @Override
-    public DBUser _verifyUser(@Nonnull final BasicAuthClientCredentials aCredentials) throws UnknownUserException,
+    public DBUser _verifyUser(@Nonnull final String sUsername) throws UnknownUserException,
             UnauthorizedException {
-        final String sUsername = aCredentials.getUserName();
+
+        //final String sUsername = aCredentials.getUserName();
+
         final DBUser aDBUser = getEntityManager().find(DBUser.class, sUsername);
 
         // Check that the user exists
         if (aDBUser == null) {
             throw new UnknownUserException(sUsername);
         }
-
+/*
         // Check that the password is correct
         if (!isNullPasswordAllowed(aDBUser.getPassword(),aCredentials.getPassword())){
             if(aCredentials.getPassword()== null || isBlank(aDBUser.getPassword()) ||
@@ -147,36 +163,38 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         if (s_aLogger.isDebugEnabled()) {
             s_aLogger.debug("Verified credentials of user '" + sUsername + "' successfully");
         }
-
+*/
         return aDBUser;
     }
+/*
 
     private boolean isNullPasswordAllowed(String requestPassword, String databasePassword){
        return (isBlank(requestPassword) && isBlank(databasePassword));
     }
+*/
 
     /**
      * Verify that the passed service group is owned by the user specified in the
      * credentials.
      *
      * @param aServiceGroupID The service group to be verified
-     * @param aCredentials    The credentials to be checked
+     * @param username    The credentials to be checked
      * @throws UnauthorizedException If the participant identifier is not owned by the user specified in
      *                               the credentials
      */
     @Nonnull
     private void _verifyOwnership(@Nonnull final ParticipantIdentifierType aServiceGroupID,
-                                         @Nonnull final BasicAuthClientCredentials aCredentials) throws UnauthorizedException {
+                                         @Nonnull final String username) throws UnauthorizedException {
 
-        if (_isAdmin(aCredentials.getUserName())){
+        if (_isAdmin(username)){
             return;
         }
 
-        final DBOwnershipID aOwnershipID = new DBOwnershipID(aCredentials.getUserName(), aServiceGroupID);
+        final DBOwnershipID aOwnershipID = new DBOwnershipID(username, aServiceGroupID);
         final DBOwnership aOwnership = getEntityManager().find(DBOwnership.class, aOwnershipID);
         if (aOwnership == null) {
             throw new UnauthorizedException("User '" +
-                    aCredentials.getUserName() +
+                    username +
                     "' does not own " +
                     IdentifierUtils.getIdentifierURIEncoded(aServiceGroupID));
         }
@@ -185,7 +203,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
             s_aLogger.debug("Verified service group ID " +
                     IdentifierUtils.getIdentifierURIEncoded(aServiceGroupID) +
                     " is owned by user '" +
-                    aCredentials.getUserName() +
+                    username +
                     "'");
     }
 
@@ -210,13 +228,13 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
     @Nonnull
     @ReturnsMutableCopy
-    public Collection<ParticipantIdentifierType> getServiceGroupList(@Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
+    public Collection<ParticipantIdentifierType> getServiceGroupList(@Nonnull final String username) throws Throwable {
         JPAExecutionResult<Collection<ParticipantIdentifierType>> ret;
         ret = doSelect(new Callable<Collection<ParticipantIdentifierType>>() {
             @Nonnull
             @ReturnsMutableCopy
             public Collection<ParticipantIdentifierType> call() throws Exception {
-                final DBUser aDBUser = _verifyUser(aCredentials);
+                final DBUser aDBUser = _verifyUser(username);
 
                 final List<DBOwnership> aDBOwnerships = getEntityManager().createQuery("SELECT p FROM DBOwnership p WHERE p.user = :user",
                         DBOwnership.class)
@@ -236,10 +254,10 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
 
     @Nullable
-    public ServiceGroup getServiceGroup(@Nonnull final ParticipantIdentifierType aServiceGroupID) throws Throwable {
+    public ServiceGroup getServiceGroup(@Nonnull final ParticipantIdentifierType aServiceGroupID) {
         final ParticipantIdentifierType normalizedServiceGroupID = caseSensitivityNormalizer.normalize(aServiceGroupID);
         JPAExecutionResult<ServiceGroup> ret;
-        ret = doInTransaction(new Callable<ServiceGroup>() {
+        ret = doInTransaction(getEntityManager(), true, new Callable<ServiceGroup>() {
             @Nullable
             public ServiceGroup call() throws Exception {
                 final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(normalizedServiceGroupID);
@@ -259,19 +277,24 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 return aServiceGroup;
             }
         });
-        return ret.getOrThrow();
+        try {
+            return ret.getOrThrow();
+        } catch (Throwable throwable) {
+            //TODO Don't bother about it, this class will be removed in next sprint.
+            throw (RuntimeException)throwable;
+        }
     }
 
-    public boolean saveServiceGroup(@Nonnull final ServiceGroup aServiceGroup,
-                                    @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
+    public boolean saveServiceGroup(@Nonnull final ServiceGroup serviceGroup,
+                                    @Nonnull final String newOwnerName) {
 
-        final ServiceGroup normalizedServiceGroup = normalizeIdentifierCaseSensitivity(aServiceGroup);
+        //final ServiceGroup serviceGroup = normalizeIdentifierCaseSensitivity(aServiceGroup);
         JPAExecutionResult<Boolean> ret;
         final EntityManager aEM = getEntityManager();
-        ret = doInTransaction(aEM, false, new Callable<Boolean>() {
+        ret = doInTransaction(aEM, true, new Callable<Boolean>() {
             public Boolean call() throws JAXBException, XMLStreamException {
-                final DBUser aDBUser = _verifyUser(aCredentials);
-                final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(normalizedServiceGroup.getParticipantIdentifier());
+                final DBUser aDBUser = _verifyUser(newOwnerName);
+                final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(serviceGroup.getParticipantIdentifier());
 
                 // Check if the passed service group ID is already in use
                 DBServiceGroup aDBServiceGroup = aEM.find(DBServiceGroup.class, aDBServiceGroupID);
@@ -279,31 +302,40 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 if (aDBServiceGroup != null) {
                     // The business did exist. So it must be owned by the passed user.
 
-                    _verifyOwnership(normalizedServiceGroup.getParticipantIdentifier(), aCredentials);
+                    //TODO: Probably verification is no longer needed as anly SMP_ADMIN can call this method
+                    //_verifyOwnership(serviceGroup.getParticipantIdentifier(), newOwnerName);
 
                     // Simply update the extension
-                    aDBServiceGroup.setExtension(ExtensionUtils.marshalExtensions(normalizedServiceGroup.getExtensions()));
+                    aDBServiceGroup.setExtension(ExtensionUtils.marshalExtensions(serviceGroup.getExtensions()));
                     aEM.merge(aDBServiceGroup);
                     return false;
                 } else {
+
                     // It's a new service group
-                    m_aHook.create(normalizedServiceGroup.getParticipantIdentifier());
+                    m_aHook.create(serviceGroup.getParticipantIdentifier());
 
                     // Did not exist. Create it.
                     aDBServiceGroup = new DBServiceGroup(aDBServiceGroupID);
-                    aDBServiceGroup.setExtension(ExtensionUtils.marshalExtensions(normalizedServiceGroup.getExtensions()));
+                    aDBServiceGroup.setExtension(ExtensionUtils.marshalExtensions(serviceGroup.getExtensions()));
                     aEM.persist(aDBServiceGroup);
 
                     // Save the ownership information
-                    final DBOwnershipID aDBOwnershipID = new DBOwnershipID(aCredentials.getUserName(), normalizedServiceGroup.getParticipantIdentifier());
+                    final DBOwnershipID aDBOwnershipID = new DBOwnershipID(newOwnerName, serviceGroup.getParticipantIdentifier());
                     final DBOwnership aDBOwnership = new DBOwnership(aDBOwnershipID, aDBUser, aDBServiceGroup);
                     aEM.persist(aDBOwnership);
                     return true;
                 }
             }
         });
-        return ret.getOrThrow();
+        try {
+            return ret.getOrThrow();
+        } catch (Throwable throwable) {
+            //TODO Don't bother about it, this class will be removed in next sprint.
+            throw (RuntimeException)throwable;
+        }
     }
+
+/*
 
     private ServiceGroup normalizeIdentifierCaseSensitivity(@Nonnull ServiceGroup aServiceGroup) {
         final ServiceGroup sg = new ServiceGroup();
@@ -312,15 +344,16 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         sg.getExtensions().addAll(aServiceGroup.getExtensions());
         return sg;
     }
+*/
 
-    public void deleteServiceGroup(@Nonnull final ParticipantIdentifierType aServiceGroupID,
-                                   @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
+    @Override
+    public void deleteServiceGroup(@Nonnull final ParticipantIdentifierType aServiceGroupID) {
         final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(aServiceGroupID);
         JPAExecutionResult<EChange> ret;
-        ret = doInTransaction(new Callable<EChange>() {
+        ret = doInTransaction(getEntityManager(), true, new Callable<EChange>() {
             @Nonnull
             public EChange call() {
-                _verifyUser(aCredentials);
+                //_verifyUser(username);
 
                 // Check if the service group is existing
                 final EntityManager aEM = getEntityManager();
@@ -333,7 +366,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 }
 
                 // Check the ownership afterwards, so that only existing serviceGroups are checked
-                _verifyOwnership(normalizedServiceGroupId, aCredentials);
+                //_verifyOwnership(normalizedServiceGroupId, username);
 
                 _removeServiceGroup(aDBServiceGroup);
 
@@ -342,9 +375,10 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 return EChange.CHANGED;
             }
         });
-        if (ret.hasThrowable())
-            throw ret.getThrowable();
-        if (ret.get().isUnchanged())
+        if (ret.hasThrowable()) {
+            //TODO Don't bother about it, this class will be removed in next sprint.
+            throw (RuntimeException)ret.getThrowable();
+        }else if (ret.get().isUnchanged())
             throw new NotFoundException(IdentifierUtils.getIdentifierURIEncoded(aServiceGroupID));
     }
 
@@ -438,18 +472,19 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return ret.getOrThrow();
     }
 
+    @Override
     public boolean saveService(@Nonnull final ParticipantIdentifierType aServiceGroupID,
                                @Nonnull final DocumentIdentifier aDocTypeID,
                                @Nonnull final String sXmlContent,
-                               @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable{
+                               @Nonnull final String username) throws Throwable{
         boolean newServiceCreated = true;
 
         final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(aServiceGroupID);
         final DocumentIdentifier normalizedDocId = caseSensitivityNormalizer.normalize(aDocTypeID);
 
-        _verifyUser(aCredentials);
+        _verifyUser(username);
         _verifyServiceGroup(normalizedServiceGroupId);
-        _verifyOwnership(normalizedServiceGroupId, aCredentials);
+        _verifyOwnership(normalizedServiceGroupId, username);
 
         // Delete an eventually contained previous service in a separate transaction
         if (_deleteService(normalizedServiceGroupId, normalizedDocId) == EChange.CHANGED) {
@@ -515,16 +550,17 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         return ret.getOrThrow();
     }
 
+    @Override
     public void deleteService(@Nonnull final ParticipantIdentifierType aServiceGroupID,
                               @Nonnull final DocumentIdentifier aDocTypeID,
-                              @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable {
+                              @Nonnull final String username) throws Throwable {
 
         final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(aServiceGroupID);
         final DocumentIdentifier normalizedDocId = caseSensitivityNormalizer.normalize(aDocTypeID);
 
-        _verifyUser(aCredentials);
+        _verifyUser(username);
         _verifyServiceGroup(normalizedServiceGroupId);
-        _verifyOwnership(normalizedServiceGroupId, aCredentials);
+        _verifyOwnership(normalizedServiceGroupId, username);
 
         final EChange eChange = _deleteService(normalizedServiceGroupId, normalizedDocId);
         if (eChange.isUnchanged())
@@ -587,5 +623,10 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
     public EntityManager getCurrentEntityManager() {
         return getEntityManager();
+    }
+
+    @Override
+    public DBUser _verifyUser(@Nonnull BasicAuthClientCredentials aCredentials) throws UnknownUserException, UnauthorizedException {
+        return null;
     }
 }

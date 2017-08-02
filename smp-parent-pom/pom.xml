@@ -98,6 +98,7 @@
 		<commons-io.version>2.4</commons-io.version>
 		<junitparams.version>1.0.5</junitparams.version>
 		<lombok.version>1.16.16</lombok.version>
+		<xmlunit.version>1.6</xmlunit.version>
 	</properties>
 
 	<!-- Where are we looking for JARs? -->
@@ -458,6 +459,12 @@
 				<groupId>pl.pragmatists</groupId>
 				<artifactId>JUnitParams</artifactId>
 				<version>${junitparams.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>xmlunit</groupId>
+				<artifactId>xmlunit</artifactId>
+				<version>${xmlunit.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>

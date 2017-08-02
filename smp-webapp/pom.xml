@@ -60,6 +60,10 @@
       <version>${commons-io.version}</version>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>xmlunit</groupId>
+          <artifactId>xmlunit</artifactId>
+      </dependency>
       <!-- You may replace MySQL in production with something else -->
       <dependency>
           <groupId>mysql</groupId>

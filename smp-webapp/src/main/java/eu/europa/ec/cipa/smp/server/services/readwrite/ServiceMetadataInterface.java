@@ -84,7 +84,9 @@ public final class ServiceMetadataInterface {
 
     // Main save
     final IDataManager aDataManager = DataManagerFactory.getInstance ();
-    boolean bServiceCreated = aDataManager.saveService (aServiceGroupID, aDocTypeID, body, RequestHelper.getAuth (headers, false));
+
+    boolean bServiceCreated=false;
+    //boolean bServiceCreated = aDataManager.saveService (aServiceGroupID, aDocTypeID, body, RequestHelper.getAuth (headers, false));
 
     s_aLogger.info (String.format("Finished saveServiceRegistration(%s,%s,%s)", sServiceGroupID, sDocumentTypeID, aServiceMetadata));
 
@@ -162,7 +164,13 @@ public final class ServiceMetadataInterface {
     final DocumentIdentifier aDocTypeID = Identifiers.asDocumentId(sDocumentTypeID);
 
     final IDataManager aDataManager = DataManagerFactory.getInstance ();
-    aDataManager.deleteService (aServiceGroupID, aDocTypeID, RequestHelper.getAuth (headers, false));
+
+
+
+    //aDataManager.deleteService (aServiceGroupID, aDocTypeID, RequestHelper.getAuth (headers, false));
+
+
+
 
     s_aLogger.info (String.format("Finished deleteServiceRegistration(%s,%s)", sServiceGroupID, sDocumentTypeID));
 

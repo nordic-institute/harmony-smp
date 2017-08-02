@@ -18,6 +18,7 @@ package eu.europa.ec.cipa.smp.server.conversion;
 import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -70,5 +71,9 @@ public class CaseSensitivityNormalizer {
             value = value.toLowerCase();
         }
         return new DocumentIdentifier(value, scheme);
+    }
+
+    public void normalizeParticipantId(ServiceGroup servicGroup){
+
     }
 }

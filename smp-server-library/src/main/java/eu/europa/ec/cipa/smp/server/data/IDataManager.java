@@ -44,14 +44,18 @@ public interface IDataManager {
   /**
    * Gets the service group ids owned by the given credentials.
    * 
-   * @param aCredentials
+   * @param username
    *        The credentials to get service groups id for.
    * @return A collection of service group id's.
    * @throws Throwable
    */
   @Nonnull
   @ReturnsMutableCopy
-  Collection <ParticipantIdentifierType> getServiceGroupList (@Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
+  Collection <ParticipantIdentifierType> getServiceGroupList (@Nonnull String username) throws Throwable;
+
+  @Nonnull
+  DBUser _verifyUser(@Nonnull String sUsername) throws UnknownUserException,
+          UnauthorizedException;
 
   /**
    * This method returns a ServiceGroup given its id.
@@ -62,7 +66,7 @@ public interface IDataManager {
    * @throws Throwable
    */
   @Nullable
-  ServiceGroup getServiceGroup (@Nonnull ParticipantIdentifierType aServiceGroupID) throws Throwable;
+  ServiceGroup getServiceGroup (@Nonnull ParticipantIdentifierType aServiceGroupID);
 
   /**
    * Persists the service group in the underlying data layer. This operation
@@ -70,24 +74,21 @@ public interface IDataManager {
    * 
    * @param aServiceGroup
    *        The service group to save.
-   * @param aCredentials
+   * @param newOwnerName
    *        The credentials to use.
    * @return true, if ServiceGroup was added; false, if ServiceGroup was updated
    * @throws Throwable
    */
-  boolean saveServiceGroup (@Nonnull ServiceGroup aServiceGroup, @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
+  boolean saveServiceGroup (@Nonnull ServiceGroup aServiceGroup, @Nonnull String newOwnerName);
 
   /**
    * Deletes the service group having the specified id.
    * 
    * @param aServiceGroupID
    *        The ID of the service group to delete.
-   * @param aCredentials
-   *        The credentials to use.
    * @throws Throwable
    */
-  void deleteServiceGroup (@Nonnull ParticipantIdentifierType aServiceGroupID,
-                           @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
+  void deleteServiceGroup(@Nonnull final ParticipantIdentifierType aServiceGroupID);
 
   /**
    * Gets a list of the document id's of the given service group.
@@ -147,7 +148,7 @@ public interface IDataManager {
   boolean saveService(@Nonnull final ParticipantIdentifierType aServiceGroupID,
                              @Nonnull final DocumentIdentifier aDocTypeID,
                              @Nonnull final String sXmlContent,
-                             @Nonnull final BasicAuthClientCredentials aCredentials) throws Throwable;
+                             @Nonnull final String username) throws Throwable;
 
   /**
    * Deletes a service metadata object given by its service group id and
@@ -163,7 +164,7 @@ public interface IDataManager {
    */
   void deleteService (@Nonnull ParticipantIdentifierType aServiceGroupID,
                       @Nonnull DocumentIdentifier aDocType,
-                      @Nonnull BasicAuthClientCredentials aCredentials) throws Throwable;
+                      @Nonnull String username) throws Throwable;
 
   /**
    * Checks whether the ServiceMetadata should be found elsewhere.

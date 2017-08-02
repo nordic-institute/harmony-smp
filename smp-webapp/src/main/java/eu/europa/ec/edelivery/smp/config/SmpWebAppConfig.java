@@ -29,7 +29,9 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
  */
 @Configuration
 @EnableWebMvc
-@ComponentScan(basePackages = "eu.europa.ec.edelivery.controllers")
+@ComponentScan(basePackages = {
+        "eu.europa.ec.edelivery.controllers",
+        "eu.europa.ec.edelivery.validation"})
 public class SmpWebAppConfig extends WebMvcConfigurerAdapter {
 
 

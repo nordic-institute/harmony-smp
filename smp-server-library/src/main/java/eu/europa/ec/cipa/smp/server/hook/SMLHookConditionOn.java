@@ -30,7 +30,6 @@
 
 package eu.europa.ec.cipa.smp.server.hook;
 
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;

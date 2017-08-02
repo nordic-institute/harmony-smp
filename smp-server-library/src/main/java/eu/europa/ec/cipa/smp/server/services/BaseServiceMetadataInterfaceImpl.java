@@ -50,7 +50,7 @@ public final class BaseServiceMetadataInterfaceImpl {
   private BaseServiceMetadataInterfaceImpl () {}
 
   @Autowired
-  private DBMSDataManager dataManager;
+  private IDataManager dataManager;
 
   @Nonnull
   public Document getServiceRegistration (@Nonnull final UriInfo uriInfo,

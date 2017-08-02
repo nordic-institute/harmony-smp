@@ -87,6 +87,8 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     configFile = (ConfigFile) context.getBean("configFile");
     */
 
+    this.configFile = configFile;
+
     // SML endpoint (incl. the service name)
     final String sURL = configFile.getString (CONFIG_HOOK_REG_LOCATOR_URL);
     try {

@@ -30,6 +30,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,7 +46,7 @@ public final class BaseServiceGroupInterfaceImpl {
 
 
   @Autowired
-  private DBMSDataManager dataManager;
+  private IDataManager dataManager;
 
 /*
   private static ConfigFile configFile;
@@ -71,7 +72,7 @@ public final class BaseServiceGroupInterfaceImpl {
    *         in case of an error
    */
   @Nullable
-  public ServiceGroup getServiceGroup(@Nullable final String sServiceGroupID) throws Throwable {
+  public ServiceGroup getServiceGroup(@Nullable final String sServiceGroupID) {
 
     s_aLogger.info (String.format("GET /%s",sServiceGroupID));
 
@@ -87,14 +88,17 @@ public final class BaseServiceGroupInterfaceImpl {
       throw new NotFoundException(String.format("ServiceGroup '%s::%s' was not found", aServiceGroupID.getScheme(), aServiceGroupID.getValue()));
     }
 
+    aServiceGroup.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType(new ArrayList<ServiceMetadataReferenceType>()));
+
     // Then add the service metadata references
+    /*
     final ServiceMetadataReferenceCollectionType aCollectionType = aObjFactory.createServiceMetadataReferenceCollectionType ();
     final List <ServiceMetadataReferenceType> aMetadataReferences = aCollectionType.getServiceMetadataReferences();
 
     final List <DBServiceMetadataID> aDocTypeIds = dataManager.getDocumentTypes (aServiceGroupID);
     for (final DBServiceMetadataID aDocTypeId : aDocTypeIds) {
       final ServiceMetadataReferenceType aMetadataReference = aObjFactory.createServiceMetadataReferenceType ();
-      /*
+
       UriBuilder uriBuilder = aUriInfo.getBaseUriBuilder();
       if (configFile.getString ("contextPath.output", "false").equals ("false")) {
         uriBuilder.replacePath ("");
@@ -107,10 +111,10 @@ public final class BaseServiceGroupInterfaceImpl {
               .toString();
 
       aMetadataReference.setHref (metadataHref);
-      */
       aMetadataReferences.add (aMetadataReference);
     }
     aServiceGroup.setServiceMetadataReferenceCollection (aCollectionType);
+    */
 
     s_aLogger.info (String.format("Finished getServiceGroup(%s)", sServiceGroupID));
 
