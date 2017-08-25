@@ -20,11 +20,10 @@ import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
 import eu.europa.ec.bdmsl.ws.soap.ManageBusinessIdentifierService;
 import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
 import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
-
 import eu.europa.ec.cipa.smp.server.security.DoNothingTrustManager;
 import eu.europa.ec.cipa.smp.server.security.HostnameVerifierAlwaysTrue;
-import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import eu.europa.ec.cipa.smp.server.security.KeyStoreUtils;
+import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.slf4j.Logger;
@@ -67,6 +66,7 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
   private static final URL s_aSMLEndpointURL;
   private static final String s_sSMPID;
   private static final String s_sSMPClientCertificate;
+  private static final URL wsdlUrl = RegistrationServiceRegistrationHook.class.getResource("/ManageBusinessIdentifierService-1.0.wsdl");
 
   private static ConfigFile configFile;
 
@@ -113,7 +113,7 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     Map<String, List<String>> customHeaders = new HashMap<>();
     customHeaders.put(CLIENT_CERT_HEADER_KEY, Arrays.asList(s_sSMPClientCertificate));
 
-    final ManageBusinessIdentifierService aService = new ManageBusinessIdentifierService((URL) null);
+    final ManageBusinessIdentifierService aService = new ManageBusinessIdentifierService(wsdlUrl);
     final IManageParticipantIdentifierWS aPort = aService.getManageBusinessIdentifierServicePort ();
     Map<String, Object> requestContext = ((BindingProvider) aPort).getRequestContext();
     requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, s_aSMLEndpointURL.toString());
