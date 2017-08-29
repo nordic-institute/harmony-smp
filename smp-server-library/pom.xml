@@ -19,7 +19,7 @@
     <parent>
         <groupId>eu.europa.ec.cipa</groupId>
         <artifactId>smp-parent-pom</artifactId>
-        <version>3.0.1-SNAPSHOT</version>
+        <version>3.0.1</version>
         <relativePath>../smp-parent-pom/pom.xml</relativePath>
     </parent>
     <artifactId>smp-server-library</artifactId>
