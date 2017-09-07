@@ -20,7 +20,7 @@
     <artifactId>smp</artifactId>
     <packaging>pom</packaging>
     <name>SMP Builder POM</name>
-    <version>3.0.1</version>
+    <version>3.0.2-SNAPSHOT</version>
 
 	<modules>
 		<module>smp-parent-pom</module>
