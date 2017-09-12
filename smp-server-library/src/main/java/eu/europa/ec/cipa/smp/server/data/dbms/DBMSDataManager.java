@@ -447,7 +447,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
     @Nullable
     public String getService(@Nonnull final ParticipantIdentifierType aServiceGroupID,
-                             @Nonnull final DocumentIdentifier aDocTypeID) throws Throwable {
+                             @Nonnull final DocumentIdentifier aDocTypeID){
         final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(aServiceGroupID);
         final DocumentIdentifier normalizedDocId = caseSensitivityNormalizer.normalize(aDocTypeID);
         JPAExecutionResult<String> ret;
@@ -469,30 +469,40 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 return aDBServiceMetadata.getXmlContent();
             }
         });
-        return ret.getOrThrow();
+        try {
+            return ret.getOrThrow();
+        } catch (Throwable throwable) {
+            //TODO Don't bother about it, this class will be removed in next sprint.
+            throw new RuntimeException(throwable);
+        }
     }
 
     @Override
     public boolean saveService(@Nonnull final ParticipantIdentifierType aServiceGroupID,
                                @Nonnull final DocumentIdentifier aDocTypeID,
-                               @Nonnull final String sXmlContent,
-                               @Nonnull final String username) throws Throwable{
+                               @Nonnull final String sXmlContent /*,
+                               @Nonnull final String username*/){
         boolean newServiceCreated = true;
 
         final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(aServiceGroupID);
         final DocumentIdentifier normalizedDocId = caseSensitivityNormalizer.normalize(aDocTypeID);
 
-        _verifyUser(username);
+        //_verifyUser(username);
         _verifyServiceGroup(normalizedServiceGroupId);
-        _verifyOwnership(normalizedServiceGroupId, username);
+        //_verifyOwnership(normalizedServiceGroupId, username);
 
         // Delete an eventually contained previous service in a separate transaction
-        if (_deleteService(normalizedServiceGroupId, normalizedDocId) == EChange.CHANGED) {
-            newServiceCreated = false;
+        try {
+            if (_deleteService(normalizedServiceGroupId, normalizedDocId) == EChange.CHANGED) {
+                newServiceCreated = false;
+            }
+        } catch (Throwable throwable) {
+            //TODO Don't bother about it, this class will be removed in next sprint.
+            throw new RuntimeException(throwable);
         }
 
         // Create a new entry
-        JPAExecutionResult<?> ret = doInTransaction(new Runnable() {
+        JPAExecutionResult<?> ret = doInTransaction(getEntityManager(), true, new Runnable() {
                 public void run() {
                     final EntityManager aEM = getEntityManager();
 
@@ -518,16 +528,17 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 }
         });
         if (ret.hasThrowable()) {
-            throw ret.getThrowable();
+            //TODO Don't bother about it, this class will be removed in next sprint.
+            throw new RuntimeException(ret.getThrowable());
         }
         return newServiceCreated;
     }
 
     @Nonnull
     private EChange _deleteService(@Nonnull final ParticipantIdentifierType aServiceGroupID,
-                                   @Nonnull final DocumentIdentifier aDocTypeID) throws Throwable {
+                                   @Nonnull final DocumentIdentifier aDocTypeID){
         JPAExecutionResult<EChange> ret;
-        ret = doInTransaction(new Callable<EChange>() {
+        ret = doInTransaction(getEntityManager(), true, new Callable<EChange>() {
             public EChange call() {
                 final EntityManager aEM = getEntityManager();
 
@@ -547,20 +558,25 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 return EChange.CHANGED;
             }
         });
-        return ret.getOrThrow();
+        try {
+            return ret.getOrThrow();
+        } catch (Throwable throwable) {
+            //TODO Don't bother about it, this class will be removed in next sprint.
+            throw new RuntimeException(throwable);
+        }
     }
 
     @Override
     public void deleteService(@Nonnull final ParticipantIdentifierType aServiceGroupID,
-                              @Nonnull final DocumentIdentifier aDocTypeID,
-                              @Nonnull final String username) throws Throwable {
+                              @Nonnull final DocumentIdentifier aDocTypeID /*,
+                              @Nonnull final String username*/){
 
         final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(aServiceGroupID);
         final DocumentIdentifier normalizedDocId = caseSensitivityNormalizer.normalize(aDocTypeID);
 
-        _verifyUser(username);
+        //_verifyUser(username);
         _verifyServiceGroup(normalizedServiceGroupId);
-        _verifyOwnership(normalizedServiceGroupId, username);
+        //_verifyOwnership(normalizedServiceGroupId, username);
 
         final EChange eChange = _deleteService(normalizedServiceGroupId, normalizedDocId);
         if (eChange.isUnchanged())

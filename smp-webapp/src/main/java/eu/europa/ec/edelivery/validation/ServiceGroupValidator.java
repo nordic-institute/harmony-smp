@@ -48,7 +48,7 @@ import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.WRONG_FIELD;
  * Created by gutowpa on 02/08/2017.
  */
 @Component
-public class ParticipantIdValidator {
+public class ServiceGroupValidator {
 
     private static final String CONFIG_SERVICE_GROUP_SCHEME_REGEXP = "identifiersBehaviour.ParticipantIdentifierScheme.validationRegex";
 

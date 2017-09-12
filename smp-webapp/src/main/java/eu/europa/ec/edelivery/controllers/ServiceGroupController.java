@@ -18,10 +18,9 @@ package eu.europa.ec.edelivery.controllers;
 import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
-import eu.europa.ec.cipa.smp.server.data.dbms.DBMSDataManager;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceGroupInterfaceImpl;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
-import eu.europa.ec.edelivery.validation.ParticipantIdValidator;
+import eu.europa.ec.edelivery.validation.ServiceGroupValidator;
 import eu.europa.ec.smp.api.Identifiers;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
@@ -37,12 +36,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
 
 import static eu.europa.ec.smp.api.Identifiers.asString;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.slf4j.helpers.Util.getCallingClass;
 import static org.springframework.http.MediaType.TEXT_XML_VALUE;
 import static org.springframework.http.ResponseEntity.created;
@@ -60,7 +58,7 @@ public class ServiceGroupController {
     private static final Logger log = LoggerFactory.getLogger(getCallingClass());
 
     @Autowired
-    ParticipantIdValidator participantIdValidator;
+    ServiceGroupValidator serviceGroupValidator;
 
     @Autowired
     private CaseSensitivityNormalizer caseSensitivityNormalizer;
@@ -70,7 +68,7 @@ public class ServiceGroupController {
     private IDataManager dataManager;
 
     @Autowired
-    private ServiceMetadataPathBuilder serviceMetadataPathBuilder;
+    private ServiceMetadataPathBuilder pathBuilder;
 
     @Autowired
     private BaseServiceGroupInterfaceImpl serviceGroupService;
@@ -79,14 +77,14 @@ public class ServiceGroupController {
     private BaseServiceMetadataInterfaceImpl serviceMetadataService;
 
 
-
     @GetMapping(produces = TEXT_XML_VALUE)
-    public ServiceGroup getServiceGroup(@PathVariable String serviceGroupId) throws Throwable {
+    public ServiceGroup getServiceGroup(@PathVariable String serviceGroupId) {
         log.info("GET ServiceGrooup: " + serviceGroupId);
 
         ServiceGroup serviceGroup = serviceGroupService.getServiceGroup(serviceGroupId);
         addReferences(serviceGroup);
 
+        log.info("Finished GET ServiceGrooup: " + serviceGroupId);
         return serviceGroup;
     }
 
@@ -103,21 +101,21 @@ public class ServiceGroupController {
         // Validations
         BdxSmpOasisValidator.validateXSD(body);
         final ServiceGroup serviceGroup = ServiceGroupConverter.unmarshal(body);
-        participantIdValidator.validate(serviceGroupId, serviceGroup);
+        serviceGroupValidator.validate(serviceGroupId, serviceGroup);
 
         // Service action
-        String newOwnerName = serviceGroupOwner != null ? serviceGroupOwner : SecurityContextHolder.getContext().getAuthentication().getName();
+        String newOwnerName = isNotBlank(serviceGroupOwner) ? serviceGroupOwner : SecurityContextHolder.getContext().getAuthentication().getName();
         final ServiceGroup normalizedServiceGroup = normalizeIdentifierCaseSensitivity(serviceGroup);
         boolean newServiceGroupCreated = dataManager.saveServiceGroup(normalizedServiceGroup, newOwnerName);
 
         log.info(String.format("Finished PUT ServiceGroup: %s", serviceGroupId));
 
-        return newServiceGroupCreated ?  created(getCurrentUri()).build() : ok().build();
+        return newServiceGroupCreated ? created(pathBuilder.getCurrentUri()).build() : ok().build();
     }
 
     @DeleteMapping
     @Secured("ROLE_SMP_ADMIN")
-    public void deleteServiceGroup(@PathVariable String serviceGroupId){
+    public void deleteServiceGroup(@PathVariable String serviceGroupId) {
 
         log.info(String.format("DELETE ServiceGroup: %s", serviceGroupId));
 
@@ -127,16 +125,12 @@ public class ServiceGroupController {
         log.info(String.format("Finished DELETE ServiceGroup: %s", serviceGroupId));
     }
 
-    private URI getCurrentUri() {
-        return ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri();
-    }
-
     private void addReferences(ServiceGroup serviceGroup) {
         ParticipantIdentifierType participantId = serviceGroup.getParticipantIdentifier();
         List<DocumentIdentifier> docIds = serviceMetadataService.getMetadataIdentifiers(asString(participantId));
         List<ServiceMetadataReferenceType> referenceIds = serviceGroup.getServiceMetadataReferenceCollection().getServiceMetadataReferences();
         for (DocumentIdentifier docId : docIds) {
-            String url = serviceMetadataPathBuilder.buildSelfUrl(participantId, docId);
+            String url = pathBuilder.buildSelfUrl(participantId, docId);
             referenceIds.add(new ServiceMetadataReferenceType(url));
         }
     }

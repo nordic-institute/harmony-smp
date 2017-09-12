@@ -17,26 +17,88 @@ package eu.europa.ec.cipa.smp.server.security;
 
 
 import eu.europa.ec.cipa.smp.server.AbstractTest;
-import eu.europa.ec.cipa.smp.server.services.readwrite.ServiceMetadataInterface;
-import eu.europa.ec.cipa.smp.server.util.DefaultHttpHeader;
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
+import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
+import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
+import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.ContextLoaderListener;
+import org.springframework.web.context.WebApplicationContext;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.SAXException;
 
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
 
-/**
- * Created by rodrfla on 08/02/2017.
- */
-public class SignatureValidatorTest extends AbstractTest{
+import static java.lang.String.format;
+import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {
+        SmpAppConfig.class,
+        SmpWebAppConfig.class,
+        SpringSecurityConfig.class})
+@WebAppConfiguration
+@Transactional
+@Rollback(true)
+@Sql("classpath:/integration_test_data.sql")
+public class SignatureValidatorTest extends AbstractTest {
 
     private static final String C14N_METHOD = CanonicalizationMethod.INCLUSIVE;
+    private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
+    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("test_admin", "gutek123");
+
+    @Autowired
+    private WebApplicationContext webAppContext;
+
+    private MockMvc mvc;
+
+    @Before
+    public void setup() {
+        mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
+                .apply(SecurityMockMvcConfigurers.springSecurity())
+                .build();
+
+        initServletContext();
+    }
+
+    private void initServletContext() {
+        MockServletContext sc = new MockServletContext("");
+        ServletContextListener listener = new ContextLoaderListener(webAppContext);
+        ServletContextEvent event = new ServletContextEvent(sc);
+        listener.contextInitialized(event);
+    }
 
     @Test
     public void validateSignature() throws Throwable {
@@ -63,24 +125,34 @@ public class SignatureValidatorTest extends AbstractTest{
     private void commonTest(String serviceGroupId, Principal principal, String filePathToLoad, String signedByCustomizedSignatureFilePath, String defaultSignatureFilePath) throws Throwable {
         //given
         String documentTypeId = "ehealth-resid-qns::urn::epsos##services:extended:epsos::107";
-        ServiceMetadataInterface serviceMetadataInterface = new ServiceMetadataInterface();
+        //ServiceMetadataInterface serviceMetadataInterface = new ServiceMetadataInterface();
         PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(principal, "N/A");
         authentication.setDetails(principal);
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        serviceMetadataInterface.setHeaders(new DefaultHttpHeader());
+        //serviceMetadataInterface.setHeaders(new DefaultHttpHeader());
 
         //Sign w/ Customized Signature
         Document docPutRequest = SignatureUtil.loadDocument(filePathToLoad);
         Element serviceInfExtension = SignatureUtil.findExtensionInServiceInformation(docPutRequest);
         SignatureUtil.sign("", serviceInfExtension, C14N_METHOD);
         String signedByCustomizedSignature = SignatureUtil.marshall(docPutRequest);
+        String uri = format("/%s/services/%s", serviceGroupId, documentTypeId);
 
         //When
         //Save ServiceMetadata
-        serviceMetadataInterface.saveServiceRegistration(serviceGroupId, documentTypeId, signedByCustomizedSignature);
+        //serviceMetadataInterface.saveServiceRegistration(serviceGroupId, documentTypeId, signedByCustomizedSignature);
+        mvc.perform(put(uri)
+                .with(ADMIN_CREDENTIALS)
+                .contentType(APPLICATION_XML_VALUE)
+                .content(signedByCustomizedSignature))
+                .andExpect(status().isCreated());
 
         //Retrieve saved ServiceMetadata
-        Document response = serviceMetadataInterface.getServiceRegistration(serviceGroupId, documentTypeId);
+        //Document response = serviceMetadataInterface.getServiceRegistration(serviceGroupId, documentTypeId);
+        String responseStr = mvc.perform(get(uri))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        Document response = parse(responseStr);
 
         //store Customized Signature for validation
         Element smNode = SignatureUtil.findFirstElementByName(response, "ServiceMetadata");
@@ -100,5 +172,17 @@ public class SignatureValidatorTest extends AbstractTest{
         SignatureUtil.validateSignature(smpSigPointer);
         Assert.assertEquals(signedByCustomizedSignature, SignatureUtil.loadDocumentAsString(signedByCustomizedSignatureFilePath));
         Assert.assertEquals(SignatureUtil.marshall(response), SignatureUtil.loadDocumentAsString(defaultSignatureFilePath));
+    }
+
+    public static Document parse(String serviceMetadataXml) throws SAXException, IOException, ParserConfigurationException {
+        InputStream inputStream = new ByteArrayInputStream(serviceMetadataXml.getBytes());
+        return getDocumentBuilder().parse(inputStream);
+    }
+
+    private static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+        dbf.setFeature(PARSER_DISALLOW_DTD_PARSING_FEATURE, true);
+        return dbf.newDocumentBuilder();
     }
 }

@@ -53,9 +53,8 @@ public final class BaseServiceMetadataInterfaceImpl {
   private IDataManager dataManager;
 
   @Nonnull
-  public Document getServiceRegistration (@Nonnull final UriInfo uriInfo,
-                                                                                @Nullable final String sServiceGroupID,
-                                                                                @Nullable final String sDocumentTypeID) throws Throwable {
+  public Document getServiceRegistration (@Nullable final String sServiceGroupID,
+                                          @Nullable final String sDocumentTypeID){
     s_aLogger.info (String.format("GET /%s/services/%s", sServiceGroupID, sDocumentTypeID));
 
     final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(sServiceGroupID);

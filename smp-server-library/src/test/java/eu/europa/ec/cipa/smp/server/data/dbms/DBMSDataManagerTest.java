@@ -28,6 +28,7 @@ import eu.europa.ec.cipa.smp.server.util.SMPDBUtils;
 import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 
@@ -40,7 +41,7 @@ import static org.junit.Assert.*;
 /**
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-// @Ignore
+@Ignore
 // ("Cannot be enabled by default, because it would fail without the correct configuration")
 @DevelopersNote ("You need to adjust your local config.properties file to run this test")
 public class DBMSDataManagerTest extends AbstractTest {
@@ -295,7 +296,7 @@ public class DBMSDataManagerTest extends AbstractTest {
   @Test
   public void testCreateServiceMetadata() throws Throwable {
     // Save to DB
-    boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(SERVICEGROUP_ID, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
+    boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(SERVICEGROUP_ID, DOCTYPE_ID, m_sServiceMetadata);
 
     // Retrieve from DB
     final String docDBServiceMetadata = s_aDataMgr.getService (SERVICEGROUP_ID, DOCTYPE_ID);
@@ -352,7 +353,7 @@ public class DBMSDataManagerTest extends AbstractTest {
         s_aDataMgr.saveServiceGroup(m_aServiceGroup, CREDENTIALS);
 
         //when
-        s_aDataMgr.saveService(inParticipantId, inDocId, m_sServiceMetadata, CREDENTIALS);
+        s_aDataMgr.saveService(inParticipantId, inDocId, m_sServiceMetadata /*, CREDENTIALS*/);
 
         //then
         String resultServiceMetadataStr = s_aDataMgr.getService (inParticipantId, inDocId);
@@ -369,7 +370,7 @@ public class DBMSDataManagerTest extends AbstractTest {
         assertEquals(inDocScheme, resultDocId.getScheme());
 
         //when
-        s_aDataMgr.deleteService(inParticipantId, inDocId, CREDENTIALS);
+        s_aDataMgr.deleteService(inParticipantId, inDocId /*, CREDENTIALS*/);
 
         //then
         resultServiceMetadataStr = s_aDataMgr.getService (inParticipantId, inDocId);
@@ -379,20 +380,20 @@ public class DBMSDataManagerTest extends AbstractTest {
     @Test(expected = NotFoundException.class)
   public void testCreateServiceMetadataNonExistingServiceGroup() throws Throwable {
       final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
-      s_aDataMgr.saveService(serviceGroupNonExisting, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
+      s_aDataMgr.saveService(serviceGroupNonExisting, DOCTYPE_ID, m_sServiceMetadata /*, CREDENTIALS*/);
   }
 
   @Test(expected = NotFoundException.class)
   public void testCreateServiceMetadataByAdminNonExistingServiceGroup() throws Throwable {
       final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
-      s_aDataMgr.saveService(serviceGroupNonExisting, DOCTYPE_ID, m_sServiceMetadata, ADMIN_CREDENTIALS);
+      s_aDataMgr.saveService(serviceGroupNonExisting, DOCTYPE_ID, m_sServiceMetadata /*, ADMIN_CREDENTIALS*/ );
   }
 
   @Test(expected = NotFoundException.class)
   public void testCreateServiceMetadataByNoAdminNonExistingServiceGroup() throws Throwable {
       final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
       //final BasicAuthClientCredentials noAdminCredentials = new BasicAuthClientCredentials (NOADMIN_USERNAME, NOADMIN_PASSWORD);
-      s_aDataMgr.saveService(serviceGroupNonExisting, DOCTYPE_ID, m_sServiceMetadata, NOADMIN_USERNAME);
+      s_aDataMgr.saveService(serviceGroupNonExisting, DOCTYPE_ID, m_sServiceMetadata /*, NOADMIN_USERNAME*/);
   }
 
   @Test
@@ -433,7 +434,7 @@ public class DBMSDataManagerTest extends AbstractTest {
       String m_sServiceMetadataRedirect = XmlTestUtils.marshall(m_aServiceMetadataRedirect);
 
       // Save to DB
-      boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(PARTY_ID3, DOCTYPE_ID, m_sServiceMetadataRedirect, CREDENTIALS);
+      boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(PARTY_ID3, DOCTYPE_ID, m_sServiceMetadataRedirect /*, CREDENTIALS*/);
 
       // Retrieve from DB
       assertTrue(bNewServiceMetadataCreated);
@@ -460,7 +461,7 @@ public class DBMSDataManagerTest extends AbstractTest {
     @Test
     public void testUpdateServiceMetadataByAdmin() throws Throwable {
         // given
-        boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
+        boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata /*, CREDENTIALS*/);
         String strMetadata = s_aDataMgr.getService(PARTY_ID, DOCTYPE_ID);
         ServiceMetadata metadata = ServiceMetadataConverter.unmarshal(strMetadata);
         EndpointType endpoint = metadata.getServiceInformation().getProcessList().getProcesses().get(0).getServiceEndpointList().getEndpoints().get(0);
@@ -468,7 +469,7 @@ public class DBMSDataManagerTest extends AbstractTest {
 
         //when
         m_sServiceMetadata = m_sServiceMetadata.replaceAll(DESCRIPTION, DESCRIPTION_2);
-        boolean bNewServiceMetadataUpdated = s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata, ADMIN_CREDENTIALS );
+        boolean bNewServiceMetadataUpdated = s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata/*, ADMIN_CREDENTIALS*/ );
 
         //then
         assertTrue(bNewServiceMetadataCreated);
@@ -482,10 +483,10 @@ public class DBMSDataManagerTest extends AbstractTest {
     @Test
     public void testDeleteServiceMetadataByAdmin() throws Throwable {
         // given
-        boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
+        boolean bNewServiceMetadataCreated = s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata /*, CREDENTIALS*/);
 
         //when
-        s_aDataMgr.deleteService(PARTY_ID, DOCTYPE_ID, ADMIN_CREDENTIALS);
+        s_aDataMgr.deleteService(PARTY_ID, DOCTYPE_ID/*, ADMIN_CREDENTIALS*/ );
 
         //then
         assertTrue(bNewServiceMetadataCreated);
@@ -496,7 +497,7 @@ public class DBMSDataManagerTest extends AbstractTest {
   public void testCreateServiceMetadataUnknownUser() throws Throwable {
     //final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
     try {
-        s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata, "Unknown_User");
+        s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata /*, "Unknown_User"*/);
         fail ();
     }
     catch (final UnknownUserException ex) {}
@@ -506,7 +507,7 @@ public class DBMSDataManagerTest extends AbstractTest {
   public void testCreateServiceMetadataWrongPass() throws Throwable {
     //final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WrongPassword");
     try {
-        s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata, USERNAME);
+        s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata /*, USERNAME*/);
         s_aDataMgr.getCurrentEntityManager().getTransaction().commit();
         fail ();
     }
@@ -517,20 +518,20 @@ public class DBMSDataManagerTest extends AbstractTest {
   public void testPrintServiceMetadata() throws Throwable {
     // Ensure something is present :)
       isServiceMetadataToDelete = true;
-      s_aDataMgr.saveService(SERVICEGROUP_ID, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
+      s_aDataMgr.saveService(SERVICEGROUP_ID, DOCTYPE_ID, m_sServiceMetadata /*, CREDENTIALS*/);
       System.out.println (s_aDataMgr.getService (SERVICEGROUP_ID, DOCTYPE_ID));
   }
 
   @Test
   public void testDeleteServiceMetadata() throws Throwable {
     // Ensure something is present :)
-    s_aDataMgr.saveService(SERVICEGROUP_ID, DOCTYPE_ID, m_sServiceMetadata, CREDENTIALS);
+    s_aDataMgr.saveService(SERVICEGROUP_ID, DOCTYPE_ID, m_sServiceMetadata /*, CREDENTIALS*/);
 
     // First deletion succeeds
-    s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, CREDENTIALS);
+    s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID /*, CREDENTIALS*/);
     try {
       // Second deletion fails
-      s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, CREDENTIALS);
+      s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID /*, CREDENTIALS*/);
       fail ();
     }
     catch (final NotFoundException ex) {}
@@ -540,7 +541,7 @@ public class DBMSDataManagerTest extends AbstractTest {
   public void testDeleteServiceMetadataUnknownUser () throws Throwable {
     //final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials ("Unknown_User", PASSWORD);
     try {
-      s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, "Unknown_User");
+      s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID /*, "Unknown_User"*/);
       fail ();
     }
     catch (final UnknownUserException ex) {}
@@ -550,7 +551,7 @@ public class DBMSDataManagerTest extends AbstractTest {
   public void testDeleteServiceMetadataWrongPass () throws Throwable {
     //final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WrongPassword");
     try {
-      s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, USERNAME);
+      s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID /*, USERNAME*/);
       fail ();
     }
     catch (final UnauthorizedException ex) {}
@@ -559,27 +560,27 @@ public class DBMSDataManagerTest extends AbstractTest {
   @Test(expected = UnauthorizedException.class )
   public void testDeleteServiceMetadataNullPass () throws Throwable {
      //final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, null);
-     s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID, USERNAME);
+     s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID /*, USERNAME*/);
      fail ();
   }
 
   @Test(expected = NotFoundException.class)
   public void testDeleteServiceMetadataNonExistingServiceGroup() throws Throwable {
       final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
-      s_aDataMgr.deleteService(serviceGroupNonExisting, DOCTYPE_ID, CREDENTIALS);
+      s_aDataMgr.deleteService(serviceGroupNonExisting, DOCTYPE_ID /*, CREDENTIALS*/);
   }
 
   @Test(expected = NotFoundException.class)
   public void testDeleteServiceMetadataByAdminNonExistingServiceGroup() throws Throwable {
       final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
-      s_aDataMgr.deleteService(serviceGroupNonExisting, DOCTYPE_ID, ADMIN_CREDENTIALS);
+      s_aDataMgr.deleteService(serviceGroupNonExisting, DOCTYPE_ID/*, ADMIN_CREDENTIALS*/ );
   }
 
   @Test(expected = NotFoundException.class)
   public void testDeleteServiceMetadataByNoAdminNonExistingServiceGroup() throws Throwable {
       final ParticipantIdentifierType serviceGroupNonExisting = new ParticipantIdentifierType("nonexisting","iso6523-actorid-upis");
       //final BasicAuthClientCredentials noAdminCredentials = new BasicAuthClientCredentials (NOADMIN_USERNAME, NOADMIN_PASSWORD);
-      s_aDataMgr.deleteService(serviceGroupNonExisting, DOCTYPE_ID, NOADMIN_USERNAME);
+      s_aDataMgr.deleteService(serviceGroupNonExisting, DOCTYPE_ID /*, NOADMIN_USERNAME*/);
   }
 
   @Test

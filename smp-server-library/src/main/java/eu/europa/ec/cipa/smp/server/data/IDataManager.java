@@ -128,7 +128,7 @@ public interface IDataManager {
    */
   @Nullable
   String getService (@Nonnull ParticipantIdentifierType aServiceGroupID,
-                       @Nonnull DocumentIdentifier aDocType) throws Throwable;
+                       @Nonnull DocumentIdentifier aDocType);
 
   /**
    * Saves the given service metadata in the underlying data layer.
@@ -139,16 +139,14 @@ public interface IDataManager {
    *        The document id to save.
    * @param sXmlContent
    *        The service metadata XML content to save.
-   * @param aCredentials
-   *        The credentials to use.
    * @return true, if ServiceMetadata was added; false, if ServiceMetadata was updated
    * @throws Throwable
    *        A throwable is thrown if an error occurs.
    */
   boolean saveService(@Nonnull final ParticipantIdentifierType aServiceGroupID,
                              @Nonnull final DocumentIdentifier aDocTypeID,
-                             @Nonnull final String sXmlContent,
-                             @Nonnull final String username) throws Throwable;
+                             @Nonnull final String sXmlContent /*,
+                             @Nonnull final String username*/);
 
   /**
    * Deletes a service metadata object given by its service group id and
@@ -158,13 +156,11 @@ public interface IDataManager {
    *        The service group id of the service metadata.
    * @param aDocType
    *        The document id of the service metadata.
-   * @param aCredentials
-   *        The credentials to use.
    * @throws Throwable
    */
   void deleteService (@Nonnull ParticipantIdentifierType aServiceGroupID,
-                      @Nonnull DocumentIdentifier aDocType,
-                      @Nonnull String username) throws Throwable;
+                      @Nonnull DocumentIdentifier aDocType /*,
+                      @Nonnull String username*/);
 
   /**
    * Checks whether the ServiceMetadata should be found elsewhere.

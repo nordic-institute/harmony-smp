@@ -22,7 +22,7 @@ import org.junit.Test;
 /**
  * Created by gutowpa on 02/08/2017.
  */
-public class ParticipantIdValidator {
+public class ServiceGroupValidator {
 
     @Test(expected = BadRequestException.class)
     public void testServiceGroupIdentifierSchemeValidationTooLong() throws Throwable {

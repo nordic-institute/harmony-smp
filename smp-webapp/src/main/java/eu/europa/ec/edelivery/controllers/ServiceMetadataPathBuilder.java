@@ -45,6 +45,8 @@ import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.net.URI;
+
 import static eu.europa.ec.smp.api.Identifiers.asString;
 
 /**
@@ -55,6 +57,10 @@ public class ServiceMetadataPathBuilder {
 
     @Autowired
     ConfigFile configFile;
+
+    public URI getCurrentUri() {
+        return ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri();
+    }
 
     public String buildSelfUrl(ParticipantIdentifierType participantId, DocumentIdentifier docId){
 
