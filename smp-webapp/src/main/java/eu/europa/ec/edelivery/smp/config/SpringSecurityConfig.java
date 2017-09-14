@@ -24,4 +24,5 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 
 @EnableWebSecurity
 @ImportResource("classpath:spring-security.xml")
-public class SpringSecurityConfig {}
+public class SpringSecurityConfig {
+}

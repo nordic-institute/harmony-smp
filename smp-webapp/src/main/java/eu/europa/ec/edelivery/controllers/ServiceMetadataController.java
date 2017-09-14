@@ -15,6 +15,7 @@
 
 package eu.europa.ec.edelivery.controllers;
 
+import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
 import eu.europa.ec.edelivery.validation.ServiceMetadataValidator;
@@ -23,12 +24,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.Document;
 
-import javax.ws.rs.core.Response;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.transform.TransformerException;
+
+import java.io.UnsupportedEncodingException;
 
 import static eu.europa.ec.smp.api.Identifiers.asDocumentId;
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
@@ -60,49 +63,46 @@ public class ServiceMetadataController {
     @Autowired
     private ServiceMetadataPathBuilder pathBuilder;
 
-    @GetMapping(/*produces = TEXT_XML_VALUE*/)
-    public Document getServiceMetadata(@PathVariable String serviceGroupId,
-                                       @PathVariable String serviceMetadataId) {
+    @GetMapping(produces = TEXT_XML_VALUE)
+    public String getServiceMetadata(@PathVariable String serviceGroupId,
+                                     @PathVariable String serviceMetadataId) throws TransformerException, UnsupportedEncodingException {
 
-        log.info(format("GET ServiceMetadata: %s - %s", serviceGroupId, serviceMetadataId));
+        log.info("GET ServiceMetadata: %s - %s", serviceGroupId, serviceMetadataId);
 
         Document serviceGroup = serviceMetadataService.getServiceRegistration(serviceGroupId, serviceMetadataId);
 
-//        JAXBElement el = new JAXBElement()
-
-
-        log.info(format("GET ServiceMetadata finished: %s - %s", serviceGroupId, serviceMetadataId));
-        return serviceGroup;
+        log.info("GET ServiceMetadata finished: %s - %s", serviceGroupId, serviceMetadataId);
+        return ServiceMetadataConverter.toString(serviceGroup);
     }
 
     @PutMapping
-    //@Secured("ROLE_SMP_ADMIN")
+    @PreAuthorize("hasAnyAuthority('ROLE_SMP_ADMIN', @caseSensitivityNormalizer.normalizeParticipantId(#serviceGroupId))")
     public ResponseEntity saveServiceMetadata(
             @PathVariable String serviceGroupId,
             @PathVariable String serviceMetadataId,
             @RequestBody String body) throws XmlInvalidAgainstSchemaException {
 
-        log.info(format("PUT ServiceMetadata: %s - %s\n%s", serviceGroupId, serviceMetadataId, body));
+        log.info("PUT ServiceMetadata: %s - %s\n%s", serviceGroupId, serviceMetadataId, body);
 
         serviceMetadataValidator.validate(serviceGroupId, serviceMetadataId, body);
 
         boolean newServiceMetadataCreated = dataManager.saveService(asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId), body);
 
-        log.info(format("PUT ServiceMetadata finished: %s - %s\n%s", serviceGroupId, serviceMetadataId, body));
+        log.info("PUT ServiceMetadata finished: %s - %s\n%s", serviceGroupId, serviceMetadataId, body);
 
         return newServiceMetadataCreated ? created(pathBuilder.getCurrentUri()).build() : ok().build();
     }
 
     @DeleteMapping
-    //@Secured("ROLE_SMP_ADMIN")
-    public Response deleteServiceRegistration(@PathVariable String serviceGroupId,
-                                              @PathVariable String serviceMetadataId) {
+    @PreAuthorize("hasAnyAuthority('ROLE_SMP_ADMIN', @caseSensitivityNormalizer.normalizeParticipantId(#serviceGroupId))")
+    public ResponseEntity deleteServiceMetadata(@PathVariable String serviceGroupId,
+                                                        @PathVariable String serviceMetadataId) {
         log.info("DELETE ServiceMetadata: %s - %s", serviceGroupId, serviceMetadataId);
 
         dataManager.deleteService(asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId));
 
         log.info("DELETE ServiceMetadata finished: %s - %s", serviceGroupId, serviceMetadataId);
 
-        return Response.ok().build();
+        return ok().build();
     }
 }

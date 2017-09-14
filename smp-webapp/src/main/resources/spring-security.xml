@@ -44,7 +44,7 @@
             <jdbc-user-service id="smpJdbcUserDetailsService"
                                data-source-ref="dataSource"
                                users-by-username-query="SELECT username, COALESCE(password, 'dummy'), 1 FROM smp_user WHERE username = ?"
-                               authorities-by-username-query="SELECT all_roles.username, all_roles.authority from ( SELECT username, 'ROLE_SERVICEGROUP_ADMIN' AS AUTHORITY FROM smp_user UNION ALL SELECT username, 'ROLE_SMP_ADMIN' AS AUTHORITY FROM smp_user WHERE isadmin = 1 ) all_roles WHERE username = ?"/>
+                               authorities-by-username-query="SELECT all_roles.username, all_roles.authority from ( SELECT username, 'ROLE_SERVICEGROUP_ADMIN' AS AUTHORITY FROM smp_user UNION ALL SELECT username, 'ROLE_SMP_ADMIN' AS AUTHORITY FROM smp_user WHERE isadmin = 1 UNION ALL SELECT username, CONCAT(businessIdentifierScheme, CONCAT('::', businessIdentifier)) FROM smp_ownership) all_roles WHERE username = ?"/>
         </authentication-provider>
 
         <authentication-provider ref="preauthAuthProvider"/>

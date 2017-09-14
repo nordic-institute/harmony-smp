@@ -18,13 +18,15 @@ package eu.europa.ec.cipa.smp.server.conversion;
 import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
+
+import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
+import static eu.europa.ec.smp.api.Identifiers.asString;
 
 /**
  * Created by gutowpa on 23/02/2017.
@@ -73,7 +75,8 @@ public class CaseSensitivityNormalizer {
         return new DocumentIdentifier(value, scheme);
     }
 
-    public void normalizeParticipantId(ServiceGroup servicGroup){
-
+    public String normalizeParticipantId(String participantId) {
+        return asString(normalize(asParticipantId(participantId)));
     }
+
 }

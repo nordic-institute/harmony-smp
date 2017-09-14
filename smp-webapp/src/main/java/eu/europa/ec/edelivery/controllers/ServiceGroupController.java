@@ -96,7 +96,7 @@ public class ServiceGroupController {
             @RequestHeader(name = "ServiceGroup-Owner", required = false) String serviceGroupOwner,
             @RequestBody String body) throws XmlInvalidAgainstSchemaException {
 
-        log.info(String.format("PUT ServiceGroup: %s\n%s", serviceGroupId, body));
+        log.info("PUT ServiceGroup: %s\n%s", serviceGroupId, body);
 
         // Validations
         BdxSmpOasisValidator.validateXSD(body);
@@ -108,7 +108,7 @@ public class ServiceGroupController {
         final ServiceGroup normalizedServiceGroup = normalizeIdentifierCaseSensitivity(serviceGroup);
         boolean newServiceGroupCreated = dataManager.saveServiceGroup(normalizedServiceGroup, newOwnerName);
 
-        log.info(String.format("Finished PUT ServiceGroup: %s", serviceGroupId));
+        log.info("Finished PUT ServiceGroup: %s", serviceGroupId);
 
         return newServiceGroupCreated ? created(pathBuilder.getCurrentUri()).build() : ok().build();
     }
@@ -117,12 +117,12 @@ public class ServiceGroupController {
     @Secured("ROLE_SMP_ADMIN")
     public void deleteServiceGroup(@PathVariable String serviceGroupId) {
 
-        log.info(String.format("DELETE ServiceGroup: %s", serviceGroupId));
+        log.info("DELETE ServiceGroup: %s", serviceGroupId);
 
         final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(serviceGroupId);
         dataManager.deleteServiceGroup(aServiceGroupID);
 
-        log.info(String.format("Finished DELETE ServiceGroup: %s", serviceGroupId));
+        log.info("Finished DELETE ServiceGroup: %s", serviceGroupId);
     }
 
     private void addReferences(ServiceGroup serviceGroup) {
