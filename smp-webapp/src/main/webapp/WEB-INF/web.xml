@@ -14,11 +14,16 @@
   ~ See the Licence for the specific language governing permissions and limitations under the Licence.
   -->
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         id="SMP_WebApp" version="2.5">
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         id="SMP_WebApp" version="3.0">
 
     <display-name>SMP - OASIS REST services</display-name>
+<!--
 
+    <error-page>
+        <location>/error</location>
+    </error-page>
+-->
 
     <servlet>
         <servlet-name>smpRestServlet</servlet-name>
@@ -117,7 +122,7 @@
                 <param-value>
                     eu.europa.ec.cipa.smp.server.services.readwrite;
                     eu.europa.ec.cipa.smp.server.services.common;
-                    eu.europa.ec.cipa.smp.server.errors.mappers
+                    eu.europa.ec.cipa.smp.sererrorrors.mappers
                 </param-value>
             </init-param>
             <init-param>

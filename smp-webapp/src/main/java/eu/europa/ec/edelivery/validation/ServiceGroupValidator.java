@@ -30,7 +30,7 @@
 
 package eu.europa.ec.edelivery.validation;
 
-import eu.europa.ec.cipa.smp.server.errors.exceptions.BadRequestException;
+import eu.europa.ec.edelivery.error.exceptions.BadRequestException;
 import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.smp.api.Identifiers;
@@ -42,7 +42,8 @@ import org.springframework.stereotype.Component;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.WRONG_FIELD;
+import static eu.europa.ec.edelivery.error.ErrorBusinessCode.WRONG_FIELD;
+
 
 /**
  * Created by gutowpa on 02/08/2017.

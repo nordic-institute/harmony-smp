@@ -67,11 +67,11 @@ public class ServiceMetadataController {
     public String getServiceMetadata(@PathVariable String serviceGroupId,
                                      @PathVariable String serviceMetadataId) throws TransformerException, UnsupportedEncodingException {
 
-        log.info("GET ServiceMetadata: %s - %s", serviceGroupId, serviceMetadataId);
+        log.info("GET ServiceMetadata: {} - {}", serviceGroupId, serviceMetadataId);
 
         Document serviceGroup = serviceMetadataService.getServiceRegistration(serviceGroupId, serviceMetadataId);
 
-        log.info("GET ServiceMetadata finished: %s - %s", serviceGroupId, serviceMetadataId);
+        log.info("GET ServiceMetadata finished: {} - {}", serviceGroupId, serviceMetadataId);
         return ServiceMetadataConverter.toString(serviceGroup);
     }
 
@@ -82,13 +82,13 @@ public class ServiceMetadataController {
             @PathVariable String serviceMetadataId,
             @RequestBody String body) throws XmlInvalidAgainstSchemaException {
 
-        log.info("PUT ServiceMetadata: %s - %s\n%s", serviceGroupId, serviceMetadataId, body);
+        log.info("PUT ServiceMetadata: {} - {}\n{}", serviceGroupId, serviceMetadataId, body);
 
         serviceMetadataValidator.validate(serviceGroupId, serviceMetadataId, body);
 
         boolean newServiceMetadataCreated = dataManager.saveService(asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId), body);
 
-        log.info("PUT ServiceMetadata finished: %s - %s\n%s", serviceGroupId, serviceMetadataId, body);
+        log.info("PUT ServiceMetadata finished: {} - {}\n{}", serviceGroupId, serviceMetadataId, body);
 
         return newServiceMetadataCreated ? created(pathBuilder.getCurrentUri()).build() : ok().build();
     }
@@ -97,11 +97,11 @@ public class ServiceMetadataController {
     @PreAuthorize("hasAnyAuthority('ROLE_SMP_ADMIN', @caseSensitivityNormalizer.normalizeParticipantId(#serviceGroupId))")
     public ResponseEntity deleteServiceMetadata(@PathVariable String serviceGroupId,
                                                         @PathVariable String serviceMetadataId) {
-        log.info("DELETE ServiceMetadata: %s - %s", serviceGroupId, serviceMetadataId);
+        log.info("DELETE ServiceMetadata: {} - {}", serviceGroupId, serviceMetadataId);
 
         dataManager.deleteService(asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId));
 
-        log.info("DELETE ServiceMetadata finished: %s - %s", serviceGroupId, serviceMetadataId);
+        log.info("DELETE ServiceMetadata finished: {} - {}", serviceGroupId, serviceMetadataId);
 
         return ok().build();
     }

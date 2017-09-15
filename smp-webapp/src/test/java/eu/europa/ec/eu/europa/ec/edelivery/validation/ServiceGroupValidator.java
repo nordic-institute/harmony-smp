@@ -16,7 +16,7 @@
 package eu.europa.ec.eu.europa.ec.edelivery.validation;
 
 import com.mysql.jdbc.NotImplemented;
-import eu.europa.ec.cipa.smp.server.errors.exceptions.BadRequestException;
+import eu.europa.ec.edelivery.error.exceptions.BadRequestException;
 import org.junit.Test;
 
 /**

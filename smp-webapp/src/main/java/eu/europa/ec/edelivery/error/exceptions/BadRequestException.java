@@ -43,34 +43,22 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.controllers;
+package eu.europa.ec.edelivery.error.exceptions;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.servlet.http.HttpServletRequest;
+import eu.europa.ec.edelivery.error.ErrorBusinessCode;
 
 /**
- * Created by gutowpa on 07/04/2017.
+ * Created by migueti on 13/01/2017.
  */
+public class BadRequestException extends RuntimeException {
+    private ErrorBusinessCode errorBusinessCode;
 
-@Controller
-public class UsernameReturningTestController {
-
-    @RequestMapping("/getLoggedUsername")
-    @ResponseBody
-    public String getLoggedUsername(){
-        return SecurityContextHolder.getContext().getAuthentication().getName();
+    public BadRequestException(ErrorBusinessCode errorBusinessCode, String sMsg) {
+        super(sMsg);
+        this.errorBusinessCode = errorBusinessCode;
     }
 
-
-    @RequestMapping("/error")
-    @ResponseBody
-    public ResponseEntity error(HttpServletRequest request, Throwable throwable){
-        return new ResponseEntity(HttpStatus.I_AM_A_TEAPOT);
+    public ErrorBusinessCode getErrorBusinessCode() {
+        return errorBusinessCode;
     }
 }

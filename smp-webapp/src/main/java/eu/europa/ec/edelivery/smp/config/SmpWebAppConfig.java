@@ -15,11 +15,10 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
+import eu.europa.ec.edelivery.error.ErrorMappingControllerAdvice;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -35,9 +34,8 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @ComponentScan(basePackages = {
         "eu.europa.ec.edelivery.controllers",
         "eu.europa.ec.edelivery.validation"})
-@Import(GlobalMethodSecurityConfig.class)
+@Import({GlobalMethodSecurityConfig.class, ErrorMappingControllerAdvice.class})
 public class SmpWebAppConfig extends WebMvcConfigurerAdapter {
-
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {

@@ -79,12 +79,12 @@ public class ServiceGroupController {
 
     @GetMapping(produces = TEXT_XML_VALUE)
     public ServiceGroup getServiceGroup(@PathVariable String serviceGroupId) {
-        log.info("GET ServiceGrooup: " + serviceGroupId);
+        log.info("GET ServiceGrooup: {}", serviceGroupId);
 
         ServiceGroup serviceGroup = serviceGroupService.getServiceGroup(serviceGroupId);
         addReferences(serviceGroup);
 
-        log.info("Finished GET ServiceGrooup: " + serviceGroupId);
+        log.info("Finished GET ServiceGrooup: {}", serviceGroupId);
         return serviceGroup;
     }
 
@@ -96,7 +96,7 @@ public class ServiceGroupController {
             @RequestHeader(name = "ServiceGroup-Owner", required = false) String serviceGroupOwner,
             @RequestBody String body) throws XmlInvalidAgainstSchemaException {
 
-        log.info("PUT ServiceGroup: %s\n%s", serviceGroupId, body);
+        log.info("PUT ServiceGroup: {}\n{}", serviceGroupId, body);
 
         // Validations
         BdxSmpOasisValidator.validateXSD(body);
@@ -108,7 +108,7 @@ public class ServiceGroupController {
         final ServiceGroup normalizedServiceGroup = normalizeIdentifierCaseSensitivity(serviceGroup);
         boolean newServiceGroupCreated = dataManager.saveServiceGroup(normalizedServiceGroup, newOwnerName);
 
-        log.info("Finished PUT ServiceGroup: %s", serviceGroupId);
+        log.info("Finished PUT ServiceGroup: {}", serviceGroupId);
 
         return newServiceGroupCreated ? created(pathBuilder.getCurrentUri()).build() : ok().build();
     }
@@ -117,12 +117,12 @@ public class ServiceGroupController {
     @Secured("ROLE_SMP_ADMIN")
     public void deleteServiceGroup(@PathVariable String serviceGroupId) {
 
-        log.info("DELETE ServiceGroup: %s", serviceGroupId);
+        log.info("DELETE ServiceGroup: {}", serviceGroupId);
 
         final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(serviceGroupId);
         dataManager.deleteServiceGroup(aServiceGroupID);
 
-        log.info("Finished DELETE ServiceGroup: %s", serviceGroupId);
+        log.info("Finished DELETE ServiceGroup: {}", serviceGroupId);
     }
 
     private void addReferences(ServiceGroup serviceGroup) {

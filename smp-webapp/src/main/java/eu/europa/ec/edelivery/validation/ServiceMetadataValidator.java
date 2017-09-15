@@ -16,21 +16,21 @@
 package eu.europa.ec.edelivery.validation;
 
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
-import eu.europa.ec.cipa.smp.server.errors.exceptions.BadRequestException;
+import eu.europa.ec.edelivery.error.exceptions.BadRequestException;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.OUT_OF_RANGE;
-import static eu.europa.ec.cipa.smp.server.errors.ErrorBusinessCode.WRONG_FIELD;
+
+import static eu.europa.ec.edelivery.error.ErrorBusinessCode.OUT_OF_RANGE;
+import static eu.europa.ec.edelivery.error.ErrorBusinessCode.WRONG_FIELD;
 import static eu.europa.ec.smp.api.Identifiers.asDocumentId;
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
 import static eu.europa.ec.smp.api.Identifiers.asString;

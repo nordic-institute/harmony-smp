@@ -23,7 +23,8 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 
 /**
- * Created by gutowpa on 13/09/2017.
+ * Spring cannot find authentication manager configured in app context when evaluating @PreAuthorize annotations placed on Controllers.
+ * This configuration class allows it to access that authentication manager.
  */
 @Configuration
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)

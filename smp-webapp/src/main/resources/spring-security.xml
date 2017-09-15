@@ -20,14 +20,12 @@
          xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
-
-    <b:bean id="jerseyBasicAuthEntryPoint"
-            class="eu.europa.ec.cipa.smp.server.errors.SpringSecurityBasicAuthenticationEntryPoint"/>
+    <b:bean id="securityExceptionHandler" class="eu.europa.ec.edelivery.error.SpringSecurityExceptionHandler"/>
 
 
     <http>
         <csrf disabled="true"/>
-        <http-basic entry-point-ref="jerseyBasicAuthEntryPoint"/>
+        <http-basic entry-point-ref="securityExceptionHandler"/>
         <anonymous granted-authority="ROLE_ANONYMOUS"/>
 
         <custom-filter position="X509_FILTER" ref="x509AuthFilter"/>
@@ -35,6 +33,8 @@
 
         <intercept-url method="PUT" access=" ! isAnonymous()" pattern="/*"/>
         <intercept-url method="DELETE" access=" ! isAnonymous()" pattern="/*"/>
+        <access-denied-handler ref="securityExceptionHandler"/>
+
     </http>
 
 
