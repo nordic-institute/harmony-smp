@@ -15,14 +15,12 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
+import eu.europa.ec.cipa.smp.server.util.SignatureFilter;
 import eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdvice;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.config.annotation.*;
 
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
@@ -48,6 +46,5 @@ public class SmpWebAppConfig extends WebMvcConfigurerAdapter {
                 .addResourceHandler("/index.html", "/favicon-16x16.png")
                 .addResourceLocations("/web/");
     }
-
 
 }

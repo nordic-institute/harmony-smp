@@ -18,11 +18,15 @@ import com.helger.commons.charset.CCharset;
 import com.helger.commons.exceptions.InitializationException;
 import com.helger.commons.io.streams.StringInputStream;
 import eu.europa.ec.cipa.smp.server.security.KeyStoreUtils;
+import eu.europa.ec.cipa.smp.server.security.Signer;
 import org.glassfish.jersey.server.ContainerRequest;
 import org.glassfish.jersey.server.ContainerResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Priority;
@@ -30,8 +34,12 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.Response.Status;
+import javax.xml.crypto.MarshalException;
+import javax.xml.crypto.dsig.XMLSignatureException;
 import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
+import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
 /**
@@ -40,8 +48,9 @@ import java.security.cert.X509Certificate;
  *
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
-@Priority(value = 2000)
-public final class SignatureFilter implements ContainerResponseFilter {
+@Deprecated // TODO: This is no longer a filter, refactor this garbage.
+@Component
+public final class SignatureFilter{
   public static final String CONFIG_XMLDSIG_KEYSTORE_CLASSPATH = "xmldsig.keystore.classpath";
   public static final String CONFIG_XMLDSIG_KEYSTORE_PASSWORD = "xmldsig.keystore.password";
   public static final String CONFIG_XMLDSIG_KEYSTORE_KEY_ALIAS = "xmldsig.keystore.key.alias";
@@ -51,19 +60,10 @@ public final class SignatureFilter implements ContainerResponseFilter {
 
   private KeyStore.PrivateKeyEntry m_aKeyEntry;
   private X509Certificate m_aCert;
+  private Signer signer;
 
-  private static ConfigFile configFile;
-
-  static {
-      /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
-        in the classpath (like smp.config.properties or sml.config.properties).
-        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
-        Needs to be properly refactored */
-      ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[]{"classpath:applicationContext.xml"});
-      configFile = (ConfigFile) context.getBean("configFile");
-  }
-
-  public SignatureFilter () {
+  @Autowired
+  public SignatureFilter (ConfigFile configFile) {
     // Load the KeyStore and get the signing key and certificate.
     try {
       final String sKeyStoreClassPath = configFile.getString (CONFIG_XMLDSIG_KEYSTORE_CLASSPATH);
@@ -99,6 +99,8 @@ public final class SignatureFilter implements ContainerResponseFilter {
                       sKeyStoreKeyAlias +
                       "'");
 
+      signer = new Signer(m_aKeyEntry.getPrivateKey(),m_aCert);
+
       if (false) {
         // Enable XMLDsig debugging
         java.util.logging.LogManager.getLogManager ()
@@ -120,24 +122,11 @@ public final class SignatureFilter implements ContainerResponseFilter {
     }
   }
 
-  @Nonnull
-  public void filter(ContainerRequestContext aRequest, ContainerResponseContext aResponse) throws IOException {
-    // Make sure that the signature is only added to GET/OK on service metadata.
-    if (aRequest.getMethod ().equals ("GET") && aResponse.getStatus () == Status.OK.getStatusCode ()) {
-      final String sRequestPath = aRequest.getUriInfo().getPath (false);
-      // Only handle requests that contain "/services/" but don't end with it
-      if (sRequestPath.contains ("/services/") && !sRequestPath.endsWith ("/services/")) {
-        if (s_aLogger.isDebugEnabled ()) {
-          s_aLogger.debug("Will sign response to " + sRequestPath);
-        }
-        if(aResponse instanceof ContainerResponse) {
-          ContainerRequest r = ((ContainerResponse)aResponse).getRequestContext();
-          SigningContainerResponseWriter responseWriter = new SigningContainerResponseWriter(r.getResponseWriter(), m_aKeyEntry, m_aCert);
-          r.setWriter(responseWriter);
-        } else {
-          throw new IllegalStateException("Wrong Jersey REQUEST class - development issue");
-        }
-      }
+  public void sign(Document serviceMetadataDoc){
+    try {
+      signer.signXML(serviceMetadataDoc.getDocumentElement());
+    } catch (Exception e) {
+      throw new RuntimeException("Could not sign serviceMetadata response", e);
     }
   }
 

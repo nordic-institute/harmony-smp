@@ -28,6 +28,7 @@ import org.springframework.context.annotation.*;
         "eu.europa.ec.cipa.smp.server.data.dbms",
         "eu.europa.ec.cipa.smp.server.services",
         "eu.europa.ec.cipa.smp.server.hook",
-        "eu.europa.ec.cipa.smp.server.conversion"})
+        "eu.europa.ec.cipa.smp.server.conversion",
+        "eu.europa.ec.cipa.smp.server.util"})
 public class SmpAppConfig {
 }

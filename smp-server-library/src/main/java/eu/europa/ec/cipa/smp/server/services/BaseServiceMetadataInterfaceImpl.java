@@ -20,6 +20,7 @@ import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.DBMSDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.DBServiceMetadataID;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
+import eu.europa.ec.cipa.smp.server.util.SignatureFilter;
 import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
@@ -52,6 +53,9 @@ public final class BaseServiceMetadataInterfaceImpl {
   @Autowired
   private IDataManager dataManager;
 
+  @Autowired
+  SignatureFilter signatureFilter;
+
   @Nonnull
   public Document getServiceRegistration (@Nullable final String sServiceGroupID,
                                           @Nullable final String sDocumentTypeID){
@@ -67,6 +71,8 @@ public final class BaseServiceMetadataInterfaceImpl {
     }
 
     Document aSignedServiceMetadata = ServiceMetadataConverter.toSignedServiceMetadatadaDocument(sServiceMetadata);
+
+    signatureFilter.sign(aSignedServiceMetadata);
 
     s_aLogger.info (String.format("Finished getServiceRegistration(%s,%s)", sServiceGroupID, sDocumentTypeID));
     return aSignedServiceMetadata;

@@ -65,10 +65,10 @@ public class ServiceMetadataController {
 
         log.info("GET ServiceMetadata: {} - {}", serviceGroupId, serviceMetadataId);
 
-        Document serviceGroup = serviceMetadataService.getServiceRegistration(serviceGroupId, serviceMetadataId);
+        Document serviceMetadata = serviceMetadataService.getServiceRegistration(serviceGroupId, serviceMetadataId);
 
         log.info("GET ServiceMetadata finished: {} - {}", serviceGroupId, serviceMetadataId);
-        return ServiceMetadataConverter.toString(serviceGroup);
+        return ServiceMetadataConverter.toString(serviceMetadata);
     }
 
     @PutMapping

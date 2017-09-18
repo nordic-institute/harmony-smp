@@ -15,6 +15,7 @@
 
 package eu.europa.ec.cipa.smp.server.conversion;
 
+import com.helger.commons.xml.transform.XMLTransformerFactory;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.XmlParsingException;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.w3c.dom.Document;
