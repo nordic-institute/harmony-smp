@@ -15,9 +15,7 @@
 package eu.europa.ec.cipa.smp.server.data.dbms;
 
 import com.helger.commons.GlobalDebug;
-import com.helger.commons.ValueEnforcer;
 import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.callback.LoggingExceptionHandler;
 import com.helger.commons.state.EChange;
 import com.helger.db.jpa.IEntityManagerProvider;
 import com.helger.db.jpa.JPAEnabledManager;
@@ -28,25 +26,18 @@ import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
-import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
 import eu.europa.ec.cipa.smp.server.hook.IRegistrationHook;
-import eu.europa.ec.cipa.smp.server.hook.RegistrationHookFactory;
 import eu.europa.ec.cipa.smp.server.util.ExtensionUtils;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.EntityManagerFactoryUtils;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.ContextLoader;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -58,8 +49,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.Callable;
-
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * A Hibernate implementation of the DataManager interface.
@@ -140,8 +129,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
      */
     @Nonnull
     @Override
-    public DBUser _verifyUser(@Nonnull final String sUsername) throws UnknownUserException,
-            UnauthorizedException {
+    public DBUser _verifyUser(@Nonnull final String sUsername) throws UnknownUserException{
 
         //final String sUsername = aCredentials.getUserName();
 
@@ -184,8 +172,8 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
      */
     @Nonnull
     private void _verifyOwnership(@Nonnull final ParticipantIdentifierType aServiceGroupID,
-                                         @Nonnull final String username) throws UnauthorizedException {
-
+                                         @Nonnull final String username)  {
+/*
         if (_isAdmin(username)){
             return;
         }
@@ -205,6 +193,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                     " is owned by user '" +
                     username +
                     "'");
+        */
     }
 
     private boolean _isAdmin(@Nonnull String username) {
@@ -642,7 +631,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     }
 
     @Override
-    public DBUser _verifyUser(@Nonnull BasicAuthClientCredentials aCredentials) throws UnknownUserException, UnauthorizedException {
+    public DBUser _verifyUser(@Nonnull BasicAuthClientCredentials aCredentials) throws UnknownUserException {
         return null;
     }
 }

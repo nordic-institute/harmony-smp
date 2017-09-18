@@ -28,13 +28,29 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.error;
+/*
+ * Copyright 2017 European Commission | CEF eDelivery
+ *
+ * Licensed under the EUPL, Version 1.1 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ *
+ * You may obtain a copy of the Licence at:
+ * https://joinup.ec.europa.eu/software/page/eupl
+ * or file: LICENCE-EUPL-v1.1.pdf
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ */
+
+package eu.europa.ec.edelivery.smp.error;
 
 import ec.services.smp._1.ErrorResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint;
@@ -49,7 +65,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 
 import static java.lang.String.format;
-import static org.slf4j.helpers.Util.getCallingClass;
 import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 
@@ -59,7 +74,7 @@ import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
 
 public class SpringSecurityExceptionHandler extends BasicAuthenticationEntryPoint implements AccessDeniedHandler {
 
-    private static final Logger log = LoggerFactory.getLogger(getCallingClass());
+    private static final Logger log = LoggerFactory.getLogger(SpringSecurityExceptionHandler.class);
 
     public SpringSecurityExceptionHandler() {
         this.setRealmName("any realm name");
@@ -68,26 +83,30 @@ public class SpringSecurityExceptionHandler extends BasicAuthenticationEntryPoin
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException, ServletException {
-        handle(response, authException);
+        String errorMsg = authException.getMessage();
+        if(authException instanceof BadCredentialsException){
+            errorMsg += " - Provided username/password or client certificate is invalid";
+        }
+        handle(response, authException, errorMsg);
     }
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        handle(response, accessDeniedException);
+        handle(response, accessDeniedException, accessDeniedException.getMessage());
     }
 
-    private void handle(HttpServletResponse response, RuntimeException exception) throws IOException, ServletException {
-        ResponseEntity respEntity = buildAndWarn(exception);
+    private void handle(HttpServletResponse response, RuntimeException exception, String errorMsg) throws IOException, ServletException {
+        ResponseEntity respEntity = buildAndWarn(exception, errorMsg);
         String errorBody = marshall((ErrorResponse) respEntity.getBody());
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType(TEXT_HTML_VALUE);
         response.getOutputStream().print(errorBody);
     }
 
-    private ResponseEntity buildAndWarn(Exception exception) {
+    private ResponseEntity buildAndWarn(RuntimeException exception, String errorMsg) {
         ResponseEntity response = ErrorResponseBuilder.status(UNAUTHORIZED)
                 .businessCode(ErrorBusinessCode.UNAUTHORIZED)
-                .errorDescription(exception.getMessage())
+                .errorDescription(errorMsg)
                 .build();
 
         String errorUniqueId = ((ErrorResponse) response.getBody()).getErrorUniqueId();

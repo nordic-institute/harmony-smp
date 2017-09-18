@@ -13,30 +13,26 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.controllers;
+package eu.europa.ec.edelivery.smp.controllers;
 
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
-import eu.europa.ec.edelivery.validation.ServiceMetadataValidator;
+import eu.europa.ec.edelivery.smp.validation.ServiceMetadataValidator;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.w3c.dom.Document;
 
 import javax.xml.transform.TransformerException;
-
 import java.io.UnsupportedEncodingException;
 
 import static eu.europa.ec.smp.api.Identifiers.asDocumentId;
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
-import static java.lang.String.format;
-import static org.slf4j.helpers.Util.getCallingClass;
 import static org.springframework.http.MediaType.TEXT_XML_VALUE;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.ok;
@@ -48,7 +44,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @RequestMapping("/{serviceGroupId}/services/{serviceMetadataId}")
 public class ServiceMetadataController {
 
-    private static final Logger log = LoggerFactory.getLogger(getCallingClass());
+    private static final Logger log = LoggerFactory.getLogger(ServiceMetadataController.class);
 
     //TODO Migrate to Service (add one more level)
     @Autowired

@@ -20,7 +20,7 @@ import eu.europa.ec.cipa.smp.server.AbstractTest;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
-import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
+
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
 import eu.europa.ec.cipa.smp.server.security.BCryptPasswordHash;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
@@ -503,16 +503,7 @@ public class DBMSDataManagerTest extends AbstractTest {
     catch (final UnknownUserException ex) {}
   }
 
-  @Test
-  public void testCreateServiceMetadataWrongPass() throws Throwable {
-    //final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WrongPassword");
-    try {
-        s_aDataMgr.saveService(PARTY_ID, DOCTYPE_ID, m_sServiceMetadata /*, USERNAME*/);
-        s_aDataMgr.getCurrentEntityManager().getTransaction().commit();
-        fail ();
-    }
-    catch (final UnauthorizedException ex) {}
-  }
+
 
   @Test
   public void testPrintServiceMetadata() throws Throwable {
@@ -547,22 +538,8 @@ public class DBMSDataManagerTest extends AbstractTest {
     catch (final UnknownUserException ex) {}
   }
 
-  @Test
-  public void testDeleteServiceMetadataWrongPass () throws Throwable {
-    //final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, "WrongPassword");
-    try {
-      s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID /*, USERNAME*/);
-      fail ();
-    }
-    catch (final UnauthorizedException ex) {}
-  }
 
-  @Test(expected = UnauthorizedException.class )
-  public void testDeleteServiceMetadataNullPass () throws Throwable {
-     //final BasicAuthClientCredentials aCredentials = new BasicAuthClientCredentials (USERNAME, null);
-     s_aDataMgr.deleteService (SERVICEGROUP_ID, DOCTYPE_ID /*, USERNAME*/);
-     fail ();
-  }
+
 
   @Test(expected = NotFoundException.class)
   public void testDeleteServiceMetadataNonExistingServiceGroup() throws Throwable {
@@ -669,17 +646,7 @@ public class DBMSDataManagerTest extends AbstractTest {
         assertNull(result);
     }
 
-  @Test(expected = UnauthorizedException.class)
-  public void testSaveServiceGroupByCertificateNotOwner() throws Throwable {
-    String participantId = PARTICIPANT_IDENTIFIER2 + "951842";
-    String certificateIdentifierHeader = NOADMIN_USERNAME;
-    ServiceGroup serviceGroup = createServiceGroup(participantId);
 
-    s_aDataMgr.saveServiceGroup(serviceGroup, CREDENTIALS);
-
-    //BasicAuthClientCredentials auth = new BasicAuthClientCredentials(certificateIdentifierHeader, "100password");
-    s_aDataMgr.saveServiceGroup(serviceGroup, certificateIdentifierHeader);
-  }
 
   @Test(expected = UnknownUserException.class)
   public void testSaveServiceGroupByCertificateNotFound() throws Throwable {
@@ -708,11 +675,7 @@ public class DBMSDataManagerTest extends AbstractTest {
     assertNotNull(user.getPassword(),CREDENTIALS);
   }
 
-  @Test(expected = UnauthorizedException.class)
-  public void verifyUserNullPassword() throws Throwable {
-       //BasicAuthClientCredentials auth = new BasicAuthClientCredentials(CREDENTIALS.getUserName(), null);
-       DBUser user = s_aDataMgr._verifyUser(CREDENTIALS);
-  }
+
 
   @Test(expected = UnknownUserException.class)
   public void verifyUserNotFound() throws Throwable {
@@ -720,11 +683,7 @@ public class DBMSDataManagerTest extends AbstractTest {
         DBUser user = s_aDataMgr._verifyUser(auth);
   }
 
-  @Test(expected = UnauthorizedException.class)
-  public void verifyUserWrongPassword() throws Throwable {
-       //BasicAuthClientCredentials auth = new BasicAuthClientCredentials(CREDENTIALS.getUserName(), "WrongPass");
-       DBUser user = s_aDataMgr._verifyUser(CREDENTIALS);
-  }
+
 
   @Test
   public void verifyUserNullAllowed() throws Throwable {

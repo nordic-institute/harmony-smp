@@ -28,10 +28,9 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.controllers;
+package eu.europa.ec.edelivery.smp.controllers;
 
 import eu.europa.ec.cipa.smp.server.util.ConfigFile;
-import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.beans.factory.annotation.Autowired;

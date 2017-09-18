@@ -13,14 +13,14 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.controllers;
+package eu.europa.ec.edelivery.smp.controllers;
 
 import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceGroupInterfaceImpl;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
-import eu.europa.ec.edelivery.validation.ServiceGroupValidator;
+import eu.europa.ec.edelivery.smp.validation.ServiceGroupValidator;
 import eu.europa.ec.smp.api.Identifiers;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
@@ -41,7 +41,6 @@ import java.util.List;
 
 import static eu.europa.ec.smp.api.Identifiers.asString;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.slf4j.helpers.Util.getCallingClass;
 import static org.springframework.http.MediaType.TEXT_XML_VALUE;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.ok;
@@ -55,7 +54,7 @@ import static org.springframework.http.ResponseEntity.ok;
 @Order
 public class ServiceGroupController {
 
-    private static final Logger log = LoggerFactory.getLogger(getCallingClass());
+    private static final Logger log = LoggerFactory.getLogger(ServiceGroupController.class);
 
     @Autowired
     ServiceGroupValidator serviceGroupValidator;

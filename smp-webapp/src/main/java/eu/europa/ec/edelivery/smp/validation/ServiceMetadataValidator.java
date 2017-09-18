@@ -13,10 +13,10 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.validation;
+package eu.europa.ec.edelivery.smp.validation;
 
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
-import eu.europa.ec.edelivery.error.exceptions.BadRequestException;
+import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
@@ -28,13 +28,9 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-
-import static eu.europa.ec.edelivery.error.ErrorBusinessCode.OUT_OF_RANGE;
-import static eu.europa.ec.edelivery.error.ErrorBusinessCode.WRONG_FIELD;
-import static eu.europa.ec.smp.api.Identifiers.asDocumentId;
-import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
-import static eu.europa.ec.smp.api.Identifiers.asString;
-import static org.slf4j.helpers.Util.getCallingClass;
+import static eu.europa.ec.edelivery.smp.error.ErrorBusinessCode.OUT_OF_RANGE;
+import static eu.europa.ec.edelivery.smp.error.ErrorBusinessCode.WRONG_FIELD;
+import static eu.europa.ec.smp.api.Identifiers.*;
 
 /**
  * Created by gutowpa on 11/09/2017.
@@ -42,7 +38,7 @@ import static org.slf4j.helpers.Util.getCallingClass;
 @Component
 public class ServiceMetadataValidator {
 
-    private static final Logger log = LoggerFactory.getLogger(getCallingClass());
+    private static final Logger log = LoggerFactory.getLogger(ServiceMetadataValidator.class);
 
     public void validate(String serviceGroupIdStr,
                          String serviceMetadataIdStr,

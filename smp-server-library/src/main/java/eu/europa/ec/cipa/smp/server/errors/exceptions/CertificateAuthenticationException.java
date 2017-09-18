@@ -15,32 +15,14 @@
 
 package eu.europa.ec.cipa.smp.server.errors.exceptions;
 
-import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+public class CertificateAuthenticationException extends Exception {
 
-/**
- * Created by migueti on 16/01/2017.
- */
-public class UnauthorizedExceptionTest {
-
-    @Test
-    public void testUnauthorizedExceptionThrown() {
-        // given
-
-        // when
-        try {
-            throwUnauthorizedException();
-        } catch(UnauthorizedException ex) {
-            // then
-            assertEquals("Exception thrown", ex.getMessage());
-            return;
-        }
-        fail();
+    public CertificateAuthenticationException(String message) {
+        super(message);
     }
 
-    private void throwUnauthorizedException() {
-        throw new UnauthorizedException("Exception thrown");
+    public CertificateAuthenticationException(String message, Throwable t) {
+        super(message, t);
     }
 }

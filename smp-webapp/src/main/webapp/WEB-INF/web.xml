@@ -18,12 +18,6 @@
          id="SMP_WebApp" version="3.0">
 
     <display-name>SMP - OASIS REST services</display-name>
-<!--
-
-    <error-page>
-        <location>/error</location>
-    </error-page>
--->
 
     <servlet>
         <servlet-name>smpRestServlet</servlet-name>
@@ -55,7 +49,6 @@
             eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
             eu.europa.ec.edelivery.smp.config.SmpAppConfig
         </param-value>
-        <!--<param-value>/WEB-INF/spring-context.xml;/WEB-INF/spring-security.xml</param-value>-->
     </context-param>
     <filter>
         <filter-name>springSecurityFilterChain</filter-name>
@@ -106,48 +99,4 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-
-    <!--
-        <filter>
-            <filter-name>RestFilter</filter-name>
-            <filter-class>org.glassfish.jersey.servlet.ServletContainer</filter-class>
-
-            <init-param>
-                <param-name>jersey.config.server.provider.classnames</param-name>
-                <param-value>eu.europa.ec.cipa.smp.server.util.SignatureFilter</param-value>
-            </init-param>
-
-            <init-param>
-                <param-name>jersey.config.server.provider.packages</param-name>
-                <param-value>
-                    eu.europa.ec.cipa.smp.server.services.readwrite;
-                    eu.europa.ec.cipa.smp.server.services.common;
-                    eu.europa.ec.cipa.smp.sererrorrors.mappers
-                </param-value>
-            </init-param>
-            <init-param>
-                <param-name>jersey.config.servlet.filter.staticContentRegex</param-name>
-                <param-value>/(images|js|styles|web)/.*</param-value>
-            </init-param>
-        </filter>
-        <filter-mapping>
-            <filter-name>RestFilter</filter-name>
-            <url-pattern>/*</url-pattern>
-        </filter-mapping>
-        -->
-
-    <!-- This is needed to ensure compatibility with JBoss/Wildfly
-    <context-param>
-        <param-name>resteasy.scan</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    <context-param>
-        <param-name>resteasy.scan.resources</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    <context-param>
-        <param-name>resteasy.scan.providers</param-name>
-        <param-value>false</param-value>
-    </context-param>
--->
 </web-app>

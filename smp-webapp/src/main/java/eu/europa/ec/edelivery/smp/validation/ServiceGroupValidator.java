@@ -28,9 +28,9 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.validation;
+package eu.europa.ec.edelivery.smp.validation;
 
-import eu.europa.ec.edelivery.error.exceptions.BadRequestException;
+import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
 import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.smp.api.Identifiers;
@@ -42,7 +42,7 @@ import org.springframework.stereotype.Component;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import static eu.europa.ec.edelivery.error.ErrorBusinessCode.WRONG_FIELD;
+import static eu.europa.ec.edelivery.smp.error.ErrorBusinessCode.WRONG_FIELD;
 
 
 /**

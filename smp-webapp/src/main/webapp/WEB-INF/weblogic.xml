@@ -26,13 +26,14 @@
             <package-name>org.slf4j.*</package-name>
             <package-name>org.apache.commons.*</package-name>
 
-            <!-- used by Jersey 2.x -->
+            <!-- used by Jersey 2.x
             <package-name>javax.ws.rs.*</package-name>
             <package-name>com.sun.jersey.*</package-name>
             <package-name>org.glassfish.jersey.*</package-name>
             <package-name>jersey.repackaged.org.objectweb.asm.*</package-name>
             <package-name>org.glassfish.hk2.*</package-name>
             <package-name>org.jvnet.hk2.*</package-name>
+            -->
 
         </prefer-application-packages>
         <prefer-application-resources>

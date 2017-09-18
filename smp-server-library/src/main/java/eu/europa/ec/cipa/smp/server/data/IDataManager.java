@@ -24,7 +24,7 @@ import javax.persistence.EntityManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.DBServiceMetadata;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.DBServiceMetadataID;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.DBUser;
-import eu.europa.ec.cipa.smp.server.errors.exceptions.UnauthorizedException;
+
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
@@ -54,8 +54,7 @@ public interface IDataManager {
   Collection <ParticipantIdentifierType> getServiceGroupList (@Nonnull String username) throws Throwable;
 
   @Nonnull
-  DBUser _verifyUser(@Nonnull String sUsername) throws UnknownUserException,
-          UnauthorizedException;
+  DBUser _verifyUser(@Nonnull String sUsername) throws UnknownUserException;
 
   /**
    * This method returns a ServiceGroup given its id.
@@ -188,5 +187,5 @@ public interface IDataManager {
   /**
    * Checks if user exists in the database and if password matches
    **/
-  DBUser _verifyUser(@Nonnull final BasicAuthClientCredentials aCredentials) throws UnknownUserException, UnauthorizedException;
+  DBUser _verifyUser(@Nonnull final BasicAuthClientCredentials aCredentials) throws UnknownUserException;
 }
