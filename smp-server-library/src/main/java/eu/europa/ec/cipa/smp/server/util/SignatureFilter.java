@@ -19,27 +19,13 @@ import com.helger.commons.exceptions.InitializationException;
 import com.helger.commons.io.streams.StringInputStream;
 import eu.europa.ec.cipa.smp.server.security.KeyStoreUtils;
 import eu.europa.ec.cipa.smp.server.security.Signer;
-import org.glassfish.jersey.server.ContainerRequest;
-import org.glassfish.jersey.server.ContainerResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Priority;
-import javax.ws.rs.container.ContainerRequestContext;
-import javax.ws.rs.container.ContainerResponseContext;
-import javax.ws.rs.container.ContainerResponseFilter;
-import javax.ws.rs.core.Response.Status;
-import javax.xml.crypto.MarshalException;
-import javax.xml.crypto.dsig.XMLSignatureException;
-import java.io.IOException;
-import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 
 /**

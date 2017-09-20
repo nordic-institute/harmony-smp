@@ -47,4 +47,10 @@ public class SmpWebAppConfig extends WebMvcConfigurerAdapter {
                 .addResourceLocations("/web/");
     }
 
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer) {
+        //Default value (true) would break Identifiers containing dot character ","
+        configurer.setUseSuffixPatternMatch(false);
+    }
+
 }

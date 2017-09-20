@@ -19,21 +19,15 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>eu.europa.ec.cipa</groupId>
 	<artifactId>smp-parent-pom</artifactId>
-	<version>3.0.1-SNAPSHOT</version>
+	<version>4.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>smp-parent-pom</name>
-	<description>The CIPA e-Delivery platform</description>
+	<description>SMP - CEF eDelivery</description>
 
 	<!-- Minimum Maven version -->
 	<prerequisites>
 		<maven>3.0.4</maven>
 	</prerequisites>
-
-	<!-- SVN location -->
-	<scm>
-		<connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/common/cipa-parent-pom</connection>
-		<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/common/cipa-parent-pom</developerConnection>
-	</scm>
 
 	<!-- Used licenses -->
 	<licenses>
@@ -93,7 +87,6 @@
 		<ant-commons-net.version>1.6.5</ant-commons-net.version>
 		<jetty.version>8.1.15.v20140411</jetty.version>
 		<servlet-api.version>3.0</servlet-api.version>
-		<jersey.version>2.17</jersey.version>
 		<metro.version>2.2.1-1</metro.version>
 		<commons-io.version>2.4</commons-io.version>
 		<junitparams.version>1.0.5</junitparams.version>
@@ -471,33 +464,6 @@
 				<artifactId>xmlunit</artifactId>
 				<version>${xmlunit.version}</version>
 				<scope>test</scope>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.jersey.core</groupId>
-				<artifactId>jersey-server</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.jersey.containers</groupId>
-				<artifactId>jersey-container-servlet-core</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.metro</groupId>
-				<artifactId>webservices-rt</artifactId>
-				<version>${metro.version}</version>
-				<scope>provided</scope>
-				<exclusions>
-					<!--  Already included in JDK6  -->
-					<exclusion>
-						<groupId>javax.activation</groupId>
-						<artifactId>activation</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>javax.xml.stream</groupId>
-						<artifactId>stax-api</artifactId>
-					</exclusion>
-				</exclusions>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

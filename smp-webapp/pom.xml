@@ -3,13 +3,13 @@
   <parent>
       <groupId>eu.europa.ec.cipa</groupId>
       <artifactId>smp-parent-pom</artifactId>
-      <version>3.0.1-SNAPSHOT</version>
+      <version>4.0.0-SNAPSHOT</version>
       <relativePath>../smp-parent-pom/pom.xml</relativePath>
   </parent>
     <artifactId>cipa-smp-full-webapp</artifactId>
     <packaging>war</packaging>
     <name>smp-webapp</name>
-    <description>SMP webapp with all available features (read &amp; write)</description>
+    <description>SMP REST service WEB APP</description>
 
   <scm>
     <connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/smp/cipa-smp-full-webapp</connection>
