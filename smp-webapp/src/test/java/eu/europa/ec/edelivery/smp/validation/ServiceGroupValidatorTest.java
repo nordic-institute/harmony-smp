@@ -111,7 +111,7 @@ public class ServiceGroupValidatorTest {
 
     private void validateBadScheme(String scheme) throws Throwable {
         ServiceGroup sg = new ServiceGroup();
-        ParticipantIdentifierType id = new ParticipantIdentifierType(scheme, "urn:poland:ncpb");
+        ParticipantIdentifierType id = new ParticipantIdentifierType("urn:poland:ncpb", scheme);
         sg.setParticipantIdentifier(id);
 
         validator.validate(asString(id), sg);

@@ -148,7 +148,7 @@ public class ErrorResponseBuilderTest {
         ErrorResponse entity2 = (ErrorResponse) result2.getBody();
         String errorUniqueId2 = checkXmlError(entity2, DEFAULT_BUSINESS_CODE, DEFAULT_ERROR_DESCRIPTION);
         assertNotNull(errorUniqueId2);
-        assertEquals(INTERNAL_SERVER_ERROR.value(), result2.getBody());
+        assertEquals(INTERNAL_SERVER_ERROR.value(), result2.getStatusCodeValue());
     }
 
     private String checkXmlError(ErrorResponse errorResponse, ErrorBusinessCode errorBusinessCode, String errorDescription) throws ParserConfigurationException, IOException, SAXException {
