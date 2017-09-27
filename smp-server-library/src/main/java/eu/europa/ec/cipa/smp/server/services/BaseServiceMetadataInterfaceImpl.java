@@ -15,8 +15,6 @@
 package eu.europa.ec.cipa.smp.server.services;
 
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
-import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
-import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.DBMSDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.DBServiceMetadataID;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
@@ -32,8 +30,6 @@ import org.w3c.dom.Document;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.ws.rs.core.UriInfo;
-import javax.xml.ws.WebServiceClient;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +47,7 @@ public final class BaseServiceMetadataInterfaceImpl {
   private BaseServiceMetadataInterfaceImpl () {}
 
   @Autowired
-  private IDataManager dataManager;
+  private DBMSDataManager dataManager;
 
   @Autowired
   SignatureFilter signatureFilter;

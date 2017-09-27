@@ -39,6 +39,7 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -56,7 +57,10 @@ public class ServiceGroupValidator {
     private Pattern schemaPattern;
 
     @Autowired
-    public void setConfigFile(ConfigFile configFile) {
+    ConfigFile configFile;
+
+    @PostConstruct
+    public void init() {
         String regex = configFile.getString(CONFIG_SERVICE_GROUP_SCHEME_REGEXP);
         try {
             schemaPattern = Pattern.compile(regex);

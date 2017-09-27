@@ -156,7 +156,7 @@ public class ConfigFile {
    * @return <code>null</code> if no such value is in the configuration file.
    */
   @Nullable
-  public final String getString (@Nonnull final String sKey) {
+  public String getString (@Nonnull final String sKey) {
     return getString (sKey, null);
   }
 

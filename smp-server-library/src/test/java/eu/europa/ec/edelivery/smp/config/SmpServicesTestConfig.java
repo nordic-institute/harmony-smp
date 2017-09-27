@@ -13,24 +13,23 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+package eu.europa.ec.edelivery.smp.config;
+
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 
 /**
- * Created by gutowpa on 13/07/2017.
+ * Created by gutowpa on 21/09/2017.
  */
-//@RunWith(SpringRunner.class)
-@RunWith(SpringJUnit4ClassRunner.class)
-//@WebAppConfiguration
-@ContextConfiguration(classes = SmpAppConfig.class)
-public class ContextTest {
 
-    @Test
-    public void test(){
-
-    }
-
+@Configuration
+@ImportResource("classpath:spring-test-context.xml")
+@ComponentScan(basePackages = {
+        "eu.europa.ec.cipa.smp.server.data.dbms",
+        "eu.europa.ec.cipa.smp.server.services",
+        "eu.europa.ec.cipa.smp.server.hook",
+        "eu.europa.ec.cipa.smp.server.conversion",
+        "eu.europa.ec.cipa.smp.server.util"})
+public class SmpServicesTestConfig {
 }

@@ -15,20 +15,21 @@
 
 package eu.europa.ec.cipa.smp.server.security;
 
-import eu.europa.ec.cipa.smp.server.AbstractTest;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import java.security.cert.X509Certificate;
 
+import static eu.europa.ec.cipa.smp.server.util.XmlTestUtils.loadDocument;
+
 /**
  * Created by rodrfla on 20/02/2017.
  */
-public class SignerTest extends AbstractTest {
+public class SignerTest {
 
     private Document loadAndSignDocumentForDefault() throws Exception {
-        Document documentToSign = SignatureUtil.loadDocument("/input/SignedServiceMetadata_withoutSignature.xml");
+        Document documentToSign = loadDocument("/input/SignedServiceMetadata_withoutSignature.xml");
         Signer signatureSigner = new Signer(SignatureUtil.loadPrivateKey(), (X509Certificate) SignatureUtil.loadCertificate());
         signatureSigner.signXML(documentToSign.getDocumentElement());
 
@@ -42,7 +43,7 @@ public class SignerTest extends AbstractTest {
 
 
     private Element loadAndSignDocumentForAdmin(String filePath) throws Exception {
-        Document response = SignatureUtil.loadDocument(filePath);
+        Document response = loadDocument(filePath);
         Element smNode = SignatureUtil.findFirstElementByName(response, "ServiceMetadata");
         Document docUnwrapped = SignatureUtil.buildDocWithGivenRoot(smNode);
         Element adminSignature = SignatureUtil.findServiceInfoSig(docUnwrapped);

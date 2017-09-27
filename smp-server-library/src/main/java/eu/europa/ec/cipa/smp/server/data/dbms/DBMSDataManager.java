@@ -41,8 +41,10 @@ import org.springframework.web.context.ContextLoader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.PersistenceContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.util.ArrayList;
@@ -57,7 +59,7 @@ import java.util.concurrent.Callable;
  */
 @Service
 @Transactional
-public final class DBMSDataManager extends JPAEnabledManager implements IDataManager {
+public /*final*/ class DBMSDataManager /*extends JPAEnabledManager*/ /*implements IDataManager*/ {
     private static final Logger s_aLogger = LoggerFactory.getLogger(DBMSDataManager.class);
 
     //@Autowired
@@ -69,9 +71,13 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     @Autowired
     private CaseSensitivityNormalizer caseSensitivityNormalizer;
 
+    @PersistenceContext
+    EntityManager entityManager;
+
     private final ObjectFactory m_aObjFactory = new ObjectFactory();
 
     public DBMSDataManager() {
+        /*
         super(new IEntityManagerProvider() {
             // This additional indirection level is required!!!
             // So that for every request the correct getInstance is invoked!
@@ -82,6 +88,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 return EntityManagerFactoryUtils.getTransactionalEntityManager(emf);
             }
         });
+        */
     }
 
     /*
@@ -128,12 +135,12 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
      *                               password
      */
     @Nonnull
-    @Override
+    ////@Override
     public DBUser _verifyUser(@Nonnull final String sUsername) throws UnknownUserException{
 
         //final String sUsername = aCredentials.getUserName();
 
-        final DBUser aDBUser = getEntityManager().find(DBUser.class, sUsername);
+        final DBUser aDBUser = entityManager.find(DBUser.class, sUsername);
 
         // Check that the user exists
         if (aDBUser == null) {
@@ -197,7 +204,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     }
 
     private boolean _isAdmin(@Nonnull String username) {
-        final DBUser aDBUser = getEntityManager().find(DBUser.class, username);
+        final DBUser aDBUser = entityManager.find(DBUser.class, username);
         return aDBUser.isAdmin();
     }
 
@@ -208,7 +215,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
      */
     private void _verifyServiceGroup(ParticipantIdentifierType aServiceGroupID) throws NotFoundException {
         final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(aServiceGroupID);
-        DBServiceGroup aDBServiceGroup = getEntityManager().find(DBServiceGroup.class, aDBServiceGroupID);
+        DBServiceGroup aDBServiceGroup = entityManager.find(DBServiceGroup.class, aDBServiceGroupID);
         if(aDBServiceGroup == null) {
             throw new NotFoundException(String.format("ServiceGroup '%s::%s' was not found", aServiceGroupID.getScheme(), aServiceGroupID.getValue()));
         }
@@ -218,14 +225,16 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     @Nonnull
     @ReturnsMutableCopy
     public Collection<ParticipantIdentifierType> getServiceGroupList(@Nonnull final String username) throws Throwable {
+        /*
         JPAExecutionResult<Collection<ParticipantIdentifierType>> ret;
         ret = doSelect(new Callable<Collection<ParticipantIdentifierType>>() {
             @Nonnull
             @ReturnsMutableCopy
             public Collection<ParticipantIdentifierType> call() throws Exception {
+            */
                 final DBUser aDBUser = _verifyUser(username);
 
-                final List<DBOwnership> aDBOwnerships = getEntityManager().createQuery("SELECT p FROM DBOwnership p WHERE p.user = :user",
+                final List<DBOwnership> aDBOwnerships = entityManager.createQuery("SELECT p FROM DBOwnership p WHERE p.user = :user",
                         DBOwnership.class)
                         .setParameter("user", aDBUser)
                         .getResultList();
@@ -236,21 +245,25 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                     aList.add(aDBServiceGroupID.asBusinessIdentifier());
                 }
                 return aList;
+                /*
             }
         });
         return ret.getOrThrow();
+        */
     }
 
 
     @Nullable
     public ServiceGroup getServiceGroup(@Nonnull final ParticipantIdentifierType aServiceGroupID) {
         final ParticipantIdentifierType normalizedServiceGroupID = caseSensitivityNormalizer.normalize(aServiceGroupID);
+        /*
         JPAExecutionResult<ServiceGroup> ret;
         ret = doInTransaction(getEntityManager(), true, new Callable<ServiceGroup>() {
             @Nullable
             public ServiceGroup call() throws Exception {
+            */
                 final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(normalizedServiceGroupID);
-                final DBServiceGroup aDBServiceGroup = getEntityManager().find(DBServiceGroup.class, aDBServiceGroupID);
+                final DBServiceGroup aDBServiceGroup = entityManager.find(DBServiceGroup.class, aDBServiceGroupID);
                 if (aDBServiceGroup == null) {
                     s_aLogger.warn("No such service group to retrieve: " +
                             IdentifierUtils.getIdentifierURIEncoded(normalizedServiceGroupID));
@@ -260,10 +273,17 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 // Convert service group DB to service group service
                 final ServiceGroup aServiceGroup = m_aObjFactory.createServiceGroup();
                 aServiceGroup.setParticipantIdentifier(normalizedServiceGroupID);
-                aServiceGroup.getExtensions().addAll(ExtensionUtils.unmarshalExtensions(aDBServiceGroup.getExtension()));
+                List<ExtensionType> extensions = null;
+                try {
+                    extensions = ExtensionUtils.unmarshalExtensions(aDBServiceGroup.getExtension());
+                } catch (JAXBException e) {
+                    throw new RuntimeException(e);
+                }
+                aServiceGroup.getExtensions().addAll(extensions);
                 // This is set by the REST interface:
                 // ret.setServiceMetadataReferenceCollection(value)
                 return aServiceGroup;
+                /*
             }
         });
         try {
@@ -272,48 +292,58 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
             //TODO Don't bother about it, this class will be removed in next sprint.
             throw (RuntimeException)throwable;
         }
+        */
     }
 
     public boolean saveServiceGroup(@Nonnull final ServiceGroup serviceGroup,
                                     @Nonnull final String newOwnerName) {
 
-        //final ServiceGroup serviceGroup = normalizeIdentifierCaseSensitivity(aServiceGroup);
+        final ServiceGroup normalizedServiceGroup = normalizeIdentifierCaseSensitivity(serviceGroup);
+        /*
         JPAExecutionResult<Boolean> ret;
         final EntityManager aEM = getEntityManager();
         ret = doInTransaction(aEM, true, new Callable<Boolean>() {
             public Boolean call() throws JAXBException, XMLStreamException {
+            */
                 final DBUser aDBUser = _verifyUser(newOwnerName);
-                final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(serviceGroup.getParticipantIdentifier());
+                final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(normalizedServiceGroup.getParticipantIdentifier());
 
                 // Check if the passed service group ID is already in use
-                DBServiceGroup aDBServiceGroup = aEM.find(DBServiceGroup.class, aDBServiceGroupID);
+                DBServiceGroup aDBServiceGroup = entityManager.find(DBServiceGroup.class, aDBServiceGroupID);
 
-                if (aDBServiceGroup != null) {
+        String extensions = null;
+        try {
+            extensions = ExtensionUtils.marshalExtensions(normalizedServiceGroup.getExtensions());
+        } catch (JAXBException|XMLStreamException e) {
+            throw new RuntimeException(e);
+        }
+        if (aDBServiceGroup != null) {
                     // The business did exist. So it must be owned by the passed user.
 
                     //TODO: Probably verification is no longer needed as anly SMP_ADMIN can call this method
                     //_verifyOwnership(serviceGroup.getParticipantIdentifier(), newOwnerName);
 
                     // Simply update the extension
-                    aDBServiceGroup.setExtension(ExtensionUtils.marshalExtensions(serviceGroup.getExtensions()));
-                    aEM.merge(aDBServiceGroup);
+                    aDBServiceGroup.setExtension(extensions);
+                    entityManager.merge(aDBServiceGroup);
                     return false;
                 } else {
 
                     // It's a new service group
-                    m_aHook.create(serviceGroup.getParticipantIdentifier());
+                    m_aHook.create(normalizedServiceGroup.getParticipantIdentifier());
 
                     // Did not exist. Create it.
                     aDBServiceGroup = new DBServiceGroup(aDBServiceGroupID);
-                    aDBServiceGroup.setExtension(ExtensionUtils.marshalExtensions(serviceGroup.getExtensions()));
-                    aEM.persist(aDBServiceGroup);
+                    aDBServiceGroup.setExtension(extensions);
+                    entityManager.persist(aDBServiceGroup);
 
                     // Save the ownership information
-                    final DBOwnershipID aDBOwnershipID = new DBOwnershipID(newOwnerName, serviceGroup.getParticipantIdentifier());
+                    final DBOwnershipID aDBOwnershipID = new DBOwnershipID(newOwnerName, normalizedServiceGroup.getParticipantIdentifier());
                     final DBOwnership aDBOwnership = new DBOwnership(aDBOwnershipID, aDBUser, aDBServiceGroup);
-                    aEM.persist(aDBOwnership);
+                    entityManager.persist(aDBOwnership);
                     return true;
                 }
+                /*
             }
         });
         try {
@@ -322,6 +352,15 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
             //TODO Don't bother about it, this class will be removed in next sprint.
             throw (RuntimeException)throwable;
         }
+        */
+    }
+
+    private ServiceGroup normalizeIdentifierCaseSensitivity(ServiceGroup serviceGroup) {
+        final ServiceGroup sg = new ServiceGroup();
+        sg.setParticipantIdentifier(caseSensitivityNormalizer.normalize(serviceGroup.getParticipantIdentifier()));
+        sg.setServiceMetadataReferenceCollection(serviceGroup.getServiceMetadataReferenceCollection());
+        sg.getExtensions().addAll(serviceGroup.getExtensions());
+        return sg;
     }
 
 /*
@@ -335,23 +374,25 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     }
 */
 
-    @Override
+    //@Override
     public void deleteServiceGroup(@Nonnull final ParticipantIdentifierType aServiceGroupID) {
         final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(aServiceGroupID);
+        /*
         JPAExecutionResult<EChange> ret;
         ret = doInTransaction(getEntityManager(), true, new Callable<EChange>() {
             @Nonnull
             public EChange call() {
+            */
                 //_verifyUser(username);
 
                 // Check if the service group is existing
-                final EntityManager aEM = getEntityManager();
+                //final EntityManager aEM = getEntityManager();
                 final DBServiceGroupID aDBServiceGroupID = new DBServiceGroupID(normalizedServiceGroupId);
-                final DBServiceGroup aDBServiceGroup = aEM.find(DBServiceGroup.class, aDBServiceGroupID);
+                final DBServiceGroup aDBServiceGroup = entityManager.find(DBServiceGroup.class, aDBServiceGroupID);
                 if (aDBServiceGroup == null) {
                     s_aLogger.warn("No such service group to delete: " +
                             IdentifierUtils.getIdentifierURIEncoded(normalizedServiceGroupId));
-                    return EChange.UNCHANGED;
+                    throw new NotFoundException(IdentifierUtils.getIdentifierURIEncoded(aServiceGroupID));
                 }
 
                 // Check the ownership afterwards, so that only existing serviceGroups are checked
@@ -361,7 +402,8 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
 
                 m_aHook.delete(normalizedServiceGroupId);
 
-                return EChange.CHANGED;
+                //return EChange.CHANGED;
+                /*
             }
         });
         if (ret.hasThrowable()) {
@@ -369,27 +411,30 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
             throw (RuntimeException)ret.getThrowable();
         }else if (ret.get().isUnchanged())
             throw new NotFoundException(IdentifierUtils.getIdentifierURIEncoded(aServiceGroupID));
+            */
     }
 
     private void _removeServiceGroup(DBServiceGroup dbServiceGroup){
-        getEntityManager().createQuery("DELETE FROM DBOwnership o WHERE o.id.businessIdentifierScheme = :scheme and o.id.businessIdentifier = :id")
+        entityManager.createQuery("DELETE FROM DBOwnership o WHERE o.id.businessIdentifierScheme = :scheme and o.id.businessIdentifier = :id")
                 .setParameter("scheme", dbServiceGroup.getId().getBusinessIdentifierScheme())
                 .setParameter("id", dbServiceGroup.getId().getBusinessIdentifier())
                 .executeUpdate();
 
-        getEntityManager().remove(dbServiceGroup);
+        entityManager.remove(dbServiceGroup);
     }
 
     @Nonnull
     @ReturnsMutableCopy
     public List<DBServiceMetadataID> getDocumentTypes(@Nonnull final ParticipantIdentifierType aServiceGroupID) throws Throwable {
         final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(aServiceGroupID);
+        /*
         JPAExecutionResult<List<DBServiceMetadataID>> ret;
         ret = doSelect(new Callable<List<DBServiceMetadataID>>() {
             @Nonnull
             @ReturnsMutableCopy
             public List<DBServiceMetadataID> call() throws Exception {
-                final List<DBServiceMetadata> aServices = getEntityManager().createQuery("SELECT p FROM DBServiceMetadata p WHERE p.id.businessIdentifierScheme = :scheme AND p.id.businessIdentifier = :value",
+            */
+                final List<DBServiceMetadata> aServices = entityManager.createQuery("SELECT p FROM DBServiceMetadata p WHERE p.id.businessIdentifierScheme = :scheme AND p.id.businessIdentifier = :value",
                         DBServiceMetadata.class)
                         .setParameter("scheme",
                                 normalizedServiceGroupId.getScheme())
@@ -401,21 +446,25 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 for (final DBServiceMetadata aService : aServices)
                     aList.add(aService.getId());
                 return aList;
+                /*
             }
         });
         return ret.getOrThrow();
+        */
     }
 
     @Nonnull
     @ReturnsMutableCopy
     public Collection<ServiceMetadata> getServices(@Nonnull final ParticipantIdentifierType aServiceGroupID) throws Throwable {
         final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(aServiceGroupID);
+        /*
         JPAExecutionResult<Collection<ServiceMetadata>> ret;
         ret = doSelect(new Callable<Collection<ServiceMetadata>>() {
             @Nonnull
             @ReturnsMutableCopy
             public Collection<ServiceMetadata> call() throws Exception {
-                final List<DBServiceMetadata> aServices = getEntityManager().createQuery("SELECT p FROM DBServiceMetadata p WHERE p.id.businessIdentifierScheme = :scheme AND p.id.businessIdentifier = :value",
+            */
+                final List<DBServiceMetadata> aServices = entityManager.createQuery("SELECT p FROM DBServiceMetadata p WHERE p.id.businessIdentifierScheme = :scheme AND p.id.businessIdentifier = :value",
                         DBServiceMetadata.class)
                         .setParameter("scheme",
                                 normalizedServiceGroupId.getScheme())
@@ -429,9 +478,11 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                     aList.add(aServiceMetadata);
                 }
                 return aList;
+                /*
             }
         });
         return ret.getOrThrow();
+        */
     }
 
     @Nullable
@@ -439,11 +490,13 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                              @Nonnull final DocumentIdentifier aDocTypeID){
         final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(aServiceGroupID);
         final DocumentIdentifier normalizedDocId = caseSensitivityNormalizer.normalize(aDocTypeID);
+        /*
         JPAExecutionResult<String> ret;
         ret = doSelect(new Callable<String>() {
             public String call() throws Exception {
+            */
                 final DBServiceMetadataID aDBServiceMetadataID = new DBServiceMetadataID(normalizedServiceGroupId, normalizedDocId);
-                final DBServiceMetadata aDBServiceMetadata = getEntityManager().find(DBServiceMetadata.class,
+                final DBServiceMetadata aDBServiceMetadata = entityManager.find(DBServiceMetadata.class,
                         aDBServiceMetadataID);
 
                 if (aDBServiceMetadata == null) {
@@ -456,6 +509,7 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 }
 
                 return aDBServiceMetadata.getXmlContent();
+                /*
             }
         });
         try {
@@ -464,9 +518,10 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
             //TODO Don't bother about it, this class will be removed in next sprint.
             throw new RuntimeException(throwable);
         }
+        */
     }
 
-    @Override
+    //@Override
     public boolean saveService(@Nonnull final ParticipantIdentifierType aServiceGroupID,
                                @Nonnull final DocumentIdentifier aDocTypeID,
                                @Nonnull final String sXmlContent /*,
@@ -491,14 +546,16 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         }
 
         // Create a new entry
+        /*
         JPAExecutionResult<?> ret = doInTransaction(getEntityManager(), true, new Runnable() {
                 public void run() {
-                    final EntityManager aEM = getEntityManager();
+                */
+                    //final EntityManager aEM = getEntityManager();
 
                     // Check if an existing service is already contained
                     // This should have been deleted previously!
                     final DBServiceMetadataID aDBServiceMetadataID = new DBServiceMetadataID(normalizedServiceGroupId, normalizedDocId);
-                    DBServiceMetadata aDBServiceMetadata = aEM.find(DBServiceMetadata.class, aDBServiceMetadataID);
+                    DBServiceMetadata aDBServiceMetadata = entityManager.find(DBServiceMetadata.class, aDBServiceMetadataID);
                     if (aDBServiceMetadata != null) {
                         throw new IllegalStateException("No DB ServiceMeta data with ID " +
                                 IdentifierUtils.getIdentifierURIEncoded(normalizedServiceGroupId) +
@@ -513,26 +570,30 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                     } catch (JAXBException | XMLStreamException e) {
                         throw new IllegalStateException("Problems converting from Service to DB", e);
                     }
-                    aEM.persist(aDBServiceMetadata);
+                    entityManager.persist(aDBServiceMetadata);
+                    /*
                 }
         });
         if (ret.hasThrowable()) {
             //TODO Don't bother about it, this class will be removed in next sprint.
             throw new RuntimeException(ret.getThrowable());
         }
+        */
         return newServiceCreated;
     }
 
     @Nonnull
     private EChange _deleteService(@Nonnull final ParticipantIdentifierType aServiceGroupID,
                                    @Nonnull final DocumentIdentifier aDocTypeID){
+                                   /*
         JPAExecutionResult<EChange> ret;
         ret = doInTransaction(getEntityManager(), true, new Callable<EChange>() {
             public EChange call() {
-                final EntityManager aEM = getEntityManager();
+            */
+                //final EntityManager aEM = getEntityManager();
 
                 final DBServiceMetadataID aDBServiceMetadataID = new DBServiceMetadataID(aServiceGroupID, aDocTypeID);
-                final DBServiceMetadata aDBServiceMetadata = aEM.find(DBServiceMetadata.class, aDBServiceMetadataID);
+                final DBServiceMetadata aDBServiceMetadata = entityManager.find(DBServiceMetadata.class, aDBServiceMetadataID);
                 if (aDBServiceMetadata == null) {
                     // There were no service to delete.
                     s_aLogger.warn("No such service to delete: " +
@@ -543,8 +604,9 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 }
 
                 // Remove main service data
-                aEM.remove(aDBServiceMetadata);
+                entityManager.remove(aDBServiceMetadata);
                 return EChange.CHANGED;
+                /*
             }
         });
         try {
@@ -553,9 +615,10 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
             //TODO Don't bother about it, this class will be removed in next sprint.
             throw new RuntimeException(throwable);
         }
+        */
     }
 
-    @Override
+    //@Override
     public void deleteService(@Nonnull final ParticipantIdentifierType aServiceGroupID,
                               @Nonnull final DocumentIdentifier aDocTypeID /*,
                               @Nonnull final String username*/){
@@ -577,13 +640,15 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
     @Nullable
     public ServiceMetadata getRedirection(@Nonnull final ParticipantIdentifierType aServiceGroupID,
                                               @Nonnull final DocumentIdentifier aDocTypeID) throws Throwable {
-        JPAExecutionResult<ServiceMetadata> ret;
+
+        /*JPAExecutionResult<ServiceMetadata> ret;
         ret = doSelect(new Callable<ServiceMetadata>() {
             @Nullable
             public ServiceMetadata call() throws Exception {
+        */
                 final DBServiceMetadataRedirectionID aDBRedirectID = new DBServiceMetadataRedirectionID(aServiceGroupID,
                         aDocTypeID);
-                final DBServiceMetadataRedirection aDBServiceMetadataRedirection = getEntityManager().find(DBServiceMetadataRedirection.class,
+                final DBServiceMetadataRedirection aDBServiceMetadataRedirection = entityManager.find(DBServiceMetadataRedirection.class,
                         aDBRedirectID);
 
                 if (aDBServiceMetadataRedirection == null) {
@@ -604,9 +669,11 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 aServiceMetadata.setRedirect(aRedirect);
 
                 return aServiceMetadata;
+                /*
             }
         });
         return ret.getOrThrow();
+        */
     }
 
     private static void _convertFromServiceToDB(@Nonnull final ParticipantIdentifierType aServiceGroupID,
@@ -625,12 +692,20 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
         }
         aDBServiceMetadata.setXmlContent(sXmlContent);
     }
+/*
 
     public EntityManager getCurrentEntityManager() {
-        return getEntityManager();
+        //return getEntityManager();
+        return entityManager;
     }
 
-    @Override
+    private EntityManager getEntityManager() {
+        //return getEntityManager();
+        return entityManager;
+    }
+*/
+
+    //@Override
     public DBUser _verifyUser(@Nonnull BasicAuthClientCredentials aCredentials) throws UnknownUserException {
         return null;
     }

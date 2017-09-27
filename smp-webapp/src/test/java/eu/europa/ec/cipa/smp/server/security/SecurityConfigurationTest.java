@@ -15,8 +15,6 @@
 
 package eu.europa.ec.cipa.smp.server.security;
 
-import eu.europa.ec.cipa.smp.server.data.dbms.model.DBUser;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,13 +28,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -50,7 +44,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 @Transactional
 @Rollback(true)
-@Sql("classpath:/integration_test_data.sql")
+@Sql("classpath:/webapp_integration_test_data.sql")
 public class SecurityConfigurationTest {
 
     public static final String RETURN_LOGGED_USER_PATH = "/getLoggedUsername";

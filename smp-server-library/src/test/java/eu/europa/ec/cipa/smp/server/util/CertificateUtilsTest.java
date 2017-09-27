@@ -26,7 +26,7 @@ import java.math.BigInteger;
 /**
  * Created by migueti on 06/12/2016.
  */
-public class CertificateUtilsTest extends AbstractTest {
+public class CertificateUtilsTest {
 
     @Test
     public void testConvertBigIntToHexString() {

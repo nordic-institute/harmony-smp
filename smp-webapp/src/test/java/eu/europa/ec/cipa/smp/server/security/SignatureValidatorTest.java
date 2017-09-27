@@ -16,15 +16,16 @@
 package eu.europa.ec.cipa.smp.server.security;
 
 
-import eu.europa.ec.cipa.smp.server.AbstractTest;
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
+import eu.europa.ec.smp.api.Identifiers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -54,10 +55,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.security.Principal;
 import java.security.cert.X509Certificate;
 
 import static java.lang.String.format;
+import static java.net.URLEncoder.encode;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -72,8 +75,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 @Transactional
 @Rollback(true)
-@Sql("classpath:/integration_test_data.sql")
-public class SignatureValidatorTest extends AbstractTest {
+@Sql("classpath:/webapp_integration_test_data.sql")
+public class SignatureValidatorTest/* extends AbstractTest*/ {
 
     private static final String C14N_METHOD = CanonicalizationMethod.INCLUSIVE;
     private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
@@ -124,7 +127,9 @@ public class SignatureValidatorTest extends AbstractTest {
 
     private void commonTest(String serviceGroupId, Principal principal, String filePathToLoad, String signedByCustomizedSignatureFilePath, String defaultSignatureFilePath) throws Throwable {
         //given
-        String documentTypeId = "ehealth-resid-qns::urn::epsos##services:extended:epsos::107";
+        String documentTypeId = encode("ehealth-resid-qns::urn::epsos##services:extended:epsos::107", "UTF-8");
+        //String documentTypeId = Identifiers.asString(new DocumentIdentifier(encode("ehealth-resid-qns::urn::epsos##services:extended:epsos::107", "UTF-8"), "ehealth-resid-qns"));
+
         //ServiceMetadataInterface serviceMetadataInterface = new ServiceMetadataInterface();
         PreAuthenticatedAuthenticationToken authentication = new PreAuthenticatedAuthenticationToken(principal, "N/A");
         authentication.setDetails(principal);
@@ -136,7 +141,7 @@ public class SignatureValidatorTest extends AbstractTest {
         Element serviceInfExtension = SignatureUtil.findExtensionInServiceInformation(docPutRequest);
         SignatureUtil.sign("", serviceInfExtension, C14N_METHOD);
         String signedByCustomizedSignature = SignatureUtil.marshall(docPutRequest);
-        String uri = format("/%s/services/%s", serviceGroupId, documentTypeId);
+        URI uri = new URI(format("/%s/services/%s", serviceGroupId, documentTypeId));
 
         //When
         //Save ServiceMetadata
@@ -145,7 +150,7 @@ public class SignatureValidatorTest extends AbstractTest {
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
                 .content(signedByCustomizedSignature))
-                .andExpect(status().isCreated());
+                .andExpect(status().is2xxSuccessful());
 
         //Retrieve saved ServiceMetadata
         //Document response = serviceMetadataInterface.getServiceRegistration(serviceGroupId, documentTypeId);

@@ -15,8 +15,9 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.cipa.smp.server.hook.IRegistrationHook;
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
 
 /**
  * Created by gutowpa on 12/07/2017.

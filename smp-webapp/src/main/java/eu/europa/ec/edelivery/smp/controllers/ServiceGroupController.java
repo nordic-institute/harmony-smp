@@ -18,6 +18,7 @@ package eu.europa.ec.edelivery.smp.controllers;
 import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
+import eu.europa.ec.cipa.smp.server.data.dbms.DBMSDataManager;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceGroupInterfaceImpl;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
 import eu.europa.ec.edelivery.smp.validation.ServiceGroupValidator;
@@ -64,7 +65,7 @@ public class ServiceGroupController {
 
     //TODO Migrate to Service (add one more level)
     @Autowired
-    private IDataManager dataManager;
+    private DBMSDataManager dataManager;
 
     @Autowired
     private ServiceMetadataPathBuilder pathBuilder;
@@ -104,8 +105,7 @@ public class ServiceGroupController {
 
         // Service action
         String newOwnerName = isNotBlank(serviceGroupOwner) ? serviceGroupOwner : SecurityContextHolder.getContext().getAuthentication().getName();
-        final ServiceGroup normalizedServiceGroup = normalizeIdentifierCaseSensitivity(serviceGroup);
-        boolean newServiceGroupCreated = dataManager.saveServiceGroup(normalizedServiceGroup, newOwnerName);
+        boolean newServiceGroupCreated = dataManager.saveServiceGroup(serviceGroup, newOwnerName);
 
         log.info("Finished PUT ServiceGroup: {}", serviceGroupId);
 
@@ -133,15 +133,5 @@ public class ServiceGroupController {
             referenceIds.add(new ServiceMetadataReferenceType(url));
         }
     }
-
-
-    private ServiceGroup normalizeIdentifierCaseSensitivity(ServiceGroup serviceGroup) {
-        final ServiceGroup sg = new ServiceGroup();
-        sg.setParticipantIdentifier(caseSensitivityNormalizer.normalize(serviceGroup.getParticipantIdentifier()));
-        sg.setServiceMetadataReferenceCollection(serviceGroup.getServiceMetadataReferenceCollection());
-        sg.getExtensions().addAll(serviceGroup.getExtensions());
-        return sg;
-    }
-
 
 }

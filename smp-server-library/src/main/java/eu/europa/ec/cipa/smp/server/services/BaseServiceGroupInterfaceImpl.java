@@ -15,23 +15,17 @@
 package eu.europa.ec.cipa.smp.server.services;
 
 
-import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
-import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.DBMSDataManager;
-import eu.europa.ec.cipa.smp.server.data.dbms.model.DBServiceMetadataID;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
-import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * This class implements the read-only methods for the REST ServiceGroup
@@ -46,7 +40,7 @@ public final class BaseServiceGroupInterfaceImpl {
 
 
   @Autowired
-  private IDataManager dataManager;
+  private DBMSDataManager dataManager;
 
 /*
   private static ConfigFile configFile;

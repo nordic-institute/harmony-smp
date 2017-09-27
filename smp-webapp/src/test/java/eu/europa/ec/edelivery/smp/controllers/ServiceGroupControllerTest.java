@@ -15,6 +15,7 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
+import eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
@@ -39,6 +40,7 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
+import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.getSampleServiceGroupBodyWithScheme;
 import static java.lang.String.format;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
@@ -59,7 +61,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebAppConfiguration
 @Transactional
 @Rollback(true)
-@Sql("classpath:/integration_test_data.sql")
+@Sql("classpath:/webapp_integration_test_data.sql")
 public class ServiceGroupControllerTest {
     
 
@@ -182,13 +184,4 @@ public class ServiceGroupControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-
-
-
-    private String getSampleServiceGroupBodyWithScheme(String scheme) {
-        return format("<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">\n" +
-                "   <ParticipantIdentifier scheme=\"%s\">urn:poland:ncpb</ParticipantIdentifier>\n" +
-                "   <ServiceMetadataReferenceCollection/>\n" +
-                " </ServiceGroup>", scheme);
-    }
 }

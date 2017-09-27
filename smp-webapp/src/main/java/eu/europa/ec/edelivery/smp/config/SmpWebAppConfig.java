@@ -49,7 +49,7 @@ public class SmpWebAppConfig extends WebMvcConfigurerAdapter {
 
     @Override
     public void configurePathMatch(PathMatchConfigurer configurer) {
-        //Default value (true) would break Identifiers containing dot character ","
+        //Default value (true) would break @PathVariable Identifiers containing dot character "."
         configurer.setUseSuffixPatternMatch(false);
     }
 

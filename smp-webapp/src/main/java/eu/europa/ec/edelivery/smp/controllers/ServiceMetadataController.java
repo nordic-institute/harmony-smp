@@ -16,7 +16,7 @@
 package eu.europa.ec.edelivery.smp.controllers;
 
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
-import eu.europa.ec.cipa.smp.server.data.IDataManager;
+import eu.europa.ec.cipa.smp.server.data.dbms.DBMSDataManager;
 import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
 import eu.europa.ec.edelivery.smp.validation.ServiceMetadataValidator;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
@@ -48,7 +48,7 @@ public class ServiceMetadataController {
 
     //TODO Migrate to Service (add one more level)
     @Autowired
-    private IDataManager dataManager;
+    private DBMSDataManager dataManager;
 
     @Autowired
     ServiceMetadataValidator serviceMetadataValidator;

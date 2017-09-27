@@ -16,15 +16,11 @@
 package eu.europa.ec.cipa.smp.server;
 
 import com.helger.commons.scopes.mock.ScopeTestRule;
-import eu.europa.ec.cipa.smp.server.data.DataManagerFactory;
 import eu.europa.ec.cipa.smp.server.data.IDataManager;
-import eu.europa.ec.cipa.smp.server.data.dbms.DBMSDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
-import eu.europa.ec.cipa.smp.server.hook.DoNothingRegistrationHook;
 import eu.europa.ec.smp.api.Identifiers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.rules.TestRule;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
@@ -49,7 +45,7 @@ public class AbstractTest {
             if (s_aDataMgr == null) {
                 // Do it only once :)
                 // SMPEntityManagerFactory.getInstance ();
-                s_aDataMgr = DataManagerFactory.getInstance();
+                //s_aDataMgr = DataManagerFactory.getInstance();
             }
         }
     }

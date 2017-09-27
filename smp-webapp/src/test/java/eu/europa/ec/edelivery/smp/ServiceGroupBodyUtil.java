@@ -13,24 +13,19 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+package eu.europa.ec.edelivery.smp;
+
+import static java.lang.String.format;
 
 /**
- * Created by gutowpa on 13/07/2017.
+ * Created by gutowpa on 26/09/2017.
  */
-//@RunWith(SpringRunner.class)
-@RunWith(SpringJUnit4ClassRunner.class)
-//@WebAppConfiguration
-@ContextConfiguration(classes = SmpAppConfig.class)
-public class ContextTest {
+public class ServiceGroupBodyUtil {
 
-    @Test
-    public void test(){
-
+    public static String getSampleServiceGroupBodyWithScheme(String scheme) {
+        return format("<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">\n" +
+                "   <ParticipantIdentifier scheme=\"%s\">urn:poland:ncpb</ParticipantIdentifier>\n" +
+                "   <ServiceMetadataReferenceCollection/>\n" +
+                " </ServiceGroup>", scheme);
     }
-
 }
