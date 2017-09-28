@@ -14,26 +14,11 @@
  */
 package eu.europa.ec.cipa.smp.server.util;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
-import com.helger.commons.annotations.PresentForCodeCoverage;
-import com.helger.commons.microdom.IMicroNode;
-import com.helger.commons.microdom.serialize.MicroWriter;
-import com.helger.commons.typeconvert.TypeConverter;
-import com.helger.commons.typeconvert.TypeConverterException;
-import com.helger.commons.xml.serialize.*;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
-
-import com.helger.commons.string.StringHelper;
-
-
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ObjectFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.xml.sax.SAXException;
+
+import javax.annotation.concurrent.Immutable;
 
 /**
  * This class is used inside the DB component and contains several utility
@@ -47,7 +32,7 @@ public final class SMPDBUtils {
 
     private static final Logger s_aLogger = LoggerFactory.getLogger(SMPDBUtils.class);
     private static final ObjectFactory s_aOF = new ObjectFactory();
-    private static final XMLWriterSettings s_aXWS = new XMLWriterSettings().setSerializeDocType(EXMLSerializeDocType.IGNORE).setIndent(EXMLSerializeIndent.NONE);
+    //private static final XMLWriterSettings s_aXWS = new XMLWriterSettings().setSerializeDocType(EXMLSerializeDocType.IGNORE).setIndent(EXMLSerializeIndent.NONE);
 
     private SMPDBUtils() {
     }
@@ -57,7 +42,7 @@ public final class SMPDBUtils {
      * extension element and the "ExtensionType" complex type.
      *
      * @author PEPPOL.AT, BRZ, Philip Helger
-     */
+     *
 
     @Nullable
     @Deprecated
@@ -78,7 +63,7 @@ public final class SMPDBUtils {
         }
         return null;
     }
-
+*/
     /**
      * Convert the passed extension type to a string representation.
      *
@@ -88,7 +73,7 @@ public final class SMPDBUtils {
      *         representation of the extension otherwise.
      * @throws IllegalArgumentException
      *         If the Extension cannot be converted to a String
-     */
+     *
     @Nullable
     @Deprecated
     public static String convert (@Nullable final ExtensionType aExtension) {
@@ -119,7 +104,7 @@ public final class SMPDBUtils {
                     aExtension.getClass ().getName ());
         }
     }
-
+*/
     /**
      * The certificate string needs to be emitted in portions of 64 characters. If
      * characters are left, than &lt;CR>&lt;LF> ("\r\n") must be added to the
@@ -130,7 +115,7 @@ public final class SMPDBUtils {
      * @param sCertificate
      *        Original certificate string as stored in the DB
      * @return The RFC 1421 compliant string
-     */
+     *
     @Nullable
     public static String getRFC1421CompliantStringWithoutCarriageReturnCharacters(@Nullable final String sCertificate) {
         if (StringHelper.hasNoText(sCertificate))
@@ -156,4 +141,5 @@ public final class SMPDBUtils {
 
         return aSB.toString();
     }
+    */
 }

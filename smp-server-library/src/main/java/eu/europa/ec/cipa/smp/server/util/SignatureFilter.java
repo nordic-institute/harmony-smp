@@ -14,9 +14,6 @@
  */
 package eu.europa.ec.cipa.smp.server.util;
 
-import com.helger.commons.charset.CCharset;
-import com.helger.commons.exceptions.InitializationException;
-import com.helger.commons.io.streams.StringInputStream;
 import eu.europa.ec.cipa.smp.server.security.KeyStoreUtils;
 import eu.europa.ec.cipa.smp.server.security.Signer;
 import org.slf4j.Logger;
@@ -86,7 +83,7 @@ public final class SignatureFilter{
                       "'");
 
       signer = new Signer(m_aKeyEntry.getPrivateKey(),m_aCert);
-
+/*
       if (false) {
         // Enable XMLDsig debugging
         java.util.logging.LogManager.getLogManager ()
@@ -101,10 +98,11 @@ public final class SignatureFilter{
         java.util.logging.Logger.getLogger ("com.sun.org.apache.xml.internal.security.level")
                                 .setLevel (java.util.logging.Level.FINER);
       }
+      */
     }
     catch (final Throwable t) {
       s_aLogger.error ("Error in constructor of SignatureFilter", t);
-      throw new InitializationException ("Error in constructor of SignatureFilter", t);
+      throw new IllegalStateException ("Error in constructor of SignatureFilter", t);
     }
   }
 

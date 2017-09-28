@@ -15,14 +15,11 @@
 
 package eu.europa.ec.cipa.smp.server;
 
-import com.helger.commons.scopes.mock.ScopeTestRule;
-import eu.europa.ec.cipa.smp.server.data.IDataManager;
+import eu.europa.ec.cipa.smp.server.data.dbms.DBMSDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
 import eu.europa.ec.smp.api.Identifiers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
-import org.junit.rules.TestRule;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 
 /**
@@ -30,13 +27,14 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
  */
 public class AbstractTest {
 
-    protected static IDataManager s_aDataMgr = null;
+    protected static DBMSDataManager s_aDataMgr = null;
 
     final static String[][] usernames = new String[][]{{"CN=EHEALTH_SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", null},
             {"CN=SMP_1000000007,O=DG-DIGIT,C=BE", null},
             {"CN=EHEALTH_SMP_1000000007,O=DG-DIGIT,C=BE", null},
             {"CN=SMP_1000000007,O=DG-DIGIT,C=BE:000000000123ABCD", null},
             {"CN=EHEALTH_SMP_EC/emailAddress\\=CEF-EDELIVERY-SUPPORT@ec.europa.eu,O=European Commission,C=BE:f71ee8b11cb3b787", null}};
+/*
 
     private static final class SMPTestRule extends ScopeTestRule {
         @Override
@@ -49,9 +47,12 @@ public class AbstractTest {
             }
         }
     }
+*/
+/*
 
     @ClassRule
     public static TestRule s_aTestRule = new SMPTestRule();
+*/
 
     @Before
     public void before() throws Throwable {

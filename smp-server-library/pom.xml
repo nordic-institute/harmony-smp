@@ -63,28 +63,41 @@
         </dependency>
         <dependency>
             <groupId>com.helger</groupId>
-            <artifactId>ph-commons</artifactId>
-            <version>5.6.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.helger</groupId>
             <artifactId>ph-datetime</artifactId>
             <version>3.3.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.helger</groupId>
+                    <artifactId>ph-commons</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+            <version>2.0.3</version>
         </dependency>
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-db-api</artifactId>
             <version>1.1.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.helger</groupId>
+                    <artifactId>ph-commons</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.helger</groupId>
             <artifactId>ph-db-jpa</artifactId>
             <version>3.3.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.helger</groupId>
-            <artifactId>ph-web</artifactId>
-            <version>6.4.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.helger</groupId>
+                    <artifactId>ph-commons</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

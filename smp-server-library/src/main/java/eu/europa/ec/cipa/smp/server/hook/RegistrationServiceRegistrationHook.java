@@ -14,26 +14,24 @@
  */
 package eu.europa.ec.cipa.smp.server.hook;
 
-import com.helger.commons.random.VerySecureRandom;
-import com.helger.commons.state.ESuccess;
+
 import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
 import eu.europa.ec.bdmsl.ws.soap.ManageBusinessIdentifierService;
 import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
 import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
-
 import eu.europa.ec.cipa.smp.server.security.DoNothingTrustManager;
 import eu.europa.ec.cipa.smp.server.security.HostnameVerifierAlwaysTrue;
-import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import eu.europa.ec.cipa.smp.server.security.KeyStoreUtils;
+import eu.europa.ec.cipa.smp.server.util.ConfigFile;
+import eu.europa.ec.cipa.smp.server.util.to_be_removed.ESuccess;
+import eu.europa.ec.cipa.smp.server.util.to_be_removed.VerySecureRandom;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Conditional;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
-import sun.security.krb5.Config;
 
 import javax.annotation.concurrent.NotThreadSafe;
 import javax.net.ssl.HttpsURLConnection;
@@ -222,7 +220,7 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
   }
 
   public void postUpdate (final ESuccess eSuccess) throws HookException {
-    if (eSuccess.isFailure ())
+    if (eSuccess == ESuccess.FAILURE)
       try {
         _setupSSLSocketFactory ();
         final IManageParticipantIdentifierWS aSMLCaller = getSmlCaller();

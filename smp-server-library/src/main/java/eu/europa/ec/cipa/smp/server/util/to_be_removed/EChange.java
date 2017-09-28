@@ -12,29 +12,14 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-package eu.europa.ec.cipa.smp.server.errors.exceptions;
 
-import javax.annotation.Nullable;
+package eu.europa.ec.cipa.smp.server.util.to_be_removed;
 
 /**
- * This exceptions is thrown if the provided user name does not exist.
- *
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * Created by gutowpa on 28/09/2017.
  */
-public class UnknownUserException extends RuntimeException {
-
-  private final String m_sUserName;
-
-  public UnknownUserException (@Nullable final String sUserName) {
-    super ("Unknown user '" + sUserName + "'");
-    m_sUserName = sUserName;
-  }
-
-  /**
-   * @return The user name which was not found. May be <code>null</code>.
-   */
-  @Nullable
-  public String getUserName () {
-    return m_sUserName;
-  }
+@Deprecated
+public enum EChange{
+    CHANGED,
+    UNCHANGED
 }

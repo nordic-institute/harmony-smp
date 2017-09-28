@@ -21,7 +21,6 @@ CREATE TABLE smp_service_group (
 );
 
 CREATE TABLE smp_service_metadata (
-  extension                CLOB,
   documentIdentifierScheme VARCHAR(100) NOT NULL,
   businessIdentifier       VARCHAR(50)  NOT NULL,
   businessIdentifierScheme VARCHAR(100) NOT NULL,

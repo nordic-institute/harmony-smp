@@ -14,10 +14,7 @@
  */
 package eu.europa.ec.cipa.smp.server.util;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.equals.EqualsUtils;
-import com.helger.commons.string.StringHelper;
+import org.apache.commons.lang.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessIdentifier;
@@ -25,7 +22,6 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessIdentifier;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.util.Locale;
 
 import static eu.europa.ec.cipa.smp.server.data.dbms.model.CommonColumnsLengths.URL_SCHEME_VALUE_SEPARATOR;
 
@@ -56,7 +52,7 @@ public final class IdentifierUtils {
   public static boolean areParticipantIdentifierValuesEqual (@Nullable final String sIdentifierValue1,
                                                              @Nullable final String sIdentifierValue2) {
     // equal case insensitive!
-    return EqualsUtils.nullSafeEqualsIgnoreCase (sIdentifierValue1, sIdentifierValue2);
+    return sIdentifierValue1 == null ? sIdentifierValue2 == null : sIdentifierValue1.equalsIgnoreCase (sIdentifierValue2);
   }
 
   /**
@@ -72,12 +68,17 @@ public final class IdentifierUtils {
    */
   public static boolean areIdentifiersEqual (@Nonnull final ParticipantIdentifierType aIdentifier1,
                                              @Nonnull final ParticipantIdentifierType aIdentifier2) {
-    ValueEnforcer.notNull (aIdentifier1, "ParticipantIdentifier1");
-    ValueEnforcer.notNull (aIdentifier2, "ParticipantIdentifier2");
 
+    if(aIdentifier1==null && aIdentifier2==null){
+      return true;
+    }
+    if((aIdentifier1==null && aIdentifier2!=null) || (aIdentifier1!=null && aIdentifier2==null)){
+      return false;
+    }
     // Identifiers are equal, if both scheme and value match case insensitive!
-    return EqualsUtils.nullSafeEqualsIgnoreCase (aIdentifier1.getScheme (), aIdentifier2.getScheme ()) &&
-           EqualsUtils.nullSafeEqualsIgnoreCase (aIdentifier1.getValue (), aIdentifier2.getValue ());
+    return stringEquals(aIdentifier1.getScheme(), aIdentifier2.getScheme ()) &&
+            stringEquals(aIdentifier1.getValue (), aIdentifier2.getValue ());
+
   }
 
   /**
@@ -93,12 +94,21 @@ public final class IdentifierUtils {
    */
   public static boolean areIdentifiersEqual (@Nonnull final DocumentIdentifier aIdentifier1,
                                              @Nonnull final DocumentIdentifier aIdentifier2) {
-    ValueEnforcer.notNull (aIdentifier1, "DocumentTypeIdentifier1");
-    ValueEnforcer.notNull (aIdentifier2, "DocumentTypeIdentifier2");
 
+    if(aIdentifier1==null && aIdentifier2==null){
+      return true;
+    }
+    if((aIdentifier1==null && aIdentifier2!=null) || (aIdentifier1!=null && aIdentifier2==null)){
+      return false;
+    }
     // Identifiers are equal, if both scheme and value match case sensitive!
-    return EqualsUtils.equals (aIdentifier1.getScheme (), aIdentifier2.getScheme ()) &&
-           EqualsUtils.equals (aIdentifier1.getValue (), aIdentifier2.getValue ());
+    return stringEquals(aIdentifier1.getScheme(), aIdentifier2.getScheme ()) &&
+            stringEquals(aIdentifier1.getValue (), aIdentifier2.getValue ());
+
+  }
+
+  private static boolean stringEquals(String a, String b){
+    return a==null ? b==null : a.equalsIgnoreCase(b);
   }
 
   /**
@@ -114,12 +124,17 @@ public final class IdentifierUtils {
    */
   public static boolean areIdentifiersEqual (@Nonnull final ProcessIdentifier aIdentifier1,
                                              @Nonnull final ProcessIdentifier aIdentifier2) {
-    ValueEnforcer.notNull (aIdentifier1, "ProcessIdentifier1");
-    ValueEnforcer.notNull (aIdentifier2, "ProcessIdentifier2");
 
+    if(aIdentifier1==null && aIdentifier2==null){
+      return true;
+    }
+    if((aIdentifier1==null && aIdentifier2!=null) || (aIdentifier1!=null && aIdentifier2==null)){
+      return false;
+    }
     // Identifiers are equal, if both scheme and value match case sensitive!
-    return EqualsUtils.equals (aIdentifier1.getScheme (), aIdentifier2.getScheme ()) &&
-           EqualsUtils.equals (aIdentifier1.getValue (), aIdentifier2.getValue ());
+    return stringEquals(aIdentifier1.getScheme(), aIdentifier2.getScheme ()) &&
+            stringEquals(aIdentifier1.getValue (), aIdentifier2.getValue ());
+
   }
 
   /**
@@ -131,12 +146,12 @@ public final class IdentifierUtils {
    *         <code>null</code>.
    */
   @Nonnull
-  @Nonempty
+
   public static String getIdentifierURIEncoded (@Nonnull final ParticipantIdentifierType aIdentifier) {
-    ValueEnforcer.notNull (aIdentifier, "Identifier");
+
 
     final String sScheme = aIdentifier.getScheme ();
-    if (StringHelper.hasNoText (sScheme))
+    if (StringUtils.isBlank(sScheme))
       throw new IllegalArgumentException ("Passed identifier has an empty scheme: " + aIdentifier);
 
     final String sValue = aIdentifier.getValue ();
@@ -148,12 +163,12 @@ public final class IdentifierUtils {
   }
 
   @Nonnull
-  @Nonempty
+
   public static String getIdentifierURIEncoded (@Nonnull final DocumentIdentifier aIdentifier) {
-    ValueEnforcer.notNull (aIdentifier, "Identifier");
+
 
     final String sScheme = aIdentifier.getScheme ();
-    if (StringHelper.hasNoText (sScheme))
+    if (StringUtils.isBlank(sScheme))
       throw new IllegalArgumentException ("Passed identifier has an empty scheme: " + aIdentifier);
 
     final String sValue = aIdentifier.getValue ();

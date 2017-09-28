@@ -14,43 +14,31 @@
  */
 package eu.europa.ec.cipa.smp.server.data.dbms;
 
-import com.helger.commons.GlobalDebug;
-import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.state.EChange;
-import com.helger.db.jpa.IEntityManagerProvider;
-import com.helger.db.jpa.JPAEnabledManager;
-import com.helger.db.jpa.JPAExecutionResult;
-import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
-import eu.europa.ec.cipa.smp.server.data.IDataManager;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
 import eu.europa.ec.cipa.smp.server.hook.IRegistrationHook;
 import eu.europa.ec.cipa.smp.server.util.ExtensionUtils;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
+import eu.europa.ec.cipa.smp.server.util.to_be_removed.EChange;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.jpa.EntityManagerFactoryUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.ContextLoader;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.persistence.Entity;
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 /**
  * A Hibernate implementation of the DataManager interface.
@@ -223,7 +211,6 @@ public /*final*/ class DBMSDataManager /*extends JPAEnabledManager*/ /*implement
 
 
     @Nonnull
-    @ReturnsMutableCopy
     public Collection<ParticipantIdentifierType> getServiceGroupList(@Nonnull final String username) throws Throwable {
         /*
         JPAExecutionResult<Collection<ParticipantIdentifierType>> ret;
@@ -424,7 +411,6 @@ public /*final*/ class DBMSDataManager /*extends JPAEnabledManager*/ /*implement
     }
 
     @Nonnull
-    @ReturnsMutableCopy
     public List<DBServiceMetadataID> getDocumentTypes(@Nonnull final ParticipantIdentifierType aServiceGroupID) throws Throwable {
         final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(aServiceGroupID);
         /*
@@ -454,7 +440,6 @@ public /*final*/ class DBMSDataManager /*extends JPAEnabledManager*/ /*implement
     }
 
     @Nonnull
-    @ReturnsMutableCopy
     public Collection<ServiceMetadata> getServices(@Nonnull final ParticipantIdentifierType aServiceGroupID) throws Throwable {
         final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(aServiceGroupID);
         /*
@@ -565,11 +550,14 @@ public /*final*/ class DBMSDataManager /*extends JPAEnabledManager*/ /*implement
                     // Create a new entry
                     aDBServiceMetadata = new DBServiceMetadata();
                     aDBServiceMetadata.setId(aDBServiceMetadataID);
+                    aDBServiceMetadata.setXmlContent(sXmlContent);
+                    /*
                     try {
                         _convertFromServiceToDB(normalizedServiceGroupId, normalizedDocId, sXmlContent, aDBServiceMetadata);
                     } catch (JAXBException | XMLStreamException e) {
                         throw new IllegalStateException("Problems converting from Service to DB", e);
                     }
+                    */
                     entityManager.persist(aDBServiceMetadata);
                     /*
                 }
@@ -584,7 +572,7 @@ public /*final*/ class DBMSDataManager /*extends JPAEnabledManager*/ /*implement
 
     @Nonnull
     private EChange _deleteService(@Nonnull final ParticipantIdentifierType aServiceGroupID,
-                                   @Nonnull final DocumentIdentifier aDocTypeID){
+                                       @Nonnull final DocumentIdentifier aDocTypeID){
                                    /*
         JPAExecutionResult<EChange> ret;
         ret = doInTransaction(getEntityManager(), true, new Callable<EChange>() {
@@ -631,51 +619,13 @@ public /*final*/ class DBMSDataManager /*extends JPAEnabledManager*/ /*implement
         //_verifyOwnership(normalizedServiceGroupId, username);
 
         final EChange eChange = _deleteService(normalizedServiceGroupId, normalizedDocId);
-        if (eChange.isUnchanged())
+        if (EChange.UNCHANGED.equals(eChange))
             throw new NotFoundException(IdentifierUtils.getIdentifierURIEncoded(normalizedServiceGroupId) +
                     " / " +
                     IdentifierUtils.getIdentifierURIEncoded(normalizedDocId));
     }
 
-    @Nullable
-    public ServiceMetadata getRedirection(@Nonnull final ParticipantIdentifierType aServiceGroupID,
-                                              @Nonnull final DocumentIdentifier aDocTypeID) throws Throwable {
-
-        /*JPAExecutionResult<ServiceMetadata> ret;
-        ret = doSelect(new Callable<ServiceMetadata>() {
-            @Nullable
-            public ServiceMetadata call() throws Exception {
-        */
-                final DBServiceMetadataRedirectionID aDBRedirectID = new DBServiceMetadataRedirectionID(aServiceGroupID,
-                        aDocTypeID);
-                final DBServiceMetadataRedirection aDBServiceMetadataRedirection = entityManager.find(DBServiceMetadataRedirection.class,
-                        aDBRedirectID);
-
-                if (aDBServiceMetadataRedirection == null) {
-                    if (GlobalDebug.isDebugMode())
-                        s_aLogger.info("No redirection service group id: " +
-                                IdentifierUtils.getIdentifierURIEncoded(aServiceGroupID));
-                    return null;
-                }
-
-                // First check whether an redirect exists.
-                final ServiceMetadata aServiceMetadata = m_aObjFactory.createServiceMetadata();
-
-                // Then return a redirect instead.
-                final RedirectType aRedirect = m_aObjFactory.createRedirectType();
-                aRedirect.setCertificateUID(aDBServiceMetadataRedirection.getCertificateUid());
-                aRedirect.setHref(aDBServiceMetadataRedirection.getRedirectionUrl());
-                aRedirect.getExtensions().addAll(ExtensionUtils.unmarshalExtensions(aDBServiceMetadataRedirection.getExtension()));
-                aServiceMetadata.setRedirect(aRedirect);
-
-                return aServiceMetadata;
-                /*
-            }
-        });
-        return ret.getOrThrow();
-        */
-    }
-
+        /*
     private static void _convertFromServiceToDB(@Nonnull final ParticipantIdentifierType aServiceGroupID,
                                                 @Nonnull final DocumentIdentifier aDocTypeID,
                                                 @Nonnull final String sXmlContent,
@@ -692,21 +642,24 @@ public /*final*/ class DBMSDataManager /*extends JPAEnabledManager*/ /*implement
         }
         aDBServiceMetadata.setXmlContent(sXmlContent);
     }
-/*
+        */
 
+
+    //TODO remove me
     public EntityManager getCurrentEntityManager() {
         //return getEntityManager();
         return entityManager;
     }
-
+/*
     private EntityManager getEntityManager() {
         //return getEntityManager();
         return entityManager;
     }
 */
-
+/*
     //@Override
     public DBUser _verifyUser(@Nonnull BasicAuthClientCredentials aCredentials) throws UnknownUserException {
         return null;
     }
+    */
 }

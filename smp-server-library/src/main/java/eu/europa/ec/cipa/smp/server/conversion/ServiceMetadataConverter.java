@@ -15,14 +15,12 @@
 
 package eu.europa.ec.cipa.smp.server.conversion;
 
-import com.helger.commons.xml.transform.XMLTransformerFactory;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.XmlParsingException;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
-import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;

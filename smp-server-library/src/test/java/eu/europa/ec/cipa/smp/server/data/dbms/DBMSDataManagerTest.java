@@ -14,13 +14,10 @@
  */
 package eu.europa.ec.cipa.smp.server.data.dbms;
 
-import com.helger.commons.annotations.DevelopersNote;
-import com.helger.web.http.basicauth.BasicAuthClientCredentials;
 import eu.europa.ec.cipa.smp.server.AbstractTest;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.cipa.smp.server.data.dbms.model.*;
 import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
-
 import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
 import eu.europa.ec.cipa.smp.server.security.BCryptPasswordHash;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
@@ -31,7 +28,9 @@ import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
+import org.w3c.dom.Element;
 
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -43,7 +42,7 @@ import static org.junit.Assert.*;
  */
 @Ignore
 // ("Cannot be enabled by default, because it would fail without the correct configuration")
-@DevelopersNote ("You need to adjust your local config.properties file to run this test")
+//@DevelopersNote ("You need to adjust your local config.properties file to run this test")
 public class DBMSDataManagerTest extends AbstractTest {
     private static final String PARTICIPANT_IDENTIFIER_SCHEME = CommonColumnsLengths.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME;
   private static final String DOCUMENT_SCHEME = CommonColumnsLengths.DEFAULT_DOCUMENT_TYPE_IDENTIFIER_SCHEME;
@@ -97,7 +96,9 @@ public class DBMSDataManagerTest extends AbstractTest {
     createOrUpdatedDBUser(NOADMIN_USERNAME, NOADMIN_PASSWORD_HASH, false);
     createOrUpdatedDBUser(ADMIN_USERNAME, null, true);
 
-    final ExtensionType aExtension = SMPDBUtils.getAsExtensionSafe("<root><any>value</any></root>");
+    //SMPDBUtils.getAsExtensionSafe("<root><any>value</any></root>");
+    final ExtensionType aExtension = new ExtensionType();
+
     assertNotNull (aExtension);
     assertNotNull (aExtension.getAny ());
 
@@ -677,12 +678,6 @@ public class DBMSDataManagerTest extends AbstractTest {
 
 
 
-  @Test(expected = UnknownUserException.class)
-  public void verifyUserNotFound() throws Throwable {
-        BasicAuthClientCredentials auth = new BasicAuthClientCredentials("UserNotFound", null);
-        DBUser user = s_aDataMgr._verifyUser(auth);
-  }
-
 
 
   @Test
@@ -706,12 +701,6 @@ public class DBMSDataManagerTest extends AbstractTest {
 
       aDBUser.setPassword(PASSWORD);
       s_aDataMgr.getCurrentEntityManager().merge(aDBUser);
-  }
-
-  @Test(expected = NullPointerException.class)
-  public void verifyNullUser() throws Throwable {
-        BasicAuthClientCredentials auth = new BasicAuthClientCredentials(null, "WrongPass");
-        DBUser user = s_aDataMgr._verifyUser(auth);
   }
 
   private ServiceGroup createServiceGroup(String participantId) {

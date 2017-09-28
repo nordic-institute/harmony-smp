@@ -28,28 +28,14 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.cipa.smp.server.hook;
-
-import eu.europa.ec.cipa.smp.server.util.ConfigFile;
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
-
-import java.io.IOException;
+package eu.europa.ec.cipa.smp.server.util.to_be_removed;
 
 /**
- * Created by gutowpa on 13/07/2017.
+ * Created by gutowpa on 28/09/2017.
  */
-public class SMLHookConditionOn implements Condition {
+@Deprecated
+public enum ESuccess {
+    SUCCESS,
+    FAILURE
 
-    @Override
-    public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        String className = null;
-        try {
-            className = new ConfigFile("smp.config.properties").getString("registrationHook.class");
-            return "eu.europa.ec.cipa.smp.server.hook.RegistrationServiceRegistrationHook".equals(className);
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
-    }
 }

@@ -14,7 +14,7 @@
  */
 package eu.europa.ec.cipa.smp.server.hook;
 
-import com.helger.commons.state.ESuccess;
+import eu.europa.ec.cipa.smp.server.util.to_be_removed.ESuccess;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.stereotype.Component;
