@@ -15,7 +15,7 @@
 package eu.europa.ec.cipa.smp.server.util;
 
 import eu.europa.ec.cipa.smp.server.util.to_be_removed.ESuccess;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

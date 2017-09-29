@@ -17,9 +17,9 @@ package eu.europa.ec.cipa.smp.server.util;
 
 import eu.europa.ec.cipa.smp.server.errors.exceptions.CertificateAuthenticationException;
 import eu.europa.ec.cipa.smp.server.security.CertificateDetails;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
@@ -135,7 +135,7 @@ public class CertificateUtils {
             try {
                 CertificateDetails certificate = new CertificateDetails();
                 clientCertHeaderDecoded = URLDecoder.decode(certHeaderValue, StandardCharsets.UTF_8.name());
-                clientCertHeaderDecoded = StringEscapeUtils.unescapeHtml(clientCertHeaderDecoded);
+                clientCertHeaderDecoded = StringEscapeUtils.unescapeHtml4(clientCertHeaderDecoded);
 
                 certificate = parseClientCertHeader(certificate, clientCertHeaderDecoded);
                 certificate.setSerial(certificate.getSerial().replaceAll(":", ""));

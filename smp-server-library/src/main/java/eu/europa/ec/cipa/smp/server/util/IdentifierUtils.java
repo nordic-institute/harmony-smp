@@ -14,7 +14,7 @@
  */
 package eu.europa.ec.cipa.smp.server.util;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessIdentifier;
@@ -69,11 +69,8 @@ public final class IdentifierUtils {
   public static boolean areIdentifiersEqual (@Nonnull final ParticipantIdentifierType aIdentifier1,
                                              @Nonnull final ParticipantIdentifierType aIdentifier2) {
 
-    if(aIdentifier1==null && aIdentifier2==null){
-      return true;
-    }
-    if((aIdentifier1==null && aIdentifier2!=null) || (aIdentifier1!=null && aIdentifier2==null)){
-      return false;
+    if(aIdentifier1==null || aIdentifier2==null){
+      throw new IllegalArgumentException("Null identifiers are not allowed");
     }
     // Identifiers are equal, if both scheme and value match case insensitive!
     return stringEquals(aIdentifier1.getScheme(), aIdentifier2.getScheme ()) &&
@@ -95,12 +92,10 @@ public final class IdentifierUtils {
   public static boolean areIdentifiersEqual (@Nonnull final DocumentIdentifier aIdentifier1,
                                              @Nonnull final DocumentIdentifier aIdentifier2) {
 
-    if(aIdentifier1==null && aIdentifier2==null){
-      return true;
+    if(aIdentifier1==null || aIdentifier2==null){
+      throw new IllegalArgumentException("Null identifiers are not allowed");
     }
-    if((aIdentifier1==null && aIdentifier2!=null) || (aIdentifier1!=null && aIdentifier2==null)){
-      return false;
-    }
+
     // Identifiers are equal, if both scheme and value match case sensitive!
     return stringEquals(aIdentifier1.getScheme(), aIdentifier2.getScheme ()) &&
             stringEquals(aIdentifier1.getValue (), aIdentifier2.getValue ());
@@ -125,11 +120,8 @@ public final class IdentifierUtils {
   public static boolean areIdentifiersEqual (@Nonnull final ProcessIdentifier aIdentifier1,
                                              @Nonnull final ProcessIdentifier aIdentifier2) {
 
-    if(aIdentifier1==null && aIdentifier2==null){
-      return true;
-    }
-    if((aIdentifier1==null && aIdentifier2!=null) || (aIdentifier1!=null && aIdentifier2==null)){
-      return false;
+    if(aIdentifier1==null || aIdentifier2==null){
+      throw new IllegalArgumentException("Null identifiers are not allowed");
     }
     // Identifiers are equal, if both scheme and value match case sensitive!
     return stringEquals(aIdentifier1.getScheme(), aIdentifier2.getScheme ()) &&
