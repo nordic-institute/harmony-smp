@@ -59,7 +59,7 @@ public final class ServiceMetadataInterface {
 
   @GET
   // changed Produced media type to match the smp specification.
-  @Produces (MediaType.TEXT_XML)
+  @Produces ("text/xml; charset=UTF-8")
   public Document getServiceRegistration (@PathParam ("ServiceGroupId") final String sServiceGroupID,
                                           @PathParam ("DocumentTypeId") final String sDocumentTypeID) throws Throwable {
     // Delegate to common implementation
