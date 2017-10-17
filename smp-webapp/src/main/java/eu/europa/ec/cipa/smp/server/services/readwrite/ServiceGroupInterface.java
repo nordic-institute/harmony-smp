@@ -67,7 +67,7 @@ public final class ServiceGroupInterface {
   public ServiceGroupInterface () {}
 
   @GET
-  @Produces (MediaType.TEXT_XML)
+  @Produces ("text/xml; charset=UTF-8")
   public ServiceGroup getServiceGroup (@PathParam ("ServiceGroupId") final String sServiceGroupId) throws Throwable {
     // Delegate to common implementation
     return BaseServiceGroupInterfaceImpl.getServiceGroup (uriInfo, headers, sServiceGroupId, ServiceMetadataInterface.class);
