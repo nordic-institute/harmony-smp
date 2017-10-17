@@ -1,0 +1,2 @@
+Manifest-Version: 1.0
+Weblogic-Application-Version: v3.0.2
