@@ -42,9 +42,4 @@
     <context:component-scan base-package="eu.europa" />
     -->
 
-    <bean id="configFile"
-          class="eu.europa.ec.cipa.smp.server.util.ConfigFile">
-        <constructor-arg type="java.lang.String" value="smp.config.properties"/>
-    </bean>
-
 </beans>

@@ -21,31 +21,6 @@
        http://www.springframework.org/schema/tx
        http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
 
-    <bean id="configFile" class="eu.europa.ec.cipa.smp.server.util.ConfigFile">
-        <constructor-arg type="java.lang.String" value="smp.config.properties"/>
-    </bean>
-
-    <bean id="blueCoatEnabled" factory-bean="configFile" factory-method="getString">
-        <constructor-arg value="authentication.blueCoat.enabled"/>
-    </bean>
-
-    <bean id="encodedSlashesAllowedInUrl" factory-bean="configFile" factory-method="getString">
-        <constructor-arg value="encodedSlashesAllowedInUrl"/>
-    </bean>
-
-    <!-- TODO: Refactor datasource creation once the application is rewritten into Spring -->
-    <bean id="jdbcDriver" factory-bean="configFile" factory-method="getString">
-        <constructor-arg value="jdbc.driver"/>
-    </bean>
-    <bean id="jdbcUrl" factory-bean="configFile" factory-method="getString">
-        <constructor-arg value="jdbc.url"/>
-    </bean>
-    <bean id="jdbcUser" factory-bean="configFile" factory-method="getString">
-        <constructor-arg value="jdbc.user"/>
-    </bean>
-    <bean id="jdbcPass" factory-bean="configFile" factory-method="getString">
-        <constructor-arg value="jdbc.password"/>
-    </bean>
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" ref="jdbcDriver"/>
         <property name="url" ref="jdbcUrl"/>

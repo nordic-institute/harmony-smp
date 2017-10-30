@@ -26,6 +26,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 
@@ -40,11 +41,14 @@ import static org.mockito.Mockito.when;
 @RunWith(JUnitParamsRunner.class)
 public class CaseSensitivityNormalizerTest {
 
-    private static final String KEY_CASE_SENSITIVE_PARTICIPANT_SCHEMES = "identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes";
-    private static final String KEY_CASE_SENSITIVE_DOCUMENT_SCHEMES = "identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes";
-
     private static final List<String> CASE_SENSITIVE_PARTICIPANT_SCHEMES = asList(new String[]{"case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"});
     private static final List<String> CASE_SENSITIVE_DOCUMENT_SCHEMES = asList(new String[]{"case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"});
+
+    @Value("#{'${identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes}'.split('|')}")
+    private List<String> caseSensitiveParticipantSchemes;
+
+    @Value("#{'${identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes}'.split('|')}")
+    private List<String> caseSensitiveDocumentSchemes;
 
     @InjectMocks
     private CaseSensitivityNormalizer normalizer;
@@ -55,8 +59,8 @@ public class CaseSensitivityNormalizerTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        when(configFile.getStringList(KEY_CASE_SENSITIVE_PARTICIPANT_SCHEMES)).thenReturn(CASE_SENSITIVE_PARTICIPANT_SCHEMES);
-        when(configFile.getStringList(KEY_CASE_SENSITIVE_DOCUMENT_SCHEMES)).thenReturn(CASE_SENSITIVE_DOCUMENT_SCHEMES);
+        when(caseSensitiveParticipantSchemes).thenReturn(CASE_SENSITIVE_PARTICIPANT_SCHEMES);
+        when(caseSensitiveDocumentSchemes).thenReturn(CASE_SENSITIVE_DOCUMENT_SCHEMES);
         normalizer.init();
     }
 

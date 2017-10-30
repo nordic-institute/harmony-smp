@@ -15,9 +15,8 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.*;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 /**
  * Created by gutowpa on 12/07/2017.
@@ -31,5 +30,14 @@ import org.springframework.context.annotation.ImportResource;
         "eu.europa.ec.cipa.smp.server.hook",
         "eu.europa.ec.cipa.smp.server.conversion",
         "eu.europa.ec.cipa.smp.server.util"})
+@PropertySources({
+        @PropertySource(value = "classpath:config.properties", ignoreResourceNotFound = true),
+        @PropertySource(value = "classpath:smp.config.properties", ignoreResourceNotFound = true)
+})
 public class SmpAppConfig {
+
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
 }
