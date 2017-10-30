@@ -36,28 +36,11 @@ import java.util.ArrayList;
  */
 @Service
 public final class BaseServiceGroupInterfaceImpl {
-  private static final Logger s_aLogger = LoggerFactory.getLogger (BaseServiceGroupInterfaceImpl.class);
 
+  private static final Logger s_aLogger = LoggerFactory.getLogger (BaseServiceGroupInterfaceImpl.class);
 
   @Autowired
   private DBMSDataManager dataManager;
-
-/*
-  private static ConfigFile configFile;
-  static {
-    /*
-     * TODO : This is a quick and dirty hack to allow the use of a configuration
-     * file with an other name if it's in the classpath (like
-     * smp.config.properties or sml.config.properties). If the configuration
-     * file defined in applicationContext.xml couldn't be found, then the
-     * config.properties inside the war is used as a fallback. Needs to be
-     * properly refactored
-     *
-    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext (new String [] { "classpath:applicationContext.xml" });
-    configFile = (ConfigFile) context.getBean ("configFile");
-  }
-  private BaseServiceGroupInterfaceImpl () {}
-*/
 
   /**
    * @param sServiceGroupID

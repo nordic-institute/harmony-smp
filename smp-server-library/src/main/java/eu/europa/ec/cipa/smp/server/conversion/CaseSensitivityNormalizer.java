@@ -15,15 +15,14 @@
 
 package eu.europa.ec.cipa.smp.server.conversion;
 
-import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
 import static eu.europa.ec.smp.api.Identifiers.asString;
@@ -34,25 +33,16 @@ import static eu.europa.ec.smp.api.Identifiers.asString;
 @Component
 public class CaseSensitivityNormalizer {
 
-    private static final String CASE_SENSITIVE_PARTICIPANT_SCHEMES = "identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes";
-    private static final String CASE_SENSITIVE_DOCUMENT_SCHEMES = "identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes";
-
+    @Value("#{'${identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes}'.split('\\|')}")
     private List<String> caseSensitiveParticipantSchemes;
-    private List<String> caseSensitiveDocumentSchemes;
 
-    @Autowired
-    protected ConfigFile config;
+    @Value("#{'${identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes}'.split('\\|')}")
+    private List<String> caseSensitiveDocumentSchemes;
 
     @PostConstruct
     public void init() {
-        caseSensitiveParticipantSchemes = new ArrayList<>();
-        caseSensitiveDocumentSchemes = new ArrayList<>();
-        for (String scheme : config.getStringList(CASE_SENSITIVE_PARTICIPANT_SCHEMES)) {
-            caseSensitiveParticipantSchemes.add(scheme.toLowerCase().trim());
-        }
-        for (String scheme : config.getStringList(CASE_SENSITIVE_DOCUMENT_SCHEMES)) {
-            caseSensitiveDocumentSchemes.add(scheme.toLowerCase().trim());
-        }
+        toLowerCaseStringList(caseSensitiveParticipantSchemes);
+        toLowerCaseStringList(caseSensitiveDocumentSchemes);
     }
 
     public ParticipantIdentifierType normalize(final ParticipantIdentifierType participantIdentifier) {
@@ -79,4 +69,10 @@ public class CaseSensitivityNormalizer {
         return asString(normalize(asParticipantId(participantId)));
     }
 
+    private static void toLowerCaseStringList(List<String> strings) {
+        ListIterator<String> iterator = strings.listIterator();
+        while (iterator.hasNext()) {
+            iterator.set(iterator.next().toLowerCase().trim());
+        }
+    }
 }

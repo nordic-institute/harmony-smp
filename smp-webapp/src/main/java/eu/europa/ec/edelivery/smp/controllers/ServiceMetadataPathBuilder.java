@@ -30,10 +30,9 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
-import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import org.springframework.web.context.request.RequestAttributes;
@@ -43,7 +42,6 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.http.HttpServletRequest;
-
 import java.net.URI;
 
 import static eu.europa.ec.smp.api.Identifiers.asString;
@@ -54,14 +52,14 @@ import static eu.europa.ec.smp.api.Identifiers.asString;
 @Component
 public class ServiceMetadataPathBuilder {
 
-    @Autowired
-    ConfigFile configFile;
+    @Value("${contextPath.output:true}")
+    private boolean keepContext;
 
     public URI getCurrentUri() {
         return ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri();
     }
 
-    public String buildSelfUrl(ParticipantIdentifierType participantId, DocumentIdentifier docId){
+    public String buildSelfUrl(ParticipantIdentifierType participantId, DocumentIdentifier docId) {
 
         String path = ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .replacePath(getUrlContext())
@@ -72,11 +70,10 @@ public class ServiceMetadataPathBuilder {
         return path;
     }
 
-    private String getUrlContext(){
-        boolean keepContext = new Boolean(configFile.getString ("contextPath.output", "true"));
-        if(keepContext){
+    private String getUrlContext() {
+        if (keepContext) {
             return new UrlPathHelper().getContextPath(getCurrentRequest());
-        }else{
+        } else {
             return "";
         }
     }
