@@ -15,7 +15,6 @@
 
 package eu.europa.ec.cipa.smp.server.conversion;
 
-import eu.europa.ec.cipa.smp.server.util.CommonUtil;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.ListIterator;
 
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
 import static eu.europa.ec.smp.api.Identifiers.asString;
@@ -33,16 +33,16 @@ import static eu.europa.ec.smp.api.Identifiers.asString;
 @Component
 public class CaseSensitivityNormalizer {
 
-    @Value("#{'${identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes}'.split('|')}")
+    @Value("#{'${identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes}'.split('\\|')}")
     private List<String> caseSensitiveParticipantSchemes;
 
-    @Value("#{'${identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes}'.split('|')}")
+    @Value("#{'${identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes}'.split('\\|')}")
     private List<String> caseSensitiveDocumentSchemes;
 
     @PostConstruct
     public void init() {
-        CommonUtil.toLowerCaseStringList(caseSensitiveParticipantSchemes);
-        CommonUtil.toLowerCaseStringList(caseSensitiveDocumentSchemes);
+        toLowerCaseStringList(caseSensitiveParticipantSchemes);
+        toLowerCaseStringList(caseSensitiveDocumentSchemes);
     }
 
     public ParticipantIdentifierType normalize(final ParticipantIdentifierType participantIdentifier) {
@@ -67,5 +67,12 @@ public class CaseSensitivityNormalizer {
 
     public String normalizeParticipantId(String participantId) {
         return asString(normalize(asParticipantId(participantId)));
+    }
+
+    private static void toLowerCaseStringList(List<String> strings) {
+        ListIterator<String> iterator = strings.listIterator();
+        while (iterator.hasNext()) {
+            iterator.set(iterator.next().toLowerCase().trim());
+        }
     }
 }

@@ -15,9 +15,13 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.ImportResource;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.*;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.test.context.TestPropertySource;
+
+import java.util.List;
+import java.util.Properties;
 
 /**
  * Created by gutowpa on 21/09/2017.
@@ -26,10 +30,14 @@ import org.springframework.context.annotation.ImportResource;
 @Configuration
 @ImportResource("classpath:spring-test-context.xml")
 @ComponentScan(basePackages = {
-        "eu.europa.ec.cipa.smp.server.data.dbms",
-        "eu.europa.ec.cipa.smp.server.services",
-        "eu.europa.ec.cipa.smp.server.hook",
-        "eu.europa.ec.cipa.smp.server.conversion",
-        "eu.europa.ec.cipa.smp.server.util"})
+        "eu.europa.ec"})
+@TestPropertySource(properties = {
+        "identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes=case-sensitive-participant-1|case-sensitive-participant-2",
+        "identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes=case-sensitive-doc-1|case-sensitive-doc-2"
+})
+@PropertySource(value = "classpath:config.properties")
 public class SmpServicesTestConfig {
+
+
+
 }
