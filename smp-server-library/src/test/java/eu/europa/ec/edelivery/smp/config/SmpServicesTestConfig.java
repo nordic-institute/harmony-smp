@@ -31,12 +31,7 @@ import java.util.Properties;
 @ImportResource("classpath:spring-test-context.xml")
 @ComponentScan(basePackages = {
         "eu.europa.ec"})
-@TestPropertySource(properties = {
-        "identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes=case-sensitive-participant-1|case-sensitive-participant-2",
-        "identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes=case-sensitive-doc-1|case-sensitive-doc-2"
-})
 @PropertySource(value = "classpath:config.properties")
 public class SmpServicesTestConfig {
-
 
 }
