@@ -15,7 +15,7 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
-import eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil;
+import eu.europa.ec.config.SmpServicesTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
@@ -23,10 +23,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -44,9 +46,7 @@ import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.getSampleServiceGr
 import static java.lang.String.format;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,8 +62,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @Rollback(true)
 @Sql("classpath:/webapp_integration_test_data.sql")
+@TestPropertySource(properties = {
+        "identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes=case-sensitive-participant-1|case-sensitive-participant-2",
+        "identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes=case-sensitive-doc-1|case-sensitive-doc-2"
+})
 public class ServiceGroupControllerTest {
-    
+
 
     private static final String PARTICIPANT_SCHEME = "ehealth-participantid-qns";
     private static final String PARTICIPANT_ID = "urn:poland:ncpb";
@@ -157,7 +161,7 @@ public class ServiceGroupControllerTest {
         mvc.perform(delete(URL_PATH)
                 .with(ADMIN_CREDENTIALS))
                 .andExpect(status().isOk());
-        
+
         mvc.perform(get(URL_PATH))
                 .andExpect(status().isNotFound());
     }

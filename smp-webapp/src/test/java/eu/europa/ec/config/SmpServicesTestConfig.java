@@ -13,30 +13,25 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.smp.config;
+package eu.europa.ec.config;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.context.TestPropertySource;
 
-import java.util.List;
-import java.util.Properties;
-
-/**
- * Created by gutowpa on 21/09/2017.
- */
-
 @Configuration
-@ImportResource("classpath:spring-test-context.xml")
+
 @ComponentScan(basePackages = {
-        "eu.europa.ec"})
+        "eu.europa.ec.config"})
 @TestPropertySource(properties = {
         "identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes=case-sensitive-participant-1|case-sensitive-participant-2",
         "identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes=case-sensitive-doc-1|case-sensitive-doc-2"
 })
-@PropertySource(value = "classpath:config.properties")
 public class SmpServicesTestConfig {
 
+    @Bean
+    public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
+        return new PropertySourcesPlaceholderConfigurer();
+    }
 
 }

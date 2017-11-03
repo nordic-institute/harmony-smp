@@ -27,12 +27,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -76,6 +78,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @Rollback(true)
 @Sql("classpath:/webapp_integration_test_data.sql")
+@TestPropertySource(properties = {
+        "identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes=case-sensitive-participant-1|case-sensitive-participant-2",
+        "identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes=case-sensitive-doc-1|case-sensitive-doc-2"
+})
 public class SignatureValidatorTest/* extends AbstractTest*/ {
 
     private static final String C14N_METHOD = CanonicalizationMethod.INCLUSIVE;

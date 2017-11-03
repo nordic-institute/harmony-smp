@@ -45,29 +45,28 @@
 
 package eu.europa.ec.edelivery.smp.validation;
 
+import eu.europa.ec.config.SmpServicesTestConfig;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.MockitoAnnotations;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static eu.europa.ec.smp.api.Identifiers.asString;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by gutowpa on 02/08/2017.
  */
-@Component
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {
+        SmpServicesTestConfig.class})
 public class ServiceGroupValidatorTest {
-
-    private static final String ALLOWED_SCHEME_REGEXP = "^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)";
-
-    @Value("${identifiersBehaviour.ParticipantIdentifierScheme.validationRegex}")
-    private String regex;
 
     @InjectMocks
     private ServiceGroupValidator validator;
@@ -75,7 +74,7 @@ public class ServiceGroupValidatorTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        when(regex).thenReturn(ALLOWED_SCHEME_REGEXP);
+        ReflectionTestUtils.setField(validator, "regex", "^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)");
         validator.init();
     }
 

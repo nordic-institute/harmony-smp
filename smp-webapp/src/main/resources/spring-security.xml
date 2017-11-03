@@ -22,6 +22,11 @@
 
     <b:bean id="securityExceptionHandler" class="eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler"/>
 
+    <b:bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <b:property name="location">
+            <b:value>classpath:config.properties</b:value>
+        </b:property>
+    </b:bean>
 
     <http>
         <csrf disabled="true"/>
@@ -64,7 +69,7 @@
     <b:bean id="blueCoatReverseProxyAuthFilter"
             class="eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter">
         <b:property name="authenticationManager" ref="smpAuthenticationManager"/>
-        <b:property name="blueCoatEnabled" ref="blueCoatEnabled"/>
+        <b:property name="blueCoatEnabled" value="${authentication.blueCoat.enabled}"/>
     </b:bean>
 
     <b:bean id="x509AuthFilter"
@@ -75,7 +80,7 @@
     <!-- Slashes in participant or document identifiers are disallowed by default -->
     <http-firewall ref="httpFirewall"/>
     <b:bean id="httpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall">
-        <b:property name="allowUrlEncodedSlash" ref="encodedSlashesAllowedInUrl"/>
+        <b:property name="allowUrlEncodedSlash" value="${encodedSlashesAllowedInUrl}"/>
     </b:bean>
 
 </b:beans>

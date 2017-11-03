@@ -13,6 +13,7 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
+import eu.europa.ec.config.SmpServicesTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,7 +26,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 //@RunWith(SpringRunner.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 //@WebAppConfiguration
-@ContextConfiguration(classes = SmpAppConfig.class)
+@ContextConfiguration(classes = SmpServicesTestConfig.class)
 public class ContextTest {
 
     @Test

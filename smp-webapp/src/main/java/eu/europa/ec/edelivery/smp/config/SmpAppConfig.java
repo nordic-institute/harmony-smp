@@ -37,7 +37,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 public class SmpAppConfig {
 
     @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+    public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
         return new PropertySourcesPlaceholderConfigurer();
     }
 }
