@@ -16,18 +16,14 @@
 package eu.europa.ec.cipa.smp.server.conversion;
 
 import eu.europa.ec.edelivery.smp.config.SmpServicesTestConfig;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.MockitoAnnotations;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 
-import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
@@ -38,16 +34,8 @@ import static org.junit.Assert.assertFalse;
 @ContextConfiguration(classes = {SmpServicesTestConfig.class})
 public class CaseSensitivityNormalizerTest {
 
-    @InjectMocks
+    @Autowired
     private CaseSensitivityNormalizer normalizer;
-
-    @Before
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
-        ReflectionTestUtils.setField(normalizer, "caseSensitiveParticipantSchemes", asList(new String[]{"case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"}));
-        ReflectionTestUtils.setField(normalizer, "caseSensitiveDocumentSchemes", asList(new String[]{"case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"}));
-        normalizer.init();
-    }
 
     @SuppressWarnings("unused")
     private static String[][] testCases() {
@@ -65,40 +53,50 @@ public class CaseSensitivityNormalizerTest {
     @Test
     public void testParticipantIdsCaseNormalization() {
         for (int i = 0; i < testCases().length; i++) {
+            String inputScheme = testCases()[i][0];
+            String inputValue = testCases()[i][1];
+            String expectedScheme = testCases()[i][2];
+            String expectedValue = testCases()[i][3];
+
             //given
-            ParticipantIdentifierType inputParticpantId = new ParticipantIdentifierType(testCases()[i][1], testCases()[i][0]);
+            ParticipantIdentifierType inputParticpantId = new ParticipantIdentifierType(inputValue, inputScheme);
 
             //when
             ParticipantIdentifierType outputParticipantId = normalizer.normalize(inputParticpantId);
 
             //then
-            assertEquals(testCases()[i][2], outputParticipantId.getScheme());
-            assertEquals(testCases()[i][3], outputParticipantId.getValue());
+            assertEquals(expectedScheme, outputParticipantId.getScheme());
+            assertEquals(expectedValue, outputParticipantId.getValue());
 
             //input stays untouched
             assertFalse(inputParticpantId == outputParticipantId);
-            assertEquals(testCases()[i][0], inputParticpantId.getScheme());
-            assertEquals(testCases()[i][1], inputParticpantId.getValue());
+            assertEquals(inputScheme, inputParticpantId.getScheme());
+            assertEquals(inputValue, inputParticpantId.getValue());
         }
     }
 
     @Test
     public void testDocumentIdsCaseNormalization() {
         for (int i = 0; i < testCases().length; i++) {
+            String inputScheme = testCases()[i][0];
+            String inputValue = testCases()[i][1];
+            String expectedScheme = testCases()[i][2];
+            String expectedValue = testCases()[i][3];
+
             //given
-            DocumentIdentifier inputDocId = new DocumentIdentifier(testCases()[i][1], testCases()[i][0]);
+            DocumentIdentifier inputDocId = new DocumentIdentifier(inputValue, inputScheme);
 
             //when
             DocumentIdentifier outputDocId = normalizer.normalize(inputDocId);
 
             //then
-            assertEquals(testCases()[i][2], outputDocId.getScheme());
-            assertEquals(testCases()[i][3], outputDocId.getValue());
+            assertEquals(expectedScheme, outputDocId.getScheme());
+            assertEquals(expectedValue, outputDocId.getValue());
 
             //input stays untouched
             assertFalse(inputDocId == outputDocId);
-            assertEquals(testCases()[i][0], inputDocId.getScheme());
-            assertEquals(testCases()[i][1], inputDocId.getValue());
+            assertEquals(inputScheme, inputDocId.getScheme());
+            assertEquals(inputValue, inputDocId.getValue());
         }
     }
 

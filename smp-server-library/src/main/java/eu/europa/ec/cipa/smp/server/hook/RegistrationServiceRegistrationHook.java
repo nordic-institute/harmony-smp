@@ -61,9 +61,12 @@ import java.util.Map;
 @Component
 @Conditional(SMLHookConditionOn.class)
 public final class RegistrationServiceRegistrationHook extends AbstractRegistrationHook {
+
     private static final Logger s_aLogger = LoggerFactory.getLogger(RegistrationServiceRegistrationHook.class);
 
     private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
+
+    private URL s_aSMLEndpointURL;
 
     @Value("${regServiceRegistrationHook.regLocatorUrl}")
     private String hookRegistrationUrl;
@@ -79,8 +82,6 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
 
     @Value("${regServiceRegistrationHook.clientCert}")
     private String hookClientCert;
-
-    private URL s_aSMLEndpointURL;
 
     @PostConstruct
     public void init() {
