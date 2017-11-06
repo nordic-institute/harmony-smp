@@ -15,6 +15,9 @@
 
 package eu.europa.ec.cipa.smp.server.security;
 
+import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
+import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
+import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -23,6 +26,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -40,11 +44,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Created by gutowpa on 20/02/2017.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/spring-context.xml", "classpath:/spring-security.xml", "classpath:/spring-security-test-context.xml"})
+@ContextConfiguration(classes = {
+        SmpAppConfig.class,
+        SmpWebAppConfig.class,
+        SpringSecurityConfig.class})
 @WebAppConfiguration
 @Transactional
 @Rollback(true)
 @Sql("classpath:/webapp_integration_test_data.sql")
+@TestPropertySource(properties = {
+        "identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes=case-sensitive-participant-1|case-sensitive-participant-2",
+        "identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes=case-sensitive-doc-1|case-sensitive-doc-2"
+})
 public class SecurityConfigurationTest {
 
     public static final String RETURN_LOGGED_USER_PATH = "/getLoggedUsername";

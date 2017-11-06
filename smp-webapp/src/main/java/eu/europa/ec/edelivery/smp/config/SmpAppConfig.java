@@ -15,15 +15,24 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
+
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
 
 /**
  * Created by gutowpa on 12/07/2017.
  */
 
 @Configuration
-@ImportResource("classpath:spring-context.xml")
 @ComponentScan(basePackages = {
         "eu.europa.ec.cipa.smp.server.data.dbms",
         "eu.europa.ec.cipa.smp.server.services",
@@ -36,8 +45,56 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 })
 public class SmpAppConfig {
 
+    @Value("${jdbc.driver}")
+    private String driver;
+
+    @Value("${jdbc.user}")
+    private String username;
+
+    @Value("${jdbc.password}")
+    private String password;
+
+    @Value("${jdbc.url}")
+    private String url;
+
     @Bean
-    public static PropertySourcesPlaceholderConfigurer propertyConfigInDev() {
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         return new PropertySourcesPlaceholderConfigurer();
+    }
+
+    @Bean
+    public DataSource dataSource() {
+        DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
+        driverManagerDataSource.setDriverClassName(driver);
+        driverManagerDataSource.setUrl(url);
+        driverManagerDataSource.setUsername(username);
+        driverManagerDataSource.setPassword(password);
+
+        return driverManagerDataSource;
+    }
+
+    @Bean
+    public LocalContainerEntityManagerFactoryBean smpEntityManagerFactory() {
+        LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
+        lef.setDataSource(dataSource());
+        lef.setJpaVendorAdapter(jpaVendorAdapter());
+        lef.setPackagesToScan("eu.europa.ec.cipa.smp.server.data.dbms.model");
+        lef.setPersistenceXmlLocation("classpath:META-INF/smp-persistence.xml");
+        return lef;
+    }
+
+    @Bean
+    public JpaVendorAdapter jpaVendorAdapter() {
+        HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
+
+        return hibernateJpaVendorAdapter;
+    }
+
+    @Bean
+    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+        JpaTransactionManager transactionManager = new JpaTransactionManager();
+        transactionManager.setEntityManagerFactory(emf);
+
+        return transactionManager;
     }
 }
