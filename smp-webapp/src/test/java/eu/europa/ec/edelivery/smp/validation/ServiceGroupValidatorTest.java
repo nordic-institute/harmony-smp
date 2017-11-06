@@ -45,7 +45,7 @@
 
 package eu.europa.ec.edelivery.smp.validation;
 
-import eu.europa.ec.config.SmpServicesTestConfig;
+import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,6 +55,7 @@ import org.mockito.MockitoAnnotations;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -64,8 +65,11 @@ import static eu.europa.ec.smp.api.Identifiers.asString;
  * Created by gutowpa on 02/08/2017.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {
-        SmpServicesTestConfig.class})
+@ContextConfiguration(classes = {SmpAppConfig.class})
+@TestPropertySource(properties = {
+        "identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes=case-sensitive-participant-1|case-sensitive-participant-2",
+        "identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes=case-sensitive-doc-1|case-sensitive-doc-2"
+})
 public class ServiceGroupValidatorTest {
 
     @InjectMocks

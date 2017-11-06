@@ -20,14 +20,11 @@ import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
-import eu.europa.ec.smp.api.Identifiers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
@@ -59,7 +56,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
-import java.security.cert.X509Certificate;
 
 import static java.lang.String.format;
 import static java.net.URLEncoder.encode;
@@ -73,7 +69,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(classes = {
         SmpAppConfig.class,
         SmpWebAppConfig.class,
-        SpringSecurityConfig.class})
+        SpringSecurityConfig.class
+})
 @WebAppConfiguration
 @Transactional
 @Rollback(true)

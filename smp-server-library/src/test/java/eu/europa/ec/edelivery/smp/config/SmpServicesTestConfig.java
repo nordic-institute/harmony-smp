@@ -37,11 +37,9 @@ import javax.sql.DataSource;
  * Created by Flavio Santos
  */
 @Configuration
-//@ImportResource("classpath:spring-test-context.xml")
 @ComponentScan(basePackages = {
         "eu.europa.ec"})
 @PropertySource(value = "classpath:config.properties")
-//@EnableTransactionManagement
 public class SmpServicesTestConfig {
 
     @Value("${jdbc.driver}")
