@@ -24,6 +24,7 @@ import eu.europa.ec.cipa.smp.server.security.HostnameVerifierAlwaysTrue;
 import eu.europa.ec.cipa.smp.server.security.KeyStoreUtils;
 import eu.europa.ec.cipa.smp.server.util.to_be_removed.ESuccess;
 import eu.europa.ec.cipa.smp.server.util.to_be_removed.VerySecureRandom;
+import org.apache.commons.lang3.StringUtils;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.slf4j.Logger;
@@ -60,6 +61,7 @@ import java.util.Map;
 @Component
 @Conditional(SMLHookConditionOn.class)
 public final class RegistrationServiceRegistrationHook extends AbstractRegistrationHook {
+    private static final Logger s_aLogger = LoggerFactory.getLogger(RegistrationServiceRegistrationHook.class);
 
     private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
 
@@ -78,19 +80,10 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
     @Value("${regServiceRegistrationHook.clientCert}")
     private String hookClientCert;
 
-    private static final Logger s_aLogger = LoggerFactory.getLogger(RegistrationServiceRegistrationHook.class);
     private URL s_aSMLEndpointURL;
-    private String s_sSMPID;
-    private String s_sSMPClientCertificate;
 
     @PostConstruct
     public void init() {
-    /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
-        in the classpath (like smp.config.properties or sml.config.properties).
-        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
-        Needs to be properly refactored
-    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"classpath:applicationContext.xml"});
-    */
         // SML endpoint (incl. the service name)
         try {
             s_aSMLEndpointURL = new URL(hookRegistrationUrl);
@@ -180,11 +173,19 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
 
     private ServiceMetadataPublisherServiceForParticipantType toBusdoxParticipantId(ParticipantIdentifierType aPI) {
         ServiceMetadataPublisherServiceForParticipantType busdoxIdentifier = new ServiceMetadataPublisherServiceForParticipantType();
-        busdoxIdentifier.setServiceMetadataPublisherID(s_sSMPID);
+        if (StringUtils.isEmpty(hookId)) {
+            throw new HookException("SMP ID is null or empty");
+        }
+        busdoxIdentifier.setServiceMetadataPublisherID(hookId);
+
+        if (StringUtils.isEmpty(aPI.getScheme()) || StringUtils.isEmpty(aPI.getValue())) {
+            throw new HookException("Participant Scheme or Id is null or empty");
+        }
         org.busdox.transport.identifiers._1.ParticipantIdentifierType parId = new org.busdox.transport.identifiers._1.ParticipantIdentifierType();
         parId.setScheme(aPI.getScheme());
         parId.setValue(aPI.getValue());
         busdoxIdentifier.setParticipantIdentifier(parId);
+
         return busdoxIdentifier;
     }
 
