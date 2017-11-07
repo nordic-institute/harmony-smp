@@ -50,9 +50,10 @@ public final class SignatureFilter {
     @Value("${xmldsig.keystore.key.password}")
     private String xmldsigKeystoreKeyPassword;
 
-
     private KeyStore.PrivateKeyEntry m_aKeyEntry;
+
     private X509Certificate m_aCert;
+
     private Signer signer;
 
     @PostConstruct
@@ -66,15 +67,15 @@ public final class SignatureFilter {
                 // Alias not found
                 throw new IllegalStateException("Failed to find key store alias '" +
                         xmldsigKeystoreKeyAlias +
-                        "' in keystore '" +
-                        xmldsigKeystorePassword +
+                        "' in keystore with password '" +
+                        xmldsigKeystoreKeyPassword +
                         "'. Does the alias exist? Is the password correct?");
             }
             if (!(aEntry instanceof KeyStore.PrivateKeyEntry)) {
                 // Not a private key
                 throw new IllegalStateException("The keystore alias '" +
                         xmldsigKeystoreKeyAlias +
-                        "' was found in keystore '" +
+                        "' was found in keystore with password '" +
                         xmldsigKeystorePassword +
                         "' but it is not a private key! The internal type is " +
                         aEntry.getClass().getName());

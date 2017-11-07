@@ -24,6 +24,7 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -33,7 +34,9 @@ import javax.sql.DataSource;
  */
 
 @Configuration
+@EnableTransactionManagement
 @ComponentScan(basePackages = {
+        "eu.europa.ec.edelivery.smp.validation",
         "eu.europa.ec.cipa.smp.server.data.dbms",
         "eu.europa.ec.cipa.smp.server.services",
         "eu.europa.ec.cipa.smp.server.hook",
