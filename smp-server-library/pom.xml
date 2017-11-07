@@ -28,12 +28,12 @@
 
     <!-- Default values for local compilation. The properties can be overriden for continuous integration servers -->
     <properties>
-        <!-- database -->
         <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
         <jdbc.url>jdbc:mysql://localhost/smp</jdbc.url>
         <jdbc.user>smp</jdbc.user>
         <jdbc.password>smp</jdbc.password>
         <target-database>MySQL</target-database>
+        <jdbc.read-connections.max>10</jdbc.read-connections.max>
     </properties>
 
     <dependencies>
