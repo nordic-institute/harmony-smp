@@ -29,6 +29,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Created by migueti on 26/01/2017.
@@ -61,7 +62,7 @@ public class ServiceGroupConverter {
     }
 
     private static Document parse(String serviceGroupXml) throws ParserConfigurationException, IOException, SAXException {
-        InputStream inputStream = new ByteArrayInputStream(serviceGroupXml.getBytes());
+        InputStream inputStream = new ByteArrayInputStream(serviceGroupXml.getBytes(UTF_8));
         return getDocumentBuilder().parse(inputStream);
     }
 

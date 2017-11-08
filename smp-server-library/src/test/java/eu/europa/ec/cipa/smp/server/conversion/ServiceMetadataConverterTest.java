@@ -65,6 +65,20 @@ public class ServiceMetadataConverterTest {
     }
 
     @Test
+    public void testUnmarshalServiceInformationUtf8() throws IOException, SAXException, ParserConfigurationException, JAXBException {
+        //given
+        String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "ServiceMetadataWithServiceInformationUtf8.xml");
+
+        //when
+        ServiceMetadata serviceMetadata = ServiceMetadataConverter.unmarshal(inputDoc);
+
+        //then
+        String serviceDescription = serviceMetadata.getServiceInformation().getProcessList().getProcesses().get(0).getServiceEndpointList().getEndpoints().get(0).getServiceDescription();
+        assertEquals("--ö--ẞßÄäPLżółćNOÆæØøÅå", serviceDescription);
+
+    }
+
+    @Test
     public void testUnmarshalRedirect() throws IOException, SAXException, ParserConfigurationException, JAXBException {
         //given
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "ServiceMetadataWithRedirect.xml");

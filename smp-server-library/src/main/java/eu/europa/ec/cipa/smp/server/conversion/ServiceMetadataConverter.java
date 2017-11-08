@@ -34,6 +34,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+
 /**
  * Created by gutowpa on 05/01/2017.
  */
@@ -80,7 +82,7 @@ public class ServiceMetadataConverter {
     }
 
     private static Document parse(String serviceMetadataXml) throws SAXException, IOException, ParserConfigurationException {
-        InputStream inputStream = new ByteArrayInputStream(serviceMetadataXml.getBytes());
+        InputStream inputStream = new ByteArrayInputStream(serviceMetadataXml.getBytes(UTF_8));
         return getDocumentBuilder().parse(inputStream);
     }
 

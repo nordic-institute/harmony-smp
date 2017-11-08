@@ -36,6 +36,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Created by migueti on 13/02/2017.
@@ -92,7 +93,7 @@ public class ExtensionUtils {
 
     public static List<ExtensionType> unmarshalExtensions(String xml) throws JAXBException {
         String wrappedExtensionsStr = String.format(WRAPPED_FORMAT, xml);
-        InputStream inStream = new ByteArrayInputStream(wrappedExtensionsStr.getBytes());
+        InputStream inStream = new ByteArrayInputStream(wrappedExtensionsStr.getBytes(UTF_8));
         JAXBContext jaxbContext = JAXBContext.newInstance(ExtensionsWrapper.class);
         Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
         JAXBElement<ExtensionsWrapper> wrappedExtensions = jaxbUnmarshaller.unmarshal(new StreamSource(inStream), ExtensionsWrapper.class);
