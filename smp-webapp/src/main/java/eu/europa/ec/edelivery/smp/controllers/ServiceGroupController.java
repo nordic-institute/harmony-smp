@@ -41,7 +41,6 @@ import java.util.List;
 
 import static eu.europa.ec.smp.api.Identifiers.asString;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
-import static org.springframework.http.MediaType.TEXT_XML_VALUE;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -76,7 +75,7 @@ public class ServiceGroupController {
     private BaseServiceMetadataInterfaceImpl serviceMetadataService;
 
 
-    @GetMapping(produces = TEXT_XML_VALUE)
+    @GetMapping(produces = "text/xml; charset=UTF-8")
     public ServiceGroup getServiceGroup(@PathVariable String serviceGroupId) {
         log.info("GET ServiceGrooup: {}", serviceGroupId);
 

@@ -33,7 +33,6 @@ import java.io.UnsupportedEncodingException;
 
 import static eu.europa.ec.smp.api.Identifiers.asDocumentId;
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
-import static org.springframework.http.MediaType.TEXT_XML_VALUE;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -59,7 +58,7 @@ public class ServiceMetadataController {
     @Autowired
     private ServiceMetadataPathBuilder pathBuilder;
 
-    @GetMapping(produces = TEXT_XML_VALUE)
+    @GetMapping(produces = "text/xml; charset=UTF-8")
     public String getServiceMetadata(@PathVariable String serviceGroupId,
                                      @PathVariable String serviceMetadataId) throws TransformerException, UnsupportedEncodingException {
 
