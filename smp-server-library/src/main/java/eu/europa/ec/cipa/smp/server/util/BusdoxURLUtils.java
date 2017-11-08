@@ -14,14 +14,10 @@
  */
 package eu.europa.ec.cipa.smp.server.util;
 
-import com.helger.commons.annotations.PresentForCodeCoverage;
-import com.helger.commons.charset.CCharset;
-import com.helger.commons.codec.URLCodec;
-
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
-import java.nio.charset.Charset;
-import java.util.Locale;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * Utility methods for assembling URLs and URL elements required for BusDox.
@@ -29,11 +25,13 @@ import java.util.Locale;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
+@Deprecated
+//TODO: Remove me
 public final class BusdoxURLUtils {
-  public static final Charset URL_CHARSET = CCharset.CHARSET_UTF_8_OBJ;
-  public static final Locale URL_LOCALE = Locale.US;
+  //public static final Charset URL_CHARSET = Charset.forName("UTF-8");
+  //public static final Locale URL_LOCALE = Locale.US;
 
-  @PresentForCodeCoverage
+
   private static final BusdoxURLUtils s_aInstance = new BusdoxURLUtils ();
 
   private BusdoxURLUtils() {}
@@ -48,7 +46,12 @@ public final class BusdoxURLUtils {
   @Nullable
   public static String createPercentEncodedURL (@Nullable final String sURL) {
     if (sURL != null)
-      return new URLCodec ().encodeText (sURL);
+      //return new URLCodec ().encodeText (sURL);
+      try {
+        return URLEncoder.encode(sURL, "UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        throw new RuntimeException(e);
+      }
     return null;
   }
 

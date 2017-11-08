@@ -14,22 +14,24 @@
  */
 package eu.europa.ec.cipa.smp.server.util;
 
-import com.helger.commons.collections.ContainerHelper;
 import eu.europa.ec.cipa.smp.server.security.KeyStoreUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.x509.X509V1CertificateGenerator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.security.auth.x500.X500Principal;
+import java.io.IOException;
 import java.math.BigInteger;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.KeyStore;
-import java.security.Security;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -72,14 +74,14 @@ public final class KeyStoreUtilsTest {
 
     KeyStore ks = KeyStoreUtils.loadKeyStore ("keystores/keystore-no-pw.jks", (String) null);
     assertEquals (KeyStoreUtils.KEYSTORE_TYPE_JKS, ks.getType ());
-    assertEquals (1, ContainerHelper.newList (ks.aliases ()).size ());
+    assertEquals (1, newList (ks.aliases ()).size ());
     assertTrue (ks.containsAlias ("1"));
     final Certificate c1 = ks.getCertificate ("1");
     assertNotNull (c1);
     ks.setKeyEntry ("2", aKeyPair.getPrivate (), "key2".toCharArray (), certs);
 
     ks = KeyStoreUtils.loadKeyStore ("keystores/keystore-pw-peppol.jks", (String) null);
-    assertEquals (1, ContainerHelper.newList (ks.aliases ()).size ());
+    assertEquals (1, newList (ks.aliases ()).size ());
     assertTrue (ks.containsAlias ("1"));
     final Certificate c2 = ks.getCertificate ("1");
     assertNotNull (c2);
@@ -87,7 +89,7 @@ public final class KeyStoreUtilsTest {
     ks.setKeyEntry ("2", aKeyPair.getPrivate (), "key2".toCharArray (), certs);
 
     ks = KeyStoreUtils.loadKeyStore ("keystores/keystore-pw-peppol.jks", "peppol");
-    assertEquals (1, ContainerHelper.newList (ks.aliases ()).size ());
+    assertEquals (1, newList (ks.aliases ()).size ());
     assertTrue (ks.containsAlias ("1"));
     final Certificate c3 = ks.getCertificate ("1");
     assertNotNull (c3);
@@ -106,7 +108,17 @@ public final class KeyStoreUtilsTest {
       KeyStoreUtils.loadKeyStore ("keystores/keystore-pw-peppol.jks", "wrongpw");
       fail ();
     }
-    catch (final IllegalStateException ex) {}
+    catch (final IOException ex) {}
+  }
+
+  @Nonnull
+  public static <ELEMENTTYPE> List<ELEMENTTYPE> newList (@Nullable final Enumeration<? extends ELEMENTTYPE> aEnum)
+  {
+    final List <ELEMENTTYPE> ret = new ArrayList<ELEMENTTYPE>();
+    if (aEnum != null)
+      while (aEnum.hasMoreElements ())
+        ret.add (aEnum.nextElement ());
+    return ret;
   }
 
   @Test

@@ -14,7 +14,6 @@
  */
 package eu.europa.ec.cipa.smp.server.security;
 
-import com.helger.commons.GlobalDebug;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +32,7 @@ public final class HostnameVerifierAlwaysTrue implements HostnameVerifier {
   private final boolean m_bDebug;
 
   public HostnameVerifierAlwaysTrue() {
-    this (GlobalDebug.isDebugMode ());
+    this (true);
   }
 
   public HostnameVerifierAlwaysTrue(final boolean bDebug) {
