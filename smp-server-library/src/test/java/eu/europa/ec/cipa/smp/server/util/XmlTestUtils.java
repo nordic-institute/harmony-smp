@@ -48,8 +48,8 @@ public class XmlTestUtils {
     }
 
     public static Document loadDocument(String docResourcePath) throws ParserConfigurationException, SAXException, IOException {
-        InputStream inputStreamm = SignatureUtil.class.getResourceAsStream(docResourcePath);
-        return getDocumentBuilder().parse(inputStreamm);
+        InputStream inputStream = SignatureUtil.class.getResourceAsStream(docResourcePath);
+        return getDocumentBuilder().parse(inputStream);
     }
 
     public static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
