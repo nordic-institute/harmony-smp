@@ -34,7 +34,7 @@
         <intercept-url method="PUT" access=" ! isAnonymous()" pattern="/*"/>
         <intercept-url method="DELETE" access=" ! isAnonymous()" pattern="/*"/>
         <access-denied-handler ref="securityExceptionHandler"/>
-
+        <headers defaults-disabled="true" />
     </http>
 
 

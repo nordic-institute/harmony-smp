@@ -77,13 +77,6 @@ public final class RegistrationServiceRegistrationHook extends AbstractRegistrat
 
   @Autowired
   public void setConfigFile(ConfigFile configFile){
-    /* TODO : This is a quick and dirty hack to allow the use of a configuration file with an other name if it's
-        in the classpath (like smp.config.properties or sml.config.properties).
-        If the configuration file defined in applicationContext.xml couldn't be found, then the config.properties inside the war is used as a fallback.
-        Needs to be properly refactored
-    ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"classpath:applicationContext.xml"});
-    configFile = (ConfigFile) context.getBean("configFile");
-    */
 
     this.configFile = configFile;
 
