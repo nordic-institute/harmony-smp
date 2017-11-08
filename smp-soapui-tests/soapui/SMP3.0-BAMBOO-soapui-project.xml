@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<con:soapui-project activeEnvironment="Default" name="SMP TEST BAMBOO TESTS" resourceRoot="" soapui-version="5.2.1" abortOnError="false" runType="SEQUENTIAL" id="8147b356-07e4-4ff9-ade6-4e92e0597a38" xmlns:con="http://eviware.com/soapui/config"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.actions.iface.tools.soapui.ProTestRunnerAction@values-local"><![CDATA[<xml-fragment xmlns:con="http://eviware.com/soapui/config">
+<con:soapui-project activeEnvironment="Default" name="SMP TEST BAMBOO TESTS" resourceRoot="" soapui-version="5.1.2-m-SNAPSHOT" abortOnError="false" runType="SEQUENTIAL" id="8147b356-07e4-4ff9-ade6-4e92e0597a38" xmlns:con="http://eviware.com/soapui/config"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.actions.iface.tools.soapui.ProTestRunnerAction@values-local"><![CDATA[<xml-fragment xmlns:con="http://eviware.com/soapui/config">
   <con:entry key="Environment" value="Default"/>
   <con:entry key="Global Properties" value=""/>
   <con:entry key="TestSuite" value="&lt;all>"/>
