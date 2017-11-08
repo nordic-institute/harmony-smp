@@ -27,9 +27,12 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
@@ -67,6 +70,7 @@ public class ServiceMetadataConverter {
         }
     }
 
+
     public static ServiceMetadata unmarshal(String serviceMetadataXml){
         try {
             Document serviceMetadataDoc = parse(serviceMetadataXml);
@@ -80,6 +84,13 @@ public class ServiceMetadataConverter {
     private static Document parse(String serviceMetadataXml) throws SAXException, IOException, ParserConfigurationException {
         InputStream inputStream = new ByteArrayInputStream(serviceMetadataXml.getBytes(UTF_8));
         return getDocumentBuilder().parse(inputStream);
+    }
+
+    public static String toString(Document doc) throws TransformerException, UnsupportedEncodingException {
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        StringWriter writer = new StringWriter();
+        transformer.transform(new DOMSource(doc), new StreamResult(writer));
+        return writer.toString();
     }
 
     private static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {

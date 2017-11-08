@@ -22,18 +22,12 @@
 	<version>4.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>smp-parent-pom</name>
-	<description>The CIPA e-Delivery platform</description>
+	<description>SMP - CEF eDelivery</description>
 
 	<!-- Minimum Maven version -->
 	<prerequisites>
 		<maven>3.0.4</maven>
 	</prerequisites>
-
-	<!-- SVN location -->
-	<scm>
-		<connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/common/cipa-parent-pom</connection>
-		<developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/common/cipa-parent-pom</developerConnection>
-	</scm>
 
 	<!-- Used licenses -->
 	<licenses>
@@ -64,6 +58,7 @@
 		<spring.security.version>4.2.1.RELEASE</spring.security.version>
 		<bdmsl.client.version>3.0.0</bdmsl.client.version>
 		<cxf.version>3.1.1</cxf.version>
+		<cxf-xjc-runtime.version>3.1.0</cxf-xjc-runtime.version>
 		<cxf.security.version>3.1.1</cxf.security.version>
 		<build.helper.maven.version>1.9.1</build.helper.maven.version>
 		<ehcache.version>2.10.0</ehcache.version>
@@ -78,11 +73,12 @@
 		<junit.version>4.12</junit.version>
 		<mockito.version>2.7.14</mockito.version>
 		<log4j.version>1.2.17</log4j.version>
-		<slf4j.version>1.7.10</slf4j.version>
 		<guava.version>18.0</guava.version>
 		<orika.version>1.4.6</orika.version>
 		<aspectj.version>1.8.6</aspectj.version>
 		<jaxb.version>2.2.4</jaxb.version>
+		<jaxb2-basics.version>0.11.0</jaxb2-basics.version>
+		<javax.annotation.version>1.2-b02</javax.annotation.version>
 		<hibernate.version>5.1.7.Final</hibernate.version>
 		<hibernate-jpa.version>1.0.0.Final</hibernate-jpa.version>
 		<hibernate.validator>5.1.2.Final</hibernate.validator>
@@ -92,12 +88,12 @@
 		<commons-net.version>1.4.1</commons-net.version>
 		<ant-commons-net.version>1.6.5</ant-commons-net.version>
 		<jetty.version>8.1.15.v20140411</jetty.version>
-		<servlet-api.version>2.5</servlet-api.version>
-		<jersey.version>2.17</jersey.version>
+		<servlet-api.version>3.0</servlet-api.version>
 		<metro.version>2.2.1-1</metro.version>
 		<commons-io.version>2.4</commons-io.version>
 		<junitparams.version>1.0.5</junitparams.version>
 		<lombok.version>1.16.16</lombok.version>
+		<xmlunit.version>1.6</xmlunit.version>
 	</properties>
 
 	<!-- Where are we looking for JARs? -->
@@ -261,6 +257,11 @@
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
+				<artifactId>spring-oxm</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
 				<artifactId>spring-beans</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
@@ -282,6 +283,11 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-context-support</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
 			<dependency>
@@ -315,11 +321,6 @@
                 <version>${spring.security.version}</version>
             </dependency>
 			<dependency>
-				<groupId>org.springframework</groupId>
-				<artifactId>spring-webmvc</artifactId>
-				<version>${spring.version}</version>
-			</dependency>
-			<dependency>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok</artifactId>
 				<version>${lombok.version}</version>
@@ -329,6 +330,12 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-test</artifactId>
 				<version>${spring.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>javax.annotation</groupId>
+				<artifactId>javax.annotation-api</artifactId>
+				<version>${javax.annotation.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.aspectj</groupId>
@@ -361,6 +368,16 @@
 				<version>${log4j.version}</version>
 			</dependency>
 			<dependency>
+				<groupId>org.jvnet.jaxb2_commons</groupId>
+				<artifactId>jaxb2-basics</artifactId>
+				<version>${jaxb2-basics.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf.xjc-utils</groupId>
+				<artifactId>cxf-xjc-runtime</artifactId>
+				<version>${cxf-xjc-runtime.version}</version>
+			</dependency>
+			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
 				<version>${mockito.version}</version>
@@ -370,6 +387,7 @@
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>${junit.version}</version>
+				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -447,6 +465,7 @@
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
 				<version>${commons-io.version}</version>
+				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
@@ -461,31 +480,10 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.glassfish.jersey.core</groupId>
-				<artifactId>jersey-server</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.jersey.containers</groupId>
-				<artifactId>jersey-container-servlet-core</artifactId>
-				<version>${jersey.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.glassfish.metro</groupId>
-				<artifactId>webservices-rt</artifactId>
-				<version>${metro.version}</version>
-				<scope>provided</scope>
-				<exclusions>
-					<!--  Already included in JDK6  -->
-					<exclusion>
-						<groupId>javax.activation</groupId>
-						<artifactId>activation</artifactId>
-					</exclusion>
-					<exclusion>
-						<groupId>javax.xml.stream</groupId>
-						<artifactId>stax-api</artifactId>
-					</exclusion>
-				</exclusions>
+				<groupId>xmlunit</groupId>
+				<artifactId>xmlunit</artifactId>
+				<version>${xmlunit.version}</version>
+				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -495,6 +493,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>

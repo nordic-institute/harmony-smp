@@ -14,23 +14,15 @@
  */
 package eu.europa.ec.cipa.smp.server.util;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.Nonempty;
-import com.helger.commons.annotations.ReturnsMutableCopy;
-import com.helger.commons.collections.CollectionHelper;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.commons.io.streams.StreamUtils;
-import com.helger.commons.state.ESuccess;
-import com.helger.commons.string.StringHelper;
-import com.helger.commons.string.StringParser;
-import com.helger.commons.string.ToStringGenerator;
+import eu.europa.ec.cipa.smp.server.util.to_be_removed.ESuccess;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -72,7 +64,7 @@ public class ConfigFile {
    * and afterwards config.properties)
    */
   private ConfigFile() {
-    this (DEFAULT_PRIVATE_CONFIG_PROPERTIES, DEFAULT_CONFIG_PROPERTIES);
+      this(DEFAULT_PRIVATE_CONFIG_PROPERTIES, DEFAULT_CONFIG_PROPERTIES);
   }
 
   /**
@@ -82,34 +74,41 @@ public class ConfigFile {
    *        The array of paths to the config files to be read. Must be
    *        classpath-relative. The first file that could be read will be taken
    */
-  public ConfigFile(@Nonnull @Nonempty final String... aConfigPaths) {
-    ValueEnforcer.notEmptyNoNullValue (aConfigPaths, "ConfigPaths");
+  public ConfigFile(@Nonnull  final String... aConfigPaths) {
 
     boolean bRead = false;
     for (final String sConfigPath : aConfigPaths)
-      if (_readConfigFile (sConfigPath).isSuccess ()) {
-        bRead = true;
-        break;
+      try {
+        if (_readConfigFile (sConfigPath) == ESuccess.SUCCESS) {
+          bRead = true;
+          break;
+        }
+      } catch (IOException e) {
+        throw new RuntimeException("Failed to load config file", e);
       }
 
     if (!bRead) {
       // No config file found at all
-      s_aLogger.warn ("Failed to resolve config file paths: " + CollectionHelper.newList (aConfigPaths).toString ());
+      s_aLogger.warn ("Failed to resolve config file paths: " + aConfigPaths);
     }
     m_bRead = bRead;
   }
 
-  public ConfigFile(final String configFilePath) {
+  public ConfigFile(final String configFilePath) throws IOException {
     this (configFilePath, DEFAULT_PRIVATE_CONFIG_PROPERTIES, DEFAULT_CONFIG_PROPERTIES);
   }
 
   @Nonnull
-  private ESuccess _readConfigFile (@Nonnull final String sPath) {
+  private ESuccess _readConfigFile (@Nonnull final String sPath) throws IOException {
     // Try to get the input stream for the passed property file name
-    InputStream aIS = ClassPathResource.getInputStream (sPath);
+    InputStream aIS = ConfigFile.class.getResourceAsStream("/"+sPath);
     if (aIS == null) {
-      // Fallback to file system - maybe this helps...
-      aIS = new FileSystemResource (sPath).getInputStream ();
+      try {
+        // Fallback to file system - maybe this helps...
+        aIS = new FileInputStream(sPath);
+      }catch(Exception e){
+        return ESuccess.FAILURE;
+      }
     }
     if (aIS != null) {
       try {
@@ -124,7 +123,10 @@ public class ConfigFile {
       }
       finally {
         // Manually close the input stream!
-        StreamUtils.close (aIS);
+        //StreamUtils.close (aIS);
+        if(aIS!=null){
+          aIS.close();
+        }
       }
     }
     return ESuccess.FAILURE;
@@ -156,7 +158,7 @@ public class ConfigFile {
    * @return <code>null</code> if no such value is in the configuration file.
    */
   @Nullable
-  public final String getString (@Nonnull final String sKey) {
+  public String getString (@Nonnull final String sKey) {
     return getString (sKey, null);
   }
 
@@ -174,7 +176,7 @@ public class ConfigFile {
   @Nullable
   public final String getString (@Nonnull final String sKey, @Nullable final String sDefault) {
     final String sValue = m_aProps.getProperty (sKey);
-    return sValue != null ? StringHelper.trim (sValue) : sDefault;
+    return sValue != null ? StringUtils.trim(sValue) : sDefault;
   }
 
   @Nullable
@@ -188,12 +190,23 @@ public class ConfigFile {
     return ret == null ? aDefault : ret.toCharArray ();
   }
 
+
   public final boolean getBoolean (@Nonnull final String sKey, final boolean bDefault) {
-    return StringParser.parseBool (getString (sKey), bDefault);
+    String val = getString (sKey);
+    if(StringUtils.isNotBlank(val)){
+      return Boolean.valueOf(getString (sKey));
+    }else{
+      return bDefault;
+    }
   }
 
   public final int getInt (@Nonnull final String sKey, final int nDefault) {
-    return StringParser.parseInt (getString (sKey), nDefault);
+    String val = getString (sKey);
+    if(StringUtils.isNotBlank(val)) {
+      return Integer.valueOf(val);
+    } else {
+      return nDefault;
+    }
   }
 
   public List<String> getStringList(@Nonnull final String sKey) {
@@ -209,7 +222,6 @@ public class ConfigFile {
    * @return A {@link Set} with all keys contained in the configuration file
    */
   @Nonnull
-  @ReturnsMutableCopy
   public final Set <String> getAllKeys () {
     // Convert from Set<Object> to Set<String>
     final Set <String> ret = new HashSet <String> ();
@@ -217,9 +229,10 @@ public class ConfigFile {
       ret.add ((String) o);
     return ret;
   }
-
+/*
   @Override
   public String toString () {
     return new ToStringGenerator (this).append ("read", m_bRead).append ("props", m_aProps).toString ();
   }
+  */
 }

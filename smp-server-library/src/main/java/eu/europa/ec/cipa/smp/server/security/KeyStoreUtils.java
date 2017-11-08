@@ -14,16 +14,12 @@
  */
 package eu.europa.ec.cipa.smp.server.security;
 
-import com.helger.commons.ValueEnforcer;
-import com.helger.commons.annotations.PresentForCodeCoverage;
-import com.helger.commons.io.resource.ClassPathResource;
-import com.helger.commons.io.resource.FileSystemResource;
-import com.helger.commons.io.streams.StreamUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.GeneralSecurityException;
@@ -64,7 +60,7 @@ public final class KeyStoreUtils {
 
   private static final String [] keystoreTypes = { KEYSTORE_TYPE_JKS, KEYSTORE_TYPE_PKCS12, KEYSTORE_TYPE_JCEKS };
 
-  @PresentForCodeCoverage
+
   private static final KeyStoreUtils s_aInstance = new KeyStoreUtils ();
 
   private KeyStoreUtils() {}
@@ -112,10 +108,17 @@ public final class KeyStoreUtils {
     Security.addProvider (new BouncyCastleProvider ());
 
     // Open the resource stream
-    InputStream aIS = ClassPathResource.getInputStream (sKeyStorePath);
+    //InputStream aIS = ClassPathResource.getInputStream (sKeyStorePath);
+    InputStream aIS = KeyStoreUtils.class.getResourceAsStream("/"+sKeyStorePath);
+
     if (aIS == null) {
       // Fallback to file system - maybe this helps...
-      aIS = new FileSystemResource (sKeyStorePath).getInputStream ();
+      //aIS = new FileSystemResource (sKeyStorePath).getInputStream ();
+      try {
+        aIS = new FileInputStream(sKeyStorePath);
+      } catch(Exception e){
+        throw new IllegalArgumentException ("Failed to open key store '" + sKeyStorePath + "'", e);
+      }
     }
     if (aIS == null)
       throw new IllegalArgumentException ("Failed to open key store '" + sKeyStorePath + "'");
@@ -136,7 +139,12 @@ public final class KeyStoreUtils {
         try {
           aKeyStore.load (aIS, aKeyStorePassword);
           return aKeyStore;
+        }finally {
+          if(aIS != null){
+              aIS.close();
+          }
         }
+        /*
         catch (final IOException e) {
           StreamUtils.close (aIS);
           aIS = ClassPathResource.getInputStream (sKeyStorePath);
@@ -144,7 +152,7 @@ public final class KeyStoreUtils {
             // Fallback to file system - maybe this helps...
             aIS = new FileSystemResource (sKeyStorePath).getInputStream ();
           }
-        }
+        }*/
 
         // } catch (final KeyStoreException ex) {
         // throw new
@@ -155,7 +163,10 @@ public final class KeyStoreUtils {
       throw new IllegalStateException ("No provider can handle JKS key stores! Very weird!");
     }
     finally {
-      StreamUtils.close (aIS);
+      if(aIS != null){
+        aIS.close();
+      }
+      //StreamUtils.close (aIS);
     }
 
   }
@@ -183,8 +194,8 @@ public final class KeyStoreUtils {
                                                         @Nonnull final String sAliasToCopy,
                                                         @Nullable final char [] aAliasPassword) throws GeneralSecurityException,
                                                                                                IOException {
-    ValueEnforcer.notNull (aBaseKeyStore, "BaseKeyStore");
-    ValueEnforcer.notNull (sAliasToCopy, "AliasToCopy");
+    /*ValueEnforcer.notNull (aBaseKeyStore, "BaseKeyStore");
+    ValueEnforcer.notNull (sAliasToCopy, "AliasToCopy");*/
 
     final KeyStore aKeyStore = KeyStore.getInstance (aBaseKeyStore.getType (), aBaseKeyStore.getProvider ());
     // null stream means: create new key store

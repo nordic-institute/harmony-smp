@@ -60,7 +60,7 @@ public final class IdentifierUtilsTest {
       IdentifierUtils.areIdentifiersEqual (aPI1, null);
       fail ("null parameter not allowed");
     }
-    catch (final NullPointerException ex) {
+    catch (final IllegalArgumentException ex) {
       // expected
     }
 
@@ -68,7 +68,7 @@ public final class IdentifierUtilsTest {
       IdentifierUtils.areIdentifiersEqual (null, aPI1);
       fail ("null parameter not allowed");
     }
-    catch (final NullPointerException ex) {
+    catch (final IllegalArgumentException ex) {
       // expected
     }
   }
@@ -92,7 +92,7 @@ public final class IdentifierUtilsTest {
       IdentifierUtils.areIdentifiersEqual (aDI1, null);
       fail ("null parameter not allowed");
     }
-    catch (final NullPointerException ex) {
+    catch (final IllegalArgumentException ex) {
       // expected
     }
 
@@ -100,7 +100,7 @@ public final class IdentifierUtilsTest {
       IdentifierUtils.areIdentifiersEqual (null, aDI1);
       fail ("null parameter not allowed");
     }
-    catch (final NullPointerException ex) {
+    catch (final IllegalArgumentException ex) {
       // expected
     }
   }
