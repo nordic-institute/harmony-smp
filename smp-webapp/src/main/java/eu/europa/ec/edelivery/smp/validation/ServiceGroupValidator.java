@@ -38,7 +38,6 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -51,13 +50,10 @@ import static eu.europa.ec.edelivery.smp.error.ErrorBusinessCode.WRONG_FIELD;
 @Component
 public class ServiceGroupValidator {
 
-    @Value("${identifiersBehaviour.ParticipantIdentifierScheme.validationRegex}")
-    private String regex;
-
     private Pattern schemaPattern;
 
-    @PostConstruct
-    public void init() {
+    @Value("${identifiersBehaviour.ParticipantIdentifierScheme.validationRegex}")
+    public void setRegexPattern(String regex) {
         try {
             schemaPattern = Pattern.compile(regex);
         } catch (PatternSyntaxException | NullPointerException e) {
