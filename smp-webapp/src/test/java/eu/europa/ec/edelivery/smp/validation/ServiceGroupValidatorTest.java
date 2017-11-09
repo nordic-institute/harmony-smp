@@ -45,27 +45,30 @@
 
 package eu.europa.ec.edelivery.smp.validation;
 
-import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static eu.europa.ec.smp.api.Identifiers.asString;
 
 /**
  * Created by gutowpa on 02/08/2017.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SmpAppConfig.class})
 public class ServiceGroupValidatorTest {
+
+    private static final String ALLOWED_SCHEME_REGEXP = "^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)";
 
     @Autowired
     private ServiceGroupValidator validator;
+
+    @Before
+    public void init() {
+        validator = new ServiceGroupValidator();
+        validator.setRegexPattern(ALLOWED_SCHEME_REGEXP);
+    }
 
     @Test
     public void testPositiveGoodScheme() throws Throwable {

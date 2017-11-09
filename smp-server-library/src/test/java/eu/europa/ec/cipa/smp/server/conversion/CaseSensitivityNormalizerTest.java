@@ -15,31 +15,36 @@
 
 package eu.europa.ec.cipa.smp.server.conversion;
 
-import eu.europa.ec.edelivery.smp.config.SmpServicesTestConfig;
+import junitparams.JUnitParamsRunner;
+import junitparams.Parameters;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 /**
  * Created by gutowpa on 06/03/2017.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SmpServicesTestConfig.class})
+@RunWith(JUnitParamsRunner.class)
 public class CaseSensitivityNormalizerTest {
 
-    @Autowired
     private CaseSensitivityNormalizer normalizer;
 
+    @Before
+    public void init() {
+        normalizer = new CaseSensitivityNormalizer();
+        normalizer.setCaseSensitiveDocumentSchemes(asList(new String[]{"case-SENSITIVE-scheme-1", "Case-SENSITIVE-Scheme-2"}));
+        normalizer.setCaseSensitiveParticipantSchemes(asList(new String[]{"case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"}));
+    }
+
     @SuppressWarnings("unused")
-    private static String[][] testCases() {
-        return new String[][]{
+    private static Object[] testCases() {
+        return new Object[][]{
                 {"scheme", "value", "scheme", "value"},
                 {"SCHEME", "VALUE", "scheme", "value"},
                 {"SchemE", "ValuE", "scheme", "value"},
@@ -51,53 +56,40 @@ public class CaseSensitivityNormalizerTest {
     }
 
     @Test
-    public void testParticipantIdsCaseNormalization() {
-        for (int i = 0; i < testCases().length; i++) {
-            String inputScheme = testCases()[i][0];
-            String inputValue = testCases()[i][1];
-            String expectedScheme = testCases()[i][2];
-            String expectedValue = testCases()[i][3];
+    @Parameters(method = "testCases")
+    public void testParticipantIdsCaseNormalization(String inputScheme, String inputValue, String expectedScheme, String expectedValue) {
+        //given
+        ParticipantIdentifierType inputParticpantId = new ParticipantIdentifierType(inputValue, inputScheme);
 
-            //given
-            ParticipantIdentifierType inputParticpantId = new ParticipantIdentifierType(inputValue, inputScheme);
+        //when
+        ParticipantIdentifierType outputParticipantId = normalizer.normalize(inputParticpantId);
 
-            //when
-            ParticipantIdentifierType outputParticipantId = normalizer.normalize(inputParticpantId);
+        //then
+        assertEquals(expectedScheme, outputParticipantId.getScheme());
+        assertEquals(expectedValue, outputParticipantId.getValue());
 
-            //then
-            assertEquals(expectedScheme, outputParticipantId.getScheme());
-            assertEquals(expectedValue, outputParticipantId.getValue());
-
-            //input stays untouched
-            assertFalse(inputParticpantId == outputParticipantId);
-            assertEquals(inputScheme, inputParticpantId.getScheme());
-            assertEquals(inputValue, inputParticpantId.getValue());
-        }
+        //input stays untouched
+        assertFalse(inputParticpantId == outputParticipantId);
+        assertEquals(inputScheme, inputParticpantId.getScheme());
+        assertEquals(inputValue, inputParticpantId.getValue());
     }
 
     @Test
-    public void testDocumentIdsCaseNormalization() {
-        for (int i = 0; i < testCases().length; i++) {
-            String inputScheme = testCases()[i][0];
-            String inputValue = testCases()[i][1];
-            String expectedScheme = testCases()[i][2];
-            String expectedValue = testCases()[i][3];
+    @Parameters(method = "testCases")
+    public void testDocumentIdsCaseNormalization(String inputScheme, String inputValue, String expectedScheme, String expectedValue) {
+        //given
+        DocumentIdentifier inputDocId = new DocumentIdentifier(inputValue, inputScheme);
 
-            //given
-            DocumentIdentifier inputDocId = new DocumentIdentifier(inputValue, inputScheme);
+        //when
+        DocumentIdentifier outputDocId = normalizer.normalize(inputDocId);
 
-            //when
-            DocumentIdentifier outputDocId = normalizer.normalize(inputDocId);
+        //then
+        assertEquals(expectedScheme, outputDocId.getScheme());
+        assertEquals(expectedValue, outputDocId.getValue());
 
-            //then
-            assertEquals(expectedScheme, outputDocId.getScheme());
-            assertEquals(expectedValue, outputDocId.getValue());
-
-            //input stays untouched
-            assertFalse(inputDocId == outputDocId);
-            assertEquals(inputScheme, inputDocId.getScheme());
-            assertEquals(inputValue, inputDocId.getValue());
-        }
+        //input stays untouched
+        assertFalse(inputDocId == outputDocId);
+        assertEquals(inputScheme, inputDocId.getScheme());
+        assertEquals(inputValue, inputDocId.getValue());
     }
-
 }
