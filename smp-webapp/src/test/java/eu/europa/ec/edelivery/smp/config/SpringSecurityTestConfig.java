@@ -15,25 +15,18 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 /**
- * Created by gutowpa on 12/07/2017.
+ * Created by Flavio Santos
  */
 
-@Configuration
+
+@EnableWebSecurity
 @ComponentScan(basePackages = {
-        "eu.europa.ec.edelivery.smp.validation",
-        "eu.europa.ec.cipa.smp.server.data.dbms",
-        "eu.europa.ec.cipa.smp.server.services",
-        "eu.europa.ec.cipa.smp.server.hook",
-        "eu.europa.ec.cipa.smp.server.conversion",
-        "eu.europa.ec.cipa.smp.server.util"})
-@Import({CommonConfig.class, DatabaseConfig.class})
-public class SmpAppConfig {
+        "eu.europa.ec.cipa.smp.server.security"})
+public class SpringSecurityTestConfig {
 
 }
