@@ -20,7 +20,6 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -33,16 +32,19 @@ import static eu.europa.ec.smp.api.Identifiers.asString;
 @Component
 public class CaseSensitivityNormalizer {
 
-    @Value("#{'${identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes}'.split('\\|')}")
     private List<String> caseSensitiveParticipantSchemes;
-
-    @Value("#{'${identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes}'.split('\\|')}")
     private List<String> caseSensitiveDocumentSchemes;
 
-    @PostConstruct
-    public void init() {
-        toLowerCaseStringList(caseSensitiveParticipantSchemes);
-        toLowerCaseStringList(caseSensitiveDocumentSchemes);
+    @Value("#{'${identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes}'.split('\\|')}")
+    public void setCaseSensitiveDocumentSchemes(List<String> caseSensitiveDocumentSchemes) {
+        this.caseSensitiveDocumentSchemes = caseSensitiveDocumentSchemes;
+        toLowerCaseStringList(this.caseSensitiveDocumentSchemes);
+    }
+
+    @Value("#{'${identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes}'.split('\\|')}")
+    public void setCaseSensitiveParticipantSchemes(List<String> caseSensitiveParticipantSchemes) {
+        this.caseSensitiveParticipantSchemes = caseSensitiveParticipantSchemes;
+        toLowerCaseStringList(this.caseSensitiveParticipantSchemes);
     }
 
     public ParticipantIdentifierType normalize(final ParticipantIdentifierType participantIdentifier) {
