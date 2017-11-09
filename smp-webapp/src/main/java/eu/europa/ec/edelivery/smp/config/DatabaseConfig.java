@@ -32,7 +32,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 /**
- * Created by gutowpa on 12/07/2017.
+ * Created by Flavio Santos
  */
 
 @Configuration
