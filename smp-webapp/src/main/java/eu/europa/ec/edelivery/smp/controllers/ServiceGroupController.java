@@ -15,11 +15,9 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
-import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter;
-import eu.europa.ec.cipa.smp.server.data.dbms.DBMSDataManager;
-import eu.europa.ec.cipa.smp.server.services.BaseServiceGroupInterfaceImpl;
-import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
+import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
+import eu.europa.ec.edelivery.smp.services.ServiceMetadataService;
 import eu.europa.ec.edelivery.smp.validation.ServiceGroupValidator;
 import eu.europa.ec.smp.api.Identifiers;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
@@ -59,20 +57,13 @@ public class ServiceGroupController {
     ServiceGroupValidator serviceGroupValidator;
 
     @Autowired
-    private CaseSensitivityNormalizer caseSensitivityNormalizer;
-
-    //TODO Migrate to Service (add one more level)
-    @Autowired
-    private DBMSDataManager dataManager;
-
-    @Autowired
     private ServiceMetadataPathBuilder pathBuilder;
 
     @Autowired
-    private BaseServiceGroupInterfaceImpl serviceGroupService;
+    private ServiceGroupService serviceGroupService;
 
     @Autowired
-    private BaseServiceMetadataInterfaceImpl serviceMetadataService;
+    private ServiceMetadataService serviceMetadataService;
 
 
     @GetMapping(produces = "text/xml; charset=UTF-8")
@@ -103,7 +94,7 @@ public class ServiceGroupController {
 
         // Service action
         String newOwnerName = isNotBlank(serviceGroupOwner) ? serviceGroupOwner : SecurityContextHolder.getContext().getAuthentication().getName();
-        boolean newServiceGroupCreated = dataManager.saveServiceGroup(serviceGroup, newOwnerName);
+        boolean newServiceGroupCreated = serviceGroupService.saveServiceGroup(serviceGroup, newOwnerName);
 
         log.info("Finished PUT ServiceGroup: {}", serviceGroupId);
 
@@ -117,14 +108,14 @@ public class ServiceGroupController {
         log.info("DELETE ServiceGroup: {}", serviceGroupId);
 
         final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(serviceGroupId);
-        dataManager.deleteServiceGroup(aServiceGroupID);
+        serviceGroupService.deleteServiceGroup(aServiceGroupID);
 
         log.info("Finished DELETE ServiceGroup: {}", serviceGroupId);
     }
 
     private void addReferences(ServiceGroup serviceGroup) {
         ParticipantIdentifierType participantId = serviceGroup.getParticipantIdentifier();
-        List<DocumentIdentifier> docIds = serviceMetadataService.getMetadataIdentifiers(asString(participantId));
+        List<DocumentIdentifier> docIds = serviceMetadataService.findServiceMetadataIdentifiers(asString(participantId));
         List<ServiceMetadataReferenceType> referenceIds = serviceGroup.getServiceMetadataReferenceCollection().getServiceMetadataReferences();
         for (DocumentIdentifier docId : docIds) {
             String url = pathBuilder.buildSelfUrl(participantId, docId);

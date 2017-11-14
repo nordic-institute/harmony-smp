@@ -15,7 +15,7 @@
 package eu.europa.ec.cipa.smp.server.util;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import eu.europa.ec.cipa.smp.server.data.dbms.model.CommonColumnsLengths;
+import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
 import org.junit.Test;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;

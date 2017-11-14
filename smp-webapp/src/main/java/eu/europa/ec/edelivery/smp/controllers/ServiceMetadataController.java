@@ -16,8 +16,7 @@
 package eu.europa.ec.edelivery.smp.controllers;
 
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
-import eu.europa.ec.cipa.smp.server.data.dbms.DBMSDataManager;
-import eu.europa.ec.cipa.smp.server.services.BaseServiceMetadataInterfaceImpl;
+import eu.europa.ec.edelivery.smp.services.ServiceMetadataService;
 import eu.europa.ec.edelivery.smp.validation.ServiceMetadataValidator;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import org.slf4j.Logger;
@@ -46,14 +45,14 @@ public class ServiceMetadataController {
     private static final Logger log = LoggerFactory.getLogger(ServiceMetadataController.class);
 
     //TODO Migrate to Service (add one more level)
-    @Autowired
-    private DBMSDataManager dataManager;
+    //@Autowired
+    //private DBMSDataManager dataManager;
 
     @Autowired
     ServiceMetadataValidator serviceMetadataValidator;
 
     @Autowired
-    private BaseServiceMetadataInterfaceImpl serviceMetadataService;
+    private ServiceMetadataService serviceMetadataService;
 
     @Autowired
     private ServiceMetadataPathBuilder pathBuilder;
@@ -64,7 +63,7 @@ public class ServiceMetadataController {
 
         log.info("GET ServiceMetadata: {} - {}", serviceGroupId, serviceMetadataId);
 
-        Document serviceMetadata = serviceMetadataService.getServiceRegistration(serviceGroupId, serviceMetadataId);
+        Document serviceMetadata = serviceMetadataService.getServiceMetadataDocument(serviceGroupId, serviceMetadataId);
 
         log.info("GET ServiceMetadata finished: {} - {}", serviceGroupId, serviceMetadataId);
         return ServiceMetadataConverter.toString(serviceMetadata);
@@ -81,7 +80,7 @@ public class ServiceMetadataController {
 
         serviceMetadataValidator.validate(serviceGroupId, serviceMetadataId, body);
 
-        boolean newServiceMetadataCreated = dataManager.saveService(asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId), body);
+        boolean newServiceMetadataCreated = serviceMetadataService.saveServiceMetadata(asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId), body);
 
         log.info("PUT ServiceMetadata finished: {} - {}\n{}", serviceGroupId, serviceMetadataId, body);
 
@@ -91,10 +90,10 @@ public class ServiceMetadataController {
     @DeleteMapping
     @PreAuthorize("hasAnyAuthority('ROLE_SMP_ADMIN', @caseSensitivityNormalizer.normalizeParticipantId(#serviceGroupId))")
     public ResponseEntity deleteServiceMetadata(@PathVariable String serviceGroupId,
-                                                        @PathVariable String serviceMetadataId) {
+                                                @PathVariable String serviceMetadataId) {
         log.info("DELETE ServiceMetadata: {} - {}", serviceGroupId, serviceMetadataId);
 
-        dataManager.deleteService(asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId));
+        serviceMetadataService.deleteServiceMetadata(asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId));
 
         log.info("DELETE ServiceMetadata finished: {} - {}", serviceGroupId, serviceMetadataId);
 

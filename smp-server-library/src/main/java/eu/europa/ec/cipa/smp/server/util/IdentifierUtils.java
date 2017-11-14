@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import static eu.europa.ec.cipa.smp.server.data.dbms.model.CommonColumnsLengths.URL_SCHEME_VALUE_SEPARATOR;
+import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.URL_SCHEME_VALUE_SEPARATOR;
 
 /**
  * This class contains several identifier related utility methods.

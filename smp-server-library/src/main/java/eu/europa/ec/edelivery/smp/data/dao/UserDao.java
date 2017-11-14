@@ -13,19 +13,24 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.cipa.smp.server.errors.exceptions;
+package eu.europa.ec.edelivery.smp.data.dao;
+
+import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import javax.persistence.EntityManager;
 
 /**
- * Created by migueti on 13/01/2017.
+ * Created by gutowpa on 14/11/2017.
  */
-public class NotFoundException extends RuntimeException {
+@Repository
+public class UserDao {
 
-    public NotFoundException(String msg) {
-        super(msg);
+    @Autowired
+    EntityManager entityManager;
+
+    public DBUser findUser(String username) {
+        return entityManager.find(DBUser.class, username);
     }
-
-    public NotFoundException(String msgFormat, Object... params) {
-        this(String.format(msgFormat, params));
-    }
-
 }
