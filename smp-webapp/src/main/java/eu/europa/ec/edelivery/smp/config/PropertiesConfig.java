@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 /**
  * Created by Flavio Santos
  */
-
 @Configuration
 @ComponentScan(basePackages = {
         "eu.europa.ec"})
@@ -30,7 +29,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
         @PropertySource(value = "classpath:config.properties", ignoreResourceNotFound = true),
         @PropertySource(value = "classpath:smp.config.properties", ignoreResourceNotFound = true)
 })
-public class CommonConfig {
+public class PropertiesConfig {
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {

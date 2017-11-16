@@ -22,12 +22,6 @@
 
     <b:bean id="securityExceptionHandler" class="eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler"/>
 
-    <b:bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-        <b:property name="location">
-            <b:value>classpath:config.properties</b:value>
-        </b:property>
-    </b:bean>
-
     <http>
         <csrf disabled="true"/>
         <http-basic entry-point-ref="securityExceptionHandler"/>
