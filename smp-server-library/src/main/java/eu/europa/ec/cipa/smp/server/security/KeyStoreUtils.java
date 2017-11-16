@@ -115,10 +115,6 @@ public final class KeyStoreUtils {
         aIS = new FileInputStream(sKeyStorePath);
       } catch(Exception e){
         throw new IllegalArgumentException ("Failed to open key store '" + sKeyStorePath + "'", e);
-      }finally {
-        if(aIS != null){
-          aIS.close();
-        }
       }
     }
 
