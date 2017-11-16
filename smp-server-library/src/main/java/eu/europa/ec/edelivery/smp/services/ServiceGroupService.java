@@ -16,28 +16,21 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
-import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
-import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
+import eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter;
+import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
+import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
 import eu.europa.ec.cipa.smp.server.hook.IRegistrationHook;
-import eu.europa.ec.cipa.smp.server.util.ExtensionUtils;
-import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.edelivery.smp.data.dao.OwnershipDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.*;
-import eu.europa.ec.smp.api.Identifiers;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import javax.persistence.EntityManager;
-import javax.xml.bind.JAXBException;
-import javax.xml.stream.XMLStreamException;
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.transaction.annotation.Transactional;
 
 import static eu.europa.ec.smp.api.Identifiers.asString;
 
@@ -45,15 +38,13 @@ import static eu.europa.ec.smp.api.Identifiers.asString;
  * Created by gutowpa on 14/11/2017.
  */
 @Service
+@Transactional
 public class ServiceGroupService {
 
     private static final Logger log = LoggerFactory.getLogger(ServiceGroupService.class);
 
     @Autowired
     private CaseSensitivityNormalizer caseSensitivityNormalizer;
-
-    @Autowired
-    private ServiceMetadataDao serviceMetadataDao;
 
     @Autowired
     private ServiceGroupDao serviceGroupDao;
@@ -67,71 +58,46 @@ public class ServiceGroupService {
     @Autowired
     private IRegistrationHook m_aHook;
 
-    @Autowired
-    private EntityManager entityManager;
-
-
-    public ServiceGroup getServiceGroup(String serviceGroupIdStr) {
-        final ParticipantIdentifierType serviceGroupId = Identifiers.asParticipantId(serviceGroupIdStr);
-
+    public ServiceGroup getServiceGroup(ParticipantIdentifierType serviceGroupId) {
         ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
 
         DBServiceGroup dbServiceGroup = serviceGroupDao.find(normalizedServiceGroupId);
         if (dbServiceGroup == null) {
             throw new NotFoundException("ServiceGroup not found: '%s'", asString(serviceGroupId));
         }
-
-        // Convert service group DB to service group service
-        final ServiceGroup serviceGroup = new ServiceGroup();
-        serviceGroup.setParticipantIdentifier(normalizedServiceGroupId);
-
-        try {
-            List<ExtensionType> extensions = ExtensionUtils.unmarshalExtensions(dbServiceGroup.getExtension());
-            serviceGroup.getExtensions().addAll(extensions);
-        } catch (JAXBException e) {
-            throw new RuntimeException(e);
-        }
-
-        serviceGroup.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType(new ArrayList()));
-        return serviceGroup;
+        return ServiceGroupConverter.toServiceGroup(dbServiceGroup);
     }
 
     public boolean saveServiceGroup(ServiceGroup serviceGroup, String newOwnerName) {
         ServiceGroup normalizedServiceGroup = normalizeIdentifierCaseSensitivity(serviceGroup);
         ParticipantIdentifierType normalizedParticipantId = normalizedServiceGroup.getParticipantIdentifier();
 
-        DBUser newOwner = userDao.findUser(newOwnerName);
+        DBUser newOwner = userDao.find(newOwnerName);
         if (newOwner == null) {
             throw new UnknownUserException(newOwnerName);
         }
 
         DBServiceGroup aDBServiceGroup = serviceGroupDao.find(normalizedParticipantId);
 
-        String extensions = null;
-        try {
-            extensions = ExtensionUtils.marshalExtensions(normalizedServiceGroup.getExtensions());
-        } catch (JAXBException | XMLStreamException e) {
-            throw new RuntimeException(e);
-        }
+        String extensions = ServiceGroupConverter.extractExtensionsPayload(normalizedServiceGroup);
 
         if (aDBServiceGroup != null) {
             aDBServiceGroup.setExtension(extensions);
             serviceGroupDao.update(aDBServiceGroup);
             return false;
         } else {
-            // Register in SML
+            // Register in SML (DNS)
             m_aHook.create(normalizedParticipantId);
 
-            // Did not exist, create it
             aDBServiceGroup = new DBServiceGroup(new DBServiceGroupID(normalizedParticipantId));
             aDBServiceGroup.setExtension(extensions);
             serviceGroupDao.save(aDBServiceGroup);
 
             // Save the ownership information
-            final DBOwnershipID aDBOwnershipID = new DBOwnershipID(newOwnerName, normalizedParticipantId);
-            final DBOwnership aDBOwnership = new DBOwnership(aDBOwnershipID, newOwner, aDBServiceGroup);
-            //TODO save ownership in one dbUpdate request
-            entityManager.persist(aDBOwnership);
+            final DBOwnershipID ownershipID = new DBOwnershipID(newOwnerName, normalizedParticipantId);
+            final DBOwnership ownership = new DBOwnership(ownershipID, newOwner, aDBServiceGroup);
+            //TODO trye to save ownership in one dbUpdate request
+            ownershipDao.save(ownership);
             return true;
         }
     }

@@ -15,8 +15,7 @@
 
 package eu.europa.ec.cipa.smp.server.util;
 
-import eu.europa.ec.cipa.smp.server.AbstractTest;
-import eu.europa.ec.cipa.smp.server.errors.exceptions.CertificateAuthenticationException;
+import eu.europa.ec.edelivery.smp.exceptions.CertificateAuthenticationException;
 import eu.europa.ec.cipa.smp.server.security.CertificateDetails;
 import org.junit.Assert;
 import org.junit.Test;
@@ -43,18 +42,18 @@ public class CertificateUtilsTest {
     @Test
     public void testReturnCertificateIdString() {
         Assert.assertEquals("TEST SUBJECT:000000008f658712",
-                CertificateUtils.returnCertificateId("TEST SUBJECT","8f658712"));
+                CertificateUtils.returnCertificateId("TEST SUBJECT", "8f658712"));
     }
 
     @Test
     public void testReturnCertificateIdStringWithHexaHeader() {
         Assert.assertEquals("TEST SUBJECT:000000008f658712",
-                CertificateUtils.returnCertificateId("TEST SUBJECT","0x8f658712"));
+                CertificateUtils.returnCertificateId("TEST SUBJECT", "0x8f658712"));
     }
 
     @Test
     public void testRemoveHexHeader() {
-        Assert.assertEquals("1234567890",CertificateUtils.removeHexHeader("0x1234567890"));
+        Assert.assertEquals("1234567890", CertificateUtils.removeHexHeader("0x1234567890"));
     }
 
     @Test

@@ -19,6 +19,8 @@ import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
 import eu.europa.ec.edelivery.smp.services.ServiceMetadataService;
 import eu.europa.ec.edelivery.smp.validation.ServiceMetadataValidator;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,10 +46,6 @@ public class ServiceMetadataController {
 
     private static final Logger log = LoggerFactory.getLogger(ServiceMetadataController.class);
 
-    //TODO Migrate to Service (add one more level)
-    //@Autowired
-    //private DBMSDataManager dataManager;
-
     @Autowired
     ServiceMetadataValidator serviceMetadataValidator;
 
@@ -63,7 +61,7 @@ public class ServiceMetadataController {
 
         log.info("GET ServiceMetadata: {} - {}", serviceGroupId, serviceMetadataId);
 
-        Document serviceMetadata = serviceMetadataService.getServiceMetadataDocument(serviceGroupId, serviceMetadataId);
+        Document serviceMetadata = serviceMetadataService.getServiceMetadataDocument(asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId));
 
         log.info("GET ServiceMetadata finished: {} - {}", serviceGroupId, serviceMetadataId);
         return ServiceMetadataConverter.toString(serviceMetadata);

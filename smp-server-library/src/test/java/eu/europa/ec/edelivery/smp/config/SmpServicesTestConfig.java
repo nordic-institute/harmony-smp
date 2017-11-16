@@ -26,8 +26,8 @@ import org.springframework.context.annotation.ImportResource;
 @Configuration
 @ImportResource("classpath:spring-test-context.xml")
 @ComponentScan(basePackages = {
-        "eu.europa.ec.cipa.smp.server.data.dbms",
-        "eu.europa.ec.cipa.smp.server.services",
+        "eu.europa.ec.edelivery.smp.services",
+        "eu.europa.ec.edelivery.smp.data.dao",
         "eu.europa.ec.cipa.smp.server.hook",
         "eu.europa.ec.cipa.smp.server.conversion",
         "eu.europa.ec.cipa.smp.server.util"})

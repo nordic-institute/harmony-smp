@@ -37,7 +37,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static eu.europa.ec.smp.api.Identifiers.asString;
+import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.ok;
@@ -70,7 +70,7 @@ public class ServiceGroupController {
     public ServiceGroup getServiceGroup(@PathVariable String serviceGroupId) {
         log.info("GET ServiceGrooup: {}", serviceGroupId);
 
-        ServiceGroup serviceGroup = serviceGroupService.getServiceGroup(serviceGroupId);
+        ServiceGroup serviceGroup = serviceGroupService.getServiceGroup(asParticipantId(serviceGroupId));
         addReferences(serviceGroup);
 
         log.info("Finished GET ServiceGrooup: {}", serviceGroupId);
@@ -115,7 +115,7 @@ public class ServiceGroupController {
 
     private void addReferences(ServiceGroup serviceGroup) {
         ParticipantIdentifierType participantId = serviceGroup.getParticipantIdentifier();
-        List<DocumentIdentifier> docIds = serviceMetadataService.findServiceMetadataIdentifiers(asString(participantId));
+        List<DocumentIdentifier> docIds = serviceMetadataService.findServiceMetadataIdentifiers(participantId);
         List<ServiceMetadataReferenceType> referenceIds = serviceGroup.getServiceMetadataReferenceCollection().getServiceMetadataReferences();
         for (DocumentIdentifier docId : docIds) {
             String url = pathBuilder.buildSelfUrl(participantId, docId);

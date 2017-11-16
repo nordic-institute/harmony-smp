@@ -15,7 +15,7 @@
 
 package eu.europa.ec.cipa.smp.server.conversion;
 
-import eu.europa.ec.cipa.smp.server.errors.exceptions.XmlParsingException;
+import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
 import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
 import org.junit.Test;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;

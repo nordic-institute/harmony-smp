@@ -27,15 +27,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-
-package eu.europa.ec.edelivery.smp.data.model;
+package eu.europa.ec.edelivery.smp.exceptions;
 
 /**
- * Created by gutowpa on 01/02/2017.
+ * This exceptions is thrown if the provided user name does not exist.
  */
-public class CommonColumnsLengths {
-    public static final int MAX_IDENTIFIER_SCHEME_LENGTH = 100;
-    public static final int MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH = 50;
-    public static final int MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH = 500;
-    public static final String URL_SCHEME_VALUE_SEPARATOR = "::";
+public class UnknownUserException extends RuntimeException {
+
+    public UnknownUserException(String username) {
+        super("Unknown user '" + username + "'");
+    }
+
 }

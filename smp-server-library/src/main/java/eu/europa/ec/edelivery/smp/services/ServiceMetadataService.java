@@ -17,13 +17,12 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
-import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
+import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
 import eu.europa.ec.cipa.smp.server.util.SignatureFilter;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadataID;
-import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.slf4j.Logger;
@@ -57,18 +56,14 @@ public class ServiceMetadataService {
     @Autowired
     private SignatureFilter signatureFilter;
 
-    public Document getServiceMetadataDocument(String serviceGroupIdStr, String documentIdStr) {
-
-        ParticipantIdentifierType serviceGroupId = asParticipantId(serviceGroupIdStr);
-        DocumentIdentifier documentId = asDocumentId(documentIdStr);
-
+    public Document getServiceMetadataDocument(ParticipantIdentifierType serviceGroupId, DocumentIdentifier documentId) {
         serviceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
         documentId = caseSensitivityNormalizer.normalize(documentId);
 
         DBServiceMetadata serviceMetadata = serviceMetadataDao.find(serviceGroupId, documentId);
 
         if (serviceMetadata == null || serviceMetadata.getXmlContent() == null) {
-            throw new NotFoundException("ServiceMetadata not found, ServiceGroupID: '%s', DocumentID: '%s'", serviceGroupIdStr, documentIdStr);
+            throw new NotFoundException("ServiceMetadata not found, ServiceGroupID: '%s', DocumentID: '%s'", asString(serviceGroupId), asString(documentId));
         }
 
         Document aSignedServiceMetadata = ServiceMetadataConverter.toSignedServiceMetadatadaDocument(serviceMetadata.getXmlContent());
@@ -103,9 +98,7 @@ public class ServiceMetadataService {
         }
     }
 
-    public List<DocumentIdentifier> findServiceMetadataIdentifiers(String serviceGroupId) {
-        ParticipantIdentifierType participantId = Identifiers.asParticipantId(serviceGroupId);
-
+    public List<DocumentIdentifier> findServiceMetadataIdentifiers(ParticipantIdentifierType participantId) {
         List<DBServiceMetadataID> metadataIds = serviceMetadataDao.findIdsByServiceGroup(participantId);
 
         List<DocumentIdentifier> documentIds = new ArrayList();

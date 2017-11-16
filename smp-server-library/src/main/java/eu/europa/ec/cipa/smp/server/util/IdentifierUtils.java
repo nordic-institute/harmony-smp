@@ -170,23 +170,4 @@ public final class IdentifierUtils {
     // Combine scheme and value
     return sScheme + URL_SCHEME_VALUE_SEPARATOR + sValue;
   }
-
-  /**
-   * Get the identifier suitable for an URI and percent encoded.
-   *
-   * @param aIdentifier
-   *        The identifier to be encoded. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static String getIdentifierURIPercentEncoded (@Nonnull final ParticipantIdentifierType aIdentifier) {
-    final String sURIEncoded = getIdentifierURIEncoded (aIdentifier);
-    return BusdoxURLUtils.createPercentEncodedURL (sURIEncoded);
-  }
-
-  @Nonnull
-  public static String getIdentifierURIPercentEncoded (@Nonnull final DocumentIdentifier aIdentifier) {
-    final String sURIEncoded = getIdentifierURIEncoded (aIdentifier);
-    return BusdoxURLUtils.createPercentEncodedURL (sURIEncoded);
-  }
 }

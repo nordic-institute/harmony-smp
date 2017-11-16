@@ -19,10 +19,10 @@ import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadataID;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +32,7 @@ import java.util.List;
 @Repository
 public class ServiceMetadataDao {
 
-    @Autowired
+    @PersistenceContext
     EntityManager entityManager;
 
     public DBServiceMetadata find(ParticipantIdentifierType serviceGroupId, DocumentIdentifier documentId) {

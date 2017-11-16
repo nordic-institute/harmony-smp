@@ -32,8 +32,7 @@
 
     <properties>
         <sonar.host.url>http://edelquality.westeurope.cloudapp.azure.com:9000/sonar/</sonar.host.url>
-        <!-- This class crashes sonar analysis. There is already a JIRA ticket for rewriting it. -->
-        <sonar.exclusions>**/DBMSDataManager.java</sonar.exclusions>
+        <sonar.exclusions>eu/europa/ec/edelivery/smp/data/model/*,eu/europa/ec/edelivery/smp/exceptions/*</sonar.exclusions>
     </properties>
 
     <build>

@@ -12,29 +12,19 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-package eu.europa.ec.cipa.smp.server.errors.exceptions;
 
-import javax.annotation.Nullable;
+package eu.europa.ec.edelivery.smp.exceptions;
 
 /**
- * This exceptions is thrown if the provided user name does not exist.
- *
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * Thrown when entity cannot be converted.
+ * Means that user's input hasn't been validated properly or data in database are malformed.
+ * In both cases most probably environment or source code issue occured (bug).
+ * <p>
+ * Created by gutowpa on 15/11/2017.
  */
-public class UnknownUserException extends RuntimeException {
+public class ConversionException extends IllegalStateException {
 
-  private final String m_sUserName;
-
-  public UnknownUserException (@Nullable final String sUserName) {
-    super ("Unknown user '" + sUserName + "'");
-    m_sUserName = sUserName;
-  }
-
-  /**
-   * @return The user name which was not found. May be <code>null</code>.
-   */
-  @Nullable
-  public String getUserName () {
-    return m_sUserName;
-  }
+    public ConversionException(Exception e){
+        super(e);
+    }
 }

@@ -16,10 +16,10 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 /**
  * Created by gutowpa on 14/11/2017.
@@ -27,10 +27,11 @@ import javax.persistence.EntityManager;
 @Repository
 public class UserDao {
 
-    @Autowired
+    @PersistenceContext
     EntityManager entityManager;
 
-    public DBUser findUser(String username) {
+    public DBUser find(String username) {
         return entityManager.find(DBUser.class, username);
     }
+
 }

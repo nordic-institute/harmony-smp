@@ -18,10 +18,10 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupID;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 /**
  * Created by gutowpa on 14/11/2017.
@@ -29,10 +29,10 @@ import javax.persistence.EntityManager;
 @Repository
 public class ServiceGroupDao {
 
-    @Autowired
+    @PersistenceContext
     EntityManager entityManager;
 
-    public DBServiceGroup find(ParticipantIdentifierType serviceGroupId){
+    public DBServiceGroup find(ParticipantIdentifierType serviceGroupId) {
         DBServiceGroupID dbServiceGroupId = new DBServiceGroupID(serviceGroupId);
         return entityManager.find(DBServiceGroup.class, dbServiceGroupId);
     }
@@ -45,6 +45,8 @@ public class ServiceGroupDao {
     public void save(DBServiceGroup dbServiceGroup) {
         //TODO Try to use one method for both create and update
         entityManager.persist(dbServiceGroup);
+        /*entityManager.flush();
+        System.out.print("====DUPA");*/
     }
 
     public void remove(DBServiceGroup serviceGroup) {
