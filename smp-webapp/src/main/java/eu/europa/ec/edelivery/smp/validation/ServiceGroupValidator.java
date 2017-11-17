@@ -30,16 +30,14 @@
 
 package eu.europa.ec.edelivery.smp.validation;
 
-import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
-import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
+import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
 import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -52,22 +50,15 @@ import static eu.europa.ec.edelivery.smp.error.ErrorBusinessCode.WRONG_FIELD;
 @Component
 public class ServiceGroupValidator {
 
-    private static final String CONFIG_SERVICE_GROUP_SCHEME_REGEXP = "identifiersBehaviour.ParticipantIdentifierScheme.validationRegex";
-
     private Pattern schemaPattern;
 
-    @Autowired
-    ConfigFile configFile;
-
-    @PostConstruct
-    public void init() {
-        String regex = configFile.getString(CONFIG_SERVICE_GROUP_SCHEME_REGEXP);
+    @Value("${identifiersBehaviour.ParticipantIdentifierScheme.validationRegex}")
+    public void setRegexPattern(String regex) {
         try {
             schemaPattern = Pattern.compile(regex);
         } catch (PatternSyntaxException | NullPointerException e) {
             throw new IllegalStateException("Contact Administrator. ServiceGroup schema pattern is wrongly configured: " + regex);
         }
-
     }
 
     public void validate(String serviceGroupId, ServiceGroup serviceGroup) {

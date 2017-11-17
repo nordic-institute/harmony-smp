@@ -45,43 +45,30 @@
 
 package eu.europa.ec.edelivery.smp.validation;
 
-import com.mysql.jdbc.NotImplemented;
-import eu.europa.ec.cipa.smp.server.util.ConfigFile;
+import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
-import eu.europa.ec.edelivery.smp.validation.ServiceGroupValidator;
-import eu.europa.ec.smp.api.Identifiers;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.getSampleServiceGroupBodyWithScheme;
 import static eu.europa.ec.smp.api.Identifiers.asString;
-import static org.mockito.Mockito.when;
+import static java.util.Arrays.asList;
 
 /**
  * Created by gutowpa on 02/08/2017.
  */
 public class ServiceGroupValidatorTest {
 
-    private static final String KEY_SERVICE_GROUP_SCHEME_REGEXP = "identifiersBehaviour.ParticipantIdentifierScheme.validationRegex";
     private static final String ALLOWED_SCHEME_REGEXP = "^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)";
 
-    @InjectMocks
-    ServiceGroupValidator validator;
-
-    @Mock
-    private ConfigFile configFile;
+    private ServiceGroupValidator validator;
 
     @Before
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
-        when(configFile.getString(KEY_SERVICE_GROUP_SCHEME_REGEXP)).thenReturn(ALLOWED_SCHEME_REGEXP);
-        validator.init();
+    public void init() {
+        validator = new ServiceGroupValidator();
+        validator.setRegexPattern(ALLOWED_SCHEME_REGEXP);
     }
 
     @Test

@@ -19,13 +19,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -34,13 +32,16 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 /**
- * Created by gutowpa on 21/09/2017.
+ * Created by Flavio Santos
  */
+
 @Configuration
+@EnableTransactionManagement
 @ComponentScan(basePackages = {
-        "eu.europa.ec.cipa.smp.server"})
-@PropertySource(value = "classpath:config.properties")
-public class SmpServicesTestConfig {
+        "eu.europa.ec.cipa.smp.server.data.dbms",
+        "eu.europa.ec.cipa.smp.server.services",
+        "eu.europa.ec.cipa.smp.server.hook"})
+public class DatabaseConfig {
 
     @Value("${jdbc.driver}")
     private String driver;
@@ -53,11 +54,6 @@ public class SmpServicesTestConfig {
 
     @Value("${jdbc.url}")
     private String url;
-
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
-    }
 
     @Bean
     public DataSource dataSource() {

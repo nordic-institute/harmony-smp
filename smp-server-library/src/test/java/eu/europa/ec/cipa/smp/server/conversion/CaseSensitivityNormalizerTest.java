@@ -15,24 +15,17 @@
 
 package eu.europa.ec.cipa.smp.server.conversion;
 
-import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-
-import java.util.List;
 
 import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.mockito.Mockito.when;
 
 /**
  * Created by gutowpa on 06/03/2017.
@@ -40,24 +33,13 @@ import static org.mockito.Mockito.when;
 @RunWith(JUnitParamsRunner.class)
 public class CaseSensitivityNormalizerTest {
 
-    private static final String KEY_CASE_SENSITIVE_PARTICIPANT_SCHEMES = "identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes";
-    private static final String KEY_CASE_SENSITIVE_DOCUMENT_SCHEMES = "identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes";
-
-    private static final List<String> CASE_SENSITIVE_PARTICIPANT_SCHEMES = asList(new String[]{"case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"});
-    private static final List<String> CASE_SENSITIVE_DOCUMENT_SCHEMES = asList(new String[]{"case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"});
-
-    @InjectMocks
     private CaseSensitivityNormalizer normalizer;
 
-    @Mock
-    private ConfigFile configFile;
-
     @Before
-    public void setup() {
-        MockitoAnnotations.initMocks(this);
-        when(configFile.getStringList(KEY_CASE_SENSITIVE_PARTICIPANT_SCHEMES)).thenReturn(CASE_SENSITIVE_PARTICIPANT_SCHEMES);
-        when(configFile.getStringList(KEY_CASE_SENSITIVE_DOCUMENT_SCHEMES)).thenReturn(CASE_SENSITIVE_DOCUMENT_SCHEMES);
-        normalizer.init();
+    public void init() {
+        normalizer = new CaseSensitivityNormalizer();
+        normalizer.setCaseSensitiveDocumentSchemes(asList(new String[]{"case-SENSITIVE-scheme-1", "Case-SENSITIVE-Scheme-2"}));
+        normalizer.setCaseSensitiveParticipantSchemes(asList(new String[]{"case-sensitive-scheme-1", "Case-SENSITIVE-Scheme-2"}));
     }
 
     @SuppressWarnings("unused")
