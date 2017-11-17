@@ -63,7 +63,6 @@ public class ServiceGroupValidatorTest {
 
     private static final String ALLOWED_SCHEME_REGEXP = "^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)";
 
-    @Autowired
     private ServiceGroupValidator validator;
 
     @Before
