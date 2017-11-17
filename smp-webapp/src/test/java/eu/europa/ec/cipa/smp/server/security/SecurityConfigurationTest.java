@@ -15,6 +15,10 @@
 
 package eu.europa.ec.cipa.smp.server.security;
 
+import eu.europa.ec.edelivery.smp.config.PropertiesConfig;
+import eu.europa.ec.edelivery.smp.config.DatabaseConfig;
+import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
+import eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +44,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Created by gutowpa on 20/02/2017.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/spring-context.xml", "classpath:/spring-security.xml", "classpath:/spring-security-test-context.xml"})
+@ContextConfiguration(classes = {
+        PropertiesConfig.class,
+        DatabaseConfig.class,
+        SpringSecurityConfig.class,
+        SpringSecurityTestConfig.class
+})
 @WebAppConfiguration
 @Transactional
 @Rollback(true)

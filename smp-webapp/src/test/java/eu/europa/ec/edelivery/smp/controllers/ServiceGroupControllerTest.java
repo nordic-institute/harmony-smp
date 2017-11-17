@@ -15,7 +15,6 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
-import eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
@@ -44,9 +43,7 @@ import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.getSampleServiceGr
 import static java.lang.String.format;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -63,7 +60,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Rollback(true)
 @Sql("classpath:/webapp_integration_test_data.sql")
 public class ServiceGroupControllerTest {
-    
 
     private static final String PARTICIPANT_SCHEME = "ehealth-participantid-qns";
     private static final String PARTICIPANT_ID = "urn:poland:ncpb";
@@ -157,7 +153,7 @@ public class ServiceGroupControllerTest {
         mvc.perform(delete(URL_PATH)
                 .with(ADMIN_CREDENTIALS))
                 .andExpect(status().isOk());
-        
+
         mvc.perform(get(URL_PATH))
                 .andExpect(status().isNotFound());
     }
@@ -183,5 +179,4 @@ public class ServiceGroupControllerTest {
                 .content(getSampleServiceGroupBodyWithScheme(scheme)))
                 .andExpect(status().isBadRequest());
     }
-
 }

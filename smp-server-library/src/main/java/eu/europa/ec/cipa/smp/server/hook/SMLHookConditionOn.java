@@ -15,12 +15,9 @@
 
 package eu.europa.ec.cipa.smp.server.hook;
 
-import eu.europa.ec.cipa.smp.server.util.ConfigFile;
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-
-import java.io.IOException;
 
 /**
  * Created by gutowpa on 13/07/2017.
@@ -29,12 +26,7 @@ public class SMLHookConditionOn implements Condition {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        String className = null;
-        try {
-            className = new ConfigFile("smp.config.properties").getString("registrationHook.class");
-            return "eu.europa.ec.cipa.smp.server.hook.RegistrationServiceRegistrationHook".equals(className);
-        } catch (IOException e) {
-            throw new IllegalStateException(e);
-        }
+        String className = context.getEnvironment().getProperty("registrationHook.class");
+        return "eu.europa.ec.cipa.smp.server.hook.RegistrationServiceRegistrationHook".equals(className);
     }
 }
