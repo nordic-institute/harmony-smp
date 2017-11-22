@@ -137,4 +137,30 @@ public class ServiceMetadataIntegrationTest {
         String newDescription = resultServiceMetadataDoc.getElementsByTagName("ServiceDescription").item(0).getTextContent();
         assertEquals("New Description", newDescription);
     }
+
+    @Test
+    public void findServiceMetadataIdsPositiveScenario() throws IOException, JAXBException, TransformerException {
+        //given
+        String serviceMetadataXml1 = loadDocumentAsString(SERVICE_METADATA_XML_PATH);
+        serviceMetadataService.saveServiceMetadata(SERVICE_GROUP_ID, DOC_ID, serviceMetadataXml1);
+
+        String secondDocIdValue = "second-doc-id";
+        DocumentIdentifier secondDocId = new DocumentIdentifier(secondDocIdValue, DOC_ID.getScheme());
+        ServiceMetadata serviceMetadata2 = unmarshal(loadDocumentAsString(SERVICE_METADATA_XML_PATH));
+        serviceMetadata2.getServiceInformation().getDocumentIdentifier().setValue(secondDocIdValue);
+        String serviceMetadataXml2 = marshall(serviceMetadata2);
+        serviceMetadataService.saveServiceMetadata(SERVICE_GROUP_ID, secondDocId, serviceMetadataXml2);
+
+        //when
+        List<DocumentIdentifier> docIds = serviceMetadataService.findServiceMetadataIdentifiers(SERVICE_GROUP_ID);
+
+        //then
+        assertEquals(2, docIds.size());
+        DocumentIdentifier docId1 = docIds.get(0);
+        assertEquals(DOC_ID.getScheme(), docId1.getScheme());
+        assertEquals(DOC_ID.getValue(), docId1.getValue());
+        DocumentIdentifier docId2 = docIds.get(1);
+        assertEquals(DOC_ID.getScheme(), docId2.getScheme());
+        assertEquals(secondDocIdValue, docId2.getValue());
+    }
 }

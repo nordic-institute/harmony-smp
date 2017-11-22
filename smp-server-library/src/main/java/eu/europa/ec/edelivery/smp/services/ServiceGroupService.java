@@ -17,13 +17,13 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter;
-import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
-import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
 import eu.europa.ec.cipa.smp.server.hook.IRegistrationHook;
 import eu.europa.ec.edelivery.smp.data.dao.OwnershipDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.*;
+import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
+import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.slf4j.Logger;
@@ -60,7 +60,7 @@ public class ServiceGroupService {
     public ServiceGroup getServiceGroup(ParticipantIdentifierType serviceGroupId) {
         ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
 
-        DBServiceGroup dbServiceGroup = serviceGroupDao.find(normalizedServiceGroupId);
+        DBServiceGroup dbServiceGroup = serviceGroupDao.find(normalizedServiceGroupId.getScheme(), normalizedServiceGroupId.getValue());
         if (dbServiceGroup == null) {
             throw new NotFoundException("ServiceGroup not found: '%s'", asString(serviceGroupId));
         }
@@ -77,26 +77,26 @@ public class ServiceGroupService {
             throw new UnknownUserException(newOwnerName);
         }
 
-        DBServiceGroup aDBServiceGroup = serviceGroupDao.find(normalizedParticipantId);
+        DBServiceGroup dbServiceGroup = serviceGroupDao.find(normalizedParticipantId.getScheme(), normalizedParticipantId.getValue());
 
         String extensions = ServiceGroupConverter.extractExtensionsPayload(normalizedServiceGroup);
 
-        if (aDBServiceGroup != null) {
-            aDBServiceGroup.setExtension(extensions);
-            serviceGroupDao.update(aDBServiceGroup);
+        if (dbServiceGroup != null) {
+            dbServiceGroup.setExtension(extensions);
+            serviceGroupDao.save(dbServiceGroup);
             return false;
         } else {
             // Register in SML (DNS)
             m_aHook.create(normalizedParticipantId);
 
-            aDBServiceGroup = new DBServiceGroup(new DBServiceGroupID(normalizedParticipantId));
-            aDBServiceGroup.setExtension(extensions);
-            serviceGroupDao.save(aDBServiceGroup);
+            //Save ServiceGroup
+            dbServiceGroup = new DBServiceGroup(new DBServiceGroupID(normalizedParticipantId.getScheme(), normalizedParticipantId.getValue()));
+            dbServiceGroup.setExtension(extensions);
+            serviceGroupDao.save(dbServiceGroup);
 
             // Save the ownership information
-            final DBOwnershipID ownershipID = new DBOwnershipID(newOwnerName, normalizedParticipantId);
-            final DBOwnership ownership = new DBOwnership(ownershipID, newOwner, aDBServiceGroup);
-            //TODO trye to save ownership in one dbUpdate request
+            final DBOwnershipID ownershipID = new DBOwnershipID(newOwnerName, normalizedParticipantId.getScheme(), normalizedParticipantId.getValue());
+            final DBOwnership ownership = new DBOwnership(ownershipID, newOwner, dbServiceGroup);
             ownershipDao.save(ownership);
             return true;
         }
@@ -115,7 +115,7 @@ public class ServiceGroupService {
     public void deleteServiceGroup(ParticipantIdentifierType serviceGroupId) {
         final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
 
-        DBServiceGroup dbServiceGroup = serviceGroupDao.find(normalizedServiceGroupId);
+        DBServiceGroup dbServiceGroup = serviceGroupDao.find(normalizedServiceGroupId.getScheme(), normalizedServiceGroupId.getValue());
         if (dbServiceGroup == null) {
             throw new NotFoundException("ServiceGroup not found: '%s'", asString(serviceGroupId));
         }
