@@ -17,6 +17,7 @@ package eu.europa.ec.cipa.smp.server.util;
 
 import eu.europa.ec.cipa.smp.server.security.SignatureUtil;
 import org.apache.commons.io.IOUtils;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -71,6 +72,14 @@ public class XmlTestUtils {
         JAXBContext jaxbContext = JAXBContext.newInstance(ServiceMetadata.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
         jaxbMarshaller.marshal(serviceMetadata, sw);
+        return sw.toString();
+    }
+
+    public static String marshall(ServiceGroup serviceGroup) throws JAXBException {
+        StringWriter sw = new StringWriter();
+        JAXBContext jaxbContext = JAXBContext.newInstance(ServiceGroup.class);
+        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+        jaxbMarshaller.marshal(serviceGroup, sw);
         return sw.toString();
     }
 }

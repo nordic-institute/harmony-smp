@@ -42,9 +42,6 @@ public final class KeyStoreUtils {
   /** The classpath entry referencing the global OpenPEPPOL truststore */
   public static final String TRUSTSTORE_CLASSPATH_OPENPEPPOL = "truststore/global-truststore-openpeppol.jks";
 
-  /** The password used to access the truststores */
-  public static final String TRUSTSTORE_PASSWORD = "peppol";
-
   /** The truststore alias for the OpenPEPPOL root certificate */
   public static final String TRUSTSTORE_ALIAS_ROOT_OPENPEPPOL = "peppol root ca";
 
@@ -120,8 +117,7 @@ public final class KeyStoreUtils {
         throw new IllegalArgumentException ("Failed to open key store '" + sKeyStorePath + "'", e);
       }
     }
-    if (aIS == null)
-      throw new IllegalArgumentException ("Failed to open key store '" + sKeyStorePath + "'");
+
     try {
       KeyStore aKeyStore = null;
       for (final String keystoreType : keystoreTypes) {
@@ -140,9 +136,9 @@ public final class KeyStoreUtils {
           aKeyStore.load (aIS, aKeyStorePassword);
           return aKeyStore;
         }finally {
-          if(aIS != null){
+          //if(aIS != null){
               aIS.close();
-          }
+          //}
         }
         /*
         catch (final IOException e) {

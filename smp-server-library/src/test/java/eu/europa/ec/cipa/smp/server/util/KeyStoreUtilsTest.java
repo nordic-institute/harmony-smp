@@ -124,8 +124,7 @@ public final class KeyStoreUtilsTest {
   @Test
   public void testLoadTrustStore () throws Exception {
     // Load trust store
-    final KeyStore aTrustStore = KeyStoreUtils.loadKeyStore (KeyStoreUtils.TRUSTSTORE_CLASSPATH,
-                                                             KeyStoreUtils.TRUSTSTORE_PASSWORD);
+    final KeyStore aTrustStore = KeyStoreUtils.loadKeyStore (KeyStoreUtils.TRUSTSTORE_CLASSPATH,"peppol");
     assertNotNull (aTrustStore);
 
     // Ensure all name entries are contained

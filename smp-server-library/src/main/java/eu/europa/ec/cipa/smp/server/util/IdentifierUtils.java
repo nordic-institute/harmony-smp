@@ -23,7 +23,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.annotation.concurrent.Immutable;
 
-import static eu.europa.ec.cipa.smp.server.data.dbms.model.CommonColumnsLengths.URL_SCHEME_VALUE_SEPARATOR;
+import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.URL_SCHEME_VALUE_SEPARATOR;
 
 /**
  * This class contains several identifier related utility methods.
@@ -169,24 +169,5 @@ public final class IdentifierUtils {
 
     // Combine scheme and value
     return sScheme + URL_SCHEME_VALUE_SEPARATOR + sValue;
-  }
-
-  /**
-   * Get the identifier suitable for an URI and percent encoded.
-   *
-   * @param aIdentifier
-   *        The identifier to be encoded. May not be <code>null</code>.
-   * @return Never <code>null</code>.
-   */
-  @Nonnull
-  public static String getIdentifierURIPercentEncoded (@Nonnull final ParticipantIdentifierType aIdentifier) {
-    final String sURIEncoded = getIdentifierURIEncoded (aIdentifier);
-    return BusdoxURLUtils.createPercentEncodedURL (sURIEncoded);
-  }
-
-  @Nonnull
-  public static String getIdentifierURIPercentEncoded (@Nonnull final DocumentIdentifier aIdentifier) {
-    final String sURIEncoded = getIdentifierURIEncoded (aIdentifier);
-    return BusdoxURLUtils.createPercentEncodedURL (sURIEncoded);
   }
 }

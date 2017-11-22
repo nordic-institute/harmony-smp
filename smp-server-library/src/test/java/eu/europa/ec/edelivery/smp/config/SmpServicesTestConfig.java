@@ -38,7 +38,11 @@ import javax.sql.DataSource;
  */
 @Configuration
 @ComponentScan(basePackages = {
-        "eu.europa.ec.cipa.smp.server"})
+        "eu.europa.ec.edelivery.smp.services",
+        "eu.europa.ec.edelivery.smp.data.dao",
+        "eu.europa.ec.cipa.smp.server.hook",
+        "eu.europa.ec.cipa.smp.server.conversion",
+        "eu.europa.ec.cipa.smp.server.util"})
 @PropertySource(value = "classpath:config.properties")
 public class SmpServicesTestConfig {
 
@@ -74,17 +78,10 @@ public class SmpServicesTestConfig {
     public LocalContainerEntityManagerFactoryBean smpEntityManagerFactory() {
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
         lef.setDataSource(dataSource());
-        lef.setJpaVendorAdapter(jpaVendorAdapter());
-        lef.setPackagesToScan("eu.europa.ec.cipa.smp.server.data.dbms.model");
-        lef.setPersistenceXmlLocation("classpath:META-INF/smp-persistence.xml");
+        lef.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        lef.setPackagesToScan("eu.europa.ec.edelivery.smp.data.model");
+        //lef.setPersistenceXmlLocation("classpath:META-INF/smp-persistence.xml");
         return lef;
-    }
-
-    @Bean
-    public JpaVendorAdapter jpaVendorAdapter() {
-        HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
-
-        return hibernateJpaVendorAdapter;
     }
 
     @Bean
