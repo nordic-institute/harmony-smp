@@ -136,25 +136,8 @@ public final class KeyStoreUtils {
           aKeyStore.load (aIS, aKeyStorePassword);
           return aKeyStore;
         }finally {
-          //if(aIS != null){
               aIS.close();
-          //}
         }
-        /*
-        catch (final IOException e) {
-          StreamUtils.close (aIS);
-          aIS = ClassPathResource.getInputStream (sKeyStorePath);
-          if (aIS == null) {
-            // Fallback to file system - maybe this helps...
-            aIS = new FileSystemResource (sKeyStorePath).getInputStream ();
-          }
-        }*/
-
-        // } catch (final KeyStoreException ex) {
-        // throw new
-        // IllegalStateException("No provider can handle JKS key stores! Very weird!",
-        // ex);
-        // }
       }
       throw new IllegalStateException ("No provider can handle JKS key stores! Very weird!");
     }
@@ -190,8 +173,6 @@ public final class KeyStoreUtils {
                                                         @Nonnull final String sAliasToCopy,
                                                         @Nullable final char [] aAliasPassword) throws GeneralSecurityException,
                                                                                                IOException {
-    /*ValueEnforcer.notNull (aBaseKeyStore, "BaseKeyStore");
-    ValueEnforcer.notNull (sAliasToCopy, "AliasToCopy");*/
 
     final KeyStore aKeyStore = KeyStore.getInstance (aBaseKeyStore.getType (), aBaseKeyStore.getProvider ());
     // null stream means: create new key store

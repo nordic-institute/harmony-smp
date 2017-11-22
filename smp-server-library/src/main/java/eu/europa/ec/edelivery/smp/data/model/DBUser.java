@@ -12,21 +12,6 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-
-/*
- * Copyright 2017 European Commission | CEF eDelivery
- *
- * Licensed under the EUPL, Version 1.1 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
- * You may not use this work except in compliance with the Licence.
- *
- * You may obtain a copy of the Licence at:
- * https://joinup.ec.europa.eu/software/page/eupl
- * or file: LICENCE-EUPL-v1.1.pdf
- *
- * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the Licence for the specific language governing permissions and limitations under the Licence.
- */
 package eu.europa.ec.edelivery.smp.data.model;
 
 import javax.persistence.*;
@@ -34,55 +19,55 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Represents a single user within the SMP database.
- * 
- * @author PEPPOL.AT, BRZ, Philip Helger
- */
+import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_USERNAME_LENGTH;
+
 @Entity
-@Table (name = "smp_user")
+@Table(name = "smp_user")
 public class DBUser implements Serializable {
-  private String m_sUserName;
-  private String m_sPassword;
-  private boolean m_bIsAdmin;
-  private Set <DBOwnership> m_aOwnerships = new HashSet <DBOwnership> ();
 
-  public DBUser () {}
+    private String username;
+    private String password;
+    private boolean isAdmin;
+    private Set<DBOwnership> ownerships = new HashSet<>();
 
-  @Id
-  @Column (name = "username", unique = true, nullable = false, length = 256)
-  public String getUsername () {
-    return m_sUserName;
-  }
+    public DBUser() {
+    }
 
-  public void setUsername (final String sUserName) {
-    m_sUserName = sUserName;
-  }
+    @Id
+    @Column(name = "username", unique = true, nullable = false, length = MAX_USERNAME_LENGTH)
+    public String getUsername() {
+        return username;
+    }
 
-  @Column (name = "password",length = 256)
-  public String getPassword () {
-    return m_sPassword;
-  }
+    @Column(name = "password", length = MAX_USERNAME_LENGTH)
+    public String getPassword() {
+        return password;
+    }
 
-  public void setPassword (final String sPassword) {
-    m_sPassword = sPassword;
-  }
 
-  @Column(name = "isadmin", nullable = false)
-  public boolean isAdmin() {
-    return m_bIsAdmin;
-  }
+    @Column(name = "isadmin", nullable = false)
+    public boolean isAdmin() {
+        return isAdmin;
+    }
 
-  public void setAdmin(boolean isAdmin) {
-    m_bIsAdmin = isAdmin;
-  }
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    public Set<DBOwnership> getOwnerships() {
+        return ownerships;
+    }
 
-  @OneToMany (fetch = FetchType.LAZY, mappedBy = "user")
-  public Set <DBOwnership> getOwnerships () {
-    return m_aOwnerships;
-  }
+    public void setUsername(String username) {
+        this.username = username;
+    }
 
-  public void setOwnerships (final Set <DBOwnership> aOwnerships) {
-    m_aOwnerships = aOwnerships;
-  }
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setAdmin(boolean isAdmin) {
+        this.isAdmin = isAdmin;
+    }
+
+    public void setOwnerships(Set<DBOwnership> ownerships) {
+        this.ownerships = ownerships;
+    }
 }

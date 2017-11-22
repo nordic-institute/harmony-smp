@@ -17,7 +17,6 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupID;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -32,21 +31,15 @@ public class ServiceGroupDao {
     @PersistenceContext
     EntityManager entityManager;
 
-    public DBServiceGroup find(ParticipantIdentifierType serviceGroupId) {
-        DBServiceGroupID dbServiceGroupId = new DBServiceGroupID(serviceGroupId);
+    public DBServiceGroup find(String participantIdScheme,
+                               String participantIdValue) {
+
+        DBServiceGroupID dbServiceGroupId = new DBServiceGroupID(participantIdScheme, participantIdValue);
         return entityManager.find(DBServiceGroup.class, dbServiceGroupId);
     }
 
-    public void update(DBServiceGroup dbServiceGroup) {
-        //TODO Try to use one method for both create and update
-        entityManager.merge(dbServiceGroup);
-    }
-
     public void save(DBServiceGroup dbServiceGroup) {
-        //TODO Try to use one method for both create and update
         entityManager.persist(dbServiceGroup);
-        /*entityManager.flush();
-        System.out.print("====DUPA");*/
     }
 
     public void remove(DBServiceGroup serviceGroup) {

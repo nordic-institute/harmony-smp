@@ -17,13 +17,10 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadataID;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -35,9 +32,17 @@ public class ServiceMetadataDao {
     @PersistenceContext
     EntityManager entityManager;
 
-    public DBServiceMetadata find(ParticipantIdentifierType serviceGroupId, DocumentIdentifier documentId) {
-        DBServiceMetadataID aDBServiceMetadataID = new DBServiceMetadataID(serviceGroupId, documentId);
-        return entityManager.find(DBServiceMetadata.class, aDBServiceMetadataID);
+    public DBServiceMetadata find(String participantIdScheme,
+                                  String participantIdValue,
+                                  String documentIdScheme,
+                                  String documentIdValue) {
+
+        DBServiceMetadataID serviceMetadataId = new DBServiceMetadataID(participantIdScheme,
+                participantIdValue,
+                documentIdScheme,
+                documentIdValue);
+
+        return entityManager.find(DBServiceMetadata.class, serviceMetadataId);
     }
 
     /**
@@ -46,8 +51,16 @@ public class ServiceMetadataDao {
      * @return true if entity existed before and was removed in this call.
      * False if entity did not exist, so nothing was changed
      */
-    public boolean remove(ParticipantIdentifierType serviceGroupId, DocumentIdentifier documentId) {
-        DBServiceMetadata serviceMetadata = find(serviceGroupId, documentId);
+    public boolean remove(String participantIdScheme,
+                          String participantIdValue,
+                          String documentIdScheme,
+                          String documentIdValue) {
+
+        DBServiceMetadata serviceMetadata = find(participantIdScheme,
+                participantIdValue,
+                documentIdScheme,
+                documentIdValue);
+
         if (serviceMetadata == null) {
             return false;
         }
@@ -59,17 +72,12 @@ public class ServiceMetadataDao {
         entityManager.persist(serviceMetadata);
     }
 
-    public List<DBServiceMetadataID> findIdsByServiceGroup(ParticipantIdentifierType serviceGroupId) {
-        //TODO Check if you can retrieve IDs directly
-        List<DBServiceMetadata> aServices = entityManager.createQuery("SELECT p FROM DBServiceMetadata p WHERE p.id.businessIdentifierScheme = :scheme AND p.id.businessIdentifier = :value", DBServiceMetadata.class)
-                .setParameter("scheme", serviceGroupId.getScheme())
-                .setParameter("value", serviceGroupId.getValue())
-                .getResultList();
+    public List<DBServiceMetadataID> findIdsByServiceGroup(String participantIdScheme,
+                                                           String participantIdValue) {
 
-        final List<DBServiceMetadataID> serviceMetadataIds = new ArrayList<>();
-        for (final DBServiceMetadata aService : aServices) {
-            serviceMetadataIds.add(aService.getId());
-        }
-        return serviceMetadataIds;
+        return entityManager.createQuery("SELECT p.id FROM DBServiceMetadata p WHERE p.id.businessIdentifierScheme = :scheme AND p.id.businessIdentifier = :value", DBServiceMetadataID.class)
+                .setParameter("scheme", participantIdScheme)
+                .setParameter("value", participantIdValue)
+                .getResultList();
     }
 }
