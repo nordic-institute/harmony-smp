@@ -69,10 +69,6 @@
     </listener>
 
 
-    <listener>
-        <listener-class>eu.europa.ec.cipa.smp.server.util.LogStartupListener</listener-class>
-    </listener>
-
     <!-- SML handling: filter -->
     <filter>
         <filter-name>registrationhook</filter-name>

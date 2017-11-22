@@ -13,25 +13,18 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.smp.config;
-
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+package eu.europa.ec.edelivery.smp.exceptions;
 
 /**
- * Created by gutowpa on 12/07/2017.
+ * Thrown when entity cannot be converted.
+ * Means that user's input hasn't been validated properly or data in database are malformed.
+ * In both cases most probably environment or source code issue occured (bug).
+ * <p>
+ * Created by gutowpa on 15/11/2017.
  */
+public class ConversionException extends IllegalStateException {
 
-@Configuration
-@ComponentScan(basePackages = {
-        "eu.europa.ec.edelivery.smp.validation",
-        "eu.europa.ec.edelivery.smp.services",
-        "eu.europa.ec.edelivery.smp.data.dao",
-        "eu.europa.ec.cipa.smp.server.hook",
-        "eu.europa.ec.cipa.smp.server.conversion",
-        "eu.europa.ec.cipa.smp.server.util"})
-@Import({PropertiesConfig.class, DatabaseConfig.class})
-public class SmpAppConfig {
-
+    public ConversionException(Exception e){
+        super(e);
+    }
 }
