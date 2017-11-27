@@ -32,7 +32,7 @@
 
     <properties>
         <sonar.host.url>http://edelquality.westeurope.cloudapp.azure.com:9000/sonar/</sonar.host.url>
-        <sonar.exclusions>**/smp/data/model/*, **/smp/exceptions/*</sonar.exclusions>
+        <sonar.exclusions>**/smp/data/model/*, **/smp/exceptions/*, **/to_be_removed/*</sonar.exclusions>
     </properties>
 
     <build>
