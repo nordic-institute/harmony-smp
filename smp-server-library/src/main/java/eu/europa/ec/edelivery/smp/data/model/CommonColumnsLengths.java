@@ -13,25 +13,15 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.smp.config;
-
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+package eu.europa.ec.edelivery.smp.data.model;
 
 /**
- * Created by gutowpa on 12/07/2017.
+ * Created by gutowpa on 01/02/2017.
  */
-
-@Configuration
-@ComponentScan(basePackages = {
-        "eu.europa.ec.edelivery.smp.validation",
-        "eu.europa.ec.edelivery.smp.services",
-        "eu.europa.ec.edelivery.smp.data.dao",
-        "eu.europa.ec.cipa.smp.server.hook",
-        "eu.europa.ec.cipa.smp.server.conversion",
-        "eu.europa.ec.cipa.smp.server.util"})
-@Import({PropertiesConfig.class, DatabaseConfig.class})
-public class SmpAppConfig {
-
+public class CommonColumnsLengths {
+    public static final int MAX_IDENTIFIER_SCHEME_LENGTH = 100;
+    public static final int MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH = 50;
+    public static final int MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH = 500;
+    public static final int MAX_USERNAME_LENGTH = 256;
+    public static final String URL_SCHEME_VALUE_SEPARATOR = "::";
 }

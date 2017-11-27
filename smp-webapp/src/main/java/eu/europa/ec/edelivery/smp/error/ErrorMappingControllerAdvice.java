@@ -31,10 +31,10 @@
 package eu.europa.ec.edelivery.smp.error;
 
 import ec.services.smp._1.ErrorResponse;
-import eu.europa.ec.cipa.smp.server.errors.exceptions.CertificateAuthenticationException;
-import eu.europa.ec.cipa.smp.server.errors.exceptions.NotFoundException;
-import eu.europa.ec.cipa.smp.server.errors.exceptions.UnknownUserException;
-import eu.europa.ec.cipa.smp.server.errors.exceptions.XmlParsingException;
+import eu.europa.ec.edelivery.smp.exceptions.CertificateAuthenticationException;
+import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
+import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
+import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
 import eu.europa.ec.smp.api.exceptions.MalformedIdentifierException;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;

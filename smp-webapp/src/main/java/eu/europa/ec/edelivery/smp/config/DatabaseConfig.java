@@ -19,10 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -38,7 +36,7 @@ import javax.sql.DataSource;
 @Configuration
 @EnableTransactionManagement
 @ComponentScan(basePackages = {
-        "eu.europa.ec.cipa.smp.server.data.dbms",
+        "eu.europa.ec.edelivery.smp.data.dao",
         "eu.europa.ec.cipa.smp.server.services",
         "eu.europa.ec.cipa.smp.server.hook"})
 public class DatabaseConfig {
@@ -70,21 +68,14 @@ public class DatabaseConfig {
     public LocalContainerEntityManagerFactoryBean smpEntityManagerFactory() {
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
         lef.setDataSource(dataSource());
-        lef.setJpaVendorAdapter(jpaVendorAdapter());
-        lef.setPackagesToScan("eu.europa.ec.cipa.smp.server.data.dbms.model");
-        lef.setPersistenceXmlLocation("classpath:META-INF/smp-persistence.xml");
+        lef.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        lef.setPackagesToScan("eu.europa.ec.edelivery.smp.data.model");
+        //lef.setPersistenceXmlLocation("classpath:META-INF/smp-persistence.xml");
         return lef;
     }
 
     @Bean
-    public JpaVendorAdapter jpaVendorAdapter() {
-        HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
-
-        return hibernateJpaVendorAdapter;
-    }
-
-    @Bean
-    public PlatformTransactionManager transactionManager(EntityManagerFactory emf) {
+    public PlatformTransactionManager smpTransactionManager(EntityManagerFactory emf) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(emf);
 

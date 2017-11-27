@@ -15,7 +15,7 @@
 
 package eu.europa.ec.cipa.smp.server.util;
 
-import eu.europa.ec.cipa.smp.server.errors.exceptions.CertificateAuthenticationException;
+import eu.europa.ec.edelivery.smp.exceptions.CertificateAuthenticationException;
 import eu.europa.ec.cipa.smp.server.security.CertificateDetails;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;

@@ -13,25 +13,14 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.smp.config;
+package eu.europa.ec.edelivery.smp.data.dao;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import org.springframework.stereotype.Repository;
 
 /**
- * Created by gutowpa on 12/07/2017.
+ * Created by gutowpa on 14/11/2017.
  */
-
-@Configuration
-@ComponentScan(basePackages = {
-        "eu.europa.ec.edelivery.smp.validation",
-        "eu.europa.ec.edelivery.smp.services",
-        "eu.europa.ec.edelivery.smp.data.dao",
-        "eu.europa.ec.cipa.smp.server.hook",
-        "eu.europa.ec.cipa.smp.server.conversion",
-        "eu.europa.ec.cipa.smp.server.util"})
-@Import({PropertiesConfig.class, DatabaseConfig.class})
-public class SmpAppConfig {
-
+@Repository
+public class UserDao extends BaseDao<DBUser> {
 }

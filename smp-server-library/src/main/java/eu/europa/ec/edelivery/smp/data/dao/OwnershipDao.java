@@ -13,25 +13,23 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.smp.config;
+package eu.europa.ec.edelivery.smp.data.dao;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import eu.europa.ec.edelivery.smp.data.model.DBOwnership;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupId;
+import org.springframework.stereotype.Repository;
 
 /**
- * Created by gutowpa on 12/07/2017.
+ * Created by gutowpa on 14/11/2017.
  */
+@Repository
+public class OwnershipDao extends BaseDao<DBOwnership>{
 
-@Configuration
-@ComponentScan(basePackages = {
-        "eu.europa.ec.edelivery.smp.validation",
-        "eu.europa.ec.edelivery.smp.services",
-        "eu.europa.ec.edelivery.smp.data.dao",
-        "eu.europa.ec.cipa.smp.server.hook",
-        "eu.europa.ec.cipa.smp.server.conversion",
-        "eu.europa.ec.cipa.smp.server.util"})
-@Import({PropertiesConfig.class, DatabaseConfig.class})
-public class SmpAppConfig {
+    public void removeByServiceGroupId(DBServiceGroupId serviceGroupID) {
+        em.createQuery("DELETE FROM DBOwnership o WHERE o.id.businessIdentifierScheme = :scheme and o.id.businessIdentifier = :id")
+                .setParameter("scheme", serviceGroupID.getBusinessIdentifierScheme())
+                .setParameter("id", serviceGroupID.getBusinessIdentifier())
+                .executeUpdate();
+    }
 
 }

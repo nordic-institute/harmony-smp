@@ -13,25 +13,16 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.smp.config;
+package eu.europa.ec.edelivery.smp.exceptions;
 
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
-/**
- * Created by gutowpa on 12/07/2017.
- */
+public class CertificateAuthenticationException extends Exception {
 
-@Configuration
-@ComponentScan(basePackages = {
-        "eu.europa.ec.edelivery.smp.validation",
-        "eu.europa.ec.edelivery.smp.services",
-        "eu.europa.ec.edelivery.smp.data.dao",
-        "eu.europa.ec.cipa.smp.server.hook",
-        "eu.europa.ec.cipa.smp.server.conversion",
-        "eu.europa.ec.cipa.smp.server.util"})
-@Import({PropertiesConfig.class, DatabaseConfig.class})
-public class SmpAppConfig {
+    public CertificateAuthenticationException(String message) {
+        super(message);
+    }
 
+    public CertificateAuthenticationException(String message, Throwable t) {
+        super(message, t);
+    }
 }
