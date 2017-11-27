@@ -32,7 +32,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
+import static eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter.toDbModel;
 import static eu.europa.ec.smp.api.Identifiers.asString;
+import static java.util.Arrays.asList;
 
 /**
  * Created by gutowpa on 14/11/2017.
@@ -49,9 +56,6 @@ public class ServiceGroupService {
     private ServiceGroupDao serviceGroupDao;
 
     @Autowired
-    private OwnershipDao ownershipDao;
-
-    @Autowired
     private UserDao userDao;
 
     @Autowired
@@ -60,7 +64,7 @@ public class ServiceGroupService {
     public ServiceGroup getServiceGroup(ParticipantIdentifierType serviceGroupId) {
         ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
 
-        DBServiceGroup dbServiceGroup = serviceGroupDao.find(normalizedServiceGroupId.getScheme(), normalizedServiceGroupId.getValue());
+        DBServiceGroup dbServiceGroup = serviceGroupDao.find(toDbModel(normalizedServiceGroupId));
         if (dbServiceGroup == null) {
             throw new NotFoundException("ServiceGroup not found: '%s'", asString(serviceGroupId));
         }
@@ -77,7 +81,7 @@ public class ServiceGroupService {
             throw new UnknownUserException(newOwnerName);
         }
 
-        DBServiceGroup dbServiceGroup = serviceGroupDao.find(normalizedParticipantId.getScheme(), normalizedParticipantId.getValue());
+        DBServiceGroup dbServiceGroup = serviceGroupDao.find(toDbModel(normalizedParticipantId));
 
         String extensions = ServiceGroupConverter.extractExtensionsPayload(normalizedServiceGroup);
 
@@ -90,14 +94,15 @@ public class ServiceGroupService {
             m_aHook.create(normalizedParticipantId);
 
             //Save ServiceGroup
-            dbServiceGroup = new DBServiceGroup(new DBServiceGroupID(normalizedParticipantId.getScheme(), normalizedParticipantId.getValue()));
+            dbServiceGroup = new DBServiceGroup(new DBServiceGroupId(normalizedParticipantId.getScheme(), normalizedParticipantId.getValue()));
             dbServiceGroup.setExtension(extensions);
-            serviceGroupDao.save(dbServiceGroup);
 
             // Save the ownership information
-            final DBOwnershipID ownershipID = new DBOwnershipID(newOwnerName, normalizedParticipantId.getScheme(), normalizedParticipantId.getValue());
-            final DBOwnership ownership = new DBOwnership(ownershipID, newOwner, dbServiceGroup);
-            ownershipDao.save(ownership);
+            DBOwnershipId dbOwnershipID = new DBOwnershipId(newOwnerName, normalizedParticipantId.getScheme(), normalizedParticipantId.getValue());
+            DBOwnership dbOwnership = new DBOwnership(dbOwnershipID, newOwner, dbServiceGroup);
+            dbServiceGroup.setOwnerships(new HashSet(asList(dbOwnership)));
+            //ownershipDao.save(ownership);
+            serviceGroupDao.save(dbServiceGroup);
             return true;
         }
     }
@@ -115,12 +120,12 @@ public class ServiceGroupService {
     public void deleteServiceGroup(ParticipantIdentifierType serviceGroupId) {
         final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
 
-        DBServiceGroup dbServiceGroup = serviceGroupDao.find(normalizedServiceGroupId.getScheme(), normalizedServiceGroupId.getValue());
+        DBServiceGroup dbServiceGroup = serviceGroupDao.find(toDbModel(normalizedServiceGroupId));
         if (dbServiceGroup == null) {
             throw new NotFoundException("ServiceGroup not found: '%s'", asString(serviceGroupId));
         }
 
-        ownershipDao.removeByServiceGroupId(dbServiceGroup.getId());
+        //ownershipDao.removeByServiceGroupId(dbServiceGroup.getId());
         serviceGroupDao.remove(dbServiceGroup);
 
         m_aHook.delete(normalizedServiceGroupId);

@@ -25,17 +25,16 @@ import java.io.Serializable;
 @Embeddable
 @ToString
 @EqualsAndHashCode
-public class DBOwnershipID implements Serializable {
+public class DBOwnershipId implements Serializable {
 
     private String username;
     private String participantIdScheme;
     private String participantIdValue;
 
-    @Deprecated
-    public DBOwnershipID() {
+    public DBOwnershipId() {
     }
 
-    public DBOwnershipID(String userName, String participantIdScheme, String participantIdValue) {
+    public DBOwnershipId(String userName, String participantIdScheme, String participantIdValue) {
         username = userName;
         setBusinessIdentifierScheme(participantIdScheme);
         setBusinessIdentifier(participantIdValue);

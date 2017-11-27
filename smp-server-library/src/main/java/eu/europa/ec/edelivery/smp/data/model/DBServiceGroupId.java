@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
+
 package eu.europa.ec.edelivery.smp.data.model;
 
 import lombok.EqualsAndHashCode;
@@ -21,32 +22,25 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.io.Serializable;
 
-import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.*;
+import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_IDENTIFIER_SCHEME_LENGTH;
+import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH;
 
 @Embeddable
 @ToString
 @EqualsAndHashCode
-public class DBServiceMetadataID implements Serializable {
+public class DBServiceGroupId implements Serializable {
 
     private String participantIdScheme;
     private String participantIdValue;
 
-    private String documentIdScheme;
-    private String documentIdValue;
-
-    @Deprecated
-    public DBServiceMetadataID() {
+    public DBServiceGroupId() {
     }
 
-    public DBServiceMetadataID(String participantIdScheme,
-                               String participantIdValue,
-                               String documentIdScheme,
-                               String documentIdValue) {
+    public DBServiceGroupId(String participantIdScheme,
+                            String participantIdValue) {
 
         setBusinessIdentifierScheme(participantIdScheme);
         setBusinessIdentifier(participantIdValue);
-        setDocumentIdentifierScheme(documentIdScheme);
-        setDocumentIdentifier(documentIdValue);
     }
 
     @Column(name = "businessIdentifierScheme", nullable = false, length = MAX_IDENTIFIER_SCHEME_LENGTH)
@@ -59,29 +53,12 @@ public class DBServiceMetadataID implements Serializable {
         return participantIdValue;
     }
 
-    @Column(name = "documentIdentifierScheme", nullable = false, length = MAX_IDENTIFIER_SCHEME_LENGTH)
-    public String getDocumentIdentifierScheme() {
-        return documentIdScheme;
-    }
-
-    @Column(name = "documentIdentifier", nullable = false, length = MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH)
-    public String getDocumentIdentifier() {
-        return documentIdValue;
-    }
-
     public void setBusinessIdentifierScheme(String participantIdScheme) {
         this.participantIdScheme = participantIdScheme;
-    }
-
-    public void setDocumentIdentifierScheme(String documentIdScheme) {
-        this.documentIdScheme = documentIdScheme;
     }
 
     public void setBusinessIdentifier(String participantIdValue) {
         this.participantIdValue = participantIdValue;
     }
 
-    public void setDocumentIdentifier(String documentIdValue) {
-        this.documentIdValue = documentIdValue;
-    }
 }

@@ -16,33 +16,11 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupID;
 import org.springframework.stereotype.Repository;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 /**
  * Created by gutowpa on 14/11/2017.
  */
 @Repository
-public class ServiceGroupDao {
-
-    @PersistenceContext
-    EntityManager entityManager;
-
-    public DBServiceGroup find(String participantIdScheme,
-                               String participantIdValue) {
-
-        DBServiceGroupID dbServiceGroupId = new DBServiceGroupID(participantIdScheme, participantIdValue);
-        return entityManager.find(DBServiceGroup.class, dbServiceGroupId);
-    }
-
-    public void save(DBServiceGroup dbServiceGroup) {
-        entityManager.persist(dbServiceGroup);
-    }
-
-    public void remove(DBServiceGroup serviceGroup) {
-        entityManager.remove(serviceGroup);
-    }
+public class ServiceGroupDao extends BaseDao<DBServiceGroup> {
 }

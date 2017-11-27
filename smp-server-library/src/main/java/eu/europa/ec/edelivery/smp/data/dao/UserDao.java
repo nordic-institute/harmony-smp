@@ -18,20 +18,9 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-
 /**
  * Created by gutowpa on 14/11/2017.
  */
 @Repository
-public class UserDao {
-
-    @PersistenceContext
-    EntityManager entityManager;
-
-    public DBUser find(String username) {
-        return entityManager.find(DBUser.class, username);
-    }
-
+public class UserDao extends BaseDao<DBUser> {
 }

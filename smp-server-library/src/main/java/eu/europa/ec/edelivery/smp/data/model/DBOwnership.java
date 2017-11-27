@@ -22,20 +22,20 @@ import java.io.Serializable;
 @Table (name = "smp_ownership")
 public class DBOwnership implements Serializable {
 
-  private DBOwnershipID ownershipId;
+  private DBOwnershipId ownershipId;
   private DBUser user;
   private DBServiceGroup serviceGroup;
 
   public DBOwnership () {}
 
-  public DBOwnership (final DBOwnershipID ownershipId, final DBUser user, final DBServiceGroup serviceGroup) {
+  public DBOwnership (final DBOwnershipId ownershipId, final DBUser user, final DBServiceGroup serviceGroup) {
     this.ownershipId = ownershipId;
     this.user = user;
     this.serviceGroup = serviceGroup;
   }
 
   @EmbeddedId
-  public DBOwnershipID getId () {
+  public DBOwnershipId getId () {
     return ownershipId;
   }
 
@@ -60,7 +60,7 @@ public class DBOwnership implements Serializable {
     return serviceGroup;
   }
 
-  public void setId (final DBOwnershipID ownershipId) {
+  public void setId (final DBOwnershipId ownershipId) {
     this.ownershipId = ownershipId;
   }
 

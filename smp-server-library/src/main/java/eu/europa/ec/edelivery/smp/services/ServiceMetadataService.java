@@ -16,19 +16,16 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
-import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
+import eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter;
 import eu.europa.ec.cipa.smp.server.util.SignatureFilter;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadataID;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadataId;
 import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +34,8 @@ import org.w3c.dom.Document;
 import java.util.ArrayList;
 import java.util.List;
 
+import static eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter.toDbModel;
+import static eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter.toSignedServiceMetadatadaDocument;
 import static eu.europa.ec.smp.api.Identifiers.asString;
 
 /**
@@ -61,17 +60,13 @@ public class ServiceMetadataService {
         ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
         DocumentIdentifier normalizedDocId = caseSensitivityNormalizer.normalize(documentId);
 
-        DBServiceMetadata serviceMetadata = serviceMetadataDao.find(
-                normalizedServiceGroupId.getScheme(),
-                normalizedServiceGroupId.getValue(),
-                normalizedDocId.getScheme(),
-                normalizedDocId.getValue());
+        DBServiceMetadata serviceMetadata = serviceMetadataDao.find(toDbModel(normalizedServiceGroupId, normalizedDocId));
 
         if (serviceMetadata == null || serviceMetadata.getXmlContent() == null) {
             throw new NotFoundException("ServiceMetadata not found, ServiceGroupID: '%s', DocumentID: '%s'", asString(serviceGroupId), asString(documentId));
         }
 
-        Document aSignedServiceMetadata = ServiceMetadataConverter.toSignedServiceMetadatadaDocument(serviceMetadata.getXmlContent());
+        Document aSignedServiceMetadata = toSignedServiceMetadatadaDocument(serviceMetadata.getXmlContent());
         signatureFilter.sign(aSignedServiceMetadata);
         return aSignedServiceMetadata;
     }
@@ -86,26 +81,19 @@ public class ServiceMetadataService {
         ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
         DocumentIdentifier normalizedDocId = caseSensitivityNormalizer.normalize(documentId);
 
-        DBServiceGroup serviceGroup = serviceGroupDao.find(normalizedServiceGroupId.getScheme(), normalizedServiceGroupId.getValue());
+        DBServiceGroup serviceGroup = serviceGroupDao.find(ServiceGroupConverter.toDbModel(normalizedServiceGroupId));
         if (serviceGroup == null) {
             throw new NotFoundException("ServiceGroup not found: '%s'", asString(serviceGroupId));
         }
 
-        boolean alreadyExisted = serviceMetadataDao.remove(
-                normalizedServiceGroupId.getScheme(),
-                normalizedServiceGroupId.getValue(),
-                normalizedDocId.getScheme(),
-                normalizedDocId.getValue());
+        DBServiceMetadataId dbServiceMetadataId = toDbModel(normalizedServiceGroupId, normalizedDocId);
+        boolean alreadyExisted = serviceMetadataDao.removeById(dbServiceMetadataId);
 
-        DBServiceMetadata serviceMetadata = new DBServiceMetadata();
-        serviceMetadata.setId(new DBServiceMetadataID(
-                normalizedServiceGroupId.getScheme(),
-                normalizedServiceGroupId.getValue(),
-                normalizedDocId.getScheme(),
-                normalizedDocId.getValue()));
+        DBServiceMetadata dbServiceMetadata = new DBServiceMetadata();
+        dbServiceMetadata.setId(dbServiceMetadataId);
 
-        serviceMetadata.setXmlContent(xmlContent);
-        serviceMetadataDao.save(serviceMetadata);
+        dbServiceMetadata.setXmlContent(xmlContent);
+        serviceMetadataDao.save(dbServiceMetadata);
         return !alreadyExisted;
     }
 
@@ -114,11 +102,8 @@ public class ServiceMetadataService {
         ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
         DocumentIdentifier normalizedDocId = caseSensitivityNormalizer.normalize(documentId);
 
-        boolean serviceMetadataRemoved = serviceMetadataDao.remove(
-                normalizedServiceGroupId.getScheme(),
-                normalizedServiceGroupId.getValue(),
-                normalizedDocId.getScheme(),
-                normalizedDocId.getValue());
+        DBServiceMetadataId dbServiceMetadataId = toDbModel(normalizedServiceGroupId, normalizedDocId);
+        boolean serviceMetadataRemoved = serviceMetadataDao.removeById(dbServiceMetadataId);
 
         if (!serviceMetadataRemoved) {
             throw new NotFoundException("ServiceGroup not found: '%s'", asString(serviceGroupId));
@@ -127,12 +112,12 @@ public class ServiceMetadataService {
 
     public List<DocumentIdentifier> findServiceMetadataIdentifiers(ParticipantIdentifierType participantId) {
         ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(participantId);
-        List<DBServiceMetadataID> metadataIds = serviceMetadataDao.findIdsByServiceGroup(
+        List<DBServiceMetadataId> metadataIds = serviceMetadataDao.findIdsByServiceGroup(
                 normalizedServiceGroupId.getScheme(),
                 normalizedServiceGroupId.getValue());
 
         List<DocumentIdentifier> documentIds = new ArrayList();
-        for (DBServiceMetadataID metadataId : metadataIds) {
+        for (DBServiceMetadataId metadataId : metadataIds) {
             DocumentIdentifier documentIdentifier = new DocumentIdentifier(metadataId.getDocumentIdentifier(), metadataId.getDocumentIdentifierScheme());
             documentIds.add(documentIdentifier);
         }

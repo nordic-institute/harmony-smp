@@ -15,6 +15,7 @@
 
 package eu.europa.ec.cipa.smp.server.conversion;
 
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupId;
 import eu.europa.ec.edelivery.smp.exceptions.ConversionException;
 import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
 import eu.europa.ec.cipa.smp.server.util.ExtensionUtils;
@@ -103,5 +104,9 @@ public class ServiceGroupConverter {
         } catch (JAXBException | XMLStreamException e) {
             throw new ConversionException(e);
         }
+    }
+
+    public static DBServiceGroupId toDbModel(ParticipantIdentifierType serviceGroupId){
+        return new DBServiceGroupId(serviceGroupId.getScheme(), serviceGroupId.getValue());
     }
 }

@@ -16,66 +16,21 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadataID;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadataId;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.List;
 
 /**
  * Created by gutowpa on 14/11/2017.
  */
 @Repository
-public class ServiceMetadataDao {
+public class ServiceMetadataDao extends BaseDao<DBServiceMetadata> {
 
-    @PersistenceContext
-    EntityManager entityManager;
-
-    public DBServiceMetadata find(String participantIdScheme,
-                                  String participantIdValue,
-                                  String documentIdScheme,
-                                  String documentIdValue) {
-
-        DBServiceMetadataID serviceMetadataId = new DBServiceMetadataID(participantIdScheme,
-                participantIdValue,
-                documentIdScheme,
-                documentIdValue);
-
-        return entityManager.find(DBServiceMetadata.class, serviceMetadataId);
-    }
-
-    /**
-     * Removes ServiceMetadata
-     *
-     * @return true if entity existed before and was removed in this call.
-     * False if entity did not exist, so nothing was changed
-     */
-    public boolean remove(String participantIdScheme,
-                          String participantIdValue,
-                          String documentIdScheme,
-                          String documentIdValue) {
-
-        DBServiceMetadata serviceMetadata = find(participantIdScheme,
-                participantIdValue,
-                documentIdScheme,
-                documentIdValue);
-
-        if (serviceMetadata == null) {
-            return false;
-        }
-        entityManager.remove(serviceMetadata);
-        return true;
-    }
-
-    public void save(DBServiceMetadata serviceMetadata) {
-        entityManager.persist(serviceMetadata);
-    }
-
-    public List<DBServiceMetadataID> findIdsByServiceGroup(String participantIdScheme,
+    public List<DBServiceMetadataId> findIdsByServiceGroup(String participantIdScheme,
                                                            String participantIdValue) {
 
-        return entityManager.createQuery("SELECT p.id FROM DBServiceMetadata p WHERE p.id.businessIdentifierScheme = :scheme AND p.id.businessIdentifier = :value", DBServiceMetadataID.class)
+        return em.createQuery("SELECT p.id FROM DBServiceMetadata p WHERE p.id.businessIdentifierScheme = :scheme AND p.id.businessIdentifier = :value", DBServiceMetadataId.class)
                 .setParameter("scheme", participantIdScheme)
                 .setParameter("value", participantIdValue)
                 .getResultList();
