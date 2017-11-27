@@ -24,7 +24,7 @@ import java.util.Set;
 @Table(name = "smp_service_group")
 public class DBServiceGroup implements Serializable {
 
-    private DBServiceGroupID serviceGroupId;
+    private DBServiceGroupId serviceGroupId;
     private String extension;
     private Set<DBOwnership> ownerships = new HashSet<>();
     private Set<DBServiceMetadata> serviceMetadatas = new HashSet<DBServiceMetadata>();
@@ -32,11 +32,11 @@ public class DBServiceGroup implements Serializable {
     public DBServiceGroup() {
     }
 
-    public DBServiceGroup(final DBServiceGroupID serviceGroupId) {
+    public DBServiceGroup(final DBServiceGroupId serviceGroupId) {
         this.serviceGroupId = serviceGroupId;
     }
 
-    public DBServiceGroup(final DBServiceGroupID serviceGroupId,
+    public DBServiceGroup(final DBServiceGroupId serviceGroupId,
                           final String extension,
                           final Set<DBOwnership> ownerships,
                           final Set<DBServiceMetadata> serviceMetadatas) {
@@ -48,7 +48,7 @@ public class DBServiceGroup implements Serializable {
     }
 
     @EmbeddedId
-    public DBServiceGroupID getId() {
+    public DBServiceGroupId getId() {
         return serviceGroupId;
     }
 
@@ -58,17 +58,17 @@ public class DBServiceGroup implements Serializable {
         return extension;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "serviceGroup", cascade = {CascadeType.ALL})
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "serviceGroup", cascade = CascadeType.ALL)
     public Set<DBOwnership> getOwnerships() {
         return ownerships;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "serviceGroup", cascade = {CascadeType.ALL})
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "serviceGroup", cascade = CascadeType.ALL)
     public Set<DBServiceMetadata> getServiceMetadatas() {
         return serviceMetadatas;
     }
 
-    public void setId(final DBServiceGroupID serviceGroupId) {
+    public void setId(final DBServiceGroupId serviceGroupId) {
         this.serviceGroupId = serviceGroupId;
     }
 

@@ -17,6 +17,9 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter;
 import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
+import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
 import eu.europa.ec.edelivery.smp.config.SmpServicesTestConfig;
 import org.junit.Before;
@@ -31,11 +34,15 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
+import javax.persistence.PersistenceContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.util.List;
 
+import static eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter.toDbModel;
 import static eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter.unmarshal;
 import static eu.europa.ec.cipa.smp.server.util.XmlTestUtils.loadDocumentAsString;
 import static eu.europa.ec.cipa.smp.server.util.XmlTestUtils.marshall;
@@ -66,10 +73,24 @@ public class ServiceMetadataIntegrationTest {
     @Autowired
     ServiceGroupService serviceGroupService;
 
+    @PersistenceContext
+    EntityManager em;
+
+    @Autowired
+    private ServiceMetadataDao serviceMetadataDao;
+
     @Before
     public void before() throws IOException {
         ServiceGroup inServiceGroup = ServiceGroupConverter.unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
         serviceGroupService.saveServiceGroup(inServiceGroup, ADMIN_USERNAME);
+    }
+
+    @Test
+    public void makeSureServiceMetadataDoesNotExistAlready(){
+        DBServiceMetadata dbServiceMetadata = serviceMetadataDao.find(ServiceMetadataConverter.toDbModel(SERVICE_GROUP_ID, DOC_ID));
+        if(dbServiceMetadata != null){
+            throw new IllegalStateException("Underlying DB already contains test data that should not be there. Remove them manually.");
+        }
     }
 
     @Test
@@ -96,6 +117,11 @@ public class ServiceMetadataIntegrationTest {
         serviceMetadataService.getServiceMetadataDocument(SERVICE_GROUP_ID, DOC_ID);
     }
 
+    @Test(expected = NotFoundException.class)
+    public void notFoundExceptionThrownWhenDeletingNotExisting() {
+        serviceMetadataService.deleteServiceMetadata(SERVICE_GROUP_ID, DOC_ID);
+    }
+
     @Test
     public void saveAndDeletePositiveScenario() throws IOException {
         //given
@@ -103,6 +129,8 @@ public class ServiceMetadataIntegrationTest {
         serviceMetadataService.saveServiceMetadata(SERVICE_GROUP_ID, DOC_ID, inServiceMetadataXml);
         List<DocumentIdentifier> docIdsBefore = serviceMetadataService.findServiceMetadataIdentifiers(SERVICE_GROUP_ID);
         assertEquals(1, docIdsBefore.size());
+        DBServiceMetadata dbServiceMetadata = serviceMetadataDao.find(ServiceMetadataConverter.toDbModel(SERVICE_GROUP_ID, DOC_ID));
+        assertNotNull(dbServiceMetadata);
 
         //when
         serviceMetadataService.deleteServiceMetadata(SERVICE_GROUP_ID, DOC_ID);
@@ -110,6 +138,13 @@ public class ServiceMetadataIntegrationTest {
         //then
         List<DocumentIdentifier> docIdsAfter = serviceMetadataService.findServiceMetadataIdentifiers(SERVICE_GROUP_ID);
         assertEquals(0, docIdsAfter.size());
+        try {
+            em.refresh(dbServiceMetadata);
+        }catch (EntityNotFoundException e){
+            // expected and needed - Hibernate's changes made on the same entity
+            // by persist() and Queries were not aware of each other
+        }
+
         try {
             serviceMetadataService.getServiceMetadataDocument(SERVICE_GROUP_ID, DOC_ID);
         } catch (NotFoundException e) {

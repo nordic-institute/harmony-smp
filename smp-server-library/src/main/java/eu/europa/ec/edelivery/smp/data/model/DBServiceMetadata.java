@@ -22,17 +22,17 @@ import java.io.Serializable;
 @Table(name = "smp_service_metadata")
 public class DBServiceMetadata implements Serializable {
 
-    private DBServiceMetadataID serviceMetadataId;
+    private DBServiceMetadataId serviceMetadataId;
     private DBServiceGroup serviceGroup;
     private String xmlContent;
 
     public DBServiceMetadata() {  }
 
-    public DBServiceMetadata(DBServiceMetadataID serviceMetadataId, DBServiceGroup serviceGroup) {
+    public DBServiceMetadata(DBServiceMetadataId serviceMetadataId, DBServiceGroup serviceGroup) {
         this(serviceMetadataId, serviceGroup, null);
     }
 
-    public DBServiceMetadata(DBServiceMetadataID serviceMetadataId,
+    public DBServiceMetadata(DBServiceMetadataId serviceMetadataId,
                              DBServiceGroup serviceGroup,
                              String xmlContent) {
         this.serviceMetadataId = serviceMetadataId;
@@ -41,7 +41,7 @@ public class DBServiceMetadata implements Serializable {
     }
 
     @EmbeddedId
-    public DBServiceMetadataID getId() {
+    public DBServiceMetadataId getId() {
         return serviceMetadataId;
     }
 
@@ -66,7 +66,7 @@ public class DBServiceMetadata implements Serializable {
         return xmlContent;
     }
 
-    public void setId(final DBServiceMetadataID serviceMetadataId) {
+    public void setId(final DBServiceMetadataId serviceMetadataId) {
         this.serviceMetadataId = serviceMetadataId;
     }
 

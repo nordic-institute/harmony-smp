@@ -15,6 +15,11 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.data.dao.OwnershipDao;
+import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
+import eu.europa.ec.edelivery.smp.data.model.DBOwnership;
+import eu.europa.ec.edelivery.smp.data.model.DBOwnershipId;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
 import eu.europa.ec.edelivery.smp.config.SmpServicesTestConfig;
 import org.junit.Test;
@@ -30,10 +35,14 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.security.acl.Owner;
 import java.util.List;
 
+import static eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter.toDbModel;
 import static eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter.unmarshal;
 import static eu.europa.ec.cipa.smp.server.util.XmlTestUtils.loadDocumentAsString;
 import static eu.europa.ec.cipa.smp.server.util.XmlTestUtils.marshall;
@@ -51,11 +60,28 @@ import static org.junit.Assert.*;
 public class ServiceGroupServiceIntegrationTest {
 
     private static final String SERVICE_GROUP_XML_PATH = "/eu/europa/ec/edelivery/smp/services/ServiceGroupPoland.xml";
-    private static final ParticipantIdentifierType SERVICE_GROUP_ID = asParticipantId("participant-scheme-qns::urn:Poland:ncpb");
+    private static final ParticipantIdentifierType SERVICE_GROUP_ID = asParticipantId("participant-scheme-qns::urn:poland:ncpb");
     public static final String ADMIN_USERNAME = "test_admin";
+
+    @PersistenceContext
+    EntityManager em;
+
+    @Autowired
+    ServiceGroupDao serviceGroupDao;
+
+    @Autowired
+    OwnershipDao ownershipDao;
 
     @Autowired
     private ServiceGroupService serviceGroupService;
+
+    @Test
+    public void makeSureServiceGroupDoesNotExistAlready(){
+        DBServiceGroup dbServiceGroup = serviceGroupDao.find(toDbModel(SERVICE_GROUP_ID));
+        if(dbServiceGroup != null){
+            throw new IllegalStateException("Underlying DB already contains test data that should not be there. Remove them manually.");
+        }
+    }
 
     @Test
     public void saveAndReadPositiveScenario() throws IOException, JAXBException {
@@ -66,6 +92,10 @@ public class ServiceGroupServiceIntegrationTest {
         //then
         assertFalse(inServiceGroup == outServiceGroup);
         assertEquals(marshall(inServiceGroup), marshall(outServiceGroup));
+
+        em.flush();
+        DBOwnership outOwnership = ownershipDao.find(new DBOwnershipId(ADMIN_USERNAME, SERVICE_GROUP_ID.getScheme(), SERVICE_GROUP_ID.getValue()));
+        assertEquals(ADMIN_USERNAME, outOwnership.getUser().getUsername());
     }
 
     @Test(expected = NotFoundException.class)
@@ -77,9 +107,11 @@ public class ServiceGroupServiceIntegrationTest {
     public void saveAndDeletePositiveScenario() throws IOException {
         //given
         saveServiceGroup();
+        em.flush();
 
         //when
         serviceGroupService.deleteServiceGroup(SERVICE_GROUP_ID);
+        em.flush();
 
         //then
         try {

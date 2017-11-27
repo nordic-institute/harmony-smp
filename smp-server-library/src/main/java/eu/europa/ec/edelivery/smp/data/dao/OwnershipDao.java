@@ -16,29 +16,20 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBOwnership;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupID;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupId;
 import org.springframework.stereotype.Repository;
-
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 /**
  * Created by gutowpa on 14/11/2017.
  */
 @Repository
-public class OwnershipDao {
+public class OwnershipDao extends BaseDao<DBOwnership>{
 
-    @PersistenceContext
-    EntityManager entityManager;
-
-    public void removeByServiceGroupId(DBServiceGroupID serviceGroupID) {
-        entityManager.createQuery("DELETE FROM DBOwnership o WHERE o.id.businessIdentifierScheme = :scheme and o.id.businessIdentifier = :id")
+    public void removeByServiceGroupId(DBServiceGroupId serviceGroupID) {
+        em.createQuery("DELETE FROM DBOwnership o WHERE o.id.businessIdentifierScheme = :scheme and o.id.businessIdentifier = :id")
                 .setParameter("scheme", serviceGroupID.getBusinessIdentifierScheme())
                 .setParameter("id", serviceGroupID.getBusinessIdentifier())
                 .executeUpdate();
     }
 
-    public void save(DBOwnership ownership) {
-        entityManager.persist(ownership);
-    }
 }
