@@ -13,25 +13,15 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.smp.config;
-
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+package eu.europa.ec.edelivery.smp.exceptions;
 
 /**
- * Created by gutowpa on 12/07/2017.
+ * This exceptions is thrown if the provided user name does not exist.
  */
+public class UnknownUserException extends RuntimeException {
 
-@Configuration
-@ComponentScan(basePackages = {
-        "eu.europa.ec.edelivery.smp.validation",
-        "eu.europa.ec.edelivery.smp.services",
-        "eu.europa.ec.edelivery.smp.data.dao",
-        "eu.europa.ec.cipa.smp.server.hook",
-        "eu.europa.ec.cipa.smp.server.conversion",
-        "eu.europa.ec.cipa.smp.server.util"})
-@Import({PropertiesConfig.class, DatabaseConfig.class})
-public class SmpAppConfig {
+    public UnknownUserException(String username) {
+        super("Unknown user '" + username + "'");
+    }
 
 }

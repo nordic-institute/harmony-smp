@@ -15,7 +15,7 @@
 package eu.europa.ec.cipa.smp.server.util;
 
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import eu.europa.ec.cipa.smp.server.data.dbms.model.CommonColumnsLengths;
+import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
 import org.junit.Test;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
@@ -28,22 +28,6 @@ import static org.junit.Assert.*;
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 public final class IdentifierUtilsTest {
-  private static final String [] PARTICIPANT_SCHEME_VALID = { "bdxr-actorid-upis",
-                                                             "bdxr-ACTORID-UPIS",
-                                                             CommonColumnsLengths.DEFAULT_PARTICIPANT_IDENTIFIER_SCHEME,
-                                                             "any-actorid-any",
-                                                             "any-ACTORID-any" };
-  private static final String [] PARTIFCIPANT_SCHEME_INVALID = { null,
-                                                                "",
-                                                                "bdxr_actorid_upis",
-                                                                "bdxr-notactorid-upis",
-                                                                "-actorid-upis",
-                                                                "actorid-upis",
-                                                                "bdxr-actorid-",
-                                                                "bdxr-actorid",
-                                                                "any-domain_actorid_any-type",
-                                                                "any-nonactoid-anybutmuchtoooooooooooooooooooooooolong" };
-
 
   @Test
   public void testAreIdentifiersEqualPariticpantIdentifier () {

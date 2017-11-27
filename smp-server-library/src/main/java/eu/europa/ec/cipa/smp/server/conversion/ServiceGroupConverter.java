@@ -15,8 +15,15 @@
 
 package eu.europa.ec.cipa.smp.server.conversion;
 
-import eu.europa.ec.cipa.smp.server.errors.exceptions.XmlParsingException;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupId;
+import eu.europa.ec.edelivery.smp.exceptions.ConversionException;
+import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
+import eu.europa.ec.cipa.smp.server.util.ExtensionUtils;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -26,9 +33,13 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -61,6 +72,20 @@ public class ServiceGroupConverter {
         }
     }
 
+    public static ServiceGroup toServiceGroup(DBServiceGroup dbServiceGroup){
+        ServiceGroup serviceGroup = new ServiceGroup();
+        ParticipantIdentifierType identifier = new ParticipantIdentifierType(dbServiceGroup.getId().getBusinessIdentifier(), dbServiceGroup.getId().getBusinessIdentifierScheme());
+        serviceGroup.setParticipantIdentifier(identifier);
+        try {
+            List<ExtensionType> extensions = ExtensionUtils.unmarshalExtensions(dbServiceGroup.getExtension());
+            serviceGroup.getExtensions().addAll(extensions);
+        } catch (JAXBException e) {
+            throw new ConversionException(e);
+        }
+        serviceGroup.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType(new ArrayList()));
+        return serviceGroup;
+    }
+
     private static Document parse(String serviceGroupXml) throws ParserConfigurationException, IOException, SAXException {
         InputStream inputStream = new ByteArrayInputStream(serviceGroupXml.getBytes(UTF_8));
         return getDocumentBuilder().parse(inputStream);
@@ -71,5 +96,17 @@ public class ServiceGroupConverter {
         documentBuilderFactory.setNamespaceAware(true);
         documentBuilderFactory.setFeature(PARSER_DISALLOW_DTD_PARSING_FEATURE, true);
         return documentBuilderFactory.newDocumentBuilder();
+    }
+
+    public static String extractExtensionsPayload(ServiceGroup serviceGroup) {
+        try {
+            return ExtensionUtils.marshalExtensions(serviceGroup.getExtensions());
+        } catch (JAXBException | XMLStreamException e) {
+            throw new ConversionException(e);
+        }
+    }
+
+    public static DBServiceGroupId toDbModel(ParticipantIdentifierType serviceGroupId){
+        return new DBServiceGroupId(serviceGroupId.getScheme(), serviceGroupId.getValue());
     }
 }

@@ -18,7 +18,6 @@ import eu.europa.ec.cipa.smp.server.util.to_be_removed.ESuccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
@@ -79,7 +78,7 @@ public final class PostRegistrationFilter implements Filter {
 
   public void init (final FilterConfig arg0) {}
 
-  private static void _notifyRegistrationHook (@Nonnull final ESuccess eSuccess) throws ServletException {
+  private static void _notifyRegistrationHook (final ESuccess eSuccess) throws ServletException {
     final AbstractRegistrationHook aCallback = AbstractRegistrationHook.getQueue ();
     if (aCallback != null) {
       try {

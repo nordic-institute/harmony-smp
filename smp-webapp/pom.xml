@@ -36,16 +36,6 @@
     </properties>
 
     <dependencies>
-
-
-        <!--TODO remove me -->
-        <dependency>
-            <groupId>com.helger</groupId>
-            <artifactId>ph-commons</artifactId>
-            <version>5.6.0</version>
-        </dependency>
-
-
         <dependency>
             <groupId>eu.europa.ec.cipa</groupId>
             <artifactId>smp-server-library</artifactId>

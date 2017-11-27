@@ -43,7 +43,7 @@ public class BdxSmpOasisValidator {
             validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
             validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         } catch (SAXException e) {
-            throw new RuntimeException("Unable to initialize BDX SMP OASIS XSD schema validator.", e);
+            throw new IllegalStateException("Unable to initialize BDX SMP OASIS XSD schema validator.", e);
         }
     }
 
