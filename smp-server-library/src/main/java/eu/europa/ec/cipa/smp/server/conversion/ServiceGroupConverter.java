@@ -20,10 +20,7 @@ import eu.europa.ec.edelivery.smp.exceptions.ConversionException;
 import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
 import eu.europa.ec.cipa.smp.server.util.ExtensionUtils;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
