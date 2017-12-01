@@ -39,39 +39,36 @@
 
 -->
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
-  xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-  id="SMP_WebApp" version="2.5">
-  <display-name>PEPPOL SMP REST service (read-only)</display-name>
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         id="SMP_WebApp" version="2.5">
+    <display-name>PEPPOL SMP REST service (read-only)</display-name>
 
-  <listener>
-    <listener-class>eu.europa.ec.cipa.smp.server.util.LogStartupListener</listener-class>
-  </listener>
-  <listener>
-    <listener-class>eu.europa.ec.cipa.smp.server.util.TimeZoneCorrectorListener</listener-class>
-  </listener>
+    <listener>
+        <listener-class>eu.europa.ec.cipa.smp.server.util.LogStartupListener</listener-class>
+    </listener>
 
-  <!-- Scope handling: listener + filter must be first -->
-  <listener>
-    <listener-class>com.helger.web.scopes.servlet.WebScopeListener</listener-class>
-  </listener>
-  <filter>
-    <filter-name>ScopeFilter</filter-name>
-    <filter-class>com.helger.web.scopes.servlet.DefaultScopeAwareFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>ScopeFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
+    <!-- Scope handling: listener + filter must be first -->
+    <listener>
+        <listener-class>com.helger.web.scopes.servlet.WebScopeListener</listener-class>
+    </listener>
+    <filter>
+        <filter-name>ScopeFilter</filter-name>
+        <filter-class>com.helger.web.scopes.servlet.DefaultScopeAwareFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>ScopeFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
-  <!-- SML handling: filter -->
-  <filter>
-    <filter-name>registrationhook</filter-name>
-    <filter-class>eu.europa.ec.cipa.smp.server.hook.PostRegistrationFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>registrationhook</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
+    <!-- SML handling: filter -->
+    <filter>
+        <filter-name>registrationhook</filter-name>
+        <filter-class>eu.europa.ec.cipa.smp.server.hook.PostRegistrationFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>registrationhook</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 
     <filter>
         <filter-name>RestFilter</filter-name>
@@ -100,8 +97,8 @@
         <param-value>false</param-value>
     </context-param>
 
-  <filter-mapping>
-    <filter-name>RestFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-  </filter-mapping>
+    <filter-mapping>
+        <filter-name>RestFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
 </web-app>

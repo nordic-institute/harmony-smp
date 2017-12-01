@@ -55,9 +55,11 @@ import com.helger.datetime.config.PDTConfig;
  * This class is used for setting the timezone so that dates saved to the
  * database are always in UTC.
  *
+ * @deprecated  As from release 2.5.2, It removes server timezone at startup
  * @author PEPPOL.AT, BRZ, Philip Helger
  */
 @Immutable
+@Deprecated
 public final class TimeZoneCorrectorListener implements ServletContextListener {
   public static final String DEFAULT_TIMEZONE = "UTC";
 
