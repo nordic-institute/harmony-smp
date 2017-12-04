@@ -12,7 +12,7 @@ import java.util.Calendar;
  *
  * */
 public class CommonUtilTest {
-    
+
     @Test
     public void sdf() throws DatatypeConfigurationException {
         Calendar result = CommonUtil.addTimezoneIfNotPresent("2003-01-01T00:00:00-11:00");
