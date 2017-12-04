@@ -14,25 +14,19 @@ public class CommonUtil {
 
 
     public static String getTimezoneFromDate(String date) {
-        try {
-            Pattern pattern = Pattern.compile(TIMEZONE_REGEX);
-            Matcher matcher = pattern.matcher(date);
+        String newDate = null;
 
-            if (matcher.find()) {
-                return matcher.group(2).trim().isEmpty() ? "Z" : matcher.group(2);
+        Pattern pattern = Pattern.compile(TIMEZONE_REGEX);
+        Matcher matcher = pattern.matcher(date);
+
+        if (matcher.find()) {
+            newDate = matcher.group(1);
+            try {
+                newDate = newDate + (matcher.group(2).trim().isEmpty() ? "Z" : matcher.group(2));
+            } catch (Exception exc) {
+                newDate = newDate + "Z";
             }
-            return date;
-        } catch (Exception exc) {
-            return "Z";
         }
-    }
-
-    public static String addDefaultTimezoneIfNotPresent(String date) {
-        String timezonedDate = getTimezoneFromDate(date);
-        if (date.equals(timezonedDate)) {
-            return date;
-        } else {
-            return date + timezonedDate;
-        }
+        return newDate == null ? date : newDate;
     }
 }

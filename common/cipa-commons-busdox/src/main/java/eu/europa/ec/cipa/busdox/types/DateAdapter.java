@@ -71,7 +71,7 @@ public final class DateAdapter {
 
     @Nonnull
     public static Date parseDate(final String sDate) {
-        String timezonedDate = CommonUtil.addDefaultTimezoneIfNotPresent(sDate);
+        String timezonedDate = CommonUtil.getTimezoneFromDate(sDate);
         final Calendar aCal = DatatypeConverter.parseDate(timezonedDate);
         final Date ret = aCal.getTime();
         return ret;
@@ -87,7 +87,7 @@ public final class DateAdapter {
 
     @Nonnull
     public static Date parseDateTime(final String sDateTime) {
-        String timezonedDate = CommonUtil.addDefaultTimezoneIfNotPresent(sDateTime);
+        String timezonedDate = CommonUtil.getTimezoneFromDate(sDateTime);
         final Calendar aCal = DatatypeConverter.parseDateTime(timezonedDate);
         final Date ret = aCal.getTime();
         return ret;
