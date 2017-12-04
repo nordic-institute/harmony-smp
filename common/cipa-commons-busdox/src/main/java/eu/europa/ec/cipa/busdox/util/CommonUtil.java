@@ -17,7 +17,7 @@ import java.util.TimeZone;
 public class CommonUtil {
 
     private static final String DEFAULT_TIMEZONE = "Z";
-    public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
+    public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone(DEFAULT_TIMEZONE);
 
 
     public static Calendar addTimezoneIfNotPresent(String dateStr) throws DateFormatException {
