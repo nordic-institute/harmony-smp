@@ -6,7 +6,7 @@ import org.junit.Test;
 /*
  *
  *@author Flavio Santos
- * 
+ *
  * */
 public class CommonUtilTest {
 
