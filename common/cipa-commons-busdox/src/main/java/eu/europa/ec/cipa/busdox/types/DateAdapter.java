@@ -20,13 +20,13 @@
  * with the Licence.
  * You may obtain a copy of the Licence at:
  * http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
- *
+ * <p>
  * If you wish to allow use of your version of this file only
  * under the terms of the EUPL License and not to allow others to use
  * your version of this file under the MPL, indicate your decision by
@@ -37,16 +37,16 @@
  */
 package eu.europa.ec.cipa.busdox.types;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
+import com.helger.commons.annotations.PresentForCodeCoverage;
+import eu.europa.ec.cipa.busdox.util.CommonUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.DatatypeConverter;
-
-import com.helger.commons.annotations.PresentForCodeCoverage;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * This class is used for converting between XML time elements and Java Date
@@ -56,42 +56,48 @@ import com.helger.commons.annotations.PresentForCodeCoverage;
  */
 @Immutable
 public final class DateAdapter {
-  /** The time zone used in the adapter */
-  public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone ("UTC");
+    /**
+     * The time zone used in the adapter
+     */
 
-  @SuppressWarnings ("unused")
-  @PresentForCodeCoverage
-  private static final DateAdapter s_aInstance = new DateAdapter ();
+    public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
 
-  private DateAdapter () {}
+    @SuppressWarnings("unused")
+    @PresentForCodeCoverage
+    private static final DateAdapter s_aInstance = new DateAdapter();
 
-  @Nonnull
-  public static Date parseDate (final String sDate) {
-    final Calendar aCal = DatatypeConverter.parseDate (sDate);
-    final Date ret = aCal.getTime ();
-    return ret;
-  }
+    private DateAdapter() {
+    }
 
-  @Nonnull
-  public static String printDate (@Nonnull final Date aDate) {
-    final Calendar aCal = new GregorianCalendar (TIMEZONE_UTC);
-    aCal.setTime (aDate);
-    final String ret = DatatypeConverter.printDate (aCal);
-    return ret;
-  }
+    @Nonnull
+    public static Date parseDate(final String sDate) {
+        String timezonedDate = CommonUtil.addDefaultTimezoneIfNotPresent(sDate);
+        final Calendar aCal = DatatypeConverter.parseDate(timezonedDate);
+        final Date ret = aCal.getTime();
+        return ret;
+    }
 
-  @Nonnull
-  public static Date parseDateTime (final String sDateTime) {
-    final Calendar aCal = DatatypeConverter.parseDateTime (sDateTime);
-    final Date ret = aCal.getTime ();
-    return ret;
-  }
+    @Nonnull
+    public static String printDate(@Nonnull final Date aDate) {
+        final Calendar aCal = new GregorianCalendar(TIMEZONE_UTC);
+        aCal.setTime(aDate);
+        final String ret = DatatypeConverter.printDate(aCal);
+        return ret;
+    }
 
-  @Nonnull
-  public static String printDateTime (@Nonnull final Date aDateTime) {
-    final Calendar aCal = new GregorianCalendar (TIMEZONE_UTC);
-    aCal.setTime (aDateTime);
-    final String ret = DatatypeConverter.printDateTime (aCal);
-    return ret;
-  }
+    @Nonnull
+    public static Date parseDateTime(final String sDateTime) {
+        String timezonedDate = CommonUtil.addDefaultTimezoneIfNotPresent(sDateTime);
+        final Calendar aCal = DatatypeConverter.parseDateTime(timezonedDate);
+        final Date ret = aCal.getTime();
+        return ret;
+    }
+
+    @Nonnull
+    public static String printDateTime(@Nonnull final Date aDateTime) {
+        final Calendar aCal = new GregorianCalendar(TIMEZONE_UTC);
+        aCal.setTime(aDateTime);
+        final String ret = DatatypeConverter.printDateTime(aCal);
+        return ret;
+    }
 }
