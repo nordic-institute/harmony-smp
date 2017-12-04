@@ -1,18 +1,18 @@
 /**
  * Version: MPL 1.1/EUPL 1.1
- *
+ * <p>
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at:
  * http://www.mozilla.org/MPL/
- *
+ * <p>
  * Software distributed under the License is distributed on an "AS IS" basis,
  * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
  * for the specific language governing rights and limitations under the
  * License.
- *
+ * <p>
  * The Original Code is Copyright The PEPPOL project (http://www.peppol.eu)
- *
+ * <p>
  * Alternatively, the contents of this file may be used under the
  * terms of the EUPL, Version 1.1 or - as soon they will be approved
  * by the European Commission - subsequent versions of the EUPL
@@ -43,10 +43,10 @@ import eu.europa.ec.cipa.busdox.util.CommonUtil;
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.DatatypeConverter;
+import javax.xml.datatype.DatatypeConfigurationException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 /**
  * This class is used for converting between XML time elements and Java Date
@@ -60,7 +60,6 @@ public final class DateAdapter {
      * The time zone used in the adapter
      */
 
-    public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
 
     @SuppressWarnings("unused")
     @PresentForCodeCoverage
@@ -70,32 +69,26 @@ public final class DateAdapter {
     }
 
     @Nonnull
-    public static Date parseDate(final String sDate) {
-        String timezonedDate = CommonUtil.getTimezoneFromDate(sDate);
-        final Calendar aCal = DatatypeConverter.parseDate(timezonedDate);
-        final Date ret = aCal.getTime();
-        return ret;
+    public static Date parseDate(final String sDate) throws DatatypeConfigurationException {
+        return CommonUtil.addTimezoneIfNotPresent(sDate).getTime();
     }
 
     @Nonnull
     public static String printDate(@Nonnull final Date aDate) {
-        final Calendar aCal = new GregorianCalendar(TIMEZONE_UTC);
+        final Calendar aCal = new GregorianCalendar(CommonUtil.TIMEZONE_UTC);
         aCal.setTime(aDate);
         final String ret = DatatypeConverter.printDate(aCal);
         return ret;
     }
 
     @Nonnull
-    public static Date parseDateTime(final String sDateTime) {
-        String timezonedDate = CommonUtil.getTimezoneFromDate(sDateTime);
-        final Calendar aCal = DatatypeConverter.parseDateTime(timezonedDate);
-        final Date ret = aCal.getTime();
-        return ret;
+    public static Date parseDateTime(final String sDateTime) throws DatatypeConfigurationException {
+        return CommonUtil.addTimezoneIfNotPresent(sDateTime).getTime();
     }
 
     @Nonnull
     public static String printDateTime(@Nonnull final Date aDateTime) {
-        final Calendar aCal = new GregorianCalendar(TIMEZONE_UTC);
+        final Calendar aCal = new GregorianCalendar(CommonUtil.TIMEZONE_UTC);
         aCal.setTime(aDateTime);
         final String ret = DatatypeConverter.printDateTime(aCal);
         return ret;

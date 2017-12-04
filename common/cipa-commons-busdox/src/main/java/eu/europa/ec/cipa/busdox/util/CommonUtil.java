@@ -5,6 +5,7 @@ import javax.xml.datatype.DatatypeConstants;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Calendar;
+import java.util.TimeZone;
 
 
 /*
@@ -14,6 +15,8 @@ import java.util.Calendar;
 public class CommonUtil {
 
     private static final String DEFAULT_TIMEZONE = "Z";
+    public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
+
 
     public static Calendar addTimezoneIfNotPresent(String dateStr) throws DatatypeConfigurationException {
         DatatypeFactory DATA_TYPE_FACTORY = DatatypeFactory.newInstance();
