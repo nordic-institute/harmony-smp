@@ -1,5 +1,10 @@
 package eu.europa.ec.cipa.busdox.util;
 
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.Calendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,7 +16,7 @@ import java.util.regex.Pattern;
 public class CommonUtil {
 
     private static final String TIMEZONE_REGEX = "^(\\d{4}-\\d{2}-\\d{1,2}T\\d{1,2}:\\d{2}:\\d{2})(.*)$";
-
+    private static final String DEFAULT_TIMEZONE = "Z";
 
     public static String getTimezoneFromDate(String date) {
         String newDate = null;
@@ -28,5 +33,15 @@ public class CommonUtil {
             }
         }
         return newDate == null ? date : newDate;
+    }
+
+    public static Calendar addTimezoneIfNotPresent(String dateStr) throws DatatypeConfigurationException {
+        DatatypeFactory DATA_TYPE_FACTORY = DatatypeFactory.newInstance();
+        XMLGregorianCalendar xmlGregorianCalendar = DATA_TYPE_FACTORY.newXMLGregorianCalendar(dateStr);
+        boolean isTimezoneNotSpecified = DatatypeConstants.FIELD_UNDEFINED == xmlGregorianCalendar.getTimezone();
+        if (isTimezoneNotSpecified) {
+            xmlGregorianCalendar = DATA_TYPE_FACTORY.newXMLGregorianCalendar(dateStr + DEFAULT_TIMEZONE);
+        }
+        return xmlGregorianCalendar.toGregorianCalendar();
     }
 }
