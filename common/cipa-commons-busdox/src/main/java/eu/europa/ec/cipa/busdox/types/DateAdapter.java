@@ -38,12 +38,12 @@
 package eu.europa.ec.cipa.busdox.types;
 
 import com.helger.commons.annotations.PresentForCodeCoverage;
+import eu.europa.ec.cipa.busdox.exception.DateFormatException;
 import eu.europa.ec.cipa.busdox.util.CommonUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.DatatypeConverter;
-import javax.xml.datatype.DatatypeConfigurationException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -60,7 +60,6 @@ public final class DateAdapter {
      * The time zone used in the adapter
      */
 
-
     @SuppressWarnings("unused")
     @PresentForCodeCoverage
     private static final DateAdapter s_aInstance = new DateAdapter();
@@ -69,7 +68,7 @@ public final class DateAdapter {
     }
 
     @Nonnull
-    public static Date parseDate(final String sDate) throws DatatypeConfigurationException {
+    public static Date parseDate(final String sDate) throws DateFormatException {
         return CommonUtil.addTimezoneIfNotPresent(sDate).getTime();
     }
 
@@ -82,7 +81,7 @@ public final class DateAdapter {
     }
 
     @Nonnull
-    public static Date parseDateTime(final String sDateTime) throws DatatypeConfigurationException {
+    public static Date parseDateTime(final String sDateTime) throws DateFormatException {
         return CommonUtil.addTimezoneIfNotPresent(sDateTime).getTime();
     }
 
