@@ -38,15 +38,19 @@
 package eu.europa.ec.cipa.busdox.types;
 
 import com.helger.commons.annotations.PresentForCodeCoverage;
-import eu.europa.ec.cipa.busdox.exception.DateFormatException;
-import eu.europa.ec.cipa.busdox.util.CommonUtil;
 
 import javax.annotation.Nonnull;
 import javax.annotation.concurrent.Immutable;
 import javax.xml.bind.DatatypeConverter;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
+
+import static javax.xml.datatype.DatatypeConstants.FIELD_UNDEFINED;
 
 /**
  * This class is used for converting between XML time elements and Java Date
@@ -56,6 +60,19 @@ import java.util.GregorianCalendar;
  */
 @Immutable
 public final class DateAdapter {
+
+    private static final String DEFAULT_TIMEZONE = "Z";
+    private static DatatypeFactory DATA_TYPE_FACTORY;
+    private static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
+
+    static {
+        try {
+            DATA_TYPE_FACTORY = DatatypeFactory.newInstance();
+        } catch (DatatypeConfigurationException e) {
+            throw new IllegalStateException(e.getMessage(), e);
+        }
+    }
+
     /**
      * The time zone used in the adapter
      */
@@ -68,28 +85,37 @@ public final class DateAdapter {
     }
 
     @Nonnull
-    public static Date parseDate(final String sDate) throws DateFormatException {
-        return CommonUtil.addTimezoneIfNotPresent(sDate).getTime();
+    public static Date parseDate(final String sDate) {
+        return parseDateStrToCalendar(sDate).getTime();
     }
 
     @Nonnull
     public static String printDate(@Nonnull final Date aDate) {
-        final Calendar aCal = new GregorianCalendar(CommonUtil.TIMEZONE_UTC);
+        final Calendar aCal = new GregorianCalendar(TIMEZONE_UTC);
         aCal.setTime(aDate);
         final String ret = DatatypeConverter.printDate(aCal);
         return ret;
     }
 
     @Nonnull
-    public static Date parseDateTime(final String sDateTime) throws DateFormatException {
-        return CommonUtil.addTimezoneIfNotPresent(sDateTime).getTime();
+    public static Date parseDateTime(final String sDateTime) {
+        return parseDateStrToCalendar(sDateTime).getTime();
     }
 
     @Nonnull
     public static String printDateTime(@Nonnull final Date aDateTime) {
-        final Calendar aCal = new GregorianCalendar(CommonUtil.TIMEZONE_UTC);
+        final Calendar aCal = new GregorianCalendar(TIMEZONE_UTC);
         aCal.setTime(aDateTime);
         final String ret = DatatypeConverter.printDateTime(aCal);
         return ret;
+    }
+
+    public static Calendar parseDateStrToCalendar(String dateStr) {
+        XMLGregorianCalendar xmlGregorianCalendar = DATA_TYPE_FACTORY.newXMLGregorianCalendar(dateStr);
+        boolean isTimezoneNotSpecified = FIELD_UNDEFINED == xmlGregorianCalendar.getTimezone();
+        if (isTimezoneNotSpecified) {
+            xmlGregorianCalendar = DATA_TYPE_FACTORY.newXMLGregorianCalendar(dateStr + DEFAULT_TIMEZONE);
+        }
+        return xmlGregorianCalendar.toGregorianCalendar();
     }
 }
