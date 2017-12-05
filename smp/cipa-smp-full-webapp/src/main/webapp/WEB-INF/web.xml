@@ -39,16 +39,12 @@
 
 -->
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
-         xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          id="SMP_WebApp" version="2.5">
     <display-name>PEPPOL SMP REST service (read &amp; write)</display-name>
 
     <listener>
         <listener-class>eu.europa.ec.cipa.smp.server.util.LogStartupListener</listener-class>
-    </listener>
-    <listener>
-        <listener-class>eu.europa.ec.cipa.smp.server.util.TimeZoneCorrectorListener</listener-class>
     </listener>
 
     <!-- Scope handling: listener + filter must be first -->

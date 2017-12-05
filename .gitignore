@@ -1,0 +1,13 @@
+.idea/artifacts/
+.idea/
+common/cipa-commons-busdox/target/
+common/cipa-edelivery-common/target/
+common/cipa-peppol-types/target/
+smp/cipa-smp-client-library/target/
+smp/cipa-smp-full-webapp/target/
+smp/cipa-smp-readonly-webapp/target/
+smp/cipa-smp-server-library/target/
+smp-api/target/
+smp-server-library/target/
+smp-soapui-tests/target/
+smp-webapp/target/
