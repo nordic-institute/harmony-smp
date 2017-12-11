@@ -52,7 +52,7 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<slf4j.version>1.7.10</slf4j.version>
-		<spring.version>4.3.5.RELEASE</spring.version>
+		<spring.version>5.0.2.RELEASE</spring.version>
 		<spring.security.version>4.2.1.RELEASE</spring.security.version>
 		<bdmsl.client.version>3.0.0</bdmsl.client.version>
 		<cxf.version>3.1.1</cxf.version>
@@ -91,7 +91,7 @@
 		<commons-io.version>2.4</commons-io.version>
 		<junitparams.version>1.0.5</junitparams.version>
 		<lombok.version>1.16.16</lombok.version>
-		<xmlunit.version>1.6</xmlunit.version>
+		<xmlunit.version>2.5.1</xmlunit.version>
 	</properties>
 
 	<!-- Where are we looking for JARs? -->
@@ -478,8 +478,14 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>xmlunit</groupId>
-				<artifactId>xmlunit</artifactId>
+				<groupId>org.xmlunit</groupId>
+				<artifactId>xmlunit-core</artifactId>
+				<version>${xmlunit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.xmlunit</groupId>
+				<artifactId>xmlunit-matchers</artifactId>
 				<version>${xmlunit.version}</version>
 				<scope>test</scope>
 			</dependency>
@@ -582,7 +588,7 @@
 		</pluginManagement>
 
 		<plugins>
-			<!-- Compile as Java 1.7 code (lifecycle: compile) -->
+			<!-- Compile as Java 1.8 code (lifecycle: compile) -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -590,8 +596,8 @@
 					<!-- fork needs to be false to compile JAXB resources. Otherwise the 
 						problem with the forward slash in package-info.java on Windows occurs! -->
 					<fork>false</fork>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<showWarnings>true</showWarnings>
 					<maxmem>768m</maxmem>
 					<compilerArguments>
