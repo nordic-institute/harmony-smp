@@ -11,3 +11,5 @@ smp-api/target/
 smp-server-library/target/
 smp-soapui-tests/target/
 smp-webapp/target/
+sml/cipa-sml-client-library/target/
+*.iml
