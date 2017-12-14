@@ -543,10 +543,11 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                         .getEndpointReference());
                 aEndpointType.setEndpointReference(endpointRef);
 
-                aEndpointType.setServiceActivationDate(aDBEndpoint.getServiceActivationDate());
+                aEndpointType.setServiceActivationDate(SMPDBUtils.addOffset(aDBEndpoint.getServiceActivationDate()));
                 aEndpointType.setServiceDescription(aDBEndpoint.getServiceDescription());
-                aEndpointType.setServiceExpirationDate(aDBEndpoint.getServiceExpirationDate());
+                aEndpointType.setServiceExpirationDate(SMPDBUtils.addOffset(aDBEndpoint.getServiceExpirationDate()));
                 aEndpointType.setTechnicalContactUrl(aDBEndpoint.getTechnicalContactUrl());
+
                 aEndpointType.setTechnicalInformationUrl(aDBEndpoint.getTechnicalInformationUrl());
                 aEndpointType.setCertificate(SMPDBUtils.getRFC1421CompliantStringWithoutCarriageReturnCharacters(aDBEndpoint.getCertificate()));
                 aEndpointType.setMinimumAuthenticationLevel(aDBEndpoint.getMinimumAuthenticationLevel());
@@ -585,9 +586,9 @@ public final class DBMSDataManager extends JPAEnabledManager implements IDataMan
                 final DBEndpoint aDBEndpoint = new DBEndpoint();
                 aDBEndpoint.setExtension(aEndpoint.getExtension());
                 aDBEndpoint.setId(aDBEndpointID);
-                aDBEndpoint.setServiceActivationDate(aEndpoint.getServiceActivationDate());
+                aDBEndpoint.setServiceActivationDate(SMPDBUtils.subtractOffset(aEndpoint.getServiceActivationDate()));
                 aDBEndpoint.setServiceDescription(aEndpoint.getServiceDescription());
-                aDBEndpoint.setServiceExpirationDate(aEndpoint.getServiceExpirationDate());
+                aDBEndpoint.setServiceExpirationDate(SMPDBUtils.subtractOffset(aEndpoint.getServiceExpirationDate()));
                 aDBEndpoint.setTechnicalContactUrl(aEndpoint.getTechnicalContactUrl());
                 aDBEndpoint.setTechnicalInformationUrl(aEndpoint.getTechnicalInformationUrl());
                 aDBEndpoint.setCertificate(aEndpoint.getCertificate());

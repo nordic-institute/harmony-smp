@@ -20,13 +20,13 @@
  * with the Licence.
  * You may obtain a copy of the Licence at:
  * http://joinup.ec.europa.eu/software/page/eupl/licence-eupl
- *
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the Licence is distributed on an "AS IS" basis,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and
  * limitations under the Licence.
- *
+ * <p>
  * If you wish to allow use of your version of this file only
  * under the terms of the EUPL License and not to allow others to use
  * your version of this file under the MPL, indicate your decision by
@@ -37,14 +37,14 @@
  */
 package eu.europa.ec.cipa.smp.server.util;
 
-import javax.annotation.Nullable;
-import javax.annotation.concurrent.Immutable;
-
+import com.helger.commons.string.StringHelper;
+import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
 import org.busdox.servicemetadata.publishing._1.ExtensionType;
 
-import com.helger.commons.string.StringHelper;
-
-import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
+import javax.annotation.Nullable;
+import javax.annotation.concurrent.Immutable;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * This class is used inside the DB component and contains several utility
@@ -54,53 +54,72 @@ import eu.europa.ec.cipa.peppol.utils.ExtensionConverter;
  */
 @Immutable
 public final class SMPDBUtils {
-  private SMPDBUtils () {}
 
-  @Nullable
-  public static ExtensionType getAsExtensionSafe (@Nullable final String sXML) {
-    try {
-      return ExtensionConverter.convert (sXML);
-    }
-    catch (final IllegalArgumentException ex) {
-      // Invalid XML passed
-      return null;
-    }
-  }
-
-  /**
-   * The certificate string needs to be emitted in portions of 64 characters. If
-   * characters are left, than &lt;CR>&lt;LF> ("\r\n") must be added to the
-   * string so that the next characters start on a new line. After the last
-   * part, no &lt;CR>&lt;LF> is needed. Respective RFC parts are 1421 4.3.2.2
-   * and 4.3.2.4
-   *
-   * @param sCertificate
-   *        Original certificate string as stored in the DB
-   * @return The RFC 1421 compliant string
-   */
-  @Nullable
-  public static String getRFC1421CompliantStringWithoutCarriageReturnCharacters(@Nullable final String sCertificate) {
-    if (StringHelper.hasNoText (sCertificate))
-      return sCertificate;
-
-    // Remove all existing whitespace characters
-    String sPlainString = StringHelper.getWithoutAnySpaces (sCertificate);
-
-    // Start building the result
-    final int nMaxLineLength = 64;
-    final String sLF = "\n"; //Originally RFC suggests CRLF instead of LF
-    final StringBuilder aSB = new StringBuilder ();
-    while (sPlainString.length () > nMaxLineLength) {
-      // Append line + LF
-      aSB.append (sPlainString, 0, nMaxLineLength).append (sLF);
-
-      // Remove the start of the string
-      sPlainString = sPlainString.substring (nMaxLineLength);
+    private SMPDBUtils() {
     }
 
-    // Append the rest
-    aSB.append (sPlainString);
+    @Nullable
+    public static ExtensionType getAsExtensionSafe(@Nullable final String sXML) {
+        try {
+            return ExtensionConverter.convert(sXML);
+        } catch (final IllegalArgumentException ex) {
+            // Invalid XML passed
+            return null;
+        }
+    }
 
-    return aSB.toString ();
-  }
+    /**
+     * The certificate string needs to be emitted in portions of 64 characters. If
+     * characters are left, than &lt;CR>&lt;LF> ("\r\n") must be added to the
+     * string so that the next characters start on a new line. After the last
+     * part, no &lt;CR>&lt;LF> is needed. Respective RFC parts are 1421 4.3.2.2
+     * and 4.3.2.4
+     *
+     * @param sCertificate Original certificate string as stored in the DB
+     * @return The RFC 1421 compliant string
+     */
+    @Nullable
+    public static String getRFC1421CompliantStringWithoutCarriageReturnCharacters(@Nullable final String sCertificate) {
+        if (StringHelper.hasNoText(sCertificate))
+            return sCertificate;
+
+        // Remove all existing whitespace characters
+        String sPlainString = StringHelper.getWithoutAnySpaces(sCertificate);
+
+        // Start building the result
+        final int nMaxLineLength = 64;
+        final String sLF = "\n"; //Originally RFC suggests CRLF instead of LF
+        final StringBuilder aSB = new StringBuilder();
+        while (sPlainString.length() > nMaxLineLength) {
+            // Append line + LF
+            aSB.append(sPlainString, 0, nMaxLineLength).append(sLF);
+
+            // Remove the start of the string
+            sPlainString = sPlainString.substring(nMaxLineLength);
+        }
+
+        // Append the rest
+        aSB.append(sPlainString);
+
+        return aSB.toString();
+    }
+
+    /*
+    These offset shifting methods are an ugly workaround for EclipseLink's timezones issue.
+    EclipseLink loses timezone when saving dates, which results in saving JVM's local time into DB.
+    We add/subtract offset to keep UTC data in DB.
+     */
+
+    public static Date subtractOffset(Date date) {
+        return new Date(date.getTime() - getOffset(date));
+    }
+
+
+    public static Date addOffset(Date date) {
+        return new Date(date.getTime() + getOffset(date));
+    }
+
+    private static int getOffset(Date date) {
+        return TimeZone.getDefault().getOffset(date.getTime());
+    }
 }
