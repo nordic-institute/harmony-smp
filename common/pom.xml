@@ -5,7 +5,7 @@
 	<artifactId>cipa-common-builder</artifactId>
 	<packaging>pom</packaging>
 	<name>CIPA Common Builder POM</name>
-	<version>3.2.0-SNAPSHOT</version>
+	<version>3.2.0</version>
 
 	<modules>
 		<module>cipa-commons-busdox</module>
