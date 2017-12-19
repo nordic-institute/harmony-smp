@@ -13,8 +13,8 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
-import eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter;
+import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
+import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.cipa.smp.server.util.SignatureFilter;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
@@ -32,8 +32,8 @@ import org.w3c.dom.Document;
 import java.util.ArrayList;
 import java.util.List;
 
-import static eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter.toDbModel;
-import static eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter.toSignedServiceMetadatadaDocument;
+import static eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter.toDbModel;
+import static eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter.toSignedServiceMetadatadaDocument;
 import static eu.europa.ec.smp.api.Identifiers.asString;
 
 /**

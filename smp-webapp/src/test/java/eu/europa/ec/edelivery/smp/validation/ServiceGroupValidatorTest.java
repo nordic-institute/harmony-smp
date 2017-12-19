@@ -13,16 +13,13 @@
 
 package eu.europa.ec.edelivery.smp.validation;
 
-import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
 import org.junit.Before;
 import org.junit.Test;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static eu.europa.ec.smp.api.Identifiers.asString;
-import static java.util.Arrays.asList;
 
 /**
  * Created by gutowpa on 02/08/2017.

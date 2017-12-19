@@ -37,11 +37,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.security.acl.Owner;
 import java.util.List;
 
-import static eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter.toDbModel;
-import static eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter.unmarshal;
+import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.toDbModel;
+import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.unmarshal;
 import static eu.europa.ec.cipa.smp.server.util.XmlTestUtils.loadDocumentAsString;
 import static eu.europa.ec.cipa.smp.server.util.XmlTestUtils.marshall;
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;

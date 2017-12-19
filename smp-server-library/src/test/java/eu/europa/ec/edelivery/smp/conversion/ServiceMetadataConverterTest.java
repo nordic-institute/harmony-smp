@@ -11,7 +11,7 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.cipa.smp.server.conversion;
+package eu.europa.ec.edelivery.smp.conversion;
 
 import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
 import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
@@ -40,7 +40,7 @@ import static org.junit.Assert.*;
 public class ServiceMetadataConverterTest {
 
     private static final String NS = "http://docs.oasis-open.org/bdxr/ns/SMP/2016/05";
-    private static final String RES_PATH = "/eu/europa/ec/cipa/smp/server/conversion/";
+    private static final String RES_PATH = "/eu/europa/ec/edelivery/smp/conversion/";
 
     @Test
     public void testUnmarshalServiceInformation() throws IOException, SAXException, ParserConfigurationException, JAXBException {
