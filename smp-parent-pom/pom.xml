@@ -55,9 +55,8 @@
 		<spring.version>5.0.2.RELEASE</spring.version>
 		<spring.security.version>4.2.1.RELEASE</spring.security.version>
 		<bdmsl.client.version>3.0.0</bdmsl.client.version>
-		<cxf.version>3.1.1</cxf.version>
-		<cxf-xjc-runtime.version>3.1.0</cxf-xjc-runtime.version>
-		<cxf.security.version>3.1.1</cxf.security.version>
+		<cxf.version>3.2.1</cxf.version>
+		<cxf-xjc-runtime.version>3.2.0</cxf-xjc-runtime.version>
 		<build.helper.maven.version>1.9.1</build.helper.maven.version>
 		<ehcache.version>2.10.0</ehcache.version>
 		<spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
@@ -74,7 +73,7 @@
 		<guava.version>18.0</guava.version>
 		<orika.version>1.4.6</orika.version>
 		<aspectj.version>1.8.6</aspectj.version>
-		<jaxb.version>2.2.4</jaxb.version>
+		<jaxb.version>2.2.11</jaxb.version>
 		<jaxb2-basics.version>0.11.0</jaxb2-basics.version>
 		<javax.annotation.version>1.2-b02</javax.annotation.version>
 		<hibernate.version>5.1.7.Final</hibernate.version>
@@ -211,11 +210,16 @@
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-ws-security</artifactId>
-				<version>${cxf.security.version}</version>
+				<version>${cxf.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-security</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-features-logging</artifactId>
 				<version>${cxf.version}</version>
 			</dependency>
 			<dependency>
@@ -246,6 +250,16 @@
 			<dependency>
 				<groupId>javax.xml.bind</groupId>
 				<artifactId>jaxb-api</artifactId>
+				<version>${jaxb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.xml.bind</groupId>
+				<artifactId>jaxb-impl</artifactId>
+				<version>${jaxb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.xml.bind</groupId>
+				<artifactId>jaxb-core</artifactId>
 				<version>${jaxb.version}</version>
 			</dependency>
 			<dependency>

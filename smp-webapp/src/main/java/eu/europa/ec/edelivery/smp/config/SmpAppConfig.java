@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Import;
         "eu.europa.ec.edelivery.smp.services",
         "eu.europa.ec.edelivery.smp.data.dao",
         "eu.europa.ec.cipa.smp.server.hook",
-        "eu.europa.ec.cipa.smp.server.conversion",
+        "eu.europa.ec.edelivery.smp.conversion",
         "eu.europa.ec.cipa.smp.server.util"})
 @Import({PropertiesConfig.class, DatabaseConfig.class})
 public class SmpAppConfig {

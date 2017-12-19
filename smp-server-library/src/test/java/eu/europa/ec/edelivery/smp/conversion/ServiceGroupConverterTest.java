@@ -11,7 +11,7 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.cipa.smp.server.conversion;
+package eu.europa.ec.edelivery.smp.conversion;
 
 import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
 import eu.europa.ec.cipa.smp.server.util.XmlTestUtils;
@@ -29,7 +29,7 @@ import static org.junit.Assert.*;
  */
 public class ServiceGroupConverterTest {
 
-    private static final String RES_PATH = "/eu/europa/ec/cipa/smp/server/conversion/";
+    private static final String RES_PATH = "/eu/europa/ec/edelivery/smp/conversion/";
 
     @Test
     public void testUnmashallingServiceGroup() throws IOException, JAXBException {

@@ -13,29 +13,32 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
-import eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter;
-import eu.europa.ec.cipa.smp.server.hook.IRegistrationHook;
-import eu.europa.ec.edelivery.smp.data.dao.OwnershipDao;
+import eu.europa.ec.bdmsl.ws.soap.*;
+import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
+import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
 import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
+import eu.europa.ec.edelivery.smp.sml.SmlIntegrationException;
+import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
-import static eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter.toDbModel;
+import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.toDbModel;
+import static eu.europa.ec.edelivery.smp.conversion.SmlIdentifierConverter.toBusdoxParticipantId;
 import static eu.europa.ec.smp.api.Identifiers.asString;
 import static java.util.Arrays.asList;
 
@@ -43,7 +46,7 @@ import static java.util.Arrays.asList;
  * Created by gutowpa on 14/11/2017.
  */
 @Service
-public class ServiceGroupService {
+public class ServiceGroupService implements ApplicationContextAware {
 
     private static final Logger log = LoggerFactory.getLogger(ServiceGroupService.class);
 
@@ -56,8 +59,14 @@ public class ServiceGroupService {
     @Autowired
     private UserDao userDao;
 
-    @Autowired
-    private IRegistrationHook m_aHook;
+    @Value("${regServiceRegistrationHook.integration.enabled}")
+    boolean smlIntegrationEnabled;
+
+    @Value("${regServiceRegistrationHook.id}")
+    private String smpId;
+
+    private ApplicationContext ctx;
+
 
     public ServiceGroup getServiceGroup(ParticipantIdentifierType serviceGroupId) {
         ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
@@ -88,9 +97,6 @@ public class ServiceGroupService {
             serviceGroupDao.save(dbServiceGroup);
             return false;
         } else {
-            // Register in SML (DNS)
-            m_aHook.create(normalizedParticipantId);
-
             //Save ServiceGroup
             dbServiceGroup = new DBServiceGroup(new DBServiceGroupId(normalizedParticipantId.getScheme(), normalizedParticipantId.getValue()));
             dbServiceGroup.setExtension(extensions);
@@ -99,12 +105,14 @@ public class ServiceGroupService {
             DBOwnershipId dbOwnershipID = new DBOwnershipId(newOwnerName, normalizedParticipantId.getScheme(), normalizedParticipantId.getValue());
             DBOwnership dbOwnership = new DBOwnership(dbOwnershipID, newOwner, dbServiceGroup);
             dbServiceGroup.setOwnerships(new HashSet(asList(dbOwnership)));
-            //ownershipDao.save(ownership);
             serviceGroupDao.save(dbServiceGroup);
+
+            if(smlIntegrationEnabled) {
+                registerInDns(normalizedParticipantId);
+            }
             return true;
         }
     }
-
 
     private ServiceGroup normalizeIdentifierCaseSensitivity(ServiceGroup serviceGroup) {
         final ServiceGroup sg = new ServiceGroup();
@@ -126,6 +134,35 @@ public class ServiceGroupService {
         //ownershipDao.removeByServiceGroupId(dbServiceGroup.getId());
         serviceGroupDao.remove(dbServiceGroup);
 
-        m_aHook.delete(normalizedServiceGroupId);
+        if(smlIntegrationEnabled) {
+            unregisterFromDns(normalizedServiceGroupId);
+        }
+    }
+
+    private void registerInDns(ParticipantIdentifierType normalizedParticipantId) {
+        try {
+            ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, smpId);
+            buildClient().create(smlRequest);
+        } catch (Exception e) {
+            throw new SmlIntegrationException("Could not create new DNS entry through SML", e);
+        }
+    }
+
+    private void unregisterFromDns(ParticipantIdentifierType normalizedParticipantId) {
+        try {
+            ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, smpId);
+            buildClient().delete(smlRequest);
+        } catch (Exception e) {
+            throw new SmlIntegrationException("Could not remove DNS entry through SML", e);
+        }
+    }
+
+    private IManageParticipantIdentifierWS buildClient() {
+        return ctx.getBean(IManageParticipantIdentifierWS.class);
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        ctx = applicationContext;
     }
 }
