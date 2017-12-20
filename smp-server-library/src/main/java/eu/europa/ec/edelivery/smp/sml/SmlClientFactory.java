@@ -24,6 +24,8 @@ import org.apache.cxf.ext.logging.LoggingFeature;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.transport.http.HTTPConduit;
 import org.apache.cxf.transports.http.configuration.ProxyServerType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Scope;
@@ -40,8 +42,11 @@ import java.security.KeyStore;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
@@ -50,24 +55,39 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Component
 public class SmlClientFactory {
 
+    private static final Logger log = LoggerFactory.getLogger(SmlClientFactory.class);
+
     private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
 
-    @Value("${regServiceRegistrationHook.regLocatorUrl}")
+    @Value("${bdmsl.integration.url}")
     private URL smlUrl;
 
-    @Value("${regServiceRegistrationHook.keystore.classpath}")
+    @Value("${bdmsl.integration.keystore.path}")
     private String smlClientKeyStorePath;
 
-    @Value("${regServiceRegistrationHook.keystore.password}")
+    @Value("${bdmsl.integration.keystore.password}")
     private String smlClientKeyStorePassword;
 
-    @Value("${regServiceRegistrationHook.keystore.alias}")
+    @Value("${bdmsl.integration.keystore.alias}")
     private String smlClientKeyAlias;
 
-    @Value("${regServiceRegistrationHook.clientCert}")
+    @Value("${bdmsl.integration.http.header.client.cert}")
     private String smlClientCertHttpHeader;
 
     private KeyManager[] keyManagers;
+
+
+    @Value("${bdmsl.integration.proxy.server}")
+    private String proxyServer;
+
+    @Value("${bdmsl.integration.proxy.port}")
+    private Optional<Integer> proxyPort;
+
+    @Value("${bdmsl.integration.proxy.user}")
+    private String proxyUser;
+
+    @Value("${bdmsl.integration.proxy.password}")
+    private String proxyPassword;
 
 
     @Bean()
@@ -81,17 +101,10 @@ public class SmlClientFactory {
         Map<String, Object> requestContext = ((BindingProvider) smlPort).getRequestContext();
         requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, smlUrl.toString());
 
-        // CXF by default stops processing response in a few cases, ie.: when server returned HTTP 400 (SOAP Fault)
-        // We want to finish processing such messages - otherwise we would not be able to log fault's reason.
-        requestContext.put(HTTPConduit.NO_IO_EXCEPTIONS, true);
-        requestContext.put(HTTPConduit.PROCESS_FAULT_ON_HTTP_400, true);
-
-        //configureProxy(httpConduit);
-
-        //logging IN and OUT messages handled by CXF
-        client.getBus().setFeatures(asList(new LoggingFeature()));
-
-        configureClientCertificate(httpConduit, requestContext);
+        configureFaultHandling(requestContext);
+        configureProxy(httpConduit);
+        configurePayloadLogging(client);
+        configureClientAuthentication(httpConduit, requestContext);
 
         return smlPort;
     }
@@ -112,11 +125,11 @@ public class SmlClientFactory {
             kmf.init(keyStore, smlClientKeyStorePassword.toCharArray());
             keyManagers = kmf.getKeyManagers();
         } catch (Exception e) {
-            throw new IllegalStateException("Could not load keystore for SML integration", e);
+            throw new IllegalStateException("Could not load keystore for SML integration: " + smlClientKeyStorePath, e);
         }
     }
 
-    private void configureClientCertificate(HTTPConduit httpConduit, Map<String, Object> requestContext) {
+    private void configureClientAuthentication(HTTPConduit httpConduit, Map<String, Object> requestContext) {
         if (isNotBlank(smlClientKeyStorePath) && isNotBlank(smlClientCertHttpHeader)) {
             throw new IllegalStateException("SML integration is wrongly configured, cannot use both authentication ways at the same time: 2-way-SSL and Client-Cert header");
         }
@@ -133,14 +146,29 @@ public class SmlClientFactory {
         }
     }
 
-    // 4 debugging locally
+    private void configureFaultHandling(Map<String, Object> requestContext) {
+        // CXF by default stops processing response in a few cases, ie.: when server returned HTTP 400 (SOAP Fault)
+        // We want to finish processing such messages - otherwise we would not be able to log fault's reason.
+        requestContext.put(HTTPConduit.NO_IO_EXCEPTIONS, true);
+        requestContext.put(HTTPConduit.PROCESS_FAULT_ON_HTTP_400, true);
+    }
+
+    private void configurePayloadLogging(Client client) {
+        client.getBus().setFeatures(asList(new LoggingFeature()));
+    }
+
     private void configureProxy(HTTPConduit httpConduit) {
+        if (isBlank(proxyServer)) {
+            return;
+        }
+
+        log.info(format("Configuring proxy for BDMSL integration client: %s:%s@%s:%d", proxyUser, "########", proxyServer, proxyPort.get()));
         httpConduit.getClient().setProxyServerType(ProxyServerType.HTTP);
-        httpConduit.getClient().setProxyServer("");
-        httpConduit.getClient().setProxyServerPort(0);
+        httpConduit.getClient().setProxyServer(proxyServer);
+        httpConduit.getClient().setProxyServerPort(proxyPort.get());
         ProxyAuthorizationPolicy proxyAuth = new ProxyAuthorizationPolicy();
-        proxyAuth.setUserName("");
-        proxyAuth.setPassword("");
+        proxyAuth.setUserName(proxyUser);
+        proxyAuth.setPassword(proxyPassword);
         httpConduit.setProxyAuthorization(proxyAuth);
     }
 }

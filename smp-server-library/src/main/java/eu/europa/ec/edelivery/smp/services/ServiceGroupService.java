@@ -59,10 +59,10 @@ public class ServiceGroupService implements ApplicationContextAware {
     @Autowired
     private UserDao userDao;
 
-    @Value("${regServiceRegistrationHook.integration.enabled}")
+    @Value("${bdmsl.integration.enabled}")
     boolean smlIntegrationEnabled;
 
-    @Value("${regServiceRegistrationHook.id}")
+    @Value("${bdmsl.integration.smp.id}")
     private String smpId;
 
     private ApplicationContext ctx;
