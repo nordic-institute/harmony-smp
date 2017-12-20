@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
     <ServiceInformation>
         <ParticipantIdentifier scheme="ehealth-actorid-qns">urn:australia:ncpb</ParticipantIdentifier>
         <DocumentIdentifier scheme="ehealth-resid-qns">urn::epsos##services:extended:epsos::107</DocumentIdentifier>
