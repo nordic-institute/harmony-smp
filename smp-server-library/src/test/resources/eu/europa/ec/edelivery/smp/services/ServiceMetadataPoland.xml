@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
     <ServiceInformation>
         <ParticipantIdentifier scheme="eHealth-participantId-qns">urn:Poland:ncpb</ParticipantIdentifier>
         <DocumentIdentifier scheme="eHealth-resId-qns">DocId.007</DocumentIdentifier>
