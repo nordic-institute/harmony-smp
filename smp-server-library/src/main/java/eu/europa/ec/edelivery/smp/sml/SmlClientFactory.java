@@ -76,7 +76,6 @@ public class SmlClientFactory {
 
     private KeyManager[] keyManagers;
 
-
     @Value("${bdmsl.integration.proxy.server}")
     private String proxyServer;
 
@@ -143,6 +142,8 @@ public class SmlClientFactory {
             Map<String, List<String>> customHeaders = new HashMap<>();
             customHeaders.put(CLIENT_CERT_HEADER_KEY, asList(smlClientCertHttpHeader));
             requestContext.put(MessageContext.HTTP_REQUEST_HEADERS, customHeaders);
+        } else{
+            throw new IllegalStateException("SML integration is wrongly configured, at least one authentication option is required: 2-way-SSL or Client-Cert header");
         }
     }
 

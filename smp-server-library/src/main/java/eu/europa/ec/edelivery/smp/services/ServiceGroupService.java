@@ -13,7 +13,6 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.bdmsl.ws.soap.*;
 import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
@@ -21,24 +20,18 @@ import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
 import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
-import eu.europa.ec.edelivery.smp.sml.SmlIntegrationException;
-import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
+import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 
 import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.toDbModel;
-import static eu.europa.ec.edelivery.smp.conversion.SmlIdentifierConverter.toBusdoxParticipantId;
 import static eu.europa.ec.smp.api.Identifiers.asString;
 import static java.util.Arrays.asList;
 
@@ -46,7 +39,7 @@ import static java.util.Arrays.asList;
  * Created by gutowpa on 14/11/2017.
  */
 @Service
-public class ServiceGroupService implements ApplicationContextAware {
+public class ServiceGroupService {
 
     private static final Logger log = LoggerFactory.getLogger(ServiceGroupService.class);
 
@@ -59,14 +52,8 @@ public class ServiceGroupService implements ApplicationContextAware {
     @Autowired
     private UserDao userDao;
 
-    @Value("${bdmsl.integration.enabled}")
-    boolean smlIntegrationEnabled;
-
-    @Value("${bdmsl.integration.smp.id}")
-    private String smpId;
-
-    private ApplicationContext ctx;
-
+    @Autowired
+    private SmlConnector smlConnector;
 
     public ServiceGroup getServiceGroup(ParticipantIdentifierType serviceGroupId) {
         ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
@@ -107,9 +94,7 @@ public class ServiceGroupService implements ApplicationContextAware {
             dbServiceGroup.setOwnerships(new HashSet(asList(dbOwnership)));
             serviceGroupDao.save(dbServiceGroup);
 
-            if(smlIntegrationEnabled) {
-                registerInDns(normalizedParticipantId);
-            }
+            smlConnector.registerInDns(normalizedParticipantId);
             return true;
         }
     }
@@ -130,39 +115,8 @@ public class ServiceGroupService implements ApplicationContextAware {
         if (dbServiceGroup == null) {
             throw new NotFoundException("ServiceGroup not found: '%s'", asString(serviceGroupId));
         }
-
-        //ownershipDao.removeByServiceGroupId(dbServiceGroup.getId());
         serviceGroupDao.remove(dbServiceGroup);
 
-        if(smlIntegrationEnabled) {
-            unregisterFromDns(normalizedServiceGroupId);
-        }
-    }
-
-    private void registerInDns(ParticipantIdentifierType normalizedParticipantId) {
-        try {
-            ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, smpId);
-            buildClient().create(smlRequest);
-        } catch (Exception e) {
-            throw new SmlIntegrationException("Could not create new DNS entry through SML", e);
-        }
-    }
-
-    private void unregisterFromDns(ParticipantIdentifierType normalizedParticipantId) {
-        try {
-            ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, smpId);
-            buildClient().delete(smlRequest);
-        } catch (Exception e) {
-            throw new SmlIntegrationException("Could not remove DNS entry through SML", e);
-        }
-    }
-
-    private IManageParticipantIdentifierWS buildClient() {
-        return ctx.getBean(IManageParticipantIdentifierWS.class);
-    }
-
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        ctx = applicationContext;
+        smlConnector.unregisterFromDns(normalizedServiceGroupId);
     }
 }
