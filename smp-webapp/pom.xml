@@ -124,6 +124,11 @@
                             <filtering>true</filtering>
                         </resource>
                     </webResources>
+                    <archive>
+                        <manifestEntries>
+                            <WebLogic-Application-Version>v${project.version}</WebLogic-Application-Version>
+                        </manifestEntries>
+                    </archive>
                 </configuration>
             </plugin>
             <plugin>
