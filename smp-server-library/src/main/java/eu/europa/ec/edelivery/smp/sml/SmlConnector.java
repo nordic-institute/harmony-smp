@@ -28,6 +28,9 @@ import static eu.europa.ec.edelivery.smp.conversion.SmlIdentifierConverter.toBus
 import static eu.europa.ec.smp.api.Identifiers.asString;
 
 /**
+ * Component responsible for building SOAP request and calling BDMSL.
+ * It knows if SML integration is turned ON and only then makes a CREATE or DELETE participant call.
+ *
  * Created by gutowpa on 22/12/2017.
  */
 @Component
