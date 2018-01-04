@@ -35,7 +35,7 @@ import javax.sql.DataSource;
 @ComponentScan(basePackages = {
         "eu.europa.ec.edelivery.smp.services",
         "eu.europa.ec.edelivery.smp.data.dao",
-        "eu.europa.ec.cipa.smp.server.hook",
+        "eu.europa.ec.edelivery.smp.sml",
         "eu.europa.ec.edelivery.smp.conversion",
         "eu.europa.ec.cipa.smp.server.util"})
 @PropertySource(value = "classpath:config.properties")
