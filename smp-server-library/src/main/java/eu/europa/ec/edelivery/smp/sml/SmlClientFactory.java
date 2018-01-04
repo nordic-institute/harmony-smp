@@ -50,6 +50,9 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
+ * Factory creating CXF client that access BDMSL via SOAP interface.
+ * Produced client has already configured all transport and authentication parameters like URL, keystore, proxy etc...
+ *
  * Created by gutowpa on 14/12/2017.
  */
 @Component

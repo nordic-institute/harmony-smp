@@ -50,7 +50,7 @@ public class SmlConnector implements ApplicationContextAware {
         log.info("Registering new Participant in BDMSL: " + asString(normalizedParticipantId));
         try {
             ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, smpId);
-            buildClient().create(smlRequest);
+            getClient().create(smlRequest);
         } catch (Exception e) {
             throw new SmlIntegrationException("Could not create new DNS entry through SML", e);
         }
@@ -63,13 +63,13 @@ public class SmlConnector implements ApplicationContextAware {
         log.info("Removing Participant from BDMSL: " + asString(normalizedParticipantId));
         try {
             ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, smpId);
-            buildClient().delete(smlRequest);
+            getClient().delete(smlRequest);
         } catch (Exception e) {
             throw new SmlIntegrationException("Could not remove DNS entry through SML", e);
         }
     }
 
-    private IManageParticipantIdentifierWS buildClient() {
+    private IManageParticipantIdentifierWS getClient() {
         return ctx.getBean(IManageParticipantIdentifierWS.class);
     }
 
