@@ -24,6 +24,9 @@
             <package-name>org.slf4j.*</package-name>
             <package-name>org.apache.commons.*</package-name>
 
+            <!-- used to switch off bean validation which resulted in failing Spring context to load -->
+            <package-name>javax.validation.*</package-name>
+
         </prefer-application-packages>
         <prefer-application-resources>
             <resource-name>org/slf4j/impl/StaticLoggerBinder.class</resource-name>

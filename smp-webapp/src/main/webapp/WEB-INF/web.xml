@@ -11,9 +11,18 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the Licence for the specific language governing permissions and limitations under the Licence.
   -->
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
-         id="SMP_WebApp" version="3.0">
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1" metadata-complete="true">
+    <!--
+    WebLogic scans all application's JAR files to search for some annotated classes.
+    This scanning has an issue with spring-web-5.0.2.RELEASE.jar -
+    that results in deployment failure with strange error "array index out of bounds".
+    metadata-complete="true" is set to inform WebLogic to NOT scan JARs
+    -->
+
 
     <display-name>SMP - OASIS REST services</display-name>
 
