@@ -62,33 +62,33 @@ public class SmlClientFactory {
 
     private static final String CLIENT_CERT_HEADER_KEY = "Client-Cert";
 
-    @Value("${bdmsl.integration.url}")
+    @Value("${bdmsl.integration.url:}")
     private URL smlUrl;
 
-    @Value("${bdmsl.integration.keystore.path}")
+    @Value("${bdmsl.integration.keystore.path:}")
     private String smlClientKeyStorePath;
 
-    @Value("${bdmsl.integration.keystore.password}")
+    @Value("${bdmsl.integration.keystore.password:}")
     private String smlClientKeyStorePassword;
 
-    @Value("${bdmsl.integration.keystore.alias}")
+    @Value("${bdmsl.integration.keystore.alias:}")
     private String smlClientKeyAlias;
 
-    @Value("${bdmsl.integration.http.header.client.cert}")
+    @Value("${bdmsl.integration.http.header.client.cert:}")
     private String smlClientCertHttpHeader;
 
     private KeyManager[] keyManagers;
 
-    @Value("${bdmsl.integration.proxy.server}")
+    @Value("${bdmsl.integration.proxy.server:}")
     private String proxyServer;
 
-    @Value("${bdmsl.integration.proxy.port}")
+    @Value("${bdmsl.integration.proxy.port:}")
     private Optional<Integer> proxyPort;
 
-    @Value("${bdmsl.integration.proxy.user}")
+    @Value("${bdmsl.integration.proxy.user:}")
     private String proxyUser;
 
-    @Value("${bdmsl.integration.proxy.password}")
+    @Value("${bdmsl.integration.proxy.password:}")
     private String proxyPassword;
 
 

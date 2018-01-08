@@ -38,8 +38,8 @@ public class SmlConnector implements ApplicationContextAware {
 
     private static final Logger log = LoggerFactory.getLogger(SmlConnector.class);
 
-    @Value("${bdmsl.integration.enabled}")
-    boolean smlIntegrationEnabled;
+    @Value("${bdmsl.integration.enabled:false}")
+    private boolean smlIntegrationEnabled;
 
     @Value("${bdmsl.integration.smp.id}")
     private String smpId;
