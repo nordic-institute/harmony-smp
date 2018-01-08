@@ -14,7 +14,7 @@
 package eu.europa.ec.edelivery.smp.sml;
 
 /**
- * Problem occured when integrating with SML
+ * Problem occurred when integrating with SML
  *
  * Created by gutowpa on 18/12/2017.
  */
