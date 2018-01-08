@@ -13,7 +13,6 @@
 
 package eu.europa.ec.cipa.smp.server.util;
 
-import eu.europa.ec.cipa.smp.server.security.CertificateDetails;
 import org.apache.commons.lang3.StringUtils;
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x509.*;
@@ -31,7 +30,6 @@ import java.security.cert.X509Certificate;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -65,11 +63,6 @@ public class CommonUtil {
         return new JcaX509CertificateConverter().setProvider("BC").getCertificate(certBuilder.build(sigGen));
     }
 
-    public static CertificateDetails createCertificateForBlueCoat(String serialNumber, String issuer, String subject, Date startDate, Date expiryDate) throws Exception {
-        DateFormat df = new SimpleDateFormat("MMM d hh:mm:ss yyyy zzz", Locale.US);
-        String headerCertificate = "serial=" + serialNumber + "&subject=" + subject + "&validFrom=" + df.format(startDate) + "&validTo=" + df.format(expiryDate) + "&issuer=" + issuer;
-        return CertificateUtils.getCommonNameFromCalculateHeaderCertificateId(headerCertificate);
-    }
 
     public static String createHeaderCertificateForBlueCoat() throws Exception {
         return createHeaderCertificateForBlueCoat(null,false);

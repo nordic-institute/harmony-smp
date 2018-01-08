@@ -12,7 +12,6 @@
  */
 package eu.europa.ec.cipa.smp.server.util;
 
-import eu.europa.ec.cipa.smp.server.security.KeyStoreUtils;
 import eu.europa.ec.cipa.smp.server.security.Signer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +20,9 @@ import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
 import javax.annotation.PostConstruct;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
@@ -58,8 +60,16 @@ public final class SignatureFilter {
     public void init() {
         // Load the KeyStore and get the signing key and certificate.
         try {
-            final KeyStore aKeyStore = KeyStoreUtils.loadKeyStore(xmldsigKeystoreClasspath, xmldsigKeystorePassword);
-            final KeyStore.Entry aEntry = aKeyStore.getEntry(xmldsigKeystoreKeyAlias,
+            InputStream keystoreInputStream;
+            try {
+                keystoreInputStream = new FileInputStream(xmldsigKeystoreClasspath);
+            } catch (FileNotFoundException e){
+                s_aLogger.warn("Could not file keystore file, trying loading from classpath: " + xmldsigKeystoreClasspath);
+                keystoreInputStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(xmldsigKeystoreClasspath);
+            }
+            KeyStore keyStore = KeyStore.getInstance("JKS");
+            keyStore.load(keystoreInputStream, xmldsigKeystorePassword.toCharArray());
+            final KeyStore.Entry aEntry = keyStore.getEntry(xmldsigKeystoreKeyAlias,
                     new KeyStore.PasswordProtection(xmldsigKeystoreKeyPassword.toCharArray()));
             if (aEntry == null) {
                 // Alias not found
@@ -87,22 +97,6 @@ public final class SignatureFilter {
                     "'");
 
             signer = new Signer(m_aKeyEntry.getPrivateKey(), m_aCert);
-/*
-      if (false) {
-        // Enable XMLDsig debugging
-        java.util.logging.LogManager.getLogManager ()
-                                    .readConfiguration (new StringInputStream ("handlers=java.util.logging.ConsoleHandler\r\n"
-                                                                                   + ".level=FINEST\r\n"
-                                                                                   + "java.util.logging.ConsoleHandler.level=FINEST\r\n"
-                                                                                   + "java.util.logging.ConsoleHandler.formatter = java.util.logging.SimpleFormatter",
-                                                                               CCharset.CHARSET_ISO_8859_1_OBJ));
-        java.util.logging.Logger.getLogger ("org.jcp.xml.dsig.internal.level").setLevel (java.util.logging.Level.FINER);
-        java.util.logging.Logger.getLogger ("org.apache.xml.internal.security.level")
-                                .setLevel (java.util.logging.Level.FINER);
-        java.util.logging.Logger.getLogger ("com.sun.org.apache.xml.internal.security.level")
-                                .setLevel (java.util.logging.Level.FINER);
-      }
-      */
         } catch (final Throwable t) {
             s_aLogger.error("Error in constructor of SignatureFilter", t);
             throw new IllegalStateException("Error in constructor of SignatureFilter", t);

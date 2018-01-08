@@ -21,12 +21,9 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
-import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
-import org.springframework.orm.jpa.vendor.Database;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
@@ -38,8 +35,8 @@ import javax.sql.DataSource;
 @ComponentScan(basePackages = {
         "eu.europa.ec.edelivery.smp.services",
         "eu.europa.ec.edelivery.smp.data.dao",
-        "eu.europa.ec.cipa.smp.server.hook",
-        "eu.europa.ec.cipa.smp.server.conversion",
+        "eu.europa.ec.edelivery.smp.sml",
+        "eu.europa.ec.edelivery.smp.conversion",
         "eu.europa.ec.cipa.smp.server.util"})
 @PropertySource(value = "classpath:config.properties")
 public class SmpServicesTestConfig {

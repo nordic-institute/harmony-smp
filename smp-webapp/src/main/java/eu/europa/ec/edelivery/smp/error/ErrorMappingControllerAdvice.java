@@ -14,7 +14,6 @@
 package eu.europa.ec.edelivery.smp.error;
 
 import ec.services.smp._1.ErrorResponse;
-import eu.europa.ec.edelivery.smp.exceptions.CertificateAuthenticationException;
 import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
 import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
 import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
@@ -69,11 +68,6 @@ public class ErrorMappingControllerAdvice {
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity handleAuthenticationException(AuthenticationException ex) {
-        return buildAndWarn(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage(), ex);
-    }
-
-    @ExceptionHandler(CertificateAuthenticationException.class)
-    public ResponseEntity handleCertificateAuthenticationException(CertificateAuthenticationException ex) {
         return buildAndWarn(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage(), ex);
     }
 

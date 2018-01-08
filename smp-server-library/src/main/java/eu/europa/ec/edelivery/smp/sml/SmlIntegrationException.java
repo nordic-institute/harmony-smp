@@ -10,21 +10,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-package eu.europa.ec.cipa.smp.server.security;
 
-import org.junit.Test;
-
-import static org.junit.Assert.assertTrue;
+package eu.europa.ec.edelivery.smp.sml;
 
 /**
- * Test class for class {@link HostnameVerifierAlwaysTrue}.
- * 
- * @author PEPPOL.AT, BRZ, Philip Helger
+ * Problem occurred when integrating with SML
+ *
+ * Created by gutowpa on 18/12/2017.
  */
-public final class HostnameVerifierAlwaysTrueTest {
-  @Test
-  public void testAll () {
-    final HostnameVerifierAlwaysTrue hv = new HostnameVerifierAlwaysTrue ();
-    assertTrue (hv.verify (null, null));
-  }
+public class SmlIntegrationException extends RuntimeException {
+    public SmlIntegrationException(String msg, Exception e) {
+        super(msg, e);
+    }
 }
