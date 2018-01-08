@@ -13,7 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
-import eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter;
+import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import eu.europa.ec.edelivery.smp.services.ServiceMetadataService;
 import eu.europa.ec.edelivery.smp.validation.ServiceGroupValidator;

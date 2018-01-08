@@ -13,11 +13,11 @@
 
 package eu.europa.ec.cipa.smp.server.util;
 
-import org.custommonkey.xmlunit.XMLUnit;
 import org.junit.Assert;
 import org.junit.Test;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
 import org.xml.sax.SAXException;
+import org.xmlunit.matchers.CompareMatcher;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -25,8 +25,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.custommonkey.xmlunit.XMLAssert.assertXMLEqual;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by migueti on 13/02/2017.
@@ -42,13 +42,12 @@ public class ExtensionUtilsTest {
         // given
         List<ExtensionType> list = createListExtensions(1);
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionMarshal.xml");
-        XMLUnit.setIgnoreWhitespace(true);
 
         // when
         String xmlResult = ExtensionUtils.marshalExtensions(list);
 
         // then
-        assertXMLEqual(inputDoc, xmlResult);
+        assertThat(xmlResult, CompareMatcher.isIdenticalTo(inputDoc));
     }
 
     @Test
@@ -56,7 +55,6 @@ public class ExtensionUtilsTest {
         // given
         List<ExtensionType> list = createListExtensions(2);
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionMarshalMore.xml");
-        XMLUnit.setIgnoreWhitespace(true);
 
         // when
         String xmlResult = ExtensionUtils.marshalExtensions(list);
@@ -64,7 +62,7 @@ public class ExtensionUtilsTest {
         // then
         String wrappedXmlResult = String.format(WRAPPED_FORMAT, xmlResult);
         String wrappedInputDoc = String.format(WRAPPED_FORMAT, inputDoc);
-        assertXMLEqual(wrappedInputDoc, wrappedXmlResult);
+        assertThat(wrappedXmlResult, CompareMatcher.isIdenticalTo(wrappedInputDoc));
     }
 
     @Test
@@ -93,15 +91,15 @@ public class ExtensionUtilsTest {
 
     private List<ExtensionType> createListExtensions(int size) {
         List<ExtensionType> list = new ArrayList<>();
-        for(int i = 1 ; i <= size; i++) {
+        for (int i = 1; i <= size; i++) {
             ExtensionType extension = new ExtensionType();
-            extension.setExtensionName("name"+i);
-            extension.setExtensionVersionID("versionId"+i);
-            extension.setExtensionReason("reason"+i);
-            extension.setExtensionReasonCode("reasonCode"+i);
-            extension.setExtensionID("id"+i);
-            extension.setExtensionAgencyURI("agencyUri"+i);
-            extension.setExtensionAgencyName("agencyName"+i);
+            extension.setExtensionName("name" + i);
+            extension.setExtensionVersionID("versionId" + i);
+            extension.setExtensionReason("reason" + i);
+            extension.setExtensionReasonCode("reasonCode" + i);
+            extension.setExtensionID("id" + i);
+            extension.setExtensionAgencyURI("agencyUri" + i);
+            extension.setExtensionAgencyName("agencyName" + i);
             list.add(extension);
         }
         return list;
@@ -112,7 +110,7 @@ public class ExtensionUtilsTest {
         Assert.assertNotNull(extensions);
         Assert.assertEquals(size, extensions.size());
         int number = 1;
-        for(ExtensionType extension : extensions) {
+        for (ExtensionType extension : extensions) {
             Assert.assertNotNull(extension);
             Assert.assertEquals("name" + number, extension.getExtensionName());
             Assert.assertEquals("versionId" + number, extension.getExtensionVersionID());

@@ -13,15 +13,14 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.cipa.smp.server.conversion.CaseSensitivityNormalizer;
-import eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter;
-import eu.europa.ec.cipa.smp.server.hook.IRegistrationHook;
-import eu.europa.ec.edelivery.smp.data.dao.OwnershipDao;
+import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
+import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
 import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
+import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.slf4j.Logger;
@@ -30,12 +29,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Array;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Set;
 
-import static eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter.toDbModel;
+import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.toDbModel;
 import static eu.europa.ec.smp.api.Identifiers.asString;
 import static java.util.Arrays.asList;
 
@@ -57,7 +53,7 @@ public class ServiceGroupService {
     private UserDao userDao;
 
     @Autowired
-    private IRegistrationHook m_aHook;
+    private SmlConnector smlConnector;
 
     public ServiceGroup getServiceGroup(ParticipantIdentifierType serviceGroupId) {
         ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
@@ -88,9 +84,6 @@ public class ServiceGroupService {
             serviceGroupDao.save(dbServiceGroup);
             return false;
         } else {
-            // Register in SML (DNS)
-            m_aHook.create(normalizedParticipantId);
-
             //Save ServiceGroup
             dbServiceGroup = new DBServiceGroup(new DBServiceGroupId(normalizedParticipantId.getScheme(), normalizedParticipantId.getValue()));
             dbServiceGroup.setExtension(extensions);
@@ -99,12 +92,12 @@ public class ServiceGroupService {
             DBOwnershipId dbOwnershipID = new DBOwnershipId(newOwnerName, normalizedParticipantId.getScheme(), normalizedParticipantId.getValue());
             DBOwnership dbOwnership = new DBOwnership(dbOwnershipID, newOwner, dbServiceGroup);
             dbServiceGroup.setOwnerships(new HashSet(asList(dbOwnership)));
-            //ownershipDao.save(ownership);
             serviceGroupDao.save(dbServiceGroup);
+
+            smlConnector.registerInDns(normalizedParticipantId);
             return true;
         }
     }
-
 
     private ServiceGroup normalizeIdentifierCaseSensitivity(ServiceGroup serviceGroup) {
         final ServiceGroup sg = new ServiceGroup();
@@ -122,10 +115,8 @@ public class ServiceGroupService {
         if (dbServiceGroup == null) {
             throw new NotFoundException("ServiceGroup not found: '%s'", asString(serviceGroupId));
         }
-
-        //ownershipDao.removeByServiceGroupId(dbServiceGroup.getId());
         serviceGroupDao.remove(dbServiceGroup);
 
-        m_aHook.delete(normalizedServiceGroupId);
+        smlConnector.unregisterFromDns(normalizedServiceGroupId);
     }
 }

@@ -13,10 +13,9 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter;
-import eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter;
+import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
+import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
 import eu.europa.ec.edelivery.smp.config.SmpServicesTestConfig;
@@ -40,8 +39,7 @@ import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.util.List;
 
-import static eu.europa.ec.cipa.smp.server.conversion.ServiceGroupConverter.toDbModel;
-import static eu.europa.ec.cipa.smp.server.conversion.ServiceMetadataConverter.unmarshal;
+import static eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter.unmarshal;
 import static eu.europa.ec.cipa.smp.server.util.XmlTestUtils.loadDocumentAsString;
 import static eu.europa.ec.cipa.smp.server.util.XmlTestUtils.marshall;
 import static eu.europa.ec.smp.api.Identifiers.asDocumentId;

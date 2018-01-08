@@ -52,12 +52,11 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<slf4j.version>1.7.10</slf4j.version>
-		<spring.version>4.3.5.RELEASE</spring.version>
+		<spring.version>5.0.2.RELEASE</spring.version>
 		<spring.security.version>4.2.1.RELEASE</spring.security.version>
 		<bdmsl.client.version>3.0.0</bdmsl.client.version>
-		<cxf.version>3.1.1</cxf.version>
-		<cxf-xjc-runtime.version>3.1.0</cxf-xjc-runtime.version>
-		<cxf.security.version>3.1.1</cxf.security.version>
+		<cxf.version>3.2.1</cxf.version>
+		<cxf-xjc-runtime.version>3.2.0</cxf-xjc-runtime.version>
 		<build.helper.maven.version>1.9.1</build.helper.maven.version>
 		<ehcache.version>2.10.0</ehcache.version>
 		<spring-modules-jakarta-commons.version>0.8</spring-modules-jakarta-commons.version>
@@ -74,7 +73,7 @@
 		<guava.version>18.0</guava.version>
 		<orika.version>1.4.6</orika.version>
 		<aspectj.version>1.8.6</aspectj.version>
-		<jaxb.version>2.2.4</jaxb.version>
+		<jaxb.version>2.2.11</jaxb.version>
 		<jaxb2-basics.version>0.11.0</jaxb2-basics.version>
 		<javax.annotation.version>1.2-b02</javax.annotation.version>
 		<hibernate.version>5.1.7.Final</hibernate.version>
@@ -91,7 +90,7 @@
 		<commons-io.version>2.4</commons-io.version>
 		<junitparams.version>1.0.5</junitparams.version>
 		<lombok.version>1.16.16</lombok.version>
-		<xmlunit.version>1.6</xmlunit.version>
+		<xmlunit.version>2.5.1</xmlunit.version>
 	</properties>
 
 	<!-- Where are we looking for JARs? -->
@@ -211,11 +210,16 @@
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-ws-security</artifactId>
-				<version>${cxf.security.version}</version>
+				<version>${cxf.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.cxf</groupId>
 				<artifactId>cxf-rt-security</artifactId>
+				<version>${cxf.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.cxf</groupId>
+				<artifactId>cxf-rt-features-logging</artifactId>
 				<version>${cxf.version}</version>
 			</dependency>
 			<dependency>
@@ -246,6 +250,16 @@
 			<dependency>
 				<groupId>javax.xml.bind</groupId>
 				<artifactId>jaxb-api</artifactId>
+				<version>${jaxb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.xml.bind</groupId>
+				<artifactId>jaxb-impl</artifactId>
+				<version>${jaxb.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.xml.bind</groupId>
+				<artifactId>jaxb-core</artifactId>
 				<version>${jaxb.version}</version>
 			</dependency>
 			<dependency>
@@ -478,8 +492,14 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>xmlunit</groupId>
-				<artifactId>xmlunit</artifactId>
+				<groupId>org.xmlunit</groupId>
+				<artifactId>xmlunit-core</artifactId>
+				<version>${xmlunit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.xmlunit</groupId>
+				<artifactId>xmlunit-matchers</artifactId>
 				<version>${xmlunit.version}</version>
 				<scope>test</scope>
 			</dependency>
@@ -582,7 +602,7 @@
 		</pluginManagement>
 
 		<plugins>
-			<!-- Compile as Java 1.7 code (lifecycle: compile) -->
+			<!-- Compile as Java 1.8 code (lifecycle: compile) -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -590,8 +610,8 @@
 					<!-- fork needs to be false to compile JAXB resources. Otherwise the 
 						problem with the forward slash in package-info.java on Windows occurs! -->
 					<fork>false</fork>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<showWarnings>true</showWarnings>
 					<maxmem>768m</maxmem>
 					<compilerArguments>

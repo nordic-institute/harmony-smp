@@ -11,7 +11,7 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.cipa.smp.server.conversion;
+package eu.europa.ec.edelivery.smp.conversion;
 
 import junitparams.JUnitParamsRunner;
 import junitparams.Parameters;
