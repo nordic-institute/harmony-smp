@@ -13,7 +13,6 @@
 
 package eu.europa.ec.edelivery.smp.validation;
 
-import eu.europa.ec.cipa.smp.server.util.IdentifierUtils;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
 import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
@@ -46,8 +45,8 @@ public class ServiceGroupValidator {
 
     public void validate(String serviceGroupId, ServiceGroup serviceGroup) {
 
-        final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(serviceGroupId);
-        if (!IdentifierUtils.areIdentifiersEqual(aServiceGroupID, serviceGroup.getParticipantIdentifier())) {
+        final ParticipantIdentifierType participantId = Identifiers.asParticipantId(serviceGroupId);
+        if (!participantId.equals(serviceGroup.getParticipantIdentifier())) {
             // Business identifier must equal path
             throw new BadRequestException(WRONG_FIELD, "Service Group Ids don't match between URL parameter and XML body");
         }
