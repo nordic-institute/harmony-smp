@@ -13,7 +13,6 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.cipa.smp.server.util.SignatureFilter;
 import eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdvice;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
