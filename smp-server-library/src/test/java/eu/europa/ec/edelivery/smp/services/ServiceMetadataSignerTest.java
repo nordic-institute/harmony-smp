@@ -14,8 +14,17 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.cipa.smp.server.security.SignatureUtil;
+import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
+import eu.europa.ec.edelivery.smp.config.SmpServicesTestConfig;
 import eu.europa.ec.edelivery.smp.services.ServiceMetadataSigner;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -25,20 +34,14 @@ import static eu.europa.ec.cipa.smp.server.util.XmlTestUtils.loadDocument;
  * Created by rodrfla on 20/02/2017.
  */
 
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = SmpServicesTestConfig.class)
 public class ServiceMetadataSignerTest {
 
-    private final static String KEYSTORE_PATH = Thread.currentThread().getContextClassLoader().getResource("signature_keys.jks").getFile();
-    private static final String KEYSTORE_PASS = "mock";
-    private static final String KEY_ALIAS = "smp_mock";
+    @Autowired
+    private ServiceMetadataSigner signer;
 
     private Document loadAndSignDocumentForDefault() throws Exception {
-        ServiceMetadataSigner signer = new ServiceMetadataSigner();
-        signer.setKeystoreFilePath(KEYSTORE_PATH);
-        signer.setKeystorePassword(KEYSTORE_PASS);
-        signer.setXmldsigKeystoreKeyAlias(KEY_ALIAS);
-        signer.setXmldsigKeystoreKeyPassword(KEYSTORE_PASS);
-        signer.init();
-
         Document documentToSign = loadDocument("/input/SignedServiceMetadata_withoutSignature.xml");
         signer.sign(documentToSign);
 

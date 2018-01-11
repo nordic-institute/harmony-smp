@@ -51,7 +51,7 @@ public class ServiceMetadataService {
     private ServiceGroupDao serviceGroupDao;
 
     @Autowired
-    private ServiceMetadataSigner signatureFilter;
+    private ServiceMetadataSigner signer;
 
     public Document getServiceMetadataDocument(ParticipantIdentifierType serviceGroupId, DocumentIdentifier documentId) {
         ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
@@ -64,7 +64,7 @@ public class ServiceMetadataService {
         }
 
         Document aSignedServiceMetadata = toSignedServiceMetadatadaDocument(serviceMetadata.getXmlContent());
-        signatureFilter.sign(aSignedServiceMetadata);
+        signer.sign(aSignedServiceMetadata);
         return aSignedServiceMetadata;
     }
 
