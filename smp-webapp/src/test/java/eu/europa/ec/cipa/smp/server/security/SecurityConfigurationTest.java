@@ -13,10 +13,7 @@
 
 package eu.europa.ec.cipa.smp.server.security;
 
-import eu.europa.ec.edelivery.smp.config.PropertiesConfig;
-import eu.europa.ec.edelivery.smp.config.DatabaseConfig;
-import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
-import eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig;
+import eu.europa.ec.edelivery.smp.config.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -43,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
-        PropertiesConfig.class,
+        PropertiesTestConfig.class,
         DatabaseConfig.class,
         SpringSecurityConfig.class,
         SpringSecurityTestConfig.class

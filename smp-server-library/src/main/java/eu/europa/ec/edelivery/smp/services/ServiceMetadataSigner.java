@@ -20,7 +20,10 @@ import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
 import javax.annotation.PostConstruct;
-import javax.xml.crypto.dsig.*;
+import javax.xml.crypto.dsig.Reference;
+import javax.xml.crypto.dsig.SignedInfo;
+import javax.xml.crypto.dsig.XMLSignature;
+import javax.xml.crypto.dsig.XMLSignatureFactory;
 import javax.xml.crypto.dsig.dom.DOMSignContext;
 import javax.xml.crypto.dsig.keyinfo.KeyInfo;
 import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
@@ -29,15 +32,13 @@ import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.security.InvalidAlgorithmParameterException;
 import java.security.Key;
 import java.security.KeyStore;
-import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+import static java.util.Collections.singletonList;
 import static javax.xml.crypto.dsig.CanonicalizationMethod.INCLUSIVE;
 import static javax.xml.crypto.dsig.DigestMethod.SHA256;
 import static javax.xml.crypto.dsig.Transform.ENVELOPED;
@@ -48,14 +49,6 @@ public final class ServiceMetadataSigner {
     private static final Logger log = LoggerFactory.getLogger(ServiceMetadataSigner.class);
 
     private static final String RSA_SHA256 = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
-
-    // Initialized in constructor
-    // Could not be initialized statically, factory methods declare throwing checked exceptions
-    private List TRANSFORM_ENVELOPED;
-    private DigestMethod DIGEST_METHOD_SHA_256;
-    private CanonicalizationMethod C14N_METHOD_INCLUSIVE;
-    private SignatureMethod SIGNATURE_METHOD_RSA_SHA256;
-
 
     @Value("${xmldsig.keystore.classpath}")
     private String keystoreFilePath;
@@ -71,25 +64,12 @@ public final class ServiceMetadataSigner {
 
 
     private Key signingKey;
-
     private X509Certificate signingCertificate;
 
 
-    public ServiceMetadataSigner() throws InvalidAlgorithmParameterException, NoSuchAlgorithmException {
-        XMLSignatureFactory domSigFactory = getDomSigFactory();
-        DIGEST_METHOD_SHA_256 = domSigFactory.newDigestMethod(SHA256, null);
-
-        Transform transformEnveloped = domSigFactory.newTransform(ENVELOPED, (TransformParameterSpec) null);
-        TRANSFORM_ENVELOPED = Collections.singletonList(transformEnveloped);
-
-        C14N_METHOD_INCLUSIVE = domSigFactory.newCanonicalizationMethod(INCLUSIVE, (C14NMethodParameterSpec) null);
-
-        SIGNATURE_METHOD_RSA_SHA256 = domSigFactory.newSignatureMethod(RSA_SHA256, null);
-    }
-
     private static XMLSignatureFactory getDomSigFactory() {
-        // Only static methods of this factory are thread-safe
-        // We cannot re-use the same instance in every place
+        // According to Javadoc, only static methods of this factory are thread-safe
+        // We cannot share and re-use the same instance in every place
         return XMLSignatureFactory.getInstance("DOM");
     }
 
@@ -111,25 +91,29 @@ public final class ServiceMetadataSigner {
     }
 
     public void sign(Document serviceMetadataDoc) {
-
-        XMLSignatureFactory domSigFactory = getDomSigFactory();
-
-        // Create a Reference to the ENVELOPED document
-        // URI "" means that the whole document is signed
-        Reference reference = domSigFactory.newReference("", DIGEST_METHOD_SHA_256, TRANSFORM_ENVELOPED, null, null);
-
-        SignedInfo singedInfo = domSigFactory.newSignedInfo(C14N_METHOD_INCLUSIVE,
-                SIGNATURE_METHOD_RSA_SHA256,
-                Collections.singletonList(reference));
-
-        KeyInfo keyInfo = createKeyInfo();
-
-        DOMSignContext domSignContext = new DOMSignContext(signingKey, serviceMetadataDoc.getDocumentElement());
-
-        // Create the XMLSignature, but don't sign it yet
-        XMLSignature signature = domSigFactory.newXMLSignature(singedInfo, keyInfo);
-
         try {
+            XMLSignatureFactory domSigFactory = getDomSigFactory();
+
+            // Create a Reference to the ENVELOPED document
+            // URI "" means that the whole document is signed
+            Reference reference = domSigFactory.newReference(
+                    "",
+                    domSigFactory.newDigestMethod(SHA256, null),
+                    singletonList(domSigFactory.newTransform(ENVELOPED, (TransformParameterSpec) null)),
+                    null,
+                    null);
+
+            SignedInfo singedInfo = domSigFactory.newSignedInfo(
+                    domSigFactory.newCanonicalizationMethod(INCLUSIVE, (C14NMethodParameterSpec) null),
+                    domSigFactory.newSignatureMethod(RSA_SHA256, null),
+                    singletonList(reference));
+
+            DOMSignContext domSignContext = new DOMSignContext(signingKey, serviceMetadataDoc.getDocumentElement());
+
+            // Create the XMLSignature, but don't sign it yet
+            KeyInfo keyInfo = createKeyInfo();
+            XMLSignature signature = domSigFactory.newXMLSignature(singedInfo, keyInfo);
+
             // Marshal, generate, and sign the enveloped signature
             signature.sign(domSignContext);
         } catch (Exception e) {
@@ -143,7 +127,7 @@ public final class ServiceMetadataSigner {
         content.add(signingCertificate.getSubjectX500Principal().getName());
         content.add(signingCertificate);
         X509Data x509Data = keyInfoFactory.newX509Data(content);
-        return keyInfoFactory.newKeyInfo(Collections.singletonList(x509Data));
+        return keyInfoFactory.newKeyInfo(singletonList(x509Data));
     }
 
     public void setKeystoreFilePath(String keystoreFilePath) {
