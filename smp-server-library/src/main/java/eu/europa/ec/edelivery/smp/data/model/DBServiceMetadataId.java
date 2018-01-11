@@ -32,9 +32,7 @@ public class DBServiceMetadataId implements Serializable {
     private String documentIdScheme;
     private String documentIdValue;
 
-    @Deprecated
-    public DBServiceMetadataId() {
-    }
+    public DBServiceMetadataId() {}
 
     public DBServiceMetadataId(String participantIdScheme,
                                String participantIdValue,

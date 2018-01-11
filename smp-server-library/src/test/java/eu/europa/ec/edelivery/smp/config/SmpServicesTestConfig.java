@@ -27,6 +27,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
  * Created by gutowpa on 21/09/2017.
@@ -40,6 +41,8 @@ import javax.sql.DataSource;
         "eu.europa.ec.cipa.smp.server.util"})
 @PropertySource(value = "classpath:config.properties")
 public class SmpServicesTestConfig {
+
+    private final static String SIGNING_KEYSTORE_PATH = Thread.currentThread().getContextClassLoader().getResource("signature_keys.jks").getFile();
 
     @Value("${jdbc.driver}")
     private String driver;
@@ -55,7 +58,14 @@ public class SmpServicesTestConfig {
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
+        PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
+
+        Properties localProps = new Properties();
+        localProps.setProperty("xmldsig.keystore.classpath", SIGNING_KEYSTORE_PATH);
+        propertiesConfig.setProperties(localProps);
+        propertiesConfig.setLocalOverride(true);
+
+        return propertiesConfig;
     }
 
     @Bean
