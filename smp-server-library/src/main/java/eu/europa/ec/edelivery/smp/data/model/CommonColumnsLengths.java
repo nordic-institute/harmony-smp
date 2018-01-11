@@ -21,5 +21,4 @@ public class CommonColumnsLengths {
     public static final int MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH = 50;
     public static final int MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH = 500;
     public static final int MAX_USERNAME_LENGTH = 256;
-    public static final String URL_SCHEME_VALUE_SEPARATOR = "::";
 }

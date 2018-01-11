@@ -12,6 +12,7 @@
  */
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.exceptions.DocumentSigningException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -95,44 +96,44 @@ public final class ServiceMetadataSigner {
     @PostConstruct
     public void init() {
         // Load the KeyStore and get the signing key and certificate.
-        try {
+        try (InputStream keystoreInputStream = new FileInputStream(keystoreFilePath)) {
+
             KeyStore keyStore = KeyStore.getInstance("JKS");
-            InputStream keystoreInputStream = new FileInputStream(keystoreFilePath);
             keyStore.load(keystoreInputStream, keystorePassword.toCharArray());
 
             signingKey = keyStore.getKey(xmldsigKeystoreKeyAlias, xmldsigKeystoreKeyPassword.toCharArray());
             signingCertificate = (X509Certificate) keyStore.getCertificate(xmldsigKeystoreKeyAlias);
 
             log.info("Successfully loaded signing key and certificate: " + signingCertificate.getSubjectDN().getName());
-        } catch (final Exception e) {
+        } catch (Exception e) {
             throw new IllegalStateException("Could not load signing certificate with private key from keystore file: " + keystoreFilePath, e);
         }
     }
 
     public void sign(Document serviceMetadataDoc) {
 
+        XMLSignatureFactory domSigFactory = getDomSigFactory();
+
+        // Create a Reference to the ENVELOPED document
+        // URI "" means that the whole document is signed
+        Reference reference = domSigFactory.newReference("", DIGEST_METHOD_SHA_256, TRANSFORM_ENVELOPED, null, null);
+
+        SignedInfo singedInfo = domSigFactory.newSignedInfo(C14N_METHOD_INCLUSIVE,
+                SIGNATURE_METHOD_RSA_SHA256,
+                Collections.singletonList(reference));
+
+        KeyInfo keyInfo = createKeyInfo();
+
+        DOMSignContext domSignContext = new DOMSignContext(signingKey, serviceMetadataDoc.getDocumentElement());
+
+        // Create the XMLSignature, but don't sign it yet
+        XMLSignature signature = domSigFactory.newXMLSignature(singedInfo, keyInfo);
+
         try {
-            XMLSignatureFactory domSigFactory = getDomSigFactory();
-
-            // Create a Reference to the ENVELOPED document
-            // URI "" means that the whole document is signed
-            Reference reference = domSigFactory.newReference("", DIGEST_METHOD_SHA_256, TRANSFORM_ENVELOPED, null, null);
-
-            SignedInfo singedInfo = domSigFactory.newSignedInfo(C14N_METHOD_INCLUSIVE,
-                    SIGNATURE_METHOD_RSA_SHA256,
-                    Collections.singletonList(reference));
-
-            KeyInfo keyInfo = createKeyInfo();
-
-            DOMSignContext domSignContext = new DOMSignContext(signingKey, serviceMetadataDoc.getDocumentElement());
-
-            // Create the XMLSignature, but don't sign it yet
-            XMLSignature signature = domSigFactory.newXMLSignature(singedInfo, keyInfo);
-
             // Marshal, generate, and sign the enveloped signature
             signature.sign(domSignContext);
         } catch (Exception e) {
-            throw new RuntimeException("Could not sign serviceMetadata response", e);
+            throw new DocumentSigningException("Could not sign serviceMetadata response", e);
         }
     }
 
@@ -148,12 +149,15 @@ public final class ServiceMetadataSigner {
     public void setKeystoreFilePath(String keystoreFilePath) {
         this.keystoreFilePath = keystoreFilePath;
     }
+
     public void setKeystorePassword(String keystorePassword) {
         this.keystorePassword = keystorePassword;
     }
+
     public void setXmldsigKeystoreKeyAlias(String xmldsigKeystoreKeyAlias) {
         this.xmldsigKeystoreKeyAlias = xmldsigKeystoreKeyAlias;
     }
+
     public void setXmldsigKeystoreKeyPassword(String xmldsigKeystoreKeyPassword) {
         this.xmldsigKeystoreKeyPassword = xmldsigKeystoreKeyPassword;
     }
