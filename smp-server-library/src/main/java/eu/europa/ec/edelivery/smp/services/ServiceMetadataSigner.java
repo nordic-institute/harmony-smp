@@ -130,20 +130,4 @@ public final class ServiceMetadataSigner {
         return keyInfoFactory.newKeyInfo(singletonList(x509Data));
     }
 
-    public void setKeystoreFilePath(String keystoreFilePath) {
-        this.keystoreFilePath = keystoreFilePath;
-    }
-
-    public void setKeystorePassword(String keystorePassword) {
-        this.keystorePassword = keystorePassword;
-    }
-
-    public void setXmldsigKeystoreKeyAlias(String xmldsigKeystoreKeyAlias) {
-        this.xmldsigKeystoreKeyAlias = xmldsigKeystoreKeyAlias;
-    }
-
-    public void setXmldsigKeystoreKeyPassword(String xmldsigKeystoreKeyPassword) {
-        this.xmldsigKeystoreKeyPassword = xmldsigKeystoreKeyPassword;
-    }
-
 }
