@@ -14,10 +14,7 @@
 package eu.europa.ec.edelivery.smp.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -27,6 +24,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
  * Created by gutowpa on 21/09/2017.
@@ -38,7 +36,7 @@ import javax.sql.DataSource;
         "eu.europa.ec.edelivery.smp.sml",
         "eu.europa.ec.edelivery.smp.conversion",
         "eu.europa.ec.cipa.smp.server.util"})
-@PropertySource(value = "classpath:config.properties")
+@Import(PropertiesTestConfig.class)
 public class SmpServicesTestConfig {
 
     @Value("${jdbc.driver}")
@@ -52,11 +50,6 @@ public class SmpServicesTestConfig {
 
     @Value("${jdbc.url}")
     private String url;
-
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
-    }
 
     @Bean
     public DataSource dataSource() {

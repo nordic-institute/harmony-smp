@@ -33,10 +33,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableTransactionManagement
-@ComponentScan(basePackages = {
-        "eu.europa.ec.edelivery.smp.data.dao",
-        "eu.europa.ec.cipa.smp.server.services",
-        "eu.europa.ec.cipa.smp.server.hook"})
+@ComponentScan(basePackages = {"eu.europa.ec.edelivery.smp.data.dao"})
 public class DatabaseConfig {
 
     @Value("${jdbc.driver}")

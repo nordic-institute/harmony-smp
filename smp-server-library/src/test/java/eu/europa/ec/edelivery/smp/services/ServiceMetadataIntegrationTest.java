@@ -159,14 +159,16 @@ public class ServiceMetadataIntegrationTest {
         EndpointType endpoint = newServiceMetadata.getServiceInformation().getProcessList().getProcesses().get(0).getServiceEndpointList().getEndpoints().get(0);
         endpoint.setServiceDescription("New Description");
         String newServiceMetadataXml = marshall(newServiceMetadata);
+
         serviceMetadataService.saveServiceMetadata(SERVICE_GROUP_ID, DOC_ID, newServiceMetadataXml);
 
         //when
-        Document resultServiceMetadataDoc = serviceMetadataService.getServiceMetadataDocument(SERVICE_GROUP_ID, DOC_ID);
 
+        Document resultServiceMetadataDoc = serviceMetadataService.getServiceMetadataDocument(SERVICE_GROUP_ID, DOC_ID);
         //then
         String newDescription = resultServiceMetadataDoc.getElementsByTagName("ServiceDescription").item(0).getTextContent();
         assertEquals("New Description", newDescription);
+
     }
 
     @Test

@@ -30,8 +30,6 @@ import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -235,4 +233,5 @@ public class SignatureUtil {
         InputStream inputStream = SignatureUtil.class.getResourceAsStream(docResourcePath);
         return org.apache.commons.io.IOUtils.toString(inputStream, "UTF-8");
     }
+
 }

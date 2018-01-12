@@ -15,6 +15,7 @@ package eu.europa.ec.cipa.smp.server.security;
 
 
 import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
+import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
@@ -64,6 +65,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {
+        PropertiesTestConfig.class,
         SmpAppConfig.class,
         SmpWebAppConfig.class,
         SpringSecurityConfig.class

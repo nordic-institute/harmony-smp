@@ -92,4 +92,52 @@ public class GeneratedCodeTest {
         return (ServiceGroup) serviceGroup;
     }
 
+    @Test
+    public void testGeneratedServiceGroupEqualsReturnsTrue(){
+        ParticipantIdentifierType id1 = new ParticipantIdentifierType(VALUE, SCHEME);
+        ParticipantIdentifierType id2 = new ParticipantIdentifierType(VALUE, SCHEME);
+
+        assertTrue(id1.equals(id2));
+    }
+
+    @Test
+    public void testGeneratedServiceGroupEqualsIsCaseSensitive(){
+        ParticipantIdentifierType id1 = new ParticipantIdentifierType("Value", "Scheme");
+        ParticipantIdentifierType id2 = new ParticipantIdentifierType("value", "scheme");
+
+        assertFalse(id1.equals(id2));
+    }
+
+    @Test
+    public void testGeneratedServiceGroupEquaHandlesEmptyScheme(){
+        ParticipantIdentifierType id1 = new ParticipantIdentifierType(VALUE, null);
+        ParticipantIdentifierType id2 = new ParticipantIdentifierType(VALUE, null);
+
+        assertTrue(id1.equals(id2));
+    }
+
+    @Test
+    public void testGeneratedDocumentIdEqualsReturnsTrue(){
+        DocumentIdentifier id1 = new DocumentIdentifier(VALUE, SCHEME);
+        DocumentIdentifier id2 = new DocumentIdentifier(VALUE, SCHEME);
+
+        assertTrue(id1.equals(id2));
+    }
+
+    @Test
+    public void testGeneratedDocumentIdEqualsIsCaseSensitive(){
+        DocumentIdentifier id1 = new DocumentIdentifier("Value", "Scheme");
+        DocumentIdentifier id2 = new DocumentIdentifier("value", "scheme");
+
+        assertFalse(id1.equals(id2));
+    }
+
+    @Test
+    public void testGeneratedDocumentIdEqualsHandlesEmptyScheme(){
+        DocumentIdentifier id1 = new DocumentIdentifier(VALUE, null);
+        DocumentIdentifier id2 = new DocumentIdentifier(VALUE, null);
+
+        assertTrue(id1.equals(id2));
+    }
+
 }
