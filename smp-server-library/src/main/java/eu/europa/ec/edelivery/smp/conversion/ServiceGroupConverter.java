@@ -16,7 +16,6 @@ package eu.europa.ec.edelivery.smp.conversion;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupId;
 import eu.europa.ec.edelivery.smp.exceptions.ConversionException;
 import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
-import eu.europa.ec.cipa.smp.server.util.ExtensionUtils;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 import org.w3c.dom.Document;
@@ -32,6 +31,7 @@ import javax.xml.stream.XMLStreamException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +72,7 @@ public class ServiceGroupConverter {
         ParticipantIdentifierType identifier = new ParticipantIdentifierType(dbServiceGroup.getId().getBusinessIdentifier(), dbServiceGroup.getId().getBusinessIdentifierScheme());
         serviceGroup.setParticipantIdentifier(identifier);
         try {
-            List<ExtensionType> extensions = ExtensionUtils.unmarshalExtensions(dbServiceGroup.getExtension());
+            List<ExtensionType> extensions = ExtensionConverter.unmarshalExtensions(dbServiceGroup.getExtension());
             serviceGroup.getExtensions().addAll(extensions);
         } catch (JAXBException e) {
             throw new ConversionException(e);
@@ -95,8 +95,8 @@ public class ServiceGroupConverter {
 
     public static String extractExtensionsPayload(ServiceGroup serviceGroup) {
         try {
-            return ExtensionUtils.marshalExtensions(serviceGroup.getExtensions());
-        } catch (JAXBException | XMLStreamException e) {
+            return ExtensionConverter.marshalExtensions(serviceGroup.getExtensions());
+        } catch (JAXBException | XMLStreamException | UnsupportedEncodingException e) {
             throw new ConversionException(e);
         }
     }

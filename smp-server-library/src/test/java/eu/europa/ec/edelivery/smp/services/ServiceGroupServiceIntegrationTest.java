@@ -41,8 +41,8 @@ import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.toDbModel;
 import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.unmarshal;
-import static eu.europa.ec.cipa.smp.server.util.XmlTestUtils.loadDocumentAsString;
-import static eu.europa.ec.cipa.smp.server.util.XmlTestUtils.marshall;
+import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocumentAsString;
+import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.marshall;
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
 import static org.junit.Assert.*;
 
