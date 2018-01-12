@@ -40,8 +40,8 @@ import java.io.IOException;
 import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter.unmarshal;
-import static eu.europa.ec.cipa.smp.server.util.XmlTestUtils.loadDocumentAsString;
-import static eu.europa.ec.cipa.smp.server.util.XmlTestUtils.marshall;
+import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocumentAsString;
+import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.marshall;
 import static eu.europa.ec.smp.api.Identifiers.asDocumentId;
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
 import static org.junit.Assert.*;

@@ -13,22 +13,17 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.cipa.smp.server.security.SignatureUtil;
-import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
+import eu.europa.ec.edelivery.smp.testutil.SignatureUtil;
 import eu.europa.ec.edelivery.smp.config.SmpServicesTestConfig;
-import eu.europa.ec.edelivery.smp.services.ServiceMetadataSigner;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import static eu.europa.ec.cipa.smp.server.util.XmlTestUtils.loadDocument;
+import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocument;
 
 /**
  * Created by rodrfla on 20/02/2017.
