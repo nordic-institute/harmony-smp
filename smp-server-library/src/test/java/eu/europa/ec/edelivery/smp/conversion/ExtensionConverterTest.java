@@ -1,7 +1,7 @@
 /*
- * Copyright 2017 European Commission | CEF eDelivery
+ * Copyright 2018 European Commission | CEF eDelivery
  *
- * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * Licensed under the EUPL, Version 1.2 or - as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  *
  * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
@@ -11,8 +11,9 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.cipa.smp.server.util;
+package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.edelivery.smp.testutil.XmlTestUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
@@ -22,20 +23,25 @@ import org.xmlunit.matchers.CompareMatcher;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
  * Created by migueti on 13/02/2017.
  */
-public class ExtensionUtilsTest {
+public class ExtensionConverterTest {
 
     private static final String WRAPPED_FORMAT = "<ExtensionsWrapper xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">%s</ExtensionsWrapper>";
 
     private static final String RES_PATH = "/eu/europa/ec/cipa/smp/server/util/";
+
+    private static final String UTF8_SEQUENCE = "ẞßÄäËëÏïÖöÜüẄẅŸÿЁёЇїӜӝ-Zażółć gęślą jaźń-ÆæØøÅå-ÀÆÇßãÿαΩƒ";
 
     @Test
     public void testMarshalOneExtension() throws JAXBException, XMLStreamException, IOException, SAXException {
@@ -44,7 +50,7 @@ public class ExtensionUtilsTest {
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionMarshal.xml");
 
         // when
-        String xmlResult = ExtensionUtils.marshalExtensions(list);
+        String xmlResult = ExtensionConverter.marshalExtensions(list);
 
         // then
         assertThat(xmlResult, CompareMatcher.isIdenticalTo(inputDoc));
@@ -57,7 +63,7 @@ public class ExtensionUtilsTest {
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionMarshalMore.xml");
 
         // when
-        String xmlResult = ExtensionUtils.marshalExtensions(list);
+        String xmlResult = ExtensionConverter.marshalExtensions(list);
 
         // then
         String wrappedXmlResult = String.format(WRAPPED_FORMAT, xmlResult);
@@ -66,12 +72,27 @@ public class ExtensionUtilsTest {
     }
 
     @Test
+    public void testUtf8Handling() throws JAXBException, XMLStreamException, UnsupportedEncodingException {
+        // given
+        ExtensionType extension = new ExtensionType();
+        extension.setExtensionName(UTF8_SEQUENCE);
+        List<ExtensionType> extensions = Arrays.asList(extension);
+
+        //when
+        String extensionsXml = ExtensionConverter.marshalExtensions(extensions);
+        List<ExtensionType> resultExtensions = ExtensionConverter.unmarshalExtensions(extensionsXml);
+
+        //then
+        assertEquals(UTF8_SEQUENCE, resultExtensions.get(0).getExtensionName());
+    }
+
+    @Test
     public void testUnmarshal() throws IOException, JAXBException {
         // given
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionMarshal.xml");
 
         // when
-        List<ExtensionType> extensions = ExtensionUtils.unmarshalExtensions(inputDoc);
+        List<ExtensionType> extensions = ExtensionConverter.unmarshalExtensions(inputDoc);
 
         // then
         checkExtensions(extensions, 1);
@@ -83,7 +104,7 @@ public class ExtensionUtilsTest {
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionMarshalMore.xml");
 
         // when
-        List<ExtensionType> extensions = ExtensionUtils.unmarshalExtensions(inputDoc);
+        List<ExtensionType> extensions = ExtensionConverter.unmarshalExtensions(inputDoc);
 
         // then
         checkExtensions(extensions, 2);
