@@ -15,7 +15,6 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
-import eu.europa.ec.cipa.smp.server.util.SignatureFilter;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
@@ -52,7 +51,7 @@ public class ServiceMetadataService {
     private ServiceGroupDao serviceGroupDao;
 
     @Autowired
-    private SignatureFilter signatureFilter;
+    private ServiceMetadataSigner signer;
 
     public Document getServiceMetadataDocument(ParticipantIdentifierType serviceGroupId, DocumentIdentifier documentId) {
         ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
@@ -65,7 +64,7 @@ public class ServiceMetadataService {
         }
 
         Document aSignedServiceMetadata = toSignedServiceMetadatadaDocument(serviceMetadata.getXmlContent());
-        signatureFilter.sign(aSignedServiceMetadata);
+        signer.sign(aSignedServiceMetadata);
         return aSignedServiceMetadata;
     }
 

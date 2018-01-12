@@ -25,11 +25,9 @@ import org.springframework.context.annotation.Import;
 @ComponentScan(basePackages = {
         "eu.europa.ec.edelivery.smp.validation",
         "eu.europa.ec.edelivery.smp.services",
-        "eu.europa.ec.edelivery.smp.data.dao",
-        "eu.europa.ec.cipa.smp.server.hook",
-        "eu.europa.ec.edelivery.smp.conversion",
-        "eu.europa.ec.cipa.smp.server.util"})
-@Import({PropertiesConfig.class, DatabaseConfig.class})
+        "eu.europa.ec.edelivery.smp.sml",
+        "eu.europa.ec.edelivery.smp.conversion"})
+@Import(DatabaseConfig.class)
 public class SmpAppConfig {
 
 }
