@@ -1,7 +1,7 @@
 /*
- * Copyright 2017 European Commission | CEF eDelivery
+ * Copyright 2018 European Commission | CEF eDelivery
  *
- * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * Licensed under the EUPL, Version 1.2 or - as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  *
  * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
@@ -11,16 +11,13 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.cipa.smp.server.util;
+package eu.europa.ec.edelivery.smp.conversion;
 
 import org.apache.cxf.staxutils.PrettyPrintXMLStreamWriter;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
+import org.springframework.util.StreamUtils;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.namespace.QName;
@@ -31,15 +28,16 @@ import javax.xml.transform.stream.StreamSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
+import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.List;
+
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Created by migueti on 13/02/2017.
  */
-public class ExtensionUtils {
+public class ExtensionConverter {
 
     private static final String WRAPPED_FORMAT = "<ExtensionsWrapper xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">%s</ExtensionsWrapper>";
 
@@ -51,24 +49,24 @@ public class ExtensionUtils {
 
     private static final QName EXT_TYPE_QNAME = new QName("http://docs.oasis-open.org/bdxr/ns/SMP/2016/05", "Extension");
 
-    public static String marshalExtensions(List<ExtensionType> extensions) throws JAXBException, XMLStreamException {
+    protected static String marshalExtensions(List<ExtensionType> extensions) throws JAXBException, XMLStreamException, UnsupportedEncodingException {
         if (extensions == null) {
             return null;
         }
         StringBuilder stringBuilder = new StringBuilder();
         for (ExtensionType aExtension : extensions) {
-            stringBuilder.append(ExtensionUtils.marshalExtension(aExtension));
+            stringBuilder.append(ExtensionConverter.marshalExtension(aExtension));
         }
         return stringBuilder.toString();
     }
 
-    private static String marshalExtension(ExtensionType extension) throws JAXBException, XMLStreamException {
-        if(extension == null) {
+    private static String marshalExtension(ExtensionType extension) throws JAXBException, XMLStreamException, UnsupportedEncodingException {
+        if (extension == null) {
             return null;
         }
         JAXBContext jaxbContext = JAXBContext.newInstance(ExtensionType.class);
         Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
-        JAXBElement aJaxbElement = new JAXBElement(EXT_TYPE_QNAME, ExtensionType.class, extension);
+        JAXBElement jaxbElement = new JAXBElement(EXT_TYPE_QNAME, ExtensionType.class, extension);
         jaxbMarshaller.setProperty("com.sun.xml.bind.xmlDeclaration", Boolean.FALSE);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         XMLOutputFactory xof = XMLOutputFactory.newFactory();
@@ -77,19 +75,19 @@ public class ExtensionUtils {
         try {
             xmlStreamWriter = xof.createXMLStreamWriter(baos);
             xsw = new PrettyPrintXMLStreamWriter(xmlStreamWriter, 4);
-            jaxbMarshaller.marshal(aJaxbElement, xsw);
+            jaxbMarshaller.marshal(jaxbElement, xsw);
         } finally {
-            if(xmlStreamWriter != null) {
+            if (xmlStreamWriter != null) {
                 xmlStreamWriter.close();
             }
             if (xsw != null) {
                 xsw.close();
             }
         }
-        return baos.toString();
+        return baos.toString(UTF_8.name());
     }
 
-    public static List<ExtensionType> unmarshalExtensions(String xml) throws JAXBException {
+    protected static List<ExtensionType> unmarshalExtensions(String xml) throws JAXBException {
         String wrappedExtensionsStr = String.format(WRAPPED_FORMAT, xml);
         InputStream inStream = new ByteArrayInputStream(wrappedExtensionsStr.getBytes(UTF_8));
         JAXBContext jaxbContext = JAXBContext.newInstance(ExtensionsWrapper.class);
