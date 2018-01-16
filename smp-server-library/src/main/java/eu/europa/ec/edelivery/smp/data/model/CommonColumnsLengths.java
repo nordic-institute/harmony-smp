@@ -18,7 +18,7 @@ package eu.europa.ec.edelivery.smp.data.model;
  */
 public class CommonColumnsLengths {
     public static final int MAX_IDENTIFIER_SCHEME_LENGTH = 100;
-    public static final int MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH = 50;
+    public static final int MAX_IDENTIFIER_VALUE_LENGTH = 50;
     public static final int MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH = 500;
     public static final int MAX_USERNAME_LENGTH = 256;
 }

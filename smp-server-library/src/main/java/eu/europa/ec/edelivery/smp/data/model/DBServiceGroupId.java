@@ -21,7 +21,7 @@ import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_IDENTIFIER_SCHEME_LENGTH;
-import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH;
+import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_IDENTIFIER_VALUE_LENGTH;
 
 @Embeddable
 @ToString
@@ -46,7 +46,7 @@ public class DBServiceGroupId implements Serializable {
         return participantIdScheme;
     }
 
-    @Column(name = "businessIdentifier", nullable = false, length = MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)
+    @Column(name = "businessIdentifier", nullable = false, length = MAX_IDENTIFIER_VALUE_LENGTH)
     public String getBusinessIdentifier() {
         return participantIdValue;
     }
