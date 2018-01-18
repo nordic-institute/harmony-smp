@@ -1,7 +1,7 @@
 /*
- * Copyright 2017 European Commission | CEF eDelivery
+ * Copyright 2018 European Commission | CEF eDelivery
  *
- * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * Licensed under the EUPL, Version 1.2 or - as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
  * You may not use this work except in compliance with the Licence.
  *
  * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
@@ -13,28 +13,17 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.data.dao.OwnershipDao;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.model.DBOwnership;
 import eu.europa.ec.edelivery.smp.data.model.DBOwnershipId;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
-import eu.europa.ec.edelivery.smp.config.SmpServicesTestConfig;
+import eu.europa.ec.edelivery.smp.exceptions.WrongInputFieldException;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.List;
@@ -47,30 +36,10 @@ import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
 import static org.junit.Assert.*;
 
 /**
- * Created by gutowpa on 27/03/2017.
+ * Created by gutowpa on 17/01/2018.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SmpServicesTestConfig.class})
-@Transactional
-@Rollback(true)
 @Sql("classpath:/service_integration_test_data.sql")
-public class ServiceGroupServiceIntegrationTest {
-
-    private static final String SERVICE_GROUP_XML_PATH = "/eu/europa/ec/edelivery/smp/services/ServiceGroupPoland.xml";
-    private static final ParticipantIdentifierType SERVICE_GROUP_ID = asParticipantId("participant-scheme-qns::urn:poland:ncpb");
-    public static final String ADMIN_USERNAME = "test_admin";
-
-    @PersistenceContext
-    EntityManager em;
-
-    @Autowired
-    ServiceGroupDao serviceGroupDao;
-
-    @Autowired
-    OwnershipDao ownershipDao;
-
-    @Autowired
-    private ServiceGroupService serviceGroupService;
+public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServiceGroupServiceIntegrationTest {
 
     @Test
     public void makeSureServiceGroupDoesNotExistAlready(){
@@ -130,7 +99,7 @@ public class ServiceGroupServiceIntegrationTest {
         newServiceGroup.getExtensions().add(newExtension);
 
         //when
-        serviceGroupService.saveServiceGroup(newServiceGroup, ADMIN_USERNAME);
+        serviceGroupService.saveServiceGroup(newServiceGroup, null, ADMIN_USERNAME);
         ServiceGroup resultServiceGroup = serviceGroupService.getServiceGroup(SERVICE_GROUP_ID);
 
         //then
@@ -152,9 +121,14 @@ public class ServiceGroupServiceIntegrationTest {
         assertEquals(0, serviceMetadataReferences.size());
     }
 
-    private ServiceGroup saveServiceGroup() throws IOException {
-        ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
-        serviceGroupService.saveServiceGroup(inServiceGroup, ADMIN_USERNAME);
-        return inServiceGroup;
+    @Test(expected = WrongInputFieldException.class)
+    public void savingUnderNotExistingDomainIsNotAllowed() throws Throwable {
+        //given
+        saveServiceGroup();
+        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
+
+        //when-then
+        serviceGroupService.saveServiceGroup(newServiceGroup,"NOT-EXISITING-DOMAIN", ADMIN_USERNAME);
     }
+
 }
