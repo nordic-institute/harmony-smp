@@ -14,6 +14,7 @@ CREATE TABLE smp_domain (
   domainId              VARCHAR(50),
   bdmslClientCertHeader VARCHAR(4000),
   bdmslClientCertAlias  VARCHAR(50),
+  bdmslSmpId            VARCHAR(50) NOT NULL,
   signatureCertAlias    VARCHAR(50),
   PRIMARY KEY(domainId),
   CONSTRAINT check_max_one_auth CHECK (
@@ -69,8 +70,8 @@ CREATE TABLE smp_ownership (
 );
 
 
-INSERT INTO smp_domain(domainId) VALUES('default');
---default admin user with password "changeit"
+INSERT INTO smp_domain(domainId, bdmslSmpId) VALUES('default', 'DEFAULT-SMP-ID');
+-- default admin user with password "changeit"
 INSERT INTO smp_user(username, password, isadmin) VALUES ('smp_admin', '$2a$10$SZXMo7K/wA.ULWxH7uximOxeNk4mf3zU6nxJx/2VfKA19QlqwSpNO', '1');
 
 commit;

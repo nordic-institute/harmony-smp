@@ -9,6 +9,27 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the Licence for the specific language governing permissions and limitations under the Licence.
 
+CREATE TABLE smp_domain (
+  domainId              VARCHAR(256)
+                        CHARACTER SET utf8
+                        COLLATE utf8_bin NOT NULL,
+  bdmslClientCertHeader VARCHAR(4000)
+                        CHARACTER SET utf8
+                        COLLATE utf8_bin NULL,
+  bdmslClientCertAlias  VARCHAR(256)
+                        CHARACTER SET utf8
+                        COLLATE utf8_bin NULL,
+  bdmslSmpId            VARCHAR(256)
+                        CHARACTER SET utf8
+                        COLLATE utf8_bin NOT NULL,
+  signatureCertAlias    VARCHAR(256)
+                        CHARACTER SET utf8
+                        COLLATE utf8_bin NULL,
+  PRIMARY KEY(domainId)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
 
 CREATE TABLE smp_service_group (
   businessIdentifier       VARCHAR(256)
@@ -17,8 +38,14 @@ CREATE TABLE smp_service_group (
   businessIdentifierScheme VARCHAR(256)
                            CHARACTER SET utf8
                            COLLATE utf8_bin NOT NULL,
+  domainId                 VARCHAR(256)
+                           CHARACTER SET utf8
+                           COLLATE utf8_bin NOT NULL
+                           DEFAULT 'default',
   extension                TEXT             NULL DEFAULT NULL,
-  PRIMARY KEY (businessIdentifier, businessIdentifierScheme)
+  PRIMARY KEY (businessIdentifier, businessIdentifierScheme),
+  CONSTRAINT FK_srv_group_domain FOREIGN KEY (domainId)
+    REFERENCES smp_domain (domainId)
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
@@ -79,6 +106,8 @@ CREATE TABLE smp_ownership (
   DEFAULT CHARSET = utf8;
 
 
+
+
 DROP TRIGGER IF EXISTS smp_user_check_is_admin_value_before_insert;
 DROP TRIGGER IF EXISTS smp_user_check_is_admin_value_before_update;
 DELIMITER //
@@ -103,3 +132,36 @@ FOR EACH ROW
     END IF;
   END //
 DELIMITER ;
+
+
+DROP TRIGGER IF EXISTS smp_domain_check_bdmsl_auth_before_insert;
+DROP TRIGGER IF EXISTS smp_domain_check_bdmsl_auth_before_update;
+DELIMITER //
+CREATE TRIGGER smp_domain_check_bdmsl_auth_before_insert
+BEFORE INSERT ON smp_domain
+FOR EACH ROW
+  BEGIN
+    IF ((NEW.bdmslClientCertAlias > '' OR NEW.bdmslClientCertAlias = null) AND (NEW.bdmslClientCertHeader > '' OR NEW.bdmslClientCertHeader = null))
+    THEN
+      SIGNAL SQLSTATE '99999'
+      SET MESSAGE_TEXT = 'Both BDMSL authentication ways cannot be switched ON at the same time: bdmslClientCertAlias and bdmslClientCertHeader';
+    END IF;
+  END //
+CREATE TRIGGER smp_domain_check_bdmsl_auth_before_update
+BEFORE UPDATE ON smp_domain
+FOR EACH ROW
+  BEGIN
+    IF ((NEW.bdmslClientCertAlias > '' OR NEW.bdmslClientCertAlias = null) AND (NEW.bdmslClientCertHeader > '' OR NEW.bdmslClientCertHeader = null))
+    THEN
+      SIGNAL SQLSTATE '99999'
+      SET MESSAGE_TEXT = 'Both BDMSL authentication ways cannot be switched ON at the same time: bdmslClientCertAlias and bdmslClientCertHeader';
+    END IF;
+  END //
+DELIMITER ;
+
+
+INSERT INTO smp_domain(domainId, bdmslSmpId) VALUES('default', 'DEFAULT-SMP-ID');
+-- default admin user with password "changeit"
+INSERT INTO smp_user(username, password, isadmin) VALUES ('smp_admin', '$2a$10$SZXMo7K/wA.ULWxH7uximOxeNk4mf3zU6nxJx/2VfKA19QlqwSpNO', '1');
+
+commit;
