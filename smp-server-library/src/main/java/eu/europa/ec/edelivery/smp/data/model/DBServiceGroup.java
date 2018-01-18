@@ -18,6 +18,9 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
+import static javax.persistence.FetchType.EAGER;
+import static javax.persistence.FetchType.LAZY;
+
 @Entity
 @Table(name = "smp_service_group")
 public class DBServiceGroup implements Serializable {
@@ -26,6 +29,7 @@ public class DBServiceGroup implements Serializable {
     private String extension;
     private Set<DBOwnership> ownerships = new HashSet<>();
     private Set<DBServiceMetadata> serviceMetadatas = new HashSet<DBServiceMetadata>();
+    private DBDomain domain;
 
     public DBServiceGroup() {
     }
@@ -56,14 +60,20 @@ public class DBServiceGroup implements Serializable {
         return extension;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "serviceGroup", cascade = CascadeType.ALL)
+    @OneToMany(fetch = LAZY, mappedBy = "serviceGroup", cascade = CascadeType.ALL)
     public Set<DBOwnership> getOwnerships() {
         return ownerships;
     }
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "serviceGroup", cascade = CascadeType.ALL)
+    @OneToMany(fetch = LAZY, mappedBy = "serviceGroup", cascade = CascadeType.ALL)
     public Set<DBServiceMetadata> getServiceMetadatas() {
         return serviceMetadatas;
+    }
+
+    @ManyToOne(fetch = EAGER, optional = false)
+    @JoinColumn(name = "domainId", nullable = false)
+    public DBDomain getDomain() {
+        return domain;
     }
 
     public void setId(final DBServiceGroupId serviceGroupId) {
@@ -80,5 +90,9 @@ public class DBServiceGroup implements Serializable {
 
     public void setServiceMetadatas(final Set<DBServiceMetadata> serviceMetadatas) {
         this.serviceMetadatas = serviceMetadatas;
+    }
+
+    public void setDomain(final DBDomain domain) {
+        this.domain = domain;
     }
 }

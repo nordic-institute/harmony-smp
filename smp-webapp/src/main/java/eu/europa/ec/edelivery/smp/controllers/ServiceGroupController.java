@@ -81,6 +81,7 @@ public class ServiceGroupController {
     public ResponseEntity saveServiceGroup(
             @PathVariable String serviceGroupId,
             @RequestHeader(name = "ServiceGroup-Owner", required = false) String serviceGroupOwner,
+            @RequestHeader(name = "Domain", required = false) String domain,
             @RequestBody String body) throws XmlInvalidAgainstSchemaException {
 
         log.info("PUT ServiceGroup: {}\n{}", serviceGroupId, body);
@@ -92,7 +93,7 @@ public class ServiceGroupController {
 
         // Service action
         String newOwnerName = isNotBlank(serviceGroupOwner) ? serviceGroupOwner : SecurityContextHolder.getContext().getAuthentication().getName();
-        boolean newServiceGroupCreated = serviceGroupService.saveServiceGroup(serviceGroup, newOwnerName);
+        boolean newServiceGroupCreated = serviceGroupService.saveServiceGroup(serviceGroup, domain, newOwnerName);
 
         log.info("Finished PUT ServiceGroup: {}", serviceGroupId);
 

@@ -17,6 +17,7 @@ package eu.europa.ec.edelivery.smp.data.model;
  * Created by gutowpa on 01/02/2017.
  */
 public class CommonColumnsLengths {
+    public static final int MAX_FREE_TEXT_LENGTH = 4000;
     public static final int MAX_IDENTIFIER_SCHEME_LENGTH = 100;
     public static final int MAX_IDENTIFIER_VALUE_LENGTH = 50;
     public static final int MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH = 500;
