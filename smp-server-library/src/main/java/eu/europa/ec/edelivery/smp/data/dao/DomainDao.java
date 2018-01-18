@@ -29,7 +29,7 @@ public class DomainDao extends BaseDao<DBDomain> {
 
     /**
      * Returns the only single record from smp_domain table.
-     * Returns Optional.empty() if there is 0 or more than 1 records present.
+     * Returns Optional.empty() if there is more than 1 records present.
      *
      * @return the only single record from smp_domain table
      * @throws IllegalStateException if no domain is configured

@@ -23,7 +23,6 @@ import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
 import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
 import eu.europa.ec.edelivery.smp.exceptions.WrongInputFieldException;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
-import org.apache.commons.lang3.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.slf4j.Logger;
