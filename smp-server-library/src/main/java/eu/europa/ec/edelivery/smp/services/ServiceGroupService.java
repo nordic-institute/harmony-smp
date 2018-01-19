@@ -111,7 +111,11 @@ public class ServiceGroupService {
 
     private DBDomain findDomain(String domain) {
         if (isNotBlank(domain)) {
-            return domainDao.find(domain);
+            DBDomain dbDomain = domainDao.find(domain);
+            if(dbDomain == null){
+                throw new WrongInputFieldException("Requested domain does not exist: " + domain);
+            }
+            return dbDomain;
         }
         Optional<DBDomain> dbDomain = domainDao.getTheOnlyDomain();
         if (dbDomain.isPresent()) {

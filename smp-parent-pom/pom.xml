@@ -91,6 +91,7 @@
 		<junitparams.version>1.0.5</junitparams.version>
 		<lombok.version>1.16.16</lombok.version>
 		<xmlunit.version>2.5.1</xmlunit.version>
+		<hamcrest.version>2.0.0.0</hamcrest.version>
 	</properties>
 
 	<!-- Where are we looking for JARs? -->
@@ -501,6 +502,12 @@
 				<groupId>org.xmlunit</groupId>
 				<artifactId>xmlunit-matchers</artifactId>
 				<version>${xmlunit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest-junit</artifactId>
+				<version>${hamcrest.version}</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>

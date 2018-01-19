@@ -40,6 +40,7 @@ import javax.servlet.ServletContextListener;
 
 import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.getSampleServiceGroupBodyWithScheme;
 import static java.lang.String.format;
+import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -64,7 +65,8 @@ public class ServiceGroupControllerTest {
     private static final String PARTICIPANT_SCHEME = "ehealth-participantid-qns";
     private static final String PARTICIPANT_ID = "urn:poland:ncpb";
     private static final String URL_PATH = format("/%s::%s", PARTICIPANT_SCHEME, PARTICIPANT_ID);
-    private final String SERVICE_GROUP_INPUT_BODY = getSampleServiceGroupBodyWithScheme(PARTICIPANT_SCHEME);
+    private static final String SERVICE_GROUP_INPUT_BODY = getSampleServiceGroupBodyWithScheme(PARTICIPANT_SCHEME);
+    private static final String HTTP_HEADER_KEY_DOMAIN = "Domain";
 
     private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("test_admin", "gutek123");
 
@@ -179,4 +181,16 @@ public class ServiceGroupControllerTest {
                 .content(getSampleServiceGroupBodyWithScheme(scheme)))
                 .andExpect(status().isBadRequest());
     }
+
+    @Test
+    public void creatingServiceGroupUnderNotExistingDomainReturnsBadRequest() throws Exception {
+        mvc.perform(put(URL_PATH)
+                .with(ADMIN_CREDENTIALS)
+                .contentType(APPLICATION_XML_VALUE)
+                .header(HTTP_HEADER_KEY_DOMAIN, "not-existing-domain")
+                .content(SERVICE_GROUP_INPUT_BODY))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(stringContainsInOrder("WRONG_FIELD")));
+    }
+
 }
