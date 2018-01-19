@@ -30,11 +30,11 @@ import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_IDE
 @Table(name = "smp_domain")
 public class DBDomain implements Serializable{
 
-    String domainId;
-    String bdmslClientCertHeader;
-    String bdmslClientCertAlias;
-    String bdmslSmpId;
-    String signatureCertAlias;
+    private String domainId;
+    private String bdmslClientCertHeader;
+    private String bdmslClientCertAlias;
+    private String bdmslSmpId;
+    private String signatureCertAlias;
 
     public DBDomain() {
     }
