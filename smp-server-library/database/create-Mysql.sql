@@ -10,19 +10,19 @@
 -- See the Licence for the specific language governing permissions and limitations under the Licence.
 
 CREATE TABLE smp_domain (
-  domainId              VARCHAR(256)
+  domainId              VARCHAR(50)
                         CHARACTER SET utf8
                         COLLATE utf8_bin NOT NULL,
   bdmslClientCertHeader VARCHAR(4000)
                         CHARACTER SET utf8
                         COLLATE utf8_bin NULL,
-  bdmslClientCertAlias  VARCHAR(256)
+  bdmslClientCertAlias  VARCHAR(50)
                         CHARACTER SET utf8
                         COLLATE utf8_bin NULL,
-  bdmslSmpId            VARCHAR(256)
+  bdmslSmpId            VARCHAR(50)
                         CHARACTER SET utf8
                         COLLATE utf8_bin NOT NULL,
-  signatureCertAlias    VARCHAR(256)
+  signatureCertAlias    VARCHAR(50)
                         CHARACTER SET utf8
                         COLLATE utf8_bin NULL,
   PRIMARY KEY(domainId)
@@ -32,13 +32,13 @@ CREATE TABLE smp_domain (
 
 
 CREATE TABLE smp_service_group (
-  businessIdentifier       VARCHAR(256)
+  businessIdentifier       VARCHAR(50)
                            CHARACTER SET utf8
                            COLLATE utf8_bin NOT NULL,
-  businessIdentifierScheme VARCHAR(256)
+  businessIdentifierScheme VARCHAR(100)
                            CHARACTER SET utf8
                            COLLATE utf8_bin NOT NULL,
-  domainId                 VARCHAR(256)
+  domainId                 VARCHAR(50)
                            CHARACTER SET utf8
                            COLLATE utf8_bin NOT NULL
                            DEFAULT 'default',
@@ -52,16 +52,16 @@ CREATE TABLE smp_service_group (
 
 
 CREATE TABLE smp_service_metadata (
-  documentIdentifier       VARCHAR(256)
+  documentIdentifier       VARCHAR(500)
                            CHARACTER SET utf8
                            COLLATE utf8_bin NOT NULL,
-  documentIdentifierScheme VARCHAR(256)
+  documentIdentifierScheme VARCHAR(100)
                            CHARACTER SET utf8
                            COLLATE utf8_bin NOT NULL,
-  businessIdentifier       VARCHAR(256)
+  businessIdentifier       VARCHAR(50)
                            CHARACTER SET utf8
                            COLLATE utf8_bin NOT NULL,
-  businessIdentifierScheme VARCHAR(256)
+  businessIdentifierScheme VARCHAR(100)
                            CHARACTER SET utf8
                            COLLATE utf8_bin NOT NULL,
   xmlcontent               TEXT,
@@ -87,10 +87,10 @@ CREATE TABLE smp_user (
 
 CREATE TABLE smp_ownership (
   username                 VARCHAR(256)     NOT NULL,
-  businessIdentifier       VARCHAR(256)
+  businessIdentifier       VARCHAR(50)
                            CHARACTER SET utf8
                            COLLATE utf8_bin NOT NULL,
-  businessIdentifierScheme VARCHAR(256)
+  businessIdentifierScheme VARCHAR(100)
                            CHARACTER SET utf8
                            COLLATE utf8_bin NOT NULL,
   KEY FK_ownership_service_group (businessIdentifier, businessIdentifierScheme),
@@ -107,57 +107,63 @@ CREATE TABLE smp_ownership (
 
 
 
-
-DROP TRIGGER IF EXISTS smp_user_check_is_admin_value_before_insert;
-DROP TRIGGER IF EXISTS smp_user_check_is_admin_value_before_update;
 DELIMITER //
-CREATE TRIGGER smp_user_check_is_admin_value_before_insert
-BEFORE INSERT ON smp_user
-FOR EACH ROW
-  BEGIN
-    IF NEW.ISADMIN <> 0 AND NEW.ISADMIN <> 1
+
+DROP PROCEDURE IF EXISTS validate_new_user //
+CREATE PROCEDURE validate_new_user (IN new_user_is_admin TINYINT(1))
+BEGIN
+    IF new_user_is_admin <> 0 AND new_user_is_admin <> 1
     THEN
       SIGNAL SQLSTATE '99999'
       SET MESSAGE_TEXT = '0 or 1 are the only allowed values for ISADMIN column';
     END IF;
+  END //
+
+DROP PROCEDURE IF EXISTS validate_new_domain //
+CREATE PROCEDURE validate_new_domain (IN new_bdmsl_client_cert_alias varchar(50), IN new_bdmsl_client_cert_header varchar(50))
+BEGIN
+    IF ((new_bdmsl_client_cert_alias > '' OR new_bdmsl_client_cert_alias = null) AND (new_bdmsl_client_cert_header > '' OR new_bdmsl_client_cert_header = null))
+    THEN
+      SIGNAL SQLSTATE '99999'
+      SET MESSAGE_TEXT = 'Both BDMSL authentication ways cannot be switched ON at the same time: bdmslClientCertAlias and bdmslClientCertHeader';
+    END IF;
+  END //
+
+
+DROP TRIGGER IF EXISTS smp_domain_check_bdmsl_auth_before_insert //
+DROP TRIGGER IF EXISTS smp_domain_check_bdmsl_auth_before_update //
+CREATE TRIGGER smp_domain_check_bdmsl_auth_before_update
+BEFORE UPDATE ON smp_domain
+FOR EACH ROW
+  BEGIN
+    call validate_new_domain(NEW.bdmslClientCertAlias, NEW.bdmslClientCertHeader);
+  END //
+CREATE TRIGGER smp_domain_check_bdmsl_auth_before_insert
+BEFORE INSERT ON smp_domain
+FOR EACH ROW
+  BEGIN
+    call validate_new_domain(NEW.bdmslClientCertAlias, NEW.bdmslClientCertHeader);
+  END //
+
+
+DROP TRIGGER IF EXISTS smp_user_check_is_admin_value_before_insert //
+DROP TRIGGER IF EXISTS smp_user_check_is_admin_value_before_update //
+
+CREATE TRIGGER smp_user_check_is_admin_value_before_insert
+BEFORE INSERT ON smp_user
+FOR EACH ROW
+  BEGIN
+	call validate_new_user(NEW.ISADMIN);
   END //
 CREATE TRIGGER smp_user_check_is_admin_value_before_update
 BEFORE UPDATE ON smp_user
 FOR EACH ROW
   BEGIN
-    IF NEW.ISADMIN <> 0 AND NEW.ISADMIN <> 1
-    THEN
-      SIGNAL SQLSTATE '99999'
-      SET MESSAGE_TEXT = '0 or 1 are the only allowed values for ISADMIN column';
-    END IF;
+	call validate_new_user(NEW.ISADMIN);
   END //
+
 DELIMITER ;
 
-
-DROP TRIGGER IF EXISTS smp_domain_check_bdmsl_auth_before_insert;
-DROP TRIGGER IF EXISTS smp_domain_check_bdmsl_auth_before_update;
-DELIMITER //
-CREATE TRIGGER smp_domain_check_bdmsl_auth_before_insert
-BEFORE INSERT ON smp_domain
-FOR EACH ROW
-  BEGIN
-    IF ((NEW.bdmslClientCertAlias > '' OR NEW.bdmslClientCertAlias = null) AND (NEW.bdmslClientCertHeader > '' OR NEW.bdmslClientCertHeader = null))
-    THEN
-      SIGNAL SQLSTATE '99999'
-      SET MESSAGE_TEXT = 'Both BDMSL authentication ways cannot be switched ON at the same time: bdmslClientCertAlias and bdmslClientCertHeader';
-    END IF;
-  END //
-CREATE TRIGGER smp_domain_check_bdmsl_auth_before_update
-BEFORE UPDATE ON smp_domain
-FOR EACH ROW
-  BEGIN
-    IF ((NEW.bdmslClientCertAlias > '' OR NEW.bdmslClientCertAlias = null) AND (NEW.bdmslClientCertHeader > '' OR NEW.bdmslClientCertHeader = null))
-    THEN
-      SIGNAL SQLSTATE '99999'
-      SET MESSAGE_TEXT = 'Both BDMSL authentication ways cannot be switched ON at the same time: bdmslClientCertAlias and bdmslClientCertHeader';
-    END IF;
-  END //
-DELIMITER ;
 
 
 INSERT INTO smp_domain(domainId, bdmslSmpId) VALUES('default', 'DEFAULT-SMP-ID');

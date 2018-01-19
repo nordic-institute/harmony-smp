@@ -128,7 +128,7 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
 
         //when-then
-        serviceGroupService.saveServiceGroup(newServiceGroup,"NOT-EXISITING-DOMAIN", ADMIN_USERNAME);
+        serviceGroupService.saveServiceGroup(newServiceGroup,"NOT-EXISTING-DOMAIN", ADMIN_USERNAME);
     }
 
 }
