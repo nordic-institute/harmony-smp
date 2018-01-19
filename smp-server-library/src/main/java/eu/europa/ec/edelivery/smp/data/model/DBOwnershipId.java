@@ -48,7 +48,7 @@ public class DBOwnershipId implements Serializable {
         return participantIdScheme;
     }
 
-    @Column(name = "businessIdentifier", nullable = false, length = CommonColumnsLengths.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)
+    @Column(name = "businessIdentifier", nullable = false, length = CommonColumnsLengths.MAX_IDENTIFIER_VALUE_LENGTH)
     public String getBusinessIdentifier() {
         return participantIdValue;
     }

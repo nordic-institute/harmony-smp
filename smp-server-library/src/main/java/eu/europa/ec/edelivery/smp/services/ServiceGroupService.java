@@ -15,11 +15,13 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
+import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
 import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
+import eu.europa.ec.edelivery.smp.exceptions.WrongInputFieldException;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
@@ -30,10 +32,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
+import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.toDbModel;
 import static eu.europa.ec.smp.api.Identifiers.asString;
 import static java.util.Arrays.asList;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
  * Created by gutowpa on 14/11/2017.
@@ -53,7 +57,11 @@ public class ServiceGroupService {
     private UserDao userDao;
 
     @Autowired
+    private DomainDao domainDao;
+
+    @Autowired
     private SmlConnector smlConnector;
+
 
     public ServiceGroup getServiceGroup(ParticipantIdentifierType serviceGroupId) {
         ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
@@ -66,7 +74,7 @@ public class ServiceGroupService {
     }
 
     @Transactional
-    public boolean saveServiceGroup(ServiceGroup serviceGroup, String newOwnerName) {
+    public boolean saveServiceGroup(ServiceGroup serviceGroup, String domain, String newOwnerName) {
         ServiceGroup normalizedServiceGroup = normalizeIdentifierCaseSensitivity(serviceGroup);
         ParticipantIdentifierType normalizedParticipantId = normalizedServiceGroup.getParticipantIdentifier();
 
@@ -80,6 +88,7 @@ public class ServiceGroupService {
         String extensions = ServiceGroupConverter.extractExtensionsPayload(normalizedServiceGroup);
 
         if (dbServiceGroup != null) {
+            blockPotentialDomainChange(dbServiceGroup, domain);
             dbServiceGroup.setExtension(extensions);
             serviceGroupDao.save(dbServiceGroup);
             return false;
@@ -87,6 +96,7 @@ public class ServiceGroupService {
             //Save ServiceGroup
             dbServiceGroup = new DBServiceGroup(new DBServiceGroupId(normalizedParticipantId.getScheme(), normalizedParticipantId.getValue()));
             dbServiceGroup.setExtension(extensions);
+            dbServiceGroup.setDomain(findDomain(domain));
 
             // Save the ownership information
             DBOwnershipId dbOwnershipID = new DBOwnershipId(newOwnerName, normalizedParticipantId.getScheme(), normalizedParticipantId.getValue());
@@ -96,6 +106,28 @@ public class ServiceGroupService {
 
             smlConnector.registerInDns(normalizedParticipantId);
             return true;
+        }
+    }
+
+    private DBDomain findDomain(String domain) {
+        if (isNotBlank(domain)) {
+            DBDomain dbDomain = domainDao.find(domain);
+            if(dbDomain == null){
+                throw new WrongInputFieldException("Requested domain does not exist: " + domain);
+            }
+            return dbDomain;
+        }
+        Optional<DBDomain> dbDomain = domainDao.getTheOnlyDomain();
+        if (dbDomain.isPresent()) {
+            return dbDomain.get();
+        }
+        throw new WrongInputFieldException("SMP is configured to use multiple domains, but no Domain is specified in request. Please specify Domain in request.");
+    }
+
+
+    private void blockPotentialDomainChange(DBServiceGroup dbServiceGroup, String domain) {
+        if (isNotBlank(domain) && !domain.equalsIgnoreCase(dbServiceGroup.getDomain().getDomainId())) {
+            throw new WrongInputFieldException("The same SarviceGroup cannot exist under 2 different domains. ServiceGroup cannot be switched between domains. Remove domain parameter from request if you want to update existing ServiceGroup.");
         }
     }
 
