@@ -16,6 +16,7 @@ package eu.europa.ec.edelivery.smp.error;
 import ec.services.smp._1.ErrorResponse;
 import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
 import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
+import eu.europa.ec.edelivery.smp.exceptions.WrongInputFieldException;
 import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
 import eu.europa.ec.smp.api.exceptions.MalformedIdentifierException;
@@ -59,6 +60,11 @@ public class ErrorMappingControllerAdvice {
     @ExceptionHandler(MalformedIdentifierException.class)
     public ResponseEntity handleMalformedIdentifierException(MalformedIdentifierException ex) {
         return buildAndWarn(BAD_REQUEST, FORMAT_ERROR, ex.getMessage(), ex);
+    }
+
+    @ExceptionHandler(WrongInputFieldException.class)
+    public ResponseEntity handleWrongInputFieldException(WrongInputFieldException ex) {
+        return buildAndWarn(BAD_REQUEST, WRONG_FIELD, ex.getMessage(), ex);
     }
 
     @ExceptionHandler(NotFoundException.class)
