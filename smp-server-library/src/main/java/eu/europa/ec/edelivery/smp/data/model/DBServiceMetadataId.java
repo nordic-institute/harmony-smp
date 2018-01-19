@@ -50,7 +50,7 @@ public class DBServiceMetadataId implements Serializable {
         return participantIdScheme;
     }
 
-    @Column(name = "businessIdentifier", nullable = false, length = MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH)
+    @Column(name = "businessIdentifier", nullable = false, length = MAX_IDENTIFIER_VALUE_LENGTH)
     public String getBusinessIdentifier() {
         return participantIdValue;
     }

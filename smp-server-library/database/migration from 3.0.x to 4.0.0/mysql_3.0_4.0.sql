@@ -9,6 +9,7 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the Licence for the specific language governing permissions and limitations under the Licence.
 
+
 CREATE TABLE smp_domain (
   domainId              VARCHAR(50)
                         CHARACTER SET utf8
@@ -26,84 +27,24 @@ CREATE TABLE smp_domain (
                         CHARACTER SET utf8
                         COLLATE utf8_bin NULL,
   PRIMARY KEY(domainId)
-)
-  ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
+);
 
 
-CREATE TABLE smp_service_group (
-  businessIdentifier       VARCHAR(50)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  businessIdentifierScheme VARCHAR(100)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  domainId                 VARCHAR(50)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL
-                           DEFAULT 'default',
-  extension                TEXT             NULL DEFAULT NULL,
-  PRIMARY KEY (businessIdentifier, businessIdentifierScheme),
-  CONSTRAINT FK_srv_group_domain FOREIGN KEY (domainId)
-    REFERENCES smp_domain (domainId)
-)
-  ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
+INSERT INTO smp_domain(domainId, bdmslSmpId) VALUES('default', 'DEFAULT-SMP-ID');
 
 
-CREATE TABLE smp_service_metadata (
-  documentIdentifier       VARCHAR(500)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  documentIdentifierScheme VARCHAR(100)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  businessIdentifier       VARCHAR(50)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  businessIdentifierScheme VARCHAR(100)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  xmlcontent               TEXT,
-  PRIMARY KEY (documentIdentifier, documentIdentifierScheme, businessIdentifier, businessIdentifierScheme),
-  KEY FK_service_metadata_service_group (businessIdentifier, businessIdentifierScheme),
-  CONSTRAINT FK_service_metadata_service_group FOREIGN KEY (businessIdentifier, businessIdentifierScheme) REFERENCES smp_service_group (businessIdentifier, businessIdentifierScheme)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-)
-  ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
 
+ALTER TABLE smp_service_group ADD
+  domainId  VARCHAR(50)
+            CHARACTER SET utf8
+            COLLATE utf8_bin NOT NULL
+            DEFAULT 'default';
 
-CREATE TABLE smp_user (
-  username VARCHAR(256)         NOT NULL,
-  password VARCHAR(256),
-  isadmin  TINYINT(1) DEFAULT 0 NOT NULL,
-  PRIMARY KEY (username)
-)
-  ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
+ALTER TABLE smp_service_group ADD
+  CONSTRAINT
+    FK_srv_group_domain FOREIGN KEY (domainId)
+    REFERENCES smp_domain (domainId);
 
-
-CREATE TABLE smp_ownership (
-  username                 VARCHAR(256)     NOT NULL,
-  businessIdentifier       VARCHAR(50)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  businessIdentifierScheme VARCHAR(100)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  KEY FK_ownership_service_group (businessIdentifier, businessIdentifierScheme),
-  KEY FK_ownership_user (username),
-  CONSTRAINT FK_ownership_service_group FOREIGN KEY (businessIdentifier, businessIdentifierScheme) REFERENCES smp_service_group (businessIdentifier, businessIdentifierScheme)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT FK_ownership_user FOREIGN KEY (username) REFERENCES smp_user (username)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-)
-  ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
 
 
 
@@ -164,10 +105,5 @@ FOR EACH ROW
 
 DELIMITER ;
 
-
-
-INSERT INTO smp_domain(domainId, bdmslSmpId) VALUES('default', 'DEFAULT-SMP-ID');
--- default admin user with password "changeit"
-INSERT INTO smp_user(username, password, isadmin) VALUES ('smp_admin', '$2a$10$SZXMo7K/wA.ULWxH7uximOxeNk4mf3zU6nxJx/2VfKA19QlqwSpNO', '1');
 
 commit;
