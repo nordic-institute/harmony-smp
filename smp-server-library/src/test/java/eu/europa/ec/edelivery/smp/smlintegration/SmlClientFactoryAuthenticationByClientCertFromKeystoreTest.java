@@ -47,14 +47,14 @@ import static org.junit.Assert.assertTrue;
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration
-public class SmlClientFactoryMultipleDomainsTest {
+public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest {
 
     @Configuration
     @ComponentScan("eu.europa.ec.edelivery.smp.sml")
     static class Config {
         @Bean
         public PropertySourcesPlaceholderConfigurer setLocalProperties() {
-            String clientCertificatesKeystorePath = Thread.currentThread().getContextClassLoader().getResource("service_integration_signatures_multiple_domains.jks").getFile();
+            String clientCertificatesKeystorePath = Thread.currentThread().getContextClassLoader().getResource("sml_integration_client_certificates.jks").getFile();
             return buildLocalProperties(new String[][]{
                     {"bdmsl.integration.url", "https://sml.url.pl"},
                     {"bdmsl.integration.keystore.path", clientCertificatesKeystorePath},
@@ -93,7 +93,7 @@ public class SmlClientFactoryMultipleDomainsTest {
         assertEquals("CN=SMP Mock Services, OU=DIGIT, O=European Commision, C=BE", clientCert.getSubjectDN().getName());
     }
 
-    private static X509Certificate getClientCertFromKeystore(Client cxfClient){
+    private static X509Certificate getClientCertFromKeystore(Client cxfClient) {
         HTTPConduit httpConduit = (HTTPConduit) cxfClient.getConduit();
         TLSClientParameters tlsParams = httpConduit.getTlsClientParameters();
         String alias = tlsParams.getCertAlias();
@@ -102,6 +102,18 @@ public class SmlClientFactoryMultipleDomainsTest {
         PrivateKey key = ((X509KeyManager) keyManager).getPrivateKey(alias);
         assertNotNull(key);
         return ((X509KeyManager) keyManager).getCertificateChain(alias)[0];
+    }
+
+    @Test
+    public void factoryProducesPreconfiguredCxfClientWithoutAnyHttpHeaderValue() {
+        //when
+        IManageParticipantIdentifierWS client = smlClientFactory.create("second_domain_alias", null);
+
+        //then
+        Client cxfClient = ClientProxy.getClient(client);
+        Map<String, Object> requestContext = cxfClient.getRequestContext();
+        Map httpHeaders = (Map) requestContext.get(Message.PROTOCOL_HEADERS);
+        assertTrue(httpHeaders == null || httpHeaders.isEmpty());
     }
 
     @Test(expected = IllegalStateException.class)
