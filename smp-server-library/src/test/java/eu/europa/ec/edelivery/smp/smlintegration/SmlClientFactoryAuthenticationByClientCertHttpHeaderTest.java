@@ -40,7 +40,9 @@ import static org.junit.Assert.assertNotNull;
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration
-public class SmlClientFactorySingleDomainTest {
+public class SmlClientFactoryAuthenticationByClientCertHttpHeaderTest {
+
+    public static final String CLIENT_CERT_HTTP_HEADER = "value_of_ClientCert_HTTP_header";
 
     @Configuration
     @ComponentScan("eu.europa.ec.edelivery.smp.sml")
@@ -59,7 +61,7 @@ public class SmlClientFactorySingleDomainTest {
     @Test
     public void factoryProducesPreconfiguredCxfClientThatAuthenticatesItselfWithGivenHttpHeader() {
         //when
-        IManageParticipantIdentifierWS client = smlClientFactory.create(null, "value_of_ClientCert_HTTP_header");
+        IManageParticipantIdentifierWS client = smlClientFactory.create(null, CLIENT_CERT_HTTP_HEADER);
 
         //then
         assertNotNull(client);
@@ -68,8 +70,8 @@ public class SmlClientFactorySingleDomainTest {
         Map httpHeaders = (Map) requestContext.get(Message.PROTOCOL_HEADERS);
         List clientCerts = (List) httpHeaders.get("Client-Cert");
         assertEquals(1, clientCerts.size());
-        assertEquals("value_of_ClientCert_HTTP_header", clientCerts.get(0));
+        assertEquals(CLIENT_CERT_HTTP_HEADER, clientCerts.get(0));
         assertEquals("https://sml.url.pl", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
-    
+
 }

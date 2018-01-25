@@ -50,6 +50,7 @@ public class DBServiceGroup implements BaseEntity {
     }
 
     @EmbeddedId
+    @Override
     public DBServiceGroupId getId() {
         return serviceGroupId;
     }
