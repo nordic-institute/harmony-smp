@@ -90,21 +90,23 @@ public class ServiceGroupService {
         if (dbServiceGroup != null) {
             blockPotentialDomainChange(dbServiceGroup, domain);
             dbServiceGroup.setExtension(extensions);
-            serviceGroupDao.save(dbServiceGroup);
+            serviceGroupDao.persistFlushDetach(dbServiceGroup);
             return false;
         } else {
             //Save ServiceGroup
             dbServiceGroup = new DBServiceGroup(new DBServiceGroupId(normalizedParticipantId.getScheme(), normalizedParticipantId.getValue()));
             dbServiceGroup.setExtension(extensions);
-            dbServiceGroup.setDomain(findDomain(domain));
+            DBDomain dbDomain = findDomain(domain);
+            dbServiceGroup.setDomain(dbDomain);
 
             // Save the ownership information
             DBOwnershipId dbOwnershipID = new DBOwnershipId(newOwnerName, normalizedParticipantId.getScheme(), normalizedParticipantId.getValue());
             DBOwnership dbOwnership = new DBOwnership(dbOwnershipID, newOwner, dbServiceGroup);
             dbServiceGroup.setOwnerships(new HashSet(asList(dbOwnership)));
-            serviceGroupDao.save(dbServiceGroup);
 
-            smlConnector.registerInDns(normalizedParticipantId);
+            serviceGroupDao.persistFlushDetach(dbServiceGroup);
+
+            smlConnector.registerInDns(normalizedParticipantId, dbDomain);
             return true;
         }
     }
@@ -126,7 +128,7 @@ public class ServiceGroupService {
 
 
     private void blockPotentialDomainChange(DBServiceGroup dbServiceGroup, String domain) {
-        if (isNotBlank(domain) && !domain.equalsIgnoreCase(dbServiceGroup.getDomain().getDomainId())) {
+        if (isNotBlank(domain) && !domain.equalsIgnoreCase(dbServiceGroup.getDomain().getId())) {
             throw new WrongInputFieldException("The same SarviceGroup cannot exist under 2 different domains. ServiceGroup cannot be switched between domains. Remove domain parameter from request if you want to update existing ServiceGroup.");
         }
     }
@@ -149,6 +151,6 @@ public class ServiceGroupService {
         }
         serviceGroupDao.remove(dbServiceGroup);
 
-        smlConnector.unregisterFromDns(normalizedServiceGroupId);
+        smlConnector.unregisterFromDns(normalizedServiceGroupId, dbServiceGroup.getDomain());
     }
 }

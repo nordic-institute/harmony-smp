@@ -15,7 +15,6 @@ package eu.europa.ec.edelivery.smp.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
-import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -24,7 +23,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.util.Properties;
 
 /**
  * Created by gutowpa on 21/09/2017.
@@ -36,7 +34,6 @@ import java.util.Properties;
         "eu.europa.ec.edelivery.smp.sml",
         "eu.europa.ec.edelivery.smp.conversion",
         "eu.europa.ec.cipa.smp.server.util"})
-@Import(PropertiesTestConfig.class)
 public class SmpServicesTestConfig {
 
     @Value("${jdbc.driver}")

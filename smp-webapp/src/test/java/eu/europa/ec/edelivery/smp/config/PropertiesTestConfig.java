@@ -27,7 +27,7 @@ import java.util.Properties;
 })
 public class PropertiesTestConfig {
 
-    private final static String SIGNING_KEYSTORE_PATH = Thread.currentThread().getContextClassLoader().getResource("signature_keys.jks").getFile();
+    private final static String SIGNING_KEYSTORE_PATH = Thread.currentThread().getContextClassLoader().getResource("service_integration_signatures_single_domain.jks").getFile();
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
@@ -35,6 +35,7 @@ public class PropertiesTestConfig {
 
         Properties localProps = new Properties();
         localProps.setProperty("xmldsig.keystore.classpath", SIGNING_KEYSTORE_PATH);
+        localProps.setProperty("xmldsig.keystore.password", "test123");
         propertiesConfig.setProperties(localProps);
         propertiesConfig.setLocalOverride(true);
 

@@ -21,7 +21,7 @@ import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_USE
 
 @Entity
 @Table(name = "smp_user")
-public class DBUser implements Serializable {
+public class DBUser implements BaseEntity {
 
     private String username;
     private String password;
@@ -67,5 +67,15 @@ public class DBUser implements Serializable {
 
     public void setOwnerships(Set<DBOwnership> ownerships) {
         this.ownerships = ownerships;
+    }
+
+    @Override
+    @Transient
+    public String getId() {
+        return username;
+    }
+
+    public void setId(String username){
+        setUsername(username);
     }
 }
