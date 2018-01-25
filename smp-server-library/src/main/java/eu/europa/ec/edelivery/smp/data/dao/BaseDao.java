@@ -15,12 +15,9 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.transaction.interceptor.TransactionInterceptor;
 
-import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.io.Serializable;
 
 /**
  * Created by gutowpa on 24/11/2017.

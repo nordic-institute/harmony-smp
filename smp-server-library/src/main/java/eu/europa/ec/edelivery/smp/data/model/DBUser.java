@@ -72,7 +72,7 @@ public class DBUser implements BaseEntity {
     @Override
     @Transient
     public String getId() {
-        return username;
+        return getUsername();
     }
 
     public void setId(String username){

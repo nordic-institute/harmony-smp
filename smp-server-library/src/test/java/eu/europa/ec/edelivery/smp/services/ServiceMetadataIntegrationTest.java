@@ -13,7 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.config.SingleDomainPropertiesTestConfig;
+import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
 import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
@@ -51,7 +51,7 @@ import static org.junit.Assert.*;
  * Created by gutowpa on 15/11/2017.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SmpServicesTestConfig.class, SingleDomainPropertiesTestConfig.class})
+@ContextConfiguration(classes = {SmpServicesTestConfig.class, PropertiesSingleDomainTestConfig.class})
 @Transactional
 @Rollback(true)
 @Sql("classpath:/service_integration_test_data.sql")

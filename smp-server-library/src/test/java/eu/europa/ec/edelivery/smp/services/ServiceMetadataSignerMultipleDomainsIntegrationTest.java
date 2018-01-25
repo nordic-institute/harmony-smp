@@ -13,7 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.config.MultipleDomainPropertiesTestConfig;
+import eu.europa.ec.edelivery.smp.config.PropertiesMultipleDomainTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpServicesTestConfig;
 import eu.europa.ec.edelivery.smp.testutil.SignatureUtil;
 import org.junit.Test;
@@ -31,7 +31,7 @@ import static org.junit.Assert.assertEquals;
  * Created by gutowpa on 24/01/2018.
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {SmpServicesTestConfig.class, MultipleDomainPropertiesTestConfig.class})
+@ContextConfiguration(classes = {SmpServicesTestConfig.class, PropertiesMultipleDomainTestConfig.class})
 public class ServiceMetadataSignerMultipleDomainsIntegrationTest {
 
     @Autowired

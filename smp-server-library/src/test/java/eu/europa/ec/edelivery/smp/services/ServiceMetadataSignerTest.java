@@ -13,7 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.config.SingleDomainPropertiesTestConfig;
+import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
 import eu.europa.ec.edelivery.smp.testutil.SignatureUtil;
 import eu.europa.ec.edelivery.smp.config.SmpServicesTestConfig;
 import org.junit.Test;
@@ -31,7 +31,7 @@ import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocument;
  */
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {SmpServicesTestConfig.class, SingleDomainPropertiesTestConfig.class})
+@ContextConfiguration(classes = {SmpServicesTestConfig.class, PropertiesSingleDomainTestConfig.class})
 public class ServiceMetadataSignerTest {
 
     @Autowired
