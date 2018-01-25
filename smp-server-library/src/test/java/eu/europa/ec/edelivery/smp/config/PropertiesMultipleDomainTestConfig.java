@@ -13,24 +13,27 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
-import java.util.HashMap;
+import static eu.europa.ec.edelivery.smp.testutil.LocalPropertiesTestUtil.buildLocalProperties;
 
 /**
  * Created by gutowpa on 24/01/2018.
  */
 @Configuration
 @PropertySource("classpath:config.properties")
-public class MultipleDomainPropertiesTestConfig extends AbstractPropertiesTestConfig {
+public class PropertiesMultipleDomainTestConfig {
 
-    public MultipleDomainPropertiesTestConfig() {
+    @Bean
+    public PropertySourcesPlaceholderConfigurer setLocalProperties() {
         String signingKeystorePath = Thread.currentThread().getContextClassLoader().getResource("service_integration_signatures_multiple_domains.jks").getFile();
-
-        overridenProperties = new HashMap<>();
-        overridenProperties.put("xmldsig.keystore.classpath", signingKeystorePath);
-        overridenProperties.put("xmldsig.keystore.password", "test123");
+        return buildLocalProperties(new String[][]{
+                {"xmldsig.keystore.classpath", signingKeystorePath},
+                {"xmldsig.keystore.password", "test123"}
+        });
     }
 
 }

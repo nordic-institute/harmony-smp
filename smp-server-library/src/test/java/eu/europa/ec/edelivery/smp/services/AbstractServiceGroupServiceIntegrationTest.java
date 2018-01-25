@@ -13,7 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.config.SingleDomainPropertiesTestConfig;
+import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpServicesTestConfig;
 import eu.europa.ec.edelivery.smp.data.dao.OwnershipDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
@@ -38,7 +38,7 @@ import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
  * Created by gutowpa on 27/03/2017.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SmpServicesTestConfig.class, SingleDomainPropertiesTestConfig.class})
+@ContextConfiguration(classes = {SmpServicesTestConfig.class, PropertiesSingleDomainTestConfig.class})
 @Transactional
 @Rollback(true)
 abstract class AbstractServiceGroupServiceIntegrationTest {
