@@ -57,7 +57,7 @@ public class ServiceGroupServiceMultipleDomainsIntegrationTest extends AbstractS
 
         // then
         DBDomain dbDomain = dbServiceGroup.getDomain();
-        assertEquals(SECOND_DOMAIN_ID, dbDomain.getDomainId());
+        assertEquals(SECOND_DOMAIN_ID, dbDomain.getId());
         assertEquals(SECOND_DOMAIN_CERT_HEADER, dbDomain.getBdmslClientCertHeader());
         assertEquals(SECOND_DOMAIN_SIGNING_ALIAS, dbDomain.getSignatureCertAlias());
         assertEquals(SECOND_DOMAIN_SMP_ID, dbDomain.getBdmslSmpId());

@@ -23,7 +23,7 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Table(name = "smp_service_group")
-public class DBServiceGroup implements Serializable {
+public class DBServiceGroup implements BaseEntity {
 
     private DBServiceGroupId serviceGroupId;
     private String extension;

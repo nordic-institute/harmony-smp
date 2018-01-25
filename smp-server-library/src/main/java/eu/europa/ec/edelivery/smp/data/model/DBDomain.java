@@ -28,7 +28,7 @@ import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_IDE
  */
 @Entity
 @Table(name = "smp_domain")
-public class DBDomain implements Serializable{
+public class DBDomain implements BaseEntity{
 
     private String domainId;
     private String bdmslClientCertHeader;
@@ -39,9 +39,18 @@ public class DBDomain implements Serializable{
     public DBDomain() {
     }
 
+    public DBDomain(String domainId, String bdmslClientCertHeader, String bdmslClientCertAlias, String bdmslSmpId, String signatureCertAlias) {
+        this.domainId = domainId;
+        this.bdmslClientCertHeader = bdmslClientCertHeader;
+        this.bdmslClientCertAlias = bdmslClientCertAlias;
+        this.bdmslSmpId = bdmslSmpId;
+        this.signatureCertAlias = signatureCertAlias;
+    }
+
     @Id
     @Column(name = "domainId", length = MAX_IDENTIFIER_VALUE_LENGTH)
-    public String getDomainId() {
+    @Override
+    public String getId() {
         return domainId;
     }
 
@@ -65,7 +74,7 @@ public class DBDomain implements Serializable{
         return signatureCertAlias;
     }
 
-    public void setDomainId(String domainId) {
+    public void setId(String domainId) {
         this.domainId = domainId;
     }
 
@@ -84,4 +93,5 @@ public class DBDomain implements Serializable{
     public void setSignatureCertAlias(String signatureCertAlias) {
         this.signatureCertAlias = signatureCertAlias;
     }
+
 }

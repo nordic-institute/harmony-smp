@@ -44,9 +44,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Created by gutowpa on 28/11/2016.
- */
 public class SignatureUtil {
 
     private final static String keystorePath = Thread.currentThread().getContextClassLoader().getResource("signature_keys.jks").getFile();
