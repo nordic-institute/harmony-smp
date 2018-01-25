@@ -41,8 +41,7 @@ import static org.junit.Assert.assertNotNull;
 @Configuration
 @ComponentScan("eu.europa.ec.edelivery.smp.sml")
 @TestPropertySource(properties = {
-        "bdmsl.integration.url=https://sml.url.pl",
-        "bdmsl.integration.http.header.client.cert=value_of_ClientCert_HTTP_header"})
+        "bdmsl.integration.url=https://sml.url.pl"})
 public class SmlClientFactoryTest {
 
     @Autowired
@@ -51,7 +50,7 @@ public class SmlClientFactoryTest {
     @Test
     public void factoryProducedPreconfiguredCxfClient() {
         //when
-        IManageParticipantIdentifierWS client = smlClientFactory.create();
+        IManageParticipantIdentifierWS client = smlClientFactory.create(null, "value_of_ClientCert_HTTP_header");
 
         //then
         assertNotNull(client);

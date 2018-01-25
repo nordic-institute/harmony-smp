@@ -13,7 +13,9 @@
 
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import org.springframework.core.GenericTypeResolver;
+import org.springframework.transaction.interceptor.TransactionInterceptor;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
@@ -23,7 +25,7 @@ import java.io.Serializable;
 /**
  * Created by gutowpa on 24/11/2017.
  */
-public abstract class BaseDao<E extends Serializable> {
+public abstract class BaseDao<E extends BaseEntity> {
 
     @PersistenceContext
     protected EntityManager em;
@@ -38,12 +40,10 @@ public abstract class BaseDao<E extends Serializable> {
         return em.find(entityClass, primaryKey);
     }
 
-    public void save(E entity) {
-        try {
-            em.persist(entity);
-        } catch(EntityExistsException e){
-            em.merge(entity);
-        }
+    public void persistFlushDetach(E entity) {
+        em.persist(entity);
+        em.flush();
+        em.detach(entity);
     }
 
     public void remove(E entity) {

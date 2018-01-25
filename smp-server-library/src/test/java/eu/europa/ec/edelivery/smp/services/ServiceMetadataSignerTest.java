@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.config.SingleDomainPropertiesTestConfig;
 import eu.europa.ec.edelivery.smp.testutil.SignatureUtil;
 import eu.europa.ec.edelivery.smp.config.SmpServicesTestConfig;
 import org.junit.Test;
@@ -30,7 +31,7 @@ import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocument;
  */
 
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = SmpServicesTestConfig.class)
+@ContextConfiguration(classes = {SmpServicesTestConfig.class, SingleDomainPropertiesTestConfig.class})
 public class ServiceMetadataSignerTest {
 
     @Autowired
@@ -38,7 +39,7 @@ public class ServiceMetadataSignerTest {
 
     private Document loadAndSignDocumentForDefault() throws Exception {
         Document documentToSign = loadDocument("/input/SignedServiceMetadata_withoutSignature.xml");
-        signer.sign(documentToSign);
+        signer.sign(documentToSign, null);
 
         return documentToSign;
     }
