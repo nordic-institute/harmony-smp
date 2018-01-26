@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
 import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
@@ -50,7 +51,7 @@ import static org.junit.Assert.*;
  * Created by gutowpa on 15/11/2017.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SmpServicesTestConfig.class})
+@ContextConfiguration(classes = {SmpServicesTestConfig.class, PropertiesSingleDomainTestConfig.class})
 @Transactional
 @Rollback(true)
 @Sql("classpath:/service_integration_test_data.sql")
@@ -159,7 +160,6 @@ public class ServiceMetadataIntegrationTest {
         EndpointType endpoint = newServiceMetadata.getServiceInformation().getProcessList().getProcesses().get(0).getServiceEndpointList().getEndpoints().get(0);
         endpoint.setServiceDescription("New Description");
         String newServiceMetadataXml = marshall(newServiceMetadata);
-
         serviceMetadataService.saveServiceMetadata(SERVICE_GROUP_ID, DOC_ID, newServiceMetadataXml);
 
         //when

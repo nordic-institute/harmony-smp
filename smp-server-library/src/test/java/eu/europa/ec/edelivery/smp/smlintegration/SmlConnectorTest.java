@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.smlintegration;
 
 import eu.europa.ec.bdmsl.ws.soap.*;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +35,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 /**
@@ -48,6 +50,7 @@ public class SmlConnectorTest {
 
     private static List<IManageParticipantIdentifierWS> smlClientMocks = new ArrayList<>();
     private static final ParticipantIdentifierType PARTICIPANT_ID = new ParticipantIdentifierType("sample:value", "sample:scheme");
+    private static final DBDomain DEFAULT_DOMAIN = new DBDomain("default_domain_id", null, null, "SAMPLE-SMP-ID", null);
 
     @Autowired
     private SmlConnector smlConnector;
@@ -64,7 +67,7 @@ public class SmlConnectorTest {
 
     @Bean
     @Scope(SCOPE_PROTOTYPE)
-    public IManageParticipantIdentifierWS smlClientMock() {
+    public IManageParticipantIdentifierWS smlClientMock(String clientKeyAlias, String clientCertHttpHeader) {
         IManageParticipantIdentifierWS clientMock = Mockito.mock(IManageParticipantIdentifierWS.class);
         smlClientMocks.add(clientMock);
         return clientMock;
@@ -73,7 +76,7 @@ public class SmlConnectorTest {
     @Test
     public void testRegisterInDns() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
-        smlConnector.registerInDns(PARTICIPANT_ID);
+        smlConnector.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         //then
         assertEquals(1, smlClientMocks.size());
@@ -84,8 +87,8 @@ public class SmlConnectorTest {
     @Test
     public void testRegisterInDnsNewClientIsAlwaysCreated() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
-        smlConnector.registerInDns(PARTICIPANT_ID);
-        smlConnector.registerInDns(PARTICIPANT_ID);
+        smlConnector.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        smlConnector.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         //then
         assertEquals(2, smlClientMocks.size());
@@ -97,7 +100,7 @@ public class SmlConnectorTest {
     @Test
     public void testUnregisterFromDns() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
-        smlConnector.unregisterFromDns(PARTICIPANT_ID);
+        smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         //then
         assertEquals(1, smlClientMocks.size());
@@ -108,8 +111,8 @@ public class SmlConnectorTest {
     @Test
     public void testUnregisterFromDnsNewClientIsAlwaysCreated() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
-        smlConnector.unregisterFromDns(PARTICIPANT_ID);
-        smlConnector.unregisterFromDns(PARTICIPANT_ID);
+        smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         //then
         assertEquals(2, smlClientMocks.size());

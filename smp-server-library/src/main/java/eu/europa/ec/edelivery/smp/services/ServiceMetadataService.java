@@ -63,9 +63,10 @@ public class ServiceMetadataService {
             throw new NotFoundException("ServiceMetadata not found, ServiceGroupID: '%s', DocumentID: '%s'", asString(serviceGroupId), asString(documentId));
         }
 
-        Document aSignedServiceMetadata = toSignedServiceMetadatadaDocument(serviceMetadata.getXmlContent());
-        signer.sign(aSignedServiceMetadata);
-        return aSignedServiceMetadata;
+        Document signedServiceMetadata = toSignedServiceMetadatadaDocument(serviceMetadata.getXmlContent());
+        String sigCertAlias = serviceMetadata.getServiceGroup().getDomain().getSignatureCertAlias();
+        signer.sign(signedServiceMetadata, sigCertAlias);
+        return signedServiceMetadata;
     }
 
     /**
@@ -90,7 +91,7 @@ public class ServiceMetadataService {
         dbServiceMetadata.setId(dbServiceMetadataId);
 
         dbServiceMetadata.setXmlContent(xmlContent);
-        serviceMetadataDao.save(dbServiceMetadata);
+        serviceMetadataDao.persistFlushDetach(dbServiceMetadata);
         return !alreadyExisted;
     }
 

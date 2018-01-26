@@ -16,9 +16,11 @@ package eu.europa.ec.edelivery.smp.data.model;
 import javax.persistence.*;
 import java.io.Serializable;
 
+import static javax.persistence.FetchType.EAGER;
+
 @Entity
 @Table(name = "smp_service_metadata")
-public class DBServiceMetadata implements Serializable {
+public class DBServiceMetadata implements BaseEntity {
 
     private DBServiceMetadataId serviceMetadataId;
     private DBServiceGroup serviceGroup;
@@ -39,11 +41,12 @@ public class DBServiceMetadata implements Serializable {
     }
 
     @EmbeddedId
+    @Override
     public DBServiceMetadataId getId() {
         return serviceMetadataId;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = EAGER)
     @JoinColumns({@JoinColumn(name = "businessIdentifier",
             referencedColumnName = "businessIdentifier",
             nullable = false,

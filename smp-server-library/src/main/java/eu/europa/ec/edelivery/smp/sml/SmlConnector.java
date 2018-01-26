@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.sml;
 
 import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.SmlIntegrationException;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
@@ -31,7 +32,7 @@ import static eu.europa.ec.smp.api.Identifiers.asString;
 /**
  * Component responsible for building SOAP request and calling BDMSL.
  * It knows if SML integration is turned ON and only then makes a CREATE or DELETE participant call.
- *
+ * <p>
  * Created by gutowpa on 22/12/2017.
  */
 @Component
@@ -42,39 +43,38 @@ public class SmlConnector implements ApplicationContextAware {
     @Value("${bdmsl.integration.enabled:false}")
     private boolean smlIntegrationEnabled;
 
-    @Value("${bdmsl.integration.smp.id}")
-    private String smpId;
-
     private ApplicationContext ctx;
 
-    public void registerInDns(ParticipantIdentifierType normalizedParticipantId) {
+    public void registerInDns(ParticipantIdentifierType normalizedParticipantId, DBDomain domain) {
         if (!smlIntegrationEnabled) {
             return;
         }
         log.info("Registering new Participant in BDMSL: " + asString(normalizedParticipantId));
         try {
-            ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, smpId);
-            getClient().create(smlRequest);
+            ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, domain.getBdmslSmpId());
+            getClient(domain).create(smlRequest);
         } catch (Exception e) {
             throw new SmlIntegrationException("Could not create new DNS entry through SML", e);
         }
     }
 
-    public void unregisterFromDns(ParticipantIdentifierType normalizedParticipantId) {
+    public void unregisterFromDns(ParticipantIdentifierType normalizedParticipantId, DBDomain domain) {
         if (!smlIntegrationEnabled) {
             return;
         }
         log.info("Removing Participant from BDMSL: " + asString(normalizedParticipantId));
         try {
-            ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, smpId);
-            getClient().delete(smlRequest);
+            ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, domain.getBdmslSmpId());
+            getClient(domain).delete(smlRequest);
         } catch (Exception e) {
             throw new SmlIntegrationException("Could not remove DNS entry through SML", e);
         }
     }
 
-    private IManageParticipantIdentifierWS getClient() {
-        return ctx.getBean(IManageParticipantIdentifierWS.class);
+    private IManageParticipantIdentifierWS getClient(DBDomain domain) {
+        String clientCertHttpHeader = domain.getBdmslClientCertHeader();
+        String clientCertAlias = domain.getBdmslClientCertAlias();
+        return ctx.getBean(IManageParticipantIdentifierWS.class, clientCertAlias, clientCertHttpHeader);
     }
 
     @Override
