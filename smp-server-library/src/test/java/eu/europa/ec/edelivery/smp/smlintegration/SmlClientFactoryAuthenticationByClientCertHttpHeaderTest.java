@@ -21,15 +21,17 @@ import org.apache.cxf.message.Message;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 import java.util.Map;
 
+import static eu.europa.ec.edelivery.smp.testutil.LocalPropertiesTestUtil.buildLocalProperties;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -37,21 +39,29 @@ import static org.junit.Assert.assertNotNull;
  * Created by gutowpa on 08/01/2018.
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = SmlClientFactoryTest.class)
-@Configuration
-@ComponentScan("eu.europa.ec.edelivery.smp.sml")
-@TestPropertySource(properties = {
-        "bdmsl.integration.url=https://sml.url.pl",
-        "bdmsl.integration.http.header.client.cert=value_of_ClientCert_HTTP_header"})
-public class SmlClientFactoryTest {
+@ContextConfiguration
+public class SmlClientFactoryAuthenticationByClientCertHttpHeaderTest {
+
+    public static final String CLIENT_CERT_HTTP_HEADER = "value_of_ClientCert_HTTP_header";
+
+    @Configuration
+    @ComponentScan("eu.europa.ec.edelivery.smp.sml")
+    static class Config {
+        @Bean
+        public PropertySourcesPlaceholderConfigurer setLocalProperties() {
+            return buildLocalProperties(new String[][]{
+                    {"bdmsl.integration.url", "https://sml.url.pl"}
+            });
+        }
+    }
 
     @Autowired
     private SmlClientFactory smlClientFactory;
 
     @Test
-    public void factoryProducedPreconfiguredCxfClient() {
+    public void factoryProducesPreconfiguredCxfClientThatAuthenticatesItselfWithGivenHttpHeader() {
         //when
-        IManageParticipantIdentifierWS client = smlClientFactory.create();
+        IManageParticipantIdentifierWS client = smlClientFactory.create(null, CLIENT_CERT_HTTP_HEADER);
 
         //then
         assertNotNull(client);
@@ -60,7 +70,8 @@ public class SmlClientFactoryTest {
         Map httpHeaders = (Map) requestContext.get(Message.PROTOCOL_HEADERS);
         List clientCerts = (List) httpHeaders.get("Client-Cert");
         assertEquals(1, clientCerts.size());
-        assertEquals("value_of_ClientCert_HTTP_header", clientCerts.get(0));
+        assertEquals(CLIENT_CERT_HTTP_HEADER, clientCerts.get(0));
         assertEquals("https://sml.url.pl", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
+
 }

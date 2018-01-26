@@ -11,34 +11,26 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.smp.config;
+package eu.europa.ec.edelivery.smp.testutil;
 
-import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import java.util.Properties;
 
 /**
- * Created by gutowpa on 11/01/2018.
+ * Created by gutowpa on 25/01/2018.
  */
-@Configuration
-@PropertySources({
-        @PropertySource(value = "classpath:config.properties", ignoreResourceNotFound = true)
-})
-public class PropertiesTestConfig {
+public class LocalPropertiesTestUtil {
 
-    private final static String SIGNING_KEYSTORE_PATH = Thread.currentThread().getContextClassLoader().getResource("service_integration_signatures_single_domain.jks").getFile();
-
-    @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+    public static PropertySourcesPlaceholderConfigurer buildLocalProperties(String[][] props) {
         PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
-
         Properties localProps = new Properties();
-        localProps.setProperty("xmldsig.keystore.classpath", SIGNING_KEYSTORE_PATH);
-        localProps.setProperty("xmldsig.keystore.password", "test123");
+        for (String[] entry : props) {
+            localProps.setProperty(entry[0], entry[1]);
+        }
         propertiesConfig.setProperties(localProps);
         propertiesConfig.setLocalOverride(true);
-
         return propertiesConfig;
     }
+
 }
