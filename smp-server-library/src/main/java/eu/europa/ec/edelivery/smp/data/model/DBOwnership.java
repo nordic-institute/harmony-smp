@@ -18,7 +18,7 @@ import java.io.Serializable;
 
 @Entity
 @Table (name = "smp_ownership")
-public class DBOwnership implements Serializable {
+public class DBOwnership implements BaseEntity {
 
   private DBOwnershipId ownershipId;
   private DBUser user;
@@ -33,6 +33,7 @@ public class DBOwnership implements Serializable {
   }
 
   @EmbeddedId
+  @Override
   public DBOwnershipId getId () {
     return ownershipId;
   }

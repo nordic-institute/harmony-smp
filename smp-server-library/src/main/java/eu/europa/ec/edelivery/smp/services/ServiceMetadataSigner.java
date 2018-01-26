@@ -32,16 +32,20 @@ import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.security.Key;
-import java.security.KeyStore;
+import java.security.*;
+import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static java.util.Collections.list;
 import static java.util.Collections.singletonList;
 import static javax.xml.crypto.dsig.CanonicalizationMethod.INCLUSIVE;
 import static javax.xml.crypto.dsig.DigestMethod.SHA256;
 import static javax.xml.crypto.dsig.Transform.ENVELOPED;
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component
 public final class ServiceMetadataSigner {
@@ -56,15 +60,8 @@ public final class ServiceMetadataSigner {
     @Value("${xmldsig.keystore.password}")
     private String keystorePassword;
 
-    @Value("${xmldsig.keystore.key.alias}")
-    private String xmldsigKeystoreKeyAlias;
-
-    @Value("${xmldsig.keystore.key.password}")
-    private String xmldsigKeystoreKeyPassword;
-
-
-    private Key signingKey;
-    private X509Certificate signingCertificate;
+    private Map<String, Key> signingKeys;
+    private Map<String, X509Certificate> signingCertificates;
 
 
     private static XMLSignatureFactory getDomSigFactory() {
@@ -81,16 +78,28 @@ public final class ServiceMetadataSigner {
             KeyStore keyStore = KeyStore.getInstance("JKS");
             keyStore.load(keystoreInputStream, keystorePassword.toCharArray());
 
-            signingKey = keyStore.getKey(xmldsigKeystoreKeyAlias, xmldsigKeystoreKeyPassword.toCharArray());
-            signingCertificate = (X509Certificate) keyStore.getCertificate(xmldsigKeystoreKeyAlias);
-
-            log.info("Successfully loaded signing key and certificate: " + signingCertificate.getSubjectDN().getName());
+            signingKeys = new HashMap();
+            signingCertificates = new HashMap();
+            for (String alias : list(keyStore.aliases())) {
+                loadKeyAndCert(keyStore, alias);
+            }
         } catch (Exception e) {
             throw new IllegalStateException("Could not load signing certificate with private key from keystore file: " + keystoreFilePath, e);
         }
     }
 
-    public void sign(Document serviceMetadataDoc) {
+    private void loadKeyAndCert(KeyStore keyStore, String alias) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+        Key key = keyStore.getKey(alias, keystorePassword.toCharArray());
+        Certificate certificate = keyStore.getCertificate(alias);
+        if (key == null || certificate == null || !(certificate instanceof X509Certificate)) {
+            throw new IllegalStateException("Wrong entry type found in keystore, only certificates with keypair are accepted, entry alias: " + alias);
+        }
+        signingKeys.put(alias, key);
+        signingCertificates.put(alias, (X509Certificate) certificate);
+        log.info("Successfully loaded [" + alias + "] signing key and certificate: " + ((X509Certificate) certificate).getSubjectDN().getName());
+    }
+
+    public void sign(Document serviceMetadataDoc, String keyAlias) {
         try {
             XMLSignatureFactory domSigFactory = getDomSigFactory();
 
@@ -108,10 +117,10 @@ public final class ServiceMetadataSigner {
                     domSigFactory.newSignatureMethod(RSA_SHA256, null),
                     singletonList(reference));
 
-            DOMSignContext domSignContext = new DOMSignContext(signingKey, serviceMetadataDoc.getDocumentElement());
+            DOMSignContext domSignContext = new DOMSignContext(getKey(keyAlias), serviceMetadataDoc.getDocumentElement());
 
             // Create the XMLSignature, but don't sign it yet
-            KeyInfo keyInfo = createKeyInfo();
+            KeyInfo keyInfo = createKeyInfo(keyAlias);
             XMLSignature signature = domSigFactory.newXMLSignature(singedInfo, keyInfo);
 
             // Marshal, generate, and sign the enveloped signature
@@ -121,11 +130,34 @@ public final class ServiceMetadataSigner {
         }
     }
 
-    private KeyInfo createKeyInfo() {
+    private Key getKey(String keyAlias) {
+        if (signingKeys.size() == 1) {
+            // don't care about configured alias in single-domain setup
+            return signingKeys.values().iterator().next();
+        }
+        if (isBlank(keyAlias) || !signingKeys.containsKey(keyAlias)) {
+            throw new IllegalStateException("Wrong configuration, missing key pair from keystore or wrong alias: " + keyAlias);
+        }
+        return signingKeys.get(keyAlias);
+    }
+
+    private X509Certificate getCert(String certAlias) {
+        if (signingCertificates.size() == 1) {
+            // don't care about configured alias in single-domain setup
+            return signingCertificates.values().iterator().next();
+        }
+        if (isBlank(certAlias) || !signingCertificates.containsKey(certAlias)) {
+            throw new IllegalStateException("Wrong configuration, missing key pair from keystore or wrong alias: " + certAlias);
+        }
+        return signingCertificates.get(certAlias);
+    }
+
+    private KeyInfo createKeyInfo(String alias) {
         KeyInfoFactory keyInfoFactory = getDomSigFactory().getKeyInfoFactory();
         List content = new ArrayList();
-        content.add(signingCertificate.getSubjectX500Principal().getName());
-        content.add(signingCertificate);
+        X509Certificate cert = getCert(alias);
+        content.add(cert.getSubjectX500Principal().getName());
+        content.add(cert);
         X509Data x509Data = keyInfoFactory.newX509Data(content);
         return keyInfoFactory.newKeyInfo(singletonList(x509Data));
     }

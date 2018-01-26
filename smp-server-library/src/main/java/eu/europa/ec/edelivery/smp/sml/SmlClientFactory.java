@@ -71,12 +71,6 @@ public class SmlClientFactory {
     @Value("${bdmsl.integration.keystore.password:}")
     private String smlClientKeyStorePassword;
 
-    @Value("${bdmsl.integration.keystore.alias:}")
-    private String smlClientKeyAlias;
-
-    @Value("${bdmsl.integration.http.header.client.cert:}")
-    private String smlClientCertHttpHeader;
-
     private KeyManager[] keyManagers;
 
     @Value("${bdmsl.integration.proxy.server:}")
@@ -92,9 +86,9 @@ public class SmlClientFactory {
     private String proxyPassword;
 
 
-    @Bean()
+    @Bean
     @Scope("prototype")
-    public IManageParticipantIdentifierWS create() {
+    public IManageParticipantIdentifierWS create(String clientKeyAlias, String clientCertHttpHeader) {
         ManageBusinessIdentifierService smlService = new ManageBusinessIdentifierService((URL) null);
         IManageParticipantIdentifierWS smlPort = smlService.getManageBusinessIdentifierServicePort();
         Client client = ClientProxy.getClient(smlPort);
@@ -106,7 +100,7 @@ public class SmlClientFactory {
         configureFaultHandling(requestContext);
         configureProxy(httpConduit);
         configurePayloadLogging(client);
-        configureClientAuthentication(httpConduit, requestContext);
+        configureClientAuthentication(httpConduit, requestContext, clientKeyAlias, clientCertHttpHeader);
 
         return smlPort;
     }
@@ -131,7 +125,7 @@ public class SmlClientFactory {
         }
     }
 
-    private void configureClientAuthentication(HTTPConduit httpConduit, Map<String, Object> requestContext) {
+    private void configureClientAuthentication(HTTPConduit httpConduit, Map<String, Object> requestContext, String smlClientKeyAlias, String smlClientCertHttpHeader) {
         if (isNotBlank(smlClientKeyStorePath) && isNotBlank(smlClientCertHttpHeader)) {
             throw new IllegalStateException("SML integration is wrongly configured, cannot use both authentication ways at the same time: 2-way-SSL and Client-Cert header");
         }
