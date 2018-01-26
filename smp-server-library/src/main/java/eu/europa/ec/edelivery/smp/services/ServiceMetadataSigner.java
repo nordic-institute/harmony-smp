@@ -96,7 +96,7 @@ public final class ServiceMetadataSigner {
         }
         signingKeys.put(alias, key);
         signingCertificates.put(alias, (X509Certificate) certificate);
-        log.info("Successfully loaded signing key and certificate: " + ((X509Certificate) certificate).getSubjectDN().getName());
+        log.info("Successfully loaded [" + alias + "] signing key and certificate: " + ((X509Certificate) certificate).getSubjectDN().getName());
     }
 
     public void sign(Document serviceMetadataDoc, String keyAlias) {
