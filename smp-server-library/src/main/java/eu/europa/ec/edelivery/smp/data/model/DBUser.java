@@ -33,7 +33,7 @@ public class DBUser implements BaseEntity {
 
     @Id
     @Column(name = "username", unique = true, nullable = false, length = MAX_USERNAME_LENGTH)
-    public String getUsername() {
+    public String getId() {
         return username;
     }
 
@@ -41,7 +41,6 @@ public class DBUser implements BaseEntity {
     public String getPassword() {
         return password;
     }
-
 
     @Column(name = "isadmin", nullable = false)
     public boolean isAdmin() {
@@ -53,7 +52,7 @@ public class DBUser implements BaseEntity {
         return ownerships;
     }
 
-    public void setUsername(String username) {
+    public void setId(String username) {
         this.username = username;
     }
 
@@ -69,13 +68,12 @@ public class DBUser implements BaseEntity {
         this.ownerships = ownerships;
     }
 
-    @Override
     @Transient
-    public String getId() {
-        return getUsername();
+    public String getUsername() {
+        return getId();
     }
 
-    public void setId(String username){
-        setUsername(username);
+    public void setUsername(String username){
+        setId(username);
     }
 }
