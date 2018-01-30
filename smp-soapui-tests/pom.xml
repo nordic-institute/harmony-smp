@@ -2,9 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>eu.europa.ec.cipa</groupId>
+        <groupId>eu.europa.ec.edelivery</groupId>
         <artifactId>smp-parent-pom</artifactId>
-        <version>3.0.2</version>
+        <version>4.0.0-RC1</version>
         <relativePath>../smp-parent-pom/pom.xml</relativePath>
     </parent>
     <artifactId>smp-soapui-tests</artifactId>
@@ -58,7 +58,7 @@
                     <dependency>
                         <groupId>mysql</groupId>
                         <artifactId>mysql-connector-java</artifactId>
-                        <version>5.1.34</version>
+                        <version>${mysql.version}</version>
                     </dependency>
                     <dependency>
                         <groupId>com.oracle</groupId>

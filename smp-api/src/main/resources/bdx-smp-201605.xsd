@@ -7,7 +7,7 @@
      Source: http://docs.oasis-open.org/bdxr/bdx-smp/v1.0/cs03/schemas/
      Latest version of the specification: http://docs.oasis-open.org/bdxr/bdx-smp/v1.0/bdx-smp-v1.0.html
      TC IPR Statement: https://www.oasis-open.org/committees/bdxr/ipr.php
-     -->
+  -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" elementFormDefault="qualified" targetNamespace="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05" id="ServiceMetadataPublishing">
 	<xs:import namespace="http://www.w3.org/2000/09/xmldsig#" schemaLocation="xmldsig-core-schema.xsd"/>
 	<xs:element name="ServiceGroup" type="ServiceGroupType"/>
