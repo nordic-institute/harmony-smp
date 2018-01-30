@@ -2,31 +2,45 @@
 <!--
   ~ Copyright 2017 European Commission | CEF eDelivery
   ~
-  ~ Licensed under the EUPL, Version 1.1 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+  ~ Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
   ~ You may not use this work except in compliance with the Licence.
   ~
-  ~ You may obtain a copy of the Licence at:
-  ~ https://joinup.ec.europa.eu/software/page/eupl
-  ~ or file: LICENCE-EUPL-v1.1.pdf
+  ~ You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
   ~
   ~ Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the Licence for the specific language governing permissions and limitations under the Licence.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <groupId>eu.europa.ec</groupId>
-    <artifactId>smp</artifactId>
+    <artifactId>smp-modules</artifactId>
     <packaging>pom</packaging>
-    <name>SMP Builder POM</name>
-    <version>3.0.2</version>
+    <name>SMP</name>
+    <version>4.0.0-RC1</version>
 
-	<modules>
-		<module>smp-parent-pom</module>
-		<module>smp-api</module>
-		<module>smp-server-library</module>
-		<module>smp-webapp</module>
-	</modules>
+    <modules>
+        <module>smp-parent-pom</module>
+        <module>smp-api</module>
+        <module>smp-server-library</module>
+        <module>smp-webapp</module>
+    </modules>
+
+    <properties>
+        <sonar.host.url>http://edelquality.westeurope.cloudapp.azure.com:9000/sonar/</sonar.host.url>
+        <sonar.exclusions>**/smp/data/model/*, **/smp/exceptions/*, **/to_be_removed/*</sonar.exclusions>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.2</version>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

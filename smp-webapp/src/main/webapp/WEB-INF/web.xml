@@ -2,34 +2,62 @@
 <!--
   ~ Copyright 2017 European Commission | CEF eDelivery
   ~
-  ~ Licensed under the EUPL, Version 1.1 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+  ~ Licensed under the EUPL, Version 1.2 or - as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
   ~ You may not use this work except in compliance with the Licence.
   ~
-  ~ You may obtain a copy of the Licence at:
-  ~ https://joinup.ec.europa.eu/software/page/eupl
-  ~ or file: LICENCE-EUPL-v1.1.pdf
+  ~ You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
   ~
   ~ Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the Licence for the specific language governing permissions and limitations under the Licence.
   -->
-<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee"
-         xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         id="SMP_WebApp" version="2.5">
-
-    <display-name>PEPPOL SMP REST service (read &amp; write)</display-name>
-
-
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+         http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+         version="3.1" metadata-complete="true">
     <!--
-        - Location of the XML file that defines the root application context
-        - Applied by ContextLoaderListener.
+    WebLogic scans all application's JAR files to search for some annotated classes.
+    This scanning has an issue with spring-web-5.0.2.RELEASE.jar -
+    that results in deployment failure with strange error "array index out of bounds".
+    metadata-complete="true" is set to inform WebLogic to NOT scan JARs
     -->
+
+
+    <display-name>SMP - OASIS REST services</display-name>
+
+    <servlet>
+        <servlet-name>smpRestServlet</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <init-param>
+            <param-name>contextClass</param-name>
+            <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+        </init-param>
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <param-value>eu.europa.ec.edelivery.smp.config.SmpWebAppConfig</param-value>
+        </init-param>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>smpRestServlet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+
+    <!-- SpringSecurity & Application Context-->
+
+    <context-param>
+        <param-name>contextClass</param-name>
+        <param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+    </context-param>
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>/WEB-INF/spring-context.xml;/WEB-INF/spring-security.xml</param-value>
+        <param-value>
+            eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
+            eu.europa.ec.edelivery.smp.config.SmpAppConfig;
+            eu.europa.ec.edelivery.smp.config.PropertiesConfig
+        </param-value>
     </context-param>
-
     <filter>
         <filter-name>springSecurityFilterChain</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
@@ -40,87 +68,12 @@
     </filter-mapping>
 
     <!--
-      - Loads the root application context of this web app at startup.
-      - The application context is then available via
-      - WebApplicationContextUtils.getWebApplicationContext(servletContext).
+          - Loads the root application context of this web app at startup.
+          - The application context is then available via
+          - WebApplicationContextUtils.getWebApplicationContext(servletContext).
     -->
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-
-
-
-
-    <listener>
-        <listener-class>eu.europa.ec.cipa.smp.server.util.LogStartupListener</listener-class>
-    </listener>
-    <listener>
-        <listener-class>eu.europa.ec.cipa.smp.server.util.TimeZoneCorrectorListener</listener-class>
-    </listener>
-
-    <!-- Scope handling: listener + filter must be first -->
-    <listener>
-        <listener-class>com.helger.web.scopes.servlet.WebScopeListener</listener-class>
-    </listener>
-    <filter>
-        <filter-name>ScopeFilter</filter-name>
-        <filter-class>com.helger.web.scopes.servlet.DefaultScopeAwareFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>ScopeFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <!-- SML handling: filter -->
-    <filter>
-        <filter-name>registrationhook</filter-name>
-        <filter-class>eu.europa.ec.cipa.smp.server.hook.PostRegistrationFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>registrationhook</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-
-
-    <filter>
-        <filter-name>RestFilter</filter-name>
-        <filter-class>org.glassfish.jersey.servlet.ServletContainer</filter-class>
-        <!-- Register resources and providers -->
-        <init-param>
-            <param-name>jersey.config.server.provider.classnames</param-name>
-            <param-value>eu.europa.ec.cipa.smp.server.util.SignatureFilter</param-value>
-        </init-param>
-        <init-param>
-            <param-name>jersey.config.server.provider.packages</param-name>
-            <param-value>
-                eu.europa.ec.cipa.smp.server.services.readwrite;
-                eu.europa.ec.cipa.smp.server.services.common;
-                eu.europa.ec.cipa.smp.server.errors.mappers
-            </param-value>
-        </init-param>
-        <init-param>
-            <param-name>jersey.config.servlet.filter.staticContentRegex</param-name>
-            <param-value>/(images|js|styles|web)/.*</param-value>
-        </init-param>
-    </filter>
-    <filter-mapping>
-        <filter-name>RestFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-
-    <!-- This is needed to ensure compatibility with JBoss/Wildfly -->
-    <context-param>
-        <param-name>resteasy.scan</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    <context-param>
-        <param-name>resteasy.scan.resources</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    <context-param>
-        <param-name>resteasy.scan.providers</param-name>
-        <param-value>false</param-value>
-    </context-param>
 
 </web-app>

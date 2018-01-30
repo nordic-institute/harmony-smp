@@ -1,0 +1,78 @@
+<!--
+  ~ Copyright 2017 European Commission | CEF eDelivery
+  ~
+  ~ Licensed under the EUPL, Version 1.2 or - as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+  ~ You may not use this work except in compliance with the Licence.
+  ~
+  ~ You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the Licence for the specific language governing permissions and limitations under the Licence.
+  -->
+
+<b:beans xmlns="http://www.springframework.org/schema/security"
+         xmlns:b="http://www.springframework.org/schema/beans"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+         xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <b:bean id="securityExceptionHandler" class="eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler"/>
+
+    <http>
+        <csrf disabled="true"/>
+        <http-basic entry-point-ref="securityExceptionHandler"/>
+        <anonymous granted-authority="ROLE_ANONYMOUS"/>
+
+        <custom-filter position="X509_FILTER" ref="x509AuthFilter"/>
+        <custom-filter position="PRE_AUTH_FILTER" ref="blueCoatReverseProxyAuthFilter"/>
+
+        <intercept-url method="PUT" access=" ! isAnonymous()" pattern="/*"/>
+        <intercept-url method="DELETE" access=" ! isAnonymous()" pattern="/*"/>
+        <access-denied-handler ref="securityExceptionHandler"/>
+        <headers defaults-disabled="true" />
+    </http>
+
+
+    <authentication-manager alias="smpAuthenticationManager">
+        <authentication-provider>
+            <password-encoder hash="bcrypt"/>
+            <jdbc-user-service id="smpJdbcUserDetailsService"
+                               data-source-ref="dataSource"
+                               users-by-username-query="SELECT username, COALESCE(password, 'dummy'), 1 FROM smp_user WHERE username = ?"
+                               authorities-by-username-query="SELECT all_roles.username, all_roles.authority from ( SELECT username, 'ROLE_SERVICEGROUP_ADMIN' AS AUTHORITY FROM smp_user UNION ALL SELECT username, 'ROLE_SMP_ADMIN' AS AUTHORITY FROM smp_user WHERE isadmin = 1 UNION ALL SELECT username, CONCAT(businessIdentifierScheme, CONCAT('::', businessIdentifier)) FROM smp_ownership) all_roles WHERE username = ?"/>
+        </authentication-provider>
+
+        <authentication-provider ref="preauthAuthProvider"/>
+
+    </authentication-manager>
+
+    <b:bean id="preauthAuthProvider"
+            class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
+        <b:property name="preAuthenticatedUserDetailsService">
+            <b:bean id="userDetailsServiceWrapper"
+                    class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper">
+                <b:property name="userDetailsService" ref="smpJdbcUserDetailsService"/>
+            </b:bean>
+        </b:property>
+    </b:bean>
+
+    <b:bean id="blueCoatReverseProxyAuthFilter"
+            class="eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter">
+        <b:property name="authenticationManager" ref="smpAuthenticationManager"/>
+        <b:property name="blueCoatEnabled" value="${authentication.blueCoat.enabled}"/>
+    </b:bean>
+
+    <b:bean id="x509AuthFilter"
+            class="eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter">
+        <b:property name="authenticationManager" ref="smpAuthenticationManager"/>
+    </b:bean>
+
+    <!-- Slashes in participant or document identifiers are disallowed by default -->
+    <http-firewall ref="httpFirewall"/>
+    <b:bean id="httpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall">
+        <b:property name="allowUrlEncodedSlash" value="${encodedSlashesAllowedInUrl}"/>
+    </b:bean>
+
+</b:beans>

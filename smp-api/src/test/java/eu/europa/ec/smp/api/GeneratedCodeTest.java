@@ -1,3 +1,16 @@
+/*
+ * Copyright 2017 European Commission | CEF eDelivery
+ *
+ * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+ * You may not use this work except in compliance with the Licence.
+ *
+ * You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the Licence for the specific language governing permissions and limitations under the Licence.
+ */
+
 package eu.europa.ec.smp.api;
 
 import org.junit.Test;
@@ -77,6 +90,54 @@ public class GeneratedCodeTest {
         Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
         Object serviceGroup = unmarshaller.unmarshal(inputStream);
         return (ServiceGroup) serviceGroup;
+    }
+
+    @Test
+    public void testGeneratedServiceGroupEqualsReturnsTrue(){
+        ParticipantIdentifierType id1 = new ParticipantIdentifierType(VALUE, SCHEME);
+        ParticipantIdentifierType id2 = new ParticipantIdentifierType(VALUE, SCHEME);
+
+        assertTrue(id1.equals(id2));
+    }
+
+    @Test
+    public void testGeneratedServiceGroupEqualsIsCaseSensitive(){
+        ParticipantIdentifierType id1 = new ParticipantIdentifierType("Value", "Scheme");
+        ParticipantIdentifierType id2 = new ParticipantIdentifierType("value", "scheme");
+
+        assertFalse(id1.equals(id2));
+    }
+
+    @Test
+    public void testGeneratedServiceGroupEquaHandlesEmptyScheme(){
+        ParticipantIdentifierType id1 = new ParticipantIdentifierType(VALUE, null);
+        ParticipantIdentifierType id2 = new ParticipantIdentifierType(VALUE, null);
+
+        assertTrue(id1.equals(id2));
+    }
+
+    @Test
+    public void testGeneratedDocumentIdEqualsReturnsTrue(){
+        DocumentIdentifier id1 = new DocumentIdentifier(VALUE, SCHEME);
+        DocumentIdentifier id2 = new DocumentIdentifier(VALUE, SCHEME);
+
+        assertTrue(id1.equals(id2));
+    }
+
+    @Test
+    public void testGeneratedDocumentIdEqualsIsCaseSensitive(){
+        DocumentIdentifier id1 = new DocumentIdentifier("Value", "Scheme");
+        DocumentIdentifier id2 = new DocumentIdentifier("value", "scheme");
+
+        assertFalse(id1.equals(id2));
+    }
+
+    @Test
+    public void testGeneratedDocumentIdEqualsHandlesEmptyScheme(){
+        DocumentIdentifier id1 = new DocumentIdentifier(VALUE, null);
+        DocumentIdentifier id2 = new DocumentIdentifier(VALUE, null);
+
+        assertTrue(id1.equals(id2));
     }
 
 }
