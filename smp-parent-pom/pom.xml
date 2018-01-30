@@ -15,9 +15,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>eu.europa.ec.cipa</groupId>
+	<groupId>eu.europa.ec.edelivery</groupId>
 	<artifactId>smp-parent-pom</artifactId>
-	<version>4.0.0-SNAPSHOT</version>
+	<version>4.0.0-RC1</version>
 	<packaging>pom</packaging>
 	<name>smp-parent-pom</name>
 	<description>SMP - CEF eDelivery</description>
@@ -30,7 +30,7 @@
 	<!-- Used licenses -->
 	<licenses>
 		<license>
-			<name>EUPL 1.1</name>
+			<name>EUPL 1.2</name>
 			<url>https://joinup.ec.europa.eu/software/page/eupl/licence-eupl</url>
 			<distribution>repo</distribution>
 		</license>
