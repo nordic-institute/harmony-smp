@@ -117,8 +117,8 @@
                     <warName>${project.artifactId}</warName>
                     <webResources>
                         <resource>
-                            <directory>${basedir}/src/main/webapp/web</directory>
-                            <targetPath>web</targetPath>
+                            <directory>${basedir}/src/main/webapp/static_resources</directory>
+                            <targetPath>static_resources</targetPath>
                             <filtering>true</filtering>
                         </resource>
                     </webResources>

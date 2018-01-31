@@ -21,7 +21,6 @@
         <relativePath>../smp-parent-pom/pom.xml</relativePath>
     </parent>
     <artifactId>smp-server-library</artifactId>
-    <packaging>bundle</packaging>
     <name>smp-server-library</name>
 
     <!-- Default values for local compilation. The properties can be overriden for continuous integration servers -->
@@ -196,19 +195,5 @@
                 </includes>
             </testResource>
         </testResources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Export-Package>
-                            eu.europa.ec.cipa.smp.server.*
-                        </Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
 </project>
