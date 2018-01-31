@@ -11,12 +11,6 @@
     <name>smp-webapp</name>
     <description>SMP REST service WEB APP</description>
 
-    <scm>
-        <connection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/smp/cipa-smp-full-webapp</connection>
-        <developerConnection>scm:svn:https://joinup.ec.europa.eu/svn/cipaedelivery/trunk/smp/cipa-smp-full-webapp
-        </developerConnection>
-    </scm>
-
     <!-- Default properties to copy the artifact on the DEV platform -->
     <properties>
         <buildtimestamp>${maven.build.timestamp}</buildtimestamp>
