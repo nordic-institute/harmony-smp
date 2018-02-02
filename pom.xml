@@ -29,9 +29,108 @@
     </modules>
 
     <properties>
-        <sonar.host.url>http://edelquality.westeurope.cloudapp.azure.com:9000/sonar/</sonar.host.url>
+        <!--<sonar.host.url>http://edelquality.westeurope.cloudapp.azure.com:9000/sonar/</sonar.host.url>-->
+        <sonar.host.url>http://localhost:9000</sonar.host.url>
         <sonar.exclusions>**/smp/data/model/*, **/smp/exceptions/*, **/to_be_removed/*</sonar.exclusions>
+
+        <sonar.ws.timeout>300</sonar.ws.timeout>
+        <sonar.login>1659ebb88e2d1a896bfd56e835358c06418219c3</sonar.login>
+        <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
+        <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
+        <jacoco.maven.plugin.version>0.7.9</jacoco.maven.plugin.version>
+        <sonar.jacoco.reportPath>${maven.multiModuleProjectDirectory}/code-coverage/jacoco-ut.exec</sonar.jacoco.reportPath>
     </properties>
+
+    <profiles>
+        <!-- soap ui -->
+        <profile>
+            <id>run-soapui</id>
+            <build>
+                <defaultGoal>test</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>com.smartbear.soapui</groupId>
+                        <artifactId>soapui-pro-maven-plugin</artifactId>
+                        <version>5.0.0</version>
+                        <configuration>
+                            <outputFolder>${maven.multiModuleProjectDirectory}/code-coverage/surefire-reports</outputFolder>
+                            <junitReport>true</junitReport>
+                            <printReport>true</printReport>
+                            <soapuiProperties>
+                                <property>
+                                    <name>soapui.scripting.library</name>
+                                    <value>${maven.multiModuleProjectDirectory}/smp-soapui-tests/groovy</value>
+                                </property>
+                                <property>
+                                    <name>soapui.logroot</name>
+                                    <value>${maven.multiModuleProjectDirectory}/code-coverage/soapui/logs/</value>
+                                </property>
+                                <property>
+                                    <name>http.nonProxyHosts</name>
+                                    <value>localhost|127.*|[::1]</value>
+                                </property>
+                            </soapuiProperties>
+                            <testFailIgnore>true</testFailIgnore>
+                            <projectFile>${maven.multiModuleProjectDirectory}/smp-soapui-tests/soapui/SMP3.0-BAMBOO-soapui-project.xml</projectFile>
+                            <projectProperties>
+                                <value>url=${url}</value>
+                            </projectProperties>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <phase>integration-test</phase>
+                                <goals>
+                                    <goal>test</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco.maven.plugin.version}</version>
+
+                        <executions>
+                            <execution>
+                                <phase>post-integration-test</phase>
+
+                                <goals>
+                                    <goal>dump</goal>
+                                </goals>
+                                <configuration>
+                                    <destFile>${sonar.jacoco.reportPath}</destFile>
+                                    <address>${sonar.jacoco.remoteAddress}</address>
+                                    <port>${sonar.jacoco.remotePort}</port>
+                                    <reset>false</reset>
+                                    <append>true</append>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+<!--
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-clean-plugin</artifactId>
+                        <version>3.0.0</version>
+                        <executions>
+                            <execution>
+                                <id>default-clean</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>clean</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                        </configuration>
+                    </plugin>-->
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <build>
         <plugins>
