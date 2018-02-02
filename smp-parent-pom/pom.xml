@@ -79,8 +79,8 @@
 		<hibernate.version>5.2.12.Final</hibernate.version>
 		<hibernate-jpa.version>1.0.0.Final</hibernate-jpa.version>
 		<hibernate.validator>5.2.12.Final</hibernate.validator>
-		<oracle.version>11.1.0.6.0</oracle.version>
-		<mysql.version>5.1.34</mysql.version>
+		<oracle.version>12.1.0.1</oracle.version>
+		<mysql.version>5.1.45</mysql.version>
 		<soapui.plugin.version>5.1.2</soapui.plugin.version>
 		<commons-net.version>1.4.1</commons-net.version>
 		<ant-commons-net.version>1.6.5</ant-commons-net.version>
@@ -137,6 +137,10 @@
 			<snapshots>
 				<enabled>true</enabled>
 			</snapshots>
+		</repository>
+		<repository>
+			<id>cefdigital-thirdparty</id>
+			<url>https://ec.europa.eu/cefdigital/artifact/content/repositories/eDelivery-third-party/</url>
 		</repository>
 		<repository>
 			<id>webgate-digit</id>
@@ -455,7 +459,7 @@
 			</dependency>
 			<dependency>
 				<groupId>com.oracle</groupId>
-				<artifactId>ojdbc6</artifactId>
+				<artifactId>ojdbc7</artifactId>
 				<version>${oracle.version}</version>
 				<scope>test</scope>
 			</dependency>
@@ -536,7 +540,7 @@
 			<dependencies>
 				<dependency>
 					<groupId>com.oracle</groupId>
-					<artifactId>ojdbc6</artifactId>
+					<artifactId>ojdbc7</artifactId>
 				</dependency>
 			</dependencies>
 		</profile>
