@@ -650,8 +650,7 @@
                     <execution>
                         <id>default-test</id>
                         <configuration>
-                            <argLine>-server -ea -Duser.language=en -XX:-UseSplitVerifier -Xms512m -Xmx1024m ${surefire.argline}
-                            </argLine>
+                            <argLine>-Duser.language=en -Xms512m -Xmx1024m ${surefire.argline} </argLine>
                             <includes>
                                 <include>**/*Test.java</include>
                             </includes>
@@ -681,9 +680,7 @@
                         </goals>
                         <configuration>
                             <!-- Sets the VM argument line used when integration tests are run. -->
-                            <argLine>-server -ea -XX:-UseSplitVerifier -Xms512m -Xmx1024m -Duser.language=en ${failsafe.argline}
-                            </argLine>
-
+                            <argLine>-Duser.language=en -Xms512m -Xmx1024m  ${failsafe.argline}</argLine>
                             <includes>
                                 <include>**/*IntegrationTest.java</include>
                             </includes>
