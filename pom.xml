@@ -128,10 +128,11 @@
 
     <build>
         <plugins>
+            <!-- sonar -->
             <plugin>
-                <groupId>org.sonarsource.scanner.maven</groupId>
+                <groupId>org.codehaus.mojo</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
-                <version>3.2</version>
+                <version>3.4.0.905</version>
             </plugin>
         </plugins>
     </build>
