@@ -34,7 +34,7 @@
         <sonar.exclusions>**/smp/data/model/*, **/smp/exceptions/*, **/to_be_removed/*</sonar.exclusions>
 
         <sonar.ws.timeout>300</sonar.ws.timeout>
-        <!--<sonar.login>1659ebb88e2d1a896bfd56e835358c06418219c3</sonar.login>-->
+        <sonar.login>1659ebb88e2d1a896bfd56e835358c06418219c3</sonar.login>
         <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
         <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
         <jacoco.maven.plugin.version>0.7.9</jacoco.maven.plugin.version>
@@ -128,11 +128,10 @@
 
     <build>
         <plugins>
-            <!-- sonar maven plugin (for 5.6 sonarqube) -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>org.sonarsource.scanner.maven</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
-                <version>3.3.0.603</version>
+                <version>3.2</version>
             </plugin>
         </plugins>
     </build>

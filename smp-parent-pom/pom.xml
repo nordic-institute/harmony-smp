@@ -98,7 +98,7 @@
         <sonar.jacoco.itReportPath>${maven.multiModuleProjectDirectory}/code-coverage/jacoco-it.exec</sonar.jacoco.itReportPath>
         <jacoco.maven.plugin.version>0.7.9</jacoco.maven.plugin.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-        <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+        <!--<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>-->
         <sonar.language>java</sonar.language>
 	</properties>
 
@@ -650,7 +650,8 @@
                     <execution>
                         <id>default-test</id>
                         <configuration>
-                            <argLine>-Duser.language=en -Xms512m -Xmx1024m ${surefire.argline} </argLine>
+                            <argLine>-server -ea -Duser.language=en -Xms512m -Xmx1024m ${surefire.argline}
+                            </argLine>
                             <includes>
                                 <include>**/*Test.java</include>
                             </includes>
@@ -680,7 +681,9 @@
                         </goals>
                         <configuration>
                             <!-- Sets the VM argument line used when integration tests are run. -->
-                            <argLine>-Duser.language=en -Xms512m -Xmx1024m  ${failsafe.argline}</argLine>
+                            <argLine>-server -ea -Xms512m -Xmx1024m -Duser.language=en ${failsafe.argline}
+                            </argLine>
+
                             <includes>
                                 <include>**/*IntegrationTest.java</include>
                             </includes>
