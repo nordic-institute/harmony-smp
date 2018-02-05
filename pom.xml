@@ -29,12 +29,12 @@
     </modules>
 
     <properties>
-        <!--<sonar.host.url>http://edelquality.westeurope.cloudapp.azure.com:9000/sonar/</sonar.host.url>-->
-        <sonar.host.url>http://localhost:9000</sonar.host.url>
+        <sonar.host.url>http://edelquality.westeurope.cloudapp.azure.com:9000/sonar/</sonar.host.url>
+        <!--<sonar.host.url>http://localhost:9000</sonar.host.url>-->
         <sonar.exclusions>**/smp/data/model/*, **/smp/exceptions/*, **/to_be_removed/*</sonar.exclusions>
 
         <sonar.ws.timeout>300</sonar.ws.timeout>
-        <sonar.login>1659ebb88e2d1a896bfd56e835358c06418219c3</sonar.login>
+        <!--<sonar.login>1659ebb88e2d1a896bfd56e835358c06418219c3</sonar.login>-->
         <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
         <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
         <jacoco.maven.plugin.version>0.7.9</jacoco.maven.plugin.version>
@@ -109,24 +109,6 @@
                             </execution>
                         </executions>
                     </plugin>
-<!--
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-clean-plugin</artifactId>
-                        <version>3.0.0</version>
-                        <executions>
-                            <execution>
-                                <id>default-clean</id>
-                                <phase>clean</phase>
-                                <goals>
-                                    <goal>clean</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
-                        </configuration>
-                    </plugin>-->
                 </plugins>
             </build>
         </profile>
