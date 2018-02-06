@@ -81,6 +81,7 @@
                             <outputFolder>${maven.multiModuleProjectDirectory}/code-coverage/surefire-reports</outputFolder>
                             <junitReport>true</junitReport>
                             <printReport>true</printReport>
+                            <settingsFile>${maven.multiModuleProjectDirectory}/smp-soapui-tests/soapui/soapui-settings.xml</settingsFile>
                             <soapuiProperties>
                                 <property>
                                     <name>soapui.scripting.library</name>
