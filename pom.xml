@@ -63,9 +63,9 @@
                     <plugin>
                         <groupId>com.smartbear.soapui</groupId>
                         <artifactId>soapui-pro-maven-plugin</artifactId>
-                        <!--<version>5.0.0</version>-->
-                        <version>5.1.2</version>
-                        <dependencies>
+                        <version>5.0.0</version>
+                        <!--<version>5.1.2</version>-->
+                       <!-- <dependencies>
                             <dependency>
                                 <groupId>org.reflections</groupId>
                                 <artifactId>reflections</artifactId>
@@ -76,7 +76,7 @@
                                 <artifactId>poi-ooxml</artifactId>
                                 <version>3.10-FINAL</version>
                             </dependency>
-                        </dependencies>
+                        </dependencies>-->
                         <configuration>
                             <outputFolder>${maven.multiModuleProjectDirectory}/code-coverage/surefire-reports</outputFolder>
                             <junitReport>true</junitReport>
@@ -175,7 +175,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
-                <!--<version>3.0.1</version>-->
+                <!--<version>3.2</version>-->
                 <version>3.3.0.603</version>
             </plugin>
         </plugins>
