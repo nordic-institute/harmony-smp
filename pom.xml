@@ -30,7 +30,6 @@
 
     <properties>
         <sonar.host.url>http://edelquality.westeurope.cloudapp.azure.com:9000/sonar/</sonar.host.url>
-        <!--<sonar.host.url>http://localhost:9000</sonar.host.url>-->
         <sonar.exclusions>**/smp/data/model/*, **/smp/exceptions/*, **/to_be_removed/*</sonar.exclusions>
 
         <sonar.ws.timeout>300</sonar.ws.timeout>
@@ -38,7 +37,8 @@
         <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
         <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
         <jacoco.maven.plugin.version>0.7.9</jacoco.maven.plugin.version>
-        <sonar.jacoco.reportPath>${maven.multiModuleProjectDirectory}/code-coverage/jacoco-ut.exec</sonar.jacoco.reportPath>
+        <sonar.jacoco.codeCoveragePath>${maven.multiModuleProjectDirectory}/code-coverage</sonar.jacoco.codeCoveragePath>
+        <sonar.jacoco.reportPath>${sonar.jacoco.codeCoveragePath}/jacoco-ut.exec</sonar.jacoco.reportPath>
     </properties>
 
 
@@ -64,21 +64,8 @@
                         <groupId>com.smartbear.soapui</groupId>
                         <artifactId>soapui-pro-maven-plugin</artifactId>
                         <version>5.0.0</version>
-                        <!--<version>5.4.0</version>-->
-                       <!-- <dependencies>
-                            <dependency>
-                                <groupId>org.reflections</groupId>
-                                <artifactId>reflections</artifactId>
-                                <version>0.9.9-RC1</version>
-                            </dependency>
-                            <dependency>
-                                <groupId>org.apache.poi</groupId>
-                                <artifactId>poi-ooxml</artifactId>
-                                <version>3.10-FINAL</version>
-                            </dependency>
-                        </dependencies>-->
                         <configuration>
-                            <outputFolder>${maven.multiModuleProjectDirectory}/code-coverage/surefire-reports</outputFolder>
+                            <outputFolder>${sonar.jacoco.codeCoveragePath}/surefire-reports</outputFolder>
                             <junitReport>true</junitReport>
                             <printReport>true</printReport>
                             <settingsFile>${maven.multiModuleProjectDirectory}/smp-soapui-tests/soapui/soapui-settings.xml</settingsFile>
@@ -89,7 +76,7 @@
                                 </property>
                                 <property>
                                     <name>soapui.logroot</name>
-                                    <value>${maven.multiModuleProjectDirectory}/code-coverage/soapui/logs/</value>
+                                    <value>${sonar.jacoco.codeCoveragePath}/soapui/logs/</value>
                                 </property>
                                 <property>
                                     <name>http.nonProxyHosts</name>
@@ -149,7 +136,7 @@
                         <version>1.6.0</version>
                         <groupId>org.codehaus.mojo</groupId>
                         <executions>
-                            <execution><!-- Run our version calculation script -->
+                            <execution><!-- Deploy war under weblogic -->
                                 <id>Deploy war under weblogic</id>
                                 <phase>package</phase>
                                 <goals>
@@ -172,11 +159,10 @@
 
     <build>
         <plugins>
-            <!-- older version -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
-                <!--<version>3.2</version>-->
+                <!-- latest version compatible with SonarQube 5.6 -->
                 <version>3.3.0.603</version>
             </plugin>
         </plugins>
