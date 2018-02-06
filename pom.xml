@@ -62,9 +62,9 @@
                 <plugins>
                     <plugin>
                         <groupId>com.smartbear.soapui</groupId>
-                        <artifactId>soapui-pro-maven-plugin</artifactId>
-                        <version>5.0.0</version>
-                        <!--<version>5.1.2</version>-->
+                        <artifactId>soapui-maven-plugin</artifactId>
+                        <!--<version>5.0.0</version>-->
+                        <version>5.1.2</version>
                        <!-- <dependencies>
                             <dependency>
                                 <groupId>org.reflections</groupId>
