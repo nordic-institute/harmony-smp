@@ -93,11 +93,13 @@
 		<xmlunit.version>2.5.1</xmlunit.version>
 		<hamcrest.version>2.0.0.0</hamcrest.version>
 
+		<!-- jacoco, sonar code coverage settings start -->
         <sonar.jacoco.reportPath>${maven.multiModuleProjectDirectory}/code-coverage/jacoco-ut.exec</sonar.jacoco.reportPath>
         <sonar.jacoco.itReportPath>${maven.multiModuleProjectDirectory}/code-coverage/jacoco-it.exec</sonar.jacoco.itReportPath>
         <jacoco.maven.plugin.version>0.7.9</jacoco.maven.plugin.version>
         <sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
         <sonar.language>java</sonar.language>
+		<!-- jacoco, sonar code coverage settings end -->
 	</properties>
 
 	<!-- Where are we looking for JARs? -->
