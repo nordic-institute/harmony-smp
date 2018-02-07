@@ -41,7 +41,7 @@
         <!-- jacoco, sonar code coverage settings start -->
         <sonar.jacoco.codeCoveragePath>${maven.multiModuleProjectDirectory}/code-coverage</sonar.jacoco.codeCoveragePath>
         <sonar.jacoco.reportPath>${sonar.jacoco.codeCoveragePath}/jacoco-ut.exec</sonar.jacoco.reportPath>
-        <!-- jacoco, sonar code coverage settings start -->
+        <!-- jacoco, sonar code coverage settings end -->
 
         <!-- default value for deploy under Weblogic, etc -->
         <deployWarFolder>/home/edelivery/oracle/middleware/domains/bdmsl/autodeploy/</deployWarFolder>
