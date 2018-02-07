@@ -93,7 +93,6 @@
 		<xmlunit.version>2.5.1</xmlunit.version>
 		<hamcrest.version>2.0.0.0</hamcrest.version>
 
-
         <sonar.jacoco.reportPath>${maven.multiModuleProjectDirectory}/code-coverage/jacoco-ut.exec</sonar.jacoco.reportPath>
         <sonar.jacoco.itReportPath>${maven.multiModuleProjectDirectory}/code-coverage/jacoco-it.exec</sonar.jacoco.itReportPath>
         <jacoco.maven.plugin.version>0.7.9</jacoco.maven.plugin.version>
@@ -635,8 +634,6 @@
 				</configuration>
 			</plugin>
 
-
-            <!-- catalin -->
             <!-- unit tests, surefire plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
