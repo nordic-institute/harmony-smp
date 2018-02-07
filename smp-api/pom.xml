@@ -84,7 +84,6 @@
             placed in this module as is the first in maven reactor order to collect info
             about code coverage.
             do not move this to parent pom or root pom!
-            for Pawel to know after years ;)
             -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
