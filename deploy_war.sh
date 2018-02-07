@@ -1,2 +1,2 @@
-cp smp-webapp/target/smp.war /home/edelivery/oracle/middleware/domains/bdmsl/autodeploy/
+cp smp-webapp/target/smp.war $DEPLOY_FOLDER
 sleep 3m
