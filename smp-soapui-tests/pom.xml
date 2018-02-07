@@ -62,7 +62,7 @@
                     </dependency>
                     <dependency>
                         <groupId>com.oracle</groupId>
-                        <artifactId>ojdbc6</artifactId>
+                        <artifactId>ojdbc7</artifactId>
                         <version>${oracle.version}</version>
                     </dependency>
                 </dependencies>
