@@ -31,14 +31,20 @@
     <properties>
         <sonar.host.url>http://edelquality.westeurope.cloudapp.azure.com:9000/sonar/</sonar.host.url>
         <sonar.exclusions>**/smp/data/model/*, **/smp/exceptions/*, **/to_be_removed/*</sonar.exclusions>
+        <jacoco.maven.plugin.version>0.7.9</jacoco.maven.plugin.version>
 
-        <sonar.ws.timeout>300</sonar.ws.timeout>
-        <sonar.login>1659ebb88e2d1a896bfd56e835358c06418219c3</sonar.login>
+        <!-- jacoco remote agent settings start -->
         <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
         <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
-        <jacoco.maven.plugin.version>0.7.9</jacoco.maven.plugin.version>
+        <!-- jacoco remote agent settings end -->
+
+        <!-- jacoco, sonar code coverage settings start -->
         <sonar.jacoco.codeCoveragePath>${maven.multiModuleProjectDirectory}/code-coverage</sonar.jacoco.codeCoveragePath>
         <sonar.jacoco.reportPath>${sonar.jacoco.codeCoveragePath}/jacoco-ut.exec</sonar.jacoco.reportPath>
+        <!-- jacoco, sonar code coverage settings start -->
+
+        <!-- default value for deploy under Weblogic, etc -->
+        <deployWarFolder>/home/edelivery/oracle/middleware/domains/bdmsl/autodeploy/</deployWarFolder>
     </properties>
 
 
@@ -143,6 +149,11 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
+                                    <environmentVariables>
+                                        <DEPLOY_FOLDER>
+                                            ${deployWarFolder}
+                                        </DEPLOY_FOLDER>
+                                    </environmentVariables>
                                     <executable>bash</executable>
                                     <commandlineArgs>deploy_war.sh</commandlineArgs>
                                 </configuration>
