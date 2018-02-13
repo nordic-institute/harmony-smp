@@ -141,9 +141,7 @@
                             <goal>single</goal>
                         </goals>
                         <configuration>
-                            <finalName>smp-setup-${project.version}</finalName>
-                            <appendAssemblyId>false</appendAssemblyId>
-                            <descriptor>src/main/smp-samples/smp-setup.xml</descriptor>
+                            <descriptor>src/main/smp-setup/smp-setup.xml</descriptor>
                         </configuration>
                     </execution>
                 </executions>
