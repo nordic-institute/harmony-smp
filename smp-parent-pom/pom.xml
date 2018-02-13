@@ -50,6 +50,9 @@
 
 	<!-- Properties for default plugins -->
 	<properties>
+		<!-- Only selected modules are deployed -->
+		<maven.deploy.skip>true</maven.deploy.skip>
+
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<slf4j.version>1.7.10</slf4j.version>
 		<spring.version>5.0.2.RELEASE</spring.version>
