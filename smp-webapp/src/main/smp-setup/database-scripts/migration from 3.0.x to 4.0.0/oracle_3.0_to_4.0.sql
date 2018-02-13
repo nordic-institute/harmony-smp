@@ -21,10 +21,10 @@ CREATE TABLE smp_domain (
   )
 );
 
-INSERT INTO smp_domain(domainId, bdmslSmpId) VALUES('default', 'DEFAULT-SMP-ID');
+INSERT INTO smp_domain(domainId, bdmslSmpId) VALUES('domain1', 'DEFAULT-SMP-ID');
 
 ALTER TABLE smp_service_group ADD (
-  domainId  VARCHAR(50) DEFAULT 'default' NOT NULL
+  domainId  VARCHAR(50) DEFAULT 'domain1' NOT NULL
 );
 
 ALTER TABLE smp_service_group ADD (
