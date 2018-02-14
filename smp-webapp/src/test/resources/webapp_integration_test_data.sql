@@ -14,7 +14,8 @@ insert into smp_user(username, password, isadmin) values ('test_admin',         
 insert into smp_user(username, password, isadmin) values ('test_user_hashed_pass',                     '$2a$06$k.Q/6anG4Eq/nNTZ0C1UIuAKxpr6ra5oaMkMSrlESIyA5jKEsUdyS', 0);
 insert into smp_user(username, password, isadmin) values ('test_user_clear_pass',                      'gutek123',                                                     0);
 insert into smp_user(username, password, isadmin) values ('CN=comon name,O=org,C=BE:0000000000000066', '',                                                             0);
-insert into smp_user (username, isadmin) values ('CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08', 0);
+insert into smp_user(username, isadmin) values ('CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08', 0);
+insert into smp_user(username, isadmin) values ('CN=utf-8_ż_SMP,O=EC,C=BE:0000000000000666', 0);
 
 insert into smp_service_group(businessidentifier, businessidentifierscheme) values ('urn:australia:ncpb', 'ehealth-actorid-qns');
 insert into smp_service_group(businessidentifier, businessidentifierscheme) values ('urn:brazil:ncpb', 'ehealth-actorid-qns');
