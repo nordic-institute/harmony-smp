@@ -26,7 +26,7 @@ CREATE TABLE smp_service_group (
   extension                CLOB,
   businessIdentifier       VARCHAR(50)  NOT NULL,
   businessIdentifierScheme VARCHAR(100) NOT NULL,
-  domainId                 VARCHAR(50)  DEFAULT 'default' NOT NULL,
+  domainId                 VARCHAR(50)  DEFAULT 'domain1' NOT NULL,
   PRIMARY KEY (businessIdentifier, businessIdentifierScheme),
   CONSTRAINT
     FK_srv_group_domain FOREIGN KEY (domainId)
@@ -70,7 +70,7 @@ CREATE TABLE smp_ownership (
 );
 
 
-INSERT INTO smp_domain(domainId, bdmslSmpId) VALUES('default', 'DEFAULT-SMP-ID');
+INSERT INTO smp_domain(domainId, bdmslSmpId) VALUES('domain1', 'DEFAULT-SMP-ID');
 -- Default admin user password. For details on managing and updating it, please refer to the documentation!
 -- INSERT INTO smp_user(username, password, isadmin) VALUES ('smp_admin', '[generated encrypted value as described in documentation!]', '1');
 
