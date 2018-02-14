@@ -67,6 +67,9 @@ public class ServiceGroupControllerTest {
     private static final String URL_PATH = format("/%s::%s", PARTICIPANT_SCHEME, PARTICIPANT_ID);
     private static final String SERVICE_GROUP_INPUT_BODY = getSampleServiceGroupBodyWithScheme(PARTICIPANT_SCHEME);
     private static final String HTTP_HEADER_KEY_DOMAIN = "Domain";
+    private static final String HTTP_HEADER_KEY_SERVICE_GROUP_OWNER = "ServiceGroup-Owner";
+
+    private static final String OTHER_OWNER_NAME_URL_ENCODED = "CN=utf-8_%C5%BC_SMP,O=EC,C=BE:0000000000000666";
 
     private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("test_admin", "gutek123");
 
@@ -191,6 +194,26 @@ public class ServiceGroupControllerTest {
                 .content(SERVICE_GROUP_INPUT_BODY))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(stringContainsInOrder("WRONG_FIELD")));
+    }
+
+    @Test
+    public void adminCanAssignNewServiceGroupToOtherOwner() throws Exception {
+        mvc.perform(put(URL_PATH)
+                .with(ADMIN_CREDENTIALS)
+                .contentType(APPLICATION_XML_VALUE)
+                .header(HTTP_HEADER_KEY_SERVICE_GROUP_OWNER, OTHER_OWNER_NAME_URL_ENCODED)
+                .content(SERVICE_GROUP_INPUT_BODY))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    public void adminCannotAssignNewServiceGroupToNotExistingOwner() throws Exception {
+        mvc.perform(put(URL_PATH)
+                .with(ADMIN_CREDENTIALS)
+                .contentType(APPLICATION_XML_VALUE)
+                .header(HTTP_HEADER_KEY_SERVICE_GROUP_OWNER, "not-existing-user")
+                .content(SERVICE_GROUP_INPUT_BODY))
+                .andExpect(status().isBadRequest());
     }
 
 }
