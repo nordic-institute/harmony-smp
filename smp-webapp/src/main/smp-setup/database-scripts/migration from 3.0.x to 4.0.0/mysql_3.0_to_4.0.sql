@@ -61,7 +61,7 @@ BEGIN
   END //
 
 DROP PROCEDURE IF EXISTS validate_new_domain //
-CREATE PROCEDURE validate_new_domain (IN new_bdmsl_client_cert_alias varchar(50), IN new_bdmsl_client_cert_header varchar(50))
+CREATE PROCEDURE validate_new_domain (IN new_bdmsl_client_cert_alias varchar(50), IN new_bdmsl_client_cert_header varchar(4000))
 BEGIN
     IF ((new_bdmsl_client_cert_alias > '' OR new_bdmsl_client_cert_alias = null) AND (new_bdmsl_client_cert_header > '' OR new_bdmsl_client_cert_header = null))
     THEN
