@@ -33,9 +33,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.toDbModel;
 import static eu.europa.ec.smp.api.Identifiers.asString;
+import static java.lang.String.format;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -46,6 +48,8 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class ServiceGroupService {
 
     private static final Logger log = LoggerFactory.getLogger(ServiceGroupService.class);
+
+    private static final Pattern DOMAIN_ID_PATTERN = Pattern.compile("[a-zA-Z0-9]+");
 
     @Autowired
     private CaseSensitivityNormalizer caseSensitivityNormalizer;
@@ -85,10 +89,10 @@ public class ServiceGroupService {
 
         DBServiceGroup dbServiceGroup = serviceGroupDao.find(toDbModel(normalizedParticipantId));
 
+        validateDomain(dbServiceGroup, domain);
         String extensions = ServiceGroupConverter.extractExtensionsPayload(normalizedServiceGroup);
 
         if (dbServiceGroup != null) {
-            blockPotentialDomainChange(dbServiceGroup, domain);
             dbServiceGroup.setExtension(extensions);
             serviceGroupDao.persistFlushDetach(dbServiceGroup);
             return false;
@@ -114,7 +118,7 @@ public class ServiceGroupService {
     private DBDomain findDomain(String domain) {
         if (isNotBlank(domain)) {
             DBDomain dbDomain = domainDao.find(domain);
-            if(dbDomain == null){
+            if (dbDomain == null) {
                 throw new WrongInputFieldException("Requested domain does not exist: " + domain);
             }
             return dbDomain;
@@ -127,8 +131,15 @@ public class ServiceGroupService {
     }
 
 
-    private void blockPotentialDomainChange(DBServiceGroup dbServiceGroup, String domain) {
-        if (isNotBlank(domain) && !domain.equalsIgnoreCase(dbServiceGroup.getDomain().getId())) {
+    private void validateDomain(DBServiceGroup dbServiceGroup, String domain) {
+        if (domain == null) {
+            return;
+        }
+        if (!DOMAIN_ID_PATTERN.matcher(domain).matches()) {
+            throw new WrongInputFieldException(format("Provided Domain ID [%s] does not match required pattern: %s", domain, DOMAIN_ID_PATTERN));
+        }
+        //blockPotentialDomainChange
+        if (dbServiceGroup != null && !domain.equalsIgnoreCase(dbServiceGroup.getDomain().getId())) {
             throw new WrongInputFieldException("The same SarviceGroup cannot exist under 2 different domains. ServiceGroup cannot be switched between domains. Remove domain parameter from request if you want to update existing ServiceGroup.");
         }
     }
