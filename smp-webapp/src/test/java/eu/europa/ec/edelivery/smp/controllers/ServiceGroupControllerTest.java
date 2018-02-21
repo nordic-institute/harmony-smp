@@ -26,6 +26,7 @@ import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfig
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
@@ -60,6 +61,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @Rollback(true)
 @Sql("classpath:/webapp_integration_test_data.sql")
+@SqlConfig(encoding = "UTF-8")
 public class ServiceGroupControllerTest {
 
     private static final String PARTICIPANT_SCHEME = "ehealth-participantid-qns";
@@ -203,7 +205,7 @@ public class ServiceGroupControllerTest {
                 .contentType(APPLICATION_XML_VALUE)
                 .header(HTTP_HEADER_KEY_SERVICE_GROUP_OWNER, OTHER_OWNER_NAME_URL_ENCODED)
                 .content(SERVICE_GROUP_INPUT_BODY))
-                .andExpect(status().isCreated());
+                .andExpect(status().isCreated())ń;
     }
 
     @Test

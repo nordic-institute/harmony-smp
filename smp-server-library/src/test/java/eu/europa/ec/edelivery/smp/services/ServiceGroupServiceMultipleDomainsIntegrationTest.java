@@ -36,7 +36,7 @@ import static org.springframework.util.StringUtils.isEmpty;
         "classpath:/service_integration_multiple_domains_test_data.sql"})
 public class ServiceGroupServiceMultipleDomainsIntegrationTest extends AbstractServiceGroupServiceIntegrationTest {
 
-    private static final String SECOND_DOMAIN_ID = "second_domain";
+    private static final String SECOND_DOMAIN_ID = "domain2";
     private static final String SECOND_DOMAIN_CERT_HEADER = "client-cert-header-value";
     private static final String SECOND_DOMAIN_SIGNING_ALIAS = "signature-alias";
     private static final String SECOND_DOMAIN_SMP_ID = "SECOND-SMP-ID";
