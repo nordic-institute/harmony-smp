@@ -205,7 +205,7 @@ public class ServiceGroupControllerTest {
                 .contentType(APPLICATION_XML_VALUE)
                 .header(HTTP_HEADER_KEY_SERVICE_GROUP_OWNER, OTHER_OWNER_NAME_URL_ENCODED)
                 .content(SERVICE_GROUP_INPUT_BODY))
-                .andExpect(status().isCreated())ń;
+                .andExpect(status().isCreated());
     }
 
     @Test
