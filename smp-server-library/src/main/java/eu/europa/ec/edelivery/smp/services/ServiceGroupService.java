@@ -47,9 +47,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Service
 public class ServiceGroupService {
 
-    private static final Logger log = LoggerFactory.getLogger(ServiceGroupService.class);
-
-    private static final Pattern DOMAIN_ID_PATTERN = Pattern.compile("[a-zA-Z0-9]+");
+    private static final Pattern DOMAIN_ID_PATTERN = Pattern.compile("[a-zA-Z0-9]{1,50}");
 
     @Autowired
     private CaseSensitivityNormalizer caseSensitivityNormalizer;
