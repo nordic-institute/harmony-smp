@@ -17,11 +17,10 @@
     <parent>
         <groupId>eu.europa.ec.edelivery</groupId>
         <artifactId>smp-parent-pom</artifactId>
-        <version>4.0.0-RC1</version>
+        <version>4.0.0-SNAPSHOT</version>
         <relativePath>../smp-parent-pom/pom.xml</relativePath>
     </parent>
     <artifactId>smp-server-library</artifactId>
-    <packaging>bundle</packaging>
     <name>smp-server-library</name>
 
     <!-- Default values for local compilation. The properties can be overriden for continuous integration servers -->
@@ -44,16 +43,6 @@
             <groupId>eu.europa.ec.bdmsl</groupId>
             <artifactId>bdmsl-client</artifactId>
         </dependency>
-
-
-        <!-- TODO: remove me -->
-        <dependency>
-            <groupId>com.google.code.findbugs</groupId>
-            <artifactId>annotations</artifactId>
-            <version>2.0.3</version>
-        </dependency>
-
-
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -62,7 +51,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
         </dependency>
-        <!-- You may replace MySQL in production with something else -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -74,10 +62,6 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-oxm</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -104,10 +88,6 @@
             <artifactId>hibernate-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-entitymanager</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
@@ -118,18 +98,6 @@
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcprov-jdk15on</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.bouncycastle</groupId>
-            <artifactId>bcpkix-jdk15on</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.cxf</groupId>
@@ -196,19 +164,5 @@
                 </includes>
             </testResource>
         </testResources>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <instructions>
-                        <Export-Package>
-                            eu.europa.ec.cipa.smp.server.*
-                        </Export-Package>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
 </project>

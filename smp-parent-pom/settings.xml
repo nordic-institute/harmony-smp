@@ -62,6 +62,11 @@
 			<password>{AP1hP8sE97kHFzAatQGzaaiQPGFrOMDFUZFfG3xTxOs=}</password>
 		</server>
 		<server>
+			<id>cefdigital-thirdparty</id>
+			<username>gutowpa</username>
+			<password>{2y/aQkOSNGYHhuusKhaDwLP/lm5YFzlJwyjUWXFDh74=}</password>
+		</server>
+		<server>
 			<id>webgate-digit</id>
 			<username>j50b107</username>
 			<password>{AP1hP8sE97kHFzAatQGzaaiQPGFrOMDFUZFfG3xTxOs=}</password>
