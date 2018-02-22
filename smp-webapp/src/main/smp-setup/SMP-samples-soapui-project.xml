@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<con:soapui-project activeEnvironment="Default" name="SMP Samples" resourceRoot="" soapui-version="5.2.1" abortOnError="false" runType="SEQUENTIAL" id="8147b356-07e4-4ff9-ade6-4e92e0597a38" defaultScriptLanguage="Groovy" xmlns:con="http://eviware.com/soapui/config">
+  <con:settings>
+    <con:setting id="com.eviware.soapui.impl.wsdl.actions.iface.tools.soapui.ProTestRunnerAction@values-local"><![CDATA[<xml-fragment xmlns:con="http://eviware.com/soapui/config">
+  <con:entry key="Environment" value="Default"/>
+  <con:entry key="Global Properties" value=""/>
+  <con:entry key="TestSuite" value="&lt;all>"/>
+  <con:entry key="Password" value=""/>
+  <con:entry key="TestRunner Path" value=""/>
+  <con:entry key="Tool Args" value=""/>
+  <con:entry key="Ignore Errors" value="false"/>
+  <con:entry key="Host:Port" value=""/>
+  <con:entry key="user-settings.xml Password" value=""/>
+  <con:entry key="WSS Password Type" value=""/>
+  <con:entry key="Save Project" value="false"/>
+  <con:entry key="Enable UI" value="false"/>
+  <con:entry key="System Properties" value=""/>
+  <con:entry key="Domain" value=""/>
+  <con:entry key="Coverage Report" value="false"/>
+  <con:entry key="Export JUnit Results" value="false"/>
+  <con:entry key="Open Report" value="false"/>
+  <con:entry key="Project Properties" value=""/>
+  <con:entry key="Export All" value="false"/>
+  <con:entry key="Project Password" value=""/>
+  <con:entry key="Report Format(s)" value=""/>
+  <con:entry key="TestCase" value="&lt;all>"/>
+  <con:entry key="Print Report" value="false"/>
+  <con:entry key="Username" value=""/>
+  <con:entry key="Root Folder" value=""/>
+  <con:entry key="Save After" value="false"/>
+  <con:entry key="Add Settings" value="false"/>
+  <con:entry key="Endpoint" value=""/>
+  <con:entry key="Select Report Type" value="TestSuite Report"/>
+</xml-fragment>]]></con:setting>
+  </con:settings>
+  <con:interface xsi:type="con:RestService" id="54068235-0451-453a-80bc-61a4c872457c" wadlVersion="http://wadl.dev.java.net/2009/02" name="SMP 4.0 Sample Requests" type="rest" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <con:settings/>
+    
+    <con:definitionCache type="TEXT" rootPart=""/><con:endpoints>
+      
+      
+      
+      <con:endpoint>http://localhost:8080/smp</con:endpoint>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+    </con:endpoints>
+    <con:resource name="ServiceMetadata" path="/{ParticipantIdentifierScheme}::{ParticipantIdentifier}/services/{DocTypeIdentifierScheme}::{DocTypeIdentifier}" id="9431d3dc-da57-48d8-b0b9-efe2e41f1e27">
+      <con:settings/>
+      <con:parameters>
+        <con:parameter required="false" disableUrlEncoding="false"><con:name>ParticipantIdentifierScheme</con:name><con:value>ehealth-participantid-qns</con:value><con:style>TEMPLATE</con:style><con:type xmlns:xs="http://www.w3.org/2001/XMLSchema">xs:string</con:type><con:default>ehealth-participantid-qns</con:default><con:description xsi:nil="true"/></con:parameter><con:parameter>
+          <con:name>ParticipantIdentifier</con:name>
+          <con:value>urn:poland:ncpb</con:value>
+          <con:style>TEMPLATE</con:style>
+          <con:default>urn:poland:ncpb</con:default>
+        </con:parameter>
+        <con:parameter required="false" disableUrlEncoding="false"><con:name>DocTypeIdentifierScheme</con:name><con:value>ehealth-resid-qns</con:value><con:style>TEMPLATE</con:style><con:type xmlns:xs="http://www.w3.org/2001/XMLSchema">xs:string</con:type><con:default>ehealth-resid-qns</con:default><con:description xsi:nil="true"/></con:parameter><con:parameter>
+          <con:name>DocTypeIdentifier</con:name>
+          <con:value>urn::epsos##services:extended:epsos::107</con:value>
+          <con:style>TEMPLATE</con:style>
+          <con:default>urn::epsos##services:extended:epsos::107</con:default>
+        </con:parameter>
+      </con:parameters>
+      <con:method name="UC07 - GET" id="6fe01816-6f48-4729-9a46-a0c16a275517" method="GET">
+        <con:settings><con:setting id="RecordResponseRepresentations">false</con:setting></con:settings>
+        <con:parameters/>
+        <con:request name="sample request" id="ee5b7ec4-2dee-44b5-b548-a89c7e0237ea" mediaType="application/json">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          <con:setting id="RecordRequestRepresentations">false</con:setting></con:settings>
+          <con:endpoint>http://localhost:8080/smp</con:endpoint>
+          <con:request/>
+          <con:originalUri>http://localhost/0007:1238000007666/services/</con:originalUri>
+          <con:credentials>
+            <con:username/>
+            <con:password/>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+  <con:entry key="ParticipantIdentifier" value="urn:poland:ncpb"/>
+  <con:entry key="DocTypeIdentifierScheme" value="ehealth-docid-qns"/>
+  <con:entry key="ParticipantIdentifierScheme" value="ehealth-participantid-qns"/>
+  <con:entry key="DocTypeIdentifier" value="urn::epsos##services:extended:epsos::107"/>
+</con:parameters>
+          <con:parameterOrder><con:entry>ParticipantIdentifierScheme</con:entry><con:entry>ParticipantIdentifier</con:entry><con:entry>DocTypeIdentifierScheme</con:entry><con:entry>DocTypeIdentifier</con:entry></con:parameterOrder>
+        </con:request>
+        
+        
+        
+      </con:method>
+      <con:method name="UC04 - PUT" id="37966084-3aa9-4596-9c18-7bab8b11c535" method="PUT">
+        <con:settings/>
+        <con:parameters/>
+        <con:representation type="REQUEST"><con:mediaType>text/xml</con:mediaType><con:params/><con:element xmlns:ns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">ns:ServiceMetadata</con:element></con:representation><con:representation type="FAULT"><con:mediaType>text/xml</con:mediaType><con:status>404</con:status><con:params/><con:element xmlns:ec="ec:services:SMP:1.0">ec:ErrorResponse</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>201</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="simple request" id="5b3ec50e-7964-4237-a8a1-1e7426069cbe" mediaType="text/xml" postQueryString="false">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/smp</con:endpoint>
+          <con:request><![CDATA[<ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+    <ServiceInformation>
+        <ParticipantIdentifier scheme="${=request.getProperty('ParticipantIdentifierScheme').getValue()}">${=request.getProperty('ParticipantIdentifier').getValue()}</ParticipantIdentifier>
+        <DocumentIdentifier scheme="${=request.getProperty('DocTypeIdentifierScheme').getValue()}">${=request.getProperty('DocTypeIdentifier').getValue()}</DocumentIdentifier>
+        <ProcessList>
+            <Process>
+                <ProcessIdentifier scheme="cenbii-procid-ubl">urn:www.cenbii.eu:profile:bii04:ver1.0</ProcessIdentifier>
+                <ServiceEndpointList>
+                    <Endpoint transportProfile="busdox-transport-start">
+                        <EndpointURI>https://poland.pl/theService</EndpointURI>
+                        <RequireBusinessLevelSignature>true</RequireBusinessLevelSignature>
+                        <ServiceActivationDate>2003-01-01T00:00:00</ServiceActivationDate>
+                        <ServiceExpirationDate>2020-05-01T00:00:00</ServiceExpirationDate>
+                        <Certificate>MIICUTCCAbqgAwIBAgIEWoKrxzANBgkqhkiG9w0BAQsFADBtMQswCQYDVQQGEwJCRTEcMBoGA1UECgwTRXVyb3BlYW4gQ29tbWlzc2lvbjEYMBYGA1UECwwPRElHSVQgZURlbGl2ZXJ5MSYwJAYDVQQDDB1TYW1wbGUgU2lnbmF0dXJlcyBDZXJ0aWZpY2F0ZTAeFw0xODAyMTMwOTEzMjBaFw0zODAyMTMwOTEzMjBaMG0xCzAJBgNVBAYTAkJFMRwwGgYDVQQKDBNFdXJvcGVhbiBDb21taXNzaW9uMRgwFgYDVQQLDA9ESUdJVCBlRGVsaXZlcnkxJjAkBgNVBAMMHVNhbXBsZSBTaWduYXR1cmVzIENlcnRpZmljYXRlMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDIWYibbbJ6YT3uLQ0oup8kB1jJO/o16nlRfB3CbCbmpGZ2r+zCh67EMstKLltuk3peJ6QTcSaFV2oS1KLKWxwWsV4iEs5qggA5BTkzUicTsQWw39OcPPe0wniJeXdNUlOUFP2ab0ZQ9UMrJgVtlyF2uLijoKx1XR0mpTKmajh1CQIDAQABMA0GCSqGSIb3DQEBCwUAA4GBABoFFJ+vgOo/78SPv73+MEdxkydn5EMsZ+Q4Vt1BmBaq78RcjeS7LpvPZtRxSzW+w59825BbaOCJ5K0oc6lwOXc+SS0ZI0JK2vMlp/2REFLedqHqnhpSWFKWM0Zrq80o1SzBQHC1hq95RXml6RzzPEEK0Ll0dVH7HXRpekRScGic</Certificate>
+                        <ServiceDescription>Sample description of invoicing service</ServiceDescription>
+                        <TechnicalContactUrl>https://example.com</TechnicalContactUrl>
+                    </Endpoint>
+                </ServiceEndpointList>
+            </Process>
+        </ProcessList>
+    </ServiceInformation>
+</ServiceMetadata>]]></con:request>
+          <con:originalUri>http://localhost/iso6523-actorid-upis::0007:1238000007666/services/THE_DOC_TYPE</con:originalUri>
+          <con:credentials>
+            <con:username>smp_admin</con:username>
+            <con:password>changeit</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:preemptive>true</con:preemptive>
+            <con:authType>Preemptive</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+  <con:entry key="ParticipantIdentifier" value="urn:poland:ncpb"/>
+  <con:entry key="DocTypeIdentifierScheme" value="ehealth-docid-qns"/>
+  <con:entry key="DocTypeIdentifier" value="urn::epsos##services:extended:epsos::107"/>
+  <con:entry key="ParticipantIdentifierScheme" value="ehealth-participantid-qns"/>
+</con:parameters>
+          <con:parameterOrder><con:entry>ParticipantIdentifierScheme</con:entry><con:entry>ParticipantIdentifier</con:entry><con:entry>DocTypeIdentifierScheme</con:entry><con:entry>DocTypeIdentifier</con:entry></con:parameterOrder>
+        </con:request>
+        
+        
+        
+      <con:request name="all fields request" id="5b3ec50e-7964-4237-a8a1-1e7426069cbe" mediaType="text/xml" postQueryString="false">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          <con:setting id="RecordRequestRepresentations">false</con:setting></con:settings>
+          <con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/smp</con:endpoint>
+          <con:request><![CDATA[<ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+    <ServiceInformation>
+        <ParticipantIdentifier scheme="${=request.getProperty('ParticipantIdentifierScheme').getValue()}">${=request.getProperty('ParticipantIdentifier').getValue()}</ParticipantIdentifier>
+        <DocumentIdentifier scheme="${=request.getProperty('DocTypeIdentifierScheme').getValue()}">${=request.getProperty('DocTypeIdentifier').getValue()}</DocumentIdentifier>
+        <ProcessList>
+            <Process>
+                <ProcessIdentifier scheme="cenbii-procid-ubl">urn:www.cenbii.eu:profile:bii04:ver1.0</ProcessIdentifier>
+                <ServiceEndpointList>
+                    <Endpoint transportProfile="busdox-transport-start">
+                        <EndpointURI>https://poland.pl/theService</EndpointURI>
+                        <RequireBusinessLevelSignature>true</RequireBusinessLevelSignature>
+                        <ServiceActivationDate>2003-01-01T00:00:00</ServiceActivationDate>
+                        <ServiceExpirationDate>2020-05-01T00:00:00</ServiceExpirationDate>
+                        <Certificate>MIICUTCCAbqgAwIBAgIEWoKrxzANBgkqhkiG9w0BAQsFADBtMQswCQYDVQQGEwJCRTEcMBoGA1UECgwTRXVyb3BlYW4gQ29tbWlzc2lvbjEYMBYGA1UECwwPRElHSVQgZURlbGl2ZXJ5MSYwJAYDVQQDDB1TYW1wbGUgU2lnbmF0dXJlcyBDZXJ0aWZpY2F0ZTAeFw0xODAyMTMwOTEzMjBaFw0zODAyMTMwOTEzMjBaMG0xCzAJBgNVBAYTAkJFMRwwGgYDVQQKDBNFdXJvcGVhbiBDb21taXNzaW9uMRgwFgYDVQQLDA9ESUdJVCBlRGVsaXZlcnkxJjAkBgNVBAMMHVNhbXBsZSBTaWduYXR1cmVzIENlcnRpZmljYXRlMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDIWYibbbJ6YT3uLQ0oup8kB1jJO/o16nlRfB3CbCbmpGZ2r+zCh67EMstKLltuk3peJ6QTcSaFV2oS1KLKWxwWsV4iEs5qggA5BTkzUicTsQWw39OcPPe0wniJeXdNUlOUFP2ab0ZQ9UMrJgVtlyF2uLijoKx1XR0mpTKmajh1CQIDAQABMA0GCSqGSIb3DQEBCwUAA4GBABoFFJ+vgOo/78SPv73+MEdxkydn5EMsZ+Q4Vt1BmBaq78RcjeS7LpvPZtRxSzW+w59825BbaOCJ5K0oc6lwOXc+SS0ZI0JK2vMlp/2REFLedqHqnhpSWFKWM0Zrq80o1SzBQHC1hq95RXml6RzzPEEK0Ll0dVH7HXRpekRScGic</Certificate>
+                        <ServiceDescription>Sample description of invoicing service</ServiceDescription>
+                        <TechnicalContactUrl>https://example.com</TechnicalContactUrl>
+                    </Endpoint>
+                    <Endpoint transportProfile="transport-profile-value">
+                        <EndpointURI>https://poland.pl/theService2</EndpointURI>
+                        <RequireBusinessLevelSignature>false</RequireBusinessLevelSignature>
+                        <ServiceActivationDate>2003-01-01T00:00:00</ServiceActivationDate>
+                        <ServiceExpirationDate>2020-05-01T00:00:00</ServiceExpirationDate>
+                        <Certificate>MIICUTCCAbqgAwIBAgIEWoKrxzANBgkqhkiG9w0BAQsFADBtMQswCQYDVQQGEwJCRTEcMBoGA1UECgwTRXVyb3BlYW4gQ29tbWlzc2lvbjEYMBYGA1UECwwPRElHSVQgZURlbGl2ZXJ5MSYwJAYDVQQDDB1TYW1wbGUgU2lnbmF0dXJlcyBDZXJ0aWZpY2F0ZTAeFw0xODAyMTMwOTEzMjBaFw0zODAyMTMwOTEzMjBaMG0xCzAJBgNVBAYTAkJFMRwwGgYDVQQKDBNFdXJvcGVhbiBDb21taXNzaW9uMRgwFgYDVQQLDA9ESUdJVCBlRGVsaXZlcnkxJjAkBgNVBAMMHVNhbXBsZSBTaWduYXR1cmVzIENlcnRpZmljYXRlMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDIWYibbbJ6YT3uLQ0oup8kB1jJO/o16nlRfB3CbCbmpGZ2r+zCh67EMstKLltuk3peJ6QTcSaFV2oS1KLKWxwWsV4iEs5qggA5BTkzUicTsQWw39OcPPe0wniJeXdNUlOUFP2ab0ZQ9UMrJgVtlyF2uLijoKx1XR0mpTKmajh1CQIDAQABMA0GCSqGSIb3DQEBCwUAA4GBABoFFJ+vgOo/78SPv73+MEdxkydn5EMsZ+Q4Vt1BmBaq78RcjeS7LpvPZtRxSzW+w59825BbaOCJ5K0oc6lwOXc+SS0ZI0JK2vMlp/2REFLedqHqnhpSWFKWM0Zrq80o1SzBQHC1hq95RXml6RzzPEEK0Ll0dVH7HXRpekRScGic</Certificate>
+                        <ServiceDescription>another sample description</ServiceDescription>
+                        <TechnicalContactUrl>https://example2.com</TechnicalContactUrl>
+                    </Endpoint>
+                </ServiceEndpointList>
+                <Extension>
+                    <ExtensionID>optional sample ID</ExtensionID>
+                    <ExtensionName>UTF-8 characters are handled, i.e. polish special ones: zażółć gęślą jaźń</ExtensionName>
+                    <ExtensionAgencyID>text</ExtensionAgencyID>
+                    <ExtensionAgencyName>text</ExtensionAgencyName>
+                    <ex:dummy xmlns:ex="http://test.eu">dummy1</ex:dummy>
+                </Extension>
+                <Extension>
+                    <ex:dummy xmlns:ex="http://test.eu">dumm2</ex:dummy>
+                </Extension>
+            </Process>
+            <Process>
+                <ProcessIdentifier scheme="cenbii-procid-ubl">urn:www.cenbii.eu:profile:bii04:ver1.0</ProcessIdentifier>
+                <ServiceEndpointList>
+                    <Endpoint transportProfile="busdox-transport-start">
+                        <EndpointURI>https://poland.pl/theService</EndpointURI>
+                        <RequireBusinessLevelSignature>true</RequireBusinessLevelSignature>
+                        <ServiceActivationDate>2003-01-01T00:00:00</ServiceActivationDate>
+                        <ServiceExpirationDate>2020-05-01T00:00:00</ServiceExpirationDate>
+                        <Certificate>MIICUTCCAbqgAwIBAgIEWoKrxzANBgkqhkiG9w0BAQsFADBtMQswCQYDVQQGEwJCRTEcMBoGA1UECgwTRXVyb3BlYW4gQ29tbWlzc2lvbjEYMBYGA1UECwwPRElHSVQgZURlbGl2ZXJ5MSYwJAYDVQQDDB1TYW1wbGUgU2lnbmF0dXJlcyBDZXJ0aWZpY2F0ZTAeFw0xODAyMTMwOTEzMjBaFw0zODAyMTMwOTEzMjBaMG0xCzAJBgNVBAYTAkJFMRwwGgYDVQQKDBNFdXJvcGVhbiBDb21taXNzaW9uMRgwFgYDVQQLDA9ESUdJVCBlRGVsaXZlcnkxJjAkBgNVBAMMHVNhbXBsZSBTaWduYXR1cmVzIENlcnRpZmljYXRlMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDIWYibbbJ6YT3uLQ0oup8kB1jJO/o16nlRfB3CbCbmpGZ2r+zCh67EMstKLltuk3peJ6QTcSaFV2oS1KLKWxwWsV4iEs5qggA5BTkzUicTsQWw39OcPPe0wniJeXdNUlOUFP2ab0ZQ9UMrJgVtlyF2uLijoKx1XR0mpTKmajh1CQIDAQABMA0GCSqGSIb3DQEBCwUAA4GBABoFFJ+vgOo/78SPv73+MEdxkydn5EMsZ+Q4Vt1BmBaq78RcjeS7LpvPZtRxSzW+w59825BbaOCJ5K0oc6lwOXc+SS0ZI0JK2vMlp/2REFLedqHqnhpSWFKWM0Zrq80o1SzBQHC1hq95RXml6RzzPEEK0Ll0dVH7HXRpekRScGic</Certificate>
+                        <ServiceDescription>Sample description of invoicing service</ServiceDescription>
+                        <TechnicalContactUrl>https://example.com</TechnicalContactUrl>
+                    </Endpoint>
+                    <Endpoint transportProfile="transport-profile-value">
+                        <EndpointURI>https://poland.pl/theService2</EndpointURI>
+                        <RequireBusinessLevelSignature>false</RequireBusinessLevelSignature>
+                        <ServiceActivationDate>2003-01-01T00:00:00</ServiceActivationDate>
+                        <ServiceExpirationDate>2020-05-01T00:00:00</ServiceExpirationDate>
+                        <Certificate>MIICUTCCAbqgAwIBAgIEWoKrxzANBgkqhkiG9w0BAQsFADBtMQswCQYDVQQGEwJCRTEcMBoGA1UECgwTRXVyb3BlYW4gQ29tbWlzc2lvbjEYMBYGA1UECwwPRElHSVQgZURlbGl2ZXJ5MSYwJAYDVQQDDB1TYW1wbGUgU2lnbmF0dXJlcyBDZXJ0aWZpY2F0ZTAeFw0xODAyMTMwOTEzMjBaFw0zODAyMTMwOTEzMjBaMG0xCzAJBgNVBAYTAkJFMRwwGgYDVQQKDBNFdXJvcGVhbiBDb21taXNzaW9uMRgwFgYDVQQLDA9ESUdJVCBlRGVsaXZlcnkxJjAkBgNVBAMMHVNhbXBsZSBTaWduYXR1cmVzIENlcnRpZmljYXRlMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDIWYibbbJ6YT3uLQ0oup8kB1jJO/o16nlRfB3CbCbmpGZ2r+zCh67EMstKLltuk3peJ6QTcSaFV2oS1KLKWxwWsV4iEs5qggA5BTkzUicTsQWw39OcPPe0wniJeXdNUlOUFP2ab0ZQ9UMrJgVtlyF2uLijoKx1XR0mpTKmajh1CQIDAQABMA0GCSqGSIb3DQEBCwUAA4GBABoFFJ+vgOo/78SPv73+MEdxkydn5EMsZ+Q4Vt1BmBaq78RcjeS7LpvPZtRxSzW+w59825BbaOCJ5K0oc6lwOXc+SS0ZI0JK2vMlp/2REFLedqHqnhpSWFKWM0Zrq80o1SzBQHC1hq95RXml6RzzPEEK0Ll0dVH7HXRpekRScGic</Certificate>
+                        <ServiceDescription>another sample description</ServiceDescription>
+                        <TechnicalContactUrl>https://example2.com</TechnicalContactUrl>
+                    </Endpoint>
+                </ServiceEndpointList>
+                <Extension>
+                    <ExtensionID>optional sample ID</ExtensionID>
+                    <ExtensionName>UTF-8 characters are handled, i.e. polish special ones: zażółć gęślą jaźń</ExtensionName>
+                    <ExtensionAgencyID>text</ExtensionAgencyID>
+                    <ExtensionAgencyName>text</ExtensionAgencyName>
+                    <ex:dummy xmlns:ex="http://test.eu">dummy1</ex:dummy>
+                </Extension>
+                <Extension>
+                    <ex:dummy xmlns:ex="http://test.eu">dumm2</ex:dummy>
+                </Extension>
+            </Process>            
+        </ProcessList>
+        <Extension>
+            <ex:dummynode xmlns:ex="http://test.eu">Sample not mandatory extension</ex:dummynode>
+        </Extension>
+        <Extension>
+            <ExtensionID>another sample not mandatory extension ID</ExtensionID>
+            <ExtensionName>name</ExtensionName>
+            <ExtensionAgencyID>sample string</ExtensionAgencyID>
+            <ExtensionAgencyName>sample string</ExtensionAgencyName>
+            <ext:nextdummynode xmlns:ext="http://test2.eu">dummt3</ext:nextdummynode>
+        </Extension>
+    </ServiceInformation>
+</ServiceMetadata>]]></con:request>
+          <con:originalUri>http://localhost/iso6523-actorid-upis::0007:1238000007666/services/THE_DOC_TYPE</con:originalUri>
+          <con:credentials>
+            <con:username>smp_admin</con:username>
+            <con:password>changeit</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:preemptive>true</con:preemptive>
+            <con:authType>Preemptive</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+  <con:entry key="ParticipantIdentifier" value="urn:poland:ncpb"/>
+  <con:entry key="DocTypeIdentifierScheme" value="ehealth-docid-qns"/>
+  <con:entry key="DocTypeIdentifier" value="urn::epsos##services:extended:epsos::107"/>
+  <con:entry key="ParticipantIdentifierScheme" value="ehealth-participantid-qns"/>
+</con:parameters>
+          <con:parameterOrder><con:entry>ParticipantIdentifierScheme</con:entry><con:entry>ParticipantIdentifier</con:entry><con:entry>DocTypeIdentifierScheme</con:entry><con:entry>DocTypeIdentifier</con:entry></con:parameterOrder>
+        </con:request></con:method>
+      <con:method name="UC05 - DELETE" id="15df8e3c-65ef-44f7-9b7c-067b77137e12" method="DELETE">
+        <con:settings/>
+        <con:parameters/>
+        <con:representation type="FAULT"><con:mediaType>text/xml</con:mediaType><con:status>404</con:status><con:params/><con:element xmlns:ec="ec:services:SMP:1.0">ec:ErrorResponse</con:element></con:representation><con:representation type="REQUEST"><con:mediaType>application/json</con:mediaType><con:params/></con:representation><con:request name="sample request" id="732b985a-b408-4171-a43c-5b7fc0de3159" mediaType="application/json" postQueryString="false">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>http://localhost:8080/smp</con:endpoint>
+          <con:request/>
+          <con:originalUri>http://localhost/iso6523-actorid-upis::0007:1238000007666/services/THE_DOC_TYPE</con:originalUri>
+          <con:credentials>
+            <con:username>smp_admin</con:username>
+            <con:password>changeit</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:preemptive>true</con:preemptive>
+            <con:authType>Preemptive</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+  <con:entry key="ParticipantIdentifier" value="urn:poland:ncpb"/>
+  <con:entry key="DocTypeIdentifierScheme" value="ehealth-docid-qns"/>
+  <con:entry key="DocTypeIdentifier" value="urn::epsos##services:extended:epsos::107"/>
+  <con:entry key="ParticipantIdentifierScheme" value="ehealth-participantid-qns"/>
+</con:parameters>
+          <con:parameterOrder><con:entry>ParticipantIdentifierScheme</con:entry><con:entry>ParticipantIdentifier</con:entry><con:entry>DocTypeIdentifierScheme</con:entry><con:entry>DocTypeIdentifier</con:entry></con:parameterOrder>
+        </con:request>
+        
+        
+        
+      </con:method>
+    </con:resource>
+    <con:resource name="ServiceGroup" path="/{ParticipantIdentifierScheme}::{ParticipantIdentifier}" id="9431d3dc-da57-48d8-b0b9-efe2e41f1e27">
+      <con:settings/>
+      <con:parameters>
+        <con:parameter required="false" disableUrlEncoding="false"><con:name>ParticipantIdentifierScheme</con:name><con:value>ehealth-participantid-qns</con:value><con:style>TEMPLATE</con:style><con:type xmlns:xs="http://www.w3.org/2001/XMLSchema">xs:string</con:type><con:default>ehealth-participantid-qns</con:default><con:description xsi:nil="true"/></con:parameter><con:parameter>
+          <con:name>ParticipantIdentifier</con:name>
+          <con:value>urn:poland:ncpb</con:value>
+          <con:style>TEMPLATE</con:style>
+          <con:default>urn:poland:ncpb</con:default>
+          <con:description xsi:nil="true"/>
+        </con:parameter>
+      </con:parameters>
+      <con:method name="UC06 - GET" id="6fe01816-6f48-4729-9a46-a0c16a275517" method="GET">
+        <con:settings/>
+        <con:parameters/>
+        <con:representation type="FAULT"><con:mediaType>text/xml</con:mediaType><con:status>404</con:status><con:params/><con:element xmlns:ec="ec:services:SMP:1.0">ec:ErrorResponse</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType>text/xml;charset=UTF-8</con:mediaType><con:status>200</con:status><con:params/><con:element xmlns:ns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">ns:ServiceGroup</con:element></con:representation><con:request name="sample request" id="ee5b7ec4-2dee-44b5-b548-a89c7e0237ea" mediaType="application/json">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>http://localhost:8080/smp</con:endpoint>
+          <con:request/>
+          <con:originalUri>http://localhost/0007:1238000007666/services/</con:originalUri>
+          <con:credentials>
+            <con:username/>
+            <con:password/>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:preemptive>false</con:preemptive>
+            <con:authType>Global HTTP Settings</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+  <con:entry key="ParticipantIdentifier" value="urn:poland:ncpb"/>
+  <con:entry key="ParticipantIdentifierScheme" value="ehealth-participantid-qns"/>
+</con:parameters>
+          <con:parameterOrder><con:entry>ParticipantIdentifierScheme</con:entry><con:entry>ParticipantIdentifier</con:entry></con:parameterOrder>
+        </con:request>
+        
+        
+        
+      </con:method>
+      <con:method name="UC02 - PUT" id="37966084-3aa9-4596-9c18-7bab8b11c535" method="PUT">
+        <con:settings/>
+        <con:parameters/>
+		<con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>201</con:status><con:params/><con:element>data</con:element></con:representation><con:representation type="REQUEST"><con:mediaType>text/xml</con:mediaType><con:params/><con:element xmlns:ns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">ns:ServiceGroup</con:element></con:representation><con:request name="simple request" id="5b3ec50e-7964-4237-a8a1-1e7426069cbe" mediaType="text/xml" postQueryString="false">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          <con:setting id="RecordRequestRepresentations">false</con:setting></con:settings>
+          <con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/smp</con:endpoint>
+          <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+    <ParticipantIdentifier scheme="${=request.getProperty('ParticipantIdentifierScheme').getValue()}">${=request.getProperty('ParticipantIdentifier').getValue()}</ParticipantIdentifier>
+    <ServiceMetadataReferenceCollection/>
+</ServiceGroup>]]></con:request>
+          <con:originalUri>http://localhost/iso6523-actorid-upis::0007:1238000007666/services/THE_DOC_TYPE</con:originalUri>
+          <con:credentials>
+            <con:username>smp_admin</con:username>
+            <con:password>changeit</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:preemptive>true</con:preemptive>
+            <con:authType>Preemptive</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+  <con:entry key="ParticipantIdentifier" value="urn:poland:ncpb"/>
+  <con:entry key="ParticipantIdentifierScheme" value="ehealth-participantid-qns"/>
+</con:parameters>
+          <con:parameterOrder><con:entry>ParticipantIdentifierScheme</con:entry><con:entry>ParticipantIdentifier</con:entry></con:parameterOrder>
+        </con:request><con:request name="sample request with specified owner (non-ASCII characters must be URL-encoded)" id="5b3ec50e-7964-4237-a8a1-1e7426069cbe" mediaType="text/xml" postQueryString="false">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="ServiceGroup-Owner" value="%C5%BB%C3%B3%C5%82ty%20J%C3%A9r%C3%B4me" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/smp</con:endpoint>
+          <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+    <ParticipantIdentifier scheme="${=request.getProperty('ParticipantIdentifierScheme').getValue()}">${=request.getProperty('ParticipantIdentifier').getValue()}</ParticipantIdentifier>
+    <ServiceMetadataReferenceCollection/>
+</ServiceGroup>]]></con:request>
+          <con:originalUri>http://localhost/iso6523-actorid-upis::0007:1238000007666/services/THE_DOC_TYPE</con:originalUri>
+          <con:credentials>
+            <con:username>smp_admin</con:username>
+            <con:password>changeit</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:preemptive>true</con:preemptive>
+            <con:authType>Preemptive</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+  <con:entry key="ParticipantIdentifier" value="urn:poland:ncpb"/>
+  <con:entry key="ParticipantIdentifierScheme" value="ehealth-participantid-qns"/>
+</con:parameters>
+          <con:parameterOrder><con:entry>ParticipantIdentifierScheme</con:entry><con:entry>ParticipantIdentifier</con:entry></con:parameterOrder>
+        </con:request><con:request name="sample request with specified Domain" id="5b3ec50e-7964-4237-a8a1-1e7426069cbe" mediaType="text/xml" postQueryString="false">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;entry key="Domain" value="domain2" xmlns="http://eviware.com/soapui/config"/></con:setting>
+          </con:settings>
+          <con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/smp</con:endpoint>
+          <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+    <ParticipantIdentifier scheme="${=request.getProperty('ParticipantIdentifierScheme').getValue()}">${=request.getProperty('ParticipantIdentifier').getValue()}</ParticipantIdentifier>
+    <ServiceMetadataReferenceCollection/>
+</ServiceGroup>]]></con:request>
+          <con:originalUri>http://localhost/iso6523-actorid-upis::0007:1238000007666/services/THE_DOC_TYPE</con:originalUri>
+          <con:credentials>
+            <con:username>smp_admin</con:username>
+            <con:password>changeit</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:preemptive>true</con:preemptive>
+            <con:authType>Preemptive</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+  <con:entry key="ParticipantIdentifier" value="urn:poland:ncpb"/>
+  <con:entry key="ParticipantIdentifierScheme" value="ehealth-participantid-qns"/>
+</con:parameters>
+          <con:parameterOrder><con:entry>ParticipantIdentifierScheme</con:entry><con:entry>ParticipantIdentifier</con:entry></con:parameterOrder>
+        </con:request><con:request name="sample request with extensions" id="5b3ec50e-7964-4237-a8a1-1e7426069cbe" mediaType="text/xml" postQueryString="false">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:encoding>UTF-8</con:encoding><con:endpoint>http://localhost:8080/smp</con:endpoint>
+          <con:request><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+    <ParticipantIdentifier scheme="${=request.getProperty('ParticipantIdentifierScheme').getValue()}">${=request.getProperty('ParticipantIdentifier').getValue()}</ParticipantIdentifier>
+    <ServiceMetadataReferenceCollection/>
+    <Extension>
+        <ex:dummynode xmlns:ex="http://test.eu">Sample not mandatory extension</ex:dummynode>
+    </Extension>
+    <Extension>
+        <ExtensionID>another sample not mandatory extension ID</ExtensionID>
+        <ExtensionName>name</ExtensionName>
+        <ExtensionAgencyID>sample string</ExtensionAgencyID>
+        <ExtensionAgencyName>sample string</ExtensionAgencyName>
+        <ext:nextdummynode xmlns:ext="http://test2.eu">token1</ext:nextdummynode>
+    </Extension>
+</ServiceGroup>]]></con:request>
+          <con:originalUri>http://localhost/iso6523-actorid-upis::0007:1238000007666/services/THE_DOC_TYPE</con:originalUri>
+          <con:credentials>
+            <con:username>smp_admin</con:username>
+            <con:password>changeit</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:preemptive>true</con:preemptive>
+            <con:authType>Preemptive</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+  <con:entry key="ParticipantIdentifier" value="urn:poland:ncpb"/>
+  <con:entry key="ParticipantIdentifierScheme" value="ehealth-participantid-qns"/>
+</con:parameters>
+          <con:parameterOrder><con:entry>ParticipantIdentifierScheme</con:entry><con:entry>ParticipantIdentifier</con:entry></con:parameterOrder>
+        </con:request></con:method>
+      <con:method name="UC03 - DELETE" id="15df8e3c-65ef-44f7-9b7c-067b77137e12" method="DELETE">
+        <con:settings/>
+        <con:parameters/>
+        <con:request name="sample request" id="732b985a-b408-4171-a43c-5b7fc0de3159" mediaType="application/json" postQueryString="false">
+          <con:settings>
+            <con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting>
+          </con:settings>
+          <con:endpoint>http://localhost:8080/smp</con:endpoint>
+          <con:request/>
+          <con:originalUri>http://localhost/iso6523-actorid-upis::0007:1238000007666</con:originalUri>
+          <con:credentials>
+            <con:username>smp_admin</con:username>
+            <con:password>changeit</con:password>
+            <con:selectedAuthProfile>Basic</con:selectedAuthProfile>
+            <con:addedBasicAuthenticationTypes>Basic</con:addedBasicAuthenticationTypes>
+            <con:preemptive>true</con:preemptive>
+            <con:authType>Preemptive</con:authType>
+          </con:credentials>
+          <con:jmsConfig JMSDeliveryMode="PERSISTENT"/>
+          <con:jmsPropertyConfig/>
+          <con:parameters>
+  <con:entry key="ParticipantIdentifier" value="urn:poland:ncpb"/>
+  <con:entry key="ParticipantIdentifierScheme" value="ehealth-participantid-qns"/>
+</con:parameters>
+          <con:parameterOrder><con:entry>ParticipantIdentifierScheme</con:entry><con:entry>ParticipantIdentifier</con:entry></con:parameterOrder>
+        </con:request>
+        
+        
+        
+      </con:method>
+    </con:resource>
+  </con:interface>
+  
+  <con:requirements/>
+  <con:properties/>
+  <con:wssContainer/>
+  <con:databaseConnectionContainer/>
+  <con:oAuth2ProfileContainer/>
+  <con:reporting>
+    <con:xmlTemplates/>
+    <con:parameters/>
+  </con:reporting>
+  <con:sensitiveInformation/>
+</con:soapui-project>

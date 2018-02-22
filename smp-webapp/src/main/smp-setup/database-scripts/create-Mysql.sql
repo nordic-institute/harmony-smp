@@ -41,7 +41,7 @@ CREATE TABLE smp_service_group (
   domainId                 VARCHAR(50)
                            CHARACTER SET utf8
                            COLLATE utf8_bin NOT NULL
-                           DEFAULT 'default',
+                           DEFAULT 'domain1',
   extension                TEXT             NULL DEFAULT NULL,
   PRIMARY KEY (businessIdentifier, businessIdentifierScheme),
   CONSTRAINT FK_srv_group_domain FOREIGN KEY (domainId)
@@ -120,7 +120,7 @@ BEGIN
   END //
 
 DROP PROCEDURE IF EXISTS validate_new_domain //
-CREATE PROCEDURE validate_new_domain (IN new_bdmsl_client_cert_alias varchar(50), IN new_bdmsl_client_cert_header varchar(50))
+CREATE PROCEDURE validate_new_domain (IN new_bdmsl_client_cert_alias varchar(50), IN new_bdmsl_client_cert_header varchar(4000))
 BEGIN
     IF ((new_bdmsl_client_cert_alias > '' OR new_bdmsl_client_cert_alias = null) AND (new_bdmsl_client_cert_header > '' OR new_bdmsl_client_cert_header = null))
     THEN
@@ -166,7 +166,7 @@ DELIMITER ;
 
 
 
-INSERT INTO smp_domain(domainId, bdmslSmpId) VALUES('default', 'DEFAULT-SMP-ID');
+INSERT INTO smp_domain(domainId, bdmslSmpId) VALUES('domain1', 'DEFAULT-SMP-ID');
 -- default admin user with password "changeit"
 INSERT INTO smp_user(username, password, isadmin) VALUES ('smp_admin', '$2a$10$SZXMo7K/wA.ULWxH7uximOxeNk4mf3zU6nxJx/2VfKA19QlqwSpNO', '1');
 

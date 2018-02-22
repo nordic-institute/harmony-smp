@@ -34,6 +34,7 @@ public class ErrorResponseBuilder {
 
     private static final Logger log = LoggerFactory.getLogger(ErrorResponseBuilder.class);
 
+    public static final MediaType CONTENT_TYPE_TEXT_XML_UTF8 = MediaType.valueOf("text/xml; charset=UTF-8");
     private HttpStatus status = INTERNAL_SERVER_ERROR;
     private ErrorBusinessCode errorBusinessCode = TECHNICAL;
     private String strErrorDescription = "Unexpected technical error occurred.";
@@ -78,7 +79,7 @@ public class ErrorResponseBuilder {
 
     public ResponseEntity build() {
         return ResponseEntity.status(this.status)
-                .contentType(MediaType.TEXT_XML)
+                .contentType(CONTENT_TYPE_TEXT_XML_UTF8)
                 .body(this.buildBody());
     }
 
