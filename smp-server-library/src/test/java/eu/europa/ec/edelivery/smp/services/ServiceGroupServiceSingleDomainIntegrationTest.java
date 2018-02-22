@@ -128,7 +128,28 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
 
         //when-then
-        serviceGroupService.saveServiceGroup(newServiceGroup,"NOT-EXISTING-DOMAIN", ADMIN_USERNAME);
+        serviceGroupService.saveServiceGroup(newServiceGroup,"NOTEXISTINGDOMAIN", ADMIN_USERNAME);
+    }
+
+    @Test(expected = WrongInputFieldException.class)
+    public void onlyASCIICharactersAllowedInDomainId() throws Throwable {
+        //given
+        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
+
+        //when-then
+        serviceGroupService.saveServiceGroup(newServiceGroup,"notAllowedChars:-_;#$", ADMIN_USERNAME);
+    }
+
+    @Test
+    public void savingUnderTheOnlyDomainSpecifiedExpliciteIsAllowed() throws Throwable {
+        //given
+        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
+
+        //when
+        serviceGroupService.saveServiceGroup(newServiceGroup,"domain1", ADMIN_USERNAME);
+
+        //then
+        assertNotNull(serviceGroupService.getServiceGroup(SERVICE_GROUP_ID));
     }
 
 }

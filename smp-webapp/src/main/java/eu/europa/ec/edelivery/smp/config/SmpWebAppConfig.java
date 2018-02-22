@@ -30,18 +30,20 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
         "eu.europa.ec.edelivery.smp.controllers",
         "eu.europa.ec.edelivery.smp.validation"})
 @Import({GlobalMethodSecurityConfig.class, ErrorMappingControllerAdvice.class})
-public class SmpWebAppConfig extends WebMvcConfigurerAdapter {
+public class SmpWebAppConfig implements WebMvcConfigurer {
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
-        registry.addViewController("/").setViewName("index.html");
+        registry.addViewController("/").setViewName("/index.html");
+        //Home page used by SMP 2.x and 3.x - needed for backward compatibility in some EC's environments
+        registry.addViewController("/web/index.html").setViewName("/index.html");
     }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.setOrder(HIGHEST_PRECEDENCE)
                 .addResourceHandler("/index.html", "/favicon-16x16.png")
-                .addResourceLocations("/web/");
+                .addResourceLocations("/static_resources/");
     }
 
     @Override
