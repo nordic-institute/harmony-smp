@@ -18,8 +18,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceType;
 
 import static eu.europa.ec.smp.api.Identifiers.asString;
+import static java.util.Arrays.asList;
 
 /**
  * Created by gutowpa on 02/08/2017.
@@ -66,6 +69,21 @@ public class ServiceGroupValidatorTest {
         ParticipantIdentifierType id = new ParticipantIdentifierType("urn:poland:ncpb", scheme);
         sg.setParticipantIdentifier(id);
 
+        validator.validate(asString(id), sg);
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void testServiceGroupWithReference() throws Throwable {
+        //given
+        ServiceMetadataReferenceType ref = new ServiceMetadataReferenceType("http://poland.pl");
+        ServiceMetadataReferenceCollectionType references = new ServiceMetadataReferenceCollectionType(asList(ref));
+
+        ParticipantIdentifierType id = new ParticipantIdentifierType("urn:poland:ncpb", "correct-scheme-ok");
+        ServiceGroup sg = new ServiceGroup();
+        sg.setServiceMetadataReferenceCollection(references);
+        sg.setParticipantIdentifier(id);
+
+        //when-then
         validator.validate(asString(id), sg);
     }
 }
