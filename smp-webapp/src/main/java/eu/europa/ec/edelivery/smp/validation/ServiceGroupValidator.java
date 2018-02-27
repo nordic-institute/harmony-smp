@@ -17,6 +17,7 @@ import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
 import eu.europa.ec.smp.api.Identifiers;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceCollectionType;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -24,6 +25,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import static eu.europa.ec.edelivery.smp.error.ErrorBusinessCode.WRONG_FIELD;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 
 /**
@@ -54,6 +56,11 @@ public class ServiceGroupValidator {
         String scheme = serviceGroup.getParticipantIdentifier().getScheme();
         if (!schemaPattern.matcher(scheme).matches()) {
             throw new BadRequestException(WRONG_FIELD, "Service Group scheme does not match allowed pattern: " + schemaPattern.pattern());
+        }
+
+        ServiceMetadataReferenceCollectionType references = serviceGroup.getServiceMetadataReferenceCollection();
+        if (references != null && !isEmpty(references.getServiceMetadataReferences())) {
+            throw new BadRequestException(WRONG_FIELD, "ServiceMetadataReferenceCollection must be empty");
         }
     }
 
