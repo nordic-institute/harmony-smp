@@ -27,7 +27,6 @@ import org.springframework.web.util.UrlPathHelper;
 import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 
-import static eu.europa.ec.smp.api.Identifiers.asString;
 import static eu.europa.ec.smp.api.Identifiers.asUrlEncodedString;
 
 /**
