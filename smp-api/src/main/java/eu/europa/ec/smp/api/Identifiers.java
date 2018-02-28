@@ -61,16 +61,16 @@ public class Identifiers {
     }
 
     public static String asUrlEncodedString(ParticipantIdentifierType participantId) {
-        try {
-            return URLEncoder.encode(asString(participantId), UTF_8.name());
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalStateException(e);
-        }
+        return urlEncode(asString(participantId));
     }
 
     public static String asUrlEncodedString(DocumentIdentifier docId) {
+        return urlEncode(asString(docId));
+    }
+
+    private static String urlEncode(String s) {
         try {
-            return URLEncoder.encode(asString(docId), UTF_8.name());
+            return URLEncoder.encode(s, UTF_8.name());
         } catch (UnsupportedEncodingException e) {
             throw new IllegalStateException(e);
         }
