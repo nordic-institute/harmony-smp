@@ -39,7 +39,7 @@ public class CaseSensitivityNormalizer {
         toLowerCaseStringList(this.caseSensitiveDocumentSchemes);
     }
 
-    @Value("#{'${identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes}'.split('\\|')}")
+    @Value("#{'${identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes}'.split('\\|')}")
     public void setCaseSensitiveParticipantSchemes(List<String> caseSensitiveParticipantSchemes) {
         this.caseSensitiveParticipantSchemes = caseSensitiveParticipantSchemes;
         toLowerCaseStringList(this.caseSensitiveParticipantSchemes);
