@@ -165,4 +165,22 @@ public class IdentifiersTest {
         assertEquals(MALFORMED_INPUT_MSG + negativeInput, e.getMessage());
     }
 
+    @Test
+    public void testUrlEncodingParticipantId(){
+        //given
+        ParticipantIdentifierType participantId = new ParticipantIdentifierType("0088:conformance:sg01#", "ehealth:actorid:qns");
+
+        //when-then
+        assertEquals("ehealth%3Aactorid%3Aqns%3A%3A0088%3Aconformance%3Asg01%23", Identifiers.asUrlEncodedString(participantId));
+    }
+
+    @Test
+    public void testUrlEncodingDocumentId(){
+        //given
+        DocumentIdentifier docId = new DocumentIdentifier("urn::ehealth##services:extended:epsos01::101", "busdox:docid:qns");
+
+        //when-then
+        assertEquals("busdox%3Adocid%3Aqns%3A%3Aurn%3A%3Aehealth%23%23services%3Aextended%3Aepsos01%3A%3A101", Identifiers.asUrlEncodedString(docId));
+    }
+
 }

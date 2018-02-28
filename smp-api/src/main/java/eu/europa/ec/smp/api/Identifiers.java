@@ -18,8 +18,14 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessIdentifier;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Factory and utility methods for API classes generated from OASIS XSD.
@@ -56,6 +62,21 @@ public class Identifiers {
         return String.format("%s::%s", docId.getScheme(), docId.getValue());
     }
 
+    public static String asUrlEncodedString(ParticipantIdentifierType participantId){
+        try {
+            return URLEncoder.encode(asString(participantId), UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    public static String asUrlEncodedString(DocumentIdentifier docId){
+        try {
+            return URLEncoder.encode(asString(docId), UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 
     private static String extract(String doubleColonDelimitedId, String groupName) {
         try {
