@@ -20,8 +20,6 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessIdentifier;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,7 +27,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Factory and utility methods for API classes generated from OASIS XSD.
- *
+ * <p>
  * Created by gutowpa on 12/01/2017.
  */
 public class Identifiers {
@@ -54,15 +52,15 @@ public class Identifiers {
         return new ProcessIdentifier(value, scheme);
     }
 
-    public static String asString(ParticipantIdentifierType participantId){
+    public static String asString(ParticipantIdentifierType participantId) {
         return String.format("%s::%s", participantId.getScheme(), participantId.getValue());
     }
 
-    public static String asString(DocumentIdentifier docId){
+    public static String asString(DocumentIdentifier docId) {
         return String.format("%s::%s", docId.getScheme(), docId.getValue());
     }
 
-    public static String asUrlEncodedString(ParticipantIdentifierType participantId){
+    public static String asUrlEncodedString(ParticipantIdentifierType participantId) {
         try {
             return URLEncoder.encode(asString(participantId), UTF_8.name());
         } catch (UnsupportedEncodingException e) {
@@ -70,7 +68,7 @@ public class Identifiers {
         }
     }
 
-    public static String asUrlEncodedString(DocumentIdentifier docId){
+    public static String asUrlEncodedString(DocumentIdentifier docId) {
         try {
             return URLEncoder.encode(asString(docId), UTF_8.name());
         } catch (UnsupportedEncodingException e) {
@@ -83,7 +81,7 @@ public class Identifiers {
             Matcher m = IDENTIFIER_PATTERN.matcher(doubleColonDelimitedId);
             m.matches();
             return m.group(groupName);
-        }catch(Exception e){
+        } catch (Exception e) {
             throw new MalformedIdentifierException(doubleColonDelimitedId, e);
         }
     }
