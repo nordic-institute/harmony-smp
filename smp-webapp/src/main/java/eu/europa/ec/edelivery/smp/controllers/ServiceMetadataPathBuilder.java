@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.net.URI;
 
 import static eu.europa.ec.smp.api.Identifiers.asString;
+import static eu.europa.ec.smp.api.Identifiers.asUrlEncodedString;
 
 /**
  * Created by gutowpa on 13/07/2017.
@@ -47,7 +48,7 @@ public class ServiceMetadataPathBuilder {
         String path = ServletUriComponentsBuilder.fromCurrentRequestUri()
                 .replacePath(getUrlContext())
                 .path("/{participantId}/services/{docId}")
-                .buildAndExpand(asString(participantId), asString(docId))
+                .buildAndExpand(asUrlEncodedString(participantId), asUrlEncodedString(docId))
                 .toUriString();
 
         return path;
