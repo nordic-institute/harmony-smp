@@ -19,9 +19,9 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.smartbear.soapui</groupId>
+				<groupId>com.smartbear.soapui</groupId>
                 <artifactId>soapui-pro-maven-plugin</artifactId>
-                <version>5.0.0</version>
+                <version>5.1.2</version>
                 <executions>
                     <execution>
                         <phase>test</phase>
@@ -49,7 +49,9 @@
                         </property>
                     </soapuiProperties>
                     <testFailIgnore>false</testFailIgnore>
-                    <projectFile>${project.basedir}/soapui/SMP3.0-BAMBOO-soapui-project.xml</projectFile>
+                    <projectFile>${project.basedir}/soapui/SMP4.0-Genneric-soapui-project.xml</projectFile>
+                    <testSuite>WS-Auto for Bamboo</testSuite>
+                    <!--<testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->	
                     <projectProperties>
                         <value>url=${url}</value>
                     </projectProperties>
