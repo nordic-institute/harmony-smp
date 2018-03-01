@@ -49,9 +49,9 @@
                         </property>
                     </soapuiProperties>
                     <testFailIgnore>false</testFailIgnore>
-                    <projectFile>${project.basedir}/soapui/SMP4.0-Genneric-soapui-project.xml</projectFile>
+                    <projectFile>${project.basedir}/soapui/SMP4.0-Generic-soapui-project.xml</projectFile>
                     <testSuite>WS-Auto for Bamboo</testSuite>
-                    <!--<testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->	
+                    <!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->	
                     <projectProperties>
                         <value>url=${url}</value>
                     </projectProperties>
