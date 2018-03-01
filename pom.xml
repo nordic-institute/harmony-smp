@@ -71,7 +71,7 @@
                     <plugin>
                         <groupId>com.smartbear.soapui</groupId>
                         <artifactId>soapui-pro-maven-plugin</artifactId>
-                        <version>5.1.2</version>
+                        <version>5.0.0</version>
                         <configuration>
                             <outputFolder>${sonar.jacoco.codeCoveragePath}/surefire-reports</outputFolder>
                             <junitReport>true</junitReport>
