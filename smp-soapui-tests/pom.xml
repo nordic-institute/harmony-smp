@@ -19,7 +19,7 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.smartbear.soapui</groupId>
+				<groupId>com.smartbear.soapui</groupId>
                 <artifactId>soapui-pro-maven-plugin</artifactId>
                 <version>5.0.0</version>
                 <executions>
@@ -49,7 +49,9 @@
                         </property>
                     </soapuiProperties>
                     <testFailIgnore>false</testFailIgnore>
-                    <projectFile>${project.basedir}/soapui/SMP3.0-BAMBOO-soapui-project.xml</projectFile>
+                    <projectFile>${project.basedir}/soapui/SMP4.0-Generic-soapui-project.xml</projectFile>
+                    <testSuite>PASSING_AUTO_BAMBOO</testSuite>
+                    <!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->	
                     <projectProperties>
                         <value>url=${url}</value>
                     </projectProperties>
