@@ -1,5 +1,3 @@
-package soapui.smp;
-
 import groovy.sql.Sql;
 import java.sql.SQLException;
 import java.security.MessageDigest;
@@ -21,14 +19,21 @@ import javax.xml.crypto.dsig.XMLSignatureFactory
 import javax.xml.crypto.dsig.XMLSignature
 import java.util.Iterator;
 import sun.misc.IOUtils;
-
+import java.text.SimpleDateFormat
+import com.eviware.soapui.support.GroovyUtils
 
 
 class SMP
 {
+    // Database parameters
+    def sql;
+	def url;
+    def driver;
+    def testDatabase="false";
 	def messageExchange;
 	def context
 	def log;
+	static def DEFAULT_LOG_LEVEL = true;	
 
 	// Table allocated to store the data/parameters of the request.
 	def requestDataTable = [];
@@ -51,12 +56,23 @@ class SMP
 	
 	// Node container
 	def Node nodeContainer = null;
+	
+	def dbUser=null
+	def dbPassword=null
 
 	// Constructor of the SMP Class
 	SMP(log,messageExchange,context) {
+		debugLog("Create SMP instance", log)
 		this.log = log 
 		this.messageExchange = messageExchange;
 		this.context=context;
+        this.url=context.expand( '${#Project#jdbc.url}' );
+        driver=context.expand( '${#Project#jdbc.driver}' );
+        testDatabase=context.expand( '${#Project#testDB}' );
+		dbUser=context.expand( '${#Project#dbUser}' );
+        dbPassword=context.expand( '${#Project#dbPassword}' );		
+		sql = null;	
+		debugLog("SMP instance created", log)
 	}
 	
 	// Class destructor
@@ -64,7 +80,43 @@ class SMP
         log.info "Test finished."
     }	
 
-
+//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+	// Log information wrapper 
+	static def void debugLog(logMsg, log,  logLevel = DEFAULT_LOG_LEVEL) {
+		if (logLevel.toString()=="1" || logLevel.toString() == "true") 
+			log.info (logMsg)
+	}
+//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+    // Simply open DB connection (dev or test depending on testEnvironment variable)	
+	def openConnection(){
+       log.debug "Open DB connections"
+        if(testDatabase.toLowerCase()=="true"){
+            try{
+				if(driver.contains("oracle")){
+					// Oracle DB
+					GroovyUtils.registerJdbcDriver( "oracle.jdbc.driver.OracleDriver" )
+				}else{
+					// Mysql DB (assuming fallback: currently, we use only those 2 DBs ...)
+					GroovyUtils.registerJdbcDriver( "com.mysql.jdbc.Driver" )
+				}
+				sql = Sql.newInstance(url, dbUser, dbPassword, driver);
+            }
+            catch (SQLException ex)
+            {
+                assert 0,"SQLException occured: " + ex;
+            }
+		}
+    }
+//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+    // Close the DB connection opened previously
+    def closeConnection(){
+        if(testDatabase.toLowerCase()=="true"){
+            if(sql){
+                sql.connection.close();
+                sql = null;
+            }
+        }
+    }
 
 
 //=================================================================================
@@ -137,6 +189,7 @@ class SMP
 			
 			// Extract the Participant Identifier and the Business Identifier Scheme from the Request
 			case "servicegroup":
+			debugLog("In extractRequestParameters tempoContainer: $tempoContainer", log)
 				initParameters("servicegroup","request");
 				requestDataTable[0][0] = tempoContainer[0];
 				requestDataTable[1][0] = tempoContainer[1];
@@ -265,13 +318,17 @@ class SMP
 //=================================================================================
 	def verifyResults(String testType, String expectedResult, String testStepName="false", String redirectURL=null, String redirectCer=null, int nRef=0){
 		// In case of testType = "servicegroup", 
+			debugLog("Entering verifyResults method with testType: $testType, expectedResult: $expectedResult, testStepName: $testStepName, redirectURL: $redirectURL, redirectCer: $redirectCer, nRef: $nRef", log)	
 		def counter = 0;
 		def String reqString = null;
 		def String extensionRequest = "0";
 		def String extensionResponse = "0";
 		def sigAlgo = "0";
+		debugLog("Befor extractRequestParameters(testType,testStepName)", log)
 		extractRequestParameters(testType,testStepName);
+		debugLog("After extractRequestParameters(testType,testStepName)", log)		
 		extractResponseParameters(testType);
+		debugLog("After extractResponseParameters(testType)", log)		
 		switch(testType.toLowerCase()){	
 			case "servicegroup":
 				if(expectedResult.toLowerCase()=="success"){
@@ -500,9 +557,10 @@ class SMP
 		def parts = [];
 		def mesure = 0;
 		def extraParts = null;
+		debugLog("entering extractFromURL", log)
 		
 		tempoContainer=["0","0","0","0"];
-
+	
 		Table1 = url.split('/services/');
 		parts=Table1[0].split('/');
 		mesure=parts.size();
@@ -518,15 +576,30 @@ class SMP
 		assert (Table1.size()== 2),locateTest()+"Error: Could not extract the Participant Identifier from the url. Non usual url format, :: separator not found";
 		tempoContainer[0] = Table1[0];
 		tempoContainer[1] = Table1[1];
+		debugLog("Filling tempoContainer table", log)		
+		// TODO FIX this backward compatibility issue
+		if (messageExchange.getProperties()) {
+			debugLog("Extracting ParticipantIdentifier from property. Table1: Table1", log)
+			tempoContainer[0] = messageExchange.getProperty('ParticipantIdentifierScheme')
+			tempoContainer[1] = messageExchange.getProperty('ParticipantIdentifier')
+		}
 		
 		if(extraParts!=null){
+			debugLog("Filling tempoContainer table fields 2 and 3. extraParts: $extraParts", log)				
 			extraParts = extraParts.replace("%3A",":");
 			extraParts = extraParts.replace("%23","#");
 			Table1 = [];
 			Table1=extraParts.split('::',2);
 			tempoContainer[2] = Table1[0].replace("%2F","/");
 			tempoContainer[3] = Table1[1].replace("%2F","/");
+		// TODO FIX this backward compatibility issue
+		if (messageExchange.getProperties()) {
+			debugLog("Extracting DocTypeIdentifier from property", log)			
+			tempoContainer[2] = messageExchange.getProperty('DocTypeIdentifierScheme')
+			tempoContainer[3] = messageExchange.getProperty('DocTypeIdentifier')
+		}			
 		}
+		debugLog("Leaving extractFromURL", log)		
 	}
 //=================================================================================
 
