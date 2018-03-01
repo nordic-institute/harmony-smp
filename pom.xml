@@ -93,7 +93,7 @@
                             </soapuiProperties>
                             <testFailIgnore>true</testFailIgnore>
                             <projectFile>${maven.multiModuleProjectDirectory}/smp-soapui-tests/soapui/SMP4.0-Generic-soapui-project.xml</projectFile>
-							<testSuite>WS-Auto for Bamboo</testSuite>
+							<testSuite>PASSING_AUTO_BAMBOO</testSuite>
 							<!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->	
 							<projectProperties>
 								<value>url=${url}</value>
