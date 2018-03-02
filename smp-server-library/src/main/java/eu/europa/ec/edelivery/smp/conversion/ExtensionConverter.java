@@ -15,7 +15,6 @@ package eu.europa.ec.edelivery.smp.conversion;
 
 import org.apache.cxf.staxutils.PrettyPrintXMLStreamWriter;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
-import org.springframework.util.StreamUtils;
 
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.XmlElement;
@@ -31,7 +30,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
 import java.util.List;
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
