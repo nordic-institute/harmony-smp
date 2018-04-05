@@ -21,12 +21,14 @@ import java.util.Iterator;
 import sun.misc.IOUtils;
 import java.text.SimpleDateFormat
 import com.eviware.soapui.support.GroovyUtils
+import com.eviware.soapui.impl.wsdl.teststeps.RestTestRequestStep
+
 
 
 class SMP
 {
     // Database parameters
-    def sql;
+    def sqlConnection;
 	def url;
     def driver;
     def testDatabase="false";
@@ -71,7 +73,7 @@ class SMP
         testDatabase=context.expand( '${#Project#testDB}' );
 		dbUser=context.expand( '${#Project#dbUser}' );
         dbPassword=context.expand( '${#Project#dbPassword}' );		
-		sql = null;	
+		sqlConnection = null;	
 		debugLog("SMP instance created", log)
 	}
 	
@@ -82,15 +84,19 @@ class SMP
 
 //IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 	// Log information wrapper 
-	static def void debugLog(logMsg, log,  logLevel = DEFAULT_LOG_LEVEL) {
+	static def void debugLog(logMsg, logObject,  logLevel = DEFAULT_LOG_LEVEL) {
 		if (logLevel.toString()=="1" || logLevel.toString() == "true") 
-			log.info (logMsg)
+			logObject.info (logMsg)
 	}
 //IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
     // Simply open DB connection (dev or test depending on testEnvironment variable)	
 	def openConnection(){
-       log.debug "Open DB connections"
-        if(testDatabase.toLowerCase()=="true"){
+       debugLog("Open DB connections", log)
+        if(testDatabase.toLowerCase()=="true")
+			if (sqlConnection) {
+				debugLog("DB connection seems already open", log)
+			}
+			else {
             try{
 				if(driver.contains("oracle")){
 					// Oracle DB
@@ -99,26 +105,120 @@ class SMP
 					// Mysql DB (assuming fallback: currently, we use only those 2 DBs ...)
 					GroovyUtils.registerJdbcDriver( "com.mysql.jdbc.Driver" )
 				}
-				sql = Sql.newInstance(url, dbUser, dbPassword, driver);
+				sqlConnection = Sql.newInstance(url, dbUser, dbPassword, driver);
             }
             catch (SQLException ex)
             {
-                assert 0,"SQLException occured: " + ex;
+                assert 0,"SQLException occurred: " + ex;
             }
 		}
     }
 //IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
     // Close the DB connection opened previously
     def closeConnection(){
+	debugLog("Close DB connection", log)
         if(testDatabase.toLowerCase()=="true"){
-            if(sql){
-                sql.connection.close();
-                sql = null;
+            if(sqlConnection){
+                sqlConnection.connection.close();
+                sqlConnection = null;
             }
+        }
+	debugLog("DB connection closed", log)
+    }
+	
+//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+    def executeListOfSqlQueries(String[] sqlQueriesList) {
+        def connectionOpenedInsideMethod = false
+
+        if (!sqlConnection) {
+            debugLog("Method executed without connections open to the DB - try to open connection", log)
+            openConnection()
+            connectionOpenedInsideMethod = true
+        }
+
+        for (query in sqlQueriesList) {
+            debugLog("Executing SQL query: " + query, log)
+			try{
+				sqlConnection.execute query
+			}
+			catch (SQLException ex){
+				closeConnection();
+				assert 0,"SQLException occurred: " + ex;
+			}
+        }
+
+        if (connectionOpenedInsideMethod) {
+            debugLog("Connection to DB opened during method execution - close opened connection", log)
+            closeConnection()
         }
     }
 
+	//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+    def executeSqlAndReturnFirstRow(String query) {
+        def connectionOpenedInsideMethod = false
+		def res
 
+        if (!sqlConnection) {
+            debugLog("Method executed without connections open to the DB - try to open connection", log)
+            openConnection()
+            connectionOpenedInsideMethod = true
+        }
+
+        debugLog("Executing SQL query: " + query, log)
+		try{
+			res = sqlConnection.firstRow query
+		}
+		catch (SQLException ex){
+			closeConnection();
+			assert 0,"SQLException occurred: " + ex;
+		}
+
+        if (connectionOpenedInsideMethod) {
+            debugLog("Connection to DB opened during method execution - close opened connection", log)
+            closeConnection()
+        }
+		return res
+    }
+	
+	def findDomainName() {
+		def result = executeSqlAndReturnFirstRow('select domainId from SMP_DOMAIN')
+		return result.domainId
+	}
+
+//IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
+//// filterForTestSuite = /PASSING_AUTO_BAMBOO/   // for multiple test suite use more advanced regexp like for example:  /PASSING_AUTO_BAMBOO|PASSING_NOT_FOR_BAMBOO/ 
+//// filterForTestCases = /SMP001.*/   //for single test case use simple regexp like /SMP001.*/
+
+def cleanAndAddHeaderElement(filterForTestSuite,  filterForTestCases, String fieldName, String newValue = null) {
+	def restMethodName = 'PUT ServiceGroup'
+	
+	debugLog("START: modyfication of test requests", log)
+	context.testCase.testSuite.project.getTestSuiteList().each { testSuite ->
+		if (testSuite.getLabel() =~ filterForTestSuite) {
+		debugLog("test suite: " + testSuite.getLabel(), log)
+			testSuite.getTestCaseList().each { testCase ->
+				if (testCase.getLabel() =~ filterForTestCases) {
+					debugLog("test label:" + testCase.getLabel(), log)
+					testCase.getTestStepList().each {testStep ->
+	      				if (testStep instanceof RestTestRequestStep && testStep.getRestMethod().name == restMethodName) {
+	
+							def hOld = testStep.getHttpRequest().getRequestHeaders()
+							hOld.remove(fieldName) 
+							hOld.remove(fieldName.capitalize())
+							hOld.remove(fieldName.toUpperCase())
+							if (newValue) 
+								hOld[fieldName] = [newValue]
+							testStep.getHttpRequest().setRequestHeaders(hOld) 
+							debugLog("For testStep:" + testStep.name + "; Header: "  + testStep.getHttpRequest().getRequestHeaders(), log)
+						}
+		  			}
+	 			}
+	
+			}
+		}
+	 }
+	debugLog("END: Modification of requests hedears finished", log)
+}
 //=================================================================================
 //======================== Initialize the parameters names ========================
 //=================================================================================	
@@ -943,4 +1043,3 @@ class SMP
 	
 	
 }
-
