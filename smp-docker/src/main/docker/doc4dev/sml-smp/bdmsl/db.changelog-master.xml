@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+(C) Copyright 2018 - European Commission | CEF eDelivery
+
+Licensed under the EUPL, Version 1.2 (the "License");
+You may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+\BDMSL\bdmsl-parent-pom\LICENSE-EUPL-v1.2.pdf or https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/eupl_v1.2_en.pdf
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <property name="now" value="sysdate" dbms="oracle"/>
+    <property name="now" value="CURRENT_TIMESTAMP" dbms="mysql,h2"/>
+
+    <!-- Initial creation script  -->
+    <include file="db.changelog-create.xml" relativeToChangelogFile="true"/>
+
+    <!-- Inserts of the properties with default values -->
+    <include file="db.changelog-default-data-inserts.xml" relativeToChangelogFile="true"/>
+
+    <!-- Initial update script  -->
+    <include file="db.changelog-update-3.0.1.xml" relativeToChangelogFile="true"/>
+    <include file="db.changelog-update-3.1.RC1.xml" relativeToChangelogFile="true"/>
+    <include file="db.changelog-update-3.1.RC2.xml" relativeToChangelogFile="true"/>
+    <include file="db.changelog-update-3.1.2.xml" relativeToChangelogFile="true"/>
+
+    <!-- env specific update script  -->
+    <include file="db.init-data-inserts.xml" relativeToChangelogFile="true"/>
+    <!-- Increments BDMSL version -->
+    <include file="db.changelog-version.xml" relativeToChangelogFile="true"/>
+</databaseChangeLog>
