@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+(C) Copyright 2018 - European Commission | CEF eDelivery
+
+Licensed under the EUPL, Version 1.2 (the "License");
+You may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+\BDMSL\bdmsl-parent-pom\LICENSE-EUPL-v1.2.pdf or https://joinup.ec.europa.eu/sites/default/files/custom-page/attachment/eupl_v1.2_en.pdf
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    
+
+    <!-- Environment Specific -->
+    <changeSet author="eDelivery" id="999990" logicalFilePath="path-independent">
+        <update tableName="bdmsl_configuration">
+            <column name="value" value='false' type="LONGTEXT"/>
+            <where>property='dnsClient.SIG0Enabled'</where>
+        </update>
+        <update tableName="bdmsl_configuration">
+            <column name="value" value='false' type="LONGTEXT"/>
+            <where>property='signResponse'</where>
+        </update>
+        <update tableName="bdmsl_configuration">
+            <column name="value" value='true' type="LONGTEXT"/>
+            <where>property='dnsClient.enabled'</where>
+        </update>
+        <update tableName="bdmsl_configuration">
+            <column name="value" value='sml/conf/' type="LONGTEXT"/>
+            <where>property='configurationDir'</where>
+        </update> 
+        <update tableName="bdmsl_configuration">
+            <column name="value" value='127.0.0.1' type="LONGTEXT"/>
+            <where>property='dnsClient.server'</where>
+        </update>
+ 	<update tableName="bdmsl_configuration">
+            <column name="value" value='true' type="LONGTEXT"/>
+            <where>property='unsecureLoginAllowed'</where>
+        </update>
+ 	<update tableName="bdmsl_configuration">
+            <column name="value" value='false' type="LONGTEXT"/>
+            <where>property='useProxy'</where>
+        </update>
+ 	<update tableName="bdmsl_configuration">
+            <column name="value" value='false' type="LONGTEXT"/>
+            <where>property='authentication.bluecoat.enabled'</where>
+        </update>
+    </changeSet>
+     <!-- Set new domain -->
+    <changeSet author="eDelivery" id="999991" logicalFilePath="path-independent">
+	<delete  tableName="bdmsl_configuration">
+        	<where>property like '%.ec.europa.eu'</where>
+    	</delete>
+
+        <update tableName="bdmsl_subdomain">
+            <column name="subdomain_name" value='acc.edelivery.tech.local' type="LONGTEXT"/>
+            <where>subdomain_id='1'</where>
+        </update>
+
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="dnsClient.domain.acc.edelivery.tech.local"/>
+            <column name="value" value="acc.edelivery.tech.local"/>
+            <column name="description"
+                    value="Test domain"/>
+        </insert>
+ 	<insert tableName="bdmsl_configuration">
+            <column name="property"
+                    value="subdomain.validation.participantIdRegex.acc.edelivery.tech.local"/>
+            <column name="value"
+                    value="^.*$"/>
+            <column name="description"
+                    value="Regex allows specific and described ids only or '*' instead for having wildcards."/>
+        </insert>
+   	<insert tableName="bdmsl_configuration">
+            <column name="property"
+                    value="subdomain.validation.smpLogicalAddressProtocolRestriction.acc.edelivery.tech.local"
+                    type="LONGTEXT"/>
+            <column name="value" value="all"/>
+            <column name="description"
+                    value="Protocol that MUST be used for LogicalAddress when registering new SMP, 'all' means both protocols are accepted possible values: [ http, https, all]."/>
+        </insert>
+         <insert tableName="bdmsl_configuration">
+            <column name="property"
+                    value="dnsClient.recordTypes.acc.edelivery.tech.local"/>
+            <column name="value" value="all"/>
+            <column name="description"
+                    value="Type of DNS Record when registering/updating participant, 'all' means that both DNS record types are accepted as possible values: [cname, naptr, all]."/>
+        </insert>
+
+    </changeSet>
+
+</databaseChangeLog>
