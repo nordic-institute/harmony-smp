@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.3.xsd">
+
+    <!-- CREATE TABLE AND COLUMNS -->
+
+    <changeSet author="eDelivery" id="39" logicalFilePath="path-independent">
+
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="dataInconsistencyCheckerCronExpression"/>
+            <column name="value" value="0 0 3 ? * *"/>
+            <column name="description"
+                    value="Cron expression for dataInconsistencyChecker job. Example: 0 0 3 ? * * (everyday at 3:00 am)"/>
+        </insert>
+
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="dataInconsistencyCheckerEmail"/>
+            <column name="value" value="email@domain.com"/>
+            <column name="description" value="Email address to receive Data Inconsistency Checker results"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="40" author="eDelivery" logicalFilePath="path-independent">
+        <createTable tableName="bdmsl_subdomain">
+            <column autoIncrement="${autoIncrement}" name="subdomain_id" remarks="Subdomain ID" type="INT">
+                <constraints primaryKey="true" primaryKeyName="PRIMARY_SUBDOM" nullable="false"/>
+            </column>
+            <column name="subdomain_name" remarks="Subdomain Name" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column defaultValueComputed="${now}" name="created_on" remarks="Date of creation"
+                    type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueComputed="${now}" name="last_updated_on" remarks="Date of the last update"
+                    type="datetime">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!--<dropColumn tableName="bdmsl_certificate_domain" columnName="subdomain"/>-->
+
+        <addColumn tableName="bdmsl_certificate_domain">
+            <column name="fk_subdomain_id" type="INT"/>
+        </addColumn>
+
+        <addColumn tableName="bdmsl_smp">
+            <column name="fk_subdomain_id" type="INT"/>
+        </addColumn>
+
+        <addForeignKeyConstraint baseColumnNames="fk_subdomain_id" baseTableName="bdmsl_certificate_domain"
+                                 constraintName="FK_certdom_subdom_subdomid" deferrable="false"
+                                 initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="subdomain_id"
+                                 referencedTableName="bdmsl_subdomain"/>
+
+        <addForeignKeyConstraint baseColumnNames="fk_subdomain_id" baseTableName="bdmsl_smp"
+                                 constraintName="FK_smp_subdom_subdomid" deferrable="false" initiallyDeferred="false"
+                                 onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="subdomain_id"
+                                 referencedTableName="bdmsl_subdomain"/>
+
+    </changeSet>
+
+    <!-- MIGRATION SCRIPT -->
+    <changeSet id="41" author="eDelivery" logicalFilePath="path-independent">
+        <validCheckSum>7:c0759dbf9933e866bace1aac5a5fc589</validCheckSum>
+        <sql dbms="oracle,h2">
+            insert into bdmsl_subdomain(subdomain_id, subdomain_name)
+            select rownum, dom from (select distinct domain dom from bdmsl_certificate_domain);
+        </sql>
+        <sql dbms="mysql">
+            set @row_number = 0;
+            insert into bdmsl_subdomain(subdomain_id, subdomain_name) (
+            select
+            (@row_number:=@row_number + 1) as num,domain from (select distinct domain from
+             bdmsl_certificate_domain) domaintable);
+        </sql>
+        <sql>
+            update bdmsl_certificate_domain set fk_subdomain_id = (select distinct subdomain_id from bdmsl_subdomain
+            where subdomain_name=domain) where fk_subdomain_id is null;
+        </sql>
+    </changeSet>
+
+    <changeSet id="42" author="eDelivery" logicalFilePath="path-independent">
+        <validCheckSum>7:c60b9400817faa59fcf753eb5264bc93</validCheckSum>
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableIsEmpty tableName="bdmsl_subdomain"/>
+            </not>
+        </preConditions>
+        <!-- MIGRATE SMP TABLE -->
+        <sql>
+            update bdmsl_smp set fk_subdomain_id = 1;
+        </sql>
+    </changeSet>
+
+    <!-- DROP OLD COLUMNS AND ADD CONSTRAINTS -->
+    <changeSet id="43" author="eDelivery" logicalFilePath="path-independent">
+        <preConditions onFail="HALT">
+            <columnExists tableName="bdmsl_certificate_domain" columnName="domain"/>
+        </preConditions>
+        <!-- DROP COLUMN DOMAIN FROM CERTIFICATEDOMAIN TABLE -->
+        <dropColumn tableName="bdmsl_certificate_domain" columnName="domain"/>
+    </changeSet>
+
+    <changeSet id="44" author="eDelivery" logicalFilePath="path-independent">
+        <!-- ADD NOT NULL CONSTRAINTS -->
+        <addNotNullConstraint tableName="bdmsl_certificate_domain" columnName="fk_subdomain_id" columnDataType="INT"/>
+        <addNotNullConstraint tableName="bdmsl_smp" columnName="fk_subdomain_id" columnDataType="INT"/>
+    </changeSet>
+
+    <changeSet id="46" author="eDelivery" logicalFilePath="path-independent">
+        <delete tableName="bdmsl_configuration">
+            <where>property = 'isAliveDNSChecking'</where>
+        </delete>
+    </changeSet>
+
+    <changeSet id="47" author="eDelivery" logicalFilePath="path-independent">
+        <update tableName="bdmsl_configuration">
+            <column name="property" value='dataInconsistencyAnalyzer.cronJobExpression' type="LONGTEXT"/>
+            <where>property='dataInconsistencyCheckerCronExpression'</where>
+        </update>
+
+        <update tableName="bdmsl_configuration">
+            <column name="property" value='dataInconsistencyAnalyzer.recipientEmail' type="LONGTEXT"/>
+            <where>property='dataInconsistencyCheckerEmail'</where>
+        </update>
+
+        <insert tableName="bdmsl_configuration">
+            <column name="property" value="dataInconsistencyAnalyzer.senderEmail" type="LONGTEXT"/>
+            <column name="value" value="automated-notifications@nomail.ec.europa.eu"/>
+            <column name="description" value="Sender email address for reporting Data Inconsistency Analyzer."/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
