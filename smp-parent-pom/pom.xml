@@ -55,8 +55,8 @@
 
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<slf4j.version>1.7.10</slf4j.version>
-		<spring.version>5.0.2.RELEASE</spring.version>
-		<spring.security.version>4.2.1.RELEASE</spring.security.version>
+		<spring.version>5.0.6.RELEASE</spring.version>
+		<spring.security.version>4.2.6.RELEASE</spring.security.version>
 		<bdmsl.client.version>3.0.0</bdmsl.client.version>
 		<cxf.version>3.2.1</cxf.version>
 		<cxf-xjc-runtime.version>3.2.0</cxf-xjc-runtime.version>
