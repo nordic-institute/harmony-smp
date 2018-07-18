@@ -46,6 +46,8 @@ abstract class AbstractServiceGroupServiceIntegrationTest {
     protected static final String SERVICE_GROUP_XML_PATH = "/eu/europa/ec/edelivery/smp/services/ServiceGroupPoland.xml";
     protected static final ParticipantIdentifierType SERVICE_GROUP_ID = asParticipantId("participant-scheme-qns::urn:poland:ncpb");
     public static final String ADMIN_USERNAME = "test_admin";
+    public static final String CERT_USER="CN=comon name,O=org,C=BE:0000000000000066";
+    public static final String CERT_USER_ENCODED="CN%3Dcomon%20name%2CO%3Dorg%2CC%3DBE%3A0000000000000066";
 
     @PersistenceContext
     protected EntityManager em;
@@ -61,7 +63,7 @@ abstract class AbstractServiceGroupServiceIntegrationTest {
 
     protected ServiceGroup saveServiceGroup() throws IOException {
         ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
-        serviceGroupService.saveServiceGroup(inServiceGroup, null, ADMIN_USERNAME);
+        serviceGroupService.saveServiceGroup(inServiceGroup, null, ADMIN_USERNAME, ADMIN_USERNAME);
         return inServiceGroup;
     }
 }
