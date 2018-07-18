@@ -79,7 +79,7 @@ public class ServiceMetadataIntegrationTest {
     @Before
     public void before() throws IOException {
         ServiceGroup inServiceGroup = ServiceGroupConverter.unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
-        serviceGroupService.saveServiceGroup(inServiceGroup, null, ADMIN_USERNAME);
+        serviceGroupService.saveServiceGroup(inServiceGroup, null, ADMIN_USERNAME, ADMIN_USERNAME);
     }
 
     @Test
