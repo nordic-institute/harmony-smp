@@ -19,6 +19,7 @@ import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.*;
+import eu.europa.ec.edelivery.smp.exceptions.InvalidOwnerException;
 import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
 import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
 import eu.europa.ec.edelivery.smp.exceptions.WrongInputFieldException;
@@ -28,16 +29,20 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.toDbModel;
 import static eu.europa.ec.smp.api.Identifiers.asString;
 import static java.lang.String.format;
+import static java.net.URLDecoder.decode;
 import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -48,6 +53,9 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 public class ServiceGroupService {
 
     private static final Pattern DOMAIN_ID_PATTERN = Pattern.compile("[a-zA-Z0-9]{1,50}");
+    private static final String UTF_8 = "UTF-8";
+
+    private static final Logger LOG = LoggerFactory.getLogger(ServiceGroupService.class);
 
     @Autowired
     private CaseSensitivityNormalizer caseSensitivityNormalizer;
@@ -76,9 +84,16 @@ public class ServiceGroupService {
     }
 
     @Transactional
-    public boolean saveServiceGroup(ServiceGroup serviceGroup, String domain, String newOwnerName) {
+    public boolean saveServiceGroup(ServiceGroup serviceGroup, String domain, String serviceGroupOwner, String authenticatedUser) {
         ServiceGroup normalizedServiceGroup = normalizeIdentifierCaseSensitivity(serviceGroup);
         ParticipantIdentifierType normalizedParticipantId = normalizedServiceGroup.getParticipantIdentifier();
+        String newOwnerName;
+        try {
+            newOwnerName = isNotBlank(serviceGroupOwner) ? decode(serviceGroupOwner, UTF_8) : authenticatedUser;
+        } catch (UnsupportedEncodingException | IllegalArgumentException ex) {
+            throw new InvalidOwnerException(serviceGroupOwner, "Unsupported or invalid encoding: " + ex.getMessage());
+        }
+
 
         DBUser newOwner = userDao.find(newOwnerName);
         if (newOwner == null) {
@@ -87,10 +102,21 @@ public class ServiceGroupService {
 
         DBServiceGroup dbServiceGroup = serviceGroupDao.find(toDbModel(normalizedParticipantId));
 
+
         validateDomain(dbServiceGroup, domain);
         String extensions = ServiceGroupConverter.extractExtensionsPayload(normalizedServiceGroup);
 
         if (dbServiceGroup != null) {
+            // test service owner
+            Set<DBOwnership> owSet =  dbServiceGroup.getOwnerships();
+            Optional<DBOwnership> owner =  owSet.stream().filter(dbOwnership -> dbOwnership.getUser().getUsername().equals(newOwnerName)).findFirst();
+            // test serviceGroupOwner but use newOwnerName - because it is decoded
+            if (serviceGroupOwner!=null && !owner.isPresent()){
+                String msg = "User: " +newOwnerName+ " is not owner of service group: " +dbServiceGroup.getId().getBusinessIdentifierScheme() + "::" + dbServiceGroup.getId().getBusinessIdentifier();
+                LOG.error(msg);
+                throw new InvalidOwnerException(serviceGroupOwner, msg);
+            }
+
             dbServiceGroup.setExtension(extensions);
             serviceGroupDao.persistFlushDetach(dbServiceGroup);
             return false;

@@ -14,10 +14,7 @@
 package eu.europa.ec.edelivery.smp.error;
 
 import ec.services.smp._1.ErrorResponse;
-import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
-import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
-import eu.europa.ec.edelivery.smp.exceptions.WrongInputFieldException;
-import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
+import eu.europa.ec.edelivery.smp.exceptions.*;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
 import eu.europa.ec.smp.api.exceptions.MalformedIdentifierException;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
@@ -85,6 +82,11 @@ public class ErrorMappingControllerAdvice {
     @ExceptionHandler(UnknownUserException.class)
     public ResponseEntity handleUnknownUserException(UnknownUserException ex) {
         return buildAndWarn(BAD_REQUEST, USER_NOT_FOUND, ex.getMessage(), ex);
+    }
+
+    @ExceptionHandler(InvalidOwnerException.class)
+    public ResponseEntity handleUnknownUserException(InvalidOwnerException ex) {
+        return buildAndWarn(BAD_REQUEST, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage(), ex);
     }
 
     @ExceptionHandler(XmlParsingException.class)

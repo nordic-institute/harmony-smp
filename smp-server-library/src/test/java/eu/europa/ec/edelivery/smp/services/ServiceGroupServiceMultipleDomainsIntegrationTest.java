@@ -50,7 +50,7 @@ public class ServiceGroupServiceMultipleDomainsIntegrationTest extends AbstractS
     public void saveAndReadPositiveScenarioForMultipleDomain() throws IOException {
         // given
         ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
-        serviceGroupService.saveServiceGroup(inServiceGroup, SECOND_DOMAIN_ID, ADMIN_USERNAME);
+        serviceGroupService.saveServiceGroup(inServiceGroup, SECOND_DOMAIN_ID, ADMIN_USERNAME, ADMIN_USERNAME);
 
         // when
         DBServiceGroup dbServiceGroup = serviceGroupDao.find(toDbModel(SERVICE_GROUP_ID));
@@ -71,7 +71,7 @@ public class ServiceGroupServiceMultipleDomainsIntegrationTest extends AbstractS
         ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
 
         //when-then
-        serviceGroupService.saveServiceGroup(newServiceGroup, SECOND_DOMAIN_ID, ADMIN_USERNAME);
+        serviceGroupService.saveServiceGroup(newServiceGroup, SECOND_DOMAIN_ID, ADMIN_USERNAME, ADMIN_USERNAME);
     }
 
 

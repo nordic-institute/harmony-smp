@@ -16,9 +16,14 @@ package eu.europa.ec.edelivery.smp.services;
 import eu.europa.ec.edelivery.smp.data.model.DBOwnership;
 import eu.europa.ec.edelivery.smp.data.model.DBOwnershipId;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
+import eu.europa.ec.edelivery.smp.exceptions.InvalidOwnerException;
 import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
+import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
 import eu.europa.ec.edelivery.smp.exceptions.WrongInputFieldException;
+import org.hamcrest.core.StringStartsWith;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceType;
@@ -27,6 +32,7 @@ import org.springframework.test.context.jdbc.Sql;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Matcher;
 
 import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.toDbModel;
 import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.unmarshal;
@@ -40,6 +46,13 @@ import static org.junit.Assert.*;
  */
 @Sql("classpath:/service_integration_test_data.sql")
 public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServiceGroupServiceIntegrationTest {
+
+    private static String UnknownUser="UnknownUser";
+
+
+
+    @Rule
+    public ExpectedException expectedExeption = ExpectedException.none();
 
     @Test
     public void makeSureServiceGroupDoesNotExistAlready(){
@@ -99,12 +112,78 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         newServiceGroup.getExtensions().add(newExtension);
 
         //when
-        serviceGroupService.saveServiceGroup(newServiceGroup, null, ADMIN_USERNAME);
+        serviceGroupService.saveServiceGroup(newServiceGroup, null, ADMIN_USERNAME, ADMIN_USERNAME);
         ServiceGroup resultServiceGroup = serviceGroupService.getServiceGroup(SERVICE_GROUP_ID);
 
         //then
         assertNotEquals(marshall(oldServiceGroup), marshall(resultServiceGroup));
         assertEquals(marshall(newServiceGroup), marshall(resultServiceGroup));
+    }
+
+    @Test
+    public void updateUnknownUserException() throws IOException, JAXBException {
+
+        String invalidServiceUser = "WrongOwner";
+        //given
+        ServiceGroup oldServiceGroup = saveServiceGroup();
+        expectedExeption.expect(UnknownUserException.class);
+        expectedExeption.expectMessage("Unknown user '"+invalidServiceUser+"'");
+
+        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
+        ExtensionType newExtension = new ExtensionType();
+        newExtension.setExtensionID("new extension ID the second");
+        newServiceGroup.getExtensions().add(newExtension);
+
+        //when
+        serviceGroupService.saveServiceGroup(newServiceGroup, null, invalidServiceUser, ADMIN_USERNAME);
+    }
+
+    @Test
+    public void updateInvalidUserException() throws IOException, JAXBException {
+
+        //given
+        ServiceGroup oldServiceGroup = saveServiceGroup();
+        expectedExeption.expect(InvalidOwnerException.class);
+        expectedExeption.expectMessage("User: "+CERT_USER+" is not owner of service group: participant-scheme-qns::urn:poland:ncpb");
+
+        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
+
+        //when
+        serviceGroupService.saveServiceGroup(newServiceGroup, null, CERT_USER, ADMIN_USERNAME);
+
+    }
+
+    @Test
+    public void updateEncodedInvalidUserException() throws IOException, JAXBException {
+
+        //given
+        ServiceGroup oldServiceGroup = saveServiceGroup();
+        expectedExeption.expect(InvalidOwnerException.class);
+        expectedExeption.expectMessage("User: "+CERT_USER+" is not owner of service group: participant-scheme-qns::urn:poland:ncpb");
+
+        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
+
+        //when
+        serviceGroupService.saveServiceGroup(newServiceGroup, null, CERT_USER_ENCODED, ADMIN_USERNAME);
+
+    }
+
+    @Test
+    public void updateInvalidUserEncodingException() throws IOException, JAXBException {
+        String  username = "test::20%atest";
+        //given
+        ServiceGroup oldServiceGroup = saveServiceGroup();
+        expectedExeption.expect(InvalidOwnerException.class);
+        expectedExeption.expectMessage(StringStartsWith.startsWith("Unsupported or invalid encoding"));
+
+        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
+        ExtensionType newExtension = new ExtensionType();
+        newExtension.setExtensionID("new extension ID the second");
+        newServiceGroup.getExtensions().add(newExtension);
+
+        //when
+        serviceGroupService.saveServiceGroup(newServiceGroup, null, username, ADMIN_USERNAME);
+
     }
 
     @Test
@@ -128,7 +207,7 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
 
         //when-then
-        serviceGroupService.saveServiceGroup(newServiceGroup,"NOTEXISTINGDOMAIN", ADMIN_USERNAME);
+        serviceGroupService.saveServiceGroup(newServiceGroup,"NOTEXISTINGDOMAIN", ADMIN_USERNAME, ADMIN_USERNAME);
     }
 
     @Test(expected = WrongInputFieldException.class)
@@ -137,7 +216,7 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
 
         //when-then
-        serviceGroupService.saveServiceGroup(newServiceGroup,"notAllowedChars:-_;#$", ADMIN_USERNAME);
+        serviceGroupService.saveServiceGroup(newServiceGroup,"notAllowedChars:-_;#$", ADMIN_USERNAME, ADMIN_USERNAME);
     }
 
     @Test
@@ -146,7 +225,7 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
 
         //when
-        serviceGroupService.saveServiceGroup(newServiceGroup,"domain1", ADMIN_USERNAME);
+        serviceGroupService.saveServiceGroup(newServiceGroup,"domain1", ADMIN_USERNAME, ADMIN_USERNAME);
 
         //then
         assertNotNull(serviceGroupService.getServiceGroup(SERVICE_GROUP_ID));

@@ -37,8 +37,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
-import static java.net.URLDecoder.decode;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -52,8 +50,6 @@ import static org.springframework.http.ResponseEntity.ok;
 public class ServiceGroupController {
 
     private static final Logger log = LoggerFactory.getLogger(ServiceGroupController.class);
-
-    private static final String UTF_8 = "UTF-8";
 
     @Autowired
     private ServiceGroupValidator serviceGroupValidator;
@@ -86,9 +82,9 @@ public class ServiceGroupController {
             @PathVariable String serviceGroupId,
             @RequestHeader(name = "ServiceGroup-Owner", required = false) String serviceGroupOwner,
             @RequestHeader(name = "Domain", required = false) String domain,
-            @RequestBody String body) throws XmlInvalidAgainstSchemaException, UnsupportedEncodingException {
+            @RequestBody String body) throws XmlInvalidAgainstSchemaException {
 
-        log.info("PUT ServiceGroup: {}\n{}", serviceGroupId, body);
+        log.info("PUT ServiceGroup: {} domain {} owner {} \n{}", serviceGroupId,domain, serviceGroupOwner, body);
 
         // Validations
         BdxSmpOasisValidator.validateXSD(body);
@@ -96,8 +92,7 @@ public class ServiceGroupController {
         serviceGroupValidator.validate(serviceGroupId, serviceGroup);
 
         // Service action
-        String newOwnerName = isNotBlank(serviceGroupOwner) ? decode(serviceGroupOwner, UTF_8) : SecurityContextHolder.getContext().getAuthentication().getName();
-        boolean newServiceGroupCreated = serviceGroupService.saveServiceGroup(serviceGroup, domain, newOwnerName);
+         boolean newServiceGroupCreated = serviceGroupService.saveServiceGroup(serviceGroup, domain, serviceGroupOwner, SecurityContextHolder.getContext().getAuthentication().getName());
 
         log.info("Finished PUT ServiceGroup: {}", serviceGroupId);
 
