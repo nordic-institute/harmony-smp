@@ -13,6 +13,8 @@
 
 package eu.europa.ec.edelivery.smp.data.model;
 
+import org.hibernate.envers.Audited;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -23,6 +25,7 @@ import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Table(name = "smp_service_group")
+@Audited
 public class DBServiceGroup implements BaseEntity {
 
     private DBServiceGroupId serviceGroupId;

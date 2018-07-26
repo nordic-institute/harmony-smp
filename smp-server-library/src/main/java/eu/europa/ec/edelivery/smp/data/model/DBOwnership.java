@@ -13,11 +13,14 @@
 
 package eu.europa.ec.edelivery.smp.data.model;
 
+import org.hibernate.envers.Audited;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Table (name = "smp_ownership")
+@Audited
 public class DBOwnership implements BaseEntity {
 
   private DBOwnershipId ownershipId;
