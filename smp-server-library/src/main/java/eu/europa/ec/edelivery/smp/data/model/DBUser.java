@@ -12,6 +12,8 @@
  */
 package eu.europa.ec.edelivery.smp.data.model;
 
+import org.hibernate.envers.Audited;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -21,6 +23,7 @@ import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_USE
 
 @Entity
 @Table(name = "smp_user")
+@Audited
 public class DBUser implements BaseEntity {
 
     private String username;

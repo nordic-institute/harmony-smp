@@ -21,7 +21,7 @@
         <ftp.port>2059</ftp.port>
         <ftp.remotedir>/ec/test/server/weblogic/u010/home/digciedt/data/CIPA-EDEL_DEV/autodeploy</ftp.remotedir>
 
-        <!-- database -->
+        <!-- database-->
         <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
         <jdbc.url>jdbc:mysql://localhost:3306/smp</jdbc.url>
         <jdbc.user>smp</jdbc.user>

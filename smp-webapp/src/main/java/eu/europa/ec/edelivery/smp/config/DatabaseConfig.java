@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
  * Created by Flavio Santos
@@ -61,10 +62,13 @@ public class DatabaseConfig {
 
     @Bean
     public LocalContainerEntityManagerFactoryBean smpEntityManagerFactory() {
+        Properties prop = new Properties();
+        prop.setProperty("org.hibernate.envers.store_data_at_delete", "true");
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
         lef.setDataSource(dataSource());
         lef.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         lef.setPackagesToScan("eu.europa.ec.edelivery.smp.data.model");
+        lef.setJpaProperties(prop);
         //lef.setPersistenceXmlLocation("classpath:META-INF/smp-persistence.xml");
         return lef;
     }
