@@ -17,6 +17,7 @@ import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpServicesTestConfig;
 import eu.europa.ec.edelivery.smp.data.dao.OwnershipDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
+import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import org.junit.runner.RunWith;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
@@ -32,7 +33,7 @@ import java.io.IOException;
 
 import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.unmarshal;
 import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocumentAsString;
-import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
+
 
 /**
  * Created by gutowpa on 27/03/2017.
@@ -43,11 +44,7 @@ import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
 @Rollback(true)
 abstract class AbstractServiceGroupServiceIntegrationTest {
 
-    protected static final String SERVICE_GROUP_XML_PATH = "/eu/europa/ec/edelivery/smp/services/ServiceGroupPoland.xml";
-    protected static final ParticipantIdentifierType SERVICE_GROUP_ID = asParticipantId("participant-scheme-qns::urn:poland:ncpb");
-    public static final String ADMIN_USERNAME = "test_admin";
-    public static final String CERT_USER="CN=comon name,O=org,C=BE:0000000000000066";
-    public static final String CERT_USER_ENCODED="CN%3Dcomon%20name%2CO%3Dorg%2CC%3DBE%3A0000000000000066";
+;
 
     @PersistenceContext
     protected EntityManager em;
@@ -62,8 +59,8 @@ abstract class AbstractServiceGroupServiceIntegrationTest {
     protected ServiceGroupService serviceGroupService;
 
     protected ServiceGroup saveServiceGroup() throws IOException {
-        ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
-        serviceGroupService.saveServiceGroup(inServiceGroup, null, ADMIN_USERNAME, ADMIN_USERNAME);
+        ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_XML_PATH));
+        serviceGroupService.saveServiceGroup(inServiceGroup, null, TestConstants.ADMIN_USERNAME, TestConstants.ADMIN_USERNAME);
         return inServiceGroup;
     }
 }
