@@ -39,16 +39,16 @@ import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.unmars
 import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocumentAsString;
 import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.marshall;
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
+
 import static org.junit.Assert.*;
+import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 
 /**
  * Created by gutowpa on 17/01/2018.
  */
+
 @Sql("classpath:/service_integration_test_data.sql")
 public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServiceGroupServiceIntegrationTest {
-
-    private static String UnknownUser="UnknownUser";
-
 
 
     @Rule
@@ -126,6 +126,7 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         String invalidServiceUser = "WrongOwner";
         //given
         ServiceGroup oldServiceGroup = saveServiceGroup();
+
         expectedExeption.expect(UnknownUserException.class);
         expectedExeption.expectMessage("Unknown user '"+invalidServiceUser+"'");
 
