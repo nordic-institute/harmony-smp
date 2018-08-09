@@ -13,9 +13,8 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.data.model.DBOwnership;
-import eu.europa.ec.edelivery.smp.data.model.DBOwnershipId;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
+
+import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.exceptions.InvalidOwnerException;
 import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
 import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
@@ -31,6 +30,7 @@ import org.springframework.test.context.jdbc.Sql;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -40,6 +40,7 @@ import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocumentAsStr
 import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.marshall;
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
 
+import static java.util.Arrays.asList;
 import static org.junit.Assert.*;
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 
@@ -118,6 +119,72 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         //then
         assertNotEquals(marshall(oldServiceGroup), marshall(resultServiceGroup));
         assertEquals(marshall(newServiceGroup), marshall(resultServiceGroup));
+    }
+
+    @Test
+    public void defineGroupOwnerWhenOwnerIsNull(){
+        String testUser = "user";
+        String result = serviceGroupService.defineGroupOwner(null, testUser);
+        assertEquals(testUser, result);
+
+        result = serviceGroupService.defineGroupOwner("", testUser);
+        assertEquals(testUser, result);
+    }
+
+    @Test
+    public void defineGroupOwnerWhenOwnerIsNotNull(){
+        String testUser = "user";
+        String testOwner = "owner";
+        String result = serviceGroupService.defineGroupOwner(testOwner, testUser);
+        assertEquals(testOwner, result);
+    }
+
+    @Test
+    public void validateOwnershipHasRightOwner(){
+        String testOwner = "owner";
+
+        DBServiceGroup dbServiceGroup = new DBServiceGroup(new DBServiceGroupId("",""));
+
+        DBUser duser = new DBUser();
+        duser.setUsername(testOwner);
+        DBOwnershipId dbOwnershipID = new DBOwnershipId(testOwner, "", "");
+        DBOwnership dbOwnership = new DBOwnership();
+        dbOwnership.setId(dbOwnershipID);
+        dbOwnership.setUser(duser);
+
+        DBUser user0 = new DBUser();
+        user0.setUsername("otherOwner");
+        DBOwnershipId dbOwnershipID0 = new DBOwnershipId("otherOwner", "", "");
+        DBOwnership dbOwnership0 = new DBOwnership();
+        dbOwnership0.setId(dbOwnershipID0);
+        dbOwnership0.setUser(user0);
+
+        dbServiceGroup.setOwnerships(new HashSet(asList(dbOwnership0, dbOwnership)));
+
+        serviceGroupService.validateOwnership(testOwner, dbServiceGroup);
+
+    }
+
+    @Test
+    public void validateOwnershipHasInvalidOwner(){
+        String testOwner = "owner";
+        DBServiceGroup dbServiceGroup = new DBServiceGroup(new DBServiceGroupId("",""));
+
+        expectedExeption.expect(InvalidOwnerException.class);
+        expectedExeption.expectMessage("User: " +testOwner+ " is not owner of service group: ");
+
+        DBUser duser = new DBUser();
+        duser.setUsername("otherOwner");
+        DBOwnershipId dbOwnershipID0 = new DBOwnershipId("otherOwner", "", "");
+        DBOwnership dbOwnership0 = new DBOwnership();
+        dbOwnership0.setId(dbOwnershipID0);
+        dbOwnership0.setUser(duser);
+
+
+        dbServiceGroup.setOwnerships(new HashSet(asList(dbOwnership0)));
+
+        serviceGroupService.validateOwnership(testOwner, dbServiceGroup);
+
     }
 
     @Test

@@ -18,7 +18,7 @@ CREATE TABLE smp_domain_AUD (
   signatureCertAlias    VARCHAR(50),
   REV INTEGER NOT NULL, 
   REVTYPE NUMBER(3),
-  CONSTRAINT PK_SMP_DOMAIN_AUD PRIMARY KEY(domainId)
+  CONSTRAINT PK_SMP_DOMAIN_AUD PRIMARY KEY(domainId, REV)
 );
 
 CREATE TABLE smp_service_group_AUD (
@@ -28,7 +28,7 @@ CREATE TABLE smp_service_group_AUD (
   domainId                 VARCHAR(50),
   REV INTEGER NOT NULL, 
   REVTYPE NUMBER(3),
-  CONSTRAINT PK_SMP_GRP_AUD PRIMARY KEY (businessIdentifier, businessIdentifierScheme)
+  CONSTRAINT PK_SMP_GRP_AUD PRIMARY KEY (businessIdentifier, businessIdentifierScheme, REV)
 );
 
 CREATE TABLE smp_service_metadata_AUD (
@@ -43,16 +43,16 @@ CREATE TABLE smp_service_metadata_AUD (
     documentIdentifierScheme,
     businessIdentifier,
     businessIdentifierScheme,
-    documentIdentifier)
+    documentIdentifier, REV)
 );
-
+ 
 CREATE TABLE smp_user_AUD (
   username VARCHAR(256),
   password VARCHAR(256),
   isadmin  NUMBER(1) DEFAULT 0,
   REV INTEGER NOT NULL, 
   REVTYPE NUMBER(3),
-  CONSTRAINT PK_SMP_USER_AUD PRIMARY KEY (username)
+  CONSTRAINT PK_SMP_USER_AUD PRIMARY KEY (username, REV)
 );
 
 CREATE TABLE smp_ownership_AUD (
@@ -61,7 +61,7 @@ CREATE TABLE smp_ownership_AUD (
   businessIdentifierScheme VARCHAR(100),
   REV INTEGER NOT NULL, 
   REVTYPE NUMBER(3),
-  CONSTRAINT PK_OWNERSHIP_AUD PRIMARY KEY (username, businessIdentifier, businessIdentifierScheme)
+  CONSTRAINT PK_OWNERSHIP_AUD PRIMARY KEY (username, businessIdentifier, businessIdentifierScheme, REV)
 );
 
 
