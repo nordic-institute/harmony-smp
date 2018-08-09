@@ -87,13 +87,8 @@ public class ServiceGroupService {
     public boolean saveServiceGroup(ServiceGroup serviceGroup, String domain, String serviceGroupOwner, String authenticatedUser) {
         ServiceGroup normalizedServiceGroup = normalizeIdentifierCaseSensitivity(serviceGroup);
         ParticipantIdentifierType normalizedParticipantId = normalizedServiceGroup.getParticipantIdentifier();
-        String newOwnerName;
-        try {
-            newOwnerName = isNotBlank(serviceGroupOwner) ? decode(serviceGroupOwner, UTF_8) : authenticatedUser;
-        } catch (UnsupportedEncodingException | IllegalArgumentException ex) {
-            throw new InvalidOwnerException(serviceGroupOwner, "Unsupported or invalid encoding: " + ex.getMessage());
-        }
 
+        String newOwnerName = defineGroupOwner(serviceGroupOwner, authenticatedUser);
 
         DBUser newOwner = userDao.find(newOwnerName);
         if (newOwner == null) {
@@ -108,15 +103,8 @@ public class ServiceGroupService {
 
         if (dbServiceGroup != null) {
             // test service owner
-            Set<DBOwnership> owSet =  dbServiceGroup.getOwnerships();
-            Optional<DBOwnership> owner =  owSet.stream().filter(dbOwnership -> dbOwnership.getUser().getUsername().equals(newOwnerName)).findFirst();
-            // test serviceGroupOwner but use newOwnerName - because it is decoded
-            if (serviceGroupOwner!=null && !owner.isPresent()){
-                String msg = "User: " +newOwnerName+ " is not owner of service group: " +dbServiceGroup.getId().getBusinessIdentifierScheme() + "::" + dbServiceGroup.getId().getBusinessIdentifier();
-                LOG.error(msg);
-                throw new InvalidOwnerException(serviceGroupOwner, msg);
-            }
-
+            validateOwnership(newOwnerName, dbServiceGroup);
+            //update extensions
             dbServiceGroup.setExtension(extensions);
             serviceGroupDao.persistFlushDetach(dbServiceGroup);
             return false;
@@ -137,6 +125,27 @@ public class ServiceGroupService {
             smlConnector.registerInDns(normalizedParticipantId, dbDomain);
             return true;
         }
+    }
+
+    protected String defineGroupOwner(String serviceGroupOwner, String authenticatedUser){
+        try {
+            return isNotBlank(serviceGroupOwner) ? decode(serviceGroupOwner, UTF_8) : authenticatedUser;
+        } catch (UnsupportedEncodingException | IllegalArgumentException ex) {
+            LOG.error("Error occurred while decoding serviceGroupOwner '" + serviceGroupOwner+"'", ex);
+            throw new InvalidOwnerException(serviceGroupOwner, "Unsupported or invalid encoding: " + ex.getMessage());
+        }
+    }
+
+    protected void validateOwnership(String newOwnerName, DBServiceGroup dbServiceGroup){
+        Set<DBOwnership> owSet =  dbServiceGroup.getOwnerships();
+        Optional<DBOwnership> owner =  owSet.stream().filter(dbOwnership -> dbOwnership.getUser().getUsername().equals(newOwnerName)).findFirst();
+        // test serviceGroupOwner but use newOwnerName - because it is decoded
+        if (newOwnerName!=null && !owner.isPresent()){
+            String msg = "User: " +newOwnerName+ " is not owner of service group: " +dbServiceGroup.getId().getBusinessIdentifierScheme() + "::" + dbServiceGroup.getId().getBusinessIdentifier();
+            LOG.error(msg);
+            throw new InvalidOwnerException(newOwnerName, msg);
+        }
+
     }
 
     private DBDomain findDomain(String domain) {
