@@ -8,13 +8,12 @@ import org.hibernate.envers.RevisionTimestamp;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
- * Own implementation of hibernate-envers Revision entity, in order to store the user and the modification type.
+ * Implementation of hibernate envers Revision log entity.
  *
- * @author Thomas Dussart
- * @since 4.0
+ * @author Joze Rihtarsic (thanks to Thomas Dussart (Domibus))
+ * @since 4.1
  */
 @Entity
 @Table(name = "SMP_REV_INFO")
