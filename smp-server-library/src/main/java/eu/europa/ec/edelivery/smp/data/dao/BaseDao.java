@@ -43,10 +43,6 @@ public abstract class BaseDao<E extends BaseEntity> {
         em.detach(entity);
     }
 
-    public void merge(E entity) {
-        em.merge(entity);
-    }
-
     public void remove(E entity) {
         em.remove(entity);
     }
