@@ -13,6 +13,8 @@
 
 package eu.europa.ec.edelivery.smp.data.model;
 
+import org.hibernate.envers.Audited;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -28,6 +30,7 @@ import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_IDE
  */
 @Entity
 @Table(name = "smp_domain")
+@Audited
 public class DBDomain implements BaseEntity{
 
     private String domainId;

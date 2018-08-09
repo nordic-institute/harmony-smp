@@ -16,6 +16,7 @@ package eu.europa.ec.edelivery.smp.services;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.exceptions.WrongInputFieldException;
+import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import org.junit.Test;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.springframework.test.context.jdbc.Sql;
@@ -36,10 +37,7 @@ import static org.springframework.util.StringUtils.isEmpty;
         "classpath:/service_integration_multiple_domains_test_data.sql"})
 public class ServiceGroupServiceMultipleDomainsIntegrationTest extends AbstractServiceGroupServiceIntegrationTest {
 
-    private static final String SECOND_DOMAIN_ID = "domain2";
-    private static final String SECOND_DOMAIN_CERT_HEADER = "client-cert-header-value";
-    private static final String SECOND_DOMAIN_SIGNING_ALIAS = "signature-alias";
-    private static final String SECOND_DOMAIN_SMP_ID = "SECOND-SMP-ID";
+    ;
 
     @Test(expected = WrongInputFieldException.class)
     public void explictlySpecifiedDomainIsRequiredWhenSavingInMultipleDomainConfiguration() throws IOException {
@@ -49,18 +47,18 @@ public class ServiceGroupServiceMultipleDomainsIntegrationTest extends AbstractS
     @Test
     public void saveAndReadPositiveScenarioForMultipleDomain() throws IOException {
         // given
-        ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
-        serviceGroupService.saveServiceGroup(inServiceGroup, SECOND_DOMAIN_ID, ADMIN_USERNAME, ADMIN_USERNAME);
+        ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_XML_PATH));
+        serviceGroupService.saveServiceGroup(inServiceGroup, TestConstants.SECOND_DOMAIN_ID, TestConstants.ADMIN_USERNAME, TestConstants.ADMIN_USERNAME);
 
         // when
-        DBServiceGroup dbServiceGroup = serviceGroupDao.find(toDbModel(SERVICE_GROUP_ID));
+        DBServiceGroup dbServiceGroup = serviceGroupDao.find(toDbModel(TestConstants.SERVICE_GROUP_ID));
 
         // then
         DBDomain dbDomain = dbServiceGroup.getDomain();
-        assertEquals(SECOND_DOMAIN_ID, dbDomain.getId());
-        assertEquals(SECOND_DOMAIN_CERT_HEADER, dbDomain.getBdmslClientCertHeader());
-        assertEquals(SECOND_DOMAIN_SIGNING_ALIAS, dbDomain.getSignatureCertAlias());
-        assertEquals(SECOND_DOMAIN_SMP_ID, dbDomain.getBdmslSmpId());
+        assertEquals(TestConstants.SECOND_DOMAIN_ID, dbDomain.getId());
+        assertEquals(TestConstants.SECOND_DOMAIN_CERT_HEADER, dbDomain.getBdmslClientCertHeader());
+        assertEquals(TestConstants.SECOND_DOMAIN_SIGNING_ALIAS, dbDomain.getSignatureCertAlias());
+        assertEquals(TestConstants.SECOND_DOMAIN_SMP_ID, dbDomain.getBdmslSmpId());
         assertTrue(isEmpty(dbDomain.getBdmslClientCertAlias()));
     }
 
@@ -68,10 +66,10 @@ public class ServiceGroupServiceMultipleDomainsIntegrationTest extends AbstractS
     public void changingDomainOfExistingServiceGroupIsNotAllowed() throws Throwable {
         //given
         saveServiceGroup();
-        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
+        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_XML_PATH));
 
         //when-then
-        serviceGroupService.saveServiceGroup(newServiceGroup, SECOND_DOMAIN_ID, ADMIN_USERNAME, ADMIN_USERNAME);
+        serviceGroupService.saveServiceGroup(newServiceGroup, TestConstants.SECOND_DOMAIN_ID, TestConstants.ADMIN_USERNAME, TestConstants.ADMIN_USERNAME);
     }
 
 

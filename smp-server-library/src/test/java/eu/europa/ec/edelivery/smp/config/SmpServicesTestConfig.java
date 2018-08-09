@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -23,6 +24,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
  * Created by gutowpa on 21/09/2017.
@@ -61,11 +63,13 @@ public class SmpServicesTestConfig {
 
     @Bean
     public LocalContainerEntityManagerFactoryBean smpEntityManagerFactory() {
+        Properties prop = new Properties();
+        prop.setProperty("org.hibernate.envers.store_data_at_delete", "true");
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
         lef.setDataSource(dataSource());
         lef.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        lef.setJpaProperties(prop);
         lef.setPackagesToScan("eu.europa.ec.edelivery.smp.data.model");
-        //lef.setPersistenceXmlLocation("classpath:META-INF/smp-persistence.xml");
         return lef;
     }
 
@@ -76,4 +80,5 @@ public class SmpServicesTestConfig {
 
         return transactionManager;
     }
+
 }

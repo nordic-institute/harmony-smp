@@ -13,6 +13,8 @@
 
 package eu.europa.ec.edelivery.smp.data.model;
 
+import org.hibernate.envers.Audited;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -20,6 +22,7 @@ import static javax.persistence.FetchType.EAGER;
 
 @Entity
 @Table(name = "smp_service_metadata")
+@Audited
 public class DBServiceMetadata implements BaseEntity {
 
     private DBServiceMetadataId serviceMetadataId;
