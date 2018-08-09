@@ -25,7 +25,7 @@ public class ErrorMappingControllerAdviceTest {
         ResponseEntity re = testIntance.handleRuntimeException(new RuntimeException("RuntimeExceptionMessage"));
 
         assertEquals(INTERNAL_SERVER_ERROR, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.TECHNICAL, ((ErrorResponse)re.getBody()).getBusinessCode());
+        assertEquals(ErrorBusinessCode.TECHNICAL.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
 
 
     }
@@ -36,7 +36,7 @@ public class ErrorMappingControllerAdviceTest {
         ResponseEntity re = testIntance.handleBadRequestException(new BadRequestException(ErrorBusinessCode.WRONG_FIELD, "BadRequestExceptionMessage"));
 
         assertEquals(BAD_REQUEST, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.WRONG_FIELD, ((ErrorResponse)re.getBody()).getBusinessCode());
+        assertEquals(ErrorBusinessCode.WRONG_FIELD.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
     }
 
 
@@ -45,7 +45,7 @@ public class ErrorMappingControllerAdviceTest {
         ResponseEntity re = testIntance.handleMalformedIdentifierException(new MalformedIdentifierException("MalformedIdentifierExceptionMessage", null));
 
         assertEquals(BAD_REQUEST, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.FORMAT_ERROR, ((ErrorResponse)re.getBody()).getBusinessCode());
+        assertEquals(ErrorBusinessCode.FORMAT_ERROR.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
     }
 
     @Test
@@ -54,7 +54,7 @@ public class ErrorMappingControllerAdviceTest {
         ResponseEntity re = testIntance.handleWrongInputFieldException(new WrongInputFieldException("WrongInputFieldExceptionMessage"));
 
         assertEquals(BAD_REQUEST, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.WRONG_FIELD, ((ErrorResponse)re.getBody()).getBusinessCode());
+        assertEquals(ErrorBusinessCode.WRONG_FIELD.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
     }
 
     @Test
@@ -62,7 +62,7 @@ public class ErrorMappingControllerAdviceTest {
         ResponseEntity re = testIntance.handleNotFoundException(new NotFoundException("NotFoundExceptionMessage"));
 
         assertEquals(NOT_FOUND, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.NOT_FOUND, ((ErrorResponse)re.getBody()).getBusinessCode());
+        assertEquals(ErrorBusinessCode.NOT_FOUND.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
     }
 
     @Test
@@ -76,7 +76,7 @@ public class ErrorMappingControllerAdviceTest {
         });
 
         assertEquals(UNAUTHORIZED, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.UNAUTHORIZED, ((ErrorResponse)re.getBody()).getBusinessCode());
+        assertEquals(ErrorBusinessCode.UNAUTHORIZED.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
     }
 
     @Test
@@ -84,7 +84,7 @@ public class ErrorMappingControllerAdviceTest {
         ResponseEntity re = testIntance.handleAccessDeniedException(new AccessDeniedException("AccessDeniedExceptionMessage"));
 
         assertEquals(UNAUTHORIZED, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.UNAUTHORIZED, ((ErrorResponse)re.getBody()).getBusinessCode());
+        assertEquals(ErrorBusinessCode.UNAUTHORIZED.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
     }
 
     @Test
@@ -92,7 +92,7 @@ public class ErrorMappingControllerAdviceTest {
         ResponseEntity re = testIntance.handleUnknownUserException(new UnknownUserException("UnknownUserExceptionMessage"));
 
         assertEquals(BAD_REQUEST, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.USER_NOT_FOUND, ((ErrorResponse)re.getBody()).getBusinessCode());
+        assertEquals(ErrorBusinessCode.USER_NOT_FOUND.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
     }
 
     @Test
@@ -100,7 +100,7 @@ public class ErrorMappingControllerAdviceTest {
         ResponseEntity re = testIntance.handleUnknownUserException(new UnknownUserException("UnknownUserExceptionMessage"));
 
         assertEquals(BAD_REQUEST, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.UNAUTHORIZED, ((ErrorResponse)re.getBody()).getBusinessCode());
+        assertEquals(ErrorBusinessCode.USER_NOT_FOUND.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
     }
 
     @Test
@@ -109,7 +109,7 @@ public class ErrorMappingControllerAdviceTest {
         ResponseEntity re = testIntance.handleXmlParsingException(new XmlParsingException(null));
 
         assertEquals(BAD_REQUEST, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.XSD_INVALID, ((ErrorResponse)re.getBody()).getBusinessCode());
+        assertEquals(ErrorBusinessCode.XSD_INVALID.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
     }
 
     @Test
@@ -118,6 +118,6 @@ public class ErrorMappingControllerAdviceTest {
                 new XmlInvalidAgainstSchemaException("XmlInvalidAgainstSchemaExceptionMessage", null));
 
         assertEquals(BAD_REQUEST, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.XSD_INVALID, ((ErrorResponse)re.getBody()).getBusinessCode());
+        assertEquals(ErrorBusinessCode.XSD_INVALID.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
     }
 }
