@@ -1,4 +1,4 @@
--- Copyright 2018 European Commission | CEF eDelivery
+x-- Copyright 2018 European Commission | CEF eDelivery
 --
 -- Licensed under the EUPL, Version 1.2
 --
@@ -116,6 +116,6 @@ CREATE TABLE hibernate_sequence(
     next_val BIGINT NOT NULL
 );
 
-INSERT INTO hibernate_sequence(next_val) values(1
+INSERT INTO hibernate_sequence(next_val) values(1);
 
 commit;
