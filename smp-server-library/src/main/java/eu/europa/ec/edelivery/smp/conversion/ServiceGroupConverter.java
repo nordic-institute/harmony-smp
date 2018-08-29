@@ -44,18 +44,18 @@ public class ServiceGroupConverter {
 
     private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
 
-    static Unmarshaller jaxbUnmarshaller;
+    private static final ThreadLocal<Unmarshaller> jaxbUnmarshaller = ThreadLocal.withInitial( () -> {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(ServiceGroup.class);
+            return jaxbContext.createUnmarshaller();
+        }catch(JAXBException ex) {
+            throw new RuntimeException("Could not create ServiceGroup Unmarshaller!");
+        }
+    } );
+
 
     private static Unmarshaller getUnmarshaller() throws JAXBException {
-        if(jaxbUnmarshaller != null) {
-            return jaxbUnmarshaller;
-        }
-
-        synchronized (ServiceGroupConverter.class) {
-            JAXBContext jaxbContext = JAXBContext.newInstance(ServiceGroup.class);
-            jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            return jaxbUnmarshaller;
-        }
+        return jaxbUnmarshaller.get();
     }
 
     public static ServiceGroup unmarshal(String serviceGroupXml) {
