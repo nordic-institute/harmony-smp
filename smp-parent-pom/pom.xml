@@ -95,6 +95,7 @@
 		<lombok.version>1.16.16</lombok.version>
 		<xmlunit.version>2.5.1</xmlunit.version>
 		<hamcrest.version>2.0.0.0</hamcrest.version>
+		<jackson.version>2.9.2</jackson.version>
 
 		<!-- jacoco, sonar code coverage settings start -->
         <sonar.jacoco.reportPath>${maven.multiModuleProjectDirectory}/code-coverage/jacoco-ut.exec</sonar.jacoco.reportPath>
@@ -422,6 +423,23 @@
 				<version>${junit.version}</version>
 				<scope>test</scope>
 			</dependency>
+			<!-- Jackson-->
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-databind</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-core</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.core</groupId>
+				<artifactId>jackson-annotations</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
+			<!-- End Jackson-->
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>

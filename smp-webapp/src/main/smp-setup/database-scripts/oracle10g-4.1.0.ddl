@@ -73,7 +73,7 @@ CREATE TABLE smp_ownership (
 INSERT INTO smp_domain(domainId, bdmslSmpId) VALUES('domain1', 'DEFAULT-SMP-ID');
 -- default admin user with password "changeit"
 INSERT INTO smp_user(username, password, isadmin) VALUES ('smp_admin', '$2a$10$SZXMo7K/wA.ULWxH7uximOxeNk4mf3zU6nxJx/2VfKA19QlqwSpNO', '1');
-
+commit;
 
 CREATE TABLE smp_domain_AUD (
   domainId              VARCHAR(50),

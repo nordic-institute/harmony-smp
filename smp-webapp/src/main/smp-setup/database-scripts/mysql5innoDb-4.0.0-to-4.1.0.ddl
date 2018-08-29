@@ -110,8 +110,12 @@ CREATE TABLE SMP_REV_INFO (
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
-create table hibernate_sequence ( next_val bigint );
-create sequence hibernate_sequence;
 
+
+CREATE TABLE hibernate_sequence(
+    next_val BIGINT NOT NULL
+);
+
+INSERT INTO hibernate_sequence(next_val) values(1);
 
 commit;

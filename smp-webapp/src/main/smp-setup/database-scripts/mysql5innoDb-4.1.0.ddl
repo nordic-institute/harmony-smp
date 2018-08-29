@@ -201,7 +201,7 @@ CREATE TABLE SMP_REV_INFO (
   ID INT AUTO_INCREMENT NOT NULL,
   TIMESTAMP BIGINT NULL,
   REVISION_DATE timestamp NULL,
-  USER_NAME VARCHAR(255) NULL,
+  username VARCHAR(255) NULL,
   CONSTRAINT PK_SMP_REV_INFO PRIMARY KEY (ID)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
@@ -265,8 +265,11 @@ FOR EACH ROW
 
 DELIMITER ;
 
-create table hibernate_sequence ( next_val bigint );
-create sequence hibernate_sequence;
+create table hibernate_sequence(
+    next_val BIGINT NOT NULL
+);
+
+INSERT INTO hibernate_sequence(next_val) values(1);
 
 INSERT INTO smp_domain(domainId, bdmslSmpId) VALUES('domain1', 'DEFAULT-SMP-ID');
 -- default admin user with password "changeit"
