@@ -1,4 +1,4 @@
-x-- Copyright 2018 European Commission | CEF eDelivery
+-- Copyright 2018 European Commission | CEF eDelivery
 --
 -- Licensed under the EUPL, Version 1.2
 --
