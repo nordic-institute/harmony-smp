@@ -1,0 +1,55 @@
+<h2 md-dialog-title>ServiceGroup Metadata</h2>
+<md-dialog-content style="height:460px;width:950px">
+  <textarea style="width: 100%; height: 95%">&lt;ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"&gt;
+    &lt;ServiceInformation&gt;
+        &lt;ParticipantIdentifier scheme="participantSchema"&gt;participantIdentifier&lt;/ParticipantIdentifier&gt;
+        &lt;DocumentIdentifier scheme="docSchema"&gt;docTypeIdentifier&lt;/DocumentIdentifier&gt;
+        &lt;ProcessList&gt;
+            &lt;Process&gt;
+                &lt;ProcessIdentifier scheme="cenbii-procid-ubl"&gt;urn:www.cenbii.eu:profile:bii04:ver1.0&lt;/ProcessIdentifier&gt;
+                &lt;ServiceEndpointList&gt;
+                    &lt;Endpoint transportProfile="busdox-transport-start"&gt;
+                        &lt;EndpointURI&gt;https://poland.pl/theService&lt;/EndpointURI&gt;
+                        &lt;RequireBusinessLevelSignature&gt;true&lt;/RequireBusinessLevelSignature&gt;
+                        &lt;ServiceActivationDate&gt;2003-01-01T00:00:00&lt;/ServiceActivationDate&gt;
+                        &lt;ServiceExpirationDate&gt;2020-05-01T00:00:00&lt;/ServiceExpirationDate&gt;
+                        &lt;Certificate&gt;MIICUTCCAbqgAwIBAgIEWoKrxzANBgkqhkiG9w0BAQsFADBtMQswCQYDVQQGEwJCRTEcMBoGA1UECgwTRXVyb3BlYW4gQ29tbWlzc2lvbjEYMBYGA1UECwwPRElHSVQgZURlbGl2ZXJ5MSYwJAYDVQQDDB1TYW1wbGUgU2lnbmF0dXJlcyBDZXJ0aWZpY2F0ZTAeFw0xODAyMTMwOTEzMjBaFw0zODAyMTMwOTEzMjBaMG0xCzAJBgNVBAYTAkJFMRwwGgYDVQQKDBNFdXJvcGVhbiBDb21taXNzaW9uMRgwFgYDVQQLDA9ESUdJVCBlRGVsaXZlcnkxJjAkBgNVBAMMHVNhbXBsZSBTaWduYXR1cmVzIENlcnRpZmljYXRlMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDIWYibbbJ6YT3uLQ0oup8kB1jJO/o16nlRfB3CbCbmpGZ2r+zCh67EMstKLltuk3peJ6QTcSaFV2oS1KLKWxwWsV4iEs5qggA5BTkzUicTsQWw39OcPPe0wniJeXdNUlOUFP2ab0ZQ9UMrJgVtlyF2uLijoKx1XR0mpTKmajh1CQIDAQABMA0GCSqGSIb3DQEBCwUAA4GBABoFFJ+vgOo/78SPv73+MEdxkydn5EMsZ+Q4Vt1BmBaq78RcjeS7LpvPZtRxSzW+w59825BbaOCJ5K0oc6lwOXc+SS0ZI0JK2vMlp/2REFLedqHqnhpSWFKWM0Zrq80o1SzBQHC1hq95RXml6RzzPEEK0Ll0dVH7HXRpekRScGic&lt;/Certificate&gt;
+                        &lt;ServiceDescription&gt;Sample description of invoicing service&lt;/ServiceDescription&gt;
+                        &lt;TechnicalContactUrl&gt;https://example.com&lt;/TechnicalContactUrl&gt;
+                    &lt;/Endpoint&gt;
+                &lt;/ServiceEndpointList&gt;
+                &lt;Extension&gt;
+                    &lt;ExtensionID&gt;optional sample ID&lt;/ExtensionID&gt;
+                    &lt;ExtensionName&gt;UTF-8 characters are handled, i.e. polish special ones: zażółć gęślą jaźń&lt;/ExtensionName&gt;
+                    &lt;ExtensionAgencyID&gt;text&lt;/ExtensionAgencyID&gt;
+                    &lt;ExtensionAgencyName&gt;text&lt;/ExtensionAgencyName&gt;
+                    &lt;ex:dummy xmlns:ex="http://test.eu"&gt;dummy1&lt;/ex:dummy&gt;
+                &lt;/Extension&gt;
+                &lt;Extension&gt;
+                    &lt;ex:dummy xmlns:ex="http://test.eu"&gt;dumm2&lt;/ex:dummy&gt;
+                &lt;/Extension&gt;
+            &lt;/Process&gt;
+        &lt;/ProcessList&gt;
+        &lt;Extension&gt;
+            &lt;ex:dummynode xmlns:ex="http://test.eu"&gt;Sample not mandatory extension&lt;/ex:dummynode&gt;
+        &lt;/Extension&gt;
+    &lt;/ServiceInformation&gt;
+&lt;/ServiceMetadata&gt;</textarea>
+
+</md-dialog-content>
+
+<md-dialog-actions>
+  <div class="group-action-button">
+    <button id="ServiceGroupsSaveButton" md-raised-button color="primary" (click)="dialogRef.close({})"
+            style="margin-top:10px">
+      <md-icon>save</md-icon>
+      <span>Save</span>
+    </button>
+
+    <button id="ServiceGroupsCloseButton" md-raised-button color="primary" (click)="dialogRef.close({})"
+            style="margin-top:10px">
+      <md-icon>close</md-icon>
+      <span>Close</span>
+    </button>
+  </div>
+</md-dialog-actions>

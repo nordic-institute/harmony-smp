@@ -1,0 +1,111 @@
+<div style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 5px;">
+  <page-header id="{{id}}_header_id">{{title}}</page-header>
+
+  <div class="selectionCriteria">
+    <md-card>
+
+      <md-card-content>
+
+        <div class="panel">
+          <form name="filterForm" #filterForm="ngForm" (ngSubmit)="search()">
+            <ng-container *ngTemplateOutlet="searchPanel"></ng-container>
+
+            <div class="searchArea">
+              <button md-raised-button color="primary" [disabled]="!filterForm.form.valid" id="searchbutton_id">
+                <md-icon>search</md-icon>
+                <span>Search</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </md-card-content>
+    </md-card>
+  </div>
+
+  <div class="panel" style="position: absolute; top: 270px; bottom: 5px; left: 5px; right: 5px;">
+    <div class="group-filter-button">
+    <span class="row-button">
+      <app-row-limiter [pageSizes]="rowLimiter.pageSizes"
+                       (onPageSizeChanged)="changePageSize($event.value)"></app-row-limiter>
+    </span>
+      <span class="column-filter-button">
+      <app-column-picker [allColumns]="columnPicker.allColumns" [selectedColumns]="columnPicker.selectedColumns"
+                         (onSelectedColumnsChanged)="columnPicker.changeSelectedColumns($event)"></app-column-picker>
+    </span>
+    </div>
+    <!-- temporal solution <div - absolut - wrapping> for stretch table height to fit screen size: scrollbarV does not work - virtual scrolling has
+    row bugs.-->
+    <div class="panel" style="position: absolute; overflow-y: scroll;top: 100px; bottom: 40px; left: 0px; right: 0px;">
+      <ngx-datatable
+        id="serviceGroupTable"
+        class="material striped"
+        style=""
+        [rows]="rows"
+        [columns]="columnPicker.selectedColumns"
+        [columnMode]="'force'"
+        [headerHeight]="50"
+        [footerHeight]="50"
+        [rowHeight]="'auto'"
+        [scrollbarH]="true"
+        [externalPaging]="true"
+        [externalSorting]="true"
+        [loadingIndicator]="loading"
+        [count]="count"
+        [offset]="offset"
+        [limit]="rowLimiter.pageSize"
+        [sorts]="[{prop: 'received', dir: 'desc'}]"
+        (page)='onPage($event)'
+        (sort)="onSort($event)"
+        [selected]="selected"
+        [selectionType]="'multi'"
+        (activate)="onActivate($event)"
+        (select)="onSelect($event)">
+      </ngx-datatable>
+    </div>
+
+    <ng-template #rowActions let-row="row" let-value="value" ngx-datatable-cell-template>
+
+      <button md-icon-button color="primary"
+              (click)="editRowButtonAction(row)" id="editButtonRow{{row.$$index}}_id" tooltip="Edit">
+        <md-icon>edit</md-icon>
+      </button>
+
+
+      <button md-icon-button color="primary" (click)="deleteRowButtonAction(row)"
+              id="deleteButtonRow{{row.$$index}}_id" tooltip="Delete">
+        <md-icon>delete</md-icon>
+      </button>
+    </ng-template>
+
+
+    <div class="group-action-button" style="position: absolute;left: 8px; bottom: 8px;">
+      <button md-raised-button color="primary"  (click)="newButtonAction()"
+              id="add_id">
+        <md-icon>add</md-icon>
+        <span>New</span>
+      </button>
+
+      <button md-raised-button color="primary" [disabled]="!isRowSelected()" (click)="editButtonAction()"
+              id="edit_id">
+        <md-icon>edit</md-icon>
+        <span>Edit</span>
+      </button>
+
+      <button md-raised-button color="primary" [disabled]="!isRowSelected()" (click)="deleteButtonAction()"
+              id="resendbutton_id">
+        <md-icon>delete</md-icon>
+        <span>Delete</span>
+      </button>
+
+      <ng-container *ngTemplateOutlet="additionalToolButtons"></ng-container>
+
+    </div>
+  </div>
+
+
+</div>
+
+<!--
+
+
+-->
