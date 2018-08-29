@@ -19,6 +19,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.*;
 
+
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
 /**
@@ -28,7 +29,8 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @EnableWebMvc
 @ComponentScan(basePackages = {
         "eu.europa.ec.edelivery.smp.controllers",
-        "eu.europa.ec.edelivery.smp.validation"})
+        "eu.europa.ec.edelivery.smp.validation",
+        "eu.europa.ec.edelivery.smp.ui"})
 @Import({GlobalMethodSecurityConfig.class, ErrorMappingControllerAdvice.class})
 public class SmpWebAppConfig implements WebMvcConfigurer {
 
@@ -51,5 +53,4 @@ public class SmpWebAppConfig implements WebMvcConfigurer {
         //Default value (true) would break @PathVariable Identifiers containing dot character "."
         configurer.setUseSuffixPatternMatch(false);
     }
-
 }

@@ -2,10 +2,7 @@ package eu.europa.ec.edelivery.smp.error;
 
 import ec.services.smp._1.ErrorResponse;
 import eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException;
-import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
-import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
-import eu.europa.ec.edelivery.smp.exceptions.WrongInputFieldException;
-import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
+import eu.europa.ec.edelivery.smp.exceptions.*;
 import eu.europa.ec.smp.api.exceptions.MalformedIdentifierException;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import org.junit.Test;
@@ -97,10 +94,10 @@ public class ErrorMappingControllerAdviceTest {
 
     @Test
     public void handleInvalidOwnerException() {
-        ResponseEntity re = testIntance.handleUnknownUserException(new UnknownUserException("UnknownUserExceptionMessage"));
+        ResponseEntity re = testIntance.handleUnknownUserException(new InvalidOwnerException("InvalidOwnerExceptionMessage"));
 
         assertEquals(BAD_REQUEST, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.USER_NOT_FOUND.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
+        assertEquals(ErrorBusinessCode.UNAUTHORIZED.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
     }
 
     @Test
