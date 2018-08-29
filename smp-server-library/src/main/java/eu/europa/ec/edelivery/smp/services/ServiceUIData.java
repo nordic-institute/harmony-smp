@@ -99,7 +99,7 @@ public class ServiceUIData {
         ServiceResult<ServiceMetadataRO> sg = new ServiceResult<>();
         sg.setPage(page);
         sg.setPageSize(pageSize);
-        long iCnt = uiDaoService.getDataListCount(DomainRO.class, null);
+        long iCnt = uiDaoService.getDataListCount(ServiceMetadataRO.class, null);
         sg.setCount(iCnt);
         if (iCnt > 0) {
             List<ServiceMetadataRO> lst = uiDaoService.getDataList(ServiceMetadataRO.class, page * pageSize, pageSize, sortField, sortOrder, null);
