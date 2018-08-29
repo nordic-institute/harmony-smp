@@ -20,12 +20,10 @@
     [offset]="offset"
     [limit]="rowLimiter.pageSize"
     [sorts]="[{prop: 'received', dir: 'desc'}]"
-    (page)='onPage($event)'
-    (sort)="onSort($event)"
+
     [selected]="selected"
     [selectionType]="'multi'"
-    (activate)="onActivate($event)"
-    (select)="onSelect($event)">
+   >
   </ngx-datatable>
 
 
