@@ -1,0 +1,77 @@
+<h2 md-dialog-title>ServiceGroup Metadata list</h2>
+<md-dialog-content style="height:460px;width:950px">
+
+
+  <ngx-datatable
+    id="metadataTable"
+    class="material striped"
+    style="height: 400px;width: 920px;"
+    [rows]="rows"
+    [columns]="columnPicker.selectedColumns"
+    [columnMode]="'force'"
+    [headerHeight]="50"
+    [footerHeight]="50"
+    [rowHeight]="'auto'"
+    [scrollbarH]="true"
+    [externalPaging]="true"
+    [externalSorting]="true"
+    [loadingIndicator]="loading"
+    [count]="count"
+    [offset]="offset"
+    [limit]="rowLimiter.pageSize"
+    [sorts]="[{prop: 'received', dir: 'desc'}]"
+    (page)='onPage($event)'
+    (sort)="onSort($event)"
+    [selected]="selected"
+    [selectionType]="'multi'"
+    (activate)="onActivate($event)"
+    (select)="onSelect($event)">
+  </ngx-datatable>
+
+
+  <ng-template #rowActions let-row="row" let-value="value" ngx-datatable-cell-template>
+
+    <button md-icon-button color="primary"
+            (click)="editRowButtonAction(row)" id="editButtonRow{{row.$$index}}_id" tooltip="Edit">
+      <md-icon>edit</md-icon>
+    </button>
+
+
+    <button md-icon-button color="primary" (click)="deleteRowButtonAction(row)"
+            id="deleteButtonRow{{row.$$index}}_id" tooltip="Delete">
+      <md-icon>delete</md-icon>
+    </button>
+  </ng-template>
+
+</md-dialog-content>
+
+<md-dialog-actions>
+  <div class="group-action-button">
+
+    <button md-raised-button color="primary" (click)="newButtonAction()"
+            id="add_id">
+      <md-icon>add</md-icon>
+      <span>New</span>
+    </button>
+
+    <button md-raised-button color="primary" [disabled]="!isRowSelected()" (click)="editButtonAction()"
+            id="edit_id">
+      <md-icon>edit</md-icon>
+      <span>Edit</span>
+    </button>
+
+    <button md-raised-button color="primary" [disabled]="!isRowSelected()" (click)="deleteButtonAction()"
+            id="resendbutton_id">
+      <md-icon>delete</md-icon>
+      <span>Delete</span>
+    </button>
+    <div style="background-color: #03A9F4; display: inline-block; width: 3px; height: 20px; margin-right: 8px">&nbsp;
+    </div>
+    <button id="ServiceGroupMetadataListCloseButton" md-raised-button color="primary" (click)="dialogRef.close({})"
+            style="margin-top:10px">
+      <md-icon>close</md-icon>
+      <span>Close</span>
+    </button>
+  </div>
+</md-dialog-actions>
+

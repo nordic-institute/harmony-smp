@@ -1,0 +1,36 @@
+<h2 md-dialog-title>User details</h2>
+<md-dialog-content style="height:260px;width:650px">
+  <md-card>
+    <md-card-content>
+      <md-input-container style="width:100%">
+        <input mdInput placeholder="Username id" value="{{user.username}}" readonly/>
+      </md-input-container>
+
+      <md-input-container style="width:100%">
+        <input mdInput placeholder="isAdmin" value="{{user.idAdmin}}" readonly/>
+      </md-input-container>
+
+
+
+    </md-card-content>
+  </md-card>
+
+</md-dialog-content>
+
+<md-dialog-actions>
+  <div class="group-action-button" >
+  <button id="ServiceGroupsSaveButton" md-raised-button color="primary" (click)="dialogRef.close({})"
+          style="margin-top:10px">
+    <md-icon>save</md-icon>
+    <span>Save</span>
+  </button>
+
+
+  <button id="ServiceGroupsCloseButton" md-raised-button color="primary" (click)="dialogRef.close({})"
+          style="margin-top:10px">
+    <md-icon>close</md-icon>
+    <span>Close</span>
+  </button>
+  </div>
+</md-dialog-actions>
+

@@ -46,17 +46,17 @@ public class ServiceMetadataConverter {
     private static final String DOC_SIGNED_SERVICE_METADATA_EMPTY = "<SignedServiceMetadata xmlns=\""+NS+"\"/>";
     private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
 
-    static Unmarshaller jaxbUnmarshaller;
+    private static final ThreadLocal<Unmarshaller> jaxbUnmarshaller = ThreadLocal.withInitial( () -> {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(ServiceMetadata.class);
+            return jaxbContext.createUnmarshaller();
+        }catch(JAXBException ex) {
+            throw new RuntimeException("Could not create ServiceGroup Unmarshaller!");
+        }
+    } );
 
     private static Unmarshaller getUnmarshaller() throws JAXBException {
-        if (jaxbUnmarshaller != null) {
-            return jaxbUnmarshaller;
-        }
-        synchronized (ServiceMetadataConverter.class) {
-            JAXBContext jaxbContext = JAXBContext.newInstance(ServiceMetadata.class);
-            jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-            return jaxbUnmarshaller;
-        }
+        return jaxbUnmarshaller.get();
     }
 
     public static Document toSignedServiceMetadatadaDocument(String serviceMetadataXml)  {

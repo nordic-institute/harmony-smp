@@ -1,0 +1,38 @@
+
+<smp-search-table
+  page_id= 'domain_id'
+  title= 'Domains'
+  [columnPicker] = "columnPicker"
+  url="ui/domain"
+  [additionalToolButtons]="additionalToolButtons"
+  [searchTableController]="domainController"
+  [searchPanel]="searchPanel"
+  [filter]="filter"
+
+>
+  <ng-template #additionalToolButtons >
+
+  </ng-template>
+
+  <ng-template #searchPanel>
+    <md-input-container>
+      <input mdInput placeholder="Domain Id" name="Domain Id" [(ngModel)]="filter.messageId"
+             #messageId="ngModel" id="Domain_id">
+    </md-input-container>
+    <md-input-container>
+      <input mdInput placeholder="SMP Id" name="SMP Id" [(ngModel)]="filter.messageId"
+             #messageId="ngModel" id="SMPid">
+    </md-input-container>
+    <md-input-container>
+    <input mdInput placeholder="ClientCert Header" name="ClientCert Header" [(ngModel)]="filter.messageId"
+           #messageId="ngModel" id="ClientCert_header">
+    </md-input-container>
+
+    <md-input-container>
+    <input mdInput placeholder="ClientCert Alias" name="ClientCert Alias" [(ngModel)]="filter.messageId"
+           #messageId="ngModel" id="ClientCert_Alias">
+    </md-input-container>
+
+  </ng-template>
+
+</smp-search-table>
