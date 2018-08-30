@@ -42,6 +42,13 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public class ServiceMetadataConverter {
 
+    /**
+     * Class has only static members. Is not ment to create instances  - also SONAR warning.
+     */
+    private  ServiceMetadataConverter() {
+
+    }
+
     private static final String NS = "http://docs.oasis-open.org/bdxr/ns/SMP/2016/05";
     private static final String DOC_SIGNED_SERVICE_METADATA_EMPTY = "<SignedServiceMetadata xmlns=\""+NS+"\"/>";
     private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
@@ -55,7 +62,7 @@ public class ServiceMetadataConverter {
         }
     } );
 
-    private static Unmarshaller getUnmarshaller() throws JAXBException {
+    private static Unmarshaller getUnmarshaller() {
         return jaxbUnmarshaller.get();
     }
 

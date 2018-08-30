@@ -11,8 +11,10 @@ import java.util.Map;
  */
 public class  ServiceResult<T> implements Serializable {
 
+    private static final long serialVersionUID = -4971552086560325302L;
+
     private Map<String, Object> filter; //NOSONAR
-    private List<T> serviceEntities;
+    private List<T> serviceEntities; //NOSONAR
 
 
     private Long count;
@@ -29,7 +31,7 @@ public class  ServiceResult<T> implements Serializable {
 
     public List<T> getServiceEntities() {
         if (serviceEntities == null) {
-            serviceEntities = new ArrayList<T>();
+            serviceEntities = new ArrayList<>();
         }
         return serviceEntities;
     }

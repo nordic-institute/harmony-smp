@@ -20,7 +20,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import java.io.Serializable;
 
 import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_FREE_TEXT_LENGTH;
 import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_IDENTIFIER_VALUE_LENGTH;

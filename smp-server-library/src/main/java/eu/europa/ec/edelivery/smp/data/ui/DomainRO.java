@@ -3,6 +3,7 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_IDENTIFIER_VALUE_LENGTH;
 import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_USERNAME_LENGTH;
@@ -16,6 +17,8 @@ import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_USE
 @Table(name = "smp_domain")
 public class DomainRO implements Serializable {
 
+
+    private static final long serialVersionUID = -9008583888835630560L;
     @Id
     @Column(name = "domainId")
     private String domainId;
@@ -80,5 +83,20 @@ public class DomainRO implements Serializable {
 
     public void setSignatureCertAlias(String signatureCertAlias) {
         this.signatureCertAlias = signatureCertAlias;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DomainRO domainRO = (DomainRO) o;
+        return Objects.equals(domainId, domainRO.domainId) &&
+                Objects.equals(bdmslSmpId, domainRO.bdmslSmpId);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(domainId, bdmslSmpId);
     }
 }

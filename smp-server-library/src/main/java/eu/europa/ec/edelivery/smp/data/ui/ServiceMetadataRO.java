@@ -6,6 +6,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * @author Joze Rihtarsic
@@ -17,6 +18,7 @@ import java.io.Serializable;
 public class ServiceMetadataRO implements Serializable {
 
 
+    private static final long serialVersionUID = 67944640449327185L;
     @EmbeddedId
     ServiceMetadataROId serviceMetadataROId;
 
@@ -29,9 +31,8 @@ public class ServiceMetadataRO implements Serializable {
     }
 
     @Embeddable
-    @ToString
-    @EqualsAndHashCode
     public static class ServiceMetadataROId implements Serializable {
+        private static final long serialVersionUID = -123975468926638078L;
         @Column(name = "businessIdentifier")
         private String participantId;
         @Column(name = "businessIdentifierScheme")
@@ -81,6 +82,22 @@ public class ServiceMetadataRO implements Serializable {
 
         public void setDocumentIdValue(String documentIdValue) {
             this.documentIdValue = documentIdValue;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ServiceMetadataROId that = (ServiceMetadataROId) o;
+            return Objects.equals(participantId, that.participantId) &&
+                    Objects.equals(participantSchema, that.participantSchema) &&
+                    Objects.equals(documentIdScheme, that.documentIdScheme) &&
+                    Objects.equals(documentIdValue, that.documentIdValue);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(participantId, participantSchema, documentIdScheme, documentIdValue);
         }
     }
 }

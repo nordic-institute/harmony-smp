@@ -42,6 +42,13 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  */
 public class ServiceGroupConverter {
 
+    /**
+     * Class has only static members.
+     */
+    private  ServiceGroupConverter() {
+
+    }
+
     private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
 
     private static final ThreadLocal<Unmarshaller> jaxbUnmarshaller = ThreadLocal.withInitial( () -> {
@@ -49,12 +56,12 @@ public class ServiceGroupConverter {
             JAXBContext jaxbContext = JAXBContext.newInstance(ServiceGroup.class);
             return jaxbContext.createUnmarshaller();
         }catch(JAXBException ex) {
-            throw new RuntimeException("Could not create ServiceGroup Unmarshaller!");
+            throw new RuntimeException("Could not create ServiceGroup Unmarshaller!", ex);
         }
     } );
 
 
-    private static Unmarshaller getUnmarshaller() throws JAXBException {
+    private static Unmarshaller getUnmarshaller() {
         return jaxbUnmarshaller.get();
     }
 
