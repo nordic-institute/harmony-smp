@@ -16,7 +16,6 @@ package eu.europa.ec.edelivery.smp.data.model;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -31,7 +30,7 @@ public class DBServiceGroup implements BaseEntity {
     private DBServiceGroupId serviceGroupId;
     private String extension;
     private Set<DBOwnership> ownerships = new HashSet<>();
-    private Set<DBServiceMetadata> serviceMetadatas = new HashSet<DBServiceMetadata>();
+    private Set<DBServiceMetadata> serviceMetadatas = new HashSet<>();
     private DBDomain domain;
 
     public DBServiceGroup() {
