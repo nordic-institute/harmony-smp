@@ -33,7 +33,7 @@
         <maven.deploy.skip>true</maven.deploy.skip>
 
         <sonar.host.url>http://edelquality.westeurope.cloudapp.azure.com:9000/sonar/</sonar.host.url>
-        <sonar.exclusions>**/smp/data/model/*, **/smp/exceptions/*, **/to_be_removed/*, </sonar.exclusions>
+        <sonar.exclusions>**/smp/data/model/*,**/smp/data/ui/*, **/smp/exceptions/*, **/to_be_removed/*</sonar.exclusions>
         <sonar.language>java</sonar.language>
         <jacoco.maven.plugin.version>0.7.9</jacoco.maven.plugin.version>
 
