@@ -40,6 +40,21 @@ public class ServiceUIData {
         return sg;
     }
 
+    public void persistServiceGroup(ServiceGroupRO sg) {
+        uiDaoService.persist(sg);
+    }
+
+    public void persistUser(UserRO ent) {
+        uiDaoService.persist(ent);
+    }
+
+    public void persistDomain(DomainRO ent) {
+        uiDaoService.persist(ent);
+    }
+    public void persistMetaData(ServiceMetadataRO ent) {
+        uiDaoService.persist(ent);
+    }
+
     /**
      *
      * @param page

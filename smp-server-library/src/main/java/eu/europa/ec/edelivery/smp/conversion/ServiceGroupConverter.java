@@ -15,6 +15,7 @@ package eu.europa.ec.edelivery.smp.conversion;
 
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupId;
 import eu.europa.ec.edelivery.smp.exceptions.ConversionException;
+import eu.europa.ec.edelivery.smp.exceptions.SMPInitializationException;
 import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
@@ -56,7 +57,7 @@ public class ServiceGroupConverter {
             JAXBContext jaxbContext = JAXBContext.newInstance(ServiceGroup.class);
             return jaxbContext.createUnmarshaller();
         }catch(JAXBException ex) {
-            throw new RuntimeException("Could not create ServiceGroup Unmarshaller!", ex);
+            throw new SMPInitializationException("Could not create ServiceGroup Unmarshaller!", ex);
         }
     } );
 
