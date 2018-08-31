@@ -58,6 +58,8 @@ public class SmpServicesTestConfig {
         driverManagerDataSource.setUsername(username);
         driverManagerDataSource.setPassword(password);
 
+
+
         return driverManagerDataSource;
     }
 
@@ -65,6 +67,9 @@ public class SmpServicesTestConfig {
     public LocalContainerEntityManagerFactoryBean smpEntityManagerFactory() {
         Properties prop = new Properties();
         prop.setProperty("org.hibernate.envers.store_data_at_delete", "true");
+        // test database
+        prop.setProperty("hibernate.dialect","org.hibernate.dialect.OracleDialect");
+
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
         lef.setDataSource(smpDataSource());
         lef.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
