@@ -22,29 +22,35 @@ import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 @Configuration
-@PropertySource("persistence-test-h2.properties")
+//@PropertySource("persistence-test-h2.properties")
 @EnableTransactionManagement
 public class H2JPATestConfiguration {
     @Autowired
     private Environment env;
 
-    @Bean
-    @Profile("db-h2-integration-test")
-    public DataSource dataSource() {
+    @Bean(name = "h2DataSource")
+    public DataSource h2DataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-
+/*
         dataSource.setDriverClassName(env.getProperty("jdbc.driverClassName"));
         dataSource.setUrl(env.getProperty("jdbc.url"));
         dataSource.setUsername(env.getProperty("jdbc.user"));
-        dataSource.setPassword(env.getProperty("jdbc.pass"));
+        dataSource.setPassword(env.getProperty("jdbc.pass"));*/
+
+        dataSource.setDriverClassName("org.h2.Driver");
+        dataSource.setUrl("jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE");
+        dataSource.setUsername("smp-dev");
+        dataSource.setPassword("smp-dev");
+
+
         return dataSource;
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource h2DataSource, JpaVendorAdapter jpaVendorAdapter) {
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
-        lef.setDataSource(dataSource);
+        lef.setDataSource(h2DataSource);
         lef.setJpaVendorAdapter(jpaVendorAdapter);
         lef.setPackagesToScan("eu.europa.ec.edelivery.smp.data.ui");
 

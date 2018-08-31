@@ -58,8 +58,6 @@ public class SmpServicesTestConfig {
         driverManagerDataSource.setUsername(username);
         driverManagerDataSource.setPassword(password);
 
-
-
         return driverManagerDataSource;
     }
 
