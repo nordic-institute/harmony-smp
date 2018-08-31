@@ -51,7 +51,7 @@ public class SmpServicesTestConfig {
     private String url;
 
     @Bean
-    public DataSource dataSource() {
+    public DataSource smpDataSource() {
         DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
         driverManagerDataSource.setDriverClassName(driver);
         driverManagerDataSource.setUrl(url);
@@ -66,7 +66,7 @@ public class SmpServicesTestConfig {
         Properties prop = new Properties();
         prop.setProperty("org.hibernate.envers.store_data_at_delete", "true");
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
-        lef.setDataSource(dataSource());
+        lef.setDataSource(smpDataSource());
         lef.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         lef.setJpaProperties(prop);
         lef.setPackagesToScan("eu.europa.ec.edelivery.smp.data.model");
