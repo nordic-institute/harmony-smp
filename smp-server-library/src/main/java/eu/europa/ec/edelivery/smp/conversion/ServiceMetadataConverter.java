@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.conversion;
 
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadataId;
+import eu.europa.ec.edelivery.smp.exceptions.SMPInitializationException;
 import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
@@ -58,7 +59,7 @@ public class ServiceMetadataConverter {
             JAXBContext jaxbContext = JAXBContext.newInstance(ServiceMetadata.class);
             return jaxbContext.createUnmarshaller();
         }catch(JAXBException ex) {
-            throw new RuntimeException("Could not create ServiceGroup Unmarshaller!");
+            throw new SMPInitializationException("Could not create ServiceGroup Unmarshaller!", ex);
         }
     } );
 
