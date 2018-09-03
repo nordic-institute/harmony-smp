@@ -32,6 +32,13 @@ import java.net.URL;
 public class BdxSmpOasisValidator {
 
     /**
+     * Class has only static members.
+     */
+    private  BdxSmpOasisValidator() {
+
+    }
+
+    /**
      * thread safe validator
      */
     private static final ThreadLocal<Validator> validator = ThreadLocal.withInitial( () -> {
