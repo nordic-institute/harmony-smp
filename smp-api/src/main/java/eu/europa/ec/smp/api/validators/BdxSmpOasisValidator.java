@@ -17,6 +17,7 @@ import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import org.xml.sax.SAXException;
 
 import javax.xml.XMLConstants;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
@@ -30,24 +31,37 @@ import java.net.URL;
  */
 public class BdxSmpOasisValidator {
 
-    private static final Validator validator;
+    /**
+     * Class has only static members.
+     */
+    private  BdxSmpOasisValidator() {
 
-    static {
+    }
+
+    /**
+     * thread safe validator
+     */
+    private static final ThreadLocal<Validator> validator = ThreadLocal.withInitial( () -> {
         SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         URL xsdFilePath = BdxSmpOasisValidator.class.getResource("/bdx-smp-201605.xsd");
         try {
             Schema schema = schemaFactory.newSchema(xsdFilePath);
-            validator = schema.newValidator();
-            validator.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-            validator.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+            Validator vaInstance = schema.newValidator();
+            vaInstance.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+            vaInstance.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+            return vaInstance;
         } catch (SAXException e) {
             throw new IllegalStateException("Unable to initialize BDX SMP OASIS XSD schema validator.", e);
         }
+    } );
+
+    private static Validator getValidator() {
+        return validator.get();
     }
 
     public static void validateXSD(String xmlBody) throws XmlInvalidAgainstSchemaException {
         try {
-            validator.validate(new StreamSource(new StringReader(xmlBody)));
+            getValidator().validate(new StreamSource(new StringReader(xmlBody)));
         } catch (SAXException | IOException e) {
             throw new XmlInvalidAgainstSchemaException(e.getMessage(), e);
         }

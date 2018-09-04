@@ -6,9 +6,7 @@ import eu.europa.ec.edelivery.smp.services.ServiceUIData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -17,12 +15,10 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 @Configuration
-//@PropertySource("persistence-test-h2.properties")
 @EnableTransactionManagement
 public class H2JPATestConfiguration {
     @Autowired
@@ -31,19 +27,10 @@ public class H2JPATestConfiguration {
     @Bean(name = "h2DataSource")
     public DataSource h2DataSource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
-
-/*
-        dataSource.setDriverClassName(env.getProperty("jdbc.driverClassName"));
-        dataSource.setUrl(env.getProperty("jdbc.url"));
-        dataSource.setUsername(env.getProperty("jdbc.user"));
-        dataSource.setPassword(env.getProperty("jdbc.pass"));*/
-
         dataSource.setDriverClassName("org.h2.Driver");
-        dataSource.setUrl("jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE");
+        dataSource.setUrl("jdbc:h2:file:./target/h2TestDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE");
         dataSource.setUsername("smp-dev");
         dataSource.setPassword("smp-dev");
-
-
         return dataSource;
     }
 
@@ -52,7 +39,8 @@ public class H2JPATestConfiguration {
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
         lef.setDataSource(h2DataSource);
         lef.setJpaVendorAdapter(jpaVendorAdapter);
-        lef.setPackagesToScan("eu.europa.ec.edelivery.smp.data.ui");
+        lef.getJpaPropertyMap().put("org.hibernate.envers.store_data_at_delete", true);
+        lef.setPackagesToScan("eu.europa.ec.edelivery.smp.data.ui", "eu.europa.ec.edelivery.smp.data.model");
 
         return lef;
     }
@@ -63,8 +51,6 @@ public class H2JPATestConfiguration {
         hibernateJpaVendorAdapter.setShowSql(false);
         hibernateJpaVendorAdapter.setGenerateDdl(true);
         hibernateJpaVendorAdapter.setDatabase(Database.H2);
-
-
         return hibernateJpaVendorAdapter;
     }
 
@@ -80,13 +66,11 @@ public class H2JPATestConfiguration {
     public ServiceUIData serviceUIData(){
         ServiceUIData serviceMetadat = new ServiceUIData();
         return serviceMetadat;
-
     }
 
     @Bean
     public UiDaoService uiDaoService(){
         UiDaoService uiDaoService = new UiDaoService();
         return uiDaoService;
-
     }
 }
