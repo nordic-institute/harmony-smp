@@ -13,8 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
-import eu.europa.ec.edelivery.smp.config.SmpServicesTestConfig;
+import eu.europa.ec.edelivery.smp.config.H2JPATestConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.*;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
@@ -24,15 +23,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-
-
 import javax.persistence.*;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
-;
 import java.util.Map;
 import java.util.UUID;
 
@@ -44,16 +38,13 @@ import static eu.europa.ec.edelivery.smp.testutil.AuditUtils.*;
  * Created by rihtajo
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SmpServicesTestConfig.class, PropertiesSingleDomainTestConfig.class})
+@ContextConfiguration(classes = {H2JPATestConfiguration.class})
 public class AuditIntegrationTest {
-
-
 
     // because envers creates audit on commit we user PersistenceUnit to control commit...
     // (instead of  PersistenceContext and transaction annotations... )
     @PersistenceUnit
     EntityManagerFactory emf;
-
 
     @Before
     public void before() throws IOException {
@@ -92,6 +83,7 @@ public class AuditIntegrationTest {
     }
 
     public void clearTable(EntityManager em, String tableName, String condition){
+
         System.out.printf(String.format("DELETE FROM %s WHERE %s", tableName, condition));
         System.out.printf(String.format("DELETE FROM %s_AUD WHERE %s", tableName, condition));
         Query qTable = em.createNativeQuery(String.format("DELETE FROM %s WHERE %s", tableName, condition));
