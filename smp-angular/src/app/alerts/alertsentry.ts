@@ -1,13 +1,10 @@
-export class AlertsEntry {
-  constructor(public processed: boolean,
-              public alertId: string,
-              public alertType: string,
-              public alertLevel: string,
-              public alertText: string,
-              public creationTime: Date,
-              public reportingTime: Date,
-              public parameters: string[])
-  {
-
-  }
+export interface AlertsEntry {
+  processed: boolean;
+  alertId: string;
+  alertType: string;
+  alertLevel: string;
+  alertText: string;
+  creationTime: Date;
+  reportingTime: Date;
+  parameters: string[];
 }

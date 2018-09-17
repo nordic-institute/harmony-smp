@@ -1,14 +1,9 @@
-export class DomainRO {
-  constructor(public domainId: string,
-              public bdmslClientCertHeader: string,
-              public bdmslClientCertAlias: string,
-              public bdmslSmpId: string,
-              public signatureCertAlias: string
-
-
-  ) {
-
-  }
+export interface DomainRO {
+  domainId: string;
+  bdmslClientCertHeader: string;
+  bdmslClientCertAlias: string;
+  bdmslSmpId: string;
+  signatureCertAlias: string;
 }
 
 

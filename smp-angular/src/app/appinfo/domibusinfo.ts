@@ -1,5 +1,3 @@
-export class DomibusInfo {
-
-  constructor(public version:string) {
-  }
+export interface DomibusInfo {
+  version:string;
 }

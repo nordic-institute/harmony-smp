@@ -2,13 +2,9 @@ import {SearchTableController} from "../common/searchtable/searchtable-controlle
 import {MdDialog, MdDialogRef} from "@angular/material";
 import {DomainDetailsDialogComponent} from "./domain-details-dialog/domain-details-dialog.component";
 
+export class DomainController implements SearchTableController {
 
-export class DomainController extends SearchTableController {
-
-  constructor(public dialog: MdDialog) {
-    super();
-  }
-
+  constructor(public dialog: MdDialog) { }
 
   public showDetails(row: any) {
     let dialogRef: MdDialogRef<DomainDetailsDialogComponent> = this.dialog.open(DomainDetailsDialogComponent);
@@ -16,17 +12,9 @@ export class DomainController extends SearchTableController {
     dialogRef.afterClosed().subscribe(result => {
       //Todo:
     });
-
   }
 
+  public edit(row: any) { }
 
-
-
-  public edit(row: any) {
-
-  }
-
-  public  delete(row: any) {
-
-  }
+  public  delete(row: any) { }
 }
