@@ -3,8 +3,7 @@ import {isNullOrUndefined} from "util";
 
 @Component({
   selector: 'app-column-picker',
-  templateUrl: './column-picker.component.html',
-  styleUrls: ['./column-picker.component.css']
+  templateUrl: './column-picker.component.html'
 })
 export class ColumnPickerComponent implements OnInit {
 

@@ -5,8 +5,7 @@ import {isNullOrUndefined} from "util";
 
 @Component({
   selector: 'page-helper',
-  templateUrl: './page-helper.component.html',
-  styleUrls: ['./page-helper.component.css']
+  templateUrl: './page-helper.component.html'
 })
 export class PageHelperComponent implements OnInit {
 

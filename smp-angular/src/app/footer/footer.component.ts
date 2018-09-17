@@ -6,7 +6,6 @@ import {DomibusInfo} from "../appinfo/domibusinfo";
   moduleId: module.id,
   templateUrl: 'footer.component.html',
   selector: 'footer',
-  providers: [],
   styleUrls: ['./footer.component.css']
 })
 

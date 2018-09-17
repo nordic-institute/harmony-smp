@@ -8,17 +8,15 @@ import {isEmpty} from "rxjs/operator/isEmpty";
 @Component({
   selector: 'app-trustore-upload',
   templateUrl: './truststore-upload.component.html',
-  styleUrls: ['./truststore-upload.component.css'],
   providers: [TrustStoreService]
 })
 export class TrustStoreUploadComponent {
 
-  password: any;
   @ViewChild('fileInput')
   private fileInput;
 
+  password: any;
   onTruststoreUploaded = new EventEmitter();
-
   enableSubmit = false;
 
   constructor(public dialogRef: MdDialogRef<TrustStoreUploadComponent>,

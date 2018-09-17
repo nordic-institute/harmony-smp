@@ -6,15 +6,13 @@ import {TrustStoreEntry} from "./trustore.model";
 
 /**
  * @Author Dussart Thomas
- * @Since 3.3
  */
-
 @Injectable()
 export class TrustStoreService {
 
   url = "rest/truststore";
-  constructor(private http: Http, private alertService: AlertService) {
 
+  constructor(private http: Http, private alertService: AlertService) {
   }
 
   getEntries(): Observable<TrustStoreEntry[]> {
@@ -48,5 +46,4 @@ export class TrustStoreService {
     console.error(errMsg);
     return Promise.reject(errMsg);
   }
-
 }
