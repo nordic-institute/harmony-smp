@@ -13,7 +13,7 @@ import { Md2Datepicker } from "md2";
 
 @Component({
   moduleId: module.id,
-  templateUrl: 'errorlog.component.html'
+  templateUrl: './errorlog.component.html'
 })
 export class ErrorLogComponent implements AfterViewInit {
 
