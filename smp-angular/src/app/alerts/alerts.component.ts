@@ -15,7 +15,7 @@ import {SaveDialogComponent} from "../common/save-dialog/save-dialog.component";
 
 @Component({
   moduleId: module.id,
-  templateUrl: 'alerts.component.html'
+  templateUrl: './alerts.component.html'
 })
 
 export class AlertsComponent {

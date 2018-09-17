@@ -10,7 +10,7 @@ let MAX_LENGTH = 255;
 
 @Component({
   selector: 'editmessagefilter-form',
-  templateUrl: 'editmessagefilter-form.component.html'
+  templateUrl: './editmessagefilter-form.component.html'
 })
 export class EditMessageFilterComponent {
 

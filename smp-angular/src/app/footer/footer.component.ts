@@ -4,7 +4,7 @@ import {DomibusInfo} from "../appinfo/domibusinfo";
 
 @Component({
   moduleId: module.id,
-  templateUrl: 'footer.component.html',
+  templateUrl: './footer.component.html',
   selector: 'footer',
   styleUrls: ['./footer.component.css']
 })
