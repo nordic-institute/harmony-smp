@@ -2,8 +2,7 @@ import {Directive,ElementRef,Input} from '@angular/core';
 import {SecurityService} from './security.service';
 
 @Directive({
-    selector:'[isAuthorized]',
-    providers:[]
+    selector:'[isAuthorized]'
 })
 export class IsAuthorized {
     @Input('isAuthorized') role:string;
