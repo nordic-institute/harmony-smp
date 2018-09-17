@@ -15,18 +15,10 @@ export class ServicegroupMetadatalistDialogComponent implements OnInit {
 
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
 
-
-
   columnPicker: ColumnPickerBase = new ColumnPickerBase();
-
-
-
   columnActions:any;
-
   rowLimiter: RowLimiterBase = new RowLimiterBase();
-
   selected = [];
-
 
   filter: any = {};
   loading: boolean = false;
@@ -38,16 +30,12 @@ export class ServicegroupMetadatalistDialogComponent implements OnInit {
   //default value
   asc: boolean = false;
 
-
   messageResent = new EventEmitter(false);
-
 
   constructor(public dialogRef: MdDialogRef<ServicegroupMetadatalistDialogComponent>, public dialog: MdDialog) {
   }
 
-
   ngOnInit() {
-
     this.columnPicker.allColumns = [
       {
         name: 'Document Id',
@@ -64,34 +52,27 @@ export class ServicegroupMetadatalistDialogComponent implements OnInit {
         width: 60,
         sortable: false
       }
-
-
     ];
 
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
       return ["Document Id", "Document schema", "Actions"].indexOf(col.name) != -1
     });
 
-
     this.rows = [{
       documentId:"urn:be:ncpb",
       documentSchema:"ehealth-docid-qns",
-
     },
       {
         documentId:"urn:pl:ncpb",
         documentSchema:"ehealth-docid-qns",
-
       },
       {
         documentId:"urn:ge:ncpb",
         documentSchema:"ehealth-docid-qns",
-
       },
       {
         documentId:"urn:si:ncpb",
         documentSchema:"ehealth-docid-qns",
-
       }];
     this.count=3;
     this.offset=0;
@@ -115,10 +96,5 @@ export class ServicegroupMetadatalistDialogComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       //Todo:
     });
-
   }
-
-
-
-
 }

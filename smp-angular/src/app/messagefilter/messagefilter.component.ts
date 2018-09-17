@@ -16,7 +16,6 @@ import {DownloadService} from "../download/download.service";
 @Component({
   moduleId: module.id,
   templateUrl: 'messagefilter.component.html',
-  providers: [],
   styleUrls: ['./messagefilter.component.css']
 })
 

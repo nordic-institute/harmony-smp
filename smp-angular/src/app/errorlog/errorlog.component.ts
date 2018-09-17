@@ -13,11 +13,8 @@ import { Md2Datepicker } from "md2";
 
 @Component({
   moduleId: module.id,
-  templateUrl: 'errorlog.component.html',
-  providers: [],
-  styleUrls: ['./errorlog.component.css']
+  templateUrl: 'errorlog.component.html'
 })
-
 export class ErrorLogComponent implements AfterViewInit {
 
   columnPicker: ColumnPickerBase = new ColumnPickerBase()

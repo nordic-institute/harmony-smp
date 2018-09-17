@@ -6,7 +6,6 @@ import {User} from "../security/user";
 @Component({
   moduleId: module.id,
   templateUrl: 'home.component.html',
-  providers: [],
   styleUrls: ['./home.component.css']
 })
 

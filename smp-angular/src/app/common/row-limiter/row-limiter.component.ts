@@ -2,8 +2,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 
 @Component({
   selector: 'app-row-limiter',
-  templateUrl: './row-limiter.component.html',
-  styleUrls: ['./row-limiter.component.css']
+  templateUrl: './row-limiter.component.html'
 })
 export class RowLimiterComponent implements OnInit {
 

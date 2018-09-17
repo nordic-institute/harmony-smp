@@ -3,8 +3,7 @@ import {MdDialogRef} from "@angular/material";
 
 @Component({
   selector: 'domain-details-dialog',
-  templateUrl: './domain-details-dialog.component.html',
-  styleUrls: ['./domain-details-dialog.component.css']
+  templateUrl: './domain-details-dialog.component.html'
 })
 export class DomainDetailsDialogComponent implements OnInit {
 

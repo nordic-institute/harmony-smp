@@ -12,7 +12,6 @@ import {SearchTableController} from "./searchtable-controller";
 @Component({
   selector: 'smp-search-table',
   templateUrl: './searchtable.component.html',
-  providers: [],
   styleUrls: ['./searchtable.component.css']
 })
 

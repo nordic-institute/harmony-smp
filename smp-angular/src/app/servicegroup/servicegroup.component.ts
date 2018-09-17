@@ -6,24 +6,18 @@ import {Http} from "@angular/http";
 import {AlertService} from "../alert/alert.service";
 import {ServiceGroupController} from "./servicegroup-controller";
 
-
 @Component({
   moduleId: module.id,
   templateUrl:'./servicegroup.component.html',
-  styleUrls: ['./servicegroup.component.css'],
-  providers: [],
+  styleUrls: ['./servicegroup.component.css']
 })
-
 export class ServiceGroupComponent {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>
   @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>
-
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
 
-
   columnPicker: ColumnPickerBase = new ColumnPickerBase();
-
   serviceGroupController: ServiceGroupController;
   filter: any = {};
 
@@ -59,15 +53,11 @@ export class ServiceGroupComponent {
         width: 80,
         sortable: false
       }
-
-
-
     ];
 
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
       return ["Participant Id", "Participant schema", "Domain", "Matadata", "Extesion"].indexOf(col.name) != -1
     });
-
   }
 
   extensionRowButtonAction(row: any){

@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ServicegroupDetailsDialogComponent } from './servicegroup-details-dialog.component';
+import { ServiceGroupExtensionDialogComponent } from './servicegroup-extension-dialog.component';
 
-describe('ServicegroupDetailsDialogComponent', () => {
-  let component: ServicegroupDetailsDialogComponent;
-  let fixture: ComponentFixture<ServicegroupDetailsDialogComponent>;
+describe('ServiceGroupExtensionDialogComponent', () => {
+  let component: ServiceGroupExtensionDialogComponent;
+  let fixture: ComponentFixture<ServiceGroupExtensionDialogComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ServicegroupDetailsDialogComponent ]
+      declarations: [ ServiceGroupExtensionDialogComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ServicegroupDetailsDialogComponent);
+    fixture = TestBed.createComponent(ServiceGroupExtensionDialogComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
