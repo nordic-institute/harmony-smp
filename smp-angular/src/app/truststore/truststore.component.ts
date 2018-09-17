@@ -35,7 +35,7 @@ export class TruststoreComponent implements OnInit {
   static readonly TRUSTSTORE_URL: string = "rest/truststore";
   static readonly TRUSTSTORE_CSV_URL: string = TruststoreComponent.TRUSTSTORE_URL + "/csv";
 
-  constructor(private trustStoreService: TrustStoreService, public dialog: MdDialog, public alertService: AlertService) {
+  constructor(private trustStoreService: TrustStoreService, public dialog: MdDialog, public alertService: AlertService, private downloadService: DownloadService) {
   }
 
   ngOnInit(): void {
@@ -125,6 +125,6 @@ export class TruststoreComponent implements OnInit {
    * Saves the content of the datatable into a CSV file
    */
   saveAsCSV() {
-    DownloadService.downloadNative(TruststoreComponent.TRUSTSTORE_CSV_URL);
+    this.downloadService.downloadNative(TruststoreComponent.TRUSTSTORE_CSV_URL);
   }
 }

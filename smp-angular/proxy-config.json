@@ -1,6 +1,6 @@
 {
   "/ui/**": {
-    "target": "http://localhost:8080/smp/",
+    "target": "http://192.168.99.101:7001/smp/",
     "changeOrigin": true,
     "secure": false,
     "logLevel": "debug"
