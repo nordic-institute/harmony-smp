@@ -1,18 +1,10 @@
-export class ServiceGroupRO {
-  constructor(public serviceGroupROId: ServiceGroupROId,
-              public domain: string
-
-  ) {
-
-  }
+export interface ServiceGroupRO {
+  serviceGroupROId: ServiceGroupROId;
+  domain: string;
 }
 
-
-class ServiceGroupROId {
-  constructor(public participantId: string,
-              public participantSchema: string
-  ) {
-
-  }
+export interface ServiceGroupROId {
+  participantId: string;
+  participantSchema: string;
 }
 

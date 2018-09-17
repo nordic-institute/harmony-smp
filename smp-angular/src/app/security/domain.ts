@@ -1,7 +1,4 @@
-export class Domain { 
+export interface Domain {
   code: string;
-  name: string; 
-
-  constructor(code: string, name: string) {
-  }
+  name: string;
 }

@@ -1,11 +1,6 @@
-
-export class SearchTableResult {
-
-  constructor(public serviceEntities: Array<any>,
-              public pageSize: number,
-              public count: number,
-              public filter: any
-              ) {
-
-  }
+export interface SearchTableResult {
+  serviceEntities: Array<any>;
+  pageSize: number;
+  count: number;
+  filter: any;
 }

@@ -1,12 +1,8 @@
 import {DomainRO} from "./domainro";
 
-export class DomainResult {
-
-  constructor(public serviceEntities: Array<DomainRO>,
-              public pageSize: number,
-              public count: number,
-              public filter: any
-              ) {
-
-  }
+export interface DomainResult {
+  serviceEntities: Array<DomainRO>;
+  pageSize: number;
+  count: number;
+  filter: any;
 }

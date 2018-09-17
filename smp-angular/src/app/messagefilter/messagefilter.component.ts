@@ -117,16 +117,16 @@ export class MessageFilterComponent implements DirtyOperations {
       if (result == true) {
         let routingCriterias: Array<RoutingCriteriaEntry> = [];
         if (!isNullOrUndefined(formRef.componentInstance.from) && formRef.componentInstance.from != "") {
-          routingCriterias.push(new RoutingCriteriaEntry(0, 'from', formRef.componentInstance.from));
+          routingCriterias.push({ entityId: 0, name: 'from', expression: formRef.componentInstance.from });
         }
         if (!isNullOrUndefined(formRef.componentInstance.to) && formRef.componentInstance.to != "") {
-          routingCriterias.push(new RoutingCriteriaEntry(0, 'to', formRef.componentInstance.to));
+          routingCriterias.push({ entityId: 0, name: 'to', expression: formRef.componentInstance.to });
         }
         if (!isNullOrUndefined(formRef.componentInstance.action) && formRef.componentInstance.action != "") {
-          routingCriterias.push(new RoutingCriteriaEntry(0, 'action', formRef.componentInstance.action));
+          routingCriterias.push({ entityId: 0, name: 'action', expression: formRef.componentInstance.action });
         }
         if (!isNullOrUndefined(formRef.componentInstance.service) && formRef.componentInstance.service != "") {
-          routingCriterias.push(new RoutingCriteriaEntry(0, 'service', formRef.componentInstance.service));
+          routingCriterias.push({ entityId: 0, name: 'service', expression: formRef.componentInstance.service });
         }
         let backendEntry = new BackendFilterEntry(0, this.rowNumber + 1, formRef.componentInstance.plugin, routingCriterias, false);
         if (this.findRowsIndex(backendEntry) == -1) {
@@ -178,16 +178,16 @@ export class MessageFilterComponent implements DirtyOperations {
       if (result == true) {
         let routingCriterias: Array<RoutingCriteriaEntry> = [];
         if (!isNullOrUndefined(formRef.componentInstance.from)) {
-          routingCriterias.push(new RoutingCriteriaEntry(0, 'from', formRef.componentInstance.from));
+          routingCriterias.push({ entityId: 0, name: 'from', expression: formRef.componentInstance.from });
         }
         if (!isNullOrUndefined(formRef.componentInstance.to)) {
-          routingCriterias.push(new RoutingCriteriaEntry(0, 'to', formRef.componentInstance.to));
+          routingCriterias.push({ entityId: 0, name: 'to', expression: formRef.componentInstance.to });
         }
         if (!isNullOrUndefined(formRef.componentInstance.action)) {
-          routingCriterias.push(new RoutingCriteriaEntry(0, 'action', formRef.componentInstance.action));
+          routingCriterias.push({ entityId: 0, name: 'action', expression: formRef.componentInstance.action });
         }
         if (!isNullOrUndefined(formRef.componentInstance.service)) {
-          routingCriterias.push(new RoutingCriteriaEntry(0, 'service', formRef.componentInstance.service));
+          routingCriterias.push({ entityId: 0, name: 'service', expression: formRef.componentInstance.service });
         }
         let backendEntry = new BackendFilterEntry(0, this.rowNumber + 1, formRef.componentInstance.plugin, routingCriterias, false);
         let backendEntryPos = this.findRowsIndex(backendEntry);
@@ -224,7 +224,7 @@ export class MessageFilterComponent implements DirtyOperations {
     if (value.length == 0) {
       return;
     }
-    let newRC = new RoutingCriteriaEntry(null, rc, value);
+    let newRC = { name: rc, expression: value };
     this.rows[this.rowNumber].routingCriterias.push(newRC);
     this.createValueProperty(rc, newRC, this.rowNumber);
   }

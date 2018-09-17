@@ -6,12 +6,9 @@ import {AlertService} from "../alert/alert.service";
 import {ServiceGroupExtensionDialogComponent} from "./servicegroup-extension-dialog/servicegroup-extension-dialog.component";
 import {ServicegroupMetadatalistDialogComponent} from "./servicegroup-metadatalist-dialog/servicegroup-metadatalist-dialog.component";
 
-export class ServiceGroupController extends SearchTableController {
+export class ServiceGroupController implements SearchTableController {
 
-  constructor(public dialog: MdDialog) {
-    super();
-  }
-
+  constructor(public dialog: MdDialog) { }
 
   public showDetails(row: any) {
     let dialogRef: MdDialogRef<ServicegroupDetailsDialogComponent> = this.dialog.open(ServicegroupDetailsDialogComponent);
@@ -19,7 +16,6 @@ export class ServiceGroupController extends SearchTableController {
     dialogRef.afterClosed().subscribe(result => {
       //Todo:
     });
-
   }
 
   public showExtension(row: any) {
@@ -36,15 +32,10 @@ export class ServiceGroupController extends SearchTableController {
     dialogRef.afterClosed().subscribe(result => {
       //Todo:
     });
-
   }
 
 
-  public edit(row: any) {
+  public edit(row: any) { }
 
-  }
-
-  public  delete(row: any) {
-
-  }
+  public  delete(row: any) { }
 }

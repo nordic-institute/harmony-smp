@@ -1,9 +1,5 @@
-export class RoutingCriteriaEntry {
-
-  public constructor(
-    public entityId: number,
-    public name: string,
-    public expression: string
-  ) {
-  }
+export interface RoutingCriteriaEntry {
+  entityId?: number;
+  name: string;
+  expression: string;
 }

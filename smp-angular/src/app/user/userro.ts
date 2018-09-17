@@ -1,10 +1,4 @@
-export class UserRO {
-  constructor(public username: string,
-              public admin: string,
-  ) {
-
-  }
+export interface UserRO {
+  username: string;
+  admin: string;
 }
-
-
-
