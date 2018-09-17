@@ -72,6 +72,7 @@ import {ServicegroupMetadataDialogComponent} from "./servicegroup/servicegroup-m
 import {DomainDetailsDialogComponent} from "./domain/domain-details-dialog/domain-details-dialog.component";
 import {UserDetailsDialogComponent} from "./user/user-details-dialog/user-details-dialog.component";
 import {DownloadService} from "./download/download.service";
+import {TrustStoreService} from "./truststore/trustore.service";
 
 export function extendedHttpClientFactory(xhrBackend: XHRBackend, requestOptions: RequestOptions, httpEventService: HttpEventService) {
   return new ExtendedHttpClient(xhrBackend, requestOptions, httpEventService);
@@ -166,6 +167,7 @@ export function extendedHttpClientFactory(xhrBackend: XHRBackend, requestOptions
     DomibusInfoService,
     AlertService,
     DownloadService,
+    TrustStoreService,
     {
       provide: Http,
       useFactory: extendedHttpClientFactory,

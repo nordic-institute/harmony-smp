@@ -15,8 +15,7 @@ import {AlertService} from "../alert/alert.service";
 @Component({
   selector: 'app-truststore',
   templateUrl: './truststore.component.html',
-  styleUrls: ['./truststore.component.css'],
-  providers: [TrustStoreService]
+  styleUrls: ['./truststore.component.css']
 })
 export class TruststoreComponent implements OnInit {
 

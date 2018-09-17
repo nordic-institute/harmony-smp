@@ -8,7 +8,6 @@ import {isEmpty} from "rxjs/operator/isEmpty";
 @Component({
   selector: 'app-trustore-upload',
   templateUrl: './truststore-upload.component.html',
-  providers: [TrustStoreService]
 })
 export class TrustStoreUploadComponent {
 
@@ -20,7 +19,7 @@ export class TrustStoreUploadComponent {
   enableSubmit = false;
 
   constructor(public dialogRef: MdDialogRef<TrustStoreUploadComponent>,
-              private truststorService: TrustStoreService, private alertService: AlertService,
+              private trustStoreService: TrustStoreService, private alertService: AlertService,
               @Inject(MD_DIALOG_DATA) public data: any) {
   }
 
@@ -30,7 +29,7 @@ export class TrustStoreUploadComponent {
 
   public submit() {
     let fi = this.fileInput.nativeElement;
-    this.truststorService.saveTrustStore(fi.files[0], this.password).subscribe(res => {
+    this.trustStoreService.saveTrustStore(fi.files[0], this.password).subscribe(res => {
         this.alertService.success(res.text(), false);
         this.onTruststoreUploaded.emit();
       },
