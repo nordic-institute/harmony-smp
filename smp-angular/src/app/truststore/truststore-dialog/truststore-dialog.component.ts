@@ -4,13 +4,10 @@ import {MD_DIALOG_DATA, MdDialogRef} from "@angular/material";
 
 /**
  * @Author Dussart Thomas
- * @Since 3.3
  */
-
 @Component({
   selector: 'app-truststore-dialog',
-  templateUrl: './truststore-dialog.component.html',
-  styleUrls: ['./truststore-dialog.component.css']
+  templateUrl: './truststore-dialog.component.html'
 })
 export class TruststoreDialogComponent {
 

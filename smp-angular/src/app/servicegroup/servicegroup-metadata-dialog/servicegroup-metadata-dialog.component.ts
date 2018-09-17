@@ -1,4 +1,4 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {MdDialogRef} from "@angular/material";
 
 @Component({
@@ -6,12 +6,9 @@ import {MdDialogRef} from "@angular/material";
   templateUrl: './servicegroup-metadata-dialog.component.html',
   styleUrls: ['./servicegroup-metadata-dialog.component.css']
 })
-export class ServicegroupMetadataDialogComponent implements OnInit {
+export class ServicegroupMetadataDialogComponent {
 
   constructor(public dialogRef: MdDialogRef<ServicegroupMetadataDialogComponent>) {
-  }
-
-  ngOnInit() {
   }
 
 }

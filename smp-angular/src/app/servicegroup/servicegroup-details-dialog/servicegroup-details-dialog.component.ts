@@ -1,20 +1,16 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {MdDialogRef} from "@angular/material";
 
 @Component({
   selector: 'app-messagelog-details',
-  templateUrl: './servicegroup-details-dialog.component.html',
-  styleUrls: ['./servicegroup-details-dialog.component.css']
+  templateUrl: './servicegroup-details-dialog.component.html'
 })
-export class ServicegroupDetailsDialogComponent implements OnInit {
+export class ServicegroupDetailsDialogComponent {
 
   servicegroup;
   dateFormat: String = 'yyyy-MM-dd HH:mm:ssZ';
 
   constructor(public dialogRef: MdDialogRef<ServicegroupDetailsDialogComponent>) {
-  }
-
-  ngOnInit() {
   }
 
 }

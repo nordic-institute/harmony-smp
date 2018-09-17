@@ -10,12 +10,9 @@ import {DefaultPasswordDialogComponent} from "app/security/default-password-dial
 
 @Component({
   moduleId: module.id,
-  templateUrl: 'login.component.html',
-  styleUrls: ['./login.component.css']
+  templateUrl: 'login.component.html'
 })
-
 export class LoginComponent implements OnInit, OnDestroy {
-
 
   model: any = {};
   loading = false;
