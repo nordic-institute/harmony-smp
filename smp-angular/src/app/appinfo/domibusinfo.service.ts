@@ -16,7 +16,7 @@ export class DomibusInfoService {
     let subject = new ReplaySubject();
     this.http.get('rest/application/info')
       .map((response: Response) => {
-        let domibusInfo = new DomibusInfo(response.json().version);
+        const domibusInfo:DomibusInfo = { version: response.json().version };
         return domibusInfo;
       })
       .subscribe((res: DomibusInfo) => {
