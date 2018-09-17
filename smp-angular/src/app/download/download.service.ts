@@ -1,7 +1,9 @@
+import {Injectable} from "@angular/core";
 
+@Injectable()
 export class DownloadService {
 
-  public static downloadNative(content) {
+  downloadNative(content) {
     let element = document.createElement('a');
     element.setAttribute('href', content);
     element.style.display = 'none';

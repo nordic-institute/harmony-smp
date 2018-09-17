@@ -60,8 +60,7 @@ export class AlertsComponent {
   timestampReportingToMinDate: Date = null;
   timestampReportingToMaxDate: Date = new Date();
 
-  constructor(private http: Http, private alertService: AlertService, public dialog: MdDialog) {
-
+  constructor(private http: Http, private alertService: AlertService, public dialog: MdDialog, private downloadService: DownloadService) {
   }
 
   ngOnInit() {
@@ -267,7 +266,6 @@ export class AlertsComponent {
     this.timestampReportingFromMaxDate = event.value;
   }
 
-
   // datatable methods
 
   onActivate(event) {
@@ -311,7 +309,7 @@ export class AlertsComponent {
     if(!this.buttonsDisabled) {
       this.save(true);
     } else {
-      DownloadService.downloadNative(AlertsComponent.ALERTS_URL + "/csv" + this.getFilterPath());
+      this.downloadService.downloadNative(AlertsComponent.ALERTS_URL + "/csv" + this.getFilterPath());
     }
   }
 
@@ -351,7 +349,6 @@ export class AlertsComponent {
     }
 
     return result;
-
   }
 
   public isAlertTypeDefined(): boolean {
@@ -377,7 +374,7 @@ export class AlertsComponent {
           this.alertService.success("The operation 'update alerts' completed successfully.", false);
           this.page(this.offset, this.rowLimiter.pageSize, this.orderBy, this.asc);
           if(withDownloadCSV) {
-            DownloadService.downloadNative(AlertsComponent.ALERTS_URL + "/csv");
+            this.downloadService.downloadNative(AlertsComponent.ALERTS_URL + "/csv");
           }
         }, err => {
           this.alertService.error("The operation 'update alerts' not completed successfully.", false);
@@ -385,7 +382,7 @@ export class AlertsComponent {
         });
       } else {
         if(withDownloadCSV) {
-          DownloadService.downloadNative(AlertsComponent.ALERTS_URL + "/csv");
+          this.downloadService.downloadNative(AlertsComponent.ALERTS_URL + "/csv");
         }
       }
     });
@@ -396,5 +393,4 @@ export class AlertsComponent {
     row.processed = !row.processed;
     this.rows[row.$$index] = row;
   }
-
 }

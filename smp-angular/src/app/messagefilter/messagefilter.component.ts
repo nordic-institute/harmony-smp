@@ -42,7 +42,7 @@ export class MessageFilterComponent implements DirtyOperations {
 
   static readonly MESSAGE_FILTER_URL: string = 'rest/messagefilters';
 
-  constructor(private http: Http, private alertService: AlertService, public dialog: MdDialog) {
+  constructor(private http: Http, private alertService: AlertService, public dialog: MdDialog, private downloadService: DownloadService) {
   }
 
 
@@ -314,7 +314,7 @@ export class MessageFilterComponent implements DirtyOperations {
     if(this.isDirty()) {
       this.saveDialog(true);
     } else {
-      DownloadService.downloadNative(MessageFilterComponent.MESSAGE_FILTER_URL + "/csv");
+      this.downloadService.downloadNative(MessageFilterComponent.MESSAGE_FILTER_URL + "/csv");
     }
   }
 
@@ -338,14 +338,14 @@ export class MessageFilterComponent implements DirtyOperations {
           this.alertService.success("The operation 'update message filters' completed successfully.", false);
           this.getBackendFiltersInfo();
           if(withDownloadCSV) {
-            DownloadService.downloadNative(MessageFilterComponent.MESSAGE_FILTER_URL + "/csv");
+            this.downloadService.downloadNative(MessageFilterComponent.MESSAGE_FILTER_URL + "/csv");
           }
         }, err => {
           this.alertService.error("The operation 'update message filters' not completed successfully.", false);
         });
       } else {
         if(withDownloadCSV) {
-          DownloadService.downloadNative(MessageFilterComponent.MESSAGE_FILTER_URL + "/csv");
+          this.downloadService.downloadNative(MessageFilterComponent.MESSAGE_FILTER_URL + "/csv");
         }
       }
     });

@@ -51,7 +51,7 @@ export class ErrorLogComponent implements AfterViewInit {
   static readonly ERROR_LOG_URL : string = 'rest/errorlogs';
   static readonly ERROR_LOG_CSV_URL : string = ErrorLogComponent.ERROR_LOG_URL + '/csv';
 
-  constructor(private elementRef: ElementRef, private http: Http, private alertService: AlertService, public dialog: MdDialog, private renderer: Renderer2) {
+  constructor(private elementRef: ElementRef, private http: Http, private alertService: AlertService, public dialog: MdDialog, private renderer: Renderer2, private downloadService: DownloadService) {
   }
 
   ngOnInit() {
@@ -316,7 +316,7 @@ export class ErrorLogComponent implements AfterViewInit {
   }
 
   saveAsCSV() {
-    DownloadService.downloadNative(ErrorLogComponent.ERROR_LOG_CSV_URL + this.getFilterPath());
+    this.downloadService.downloadNative(ErrorLogComponent.ERROR_LOG_CSV_URL + this.getFilterPath());
   }
 
   ngAfterViewInit() {

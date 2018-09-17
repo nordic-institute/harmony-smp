@@ -23,8 +23,6 @@ import {AppComponent} from "./app.component";
 import {LoginComponent} from "./login/login.component";
 import {HomeComponent} from "./home/home.component";
 
-
-
 import {AuthenticatedGuard} from "./guards/authenticated.guard";
 import {AuthorizedGuard} from "./guards/authorized.guard";
 import {routing} from "./app.routes";
@@ -36,6 +34,7 @@ import {SecurityEventService} from "./security/security.event.service";
 import {DomainService} from "./security/domain.service";
 import {AlertComponent} from "./alert/alert.component";
 import {AlertService} from "./alert/alert.service";
+
 import {ErrorLogComponent} from "./errorlog/errorlog.component";
 import {FooterComponent} from "./footer/footer.component";
 import {DomibusInfoService} from "./appinfo/domibusinfo.service";
@@ -61,7 +60,7 @@ import {TruststoreDialogComponent} from "./truststore/truststore-dialog/truststo
 import {TrustStoreUploadComponent} from "./truststore/truststore-upload/truststore-upload.component";
 import {ColumnPickerComponent} from "./common/column-picker/column-picker.component";
 import {PageHelperComponent} from "./common/page-helper/page-helper.component";
-import {SharedModule} from "./common/module/SharedModule";;
+import {SharedModule} from "./common/module/SharedModule";
 import {ClearInvalidDirective} from "./customDate/clearInvalid.directive";
 import {PageHeaderComponent} from "./common/page-header/page-header.component";
 import {DomainSelectorComponent} from "./common/domain-selector/domain-selector.component";
@@ -72,7 +71,7 @@ import {ServiceGroupExtensionDialogComponent} from "./servicegroup/servicegroup-
 import {ServicegroupMetadataDialogComponent} from "./servicegroup/servicegroup-metadata-dialog/servicegroup-metadata-dialog.component";
 import {DomainDetailsDialogComponent} from "./domain/domain-details-dialog/domain-details-dialog.component";
 import {UserDetailsDialogComponent} from "./user/user-details-dialog/user-details-dialog.component";
-
+import {DownloadService} from "./download/download.service";
 
 export function extendedHttpClientFactory(xhrBackend: XHRBackend, requestOptions: RequestOptions, httpEventService: HttpEventService) {
   return new ExtendedHttpClient(xhrBackend, requestOptions, httpEventService);
@@ -166,6 +165,7 @@ export function extendedHttpClientFactory(xhrBackend: XHRBackend, requestOptions
     DomainService,
     DomibusInfoService,
     AlertService,
+    DownloadService,
     {
       provide: Http,
       useFactory: extendedHttpClientFactory,
