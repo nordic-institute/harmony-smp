@@ -2,9 +2,9 @@
 import {Http, Headers, Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/map';
-import {User} from './user';
+import {User} from './user.model';
 import {ReplaySubject} from 'rxjs';
-import {SecurityEventService} from './security.event.service';
+import {SecurityEventService} from './security-event.service';
 import {DomainService} from './domain.service';
 
 @Injectable()
