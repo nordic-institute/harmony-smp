@@ -1,6 +1,6 @@
 import { browser, element, by } from 'protractor';
 
-export class DomibusAngular2WebPage {
+export class SmpAngular2WebPage {
   navigateTo() {
     return browser.get('/');
   }

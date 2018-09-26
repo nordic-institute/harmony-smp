@@ -1,5 +1,5 @@
 import {Component, TemplateRef, ViewChild} from "@angular/core";
-import {ColumnPickerBase} from "../common/column-picker/column-picker-base";
+import {ColumnPicker} from "../common/column-picker/column-picker.model";
 import {MdDialog, MdDialogRef} from "@angular/material";
 
 import {Http} from "@angular/http";
@@ -17,7 +17,7 @@ export class DomainComponent {
   @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>;
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
 
-  columnPicker: ColumnPickerBase = new ColumnPickerBase();
+  columnPicker: ColumnPicker = new ColumnPicker();
   domainController: DomainController;
   filter: any = {};
 

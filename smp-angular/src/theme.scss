@@ -67,7 +67,7 @@ $datatable_background_color_active: map-get($mat-grey, 600);
   color: #0d0d0d;
 }
 
-.domibusLink {
+.smpLink {
   color: #03A9F4;//map-get($mat-blue, A200);
 }
 
@@ -75,7 +75,7 @@ $datatable_background_color_active: map-get($mat-grey, 600);
   margin: 20px 0 0 0;
   display:block;
   a {
-    @extend .domibusLink;
+    @extend .smpLink;
     vertical-align: bottom;
     margin-left: 10px;
     color: #03A9F4;
