@@ -1,6 +1,6 @@
 ﻿import {Component, OnInit} from "@angular/core";
-import {DomibusInfoService} from "../appinfo/domibusinfo.service";
-import {DomibusInfo} from "../appinfo/domibusinfo";
+import {DomibusInfoService} from "../appinfo/domibus-info.service";
+import {DomibusInfo} from "../appinfo/domibus-info.model";
 
 @Component({
   moduleId: module.id,

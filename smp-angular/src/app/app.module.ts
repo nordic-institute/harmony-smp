@@ -28,51 +28,47 @@ import {AuthorizedGuard} from "./guards/authorized.guard";
 import {routing} from "./app.routes";
 import {IsAuthorized} from "./security/is-authorized.directive";
 import {ExtendedHttpClient} from "./http/extended-http-client";
-import {HttpEventService} from "./http/http.event.service";
+import {HttpEventService} from "./http/http-event.service";
 import {SecurityService} from "./security/security.service";
-import {SecurityEventService} from "./security/security.event.service";
+import {SecurityEventService} from "./security/security-event.service";
 import {DomainService} from "./security/domain.service";
 import {AlertComponent} from "./alert/alert.component";
 import {AlertService} from "./alert/alert.service";
 
-import {ErrorLogComponent} from "./errorlog/errorlog.component";
 import {FooterComponent} from "./footer/footer.component";
-import {DomibusInfoService} from "./appinfo/domibusinfo.service";
+import {DomibusInfoService} from "./appinfo/domibus-info.service";
 import {AuthorizedAdminGuard} from "./guards/authorized-admin.guard";
-import {MessageFilterComponent} from "./messagefilter/messagefilter.component";
-import {ServiceGroupComponent} from "./servicegroup/servicegroup.component";
+import {ServiceGroupComponent} from "./servicegroup/service-group.component";
 import {DomainComponent} from "./domain/domain.component";
 import {UserComponent} from "./user/user.component";
-import {TruststoreComponent} from "./truststore/truststore.component";
+import {TrustStoreComponent} from "./truststore/trust-store.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
-import {ServicegroupMetadatalistDialogComponent} from "./servicegroup/servicegroup-metadatalist-dialog/servicegroup-metadatalist-dialog.component";
+import {ServiceGroupMetadatalistDialogComponent} from "./servicegroup/servicegroup-metadatalist-dialog/service-group-metadatalist-dialog.component";
 import {RowLimiterComponent} from "./common/row-limiter/row-limiter.component";
-import {DatePipe} from "./customDate/datePipe";
-import {CapitalizeFirstPipe} from "./common/capitalizefirst.pipe";
+import {DatePipe} from "./customDate/date.pipe";
+import {CapitalizeFirstPipe} from "./common/capitalize-first.pipe";
 import {DefaultPasswordDialogComponent} from "./security/default-password-dialog/default-password-dialog.component";
-import {ServicegroupDetailsDialogComponent} from "./servicegroup/servicegroup-details-dialog/servicegroup-details-dialog.component";
-import {ErrorlogDetailsComponent} from "./errorlog/errorlog-details/errorlog-details.component";
-import {EditMessageFilterComponent} from "./messagefilter/editmessagefilter-form/editmessagefilter-form.component";
+import {ServiceGroupDetailsDialogComponent} from "./servicegroup/servicegroup-details-dialog/service-group-details-dialog.component";
 import {CancelDialogComponent} from "./common/cancel-dialog/cancel-dialog.component";
 import {DirtyGuard} from "./common/dirty.guard";
 import {SaveDialogComponent} from "./common/save-dialog/save-dialog.component";
-import {TruststoreDialogComponent} from "./truststore/truststore-dialog/truststore-dialog.component";
-import {TrustStoreUploadComponent} from "./truststore/truststore-upload/truststore-upload.component";
+import {TrustStoreDialogComponent} from "./truststore/truststore-dialog/trust-store-dialog.component";
+import {TrustStoreUploadComponent} from "./truststore/truststore-upload/trust-store-upload.component";
 import {ColumnPickerComponent} from "./common/column-picker/column-picker.component";
 import {PageHelperComponent} from "./common/page-helper/page-helper.component";
-import {SharedModule} from "./common/module/SharedModule";
-import {ClearInvalidDirective} from "./customDate/clearInvalid.directive";
+import {SharedModule} from "./common/module/shared.module";
+import {ClearInvalidDirective} from "./customDate/clear-invalid.directive";
 import {PageHeaderComponent} from "./common/page-header/page-header.component";
 import {DomainSelectorComponent} from "./common/domain-selector/domain-selector.component";
 import {AlertsComponent} from "./alerts/alerts.component";
 
-import {SearchTableComponent} from "./common/searchtable/searchtable.component";
-import {ServiceGroupExtensionDialogComponent} from "./servicegroup/servicegroup-extension-dialog/servicegroup-extension-dialog.component";
-import {ServicegroupMetadataDialogComponent} from "./servicegroup/servicegroup-metadata-dialog/servicegroup-metadata-dialog.component";
+import {SearchTableComponent} from "./common/searchtable/search-table.component";
+import {ServiceGroupExtensionDialogComponent} from "./servicegroup/servicegroup-extension-dialog/service-group-extension-dialog.component";
+import {ServiceGroupMetadataDialogComponent} from "./servicegroup/servicegroup-metadata-dialog/service-group-metadata-dialog.component";
 import {DomainDetailsDialogComponent} from "./domain/domain-details-dialog/domain-details-dialog.component";
 import {UserDetailsDialogComponent} from "./user/user-details-dialog/user-details-dialog.component";
 import {DownloadService} from "./download/download.service";
-import {TrustStoreService} from "./truststore/trustore.service";
+import {TrustStoreService} from "./truststore/trust-store.service";
 
 export function extendedHttpClientFactory(xhrBackend: XHRBackend, requestOptions: RequestOptions, httpEventService: HttpEventService) {
   return new ExtendedHttpClient(xhrBackend, requestOptions, httpEventService);
@@ -83,29 +79,25 @@ export function extendedHttpClientFactory(xhrBackend: XHRBackend, requestOptions
     AppComponent,
     LoginComponent,
     HomeComponent,
-    MessageFilterComponent,
     ServiceGroupComponent,
     DomainComponent,
     DomainDetailsDialogComponent,
     UserComponent,
-    ErrorLogComponent,
     AlertComponent,
     FooterComponent,
     IsAuthorized,
-    TruststoreComponent,
+    TrustStoreComponent,
     SaveDialogComponent,
-    ServicegroupMetadatalistDialogComponent,
-    ServicegroupMetadataDialogComponent,
+    ServiceGroupMetadatalistDialogComponent,
+    ServiceGroupMetadataDialogComponent,
     ServiceGroupExtensionDialogComponent,
     CancelDialogComponent,
     RowLimiterComponent,
     DatePipe,
     CapitalizeFirstPipe,
     DefaultPasswordDialogComponent,
-    EditMessageFilterComponent,
-    ServicegroupDetailsDialogComponent,
-    ErrorlogDetailsComponent,
-    TruststoreDialogComponent,
+    ServiceGroupDetailsDialogComponent,
+    TrustStoreDialogComponent,
     TrustStoreUploadComponent,
     ColumnPickerComponent,
     TrustStoreUploadComponent,
@@ -119,18 +111,16 @@ export function extendedHttpClientFactory(xhrBackend: XHRBackend, requestOptions
   ],
   entryComponents: [
     AppComponent,
-    ServicegroupMetadatalistDialogComponent,
-    ServicegroupMetadataDialogComponent,
-    ServicegroupDetailsDialogComponent,
+    ServiceGroupMetadatalistDialogComponent,
+    ServiceGroupMetadataDialogComponent,
+    ServiceGroupDetailsDialogComponent,
     ServiceGroupExtensionDialogComponent,
     DomainDetailsDialogComponent,
     UserDetailsDialogComponent,
     CancelDialogComponent,
     SaveDialogComponent,
     DefaultPasswordDialogComponent,
-    EditMessageFilterComponent,
-    ErrorlogDetailsComponent,
-    TruststoreDialogComponent,
+    TrustStoreDialogComponent,
     TrustStoreUploadComponent,
   ],
   imports: [

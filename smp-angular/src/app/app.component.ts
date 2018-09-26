@@ -1,7 +1,7 @@
 import {Component, OnInit, ViewChild} from "@angular/core";
 import {SecurityService} from "./security/security.service";
 import {Router, RouterOutlet} from "@angular/router";
-import {SecurityEventService} from "./security/security.event.service";
+import {SecurityEventService} from "./security/security-event.service";
 import {Title} from "@angular/platform-browser";
 import {Http, Response} from "@angular/http";
 import {Observable} from "rxjs/Observable";

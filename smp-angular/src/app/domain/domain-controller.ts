@@ -1,4 +1,4 @@
-import {SearchTableController} from "../common/searchtable/searchtable-controller";
+import {SearchTableController} from "../common/searchtable/search-table-controller";
 import {MdDialog, MdDialogRef} from "@angular/material";
 import {DomainDetailsDialogComponent} from "./domain-details-dialog/domain-details-dialog.component";
 

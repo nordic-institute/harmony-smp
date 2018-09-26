@@ -1,7 +1,7 @@
 ﻿import {Component, OnInit} from '@angular/core';
 
 import {SecurityService} from '../security/security.service';
-import {User} from "../security/user";
+import {User} from "../security/user.model";
 
 @Component({
   moduleId: module.id,

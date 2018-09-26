@@ -1,14 +1,14 @@
 import {Component, TemplateRef, ViewChild} from "@angular/core";
-import {ColumnPickerBase} from "../common/column-picker/column-picker-base";
-import {RowLimiterBase} from "../common/row-limiter/row-limiter-base";
+import {ColumnPicker} from "../common/column-picker/column-picker.model";
+import {RowLimiter} from "../common/row-limiter/row-limiter.model";
 import {isNullOrUndefined} from "util";
 import {DownloadService} from "../download/download.service";
 import {AlertComponent} from "../alert/alert.component";
 import {Observable} from "rxjs/Observable";
-import {AlertsResult} from "./alertsresult";
+import {AlertsResult} from "./alerts-result.model";
 import {Http, URLSearchParams, Response, Headers} from "@angular/http";
 import {AlertService} from "../alert/alert.service";
-import {AlertsEntry} from "./alertsentry";
+import {AlertsEntry} from "./alerts-entry.model";
 import {CancelDialogComponent} from "../common/cancel-dialog/cancel-dialog.component";
 import {MdDialog} from "@angular/material";
 import {SaveDialogComponent} from "../common/save-dialog/save-dialog.component";
@@ -24,8 +24,8 @@ export class AlertsComponent {
 
   static readonly ALERTS_URL: string = 'rest/alerts';
 
-  columnPicker: ColumnPickerBase = new ColumnPickerBase();
-  rowLimiter: RowLimiterBase = new RowLimiterBase();
+  columnPicker: ColumnPicker = new ColumnPicker();
+  rowLimiter: RowLimiter = new RowLimiter();
 
   advancedSearch: boolean;
   loading: boolean = false;
