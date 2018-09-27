@@ -1,32 +1,31 @@
-import {Component, TemplateRef, ViewChild} from "@angular/core";
-import {ColumnPickerBase} from "../common/column-picker/column-picker-base";
-import {RowLimiterBase} from "../common/row-limiter/row-limiter-base";
+import {Component, OnInit, TemplateRef, ViewChild} from "@angular/core";
+import {ColumnPicker} from "../common/column-picker/column-picker.model";
+import {RowLimiter} from "../common/row-limiter/row-limiter.model";
 import {isNullOrUndefined} from "util";
 import {DownloadService} from "../download/download.service";
 import {AlertComponent} from "../alert/alert.component";
 import {Observable} from "rxjs/Observable";
-import {AlertsResult} from "./alertsresult";
+import {AlertsResult} from "./alerts-result.model";
 import {Http, URLSearchParams, Response, Headers} from "@angular/http";
 import {AlertService} from "../alert/alert.service";
-import {AlertsEntry} from "./alertsentry";
+import {AlertsEntry} from "./alerts-entry.model";
 import {CancelDialogComponent} from "../common/cancel-dialog/cancel-dialog.component";
 import {MdDialog} from "@angular/material";
 import {SaveDialogComponent} from "../common/save-dialog/save-dialog.component";
 
 @Component({
   moduleId: module.id,
-  templateUrl: 'alerts.component.html',
-  providers: []
+  templateUrl: './alerts.component.html'
 })
 
-export class AlertsComponent {
+export class AlertsComponent implements OnInit {
 
   @ViewChild('rowProcessed') rowProcessed: TemplateRef<any>;
 
   static readonly ALERTS_URL: string = 'rest/alerts';
 
-  columnPicker: ColumnPickerBase = new ColumnPickerBase();
-  rowLimiter: RowLimiterBase = new RowLimiterBase();
+  columnPicker: ColumnPicker = new ColumnPicker();
+  rowLimiter: RowLimiter = new RowLimiter();
 
   advancedSearch: boolean;
   loading: boolean = false;
@@ -61,8 +60,7 @@ export class AlertsComponent {
   timestampReportingToMinDate: Date = null;
   timestampReportingToMaxDate: Date = new Date();
 
-  constructor(private http: Http, private alertService: AlertService, public dialog: MdDialog) {
-
+  constructor(private http: Http, private alertService: AlertService, public dialog: MdDialog, private downloadService: DownloadService) {
   }
 
   ngOnInit() {
@@ -268,7 +266,6 @@ export class AlertsComponent {
     this.timestampReportingFromMaxDate = event.value;
   }
 
-
   // datatable methods
 
   onActivate(event) {
@@ -312,7 +309,7 @@ export class AlertsComponent {
     if(!this.buttonsDisabled) {
       this.save(true);
     } else {
-      DownloadService.downloadNative(AlertsComponent.ALERTS_URL + "/csv" + this.getFilterPath());
+      this.downloadService.downloadNative(AlertsComponent.ALERTS_URL + "/csv" + this.getFilterPath());
     }
   }
 
@@ -352,7 +349,6 @@ export class AlertsComponent {
     }
 
     return result;
-
   }
 
   public isAlertTypeDefined(): boolean {
@@ -378,7 +374,7 @@ export class AlertsComponent {
           this.alertService.success("The operation 'update alerts' completed successfully.", false);
           this.page(this.offset, this.rowLimiter.pageSize, this.orderBy, this.asc);
           if(withDownloadCSV) {
-            DownloadService.downloadNative(AlertsComponent.ALERTS_URL + "/csv");
+            this.downloadService.downloadNative(AlertsComponent.ALERTS_URL + "/csv");
           }
         }, err => {
           this.alertService.error("The operation 'update alerts' not completed successfully.", false);
@@ -386,7 +382,7 @@ export class AlertsComponent {
         });
       } else {
         if(withDownloadCSV) {
-          DownloadService.downloadNative(AlertsComponent.ALERTS_URL + "/csv");
+          this.downloadService.downloadNative(AlertsComponent.ALERTS_URL + "/csv");
         }
       }
     });
@@ -397,5 +393,4 @@ export class AlertsComponent {
     row.processed = !row.processed;
     this.rows[row.$$index] = row;
   }
-
 }

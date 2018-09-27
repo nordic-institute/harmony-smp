@@ -1,4 +1,4 @@
-import {Component, OnInit} from "@angular/core";
+import {Component} from "@angular/core";
 import {MdDialogRef} from "@angular/material";
 
 @Component({
@@ -6,11 +6,8 @@ import {MdDialogRef} from "@angular/material";
   templateUrl: './default-password-dialog.component.html',
   styleUrls: ['./default-password-dialog.component.css']
 })
-export class DefaultPasswordDialogComponent implements OnInit {
+export class DefaultPasswordDialogComponent {
 
   constructor(public dialogRef: MdDialogRef<DefaultPasswordDialogComponent>) { }
-
-  ngOnInit() {
-  }
 
 }

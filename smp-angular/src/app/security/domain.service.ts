@@ -3,7 +3,7 @@ import {Http, Headers, Response} from '@angular/http';
 import {Observable} from 'rxjs/Observable';
 import {ReplaySubject} from 'rxjs';
 import 'rxjs/add/operator/map';
-import {Domain} from './domain';
+import {Domain} from './domain.model';
 
 @Injectable()
 export class DomainService {

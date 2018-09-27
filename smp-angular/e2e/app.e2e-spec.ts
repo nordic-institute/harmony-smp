@@ -1,10 +1,10 @@
-import { DomibusAngular2WebPage } from './app.po';
+import { SmpAngular2WebPage } from './app.po';
 
 describe('domibus-MSH-web App', function() {
-  let page: DomibusAngular2WebPage;
+  let page: SmpAngular2WebPage;
 
   beforeEach(() => {
-    page = new DomibusAngular2WebPage();
+    page = new SmpAngular2WebPage();
   });
 
   it('should display message saying app works', () => {
