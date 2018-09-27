@@ -5,24 +5,24 @@ import "rxjs/add/operator/map";
 import {Router} from "@angular/router";
 import {HttpEventService} from "../http/http-event.service";
 import {ReplaySubject} from "rxjs";
-import {DomibusInfo} from "./domibus-info.model";
+import {SmpInfo} from "./smp-info.model";
 
 @Injectable()
-export class DomibusInfoService {
+export class SmpInfoService {
   constructor(private http: Http, private router: Router) {
   }
 
-  getDomibusInfo(): Observable<DomibusInfo> {
+  getSmpInfo(): Observable<SmpInfo> {
     let subject = new ReplaySubject();
     this.http.get('rest/application/info')
       .map((response: Response) => {
-        const domibusInfo:DomibusInfo = { version: response.json().version };
-        return domibusInfo;
+        const smpInfo: SmpInfo = { version: response.json().version };
+        return smpInfo;
       })
-      .subscribe((res: DomibusInfo) => {
+      .subscribe((res: SmpInfo) => {
         subject.next(res);
       }, (error: any) => {
-        console.log("getDomibusInfo:" + error);
+        console.log("getSmpInfo:" + error);
         // subject.next(null);
       });
     return subject.asObservable();

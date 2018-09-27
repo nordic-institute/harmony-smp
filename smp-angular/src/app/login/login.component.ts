@@ -73,7 +73,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             break;
           case HTTP_GATEWAY_TIMEOUT:
           case HTTP_NOTFOUND:
-            message = "Unable to login. Domibus is not running.";
+            message = "Unable to login. SMP is not running.";
             break;
           default:
             message = "Default error (" + error.status + ") occurred during login.";
