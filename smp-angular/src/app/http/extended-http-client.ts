@@ -9,7 +9,7 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/operator/share';
 import 'rxjs/add/observable/throw';
 import {Observer} from 'rxjs/Observer';
-import {HttpEventService} from "./http.event.service";
+import {HttpEventService} from "./http-event.service";
 
 @Injectable()
 export class ExtendedHttpClient extends Http {

@@ -1,21 +1,18 @@
 ﻿import {Component, OnDestroy, OnInit} from "@angular/core";
 import {Router, ActivatedRoute} from "@angular/router";
 import {SecurityService} from "../security/security.service";
-import {HttpEventService} from "../http/http.event.service";
+import {HttpEventService} from "../http/http-event.service";
 import {AlertService} from "../alert/alert.service";
-import {SecurityEventService} from "../security/security.event.service";
-import {User} from "../security/user";
+import {SecurityEventService} from "../security/security-event.service";
+import {User} from "../security/user.model";
 import {MdDialogRef, MdDialog} from "@angular/material";
 import {DefaultPasswordDialogComponent} from "app/security/default-password-dialog/default-password-dialog.component";
 
 @Component({
   moduleId: module.id,
-  templateUrl: 'login.component.html',
-  styleUrls: ['./login.component.css']
+  templateUrl: './login.component.html'
 })
-
 export class LoginComponent implements OnInit, OnDestroy {
-
 
   model: any = {};
   loading = false;
@@ -76,7 +73,7 @@ export class LoginComponent implements OnInit, OnDestroy {
             break;
           case HTTP_GATEWAY_TIMEOUT:
           case HTTP_NOTFOUND:
-            message = "Unable to login. Domibus is not running.";
+            message = "Unable to login. SMP is not running.";
             break;
           default:
             message = "Default error (" + error.status + ") occurred during login.";

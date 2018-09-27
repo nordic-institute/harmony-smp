@@ -1,20 +1,16 @@
-import {Component, OnInit} from '@angular/core';
+import {Component} from '@angular/core';
 import {MdDialogRef} from "@angular/material";
 
 @Component({
   selector: 'user-details-dialog',
-  templateUrl: './user-details-dialog.component.html',
-  styleUrls: ['./user-details-dialog.component.css']
+  templateUrl: './user-details-dialog.component.html'
 })
-export class UserDetailsDialogComponent implements OnInit {
+export class UserDetailsDialogComponent {
 
   user;
   dateFormat: String = 'yyyy-MM-dd HH:mm:ssZ';
 
   constructor(public dialogRef: MdDialogRef<UserDetailsDialogComponent>) {
-  }
-
-  ngOnInit() {
   }
 
 }

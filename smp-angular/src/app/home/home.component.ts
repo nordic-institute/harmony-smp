@@ -1,12 +1,11 @@
 ﻿import {Component, OnInit} from '@angular/core';
 
 import {SecurityService} from '../security/security.service';
-import {User} from "../security/user";
+import {User} from "../security/user.model";
 
 @Component({
   moduleId: module.id,
-  templateUrl: 'home.component.html',
-  providers: [],
+  templateUrl: './home.component.html',
   styleUrls: ['./home.component.css']
 })
 
