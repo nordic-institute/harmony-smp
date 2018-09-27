@@ -1,14 +1,10 @@
-import {SearchTableController} from "../common/searchtable/searchtable-controller";
+import {SearchTableController} from "../common/search-table/search-table-controller";
 import {MdDialog, MdDialogRef} from "@angular/material";
 import {UserDetailsDialogComponent} from "./user-details-dialog/user-details-dialog.component";
 
+export class UserController implements SearchTableController {
 
-export class UserController extends SearchTableController {
-
-  constructor(public dialog: MdDialog) {
-    super();
-  }
-
+  constructor(public dialog: MdDialog) { }
 
   public showDetails(row: any) {
     let dialogRef: MdDialogRef<UserDetailsDialogComponent> = this.dialog.open(UserDetailsDialogComponent);
@@ -16,17 +12,9 @@ export class UserController extends SearchTableController {
     dialogRef.afterClosed().subscribe(result => {
       //Todo:
     });
-
   }
 
+  public edit(row: any) { }
 
-
-
-  public edit(row: any) {
-
-  }
-
-  public  delete(row: any) {
-
-  }
+  public  delete(row: any) { }
 }

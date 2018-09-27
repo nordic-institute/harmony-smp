@@ -1,15 +1,14 @@
-import {Directive,ElementRef,Input} from '@angular/core';
+import {Directive, ElementRef, Input, OnInit} from '@angular/core';
 import {SecurityService} from './security.service';
 
 @Directive({
-    selector:'[isAuthorized]',
-    providers:[]
+    selector:'[isAuthorized]'
 })
-export class IsAuthorized {
+export class IsAuthorized implements OnInit {
     @Input('isAuthorized') role:string;
     constructor(private _elementRef:ElementRef, private securityService:SecurityService) {
-
     }
+
     ngOnInit():void {
       if(this.role && this.role.trim() !== '') {
         this.securityService.isAuthorized([this.role]).subscribe((isAuthorized:boolean) => {

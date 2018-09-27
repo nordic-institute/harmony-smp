@@ -1,14 +1,14 @@
-import {Component} from "@angular/core";
+import {Component, OnInit} from "@angular/core";
 import {AlertService} from "./alert.service";
 
 @Component({
   moduleId: module.id,
   selector: 'alert',
-  templateUrl: 'alert.component.html',
+  templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.css']
 })
 
-export class AlertComponent {
+export class AlertComponent implements OnInit {
   message: any;
 
   public static readonly MAX_COUNT_CSV: number = 10000;
