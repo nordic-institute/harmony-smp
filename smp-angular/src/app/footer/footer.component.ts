@@ -1,6 +1,6 @@
 ﻿import {Component, OnInit} from "@angular/core";
-import {DomibusInfoService} from "../appinfo/domibus-info.service";
-import {DomibusInfo} from "../appinfo/domibus-info.model";
+import {SmpInfoService} from "../app-info/smp-info.service";
+import {SmpInfo} from "../app-info/smp-info.model";
 
 @Component({
   moduleId: module.id,
@@ -10,15 +10,15 @@ import {DomibusInfo} from "../appinfo/domibus-info.model";
 })
 
 export class FooterComponent implements OnInit {
-  domibusVersion: string;
+  smpVersion: string;
 
-  constructor(private domibusInfoService: DomibusInfoService) {
+  constructor(private smpInfoService: SmpInfoService) {
   }
 
   ngOnInit(): void {
     console.log("FooterComponent onInit");
-    this.domibusInfoService.getDomibusInfo().subscribe((domibusInfo: DomibusInfo) => {
-      this.domibusVersion = domibusInfo.version;
+    this.smpInfoService.getSmpInfo().subscribe((smpInfo: SmpInfo) => {
+      this.smpVersion = smpInfo.version;
       }
     );
   }

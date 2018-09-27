@@ -1,10 +1,10 @@
-import {SearchTableController} from "../common/searchtable/search-table-controller";
+import {SearchTableController} from "../common/search-table/search-table-controller";
 import {MdDialog, MdDialogRef} from "@angular/material";
-import {ServiceGroupDetailsDialogComponent} from "./servicegroup-details-dialog/service-group-details-dialog.component";
+import {ServiceGroupDetailsDialogComponent} from "./service-group-details-dialog/service-group-details-dialog.component";
 import {Http} from "@angular/http";
 import {AlertService} from "../alert/alert.service";
-import {ServiceGroupExtensionDialogComponent} from "./servicegroup-extension-dialog/service-group-extension-dialog.component";
-import {ServiceGroupMetadatalistDialogComponent} from "./servicegroup-metadatalist-dialog/service-group-metadatalist-dialog.component";
+import {ServiceGroupExtensionDialogComponent} from "./service-group-extension-dialog/service-group-extension-dialog.component";
+import {ServiceGroupMetadataListDialogComponent} from "./service-group-metadata-list-dialog/service-group-metadata-list-dialog.component";
 
 export class ServiceGroupController implements SearchTableController {
 
@@ -27,7 +27,7 @@ export class ServiceGroupController implements SearchTableController {
   }
 
   public showMetadataList(row: any) {
-    let dialogRef: MdDialogRef<ServiceGroupMetadatalistDialogComponent> = this.dialog.open(ServiceGroupMetadatalistDialogComponent);
+    let dialogRef: MdDialogRef<ServiceGroupMetadataListDialogComponent> = this.dialog.open(ServiceGroupMetadataListDialogComponent);
    // dialogRef.componentInstance.servicegroup = row;
     dialogRef.afterClosed().subscribe(result => {
       //Todo:
