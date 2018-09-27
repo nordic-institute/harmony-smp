@@ -3,15 +3,15 @@ import {MdDialog, MdDialogRef} from "@angular/material";
 import {ColumnPicker} from "../../common/column-picker/column-picker.model";
 import {ServiceGroupController} from "../service-group-controller";
 import {RowLimiter} from "../../common/row-limiter/row-limiter.model";
-import {ServiceGroupExtensionDialogComponent} from "../servicegroup-extension-dialog/service-group-extension-dialog.component";
-import {ServiceGroupMetadataDialogComponent} from "../servicegroup-metadata-dialog/service-group-metadata-dialog.component";
+import {ServiceGroupExtensionDialogComponent} from "../service-group-extension-dialog/service-group-extension-dialog.component";
+import {ServiceGroupMetadataDialogComponent} from "../service-group-metadata-dialog/service-group-metadata-dialog.component";
 
 @Component({
   selector: 'app-messagelog-dialog',
-  templateUrl: './service-group-metadatalist-dialog.component.html',
-  styleUrls: ['./service-group-metadatalist-dialog.component.css']
+  templateUrl: './service-group-metadata-list-dialog.component.html',
+  styleUrls: ['./service-group-metadata-list-dialog.component.css']
 })
-export class ServiceGroupMetadatalistDialogComponent implements OnInit {
+export class ServiceGroupMetadataListDialogComponent implements OnInit {
 
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
 
@@ -32,7 +32,7 @@ export class ServiceGroupMetadatalistDialogComponent implements OnInit {
 
   messageResent = new EventEmitter(false);
 
-  constructor(public dialogRef: MdDialogRef<ServiceGroupMetadatalistDialogComponent>, public dialog: MdDialog) {
+  constructor(public dialogRef: MdDialogRef<ServiceGroupMetadataListDialogComponent>, public dialog: MdDialog) {
   }
 
   ngOnInit() {

@@ -2,7 +2,7 @@ import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { ServiceGroupMetadataDialogComponent } from './service-group-metadata-dialog.component';
 
-describe('ServicegroupExtensionDialogComponent', () => {
+describe('ServiceGroupMetadataDialogComponent', () => {
   let component: ServiceGroupMetadataDialogComponent;
   let fixture: ComponentFixture<ServiceGroupMetadataDialogComponent>;
 
