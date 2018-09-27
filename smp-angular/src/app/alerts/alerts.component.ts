@@ -1,4 +1,4 @@
-import {Component, TemplateRef, ViewChild} from "@angular/core";
+import {Component, OnInit, TemplateRef, ViewChild} from "@angular/core";
 import {ColumnPicker} from "../common/column-picker/column-picker.model";
 import {RowLimiter} from "../common/row-limiter/row-limiter.model";
 import {isNullOrUndefined} from "util";
@@ -18,7 +18,7 @@ import {SaveDialogComponent} from "../common/save-dialog/save-dialog.component";
   templateUrl: './alerts.component.html'
 })
 
-export class AlertsComponent {
+export class AlertsComponent implements OnInit {
 
   @ViewChild('rowProcessed') rowProcessed: TemplateRef<any>;
 

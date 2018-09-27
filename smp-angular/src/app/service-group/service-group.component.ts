@@ -1,4 +1,4 @@
-import {Component, TemplateRef, ViewChild} from "@angular/core";
+import {Component, OnInit, TemplateRef, ViewChild} from "@angular/core";
 import {ColumnPicker} from "../common/column-picker/column-picker.model";
 import {MdDialog, MdDialogRef} from "@angular/material";
 import {ServiceGroupDetailsDialogComponent} from "./service-group-details-dialog/service-group-details-dialog.component";
@@ -11,7 +11,7 @@ import {ServiceGroupController} from "./service-group-controller";
   templateUrl:'./service-group.component.html',
   styleUrls: ['./service-group.component.css']
 })
-export class ServiceGroupComponent {
+export class ServiceGroupComponent implements OnInit {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>
   @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>

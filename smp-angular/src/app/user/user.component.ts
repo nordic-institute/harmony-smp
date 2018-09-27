@@ -1,4 +1,4 @@
-import {Component, TemplateRef, ViewChild} from "@angular/core";
+import {Component, OnInit, TemplateRef, ViewChild} from "@angular/core";
 import {ColumnPicker} from "../common/column-picker/column-picker.model";
 import {MdDialog, MdDialogRef} from "@angular/material";
 
@@ -11,7 +11,7 @@ import {UserController} from "./user-controller";
   templateUrl:'./user.component.html',
   styleUrls: ['./user.component.css']
 })
-export class UserComponent {
+export class UserComponent implements OnInit {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>
   @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>

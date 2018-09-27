@@ -1,4 +1,4 @@
-import {Component, TemplateRef, ViewChild} from "@angular/core";
+import {Component, OnInit, TemplateRef, ViewChild} from "@angular/core";
 import {ColumnPicker} from "../common/column-picker/column-picker.model";
 import {MdDialog, MdDialogRef} from "@angular/material";
 
@@ -11,7 +11,7 @@ import {DomainController} from "./domain-controller";
   templateUrl:'./domain.component.html',
   styleUrls: ['./domain.component.css']
 })
-export class DomainComponent {
+export class DomainComponent implements OnInit {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
   @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>;
