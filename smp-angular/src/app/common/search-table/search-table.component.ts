@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, TemplateRef, ViewChild} from "@angular/core";
+import {Component, EventEmitter, Input, OnInit, TemplateRef, ViewChild} from "@angular/core";
 import {Http, URLSearchParams, Response} from "@angular/http";
 import {SearchTableResult} from "./search-table-result.model";
 import {Observable} from "rxjs";
@@ -15,14 +15,11 @@ import {SearchTableController} from "./search-table-controller";
   styleUrls: ['./search-table.component.css']
 })
 
-export class SearchTableComponent {
+export class SearchTableComponent implements OnInit {
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
 
   @Input() @ViewChild('additionalToolButtons') additionalToolButtons: TemplateRef<any>;
   @Input() @ViewChild('searchPanel') searchPanel: TemplateRef<any>;
-
-
-
 
   @Input() id: String = "";
   @Input() title: String = "";
@@ -31,15 +28,11 @@ export class SearchTableComponent {
   @Input() searchTableController: SearchTableController;
   @Input() filter: any = {};
 
-
-
   columnActions:any;
 
   rowLimiter: RowLimiter = new RowLimiter();
 
   selected = [];
-
-
 
   loading: boolean = false;
   rows = [];
@@ -52,14 +45,12 @@ export class SearchTableComponent {
 
   msgStatus: Array<String>;
 
-
   messageResent = new EventEmitter(false);
 
   constructor(protected http: Http, protected alertService: AlertService, public dialog: MdDialog) {
   }
 
   ngOnInit() {
-
     this.columnActions = {
       cellTemplate: this.rowActions,
       name: 'Actions',

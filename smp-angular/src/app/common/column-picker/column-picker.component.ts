@@ -1,11 +1,11 @@
-import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
+import {Component, EventEmitter, Input, Output} from "@angular/core";
 import {isNullOrUndefined} from "util";
 
 @Component({
   selector: 'app-column-picker',
   templateUrl: './column-picker.component.html'
 })
-export class ColumnPickerComponent implements OnInit {
+export class ColumnPickerComponent {
 
   columnSelection: boolean;
 
@@ -19,9 +19,6 @@ export class ColumnPickerComponent implements OnInit {
   onSelectedColumnsChanged = new EventEmitter<Array<any>>();
 
   constructor() {
-  }
-
-  ngOnInit() {
   }
 
   toggleColumnSelection() {
