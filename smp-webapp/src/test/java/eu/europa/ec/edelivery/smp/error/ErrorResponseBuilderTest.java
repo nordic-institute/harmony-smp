@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.error;
 
 import ec.services.smp._1.ErrorResponse;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import org.junit.Test;
 import org.springframework.http.ResponseEntity;
 import org.xml.sax.SAXException;
@@ -23,7 +24,7 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static eu.europa.ec.edelivery.smp.error.ErrorBusinessCode.*;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.*;
 import static org.junit.Assert.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;

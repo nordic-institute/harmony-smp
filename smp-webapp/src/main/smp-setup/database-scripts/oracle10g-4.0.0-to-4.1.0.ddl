@@ -22,7 +22,7 @@ CREATE TABLE smp_domain_AUD (
 );
 
 CREATE TABLE smp_service_group_AUD (
-  extension                CLOB,
+  xmlContent                CLOB,
   businessIdentifier       VARCHAR(50),
   businessIdentifierScheme VARCHAR(100),
   domainId                 VARCHAR(50),

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="main"  >
+<target name="main">
+  <java fork="true" classname="eu.europa.ec.edelivery.smp.data.dao.utils.SMPSchemaGenerator" failonerror="true">
+    <arg value="org.hibernate.dialect.Oracle10gDialect,org.hibernate.dialect.MySQL5InnoDBDialect"/>
+    <arg value="4.1.0-SNAPSHOT"/>
+    <arg value="/cef/code/smp/smp-server-library/../smp-webapp/src/main/smp-setup/database-scripts"/>
+    <classpath refid="maven.compile.classpath"/>
+  </java>
+</target>
+</project>

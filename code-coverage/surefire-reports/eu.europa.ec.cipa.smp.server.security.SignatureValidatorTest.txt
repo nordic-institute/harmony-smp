@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: eu.europa.ec.cipa.smp.server.security.SignatureValidatorTest
+-------------------------------------------------------------------------------
+Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.715 sec - in eu.europa.ec.cipa.smp.server.security.SignatureValidatorTest

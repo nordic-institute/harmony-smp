@@ -46,23 +46,6 @@ public class ErrorMappingControllerAdviceTest {
     }
 
     @Test
-    public void handleWrongInputFieldException() {
-
-        ResponseEntity re = testIntance.handleWrongInputFieldException(new WrongInputFieldException("WrongInputFieldExceptionMessage"));
-
-        assertEquals(BAD_REQUEST, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.WRONG_FIELD.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
-    }
-
-    @Test
-    public void handleNotFoundException() {
-        ResponseEntity re = testIntance.handleNotFoundException(new NotFoundException("NotFoundExceptionMessage"));
-
-        assertEquals(NOT_FOUND, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.NOT_FOUND.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
-    }
-
-    @Test
     public void handleAuthenticationException() {
 
         ResponseEntity re = testIntance.handleAuthenticationException(new AuthenticationException("AuthenticationException") {
@@ -84,30 +67,6 @@ public class ErrorMappingControllerAdviceTest {
         assertEquals(ErrorBusinessCode.UNAUTHORIZED.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
     }
 
-    @Test
-    public void handleUnknownUserException() {
-        ResponseEntity re = testIntance.handleUnknownUserException(new UnknownUserException("UnknownUserExceptionMessage"));
-
-        assertEquals(BAD_REQUEST, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.USER_NOT_FOUND.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
-    }
-
-    @Test
-    public void handleInvalidOwnerException() {
-        ResponseEntity re = testIntance.handleUnknownUserException(new InvalidOwnerException("InvalidOwnerExceptionMessage"));
-
-        assertEquals(BAD_REQUEST, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.UNAUTHORIZED.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
-    }
-
-    @Test
-    public void handleXmlParsingException() {
-
-        ResponseEntity re = testIntance.handleXmlParsingException(new XmlParsingException(null));
-
-        assertEquals(BAD_REQUEST, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.XSD_INVALID.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
-    }
 
     @Test
     public void handleXmlInvalidAgainstSchemaException() {
@@ -115,6 +74,6 @@ public class ErrorMappingControllerAdviceTest {
                 new XmlInvalidAgainstSchemaException("XmlInvalidAgainstSchemaExceptionMessage", null));
 
         assertEquals(BAD_REQUEST, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.XSD_INVALID.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
+        assertEquals(ErrorBusinessCode.XML_INVALID.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
     }
 }

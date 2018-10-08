@@ -14,86 +14,114 @@
 package eu.europa.ec.edelivery.smp.data.model;
 
 import org.hibernate.envers.Audited;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-
-import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_FREE_TEXT_LENGTH;
-import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_IDENTIFIER_VALUE_LENGTH;
+import javax.persistence.*;
+import java.math.BigInteger;
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 /**
  * Created by gutowpa on 16/01/2018.
  */
 @Entity
-@Table(name = "smp_domain")
 @Audited
-public class DBDomain implements BaseEntity{
-
-    private String domainId;
-    private String bdmslClientCertHeader;
-    private String bdmslClientCertAlias;
-    private String bdmslSmpId;
-    private String signatureCertAlias;
-
-    public DBDomain() {
-    }
-
-    public DBDomain(String domainId, String bdmslClientCertHeader, String bdmslClientCertAlias, String bdmslSmpId, String signatureCertAlias) {
-        this.domainId = domainId;
-        this.bdmslClientCertHeader = bdmslClientCertHeader;
-        this.bdmslClientCertAlias = bdmslClientCertAlias;
-        this.bdmslSmpId = bdmslSmpId;
-        this.signatureCertAlias = signatureCertAlias;
-    }
+@Table(name = "SMP_DOMAIN")
+@NamedQueries({
+        @NamedQuery(name = "DBDomain.getDomainByCode", query = "SELECT d FROM DBDomain d WHERE d.domainCode = :domainCode"),
+        @NamedQuery(name = "DBDomain.getDomainByID", query = "SELECT d FROM DBDomain d WHERE d.id = :id"),
+        @NamedQuery(name = "DBDomain.getAll", query = "SELECT d FROM DBDomain d"),
+        @NamedQuery(name = "DBDomain.removeByDomainCode", query = "DELETE FROM DBDomain d WHERE d.domainCode = :domainCode")
+})
+public class DBDomain extends BaseEntity {
 
     @Id
-    @Column(name = "domainId", length = MAX_IDENTIFIER_VALUE_LENGTH)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "domain_generator")
+    @SequenceGenerator(name="domain_generator", sequenceName = "SMP_DOMAIN_SEQ", allocationSize = 1, initialValue = 1)
+    @Column(name = "ID" )
+    Long id;
+
+    @Column(name = "DOMAIN_CODE", length = CommonColumnsLengths.MAX_DOMAIN_CODE_LENGTH, nullable = false,  unique = true)
+    String domainCode;
+    @Column(name = "SML_SUBDOMAIN", length = CommonColumnsLengths.MAX_SML_SUBDOMAIN_LENGTH, nullable = false,  unique = true)
+    String smlSubdomain;
+    @Column(name = "SML_SMP_ID", length = CommonColumnsLengths.MAX_SML_SMP_ID_LENGTH)
+    String smlSmpId;
+    @Column(name = "SML_PARTC_IDENT_REGEXP", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
+    String smlParticipantIdentifierRegExp;
+    @Column(name = "SML_CLIENT_CERT_HEADER", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
+    String smlClientCertHeader;
+    @Column(name = "SML_CLIENT_KEY_ALIAS", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
+    String smlClientKeyAlias;
+    @Column(name = "SIGNATURE_KEY_ALIAS", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
+    String signatureKeyAlias;
+
+    public DBDomain() {
+
+    }
+
     @Override
-    public String getId() {
-        return domainId;
+    public Long getId() {
+        return id;
     }
 
-    @Column(name = "bdmslClientCertHeader", length = MAX_FREE_TEXT_LENGTH)
-    public String getBdmslClientCertHeader() {
-        return bdmslClientCertHeader;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    @Column(name = "bdmslClientCertAlias", length = MAX_IDENTIFIER_VALUE_LENGTH)
-    public String getBdmslClientCertAlias() {
-        return bdmslClientCertAlias;
+    public String getDomainCode() {
+        return domainCode;
     }
 
-    @Column(name = "bdmslSmpId", length = MAX_IDENTIFIER_VALUE_LENGTH, nullable = false)
-    public String getBdmslSmpId() {
-        return bdmslSmpId;
+    public void setDomainCode(String domainCode) {
+        this.domainCode = domainCode;
     }
 
-    @Column(name = "signatureCertAlias", length = MAX_IDENTIFIER_VALUE_LENGTH)
-    public String getSignatureCertAlias() {
-        return signatureCertAlias;
+    public String getSmlSubdomain() {
+        return smlSubdomain;
     }
 
-    public void setId(String domainId) {
-        this.domainId = domainId;
+    public void setSmlSubdomain(String smlSubdomain) {
+        this.smlSubdomain = smlSubdomain;
     }
 
-    public void setBdmslClientCertHeader(String bdmslClientCertHeader) {
-        this.bdmslClientCertHeader = bdmslClientCertHeader;
+    public String getSmlSmpId() {
+        return smlSmpId;
     }
 
-    public void setBdmslClientCertAlias(String bdmslClientCertAlias) {
-        this.bdmslClientCertAlias = bdmslClientCertAlias;
+    public void setSmlSmpId(String smlSmpId) {
+        this.smlSmpId = smlSmpId;
     }
 
-    public void setBdmslSmpId(String bdmslSmpId) {
-        this.bdmslSmpId = bdmslSmpId;
+    public String getSmlParticipantIdentifierRegExp() {
+        return smlParticipantIdentifierRegExp;
     }
 
-    public void setSignatureCertAlias(String signatureCertAlias) {
-        this.signatureCertAlias = signatureCertAlias;
+    public void setSmlParticipantIdentifierRegExp(String smlParticipantIdentifierRegExp) {
+        this.smlParticipantIdentifierRegExp = smlParticipantIdentifierRegExp;
     }
+
+    public String getSmlClientCertHeader() {
+        return smlClientCertHeader;
+    }
+
+    public void setSmlClientCertHeader(String smlClientCertHeader) {
+        this.smlClientCertHeader = smlClientCertHeader;
+    }
+
+    public String getSmlClientKeyAlias() {
+        return smlClientKeyAlias;
+    }
+
+    public void setSmlClientKeyAlias(String smlClientKeyAlias) {
+        this.smlClientKeyAlias = smlClientKeyAlias;
+    }
+
+    public String getSignatureKeyAlias() {
+        return signatureKeyAlias;
+    }
+
+    public void setSignatureKeyAlias(String keyAlias) {
+        this.signatureKeyAlias = keyAlias;
+    }
+
 
 }

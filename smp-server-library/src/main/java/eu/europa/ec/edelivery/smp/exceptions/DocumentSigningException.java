@@ -18,8 +18,8 @@ package eu.europa.ec.edelivery.smp.exceptions;
  * <p>
  * Created by gutowpa on 11/01/2018.
  */
-public class DocumentSigningException extends RuntimeException {
-    public DocumentSigningException(String msg, Exception e) {
-        super(msg, e);
+public class DocumentSigningException extends SMPRuntimeException {
+    public DocumentSigningException(ErrorCode ec, String msg, Exception e) {
+        super(ec,msg, e);
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.core.GenericTypeResolver;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.transaction.Transactional;
 
 /**
  * Created by gutowpa on 24/11/2017.
@@ -37,15 +38,21 @@ public abstract class BaseDao<E extends BaseEntity> {
         return em.find(entityClass, primaryKey);
     }
 
+
+    @Transactional
     public void persistFlushDetach(E entity) {
         em.persist(entity);
         em.flush();
         em.detach(entity);
     }
 
-    public void remove(E entity) {
-        em.remove(entity);
+    @Transactional
+    public void update(E entity) {
+        em.merge(entity);
+        em.flush();
+        em.detach(entity);
     }
+
 
     /**
      * Removes Entity by given primary key
@@ -53,10 +60,26 @@ public abstract class BaseDao<E extends BaseEntity> {
      * @return true if entity existed before and was removed in this call.
      * False if entity did not exist, so nothing was changed
      */
+    @Transactional
     public boolean removeById(Object primaryKey) {
         int removedRecords = em.createQuery("delete from " + entityClass.getName() + " e where e.id = :primaryKey")
                 .setParameter("primaryKey", primaryKey)
                 .executeUpdate();
         return removedRecords > 0;
     }
+
+
+    /**
+     * Clear the persistence context, causing all managed entities to become detached.
+     * Changes made to entities that have not been flushed to the database will not be persisted.
+     *
+     * Main purpose is to clear cache for unit testing
+     *
+     */
+    public void clearPersistenceContext(){
+        em.clear();
+    }
+
+
+
 }

@@ -13,89 +13,216 @@
 
 package eu.europa.ec.edelivery.smp.data.model;
 
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
-import java.util.HashSet;
-import java.util.Set;
-
-import static javax.persistence.FetchType.EAGER;
-import static javax.persistence.FetchType.LAZY;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Entity
-@Table(name = "smp_service_group")
 @Audited
-public class DBServiceGroup implements BaseEntity {
+// the SMP_SG_UNIQ_PARTC_IDX  is natural key
+@Table(name = "SMP_SERVICE_GROUP",
+        indexes = {@Index(name = "SMP_SG_UNIQ_PARTC_IDX", columnList = "PARTICIPANT_SCHEME, PARTICIPANT_IDENTIFIER", unique = true),
+                @Index(name = "SMP_SG_PART_ID_IDX", columnList = "PARTICIPANT_IDENTIFIER", unique = false),
+                @Index(name = "SMP_SG_PART_SCH_IDX", columnList = "PARTICIPANT_SCHEME", unique = false)
+        })
+@NamedQueries({
+        @NamedQuery(name = "DBServiceGroup.getServiceGroupByID", query = "SELECT d FROM DBServiceGroup d WHERE d.id = :id"),
+        @NamedQuery(name = "DBServiceGroup.getServiceGroup", query = "SELECT d FROM DBServiceGroup d WHERE d.participantIdentifier = :participantIdentifier and d.participantScheme = :participantScheme"),
+        @NamedQuery(name = "DBServiceGroup.getServiceGroupList", query = "SELECT d FROM DBServiceGroup d WHERE d.participantIdentifier = :participantIdentifier and d.participantScheme = :participantScheme"),
+        @NamedQuery(name = "DBServiceGroup.deleteById", query = "DELETE FROM DBServiceGroup d WHERE d.id = :id"),
+})
+@NamedNativeQueries({
+        @NamedNativeQuery(name = "DBServiceGroup.deleteAllOwnerships", query = "DELETE FROM SMP_OWNERSHIP WHERE FK_SG_ID=:serviceGroupId")
+})
 
-    private DBServiceGroupId serviceGroupId;
-    private String extension;
-    private Set<DBOwnership> ownerships = new HashSet<>();
-    private Set<DBServiceMetadata> serviceMetadatas = new HashSet<>();
-    private DBDomain domain;
+public class DBServiceGroup extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sg_generator")
+    @SequenceGenerator(name = "sg_generator", sequenceName = "SMP_SERVICE_GROUP_SEQ")
+    @Column(name = "ID")
+    Long id;
+
+
+    @OneToMany(
+            mappedBy = "serviceGroup",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    List<DBServiceGroupDomain> serviceGroupDomains= new ArrayList<>();
+
+
+
+    // fetch in on demand - reduce performance issue on big SG table (set it better option)
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "SMP_OWNERSHIP",
+            joinColumns = @JoinColumn(name = "FK_SG_ID"),
+            inverseJoinColumns = @JoinColumn(name = "FK_USER_ID")
+    )
+    @OrderColumn(name = "USERNAME")
+    private Set<DBUser> users = new HashSet<>();
+
+
+    @Column(name = "PARTICIPANT_IDENTIFIER", length = CommonColumnsLengths.MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH, nullable = false)
+    String participantIdentifier;
+
+    @Column(name = "PARTICIPANT_SCHEME", length = CommonColumnsLengths.MAX_PARTICIPANT_IDENTIFIER_SCHEME_LENGTH, nullable = false)
+    String participantScheme;
+    @Column(name = "SML_REGISTRED", nullable = false)
+    private boolean smlRegistered = false;
+
+    @OneToOne(mappedBy = "dbServiceGroup", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private DBServiceGroupExtension serviceGroupExtension;
 
     public DBServiceGroup() {
     }
 
-    public DBServiceGroup(final DBServiceGroupId serviceGroupId) {
-        this.serviceGroupId = serviceGroupId;
-    }
-
-    public DBServiceGroup(final DBServiceGroupId serviceGroupId,
-                          final String extension,
-                          final Set<DBOwnership> ownerships,
-                          final Set<DBServiceMetadata> serviceMetadatas) {
-
-        this.serviceGroupId = serviceGroupId;
-        this.extension = extension;
-        this.ownerships = ownerships;
-        this.serviceMetadatas = serviceMetadatas;
-    }
-
-    @EmbeddedId
     @Override
-    public DBServiceGroupId getId() {
-        return serviceGroupId;
+    public Long getId() {
+        return id;
     }
 
-    @Lob
-    @Column(name = "extension", length = 65535)
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getParticipantIdentifier() {
+        return participantIdentifier;
+    }
+
+    public void setParticipantIdentifier(String participantIdentifier) {
+        this.participantIdentifier = participantIdentifier;
+    }
+
+    public String getParticipantScheme() {
+        return participantScheme;
+    }
+
+    public void setParticipantScheme(String participantScheme) {
+        this.participantScheme = participantScheme;
+    }
+
+
+    public void addUser(DBUser u) {
+        this.users.add(u);
+    }
+
+    public void removeUser(DBUser u) {
+        this.users.remove(u);
+    }
+
+    public Set<DBUser> getUsers() {
+        return this.users;
+    }
+
+    public boolean isSmlRegistered() {
+        return smlRegistered;
+    }
+
+    public void setSmlRegistered(boolean smlRegistered) {
+        this.smlRegistered = smlRegistered;
+    }
+
+    public DBServiceGroupExtension getServiceGroupExtension() {
+        return serviceGroupExtension;
+    }
+
+    public void setServiceGroupExtension(DBServiceGroupExtension serviceGroupExtension) {
+        if (serviceGroupExtension == null) {
+            if (this.serviceGroupExtension != null) {
+                this.serviceGroupExtension.setDbServiceGroup(null);
+            }
+        } else {
+            serviceGroupExtension.setDbServiceGroup(this);
+        }
+        this.serviceGroupExtension = serviceGroupExtension;
+    }
+
+    public List<DBServiceGroupDomain> getServiceGroupDomains() {
+        return serviceGroupDomains;
+    }
+
+    public void setServiceGroupDomains(List<DBServiceGroupDomain> serviceGroupDomains) {
+        this.serviceGroupDomains = serviceGroupDomains;
+    }
+
+
+    public DBServiceGroupDomain addDomain(DBDomain domain) {
+        DBServiceGroupDomain sgd = new DBServiceGroupDomain(this, domain);
+        serviceGroupDomains.add(sgd);
+        return sgd;
+    }
+
+    public void removeDomain(String domainCode) {
+        // find connecting object
+        Optional<DBServiceGroupDomain> osgd =  serviceGroupDomains.stream()
+                .filter(psgd -> domainCode.equals(psgd.getDomain().getDomainCode())).findFirst();
+        if (osgd.isPresent()){
+            DBServiceGroupDomain dsg = osgd.get();
+            serviceGroupDomains.remove(dsg);
+            dsg.setDomain(null);
+            dsg.setServiceGroup(null);
+        }
+    }
+
+
+
+    @Transient
+    public Optional<DBServiceGroupDomain> getServiceGroupForDomain(String domainCode) {
+        // find connecting object
+        return StringUtils.isBlank(domainCode)?Optional.empty():serviceGroupDomains.stream()
+                .filter(psgd -> domainCode.equals(psgd.getDomain().getDomainCode())).findFirst();
+    }
+
+    @Transient
     public String getExtension() {
-        return extension;
+        return getServiceGroupExtension() != null ? getServiceGroupExtension().getExtension() : null;
     }
 
-    @OneToMany(fetch = LAZY, mappedBy = "serviceGroup", cascade = CascadeType.ALL)
-    public Set<DBOwnership> getOwnerships() {
-        return ownerships;
+    public void setExtension(String extension) {
+
+        if (StringUtils.isBlank(extension)) {
+            if (this.serviceGroupExtension != null) {
+                this.serviceGroupExtension.setExtension(null);
+            }
+        } else {
+            if (this.serviceGroupExtension == null) {
+                this.serviceGroupExtension = new DBServiceGroupExtension();
+                this.serviceGroupExtension.setDbServiceGroup(this);
+            }
+            this.serviceGroupExtension.setExtension(extension);
+        }
     }
 
-    @OneToMany(fetch = LAZY, mappedBy = "serviceGroup", cascade = CascadeType.ALL)
-    public Set<DBServiceMetadata> getServiceMetadatas() {
-        return serviceMetadatas;
+
+
+
+    /**
+     * Id is database suragete id + natural key!
+     *
+     * @param o
+     * @return
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        DBServiceGroup that = (DBServiceGroup) o;
+        return Objects.equals(id, that.id) &&
+
+                Objects.equals(participantIdentifier, that.participantIdentifier) &&
+                Objects.equals(participantScheme, that.participantScheme);
     }
 
-    @ManyToOne(fetch = EAGER, optional = false)
-    @JoinColumn(name = "domainId", nullable = false)
-    public DBDomain getDomain() {
-        return domain;
-    }
-
-    public void setId(final DBServiceGroupId serviceGroupId) {
-        this.serviceGroupId = serviceGroupId;
-    }
-
-    public void setExtension(String extensions) {
-        this.extension = extensions;
-    }
-
-    public void setOwnerships(final Set<DBOwnership> ownerships) {
-        this.ownerships = ownerships;
-    }
-
-    public void setServiceMetadatas(final Set<DBServiceMetadata> serviceMetadatas) {
-        this.serviceMetadatas = serviceMetadatas;
-    }
-
-    public void setDomain(final DBDomain domain) {
-        this.domain = domain;
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), id, participantIdentifier, participantScheme);
     }
 }

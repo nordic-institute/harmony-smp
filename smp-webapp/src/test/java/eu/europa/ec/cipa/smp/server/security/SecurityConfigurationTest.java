@@ -119,7 +119,7 @@ public class SecurityConfigurationTest {
     }
 
     @Test
-    public void userStoredWithHashedPassIsAuthorizedForPutTest() throws Exception {
+        public void userStoredWithHashedPassIsAuthorizedForPutTest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .with(httpBasic(TEST_USERNAME_HASHED_PASS, PASSWORD)))
                 .andExpect(status().isOk())

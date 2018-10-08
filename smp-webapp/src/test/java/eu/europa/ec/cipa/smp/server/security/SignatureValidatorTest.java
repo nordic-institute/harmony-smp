@@ -144,7 +144,7 @@ public class SignatureValidatorTest/* extends AbstractTest*/ {
         //When
         //Save ServiceMetadata
         //serviceMetadataInterface.saveServiceRegistration(serviceGroupId, documentTypeId, signedByCustomizedSignature);
-        mvc.perform(put(uri)
+        mvc.perform(put(uri).header("Domain","domain")
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
                 .content(signedByCustomizedSignature))

@@ -18,9 +18,9 @@ package eu.europa.ec.edelivery.smp.exceptions;
  *
  * Created by gutowpa on 17/01/2018.
  */
-public class WrongInputFieldException extends RuntimeException{
+public class WrongInputFieldException extends SMPRuntimeException{
 
-    public WrongInputFieldException(String msg){
-        super(msg);
+    public WrongInputFieldException(ErrorCode ec, String msg){
+        super(ec,msg);
     }
 }

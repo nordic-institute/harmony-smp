@@ -12,71 +12,146 @@
  */
 package eu.europa.ec.edelivery.smp.data.model;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
+
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigInteger;
+import java.time.LocalDateTime;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_USERNAME_LENGTH;
 
 @Entity
-@Table(name = "smp_user")
 @Audited
-public class DBUser implements BaseEntity {
+@Table(name = "SMP_USER")
+@NamedQueries({
+        // case insesitive search
+        @NamedQuery(name = "DBUser.getUserByUsernameInsensitive", query = "SELECT u FROM DBUser u WHERE lower(u.username) = lower(:username)"),
+        @NamedQuery(name = "DBUser.getUserByCertificateId", query = "SELECT u FROM DBUser u WHERE u.certificate.certificateId = :certificateId"),
+})
+public class DBUser extends BaseEntity {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usr_generator")
+    @SequenceGenerator(name = "usr_generator", sequenceName = "SMP_USER_SEQ")
+    @Column(name = "ID")
+    Long id;
+    @Column(name = "USERNAME", length = CommonColumnsLengths.MAX_USERNAME_LENGTH, unique = true)
     private String username;
+    @Column(name = "PASSWORD", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
     private String password;
-    private boolean isAdmin;
-    private Set<DBOwnership> ownerships = new HashSet<>();
+    @Column(name = "EMAIL", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
+    private String email;
+
+    @Column(name = "PASSWORD_CHANGED")
+    LocalDateTime passwordChanged;
+
+    @Column(name = "ACTIVE", nullable = false)
+    private boolean active = true;
+    // user can have only one of the role smp_admin, servicegroup_admin, system_admin
+    @Column(name = "ROLE", length = CommonColumnsLengths.MAX_USER_ROLE_LENGTH)
+    private String role;
+
+    @OneToOne(mappedBy = "dbUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = true)
+    private DBCertificate certificate;
 
     public DBUser() {
     }
 
-    @Id
-    @Column(name = "username", unique = true, nullable = false, length = MAX_USERNAME_LENGTH)
-    public String getId() {
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
         return username;
     }
 
-    @Column(name = "password", length = MAX_USERNAME_LENGTH)
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public String getPassword() {
         return password;
-    }
-
-    @Column(name = "isadmin", nullable = false)
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    public Set<DBOwnership> getOwnerships() {
-        return ownerships;
-    }
-
-    public void setId(String username) {
-        this.username = username;
     }
 
     public void setPassword(String password) {
         this.password = password;
     }
 
-    public void setAdmin(boolean isAdmin) {
-        this.isAdmin = isAdmin;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setOwnerships(Set<DBOwnership> ownerships) {
-        this.ownerships = ownerships;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
-    @Transient
-    public String getUsername() {
-        return getId();
+    public String getRole() {
+        return role;
     }
 
-    public void setUsername(String username){
-        setId(username);
+    public void setRole(String role) {
+        this.role = role;
     }
+
+    public DBCertificate getCertificate() {
+        return certificate;
+    }
+
+    public void setCertificate(DBCertificate certificate) {
+        if (certificate == null) {
+            if (this.certificate != null) {
+                this.certificate.setDbUser(null);
+            }
+        }
+        else {
+            certificate.setDbUser(this);
+        }
+        this.certificate = certificate;
+    }
+
+    public String getEmail() {        return email;    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public LocalDateTime getPasswordChanged() {
+        return passwordChanged;
+    }
+
+    public void setPasswordChanged(LocalDateTime passwordChanged) {
+        this.passwordChanged = passwordChanged;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        DBUser dbUser = (DBUser) o;
+
+        return Objects.equals(id, dbUser.id) &&
+                StringUtils.equalsIgnoreCase(username, dbUser.username) &&
+                Objects.equals(certificate, dbUser.certificate);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(super.hashCode(), id, username, certificate);
+    }
+
 }

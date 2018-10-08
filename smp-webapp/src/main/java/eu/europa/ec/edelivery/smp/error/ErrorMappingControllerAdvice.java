@@ -27,7 +27,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static eu.europa.ec.edelivery.smp.error.ErrorBusinessCode.*;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.*;
 import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.*;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -45,7 +45,14 @@ public class ErrorMappingControllerAdvice {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity handleRuntimeException(RuntimeException ex) {
         ResponseEntity response = buildAndWarn(INTERNAL_SERVER_ERROR, TECHNICAL, "Unexpected technical error occurred.", ex);
-        log.error("Unhandled exception ocured, unique ID: "+((ErrorResponse) response.getBody()).getErrorUniqueId(), ex);
+        log.error("Unhandled exception occurred, unique ID: "+((ErrorResponse) response.getBody()).getErrorUniqueId(), ex);
+        return response;
+    }
+
+    @ExceptionHandler(SMPRuntimeException.class)
+    public ResponseEntity handleSMPRuntimeException(SMPRuntimeException ex) {
+        ResponseEntity response = buildAndWarn(INTERNAL_SERVER_ERROR, ex.getErrorCode().getErrorBusinessCode(), "Unexpected technical error occurred.", ex);
+        log.error("Unhandled exception occurred, unique ID: "+((ErrorResponse) response.getBody()).getErrorUniqueId(), ex);
         return response;
     }
 
@@ -64,10 +71,6 @@ public class ErrorMappingControllerAdvice {
         return buildAndWarn(BAD_REQUEST, WRONG_FIELD, ex.getMessage(), ex);
     }
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity handleNotFoundException(NotFoundException ex) {
-        return buildAndWarn(NOT_FOUND, ErrorBusinessCode.NOT_FOUND, ex.getMessage(), ex);
-    }
 
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity handleAuthenticationException(AuthenticationException ex) {
@@ -79,24 +82,16 @@ public class ErrorMappingControllerAdvice {
         return buildAndWarn(UNAUTHORIZED, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage() + " - Only SMP Admin or owner of given ServiceGroup is allowed to perform this action", ex);
     }
 
-    @ExceptionHandler(UnknownUserException.class)
-    public ResponseEntity handleUnknownUserException(UnknownUserException ex) {
-        return buildAndWarn(BAD_REQUEST, USER_NOT_FOUND, ex.getMessage(), ex);
-    }
 
     @ExceptionHandler(InvalidOwnerException.class)
     public ResponseEntity handleUnknownUserException(InvalidOwnerException ex) {
         return buildAndWarn(BAD_REQUEST, ErrorBusinessCode.UNAUTHORIZED, ex.getMessage(), ex);
     }
 
-    @ExceptionHandler(XmlParsingException.class)
-    public ResponseEntity handleXmlParsingException(XmlParsingException ex) {
-        return buildAndWarn(BAD_REQUEST, XSD_INVALID, ex.getMessage(), ex);
-    }
 
     @ExceptionHandler(XmlInvalidAgainstSchemaException.class)
     public ResponseEntity handleXmlInvalidAgainstSchemaException(XmlInvalidAgainstSchemaException ex) {
-        return buildAndWarn(BAD_REQUEST, XSD_INVALID , ex.getMessage(), ex);
+        return buildAndWarn(BAD_REQUEST, XML_INVALID, ex.getMessage(), ex);
     }
 
 

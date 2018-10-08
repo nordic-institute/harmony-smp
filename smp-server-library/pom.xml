@@ -17,7 +17,7 @@
     <parent>
         <groupId>eu.europa.ec.edelivery</groupId>
         <artifactId>smp-parent-pom</artifactId>
-        <version>4.0.1-SNAPSHOT</version>
+        <version>4.1.0-SNAPSHOT</version>
         <relativePath>../smp-parent-pom/pom.xml</relativePath>
     </parent>
     <artifactId>smp-server-library</artifactId>
@@ -25,6 +25,7 @@
 
     <!-- Default values for local compilation. The properties can be overriden for continuous integration servers -->
     <properties>
+
         <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
         <jdbc.url>jdbc:mysql://localhost/smp</jdbc.url>
         <jdbc.user>smp</jdbc.user>
@@ -53,6 +54,10 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-ext</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -110,6 +115,10 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-envers</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-annotations</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -191,6 +200,11 @@
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -217,5 +231,37 @@
                 </includes>
             </testResource>
         </testResources>
+        <plugins>
+        <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+                <execution>
+                    <id>generate-ddl</id>
+                    <phase>process-classes</phase>
+                    <goals>
+                        <goal>run</goal>
+                    </goals>
+                    <configuration>
+                        <target>
+                            <!-- ANT Task definition
+                            Class generates ddl scripts
+                                1. Parameter: comma separated hibernate database dialects
+                                2. script version
+                                3. export scripts.-->
+                            <java classname="eu.europa.ec.edelivery.smp.data.dao.utils.SMPSchemaGenerator"
+                                  fork="true" failonerror="true">
+                                <arg value="org.hibernate.dialect.Oracle10gDialect,org.hibernate.dialect.MySQL5InnoDBDialect" />
+                                <arg value="${project.version}" />
+                                <arg value="${project.basedir}/../smp-webapp/src/main/smp-setup/database-scripts" />
+                                <!-- reference to the passed-in classpath reference -->
+                                <classpath refid="maven.compile.classpath" />
+                            </java>
+                        </target>
+                    </configuration>
+
+                </execution>
+            </executions>
+        </plugin>
+        </plugins>
     </build>
 </project>

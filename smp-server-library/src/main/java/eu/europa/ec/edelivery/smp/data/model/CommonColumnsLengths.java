@@ -17,9 +17,17 @@ package eu.europa.ec.edelivery.smp.data.model;
  * Created by gutowpa on 01/02/2017.
  */
 public class CommonColumnsLengths {
+    public static final int MAX_DOMAIN_CODE_LENGTH = 256;
     public static final int MAX_FREE_TEXT_LENGTH = 4000;
-    public static final int MAX_IDENTIFIER_SCHEME_LENGTH = 100;
-    public static final int MAX_IDENTIFIER_VALUE_LENGTH = 50;
+    public static final int MAX_PARTICIPANT_IDENTIFIER_SCHEME_LENGTH = 256;
+    public static final int MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH = 256;
     public static final int MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH = 500;
+    public static final int MAX_DOCUMENT_TYPE_IDENTIFIER_SCHEME_LENGTH = 500;
     public static final int MAX_USERNAME_LENGTH = 256;
+    public static final int MAX_PASSWORD_LENGTH = 256;
+    public static final int MAX_CERT_ALIAS_LENGTH = 256;
+    public static final int MAX_SML_SUBDOMAIN_LENGTH = 256;
+    public static final int MAX_SML_SMP_ID_LENGTH = 256;
+    public static final int MAX_USER_ROLE_LENGTH = 256;
+
 }
