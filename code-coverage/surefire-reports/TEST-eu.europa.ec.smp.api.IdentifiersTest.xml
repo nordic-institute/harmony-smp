@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="eu.europa.ec.smp.api.IdentifiersTest" time="0.04" tests="122" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="idea.version" value="2018.1.2"/>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="sun.boot.library.path" value="/opt/java/jdk1.8.0_161/jre/lib/amd64"/>
+    <property name="java.vm.version" value="25.161-b12"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="maven.multiModuleProjectDirectory" value="/cef/code/smp"/>
+    <property name="javax.xml.accessExternalSchema" value="all"/>
+    <property name="java.vendor.url" value="http://java.oracle.com/"/>
+    <property name="path.separator" value=":"/>
+    <property name="guice.disable.misplaced.annotation.check" value="true"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="user.country" value="US"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.os.patch.level" value="unknown"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="/cef/code/smp"/>
+    <property name="java.runtime.version" value="1.8.0_161-b12"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment"/>
+    <property name="java.endorsed.dirs" value="/opt/java/jdk1.8.0_161/jre/lib/endorsed"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.io.tmpdir" value="/tmp"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="os.name" value="Linux"/>
+    <property name="javax.xml.accessExternalDTD" value="all"/>
+    <property name="classworlds.conf" value="/opt/programs/idea-IU-181.4445.78/plugins/maven/lib/maven3/bin/m2.conf"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.library.path" value="/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.class.version" value="52.0"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="os.version" value="4.10.0-38-generic"/>
+    <property name="user.home" value="/home/cef"/>
+    <property name="user.timezone" value="Europe/Brussels"/>
+    <property name="java.awt.printerjob" value="sun.print.PSPrinterJob"/>
+    <property name="java.specification.version" value="1.8"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="user.name" value="cef"/>
+    <property name="java.class.path" value="/opt/programs/idea-IU-181.4445.78/plugins/maven/lib/maven3/boot/plexus-classworlds-2.5.2.jar:/opt/programs/idea-IU-181.4445.78/lib/idea_rt.jar"/>
+    <property name="java.vm.specification.version" value="1.8"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.home" value="/opt/java/jdk1.8.0_161/jre"/>
+    <property name="sun.java.command" value="org.codehaus.classworlds.Launcher -Didea.version=2018.1.2 clean install"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="user.language" value="en"/>
+    <property name="awt.toolkit" value="sun.awt.X11.XToolkit"/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="java.version" value="1.8.0_161"/>
+    <property name="java.ext.dirs" value="/opt/java/jdk1.8.0_161/jre/lib/ext:/usr/java/packages/lib/ext"/>
+    <property name="securerandom.source" value="file:/dev/./urandom"/>
+    <property name="sun.boot.class.path" value="/opt/java/jdk1.8.0_161/jre/lib/resources.jar:/opt/java/jdk1.8.0_161/jre/lib/rt.jar:/opt/java/jdk1.8.0_161/jre/lib/sunrsasign.jar:/opt/java/jdk1.8.0_161/jre/lib/jsse.jar:/opt/java/jdk1.8.0_161/jre/lib/jce.jar:/opt/java/jdk1.8.0_161/jre/lib/charsets.jar:/opt/java/jdk1.8.0_161/jre/lib/jfr.jar:/opt/java/jdk1.8.0_161/jre/classes"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="maven.home" value="/opt/programs/idea-IU-181.4445.78/plugins/maven/lib/maven3"/>
+    <property name="file.separator" value="/"/>
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="sun.cpu.isalist" value=""/>
+  </properties>
+  <testcase name="[0] null (testDocumentIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.007"/>
+  <testcase name="[1]  (testDocumentIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[2] a (testDocumentIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[3] abc (testDocumentIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.007"/>
+  <testcase name="[4] a:b (testDocumentIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[5] ::a (testDocumentIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[6] a:: (testDocumentIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[7] ehealth-actorid-qns (testDocumentIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[8] urn:poland:ncpb (testDocumentIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[9] ehealth-resid-qns (testDocumentIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[10] epsos##services:extended:epsos:51 (testDocumentIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[0] a::b, a, b (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.002"/>
+  <testcase name="[1] a::b::c, a, b::c (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.002"/>
+  <testcase name="[2] a:b::c, a:b, c (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[3] ehealth-actorid-qns::urn:poland:ncpb, ehealth-actorid-qns, urn:poland:ncpb (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[4] ehealth-resid-qns::urn::epsos##services:extended:epsos::51, ehealth-resid-qns, urn::epsos##services:extended:epsos::51 (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[5] iso6523-actorid-upis::0002:gutek, iso6523-actorid-upis, 0002:gutek (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[6] ehealth-actorid-qns::urn:ehealth:hr:ncpb-idp, ehealth-actorid-qns, urn:ehealth:hr:ncpb-idp (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[7] scheme::urn:ehealth:pt:ncpb-idp, scheme, urn:ehealth:pt:ncpb-idp (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[8] otherscheme::urn:ehealth:be:ncpb-idp, otherscheme, urn:ehealth:be:ncpb-idp (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[9] ehealth-resid-qns::urn:ehealth:IdentityService::XCPD::CrossGatewayPatientDiscovery##ITI-55, ehealth-resid-qns, urn:ehealth:IdentityService::XCPD::CrossGatewayPatientDiscovery##ITI-55 (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[10] ehealth-resid-qns::urn:XCPD::CrossGatewayPatientDiscovery, ehealth-resid-qns, urn:XCPD::CrossGatewayPatientDiscovery (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[11] ehealth-resid-qns::urn:ehealth:PatientService::XCA::CrossGatewayQuery##ITI-38, ehealth-resid-qns, urn:ehealth:PatientService::XCA::CrossGatewayQuery##ITI-38 (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[12] ehealth-resid-qns::urn:XCA::CrossGatewayQuery, ehealth-resid-qns, urn:XCA::CrossGatewayQuery (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[13] ehealth-resid-qns::urn:ehealth:OrderService::XCA::CrossGatewayQuery##ITI-38, ehealth-resid-qns, urn:ehealth:OrderService::XCA::CrossGatewayQuery##ITI-38 (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[14] ehealth-resid-qns::urn:ehealth:DispensationService:Initialize::XDR::ProvideandRegisterDocumentSet-b##ITI-41, ehealth-resid-qns, urn:ehealth:DispensationService:Initialize::XDR::ProvideandRegisterDocumentSet-b##ITI-41 (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[15] ehealth-resid-qns::urn:XDR::ProvideandRegisterDocumentSet-b, ehealth-resid-qns, urn:XDR::ProvideandRegisterDocumentSet-b (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[16] ehealth-resid-qns::urn:ehealth:DispensationService:Discard::XDR::ProvideandRegisterDocumentSet-b##ITI-41, ehealth-resid-qns, urn:ehealth:DispensationService:Discard::XDR::ProvideandRegisterDocumentSet-b##ITI-41 (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[17] ehealth-resid-qns::urn:ehealth:ConsentService:Put::XDR::BPPCProvideandRegisterDocumentSet-b##ITI-41, ehealth-resid-qns, urn:ehealth:ConsentService:Put::XDR::BPPCProvideandRegisterDocumentSet-b##ITI-41 (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[18] ehealth-resid-qns::urn:XDR::BPPCProvideandRegisterDocumentSet-b, ehealth-resid-qns, urn:XDR::BPPCProvideandRegisterDocumentSet-b (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[19] ehealth-resid-qns::urn:ehealth:ConsentService:Discard::XDR::BPPCProvideandRegisterDocumentSet-b##ITI-41, ehealth-resid-qns, urn:ehealth:ConsentService:Discard::XDR::BPPCProvideandRegisterDocumentSet-b##ITI-41 (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[20] ehealth-resid-qns::urn:ehealth:IdP::identityProvider::HPAuthentication##epsos-91, ehealth-resid-qns, urn:ehealth:IdP::identityProvider::HPAuthentication##epsos-91 (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[21] ehealth-resid-qns::urn:identityProvider::HPAuthentication, ehealth-resid-qns, urn:identityProvider::HPAuthentication (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[22] ehealth-resid-qns::urn:ehealth:IdP::XUA::ProvideX-UserAssertion##ITI-40, ehealth-resid-qns, urn:ehealth:IdP::XUA::ProvideX-UserAssertion##ITI-40 (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[23] ehealth-resid-qns::urn:XUA::ProvideX-UserAssertion, ehealth-resid-qns, urn:XUA::ProvideX-UserAssertion (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[24] ehealth-resid-qns::urn:ehealth:VPN::VPNGatewayServer##epsos-105, ehealth-resid-qns, urn:ehealth:VPN::VPNGatewayServer##epsos-105 (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[25] ehealth-resid-qns::urn:ehealth:ncp::vpngateway, ehealth-resid-qns, urn:ehealth:ncp::vpngateway (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[26] ehealth-resid-qns::urn:ehealth:VPN::VPNGatewayClient##epsos-106, ehealth-resid-qns, urn:ehealth:VPN::VPNGatewayClient##epsos-106 (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[27] ehealth-resid-qns::urn:ehealth:ISM::InternationalSearchMask##epsos-107, ehealth-resid-qns, urn:ehealth:ISM::InternationalSearchMask##epsos-107 (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[28] ehealth-resid-qns::urn:ehealth:ncp::pt:ism, ehealth-resid-qns, urn:ehealth:ncp::pt:ism (testProcessIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[0] null (testProcessIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[1]  (testProcessIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[2] a (testProcessIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[3] abc (testProcessIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.002"/>
+  <testcase name="[4] a:b (testProcessIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[5] ::a (testProcessIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[6] a:: (testProcessIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[7] ehealth-actorid-qns (testProcessIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[8] urn:poland:ncpb (testProcessIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[9] ehealth-resid-qns (testProcessIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[10] epsos##services:extended:epsos:51 (testProcessIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[0] a::b, a, b (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[1] a::b::c, a, b::c (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[2] a:b::c, a:b, c (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[3] ehealth-actorid-qns::urn:poland:ncpb, ehealth-actorid-qns, urn:poland:ncpb (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[4] ehealth-resid-qns::urn::epsos##services:extended:epsos::51, ehealth-resid-qns, urn::epsos##services:extended:epsos::51 (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[5] iso6523-actorid-upis::0002:gutek, iso6523-actorid-upis, 0002:gutek (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[6] ehealth-actorid-qns::urn:ehealth:hr:ncpb-idp, ehealth-actorid-qns, urn:ehealth:hr:ncpb-idp (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[7] scheme::urn:ehealth:pt:ncpb-idp, scheme, urn:ehealth:pt:ncpb-idp (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[8] otherscheme::urn:ehealth:be:ncpb-idp, otherscheme, urn:ehealth:be:ncpb-idp (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[9] ehealth-resid-qns::urn:ehealth:IdentityService::XCPD::CrossGatewayPatientDiscovery##ITI-55, ehealth-resid-qns, urn:ehealth:IdentityService::XCPD::CrossGatewayPatientDiscovery##ITI-55 (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[10] ehealth-resid-qns::urn:XCPD::CrossGatewayPatientDiscovery, ehealth-resid-qns, urn:XCPD::CrossGatewayPatientDiscovery (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[11] ehealth-resid-qns::urn:ehealth:PatientService::XCA::CrossGatewayQuery##ITI-38, ehealth-resid-qns, urn:ehealth:PatientService::XCA::CrossGatewayQuery##ITI-38 (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[12] ehealth-resid-qns::urn:XCA::CrossGatewayQuery, ehealth-resid-qns, urn:XCA::CrossGatewayQuery (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[13] ehealth-resid-qns::urn:ehealth:OrderService::XCA::CrossGatewayQuery##ITI-38, ehealth-resid-qns, urn:ehealth:OrderService::XCA::CrossGatewayQuery##ITI-38 (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[14] ehealth-resid-qns::urn:ehealth:DispensationService:Initialize::XDR::ProvideandRegisterDocumentSet-b##ITI-41, ehealth-resid-qns, urn:ehealth:DispensationService:Initialize::XDR::ProvideandRegisterDocumentSet-b##ITI-41 (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[15] ehealth-resid-qns::urn:XDR::ProvideandRegisterDocumentSet-b, ehealth-resid-qns, urn:XDR::ProvideandRegisterDocumentSet-b (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[16] ehealth-resid-qns::urn:ehealth:DispensationService:Discard::XDR::ProvideandRegisterDocumentSet-b##ITI-41, ehealth-resid-qns, urn:ehealth:DispensationService:Discard::XDR::ProvideandRegisterDocumentSet-b##ITI-41 (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[17] ehealth-resid-qns::urn:ehealth:ConsentService:Put::XDR::BPPCProvideandRegisterDocumentSet-b##ITI-41, ehealth-resid-qns, urn:ehealth:ConsentService:Put::XDR::BPPCProvideandRegisterDocumentSet-b##ITI-41 (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[18] ehealth-resid-qns::urn:XDR::BPPCProvideandRegisterDocumentSet-b, ehealth-resid-qns, urn:XDR::BPPCProvideandRegisterDocumentSet-b (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[19] ehealth-resid-qns::urn:ehealth:ConsentService:Discard::XDR::BPPCProvideandRegisterDocumentSet-b##ITI-41, ehealth-resid-qns, urn:ehealth:ConsentService:Discard::XDR::BPPCProvideandRegisterDocumentSet-b##ITI-41 (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[20] ehealth-resid-qns::urn:ehealth:IdP::identityProvider::HPAuthentication##epsos-91, ehealth-resid-qns, urn:ehealth:IdP::identityProvider::HPAuthentication##epsos-91 (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[21] ehealth-resid-qns::urn:identityProvider::HPAuthentication, ehealth-resid-qns, urn:identityProvider::HPAuthentication (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[22] ehealth-resid-qns::urn:ehealth:IdP::XUA::ProvideX-UserAssertion##ITI-40, ehealth-resid-qns, urn:ehealth:IdP::XUA::ProvideX-UserAssertion##ITI-40 (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[23] ehealth-resid-qns::urn:XUA::ProvideX-UserAssertion, ehealth-resid-qns, urn:XUA::ProvideX-UserAssertion (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[24] ehealth-resid-qns::urn:ehealth:VPN::VPNGatewayServer##epsos-105, ehealth-resid-qns, urn:ehealth:VPN::VPNGatewayServer##epsos-105 (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[25] ehealth-resid-qns::urn:ehealth:ncp::vpngateway, ehealth-resid-qns, urn:ehealth:ncp::vpngateway (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[26] ehealth-resid-qns::urn:ehealth:VPN::VPNGatewayClient##epsos-106, ehealth-resid-qns, urn:ehealth:VPN::VPNGatewayClient##epsos-106 (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[27] ehealth-resid-qns::urn:ehealth:ISM::InternationalSearchMask##epsos-107, ehealth-resid-qns, urn:ehealth:ISM::InternationalSearchMask##epsos-107 (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[28] ehealth-resid-qns::urn:ehealth:ncp::pt:ism, ehealth-resid-qns, urn:ehealth:ncp::pt:ism (testParticipantIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[0] null (testParticipantIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[1]  (testParticipantIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[2] a (testParticipantIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[3] abc (testParticipantIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[4] a:b (testParticipantIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[5] ::a (testParticipantIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[6] a:: (testParticipantIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[7] ehealth-actorid-qns (testParticipantIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[8] urn:poland:ncpb (testParticipantIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[9] ehealth-resid-qns (testParticipantIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[10] epsos##services:extended:epsos:51 (testParticipantIdNegative)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="testUrlEncodingParticipantId" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="testUrlEncodingDocumentId" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[0] a::b, a, b (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[1] a::b::c, a, b::c (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[2] a:b::c, a:b, c (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[3] ehealth-actorid-qns::urn:poland:ncpb, ehealth-actorid-qns, urn:poland:ncpb (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[4] ehealth-resid-qns::urn::epsos##services:extended:epsos::51, ehealth-resid-qns, urn::epsos##services:extended:epsos::51 (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[5] iso6523-actorid-upis::0002:gutek, iso6523-actorid-upis, 0002:gutek (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[6] ehealth-actorid-qns::urn:ehealth:hr:ncpb-idp, ehealth-actorid-qns, urn:ehealth:hr:ncpb-idp (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[7] scheme::urn:ehealth:pt:ncpb-idp, scheme, urn:ehealth:pt:ncpb-idp (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[8] otherscheme::urn:ehealth:be:ncpb-idp, otherscheme, urn:ehealth:be:ncpb-idp (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[9] ehealth-resid-qns::urn:ehealth:IdentityService::XCPD::CrossGatewayPatientDiscovery##ITI-55, ehealth-resid-qns, urn:ehealth:IdentityService::XCPD::CrossGatewayPatientDiscovery##ITI-55 (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[10] ehealth-resid-qns::urn:XCPD::CrossGatewayPatientDiscovery, ehealth-resid-qns, urn:XCPD::CrossGatewayPatientDiscovery (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[11] ehealth-resid-qns::urn:ehealth:PatientService::XCA::CrossGatewayQuery##ITI-38, ehealth-resid-qns, urn:ehealth:PatientService::XCA::CrossGatewayQuery##ITI-38 (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[12] ehealth-resid-qns::urn:XCA::CrossGatewayQuery, ehealth-resid-qns, urn:XCA::CrossGatewayQuery (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[13] ehealth-resid-qns::urn:ehealth:OrderService::XCA::CrossGatewayQuery##ITI-38, ehealth-resid-qns, urn:ehealth:OrderService::XCA::CrossGatewayQuery##ITI-38 (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[14] ehealth-resid-qns::urn:ehealth:DispensationService:Initialize::XDR::ProvideandRegisterDocumentSet-b##ITI-41, ehealth-resid-qns, urn:ehealth:DispensationService:Initialize::XDR::ProvideandRegisterDocumentSet-b##ITI-41 (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[15] ehealth-resid-qns::urn:XDR::ProvideandRegisterDocumentSet-b, ehealth-resid-qns, urn:XDR::ProvideandRegisterDocumentSet-b (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[16] ehealth-resid-qns::urn:ehealth:DispensationService:Discard::XDR::ProvideandRegisterDocumentSet-b##ITI-41, ehealth-resid-qns, urn:ehealth:DispensationService:Discard::XDR::ProvideandRegisterDocumentSet-b##ITI-41 (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[17] ehealth-resid-qns::urn:ehealth:ConsentService:Put::XDR::BPPCProvideandRegisterDocumentSet-b##ITI-41, ehealth-resid-qns, urn:ehealth:ConsentService:Put::XDR::BPPCProvideandRegisterDocumentSet-b##ITI-41 (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[18] ehealth-resid-qns::urn:XDR::BPPCProvideandRegisterDocumentSet-b, ehealth-resid-qns, urn:XDR::BPPCProvideandRegisterDocumentSet-b (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[19] ehealth-resid-qns::urn:ehealth:ConsentService:Discard::XDR::BPPCProvideandRegisterDocumentSet-b##ITI-41, ehealth-resid-qns, urn:ehealth:ConsentService:Discard::XDR::BPPCProvideandRegisterDocumentSet-b##ITI-41 (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[20] ehealth-resid-qns::urn:ehealth:IdP::identityProvider::HPAuthentication##epsos-91, ehealth-resid-qns, urn:ehealth:IdP::identityProvider::HPAuthentication##epsos-91 (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[21] ehealth-resid-qns::urn:identityProvider::HPAuthentication, ehealth-resid-qns, urn:identityProvider::HPAuthentication (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[22] ehealth-resid-qns::urn:ehealth:IdP::XUA::ProvideX-UserAssertion##ITI-40, ehealth-resid-qns, urn:ehealth:IdP::XUA::ProvideX-UserAssertion##ITI-40 (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0.001"/>
+  <testcase name="[23] ehealth-resid-qns::urn:XUA::ProvideX-UserAssertion, ehealth-resid-qns, urn:XUA::ProvideX-UserAssertion (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[24] ehealth-resid-qns::urn:ehealth:VPN::VPNGatewayServer##epsos-105, ehealth-resid-qns, urn:ehealth:VPN::VPNGatewayServer##epsos-105 (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[25] ehealth-resid-qns::urn:ehealth:ncp::vpngateway, ehealth-resid-qns, urn:ehealth:ncp::vpngateway (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[26] ehealth-resid-qns::urn:ehealth:VPN::VPNGatewayClient##epsos-106, ehealth-resid-qns, urn:ehealth:VPN::VPNGatewayClient##epsos-106 (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[27] ehealth-resid-qns::urn:ehealth:ISM::InternationalSearchMask##epsos-107, ehealth-resid-qns, urn:ehealth:ISM::InternationalSearchMask##epsos-107 (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+  <testcase name="[28] ehealth-resid-qns::urn:ehealth:ncp::pt:ism, ehealth-resid-qns, urn:ehealth:ncp::pt:ism (testDocumentIdPositive)" classname="eu.europa.ec.smp.api.IdentifiersTest" time="0"/>
+</testsuite>

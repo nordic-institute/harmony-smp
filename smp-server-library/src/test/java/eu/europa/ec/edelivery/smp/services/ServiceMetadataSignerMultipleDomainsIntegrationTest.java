@@ -31,7 +31,8 @@ import static org.junit.Assert.assertEquals;
  * Created by gutowpa on 24/01/2018.
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration(classes = {SmpServicesTestConfig.class, PropertiesMultipleDomainTestConfig.class})
+@ContextConfiguration(classes = {PropertiesMultipleDomainTestConfig.class,
+        ServiceMetadataSigner.class})
 public class ServiceMetadataSignerMultipleDomainsIntegrationTest {
 
     @Autowired

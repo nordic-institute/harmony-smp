@@ -19,7 +19,7 @@
     <artifactId>smp-modules</artifactId>
     <packaging>pom</packaging>
     <name>SMP</name>
-    <version>4.0.1-SNAPSHOT</version>
+    <version>4.1.0-SNAPSHOT</version>
 
     <modules>
         <module>smp-parent-pom</module>

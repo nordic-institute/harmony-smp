@@ -68,13 +68,14 @@ public class ServiceMetadataController {
     public ResponseEntity saveServiceMetadata(
             @PathVariable String serviceGroupId,
             @PathVariable String serviceMetadataId,
+            @RequestHeader(name = "Domain", required = false) String domain,
             @RequestBody String body) throws XmlInvalidAgainstSchemaException {
 
         log.info("PUT ServiceMetadata: {} - {}\n{}", serviceGroupId, serviceMetadataId, body);
 
         serviceMetadataValidator.validate(serviceGroupId, serviceMetadataId, body);
 
-        boolean newServiceMetadataCreated = serviceMetadataService.saveServiceMetadata(asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId), body);
+        boolean newServiceMetadataCreated = serviceMetadataService.saveServiceMetadata(domain, asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId), body);
 
         log.info("PUT ServiceMetadata finished: {} - {}\n{}", serviceGroupId, serviceMetadataId, body);
 
@@ -84,10 +85,11 @@ public class ServiceMetadataController {
     @DeleteMapping
     @PreAuthorize("hasAnyAuthority('ROLE_SMP_ADMIN', @caseSensitivityNormalizer.normalizeParticipantId(#serviceGroupId))")
     public ResponseEntity deleteServiceMetadata(@PathVariable String serviceGroupId,
-                                                @PathVariable String serviceMetadataId) {
+                                                @PathVariable String serviceMetadataId,
+                                                @RequestHeader(name = "Domain", required = false) String domain ) {
         log.info("DELETE ServiceMetadata: {} - {}", serviceGroupId, serviceMetadataId);
 
-        serviceMetadataService.deleteServiceMetadata(asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId));
+        serviceMetadataService.deleteServiceMetadata(domain, asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId));
 
         log.info("DELETE ServiceMetadata finished: {} - {}", serviceGroupId, serviceMetadataId);
 

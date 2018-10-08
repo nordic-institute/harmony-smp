@@ -1,0 +1,12 @@
+/cef/code/smp/smp-webapp/src/test/java/eu/europa/ec/edelivery/smp/validation/ServiceGroupValidatorTest.java
+/cef/code/smp/smp-webapp/src/test/java/eu/europa/ec/edelivery/smp/error/ErrorMappingControllerAdviceTest.java
+/cef/code/smp/smp-webapp/src/test/java/eu/europa/ec/cipa/smp/server/security/SignatureUtil.java
+/cef/code/smp/smp-webapp/src/test/java/eu/europa/ec/edelivery/smp/ServiceGroupBodyUtil.java
+/cef/code/smp/smp-webapp/src/test/java/eu/europa/ec/cipa/smp/server/security/SecurityConfigurationTest.java
+/cef/code/smp/smp-webapp/src/test/java/eu/europa/ec/cipa/smp/server/security/SignatureValidatorTest.java
+/cef/code/smp/smp-webapp/src/test/java/eu/europa/ec/cipa/smp/server/security/UsernameReturningTestController.java
+/cef/code/smp/smp-webapp/src/test/java/eu/europa/ec/edelivery/smp/config/PropertiesTestConfig.java
+/cef/code/smp/smp-webapp/src/test/java/eu/europa/ec/edelivery/smp/controllers/ServiceGroupControllerTest.java
+/cef/code/smp/smp-webapp/src/test/java/eu/europa/ec/edelivery/smp/config/SpringSecurityTestConfig.java
+/cef/code/smp/smp-webapp/src/test/java/eu/europa/ec/edelivery/smp/error/ErrorResponseBuilderTest.java
+/cef/code/smp/smp-webapp/src/test/java/eu/europa/ec/cipa/smp/server/security/X509KeySelector.java

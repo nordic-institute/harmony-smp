@@ -1,0 +1,931 @@
+2018-10-08 15:50:25,712 INFO org.springframework.test.context.web.WebTestContextBootstrapper - Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener, org.springframework.security.test.context.support.ReactorContextTestExecutionListener, org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener]
+2018-10-08 15:50:25,771 INFO org.springframework.test.context.web.WebTestContextBootstrapper - Using TestExecutionListeners: [org.springframework.test.context.web.ServletTestExecutionListener@7cab1508, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener@6a84bc3f, org.springframework.test.context.support.DependencyInjectionTestExecutionListener@258ee7de, org.springframework.test.context.support.DirtiesContextTestExecutionListener@4930539b, org.springframework.test.context.transaction.TransactionalTestExecutionListener@6d171ce0, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener@22bd2039, org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener@705f83a7, org.springframework.security.test.context.support.ReactorContextTestExecutionListener@3bb8aabc]
+2018-10-08 15:50:25,788 INFO org.springframework.test.context.web.WebTestContextBootstrapper - Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener, org.springframework.security.test.context.support.ReactorContextTestExecutionListener, org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener]
+2018-10-08 15:50:25,790 INFO org.springframework.test.context.web.WebTestContextBootstrapper - Using TestExecutionListeners: [org.springframework.test.context.web.ServletTestExecutionListener@629ae7e, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener@1d25c1c, org.springframework.test.context.support.DependencyInjectionTestExecutionListener@de88ac6, org.springframework.test.context.support.DirtiesContextTestExecutionListener@5bca7664, org.springframework.test.context.transaction.TransactionalTestExecutionListener@105b693d, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener@3fae596, org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener@4a0df195, org.springframework.security.test.context.support.ReactorContextTestExecutionListener@42fcc7e6]
+2018-10-08 15:50:25,793 INFO org.springframework.test.context.web.WebTestContextBootstrapper - Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener, org.springframework.security.test.context.support.ReactorContextTestExecutionListener, org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener]
+2018-10-08 15:50:25,794 INFO org.springframework.test.context.web.WebTestContextBootstrapper - Using TestExecutionListeners: [org.springframework.test.context.web.ServletTestExecutionListener@5da7cee2, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener@78830d9a, org.springframework.test.context.support.DependencyInjectionTestExecutionListener@5ce4369b, org.springframework.test.context.support.DirtiesContextTestExecutionListener@7f829c76, org.springframework.test.context.transaction.TransactionalTestExecutionListener@1cb19dba, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener@7c3ebc6b, org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener@1931d99, org.springframework.security.test.context.support.ReactorContextTestExecutionListener@6a9950f1]
+2018-10-08 15:50:25,917 WARN eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdvice - Error unique ID: 2018-10-08T15:50:25.899CEST:b26a2aee-4f35-480c-beaa-627292f04f4c
+org.springframework.security.access.AccessDeniedException: AccessDeniedExceptionMessage
+	at eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdviceTest.handleAccessDeniedException(ErrorMappingControllerAdviceTest.java:64)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:283)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:173)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:128)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:203)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:155)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
+2018-10-08 15:50:25,924 WARN eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdvice - Error unique ID: 2018-10-08T15:50:25.924CEST:92765cc9-514c-419a-b9d2-f84c4cb8c441
+eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException: BadRequestExceptionMessage
+	at eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdviceTest.handleBadRequestException(ErrorMappingControllerAdviceTest.java:33)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:283)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:173)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:128)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:203)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:155)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
+2018-10-08 15:50:25,927 WARN eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdvice - Error unique ID: 2018-10-08T15:50:25.927CEST:b7f494d6-c870-4e4b-bbd5-d4f80f83f117
+java.lang.RuntimeException: RuntimeExceptionMessage
+	at eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdviceTest.handleRuntimeException(ErrorMappingControllerAdviceTest.java:22)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:283)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:173)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:128)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:203)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:155)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
+2018-10-08 15:50:25,928 ERROR eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdvice - Unhandled exception occurred, unique ID: 2018-10-08T15:50:25.927CEST:b7f494d6-c870-4e4b-bbd5-d4f80f83f117
+java.lang.RuntimeException: RuntimeExceptionMessage
+	at eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdviceTest.handleRuntimeException(ErrorMappingControllerAdviceTest.java:22)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:283)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:173)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:128)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:203)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:155)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
+2018-10-08 15:50:25,930 WARN eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdvice - Error unique ID: 2018-10-08T15:50:25.930CEST:6476c8d0-730d-437d-a61d-2081698b720d
+eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdviceTest$1: AuthenticationException
+	at eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdviceTest.handleAuthenticationException(ErrorMappingControllerAdviceTest.java:51)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:283)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:173)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:128)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:203)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:155)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
+2018-10-08 15:50:25,935 WARN eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdvice - Error unique ID: 2018-10-08T15:50:25.935CEST:e159ba81-281b-410c-85d2-6092ded8e831
+eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException: XmlInvalidAgainstSchemaExceptionMessage
+	at eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdviceTest.handleXmlInvalidAgainstSchemaException(ErrorMappingControllerAdviceTest.java:73)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:283)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:173)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:128)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:203)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:155)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
+2018-10-08 15:50:25,938 WARN eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdvice - Error unique ID: 2018-10-08T15:50:25.938CEST:144def73-8543-4b31-bae2-d5d90de85863
+eu.europa.ec.smp.api.exceptions.MalformedIdentifierException: Malformed identifier, scheme and id should be delimited by double colon: MalformedIdentifierExceptionMessage
+	at eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdviceTest.handleMalformedIdentifierException(ErrorMappingControllerAdviceTest.java:42)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:283)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:173)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:128)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:203)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:155)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
+2018-10-08 15:50:25,951 INFO org.springframework.test.context.web.WebTestContextBootstrapper - Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener, org.springframework.security.test.context.support.ReactorContextTestExecutionListener, org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener]
+2018-10-08 15:50:25,953 INFO org.springframework.test.context.web.WebTestContextBootstrapper - Using TestExecutionListeners: [org.springframework.test.context.web.ServletTestExecutionListener@6fca5907, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener@6ec65b5e, org.springframework.test.context.support.DependencyInjectionTestExecutionListener@7bebcd65, org.springframework.test.context.support.DirtiesContextTestExecutionListener@47447ccf, org.springframework.test.context.transaction.TransactionalTestExecutionListener@7afb1741, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener@263bbfeb, org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener@31edeac, org.springframework.security.test.context.support.ReactorContextTestExecutionListener@67d86804]
+2018-10-08 15:50:27,023 INFO org.springframework.security.config.SecurityNamespaceHandler - Spring Security 'config' module version is 5.1.0.RELEASE
+2018-10-08 15:50:27,091 INFO org.springframework.security.config.http.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute '! isAnonymous()' for /*
+2018-10-08 15:50:27,092 INFO org.springframework.security.config.http.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute '! isAnonymous()' for /*
+2018-10-08 15:50:27,125 INFO org.springframework.security.config.http.HttpSecurityBeanDefinitionParser - Checking sorted filter chain: [Root bean: class [org.springframework.security.web.context.SecurityContextPersistenceFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 200, Root bean: class [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 400, <x509AuthFilter>, order = 900, <blueCoatReverseProxyAuthFilter>, order = 1000, Root bean: class [org.springframework.security.web.authentication.www.BasicAuthenticationFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 1800, Root bean: class [org.springframework.security.web.savedrequest.RequestCacheAwareFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 1900, Root bean: class [null]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=org.springframework.security.config.http.HttpConfigurationBuilder$SecurityContextHolderAwareRequestFilterBeanFactory#0; factoryMethodName=getBean; initMethodName=null; destroyMethodName=null, order = 2000, Root bean: class [org.springframework.security.web.authentication.AnonymousAuthenticationFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 2300, Root bean: class [org.springframework.security.web.session.SessionManagementFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 2400, Root bean: class [org.springframework.security.web.access.ExceptionTranslationFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 2500, <org.springframework.security.web.access.intercept.FilterSecurityInterceptor#0>, order = 2600]
+2018-10-08 15:50:28,183 INFO org.springframework.security.provisioning.JdbcUserDetailsManager - No authentication manager set. Reauthentication of users when changing passwords will not be performed.
+2018-10-08 15:50:28,440 INFO org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2018-10-08 15:50:28,634 INFO org.hibernate.Version - HHH000412: Hibernate Core {5.2.13.Final}
+2018-10-08 15:50:28,637 INFO org.hibernate.cfg.Environment - HHH000206: hibernate.properties not found
+2018-10-08 15:50:28,724 INFO org.hibernate.annotations.common.Version - HCANN000001: Hibernate Commons Annotations {5.0.1.Final}
+2018-10-08 15:50:29,360 INFO org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL57Dialect
+2018-10-08 15:50:29,470 INFO org.hibernate.envers.boot.internal.EnversServiceImpl - Envers integration enabled? : true
+2018-10-08 15:50:32,105 INFO org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+2018-10-08 15:50:32,377 INFO org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2018-10-08 15:50:32,689 INFO eu.europa.ec.edelivery.smp.services.ServiceMetadataSigner - Successfully loaded [single_domain_key] signing key and certificate: CN=SMP Mock Services, OU=DIGIT, O=European Commision, C=BE
+2018-10-08 15:50:33,706 INFO org.springframework.security.web.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.SecurityContextPersistenceFilter@7f054ad, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@66ec57b1, eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter@1e5fb666, eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter@54550b92, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@ddc74e1, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@10d7f17, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3a554341, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@5b14986a, org.springframework.security.web.session.SessionManagementFilter@692d271, org.springframework.security.web.access.ExceptionTranslationFilter@6203668a, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@b4fade7]
+2018-10-08 15:50:33,895 INFO org.springframework.test.context.transaction.TransactionContext - Began transaction (1) for test context [DefaultTestContext@3782b68f testClass = ServiceGroupControllerTest, testInstance = eu.europa.ec.edelivery.smp.controllers.ServiceGroupControllerTest@3646445c, testMethod = malformedInputReturnsBadRequest@ServiceGroupControllerTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@5d1110ea testClass = ServiceGroupControllerTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.SmpAppConfig, class eu.europa.ec.edelivery.smp.config.SmpWebAppConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]; transaction manager [org.springframework.orm.jpa.JpaTransactionManager@77d042f]; rollback [true]
+2018-10-08 15:50:34,093 INFO org.springframework.mock.web.MockServletContext - Initializing Spring TestDispatcherServlet ''
+2018-10-08 15:50:34,093 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Initializing Servlet ''
+2018-10-08 15:50:34,103 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Completed initialization in 10 ms
+2018-10-08 15:50:34,107 INFO org.springframework.mock.web.MockServletContext - Initializing Spring root WebApplicationContext
+2018-10-08 15:50:34,107 INFO org.springframework.web.context.ContextLoader - Root WebApplicationContext: initialization started
+2018-10-08 15:50:34,107 INFO org.springframework.web.context.ContextLoader - Root WebApplicationContext initialized in 0 ms
+2018-10-08 15:50:34,311 INFO eu.europa.ec.edelivery.smp.controllers.ServiceGroupController - PUT ServiceGroup: ehealth-participantid-qns::urn:poland:ncpb domain null owner null 
+malformed input XML
+2018-10-08 15:50:34,329 WARN eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdvice - Error unique ID: 2018-10-08T15:50:34.329CEST:2094e0f9-c0f1-49b1-859f-f2b8784b5b37
+eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException: Content is not allowed in prolog.
+	at eu.europa.ec.smp.api.validators.BdxSmpOasisValidator.validateXSD(BdxSmpOasisValidator.java:66)
+	at eu.europa.ec.edelivery.smp.controllers.ServiceGroupController.saveServiceGroup(ServiceGroupController.java:90)
+	at eu.europa.ec.edelivery.smp.controllers.ServiceGroupController$$FastClassBySpringCGLIB$$92624a68.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:746)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.security.access.intercept.aopalliance.MethodSecurityInterceptor.invoke(MethodSecurityInterceptor.java:69)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:688)
+	at eu.europa.ec.edelivery.smp.controllers.ServiceGroupController$$EnhancerBySpringCGLIB$$1cc357b4.saveServiceGroup(<generated>)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:207)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:137)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:102)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:895)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:800)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1038)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:942)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:998)
+	at org.springframework.web.servlet.FrameworkServlet.doPut(FrameworkServlet.java:912)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:710)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:875)
+	at org.springframework.test.web.servlet.TestDispatcherServlet.service(TestDispatcherServlet.java:71)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:790)
+	at org.springframework.mock.web.MockFilterChain$ServletFilterProxy.doFilter(MockFilterChain.java:166)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:133)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:320)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:127)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:91)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:119)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:137)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:111)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:170)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.www.BasicAuthenticationFilter.doFilterInternal(BasicAuthenticationFilter.java:215)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter.doFilter(AbstractPreAuthenticatedProcessingFilter.java:121)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter.doFilter(AbstractPreAuthenticatedProcessingFilter.java:121)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:133)
+	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:182)
+	at eu.europa.ec.edelivery.smp.controllers.ServiceGroupControllerTest.malformedInputReturnsBadRequest(ServiceGroupControllerTest.java:171)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestExecutionCallbacks.evaluate(RunBeforeTestExecutionCallbacks.java:74)
+	at org.springframework.test.context.junit4.statements.RunAfterTestExecutionCallbacks.evaluate(RunAfterTestExecutionCallbacks.java:84)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestMethodCallbacks.evaluate(RunBeforeTestMethodCallbacks.java:75)
+	at org.springframework.test.context.junit4.statements.RunAfterTestMethodCallbacks.evaluate(RunAfterTestMethodCallbacks.java:86)
+	at org.springframework.test.context.junit4.statements.SpringRepeat.evaluate(SpringRepeat.java:84)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:251)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:97)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestClassCallbacks.evaluate(RunBeforeTestClassCallbacks.java:61)
+	at org.springframework.test.context.junit4.statements.RunAfterTestClassCallbacks.evaluate(RunAfterTestClassCallbacks.java:70)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.run(SpringJUnit4ClassRunner.java:190)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:283)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:173)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:128)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:203)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:155)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
+Caused by: org.xml.sax.SAXParseException; lineNumber: 1; columnNumber: 1; Content is not allowed in prolog.
+	at com.sun.org.apache.xerces.internal.util.ErrorHandlerWrapper.createSAXParseException(ErrorHandlerWrapper.java:203)
+	at com.sun.org.apache.xerces.internal.util.ErrorHandlerWrapper.fatalError(ErrorHandlerWrapper.java:177)
+	at com.sun.org.apache.xerces.internal.impl.XMLErrorReporter.reportError(XMLErrorReporter.java:400)
+	at com.sun.org.apache.xerces.internal.impl.XMLErrorReporter.reportError(XMLErrorReporter.java:327)
+	at com.sun.org.apache.xerces.internal.impl.XMLScanner.reportFatalError(XMLScanner.java:1472)
+	at com.sun.org.apache.xerces.internal.impl.XMLDocumentScannerImpl$PrologDriver.next(XMLDocumentScannerImpl.java:994)
+	at com.sun.org.apache.xerces.internal.impl.XMLDocumentScannerImpl.next(XMLDocumentScannerImpl.java:602)
+	at com.sun.org.apache.xerces.internal.impl.XMLNSDocumentScannerImpl.next(XMLNSDocumentScannerImpl.java:112)
+	at com.sun.org.apache.xerces.internal.impl.XMLDocumentFragmentScannerImpl.scanDocument(XMLDocumentFragmentScannerImpl.java:505)
+	at com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(XML11Configuration.java:842)
+	at com.sun.org.apache.xerces.internal.parsers.XML11Configuration.parse(XML11Configuration.java:771)
+	at com.sun.org.apache.xerces.internal.jaxp.validation.StreamValidatorHelper.validate(StreamValidatorHelper.java:152)
+	at com.sun.org.apache.xerces.internal.jaxp.validation.ValidatorImpl.validate(ValidatorImpl.java:116)
+	at javax.xml.validation.Validator.validate(Validator.java:124)
+	at eu.europa.ec.smp.api.validators.BdxSmpOasisValidator.validateXSD(BdxSmpOasisValidator.java:64)
+	... 93 more
+2018-10-08 15:50:34,385 WARN org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver - Resolved [eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException: Content is not allowed in prolog.]
+2018-10-08 15:50:34,404 INFO org.springframework.test.context.transaction.TransactionContext - Rolled back transaction for test: [DefaultTestContext@3782b68f testClass = ServiceGroupControllerTest, testInstance = eu.europa.ec.edelivery.smp.controllers.ServiceGroupControllerTest@3646445c, testMethod = malformedInputReturnsBadRequest@ServiceGroupControllerTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@5d1110ea testClass = ServiceGroupControllerTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.SmpAppConfig, class eu.europa.ec.edelivery.smp.config.SmpWebAppConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]
+2018-10-08 15:50:34,416 INFO org.springframework.test.context.transaction.TransactionContext - Began transaction (1) for test context [DefaultTestContext@3782b68f testClass = ServiceGroupControllerTest, testInstance = eu.europa.ec.edelivery.smp.controllers.ServiceGroupControllerTest@173a0e0f, testMethod = invalidParticipantSchemeReturnsBadRequest@ServiceGroupControllerTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@5d1110ea testClass = ServiceGroupControllerTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.SmpAppConfig, class eu.europa.ec.edelivery.smp.config.SmpWebAppConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]; transaction manager [org.springframework.orm.jpa.JpaTransactionManager@77d042f]; rollback [true]
+2018-10-08 15:50:34,432 INFO org.springframework.mock.web.MockServletContext - Initializing Spring TestDispatcherServlet ''
+2018-10-08 15:50:34,432 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Initializing Servlet ''
+2018-10-08 15:50:34,440 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Completed initialization in 8 ms
+2018-10-08 15:50:34,440 INFO org.springframework.mock.web.MockServletContext - Initializing Spring root WebApplicationContext
+2018-10-08 15:50:34,440 INFO org.springframework.web.context.ContextLoader - Root WebApplicationContext: initialization started
+2018-10-08 15:50:34,441 INFO org.springframework.web.context.ContextLoader - Root WebApplicationContext initialized in 0 ms
+2018-10-08 15:50:34,454 INFO eu.europa.ec.edelivery.smp.controllers.ServiceGroupController - PUT ServiceGroup: length-exceeeeeeds-25chars::urn:poland:ncpb domain null owner null 
+<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+   <ParticipantIdentifier scheme="length-exceeeeeeds-25chars">urn:poland:ncpb</ParticipantIdentifier>
+   <ServiceMetadataReferenceCollection/>
+ </ServiceGroup>
+2018-10-08 15:50:34,627 WARN eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdvice - Error unique ID: 2018-10-08T15:50:34.626CEST:795992a5-fcc7-406b-bfed-391fac4797ce
+eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException: Service Group scheme does not match allowed pattern: ^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)
+	at eu.europa.ec.edelivery.smp.validation.ServiceGroupValidator.validate(ServiceGroupValidator.java:58)
+	at eu.europa.ec.edelivery.smp.controllers.ServiceGroupController.saveServiceGroup(ServiceGroupController.java:92)
+	at eu.europa.ec.edelivery.smp.controllers.ServiceGroupController$$FastClassBySpringCGLIB$$92624a68.invoke(<generated>)
+	at org.springframework.cglib.proxy.MethodProxy.invoke(MethodProxy.java:218)
+	at org.springframework.aop.framework.CglibAopProxy$CglibMethodInvocation.invokeJoinpoint(CglibAopProxy.java:746)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:163)
+	at org.springframework.security.access.intercept.aopalliance.MethodSecurityInterceptor.invoke(MethodSecurityInterceptor.java:69)
+	at org.springframework.aop.framework.ReflectiveMethodInvocation.proceed(ReflectiveMethodInvocation.java:186)
+	at org.springframework.aop.framework.CglibAopProxy$DynamicAdvisedInterceptor.intercept(CglibAopProxy.java:688)
+	at eu.europa.ec.edelivery.smp.controllers.ServiceGroupController$$EnhancerBySpringCGLIB$$1cc357b4.saveServiceGroup(<generated>)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.springframework.web.method.support.InvocableHandlerMethod.doInvoke(InvocableHandlerMethod.java:207)
+	at org.springframework.web.method.support.InvocableHandlerMethod.invokeForRequest(InvocableHandlerMethod.java:137)
+	at org.springframework.web.servlet.mvc.method.annotation.ServletInvocableHandlerMethod.invokeAndHandle(ServletInvocableHandlerMethod.java:102)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.invokeHandlerMethod(RequestMappingHandlerAdapter.java:895)
+	at org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter.handleInternal(RequestMappingHandlerAdapter.java:800)
+	at org.springframework.web.servlet.mvc.method.AbstractHandlerMethodAdapter.handle(AbstractHandlerMethodAdapter.java:87)
+	at org.springframework.web.servlet.DispatcherServlet.doDispatch(DispatcherServlet.java:1038)
+	at org.springframework.web.servlet.DispatcherServlet.doService(DispatcherServlet.java:942)
+	at org.springframework.web.servlet.FrameworkServlet.processRequest(FrameworkServlet.java:998)
+	at org.springframework.web.servlet.FrameworkServlet.doPut(FrameworkServlet.java:912)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:710)
+	at org.springframework.web.servlet.FrameworkServlet.service(FrameworkServlet.java:875)
+	at org.springframework.test.web.servlet.TestDispatcherServlet.service(TestDispatcherServlet.java:71)
+	at javax.servlet.http.HttpServlet.service(HttpServlet.java:790)
+	at org.springframework.mock.web.MockFilterChain$ServletFilterProxy.doFilter(MockFilterChain.java:166)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:133)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:320)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.invoke(FilterSecurityInterceptor.java:127)
+	at org.springframework.security.web.access.intercept.FilterSecurityInterceptor.doFilter(FilterSecurityInterceptor.java:91)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:119)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:137)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:111)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:170)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.www.BasicAuthenticationFilter.doFilterInternal(BasicAuthenticationFilter.java:215)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter.doFilter(AbstractPreAuthenticatedProcessingFilter.java:121)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter.doFilter(AbstractPreAuthenticatedProcessingFilter.java:121)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:133)
+	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:182)
+	at eu.europa.ec.edelivery.smp.controllers.ServiceGroupControllerTest.invalidParticipantSchemeReturnsBadRequest(ServiceGroupControllerTest.java:184)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestExecutionCallbacks.evaluate(RunBeforeTestExecutionCallbacks.java:74)
+	at org.springframework.test.context.junit4.statements.RunAfterTestExecutionCallbacks.evaluate(RunAfterTestExecutionCallbacks.java:84)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestMethodCallbacks.evaluate(RunBeforeTestMethodCallbacks.java:75)
+	at org.springframework.test.context.junit4.statements.RunAfterTestMethodCallbacks.evaluate(RunAfterTestMethodCallbacks.java:86)
+	at org.springframework.test.context.junit4.statements.SpringRepeat.evaluate(SpringRepeat.java:84)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:251)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:97)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestClassCallbacks.evaluate(RunBeforeTestClassCallbacks.java:61)
+	at org.springframework.test.context.junit4.statements.RunAfterTestClassCallbacks.evaluate(RunAfterTestClassCallbacks.java:70)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.run(SpringJUnit4ClassRunner.java:190)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:283)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:173)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:128)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:203)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:155)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
+2018-10-08 15:50:34,633 WARN org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver - Resolved [eu.europa.ec.edelivery.smp.error.exceptions.BadRequestException: Service Group scheme does not match allowed pattern: ^(?!^.{26})([a-z0-9]+-[a-z0-9]+-[a-z0-9]+)]
+2018-10-08 15:50:34,638 INFO org.springframework.test.context.transaction.TransactionContext - Rolled back transaction for test: [DefaultTestContext@3782b68f testClass = ServiceGroupControllerTest, testInstance = eu.europa.ec.edelivery.smp.controllers.ServiceGroupControllerTest@173a0e0f, testMethod = invalidParticipantSchemeReturnsBadRequest@ServiceGroupControllerTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@5d1110ea testClass = ServiceGroupControllerTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.SmpAppConfig, class eu.europa.ec.edelivery.smp.config.SmpWebAppConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]
+2018-10-08 15:50:34,643 INFO org.springframework.test.context.web.WebTestContextBootstrapper - Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener, org.springframework.security.test.context.support.ReactorContextTestExecutionListener, org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener]
+2018-10-08 15:50:34,644 INFO org.springframework.test.context.web.WebTestContextBootstrapper - Using TestExecutionListeners: [org.springframework.test.context.web.ServletTestExecutionListener@5d9915f2, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener@7fae09f4, org.springframework.test.context.support.DependencyInjectionTestExecutionListener@184287fd, org.springframework.test.context.support.DirtiesContextTestExecutionListener@442455f7, org.springframework.test.context.transaction.TransactionalTestExecutionListener@5187fe04, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener@5ee9bc69, org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener@5298b526, org.springframework.security.test.context.support.ReactorContextTestExecutionListener@34f5c96f]
+2018-10-08 15:50:34,697 INFO org.springframework.security.config.SecurityNamespaceHandler - Spring Security 'config' module version is 5.1.0.RELEASE
+2018-10-08 15:50:34,698 INFO org.springframework.security.config.http.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute '! isAnonymous()' for /*
+2018-10-08 15:50:34,698 INFO org.springframework.security.config.http.FilterInvocationSecurityMetadataSourceParser - Creating access control expression attribute '! isAnonymous()' for /*
+2018-10-08 15:50:34,699 INFO org.springframework.security.config.http.HttpSecurityBeanDefinitionParser - Checking sorted filter chain: [Root bean: class [org.springframework.security.web.context.SecurityContextPersistenceFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 200, Root bean: class [org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 400, <x509AuthFilter>, order = 900, <blueCoatReverseProxyAuthFilter>, order = 1000, Root bean: class [org.springframework.security.web.authentication.www.BasicAuthenticationFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 1800, Root bean: class [org.springframework.security.web.savedrequest.RequestCacheAwareFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 1900, Root bean: class [null]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=org.springframework.security.config.http.HttpConfigurationBuilder$SecurityContextHolderAwareRequestFilterBeanFactory#0; factoryMethodName=getBean; initMethodName=null; destroyMethodName=null, order = 2000, Root bean: class [org.springframework.security.web.authentication.AnonymousAuthenticationFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 2300, Root bean: class [org.springframework.security.web.session.SessionManagementFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 2400, Root bean: class [org.springframework.security.web.access.ExceptionTranslationFilter]; scope=; abstract=false; lazyInit=false; autowireMode=0; dependencyCheck=0; autowireCandidate=true; primary=false; factoryBeanName=null; factoryMethodName=null; initMethodName=null; destroyMethodName=null, order = 2500, <org.springframework.security.web.access.intercept.FilterSecurityInterceptor#0>, order = 2600]
+2018-10-08 15:50:34,725 INFO org.hibernate.jpa.internal.util.LogHelper - HHH000204: Processing PersistenceUnitInfo [
+	name: default
+	...]
+2018-10-08 15:50:34,741 INFO org.hibernate.dialect.Dialect - HHH000400: Using dialect: org.hibernate.dialect.MySQL57Dialect
+2018-10-08 15:50:34,748 INFO org.hibernate.envers.boot.internal.EnversServiceImpl - Envers integration enabled? : true
+2018-10-08 15:50:35,078 INFO org.hibernate.hql.internal.QueryTranslatorFactoryInitiator - HHH000397: Using ASTQueryTranslatorFactory
+2018-10-08 15:50:35,098 INFO org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Initialized JPA EntityManagerFactory for persistence unit 'default'
+2018-10-08 15:50:35,127 INFO org.springframework.security.provisioning.JdbcUserDetailsManager - No authentication manager set. Reauthentication of users when changing passwords will not be performed.
+2018-10-08 15:50:35,160 INFO org.springframework.security.web.DefaultSecurityFilterChain - Creating filter chain: any request, [org.springframework.security.web.context.SecurityContextPersistenceFilter@3d1dbfe, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@18564687, eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter@3990ec1a, eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter@29dd1dbc, org.springframework.security.web.authentication.www.BasicAuthenticationFilter@5f342e59, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@282952bf, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@ba6a88, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@7825d5d2, org.springframework.security.web.session.SessionManagementFilter@42d07888, org.springframework.security.web.access.ExceptionTranslationFilter@654e1762, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@285107bb]
+2018-10-08 15:50:35,174 INFO org.springframework.test.context.transaction.TransactionContext - Began transaction (1) for test context [DefaultTestContext@22fc3b6a testClass = SecurityConfigurationTest, testInstance = eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest@413996f4, testMethod = userStoredWithClearPassIsNotAuthorizedForPutTest@SecurityConfigurationTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@169c9e7d testClass = SecurityConfigurationTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.DatabaseConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]; transaction manager [org.springframework.orm.jpa.JpaTransactionManager@820c8a1]; rollback [true]
+2018-10-08 15:50:35,182 INFO org.springframework.mock.web.MockServletContext - Initializing Spring TestDispatcherServlet ''
+2018-10-08 15:50:35,182 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Initializing Servlet ''
+2018-10-08 15:50:35,205 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Completed initialization in 23 ms
+2018-10-08 15:50:35,290 WARN org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder - Encoded password does not look like BCrypt
+2018-10-08 15:50:35,291 WARN eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler - Error unique ID: 2018-10-08T15:50:35.291CEST:a6a69c5f-c084-4101-8b2a-9beacdd18d43
+org.springframework.security.authentication.BadCredentialsException: Bad credentials
+	at org.springframework.security.authentication.dao.DaoAuthenticationProvider.additionalAuthenticationChecks(DaoAuthenticationProvider.java:93)
+	at org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider.authenticate(AbstractUserDetailsAuthenticationProvider.java:166)
+	at org.springframework.security.authentication.ProviderManager.authenticate(ProviderManager.java:174)
+	at org.springframework.security.authentication.ProviderManager.authenticate(ProviderManager.java:199)
+	at org.springframework.security.web.authentication.www.BasicAuthenticationFilter.doFilterInternal(BasicAuthenticationFilter.java:180)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter.doFilter(AbstractPreAuthenticatedProcessingFilter.java:121)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter.doFilter(AbstractPreAuthenticatedProcessingFilter.java:121)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:133)
+	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:182)
+	at eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest.userStoredWithClearPassIsNotAuthorizedForPutTest(SecurityConfigurationTest.java:131)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestExecutionCallbacks.evaluate(RunBeforeTestExecutionCallbacks.java:74)
+	at org.springframework.test.context.junit4.statements.RunAfterTestExecutionCallbacks.evaluate(RunAfterTestExecutionCallbacks.java:84)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestMethodCallbacks.evaluate(RunBeforeTestMethodCallbacks.java:75)
+	at org.springframework.test.context.junit4.statements.RunAfterTestMethodCallbacks.evaluate(RunAfterTestMethodCallbacks.java:86)
+	at org.springframework.test.context.junit4.statements.SpringRepeat.evaluate(SpringRepeat.java:84)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:251)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:97)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestClassCallbacks.evaluate(RunBeforeTestClassCallbacks.java:61)
+	at org.springframework.test.context.junit4.statements.RunAfterTestClassCallbacks.evaluate(RunAfterTestClassCallbacks.java:70)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.run(SpringJUnit4ClassRunner.java:190)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:283)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:173)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:128)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:203)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:155)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
+2018-10-08 15:50:35,300 INFO org.springframework.test.context.transaction.TransactionContext - Rolled back transaction for test: [DefaultTestContext@22fc3b6a testClass = SecurityConfigurationTest, testInstance = eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest@413996f4, testMethod = userStoredWithClearPassIsNotAuthorizedForPutTest@SecurityConfigurationTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@169c9e7d testClass = SecurityConfigurationTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.DatabaseConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]
+2018-10-08 15:50:35,307 INFO org.springframework.test.context.transaction.TransactionContext - Began transaction (1) for test context [DefaultTestContext@22fc3b6a testClass = SecurityConfigurationTest, testInstance = eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest@575d8bd1, testMethod = malformedBlueCoatHeaderNotAuthorizedTest@SecurityConfigurationTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@169c9e7d testClass = SecurityConfigurationTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.DatabaseConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]; transaction manager [org.springframework.orm.jpa.JpaTransactionManager@820c8a1]; rollback [true]
+2018-10-08 15:50:35,314 INFO org.springframework.mock.web.MockServletContext - Initializing Spring TestDispatcherServlet ''
+2018-10-08 15:50:35,315 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Initializing Servlet ''
+2018-10-08 15:50:35,328 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Completed initialization in 13 ms
+2018-10-08 15:50:35,329 ERROR eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter - Malformed BlueCoat 'Client-Cert' authentication header. This might be a bug or environment configuration: malformed header value
+org.springframework.security.authentication.BadCredentialsException: BlueCoat authentication header does not contain mandatory field: [validFrom]: malformed header value
+	at eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter.getField(BlueCoatAuthenticationFilter.java:143)
+	at eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter.getDateField(BlueCoatAuthenticationFilter.java:159)
+	at eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter.validateCertDates(BlueCoatAuthenticationFilter.java:147)
+	at eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter.buildPrincipal(BlueCoatAuthenticationFilter.java:108)
+	at eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter.getPreAuthenticatedPrincipal(BlueCoatAuthenticationFilter.java:88)
+	at eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter.getPreAuthenticatedPrincipal(BlueCoatAuthenticationFilter.java:63)
+	at org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter.doAuthenticate(AbstractPreAuthenticatedProcessingFilter.java:164)
+	at org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter.doFilter(AbstractPreAuthenticatedProcessingFilter.java:118)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter.doFilter(AbstractPreAuthenticatedProcessingFilter.java:121)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:133)
+	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:182)
+	at eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest.malformedBlueCoatHeaderNotAuthorizedTest(SecurityConfigurationTest.java:140)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestExecutionCallbacks.evaluate(RunBeforeTestExecutionCallbacks.java:74)
+	at org.springframework.test.context.junit4.statements.RunAfterTestExecutionCallbacks.evaluate(RunAfterTestExecutionCallbacks.java:84)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestMethodCallbacks.evaluate(RunBeforeTestMethodCallbacks.java:75)
+	at org.springframework.test.context.junit4.statements.RunAfterTestMethodCallbacks.evaluate(RunAfterTestMethodCallbacks.java:86)
+	at org.springframework.test.context.junit4.statements.SpringRepeat.evaluate(SpringRepeat.java:84)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:251)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:97)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestClassCallbacks.evaluate(RunBeforeTestClassCallbacks.java:61)
+	at org.springframework.test.context.junit4.statements.RunAfterTestClassCallbacks.evaluate(RunAfterTestClassCallbacks.java:70)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.run(SpringJUnit4ClassRunner.java:190)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:283)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:173)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:128)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:203)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:155)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
+2018-10-08 15:50:35,338 WARN eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler - Error unique ID: 2018-10-08T15:50:35.338CEST:62e0a005-105a-45b0-a464-72711a068a27
+org.springframework.security.authentication.InsufficientAuthenticationException: Full authentication is required to access this resource
+	at org.springframework.security.web.access.ExceptionTranslationFilter.handleSpringSecurityException(ExceptionTranslationFilter.java:190)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:141)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:137)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:111)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:170)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.www.BasicAuthenticationFilter.doFilterInternal(BasicAuthenticationFilter.java:158)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter.doFilter(AbstractPreAuthenticatedProcessingFilter.java:121)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter.doFilter(AbstractPreAuthenticatedProcessingFilter.java:121)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:133)
+	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:182)
+	at eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest.malformedBlueCoatHeaderNotAuthorizedTest(SecurityConfigurationTest.java:140)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestExecutionCallbacks.evaluate(RunBeforeTestExecutionCallbacks.java:74)
+	at org.springframework.test.context.junit4.statements.RunAfterTestExecutionCallbacks.evaluate(RunAfterTestExecutionCallbacks.java:84)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestMethodCallbacks.evaluate(RunBeforeTestMethodCallbacks.java:75)
+	at org.springframework.test.context.junit4.statements.RunAfterTestMethodCallbacks.evaluate(RunAfterTestMethodCallbacks.java:86)
+	at org.springframework.test.context.junit4.statements.SpringRepeat.evaluate(SpringRepeat.java:84)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:251)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:97)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestClassCallbacks.evaluate(RunBeforeTestClassCallbacks.java:61)
+	at org.springframework.test.context.junit4.statements.RunAfterTestClassCallbacks.evaluate(RunAfterTestClassCallbacks.java:70)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.run(SpringJUnit4ClassRunner.java:190)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:283)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:173)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:128)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:203)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:155)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
+2018-10-08 15:50:35,343 INFO org.springframework.test.context.transaction.TransactionContext - Rolled back transaction for test: [DefaultTestContext@22fc3b6a testClass = SecurityConfigurationTest, testInstance = eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest@575d8bd1, testMethod = malformedBlueCoatHeaderNotAuthorizedTest@SecurityConfigurationTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@169c9e7d testClass = SecurityConfigurationTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.DatabaseConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]
+2018-10-08 15:50:35,348 INFO org.springframework.test.context.transaction.TransactionContext - Began transaction (1) for test context [DefaultTestContext@22fc3b6a testClass = SecurityConfigurationTest, testInstance = eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest@2ad27966, testMethod = userStoredWithHashedPassIsAuthorizedForPutTest@SecurityConfigurationTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@169c9e7d testClass = SecurityConfigurationTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.DatabaseConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]; transaction manager [org.springframework.orm.jpa.JpaTransactionManager@820c8a1]; rollback [true]
+2018-10-08 15:50:35,356 INFO org.springframework.mock.web.MockServletContext - Initializing Spring TestDispatcherServlet ''
+2018-10-08 15:50:35,356 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Initializing Servlet ''
+2018-10-08 15:50:35,366 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Completed initialization in 10 ms
+2018-10-08 15:50:35,389 INFO org.springframework.test.context.transaction.TransactionContext - Rolled back transaction for test: [DefaultTestContext@22fc3b6a testClass = SecurityConfigurationTest, testInstance = eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest@2ad27966, testMethod = userStoredWithHashedPassIsAuthorizedForPutTest@SecurityConfigurationTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@169c9e7d testClass = SecurityConfigurationTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.DatabaseConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]
+2018-10-08 15:50:35,396 INFO org.springframework.test.context.transaction.TransactionContext - Began transaction (1) for test context [DefaultTestContext@22fc3b6a testClass = SecurityConfigurationTest, testInstance = eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest@a2f6d15, testMethod = validBlueCoatHeaderAuthorizedForPutTest@SecurityConfigurationTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@169c9e7d testClass = SecurityConfigurationTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.DatabaseConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]; transaction manager [org.springframework.orm.jpa.JpaTransactionManager@820c8a1]; rollback [true]
+2018-10-08 15:50:35,404 INFO org.springframework.mock.web.MockServletContext - Initializing Spring TestDispatcherServlet ''
+2018-10-08 15:50:35,404 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Initializing Servlet ''
+2018-10-08 15:50:35,413 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Completed initialization in 9 ms
+2018-10-08 15:50:35,435 INFO eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter - Successfully extracted user details from 'Client-Cert' header: PreAuthenticatedCertificatePrincipal(certSerial=0000000000000066, subjectDN=CN=comon name,O=org,C=BE, issuerDN=CN=z,O=y,C=x)
+2018-10-08 15:50:35,440 INFO org.springframework.test.context.transaction.TransactionContext - Rolled back transaction for test: [DefaultTestContext@22fc3b6a testClass = SecurityConfigurationTest, testInstance = eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest@a2f6d15, testMethod = validBlueCoatHeaderAuthorizedForPutTest@SecurityConfigurationTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@169c9e7d testClass = SecurityConfigurationTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.DatabaseConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]
+2018-10-08 15:50:35,444 INFO org.springframework.test.context.transaction.TransactionContext - Began transaction (1) for test context [DefaultTestContext@22fc3b6a testClass = SecurityConfigurationTest, testInstance = eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest@6e17d820, testMethod = notAuthenticatedUserCannotCallDeleteTest@SecurityConfigurationTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@169c9e7d testClass = SecurityConfigurationTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.DatabaseConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]; transaction manager [org.springframework.orm.jpa.JpaTransactionManager@820c8a1]; rollback [true]
+2018-10-08 15:50:35,451 INFO org.springframework.mock.web.MockServletContext - Initializing Spring TestDispatcherServlet ''
+2018-10-08 15:50:35,451 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Initializing Servlet ''
+2018-10-08 15:50:35,459 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Completed initialization in 8 ms
+2018-10-08 15:50:35,460 WARN eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler - Error unique ID: 2018-10-08T15:50:35.460CEST:9529435e-2c46-4a93-bbee-b635173612e7
+org.springframework.security.authentication.InsufficientAuthenticationException: Full authentication is required to access this resource
+	at org.springframework.security.web.access.ExceptionTranslationFilter.handleSpringSecurityException(ExceptionTranslationFilter.java:190)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:141)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:137)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:111)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:170)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.www.BasicAuthenticationFilter.doFilterInternal(BasicAuthenticationFilter.java:158)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter.doFilter(AbstractPreAuthenticatedProcessingFilter.java:121)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter.doFilter(AbstractPreAuthenticatedProcessingFilter.java:121)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:133)
+	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:182)
+	at eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest.notAuthenticatedUserCannotCallDeleteTest(SecurityConfigurationTest.java:117)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestExecutionCallbacks.evaluate(RunBeforeTestExecutionCallbacks.java:74)
+	at org.springframework.test.context.junit4.statements.RunAfterTestExecutionCallbacks.evaluate(RunAfterTestExecutionCallbacks.java:84)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestMethodCallbacks.evaluate(RunBeforeTestMethodCallbacks.java:75)
+	at org.springframework.test.context.junit4.statements.RunAfterTestMethodCallbacks.evaluate(RunAfterTestMethodCallbacks.java:86)
+	at org.springframework.test.context.junit4.statements.SpringRepeat.evaluate(SpringRepeat.java:84)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:251)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:97)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestClassCallbacks.evaluate(RunBeforeTestClassCallbacks.java:61)
+	at org.springframework.test.context.junit4.statements.RunAfterTestClassCallbacks.evaluate(RunAfterTestClassCallbacks.java:70)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.run(SpringJUnit4ClassRunner.java:190)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:283)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:173)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:128)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:203)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:155)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
+2018-10-08 15:50:35,465 INFO org.springframework.test.context.transaction.TransactionContext - Rolled back transaction for test: [DefaultTestContext@22fc3b6a testClass = SecurityConfigurationTest, testInstance = eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest@6e17d820, testMethod = notAuthenticatedUserCannotCallDeleteTest@SecurityConfigurationTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@169c9e7d testClass = SecurityConfigurationTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.DatabaseConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]
+2018-10-08 15:50:35,470 INFO org.springframework.test.context.transaction.TransactionContext - Began transaction (1) for test context [DefaultTestContext@22fc3b6a testClass = SecurityConfigurationTest, testInstance = eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest@1af64b06, testMethod = validBlueCoatHeaderAuthorizedBeforeValidBasicAuthTest@SecurityConfigurationTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@169c9e7d testClass = SecurityConfigurationTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.DatabaseConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]; transaction manager [org.springframework.orm.jpa.JpaTransactionManager@820c8a1]; rollback [true]
+2018-10-08 15:50:35,476 INFO org.springframework.mock.web.MockServletContext - Initializing Spring TestDispatcherServlet ''
+2018-10-08 15:50:35,476 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Initializing Servlet ''
+2018-10-08 15:50:35,485 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Completed initialization in 8 ms
+2018-10-08 15:50:35,488 INFO eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter - Successfully extracted user details from 'Client-Cert' header: PreAuthenticatedCertificatePrincipal(certSerial=0000000000000066, subjectDN=CN=comon name,O=org,C=BE, issuerDN=CN=z,O=y,C=x)
+2018-10-08 15:50:35,493 INFO org.springframework.test.context.transaction.TransactionContext - Rolled back transaction for test: [DefaultTestContext@22fc3b6a testClass = SecurityConfigurationTest, testInstance = eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest@1af64b06, testMethod = validBlueCoatHeaderAuthorizedBeforeValidBasicAuthTest@SecurityConfigurationTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@169c9e7d testClass = SecurityConfigurationTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.DatabaseConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]
+2018-10-08 15:50:35,498 INFO org.springframework.test.context.transaction.TransactionContext - Began transaction (1) for test context [DefaultTestContext@22fc3b6a testClass = SecurityConfigurationTest, testInstance = eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest@326389f7, testMethod = getMethodAccessiblePubliclyTest@SecurityConfigurationTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@169c9e7d testClass = SecurityConfigurationTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.DatabaseConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]; transaction manager [org.springframework.orm.jpa.JpaTransactionManager@820c8a1]; rollback [true]
+2018-10-08 15:50:35,504 INFO org.springframework.mock.web.MockServletContext - Initializing Spring TestDispatcherServlet ''
+2018-10-08 15:50:35,504 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Initializing Servlet ''
+2018-10-08 15:50:35,514 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Completed initialization in 9 ms
+2018-10-08 15:50:35,517 INFO org.springframework.test.context.transaction.TransactionContext - Rolled back transaction for test: [DefaultTestContext@22fc3b6a testClass = SecurityConfigurationTest, testInstance = eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest@326389f7, testMethod = getMethodAccessiblePubliclyTest@SecurityConfigurationTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@169c9e7d testClass = SecurityConfigurationTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.DatabaseConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]
+2018-10-08 15:50:35,521 INFO org.springframework.test.context.transaction.TransactionContext - Began transaction (1) for test context [DefaultTestContext@22fc3b6a testClass = SecurityConfigurationTest, testInstance = eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest@7787275a, testMethod = notAuthenticatedUserCannotCallPutTest@SecurityConfigurationTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@169c9e7d testClass = SecurityConfigurationTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.DatabaseConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]; transaction manager [org.springframework.orm.jpa.JpaTransactionManager@820c8a1]; rollback [true]
+2018-10-08 15:50:35,537 INFO org.springframework.mock.web.MockServletContext - Initializing Spring TestDispatcherServlet ''
+2018-10-08 15:50:35,538 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Initializing Servlet ''
+2018-10-08 15:50:35,560 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Completed initialization in 22 ms
+2018-10-08 15:50:35,561 WARN eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler - Error unique ID: 2018-10-08T15:50:35.561CEST:f0468e04-0c2a-4e50-9358-1216adbd4132
+org.springframework.security.authentication.InsufficientAuthenticationException: Full authentication is required to access this resource
+	at org.springframework.security.web.access.ExceptionTranslationFilter.handleSpringSecurityException(ExceptionTranslationFilter.java:190)
+	at org.springframework.security.web.access.ExceptionTranslationFilter.doFilter(ExceptionTranslationFilter.java:141)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.session.SessionManagementFilter.doFilter(SessionManagementFilter.java:137)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.AnonymousAuthenticationFilter.doFilter(AnonymousAuthenticationFilter.java:111)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter.doFilter(SecurityContextHolderAwareRequestFilter.java:170)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.savedrequest.RequestCacheAwareFilter.doFilter(RequestCacheAwareFilter.java:63)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.www.BasicAuthenticationFilter.doFilterInternal(BasicAuthenticationFilter.java:158)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter.doFilter(AbstractPreAuthenticatedProcessingFilter.java:121)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter.doFilter(AbstractPreAuthenticatedProcessingFilter.java:121)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter.doFilterInternal(WebAsyncManagerIntegrationFilter.java:56)
+	at org.springframework.web.filter.OncePerRequestFilter.doFilter(OncePerRequestFilter.java:107)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.context.SecurityContextPersistenceFilter.doFilter(SecurityContextPersistenceFilter.java:105)
+	at org.springframework.security.web.FilterChainProxy$VirtualFilterChain.doFilter(FilterChainProxy.java:334)
+	at org.springframework.security.web.FilterChainProxy.doFilterInternal(FilterChainProxy.java:215)
+	at org.springframework.security.web.FilterChainProxy.doFilter(FilterChainProxy.java:178)
+	at org.springframework.mock.web.MockFilterChain.doFilter(MockFilterChain.java:133)
+	at org.springframework.test.web.servlet.MockMvc.perform(MockMvc.java:182)
+	at eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest.notAuthenticatedUserCannotCallPutTest(SecurityConfigurationTest.java:111)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestExecutionCallbacks.evaluate(RunBeforeTestExecutionCallbacks.java:74)
+	at org.springframework.test.context.junit4.statements.RunAfterTestExecutionCallbacks.evaluate(RunAfterTestExecutionCallbacks.java:84)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:26)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestMethodCallbacks.evaluate(RunBeforeTestMethodCallbacks.java:75)
+	at org.springframework.test.context.junit4.statements.RunAfterTestMethodCallbacks.evaluate(RunAfterTestMethodCallbacks.java:86)
+	at org.springframework.test.context.junit4.statements.SpringRepeat.evaluate(SpringRepeat.java:84)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:251)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.runChild(SpringJUnit4ClassRunner.java:97)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.springframework.test.context.junit4.statements.RunBeforeTestClassCallbacks.evaluate(RunBeforeTestClassCallbacks.java:61)
+	at org.springframework.test.context.junit4.statements.RunAfterTestClassCallbacks.evaluate(RunAfterTestClassCallbacks.java:70)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.springframework.test.context.junit4.SpringJUnit4ClassRunner.run(SpringJUnit4ClassRunner.java:190)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:283)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeWithRerun(JUnit4Provider.java:173)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:153)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:128)
+	at org.apache.maven.surefire.booter.ForkedBooter.invokeProviderInSameClassLoader(ForkedBooter.java:203)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:155)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:103)
+2018-10-08 15:50:35,567 INFO org.springframework.test.context.transaction.TransactionContext - Rolled back transaction for test: [DefaultTestContext@22fc3b6a testClass = SecurityConfigurationTest, testInstance = eu.europa.ec.cipa.smp.server.security.SecurityConfigurationTest@7787275a, testMethod = notAuthenticatedUserCannotCallPutTest@SecurityConfigurationTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@169c9e7d testClass = SecurityConfigurationTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.DatabaseConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityTestConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]
+2018-10-08 15:50:35,573 INFO org.springframework.test.context.web.WebTestContextBootstrapper - Loaded default TestExecutionListener class names from location [META-INF/spring.factories]: [org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener, org.springframework.security.test.context.support.ReactorContextTestExecutionListener, org.springframework.test.context.web.ServletTestExecutionListener, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener, org.springframework.test.context.support.DependencyInjectionTestExecutionListener, org.springframework.test.context.support.DirtiesContextTestExecutionListener, org.springframework.test.context.transaction.TransactionalTestExecutionListener, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener]
+2018-10-08 15:50:35,574 INFO org.springframework.test.context.web.WebTestContextBootstrapper - Using TestExecutionListeners: [org.springframework.test.context.web.ServletTestExecutionListener@4340020c, org.springframework.test.context.support.DirtiesContextBeforeModesTestExecutionListener@50ab1c80, org.springframework.test.context.support.DependencyInjectionTestExecutionListener@14c5c2a, org.springframework.test.context.support.DirtiesContextTestExecutionListener@76fc9435, org.springframework.test.context.transaction.TransactionalTestExecutionListener@356fb884, org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener@3da8edb5, org.springframework.security.test.context.support.WithSecurityContextTestExecutionListener@5ee65b26, org.springframework.security.test.context.support.ReactorContextTestExecutionListener@4ca931f3]
+2018-10-08 15:50:35,587 INFO org.springframework.test.context.transaction.TransactionContext - Began transaction (1) for test context [DefaultTestContext@21a4eb04 testClass = SignatureValidatorTest, testInstance = eu.europa.ec.cipa.smp.server.security.SignatureValidatorTest@6fa61856, testMethod = validateSignature@SignatureValidatorTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@7bb69b9a testClass = SignatureValidatorTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.SmpAppConfig, class eu.europa.ec.edelivery.smp.config.SmpWebAppConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]; transaction manager [org.springframework.orm.jpa.JpaTransactionManager@77d042f]; rollback [true]
+2018-10-08 15:50:35,599 INFO org.springframework.mock.web.MockServletContext - Initializing Spring TestDispatcherServlet ''
+2018-10-08 15:50:35,600 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Initializing Servlet ''
+2018-10-08 15:50:35,601 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Completed initialization in 1 ms
+2018-10-08 15:50:35,602 INFO org.springframework.mock.web.MockServletContext - Initializing Spring root WebApplicationContext
+2018-10-08 15:50:35,602 INFO org.springframework.web.context.ContextLoader - Root WebApplicationContext: initialization started
+2018-10-08 15:50:35,602 INFO org.springframework.web.context.ContextLoader - Root WebApplicationContext initialized in 0 ms
+2018-10-08 15:50:35,754 INFO eu.europa.ec.edelivery.smp.controllers.ServiceMetadataController - PUT ServiceMetadata: ehealth-actorid-qns::urn:australia:ncpb - ehealth-resid-qns::urn::epsos##services:extended:epsos::107
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+    <ServiceInformation>
+        <ParticipantIdentifier scheme="ehealth-actorid-qns">urn:australia:ncpb</ParticipantIdentifier>
+        <DocumentIdentifier scheme="ehealth-resid-qns">urn::epsos##services:extended:epsos::107</DocumentIdentifier>
+        <ProcessList>
+            <Process>
+                <ProcessIdentifier scheme="ehealth-procid-qns">urn:epsosPatientService::List</ProcessIdentifier>
+                <ServiceEndpointList>
+                    <Endpoint transportProfile="urn:ihe:iti:2013:xcpd">
+                        <EndpointURI>http://poland.pl/ncp/patient/list</EndpointURI>
+                        <RequireBusinessLevelSignature>false</RequireBusinessLevelSignature>
+                        <MinimumAuthenticationLevel>urn:epSOS:loa:1</MinimumAuthenticationLevel>
+                        <ServiceActivationDate>2016-06-06T11:06:02.000+02:00</ServiceActivationDate>
+                        <ServiceExpirationDate>2026-06-06T11:06:02+02:00</ServiceExpirationDate>
+                        <Certificate>MIID7jCCA1egAwIBAgICA+YwDQYJKoZIhvcNAQENBQAwOjELMAkGA1UEBhMCRlIxEzARBgNVBAoMCklIRSBFdXJvcGUxFjAUBgNVBAMMDUlIRSBFdXJvcGUgQ0EwHhcNMTYwNjAxMTQzNTUzWhcNMjYwNjAxMTQzNTUzWjCBgzELMAkGA1UEBhMCUFQxDDAKBgNVBAoMA01vSDENMAsGA1UECwwEU1BNUzENMAsGA1UEKgwESm9hbzEOMAwGA1UEBRMFQ3VuaGExHTAbBgNVBAMMFHFhZXBzb3MubWluLXNhdWRlLnB0MRkwFwYDVQQMDBBTZXJ2aWNlIFByb3ZpZGVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1eN4qPSSRZqjVFG9TlcPlxf2WiSimQK9L1nf9Z/s0ezeGQjCukDeDq/Wzqd9fpHhaMMq+XSSOtyEtIr5K/As4kFrViONUUkG12J6UllSWogp0NYFwA4wIqKSFiTnQS5/nRTs05oONCCGILCyJNNeO53JzPlaq3/QbPLssuSAr6XucPE8wBBGM8b/TsB2G/zjG8yuSTgGbhaZekq/Vnf9ftj1fr/vJDDAQgH6Yvzd88Z0DACJPHfW1p4F/OWLI386Bq7g/bo1DUPAyEwlf+CkLgJWRKki3yJlOCIZ9enMA5O7rfeG3rXdgYGmWS7tNEgKXxgC+heiYvi7ZWd7M+/SUwIDAQABo4IBMzCCAS8wPgYDVR0fBDcwNTAzoDGgL4YtaHR0cHM6Ly9nYXplbGxlLmloZS5uZXQvcGtpL2NybC82NDMvY2FjcmwuY3JsMDwGCWCGSAGG+EIBBAQvFi1odHRwczovL2dhemVsbGUuaWhlLm5ldC9wa2kvY3JsLzY0My9jYWNybC5jcmwwPAYJYIZIAYb4QgEDBC8WLWh0dHBzOi8vZ2F6ZWxsZS5paGUubmV0L3BraS9jcmwvNjQzL2NhY3JsLmNybDAfBgNVHSMEGDAWgBTsMw4TyCJeouFrr0N7el3Sd3MdfjAdBgNVHQ4EFgQU1GQ/K1ykIwWFgiONzWJLQzufF/8wDAYDVR0TAQH/BAIwADAOBgNVHQ8BAf8EBAMCBSAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDQYJKoZIhvcNAQENBQADgYEAZ7t1Qkr9wz3q6+WcF6p/YX7Jr0CzVe7w58FvJFk2AsHeYkSlOyO5hxNpQbs1L1v6JrcqziNFrh2QKGT2v6iPdWtdCT8HBLjmuvVWxxnfzYjdQ0J+kdKMAEV6EtWU78OqL60CCtUZKXE/NKJUq7TTUCFP2fwiARy/t1dTD2NZo8c=</Certificate>
+                        <ServiceDescription>This is the epSOS Patient Service List for the Polish NCP</ServiceDescription>
+                        <TechnicalContactUrl>http://poland.pl/contact</TechnicalContactUrl>
+                        <TechnicalInformationUrl>http://poland.pl/contact</TechnicalInformationUrl>
+                    </Endpoint>
+                </ServiceEndpointList>
+            </Process>
+        </ProcessList>
+        <Extension><Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><DigestValue>ktNWJpYkSpjbs9tfoWJhd3fXu2FX4dYwqmHSRCDSpnA=</DigestValue></Reference></SignedInfo><SignatureValue>HYfVB7GzX7olZC5/+k5E6lgudABa/ZP/jSEVFhSCohUAghVXjZdJScTsa0t5essJr41HuZmV/ufL
+GD8BJN6GXzTDYXwZcFrWU8JZZ7Bm9gdly+hKz+6E8M6rXZp07K3xHi8WEcgBD0eXnVD3b4b8vmTz
+QVOEOW8r4V0wyizZjYw=</SignatureValue><KeyInfo><X509Data><X509SubjectName>CN=Sample National Infrastructure,OU=Sante,C=PT</X509SubjectName><X509Certificate>MIICAzCCAWygAwIBAgIEWCRzHjANBgkqhkiG9w0BAQsFADBGMQswCQYDVQQGEwJQVDEOMAwGA1UE
+CwwFU2FudGUxJzAlBgNVBAMMHlNhbXBsZSBOYXRpb25hbCBJbmZyYXN0cnVjdHVyZTAeFw0xNjEx
+MTAxMzE2NTBaFw0yNjExMTAxMzE2NTBaMEYxCzAJBgNVBAYTAlBUMQ4wDAYDVQQLDAVTYW50ZTEn
+MCUGA1UEAwweU2FtcGxlIE5hdGlvbmFsIEluZnJhc3RydWN0dXJlMIGfMA0GCSqGSIb3DQEBAQUA
+A4GNADCBiQKBgQCywt50WXEWIiWytRGcMqzeMM/EyxruNthPdiUEUTbs9un7lzGGjpfFMTgd83wJ
+haB6FgpaVd8V2w/JBdkim5Ltuhu2vA0d6hHOsa58neIfe4z1ZhswwNmB0+mDTjwnd/gg8IJyQhhY
+c5G4x7m0ZGdDKZDizjtDTEPTsl8D4FzBFwIDAQABMA0GCSqGSIb3DQEBCwUAA4GBACKxUpAx0PYm
+ZZi4DfAzBkQ0+CvQw/l6Yo8wonVdpcQXO3khpWIcXhgYhTLHwm8IwJLEyFatmMyCKklSA3CLebJU
+L4XH1GcdCg6oPKPUc+ovbgN7/iR265Elp4qHfpVteBijBTyZReH4oAK9hRhK1gLwtjI7vpjVaPXv
+vkV1fbrz</X509Certificate></X509Data></KeyInfo></Signature></Extension>
+    </ServiceInformation>
+</ServiceMetadata>
+2018-10-08 15:50:36,119 INFO eu.europa.ec.edelivery.smp.controllers.ServiceMetadataController - PUT ServiceMetadata finished: ehealth-actorid-qns::urn:australia:ncpb - ehealth-resid-qns::urn::epsos##services:extended:epsos::107
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+    <ServiceInformation>
+        <ParticipantIdentifier scheme="ehealth-actorid-qns">urn:australia:ncpb</ParticipantIdentifier>
+        <DocumentIdentifier scheme="ehealth-resid-qns">urn::epsos##services:extended:epsos::107</DocumentIdentifier>
+        <ProcessList>
+            <Process>
+                <ProcessIdentifier scheme="ehealth-procid-qns">urn:epsosPatientService::List</ProcessIdentifier>
+                <ServiceEndpointList>
+                    <Endpoint transportProfile="urn:ihe:iti:2013:xcpd">
+                        <EndpointURI>http://poland.pl/ncp/patient/list</EndpointURI>
+                        <RequireBusinessLevelSignature>false</RequireBusinessLevelSignature>
+                        <MinimumAuthenticationLevel>urn:epSOS:loa:1</MinimumAuthenticationLevel>
+                        <ServiceActivationDate>2016-06-06T11:06:02.000+02:00</ServiceActivationDate>
+                        <ServiceExpirationDate>2026-06-06T11:06:02+02:00</ServiceExpirationDate>
+                        <Certificate>MIID7jCCA1egAwIBAgICA+YwDQYJKoZIhvcNAQENBQAwOjELMAkGA1UEBhMCRlIxEzARBgNVBAoMCklIRSBFdXJvcGUxFjAUBgNVBAMMDUlIRSBFdXJvcGUgQ0EwHhcNMTYwNjAxMTQzNTUzWhcNMjYwNjAxMTQzNTUzWjCBgzELMAkGA1UEBhMCUFQxDDAKBgNVBAoMA01vSDENMAsGA1UECwwEU1BNUzENMAsGA1UEKgwESm9hbzEOMAwGA1UEBRMFQ3VuaGExHTAbBgNVBAMMFHFhZXBzb3MubWluLXNhdWRlLnB0MRkwFwYDVQQMDBBTZXJ2aWNlIFByb3ZpZGVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1eN4qPSSRZqjVFG9TlcPlxf2WiSimQK9L1nf9Z/s0ezeGQjCukDeDq/Wzqd9fpHhaMMq+XSSOtyEtIr5K/As4kFrViONUUkG12J6UllSWogp0NYFwA4wIqKSFiTnQS5/nRTs05oONCCGILCyJNNeO53JzPlaq3/QbPLssuSAr6XucPE8wBBGM8b/TsB2G/zjG8yuSTgGbhaZekq/Vnf9ftj1fr/vJDDAQgH6Yvzd88Z0DACJPHfW1p4F/OWLI386Bq7g/bo1DUPAyEwlf+CkLgJWRKki3yJlOCIZ9enMA5O7rfeG3rXdgYGmWS7tNEgKXxgC+heiYvi7ZWd7M+/SUwIDAQABo4IBMzCCAS8wPgYDVR0fBDcwNTAzoDGgL4YtaHR0cHM6Ly9nYXplbGxlLmloZS5uZXQvcGtpL2NybC82NDMvY2FjcmwuY3JsMDwGCWCGSAGG+EIBBAQvFi1odHRwczovL2dhemVsbGUuaWhlLm5ldC9wa2kvY3JsLzY0My9jYWNybC5jcmwwPAYJYIZIAYb4QgEDBC8WLWh0dHBzOi8vZ2F6ZWxsZS5paGUubmV0L3BraS9jcmwvNjQzL2NhY3JsLmNybDAfBgNVHSMEGDAWgBTsMw4TyCJeouFrr0N7el3Sd3MdfjAdBgNVHQ4EFgQU1GQ/K1ykIwWFgiONzWJLQzufF/8wDAYDVR0TAQH/BAIwADAOBgNVHQ8BAf8EBAMCBSAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDQYJKoZIhvcNAQENBQADgYEAZ7t1Qkr9wz3q6+WcF6p/YX7Jr0CzVe7w58FvJFk2AsHeYkSlOyO5hxNpQbs1L1v6JrcqziNFrh2QKGT2v6iPdWtdCT8HBLjmuvVWxxnfzYjdQ0J+kdKMAEV6EtWU78OqL60CCtUZKXE/NKJUq7TTUCFP2fwiARy/t1dTD2NZo8c=</Certificate>
+                        <ServiceDescription>This is the epSOS Patient Service List for the Polish NCP</ServiceDescription>
+                        <TechnicalContactUrl>http://poland.pl/contact</TechnicalContactUrl>
+                        <TechnicalInformationUrl>http://poland.pl/contact</TechnicalInformationUrl>
+                    </Endpoint>
+                </ServiceEndpointList>
+            </Process>
+        </ProcessList>
+        <Extension><Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><DigestValue>ktNWJpYkSpjbs9tfoWJhd3fXu2FX4dYwqmHSRCDSpnA=</DigestValue></Reference></SignedInfo><SignatureValue>HYfVB7GzX7olZC5/+k5E6lgudABa/ZP/jSEVFhSCohUAghVXjZdJScTsa0t5essJr41HuZmV/ufL
+GD8BJN6GXzTDYXwZcFrWU8JZZ7Bm9gdly+hKz+6E8M6rXZp07K3xHi8WEcgBD0eXnVD3b4b8vmTz
+QVOEOW8r4V0wyizZjYw=</SignatureValue><KeyInfo><X509Data><X509SubjectName>CN=Sample National Infrastructure,OU=Sante,C=PT</X509SubjectName><X509Certificate>MIICAzCCAWygAwIBAgIEWCRzHjANBgkqhkiG9w0BAQsFADBGMQswCQYDVQQGEwJQVDEOMAwGA1UE
+CwwFU2FudGUxJzAlBgNVBAMMHlNhbXBsZSBOYXRpb25hbCBJbmZyYXN0cnVjdHVyZTAeFw0xNjEx
+MTAxMzE2NTBaFw0yNjExMTAxMzE2NTBaMEYxCzAJBgNVBAYTAlBUMQ4wDAYDVQQLDAVTYW50ZTEn
+MCUGA1UEAwweU2FtcGxlIE5hdGlvbmFsIEluZnJhc3RydWN0dXJlMIGfMA0GCSqGSIb3DQEBAQUA
+A4GNADCBiQKBgQCywt50WXEWIiWytRGcMqzeMM/EyxruNthPdiUEUTbs9un7lzGGjpfFMTgd83wJ
+haB6FgpaVd8V2w/JBdkim5Ltuhu2vA0d6hHOsa58neIfe4z1ZhswwNmB0+mDTjwnd/gg8IJyQhhY
+c5G4x7m0ZGdDKZDizjtDTEPTsl8D4FzBFwIDAQABMA0GCSqGSIb3DQEBCwUAA4GBACKxUpAx0PYm
+ZZi4DfAzBkQ0+CvQw/l6Yo8wonVdpcQXO3khpWIcXhgYhTLHwm8IwJLEyFatmMyCKklSA3CLebJU
+L4XH1GcdCg6oPKPUc+ovbgN7/iR265Elp4qHfpVteBijBTyZReH4oAK9hRhK1gLwtjI7vpjVaPXv
+vkV1fbrz</X509Certificate></X509Data></KeyInfo></Signature></Extension>
+    </ServiceInformation>
+</ServiceMetadata>
+2018-10-08 15:50:36,153 INFO eu.europa.ec.edelivery.smp.controllers.ServiceMetadataController - GET ServiceMetadata: ehealth-actorid-qns::urn:australia:ncpb - ehealth-resid-qns::urn::epsos##services:extended:epsos::107
+2018-10-08 15:50:36,179 INFO eu.europa.ec.edelivery.smp.controllers.ServiceMetadataController - GET ServiceMetadata finished: ehealth-actorid-qns::urn:australia:ncpb - ehealth-resid-qns::urn::epsos##services:extended:epsos::107
+2018-10-08 15:50:36,202 INFO org.springframework.test.context.transaction.TransactionContext - Rolled back transaction for test: [DefaultTestContext@21a4eb04 testClass = SignatureValidatorTest, testInstance = eu.europa.ec.cipa.smp.server.security.SignatureValidatorTest@6fa61856, testMethod = validateSignature@SignatureValidatorTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@7bb69b9a testClass = SignatureValidatorTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.SmpAppConfig, class eu.europa.ec.edelivery.smp.config.SmpWebAppConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]
+2018-10-08 15:50:36,207 INFO org.springframework.test.context.transaction.TransactionContext - Began transaction (1) for test context [DefaultTestContext@21a4eb04 testClass = SignatureValidatorTest, testInstance = eu.europa.ec.cipa.smp.server.security.SignatureValidatorTest@2e111dbe, testMethod = validateLinarizedSignature@SignatureValidatorTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@7bb69b9a testClass = SignatureValidatorTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.SmpAppConfig, class eu.europa.ec.edelivery.smp.config.SmpWebAppConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]; transaction manager [org.springframework.orm.jpa.JpaTransactionManager@77d042f]; rollback [true]
+2018-10-08 15:50:36,213 INFO org.springframework.mock.web.MockServletContext - Initializing Spring TestDispatcherServlet ''
+2018-10-08 15:50:36,213 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Initializing Servlet ''
+2018-10-08 15:50:36,214 INFO org.springframework.test.web.servlet.TestDispatcherServlet - Completed initialization in 1 ms
+2018-10-08 15:50:36,215 INFO org.springframework.mock.web.MockServletContext - Initializing Spring root WebApplicationContext
+2018-10-08 15:50:36,215 INFO org.springframework.web.context.ContextLoader - Root WebApplicationContext: initialization started
+2018-10-08 15:50:36,215 INFO org.springframework.web.context.ContextLoader - Root WebApplicationContext initialized in 0 ms
+2018-10-08 15:50:36,233 INFO eu.europa.ec.edelivery.smp.controllers.ServiceMetadataController - PUT ServiceMetadata: ehealth-actorid-qns::urn:brazil:ncpb - ehealth-resid-qns::urn::epsos##services:extended:epsos::107
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ServiceInformation><ParticipantIdentifier scheme="ehealth-actorid-qns">urn:brazil:ncpb</ParticipantIdentifier><DocumentIdentifier scheme="ehealth-resid-qns">urn::epsos##services:extended:epsos::107</DocumentIdentifier><ProcessList><Process><ProcessIdentifier scheme="ehealth-procid-qns">urn:epsosPatientService::List</ProcessIdentifier><ServiceEndpointList><Endpoint transportProfile="urn:ihe:iti:2013:xcpd"><EndpointURI>http://poland.pl/ncp/patient/list</EndpointURI><RequireBusinessLevelSignature>false</RequireBusinessLevelSignature><MinimumAuthenticationLevel>urn:epSOS:loa:1</MinimumAuthenticationLevel><ServiceActivationDate>2016-06-06T11:06:02.000+02:00</ServiceActivationDate><ServiceExpirationDate>2026-06-06T11:06:02+02:00</ServiceExpirationDate><Certificate>MIID7jCCA1egAwIBAgICA+YwDQYJKoZIhvcNAQENBQAwOjELMAkGA1UEBhMCRlIxEzARBgNVBAoMCklIRSBFdXJvcGUxFjAUBgNVBAMMDUlIRSBFdXJvcGUgQ0EwHhcNMTYwNjAxMTQzNTUzWhcNMjYwNjAxMTQzNTUzWjCBgzELMAkGA1UEBhMCUFQxDDAKBgNVBAoMA01vSDENMAsGA1UECwwEU1BNUzENMAsGA1UEKgwESm9hbzEOMAwGA1UEBRMFQ3VuaGExHTAbBgNVBAMMFHFhZXBzb3MubWluLXNhdWRlLnB0MRkwFwYDVQQMDBBTZXJ2aWNlIFByb3ZpZGVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1eN4qPSSRZqjVFG9TlcPlxf2WiSimQK9L1nf9Z/s0ezeGQjCukDeDq/Wzqd9fpHhaMMq+XSSOtyEtIr5K/As4kFrViONUUkG12J6UllSWogp0NYFwA4wIqKSFiTnQS5/nRTs05oONCCGILCyJNNeO53JzPlaq3/QbPLssuSAr6XucPE8wBBGM8b/TsB2G/zjG8yuSTgGbhaZekq/Vnf9ftj1fr/vJDDAQgH6Yvzd88Z0DACJPHfW1p4F/OWLI386Bq7g/bo1DUPAyEwlf+CkLgJWRKki3yJlOCIZ9enMA5O7rfeG3rXdgYGmWS7tNEgKXxgC+heiYvi7ZWd7M+/SUwIDAQABo4IBMzCCAS8wPgYDVR0fBDcwNTAzoDGgL4YtaHR0cHM6Ly9nYXplbGxlLmloZS5uZXQvcGtpL2NybC82NDMvY2FjcmwuY3JsMDwGCWCGSAGG+EIBBAQvFi1odHRwczovL2dhemVsbGUuaWhlLm5ldC9wa2kvY3JsLzY0My9jYWNybC5jcmwwPAYJYIZIAYb4QgEDBC8WLWh0dHBzOi8vZ2F6ZWxsZS5paGUubmV0L3BraS9jcmwvNjQzL2NhY3JsLmNybDAfBgNVHSMEGDAWgBTsMw4TyCJeouFrr0N7el3Sd3MdfjAdBgNVHQ4EFgQU1GQ/K1ykIwWFgiONzWJLQzufF/8wDAYDVR0TAQH/BAIwADAOBgNVHQ8BAf8EBAMCBSAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDQYJKoZIhvcNAQENBQADgYEAZ7t1Qkr9wz3q6+WcF6p/YX7Jr0CzVe7w58FvJFk2AsHeYkSlOyO5hxNpQbs1L1v6JrcqziNFrh2QKGT2v6iPdWtdCT8HBLjmuvVWxxnfzYjdQ0J+kdKMAEV6EtWU78OqL60CCtUZKXE/NKJUq7TTUCFP2fwiARy/t1dTD2NZo8c=</Certificate><ServiceDescription>This is the epSOS Patient Service List for the Polish NCP</ServiceDescription><TechnicalContactUrl>http://poland.pl/contact</TechnicalContactUrl><TechnicalInformationUrl>http://poland.pl/contact</TechnicalInformationUrl></Endpoint></ServiceEndpointList></Process></ProcessList><Extension><Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><DigestValue>Azi31Eao+Y+y373EqCp2GaFG6tOElaC5p5nkRpaZGiU=</DigestValue></Reference></SignedInfo><SignatureValue>lWgydpjVbwT0FN8ki9FDPdlK2CO2z7ehv60uz4Cowu/0hz2SgsLfRwLVHd9HxQ2PQmz4ZHYzKW9f
+3zxVDh2ozEbDWfs22HiFcvjLaxFXxp+cq+8GmRZLRc6b0HbNz2SZ7bOrUGrr+pCLwzwgw/egG1/l
+7wYBGw7mOhPJTIBR6FM=</SignatureValue><KeyInfo><X509Data><X509SubjectName>CN=Sample National Infrastructure,OU=Sante,C=PT</X509SubjectName><X509Certificate>MIICAzCCAWygAwIBAgIEWCRzHjANBgkqhkiG9w0BAQsFADBGMQswCQYDVQQGEwJQVDEOMAwGA1UE
+CwwFU2FudGUxJzAlBgNVBAMMHlNhbXBsZSBOYXRpb25hbCBJbmZyYXN0cnVjdHVyZTAeFw0xNjEx
+MTAxMzE2NTBaFw0yNjExMTAxMzE2NTBaMEYxCzAJBgNVBAYTAlBUMQ4wDAYDVQQLDAVTYW50ZTEn
+MCUGA1UEAwweU2FtcGxlIE5hdGlvbmFsIEluZnJhc3RydWN0dXJlMIGfMA0GCSqGSIb3DQEBAQUA
+A4GNADCBiQKBgQCywt50WXEWIiWytRGcMqzeMM/EyxruNthPdiUEUTbs9un7lzGGjpfFMTgd83wJ
+haB6FgpaVd8V2w/JBdkim5Ltuhu2vA0d6hHOsa58neIfe4z1ZhswwNmB0+mDTjwnd/gg8IJyQhhY
+c5G4x7m0ZGdDKZDizjtDTEPTsl8D4FzBFwIDAQABMA0GCSqGSIb3DQEBCwUAA4GBACKxUpAx0PYm
+ZZi4DfAzBkQ0+CvQw/l6Yo8wonVdpcQXO3khpWIcXhgYhTLHwm8IwJLEyFatmMyCKklSA3CLebJU
+L4XH1GcdCg6oPKPUc+ovbgN7/iR265Elp4qHfpVteBijBTyZReH4oAK9hRhK1gLwtjI7vpjVaPXv
+vkV1fbrz</X509Certificate></X509Data></KeyInfo></Signature></Extension></ServiceInformation></ServiceMetadata>
+2018-10-08 15:50:36,250 INFO eu.europa.ec.edelivery.smp.controllers.ServiceMetadataController - PUT ServiceMetadata finished: ehealth-actorid-qns::urn:brazil:ncpb - ehealth-resid-qns::urn::epsos##services:extended:epsos::107
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ServiceInformation><ParticipantIdentifier scheme="ehealth-actorid-qns">urn:brazil:ncpb</ParticipantIdentifier><DocumentIdentifier scheme="ehealth-resid-qns">urn::epsos##services:extended:epsos::107</DocumentIdentifier><ProcessList><Process><ProcessIdentifier scheme="ehealth-procid-qns">urn:epsosPatientService::List</ProcessIdentifier><ServiceEndpointList><Endpoint transportProfile="urn:ihe:iti:2013:xcpd"><EndpointURI>http://poland.pl/ncp/patient/list</EndpointURI><RequireBusinessLevelSignature>false</RequireBusinessLevelSignature><MinimumAuthenticationLevel>urn:epSOS:loa:1</MinimumAuthenticationLevel><ServiceActivationDate>2016-06-06T11:06:02.000+02:00</ServiceActivationDate><ServiceExpirationDate>2026-06-06T11:06:02+02:00</ServiceExpirationDate><Certificate>MIID7jCCA1egAwIBAgICA+YwDQYJKoZIhvcNAQENBQAwOjELMAkGA1UEBhMCRlIxEzARBgNVBAoMCklIRSBFdXJvcGUxFjAUBgNVBAMMDUlIRSBFdXJvcGUgQ0EwHhcNMTYwNjAxMTQzNTUzWhcNMjYwNjAxMTQzNTUzWjCBgzELMAkGA1UEBhMCUFQxDDAKBgNVBAoMA01vSDENMAsGA1UECwwEU1BNUzENMAsGA1UEKgwESm9hbzEOMAwGA1UEBRMFQ3VuaGExHTAbBgNVBAMMFHFhZXBzb3MubWluLXNhdWRlLnB0MRkwFwYDVQQMDBBTZXJ2aWNlIFByb3ZpZGVyMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1eN4qPSSRZqjVFG9TlcPlxf2WiSimQK9L1nf9Z/s0ezeGQjCukDeDq/Wzqd9fpHhaMMq+XSSOtyEtIr5K/As4kFrViONUUkG12J6UllSWogp0NYFwA4wIqKSFiTnQS5/nRTs05oONCCGILCyJNNeO53JzPlaq3/QbPLssuSAr6XucPE8wBBGM8b/TsB2G/zjG8yuSTgGbhaZekq/Vnf9ftj1fr/vJDDAQgH6Yvzd88Z0DACJPHfW1p4F/OWLI386Bq7g/bo1DUPAyEwlf+CkLgJWRKki3yJlOCIZ9enMA5O7rfeG3rXdgYGmWS7tNEgKXxgC+heiYvi7ZWd7M+/SUwIDAQABo4IBMzCCAS8wPgYDVR0fBDcwNTAzoDGgL4YtaHR0cHM6Ly9nYXplbGxlLmloZS5uZXQvcGtpL2NybC82NDMvY2FjcmwuY3JsMDwGCWCGSAGG+EIBBAQvFi1odHRwczovL2dhemVsbGUuaWhlLm5ldC9wa2kvY3JsLzY0My9jYWNybC5jcmwwPAYJYIZIAYb4QgEDBC8WLWh0dHBzOi8vZ2F6ZWxsZS5paGUubmV0L3BraS9jcmwvNjQzL2NhY3JsLmNybDAfBgNVHSMEGDAWgBTsMw4TyCJeouFrr0N7el3Sd3MdfjAdBgNVHQ4EFgQU1GQ/K1ykIwWFgiONzWJLQzufF/8wDAYDVR0TAQH/BAIwADAOBgNVHQ8BAf8EBAMCBSAwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDQYJKoZIhvcNAQENBQADgYEAZ7t1Qkr9wz3q6+WcF6p/YX7Jr0CzVe7w58FvJFk2AsHeYkSlOyO5hxNpQbs1L1v6JrcqziNFrh2QKGT2v6iPdWtdCT8HBLjmuvVWxxnfzYjdQ0J+kdKMAEV6EtWU78OqL60CCtUZKXE/NKJUq7TTUCFP2fwiARy/t1dTD2NZo8c=</Certificate><ServiceDescription>This is the epSOS Patient Service List for the Polish NCP</ServiceDescription><TechnicalContactUrl>http://poland.pl/contact</TechnicalContactUrl><TechnicalInformationUrl>http://poland.pl/contact</TechnicalInformationUrl></Endpoint></ServiceEndpointList></Process></ProcessList><Extension><Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2001/04/xmlenc#sha256"/><DigestValue>Azi31Eao+Y+y373EqCp2GaFG6tOElaC5p5nkRpaZGiU=</DigestValue></Reference></SignedInfo><SignatureValue>lWgydpjVbwT0FN8ki9FDPdlK2CO2z7ehv60uz4Cowu/0hz2SgsLfRwLVHd9HxQ2PQmz4ZHYzKW9f
+3zxVDh2ozEbDWfs22HiFcvjLaxFXxp+cq+8GmRZLRc6b0HbNz2SZ7bOrUGrr+pCLwzwgw/egG1/l
+7wYBGw7mOhPJTIBR6FM=</SignatureValue><KeyInfo><X509Data><X509SubjectName>CN=Sample National Infrastructure,OU=Sante,C=PT</X509SubjectName><X509Certificate>MIICAzCCAWygAwIBAgIEWCRzHjANBgkqhkiG9w0BAQsFADBGMQswCQYDVQQGEwJQVDEOMAwGA1UE
+CwwFU2FudGUxJzAlBgNVBAMMHlNhbXBsZSBOYXRpb25hbCBJbmZyYXN0cnVjdHVyZTAeFw0xNjEx
+MTAxMzE2NTBaFw0yNjExMTAxMzE2NTBaMEYxCzAJBgNVBAYTAlBUMQ4wDAYDVQQLDAVTYW50ZTEn
+MCUGA1UEAwweU2FtcGxlIE5hdGlvbmFsIEluZnJhc3RydWN0dXJlMIGfMA0GCSqGSIb3DQEBAQUA
+A4GNADCBiQKBgQCywt50WXEWIiWytRGcMqzeMM/EyxruNthPdiUEUTbs9un7lzGGjpfFMTgd83wJ
+haB6FgpaVd8V2w/JBdkim5Ltuhu2vA0d6hHOsa58neIfe4z1ZhswwNmB0+mDTjwnd/gg8IJyQhhY
+c5G4x7m0ZGdDKZDizjtDTEPTsl8D4FzBFwIDAQABMA0GCSqGSIb3DQEBCwUAA4GBACKxUpAx0PYm
+ZZi4DfAzBkQ0+CvQw/l6Yo8wonVdpcQXO3khpWIcXhgYhTLHwm8IwJLEyFatmMyCKklSA3CLebJU
+L4XH1GcdCg6oPKPUc+ovbgN7/iR265Elp4qHfpVteBijBTyZReH4oAK9hRhK1gLwtjI7vpjVaPXv
+vkV1fbrz</X509Certificate></X509Data></KeyInfo></Signature></Extension></ServiceInformation></ServiceMetadata>
+2018-10-08 15:50:36,254 INFO eu.europa.ec.edelivery.smp.controllers.ServiceMetadataController - GET ServiceMetadata: ehealth-actorid-qns::urn:brazil:ncpb - ehealth-resid-qns::urn::epsos##services:extended:epsos::107
+2018-10-08 15:50:36,265 INFO eu.europa.ec.edelivery.smp.controllers.ServiceMetadataController - GET ServiceMetadata finished: ehealth-actorid-qns::urn:brazil:ncpb - ehealth-resid-qns::urn::epsos##services:extended:epsos::107
+2018-10-08 15:50:36,284 INFO org.springframework.test.context.transaction.TransactionContext - Rolled back transaction for test: [DefaultTestContext@21a4eb04 testClass = SignatureValidatorTest, testInstance = eu.europa.ec.cipa.smp.server.security.SignatureValidatorTest@2e111dbe, testMethod = validateLinarizedSignature@SignatureValidatorTest, testException = [null], mergedContextConfiguration = [WebMergedContextConfiguration@7bb69b9a testClass = SignatureValidatorTest, locations = '{}', classes = '{class eu.europa.ec.edelivery.smp.config.PropertiesTestConfig, class eu.europa.ec.edelivery.smp.config.SmpAppConfig, class eu.europa.ec.edelivery.smp.config.SmpWebAppConfig, class eu.europa.ec.edelivery.smp.config.SpringSecurityConfig}', contextInitializerClasses = '[]', activeProfiles = '{}', propertySourceLocations = '{}', propertySourceProperties = '{}', contextCustomizers = set[org.springframework.test.context.web.socket.MockServerContainerContextCustomizer@17ae7628], resourceBasePath = 'src/main/webapp', contextLoader = 'org.springframework.test.context.web.WebDelegatingSmartContextLoader', parent = [null]], attributes = map['org.springframework.test.context.web.ServletTestExecutionListener.populatedRequestContextHolder' -> true, 'org.springframework.test.context.web.ServletTestExecutionListener.resetRequestContextHolder' -> true]]
+2018-10-08 15:50:36,309 INFO org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'
+2018-10-08 15:50:36,314 INFO org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean - Closing JPA EntityManagerFactory for persistence unit 'default'

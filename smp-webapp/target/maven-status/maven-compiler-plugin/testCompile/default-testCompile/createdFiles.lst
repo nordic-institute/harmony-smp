@@ -1,0 +1,14 @@
+eu/europa/ec/edelivery/smp/config/SpringSecurityTestConfig.class
+eu/europa/ec/cipa/smp/server/security/SecurityConfigurationTest.class
+eu/europa/ec/cipa/smp/server/security/X509KeySelector.class
+eu/europa/ec/edelivery/smp/ServiceGroupBodyUtil.class
+eu/europa/ec/edelivery/smp/config/PropertiesTestConfig.class
+eu/europa/ec/edelivery/smp/error/ErrorResponseBuilderTest.class
+eu/europa/ec/edelivery/smp/error/ErrorMappingControllerAdviceTest.class
+eu/europa/ec/cipa/smp/server/security/SignatureValidatorTest.class
+eu/europa/ec/cipa/smp/server/security/SignatureUtil.class
+eu/europa/ec/edelivery/smp/error/ErrorMappingControllerAdviceTest$1.class
+eu/europa/ec/edelivery/smp/validation/ServiceGroupValidatorTest.class
+eu/europa/ec/cipa/smp/server/security/UsernameReturningTestController.class
+eu/europa/ec/cipa/smp/server/security/X509KeySelector$1.class
+eu/europa/ec/edelivery/smp/controllers/ServiceGroupControllerTest.class

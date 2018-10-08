@@ -5,9 +5,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 
-import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_IDENTIFIER_VALUE_LENGTH;
-import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_USERNAME_LENGTH;
-
 /**
  * @author Joze Rihtarsic
  * @since 4.1
@@ -96,7 +93,6 @@ public class DomainRO implements Serializable {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(domainId, bdmslSmpId);
     }
 }
