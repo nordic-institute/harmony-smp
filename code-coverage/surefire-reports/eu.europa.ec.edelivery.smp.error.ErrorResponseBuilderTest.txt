@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: eu.europa.ec.edelivery.smp.error.ErrorResponseBuilderTest
--------------------------------------------------------------------------------
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 sec - in eu.europa.ec.edelivery.smp.error.ErrorResponseBuilderTest
