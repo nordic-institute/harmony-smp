@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<ServiceGroup xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
-    <ParticipantIdentifier scheme="ehealth-actorid-qns">urn:eu:ncpb:utest</ParticipantIdentifier>
-    <ServiceMetadataReferenceCollection/>
-    <Extension xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ex:dummynode xmlns:ex="http://test.eu">Sample not mandatory extension</ex:dummynode></Extension>
-</ServiceGroup>
