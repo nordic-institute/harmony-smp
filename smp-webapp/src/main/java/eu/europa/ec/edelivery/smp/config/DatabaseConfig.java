@@ -67,7 +67,7 @@ public class DatabaseConfig {
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
         lef.setDataSource(dataSource());
         lef.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        lef.setPackagesToScan("eu.europa.ec.edelivery.smp.data.model", "eu.europa.ec.edelivery.smp.data.ui");
+        lef.setPackagesToScan("eu.europa.ec.edelivery.smp.data.model");
         lef.setJpaProperties(prop);
         //lef.setPersistenceXmlLocation("classpath:META-INF/smp-persistence.xml");
         return lef;

@@ -18,8 +18,8 @@ package eu.europa.ec.edelivery.smp.exceptions;
  *
  * Created by gutowpa on 18/12/2017.
  */
-public class SmlIntegrationException extends RuntimeException {
-    public SmlIntegrationException(String msg, Exception e) {
-        super(msg, e);
+public class SmlIntegrationException extends SMPRuntimeException {
+    public SmlIntegrationException(ErrorCode ec, String msg, Exception e) {
+        super(ec,msg, e);
     }
 }
