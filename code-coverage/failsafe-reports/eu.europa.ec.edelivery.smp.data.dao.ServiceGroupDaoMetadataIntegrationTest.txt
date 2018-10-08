@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDaoMetadataIntegrationTest
--------------------------------------------------------------------------------
-Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.246 sec - in eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDaoMetadataIntegrationTest
