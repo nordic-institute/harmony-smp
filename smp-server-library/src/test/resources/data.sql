@@ -1,7 +1,7 @@
 --------------------------------------------------------
 --  File created - Thursday-August-30-2018   
 --------------------------------------------------------
-
+/*
 
 Insert into SMP_DOMAIN (DOMAINID,BDMSLCLIENTCERTHEADER,BDMSLCLIENTCERTALIAS,BDMSLSMPID,SIGNATURECERTALIAS) values ('peppol','sno=3b3b162e7d37dd2e50edc6d3378997e1&subject=CN=SMP_OpenPEPPOL SMK 003,O=OpenPEPPOL,C=BE&validfrom=Oct 12 10:37:53 2016 CEST&validto=Oct 1 10:37:53 2018 CEST&issuer=CN=PEPPOL Root TEST CA,OU=FOR TEST PURPOSES ONLY,O=NATIONAL IT AND TELECOM AGENCY,C=DK',null,'CEF-TEST-PEPPOL-SMP',null);
 Insert into SMP_DOMAIN (DOMAINID,BDMSLCLIENTCERTHEADER,BDMSLCLIENTCERTALIAS,BDMSLSMPID,SIGNATURECERTALIAS) values ('default','sno=3b3b162e7d37dd2e50edc6d3378997e1&subject=CN=SMP_OpenPEPPOL SMK 003,O=OpenPEPPOL,C=BE&validfrom=Oct 12 10:37:53 2016 CEST&validto=Oct 1 10:37:53 2018 CEST&issuer=CN=PEPPOL Root TEST CA,OU=FOR TEST PURPOSES ONLY,O=NATIONAL IT AND TELECOM AGENCY,C=DK',null,'DEFAULT-SMP-ID',null);
@@ -162,3 +162,4 @@ Insert into SMP_USER (USERNAME,PASSWORD,ISADMIN) values ('CN=SMP_CONNECTIVITYTES
 Insert into SMP_USER (USERNAME,PASSWORD,ISADMIN) values ('CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:0000000000000123',null,0);
 Insert into SMP_USER (USERNAME,PASSWORD,ISADMIN) values ('CN=slash/backslash\\quote\"colon:_rfc2253special_ampersand&comma\,equals\=plus\+lessthan\<greaterthan\>hash\#semicolon\;end,O=DEáºžÃŸÃ„Ã¤PLÅ¼Ã³Å‚Ä‡NOÃ†Ã¦Ã˜Ã¸Ã…Ã¥,C=PL:0000000000001010',null,1);
 Insert into SMP_USER (USERNAME,PASSWORD,ISADMIN) values ('admin','$2a$10$jsZamGH2qv8SVnRy55bKOOXof0QbIOaOqsYT/Ujo2Eb7dVQxG0Hd6',0);
+*/

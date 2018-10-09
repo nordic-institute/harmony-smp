@@ -42,7 +42,7 @@ CREATE TABLE smp_service_group_AUD (
                            CHARACTER SET utf8
                            COLLATE utf8_bin NOT NULL
                            DEFAULT 'domain1',
-  extension                TEXT             NULL DEFAULT NULL,
+  xmlContent                TEXT             NULL DEFAULT NULL,
   REV integer not null,
   REVTYPE tinyint,
   PRIMARY KEY (businessIdentifier, businessIdentifierScheme, REV)
@@ -112,10 +112,7 @@ CREATE TABLE SMP_REV_INFO (
 
 
 
-CREATE TABLE hibernate_sequence(
-    next_val BIGINT NOT NULL
-);
-
+CREATE TABLE hibernate_sequence( next_val BIGINT NOT NULL );
 INSERT INTO hibernate_sequence(next_val) values(1);
 
 commit;

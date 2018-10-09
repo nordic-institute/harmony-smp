@@ -34,8 +34,7 @@ import java.util.Properties;
         "eu.europa.ec.edelivery.smp.services",
         "eu.europa.ec.edelivery.smp.data.dao",
         "eu.europa.ec.edelivery.smp.sml",
-        "eu.europa.ec.edelivery.smp.conversion",
-        "eu.europa.ec.cipa.smp.server.util"})
+        "eu.europa.ec.edelivery.smp.conversion"})
 public class SmpServicesTestConfig {
 
     @Value("${jdbc.driver}")
@@ -64,7 +63,7 @@ public class SmpServicesTestConfig {
     @Bean
     public LocalContainerEntityManagerFactoryBean smpEntityManagerFactory() {
         Properties prop = new Properties();
-        prop.setProperty("org.hibernate.envers.store_data_at_delete", "true");
+        prop.setProperty("org.hibernate.envers.store_data_at_delete", "true"); // add this cause of constraints
         // test database
         prop.setProperty("hibernate.dialect","org.hibernate.dialect.OracleDialect");
 

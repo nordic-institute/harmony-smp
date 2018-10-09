@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.error;
 
 import ec.services.smp._1.ErrorResponse;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -24,7 +25,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
 
-import static eu.europa.ec.edelivery.smp.error.ErrorBusinessCode.TECHNICAL;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.TECHNICAL;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 /**

@@ -13,6 +13,8 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.exceptions.DocumentSigningException;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -126,7 +128,7 @@ public final class ServiceMetadataSigner {
             // Marshal, generate, and sign the enveloped signature
             signature.sign(domSignContext);
         } catch (Exception e) {
-            throw new DocumentSigningException("Could not sign serviceMetadata response", e);
+            throw new SMPRuntimeException(ErrorCode.XML_SIGNING_EXCEPTION, e);
         }
     }
 

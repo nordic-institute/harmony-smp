@@ -14,18 +14,40 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import org.springframework.core.GenericTypeResolver;
 
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.transaction.Transactional;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Created by gutowpa on 24/11/2017.
+ * Database abstract resource file. Class implements all common methods for all resources.
+ *
+ * @author Joze Rihtarsic
+ * @since 4.1
  */
 public abstract class BaseDao<E extends BaseEntity> {
 
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupService.class);
+
     @PersistenceContext
-    protected EntityManager em;
+    protected EntityManager memEManager;
 
     private final Class<E> entityClass;
 
@@ -34,29 +56,250 @@ public abstract class BaseDao<E extends BaseEntity> {
     }
 
     public E find(Object primaryKey) {
-        return em.find(entityClass, primaryKey);
+        return memEManager.find(entityClass, primaryKey);
     }
 
+
+    /**
+     * save or update database entity
+     *
+     * @param entity
+     */
+    @Transactional
     public void persistFlushDetach(E entity) {
-        em.persist(entity);
-        em.flush();
-        em.detach(entity);
+        memEManager.persist(entity);
+        memEManager.flush();
+        memEManager.detach(entity);
     }
 
-    public void remove(E entity) {
-        em.remove(entity);
+    /**
+     * save or update detached database entity
+     *
+     * @param entity
+     */
+    @Transactional
+    public void update(E entity) {
+        memEManager.merge(entity);
+        memEManager.flush();
+        memEManager.detach(entity);
     }
+
 
     /**
      * Removes Entity by given primary key
      *
      * @return true if entity existed before and was removed in this call.
-     * False if entity did not exist, so nothing was changed
+     * False if entity does not exist, so nothing was changed
      */
+    @Transactional
     public boolean removeById(Object primaryKey) {
-        int removedRecords = em.createQuery("delete from " + entityClass.getName() + " e where e.id = :primaryKey")
+        int removedRecords = memEManager.createQuery("delete from " + entityClass.getName() + " e where e.id = :primaryKey")
                 .setParameter("primaryKey", primaryKey)
                 .executeUpdate();
         return removedRecords > 0;
     }
+
+
+    /**
+     * Clear the persistence context, causing all managed entities to become detached.
+     * Changes made to entities that have not been flushed to the database will not be persisted.
+     *
+     * Main purpose is to clear cache for unit testing
+     *
+     */
+    public void clearPersistenceContext(){
+        memEManager.clear();
+    }
+
+    /**
+     * Method generates CriteriaQuery for search or count. If filter property value should match multiple values eg: column in (:list)
+     * than filter method must end with List and returned value must be list. If property is comparable (decimal, int, date)
+     * if filter method ends with From, than predicate greaterThanOrEqualTo is set to quer. If Method end To, than
+     * predicate cb.lessThan is setted. If filter property  has null value, than filter parameter is ignored.
+     *
+     * @param searchParams
+     * @param forCount
+     * @param sortField
+     * @param sortOrder
+     * @return
+     */
+    protected < D> CriteriaQuery createSearchCriteria(Object searchParams, Class<D> filterType,
+                                                        boolean forCount, String sortField, String sortOrder) {
+        CriteriaBuilder cb = memEManager.getCriteriaBuilder();
+        CriteriaQuery cq = forCount ? cb.createQuery(Long.class
+        ) : cb.createQuery(entityClass);
+        Root<E> om = cq.from(filterType == null ? entityClass : filterType);
+        if (forCount) {
+            cq.select(cb.count(om));
+        } else if (sortField != null) {
+            if (sortOrder != null && sortOrder.equalsIgnoreCase("desc")) {
+                cq.orderBy(cb.asc(om.get(sortField)));
+            } else {
+                cq.orderBy(cb.desc(om.get(sortField)));
+            }
+        } else {
+            // cq.orderBy(cb.desc(om.get("Id")));
+        }
+        List<Predicate> lstPredicate = new ArrayList<>();
+        // set order by
+        if (searchParams != null) {
+            Class cls = searchParams.getClass();
+            Method[] methodList = cls.getMethods();
+            for (Method m : methodList) {
+                // only getters (public, starts with get, no arguments)
+                String mName = m.getName();
+                if (Modifier.isPublic(m.getModifiers()) && m.getParameterCount() == 0
+                        && !m.getReturnType().equals(Void.TYPE)
+                        && (mName.startsWith("get") || mName.startsWith("is"))) {
+                    String fieldName = mName.substring(mName.startsWith("get") ? 3 : 2);
+                    // get retur parameter
+                    Object searchValue;
+                    try {
+                        searchValue = m.invoke(searchParams, new Object[]{});
+                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                        // LOG.error(l, ex);
+                        continue;
+                    }
+
+                    if (searchValue == null) {
+                        continue;
+                    }
+
+                    if (fieldName.endsWith("List") && searchValue instanceof List) {
+                        String property = fieldName.substring(0, fieldName.lastIndexOf(
+                                "List"));
+                        if (!((List) searchValue).isEmpty()) {
+                            lstPredicate.add(om.get(property).in(
+                                    ((List) searchValue).toArray()));
+                        } else {
+                            lstPredicate.add(om.get(property).isNull());
+                        }
+                    } else {
+                        try {
+                            cls.getMethod("set" + fieldName, new Class[]{m.getReturnType()});
+                        } catch (NoSuchMethodException | SecurityException ex) {
+                            // method does not have setter // ignore other methods
+                            continue;
+                        }
+
+                        if (fieldName.endsWith("From") && searchValue instanceof Comparable) {
+                            lstPredicate.add(cb.greaterThanOrEqualTo(
+                                    om.get(fieldName.substring(0, fieldName.
+                                            lastIndexOf("From"))),
+                                    (Comparable) searchValue));
+                        } else if (fieldName.endsWith("To") && searchValue instanceof Comparable) {
+                            lstPredicate.add(cb.lessThan(
+                                    om.
+                                            get(fieldName.substring(0, fieldName.lastIndexOf(
+                                                    "To"))),
+                                    (Comparable) searchValue));
+                        } else if (searchValue instanceof String) {
+                            if (!((String) searchValue).isEmpty()) {
+                                lstPredicate.add(cb.equal(om.get(fieldName), searchValue));
+                            }
+                        } else if (searchValue instanceof BigInteger) {
+                            lstPredicate.add(cb.equal(om.get(fieldName), searchValue));
+                        } else {
+                            LOG.warn("Unknown search value type %s for method %s! "
+                                            + "Parameter is ignored!",
+                                    searchValue, fieldName);
+                        }
+                    }
+
+                }
+            }
+            if (!lstPredicate.isEmpty()) {
+                Predicate[] tblPredicate = lstPredicate.stream().toArray(
+                        Predicate[]::new);
+                cq.where(cb.and(tblPredicate));
+            }
+        }
+        return cq;
+    }
+
+
+    /**
+     * Method returns paginated entity list with give pagination parameters and filters.
+     * Filter methods must match object methods. If property value should match multiple values eg: column in (:list)
+     * than filter method must end with List and returned value must be list. If property is comparable (decimal, int, date)
+     * if filter method ends with From, than predicate greaterThanOrEqualTo is set to quer. If Method end To, than
+     * predicate cb.lessThan is setted. If filter property  has null value, than filter parameter is ignored.
+     *
+     * @param startingAt
+     * @param maxResultCnt
+     * @param sortField
+     * @param sortOrder
+     * @param filters
+     * @return List
+     */
+
+    public List<E> getDataList(int startingAt, int maxResultCnt,
+                                   String sortField,
+                                   String sortOrder, Object filters) {
+
+        return getDataList(startingAt, maxResultCnt, sortField, sortOrder,
+                filters, null);
+    }
+
+    /**
+     * Method returns paginated entity list with give pagination parameters and filters.
+     * Filter methods must match object methods. If property value should match multiple values eg: column in (:list)
+     * than filter method must end with List and returned value must be list. If property is comparable (decimal, int, date)
+     * if filter method ends with From, than predicate greaterThanOrEqualTo is set to quer. If Method end To, than
+     * predicate cb.lessThan is setted. If filter property  has null value, than filter parameter is ignored.
+     *
+     * @param startingAt
+     * @param maxResultCnt
+     * @param sortField
+     * @param sortOrder
+     * @param filters
+     * @param filterType
+     * @return List
+     */
+    public <D> List<E> getDataList(int startingAt,
+                                      int maxResultCnt,
+                                      String sortField,
+                                      String sortOrder, Object filters, Class<D> filterType) {
+
+        List<E> lstResult;
+        try {
+            CriteriaQuery<E> cq = createSearchCriteria(filters, filterType,
+                    false, sortField,
+                    sortOrder);
+            TypedQuery<E> q = memEManager.createQuery(cq);
+            if (maxResultCnt > 0) {
+                q.setMaxResults(maxResultCnt);
+            }
+            if (startingAt > 0) {
+                q.setFirstResult(startingAt);
+            }
+            lstResult = q.getResultList();
+        } catch (NoResultException ex) {
+            lstResult = new ArrayList<>();
+        }
+
+        return lstResult;
+    }
+
+    /**
+     * Method returns filtered list count.
+     * Filter methods must match object methods. If property value should match multiple values eg: column in (:list)
+     * than filter method must end with List and returned value must be list. If property is comparable (decimal, int, date)
+     * if filter method ends with From, than predicate greaterThanOrEqualTo is set to quer. If Method end To, than
+     * predicate cb.lessThan is setted. If filter property  has null value, than filter parameter is ignored.
+
+     * @param filters
+     * @return
+     */
+    public long getDataListCount(Object filters) {
+
+        CriteriaQuery<Long> cqCount = createSearchCriteria(filters, null, true,
+                null,
+                null);
+        Long res = memEManager.createQuery(cqCount).getSingleResult();
+        return res;
+    }
+
+
+
 }
