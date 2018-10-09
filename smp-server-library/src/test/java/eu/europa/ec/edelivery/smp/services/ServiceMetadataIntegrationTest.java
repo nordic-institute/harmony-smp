@@ -13,21 +13,38 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.config.H2JPATestConfiguration;
 import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
+import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
+import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
+import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
+import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
-import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
 import eu.europa.ec.edelivery.smp.config.SmpServicesTestConfig;
+import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.sml.SmlConnector;
+import eu.europa.ec.edelivery.smp.testutil.DBAssertion;
+import eu.europa.ec.edelivery.smp.testutil.TestConstants;
+import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
+import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
@@ -39,8 +56,10 @@ import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter.unmarshal;
+import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocumentAsString;
 import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.marshall;
 import static eu.europa.ec.smp.api.Identifiers.asDocumentId;
@@ -51,149 +70,151 @@ import static org.junit.Assert.*;
  * Created by gutowpa on 15/11/2017.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {SmpServicesTestConfig.class, PropertiesSingleDomainTestConfig.class})
-@Transactional
-@Rollback(true)
-@Sql("classpath:/service_integration_test_data.sql")
-public class ServiceMetadataIntegrationTest {
+public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTest {
 
-    private static final String SERVICE_GROUP_XML_PATH = "/eu/europa/ec/edelivery/smp/services/ServiceGroupPoland.xml";
-    private static final String SERVICE_METADATA_XML_PATH = "/eu/europa/ec/edelivery/smp/services/ServiceMetadataPoland.xml";
-    private static final String SIGNED_SERVICE_METADATA_XML_PATH = "/eu/europa/ec/edelivery/smp/services/SignedServiceMetadataPoland.xml";
-    private static final ParticipantIdentifierType SERVICE_GROUP_ID = asParticipantId("participant-scheme-qns::urn:poland:ncpb");
-    private static final DocumentIdentifier DOC_ID = asDocumentId("ehealth-resid-qns::docid.007");
-    public static final String ADMIN_USERNAME = "test_admin";
-
-    @Autowired
-    ServiceMetadataService serviceMetadataService;
-
-    @Autowired
-    ServiceGroupService serviceGroupService;
-
-    @PersistenceContext
-    EntityManager em;
-
-    @Autowired
-    private ServiceMetadataDao serviceMetadataDao;
-
-    @Before
-    public void before() throws IOException {
-        ServiceGroup inServiceGroup = ServiceGroupConverter.unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
-        serviceGroupService.saveServiceGroup(inServiceGroup, null, ADMIN_USERNAME, ADMIN_USERNAME);
+    static ParticipantIdentifierType PT_ID =null;
+    static DocumentIdentifier DOC_ID  = null;
+    static {
+        PT_ID  = new ParticipantIdentifierType();
+        PT_ID.setValue(TEST_SG_ID_PL2);
+        PT_ID.setScheme(TEST_SG_SCHEMA_PL2);
+        DOC_ID  = new DocumentIdentifier();
+        DOC_ID.setValue(TEST_DOC_ID_PL2);
+        DOC_ID.setScheme(TEST_DOC_SCHEMA_PL2);
     }
 
-    @Test
-    public void makeSureServiceMetadataDoesNotExistAlready(){
-        DBServiceMetadata dbServiceMetadata = serviceMetadataDao.find(ServiceMetadataConverter.toDbModel(SERVICE_GROUP_ID, DOC_ID));
-        if(dbServiceMetadata != null){
-            throw new IllegalStateException("Underlying DB already contains test data that should not be there. Remove them manually.");
-        }
+    @Autowired
+    ServiceMetadataService testInstance;
+
+
+    @Rule
+    public ExpectedException expectedExeption = ExpectedException.none();
+
+    @Before
+    @Transactional
+    public void prepareDatabase() {
+        prepareDatabaseForSignleDomainEnv();
+        DBServiceGroup sg = new DBServiceGroup();
+        sg.setParticipantIdentifier(TEST_SG_ID_PL2.toLowerCase());
+        sg.setParticipantScheme(TEST_SG_SCHEMA_PL2.toLowerCase());
+        DBDomain domain = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
+        sg.addDomain(domain);
+        serviceGroupDao.persistFlushDetach(sg);
     }
 
     @Test
     public void saveAndReadPositiveScenario() throws IOException, TransformerException, JAXBException {
+
+
         //given
         String inServiceMetadataXml = loadDocumentAsString(SERVICE_METADATA_XML_PATH);
         String expectedSignedServiceMetadataXml = loadDocumentAsString(SIGNED_SERVICE_METADATA_XML_PATH);
-        List<DocumentIdentifier> docIdsBefore = serviceMetadataService.findServiceMetadataIdentifiers(SERVICE_GROUP_ID);
+        List<DocumentIdentifier> docIdsBefore = testInstance.findServiceMetadataIdentifiers(PT_ID);
         assertEquals(0, docIdsBefore.size());
 
         //when
-        serviceMetadataService.saveServiceMetadata(SERVICE_GROUP_ID, DOC_ID, inServiceMetadataXml);
-        Document outServiceMetadataDoc = serviceMetadataService.getServiceMetadataDocument(SERVICE_GROUP_ID, DOC_ID);
+        testInstance.saveServiceMetadata(null, PT_ID, DOC_ID, inServiceMetadataXml);
+        List<DocumentIdentifier> docIdsAfter = testInstance.findServiceMetadataIdentifiers(PT_ID);
+        Document outServiceMetadataDoc = testInstance.getServiceMetadataDocument(PT_ID, DOC_ID);
 
         //then
-        assertEquals(expectedSignedServiceMetadataXml, ServiceMetadataConverter.toString(outServiceMetadataDoc));
-        List<DocumentIdentifier> docIdsAfter = serviceMetadataService.findServiceMetadataIdentifiers(SERVICE_GROUP_ID);
         assertEquals(1, docIdsAfter.size());
-        assertTrue(DOC_ID.equals(docIdsAfter.get(0)));
+        assertEquals(DOC_ID.getValue().toLowerCase(), docIdsAfter.get(0).getValue()); // normalized
+        assertEquals(DOC_ID.getScheme().toLowerCase(), docIdsAfter.get(0).getScheme()); // normalized
+        assertEquals(expectedSignedServiceMetadataXml, ServiceMetadataConverter.toString(outServiceMetadataDoc));
     }
 
-    @Test(expected = NotFoundException.class)
-    public void notFoundExceptionThrownWhenReadingNotExisting() {
-        serviceMetadataService.getServiceMetadataDocument(SERVICE_GROUP_ID, DOC_ID);
+    @Test
+    public void serviceMetadataNotExistsWhenReading() {
+
+        expectedExeption.expect(SMPRuntimeException.class);
+        expectedExeption.expectMessage(ErrorCode.METADATA_NOT_EXISTS.getMessage(SERVICE_GROUP_ID.getValue().toLowerCase(),
+                SERVICE_GROUP_ID.getScheme().toLowerCase(),DOC_ID.getValue().toLowerCase(), DOC_ID.getScheme().toLowerCase()));
+
+        testInstance.getServiceMetadataDocument(SERVICE_GROUP_ID, DOC_ID);
     }
 
-    @Test(expected = NotFoundException.class)
-    public void notFoundExceptionThrownWhenDeletingNotExisting() {
-        serviceMetadataService.deleteServiceMetadata(SERVICE_GROUP_ID, DOC_ID);
+
+    @Test
+    public void serviceMetadataNotExistsWhenDeleting() {
+        // given
+        expectedExeption.expect(SMPRuntimeException.class);
+        expectedExeption.expectMessage(ErrorCode.METADATA_NOT_EXISTS.getMessage(SERVICE_GROUP_ID.getValue().toLowerCase(),
+                SERVICE_GROUP_ID.getScheme().toLowerCase(),DOC_ID.getValue().toLowerCase(), DOC_ID.getScheme().toLowerCase()));
+        // when - then
+        testInstance.deleteServiceMetadata(null, SERVICE_GROUP_ID, DOC_ID);
     }
 
     @Test
     public void saveAndDeletePositiveScenario() throws IOException {
         //given
         String inServiceMetadataXml = loadDocumentAsString(SERVICE_METADATA_XML_PATH);
-        serviceMetadataService.saveServiceMetadata(SERVICE_GROUP_ID, DOC_ID, inServiceMetadataXml);
-        List<DocumentIdentifier> docIdsBefore = serviceMetadataService.findServiceMetadataIdentifiers(SERVICE_GROUP_ID);
+        testInstance.saveServiceMetadata(null, PT_ID, DOC_ID, inServiceMetadataXml);
+        List<DocumentIdentifier> docIdsBefore = testInstance.findServiceMetadataIdentifiers(PT_ID);
         assertEquals(1, docIdsBefore.size());
-        DBServiceMetadata dbServiceMetadata = serviceMetadataDao.find(ServiceMetadataConverter.toDbModel(SERVICE_GROUP_ID, DOC_ID));
-        assertNotNull(dbServiceMetadata);
+        Optional<DBServiceMetadata> dbServiceMetadata = serviceMetadataDao.findServiceMetadata(
+                PT_ID.getValue().toLowerCase(), PT_ID.getScheme().toLowerCase(),
+                DOC_ID.getValue().toLowerCase(), DOC_ID.getScheme().toLowerCase());;
+        assertTrue(dbServiceMetadata.isPresent());
 
         //when
-        serviceMetadataService.deleteServiceMetadata(SERVICE_GROUP_ID, DOC_ID);
+        testInstance.deleteServiceMetadata(null, PT_ID, DOC_ID);
 
         //then
-        List<DocumentIdentifier> docIdsAfter = serviceMetadataService.findServiceMetadataIdentifiers(SERVICE_GROUP_ID);
+        List<DocumentIdentifier> docIdsAfter = testInstance.findServiceMetadataIdentifiers(SERVICE_GROUP_ID);
         assertEquals(0, docIdsAfter.size());
-        try {
-            em.refresh(dbServiceMetadata);
-        }catch (EntityNotFoundException e){
-            // expected and needed - Hibernate's changes made on the same entity
-            // by persist() and Queries were not aware of each other
-        }
 
-        try {
-            serviceMetadataService.getServiceMetadataDocument(SERVICE_GROUP_ID, DOC_ID);
-        } catch (NotFoundException e) {
-            return;
-        }
-        fail("ServiceMetadata has not been deleted");
+        expectedExeption.expect(SMPRuntimeException.class);
+        expectedExeption.expectMessage(ErrorCode.METADATA_NOT_EXISTS.getMessage(SERVICE_GROUP_ID.getValue().toLowerCase(),
+                SERVICE_GROUP_ID.getScheme().toLowerCase(),DOC_ID.getValue().toLowerCase(), DOC_ID.getScheme().toLowerCase()));
+
+        testInstance.getServiceMetadataDocument(SERVICE_GROUP_ID, DOC_ID);
     }
 
     @Test
     public void updatePositiveScenario() throws IOException, JAXBException, TransformerException {
         //given
         String oldServiceMetadataXml = loadDocumentAsString(SERVICE_METADATA_XML_PATH);
-        serviceMetadataService.saveServiceMetadata(SERVICE_GROUP_ID, DOC_ID, oldServiceMetadataXml);
+        testInstance.saveServiceMetadata(null, PT_ID, DOC_ID, oldServiceMetadataXml);
 
         ServiceMetadata newServiceMetadata = unmarshal(loadDocumentAsString(SERVICE_METADATA_XML_PATH));
         EndpointType endpoint = newServiceMetadata.getServiceInformation().getProcessList().getProcesses().get(0).getServiceEndpointList().getEndpoints().get(0);
         endpoint.setServiceDescription("New Description");
         String newServiceMetadataXml = marshall(newServiceMetadata);
-        serviceMetadataService.saveServiceMetadata(SERVICE_GROUP_ID, DOC_ID, newServiceMetadataXml);
+        testInstance.saveServiceMetadata(null, PT_ID, DOC_ID, newServiceMetadataXml);
 
         //when
-
-        Document resultServiceMetadataDoc = serviceMetadataService.getServiceMetadataDocument(SERVICE_GROUP_ID, DOC_ID);
+        Document resultServiceMetadataDoc = testInstance.getServiceMetadataDocument(PT_ID, DOC_ID);
         //then
         String newDescription = resultServiceMetadataDoc.getElementsByTagName("ServiceDescription").item(0).getTextContent();
         assertEquals("New Description", newDescription);
-
     }
 
     @Test
     public void findServiceMetadataIdsPositiveScenario() throws IOException, JAXBException, TransformerException {
         //given
         String serviceMetadataXml1 = loadDocumentAsString(SERVICE_METADATA_XML_PATH);
-        serviceMetadataService.saveServiceMetadata(SERVICE_GROUP_ID, DOC_ID, serviceMetadataXml1);
+        testInstance.saveServiceMetadata(null, PT_ID, DOC_ID, serviceMetadataXml1);
 
         String secondDocIdValue = "second-doc-id";
         DocumentIdentifier secondDocId = new DocumentIdentifier(secondDocIdValue, DOC_ID.getScheme());
         ServiceMetadata serviceMetadata2 = unmarshal(loadDocumentAsString(SERVICE_METADATA_XML_PATH));
         serviceMetadata2.getServiceInformation().getDocumentIdentifier().setValue(secondDocIdValue);
         String serviceMetadataXml2 = marshall(serviceMetadata2);
-        serviceMetadataService.saveServiceMetadata(SERVICE_GROUP_ID, secondDocId, serviceMetadataXml2);
+        testInstance.saveServiceMetadata(null, PT_ID, secondDocId, serviceMetadataXml2);
 
         //when
-        List<DocumentIdentifier> docIds = serviceMetadataService.findServiceMetadataIdentifiers(SERVICE_GROUP_ID);
+        List<DocumentIdentifier> docIds = testInstance.findServiceMetadataIdentifiers(PT_ID);
 
         //then
         assertEquals(2, docIds.size());
         DocumentIdentifier docId1 = docIds.get(0);
-        assertEquals(DOC_ID.getScheme(), docId1.getScheme());
-        assertEquals(DOC_ID.getValue(), docId1.getValue());
+        assertEquals(DOC_ID.getScheme().toLowerCase(), docId1.getScheme());
+        assertEquals(DOC_ID.getValue().toLowerCase(), docId1.getValue());
         DocumentIdentifier docId2 = docIds.get(1);
-        assertEquals(DOC_ID.getScheme(), docId2.getScheme());
+        assertEquals(DOC_ID.getScheme().toLowerCase(), docId2.getScheme());
         assertEquals(secondDocIdValue, docId2.getValue());
     }
+
+
 }

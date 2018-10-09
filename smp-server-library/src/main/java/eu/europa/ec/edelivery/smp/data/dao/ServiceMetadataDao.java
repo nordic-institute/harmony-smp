@@ -13,11 +13,17 @@
 
 package eu.europa.ec.edelivery.smp.data.dao;
 
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadataId;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import org.springframework.stereotype.Repository;
 
+import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
+import javax.persistence.TypedQuery;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by gutowpa on 14/11/2017.
@@ -25,12 +31,40 @@ import java.util.List;
 @Repository
 public class ServiceMetadataDao extends BaseDao<DBServiceMetadata> {
 
-    public List<DBServiceMetadataId> findIdsByServiceGroup(String participantIdScheme,
-                                                           String participantIdValue) {
+    /**
+     * Method returns DBServiceGroup by domain, and participant. If there is no service group it returns empty Option.
+     * If more than one result returns IllegalStateException caused by database data inconsistency.
+     *
+     * @param participantId participant id
+     * @param participantSchema        participant identifier schema
+     * @param documentId  document id
+     * @param documentSchema document identifier schema
+     *
+     * @return Optional DBServiceMetadata - empty if no metadata found else with DBServiceMetadata objecdt
+     */
 
-        return em.createQuery("SELECT p.id FROM DBServiceMetadata p WHERE p.id.businessIdentifierScheme = :scheme AND p.id.businessIdentifier = :value", DBServiceMetadataId.class)
-                .setParameter("scheme", participantIdScheme)
-                .setParameter("value", participantIdValue)
-                .getResultList();
+    public Optional<DBServiceMetadata> findServiceMetadata(String participantId, String participantSchema, String documentId, String documentSchema){
+
+        try {
+            TypedQuery<DBServiceMetadata> query = memEManager.createNamedQuery("DBServiceMetadata.getBySGIdentifierAndSMDdentifier", DBServiceMetadata.class);
+            query.setParameter("partcId", participantId);
+            query.setParameter("partcSch", participantSchema);
+            query.setParameter("docId", documentId);
+            query.setParameter("docSch", documentSchema);
+            DBServiceMetadata res = query.getSingleResult();
+            return Optional.of(res);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        } catch (NonUniqueResultException e) {
+            throw new IllegalStateException(ErrorCode.ILLEGAL_STATE_SG_MULTIPLE_ENTRY.getMessage(documentId,documentSchema,participantId, participantSchema));
+        }
     }
+
+    public List<DBServiceMetadata> getAllMetadataForServiceGroup(String participantId,
+                                                         String participantSchema) {
+        TypedQuery<DBServiceMetadata> query = memEManager.createNamedQuery("DBServiceMetadata.getBySGIdentifier", DBServiceMetadata.class);
+        query.setParameter("partcId", participantId);
+        query.setParameter("partcSch", participantSchema);
+        return query.getResultList();
+   }
 }

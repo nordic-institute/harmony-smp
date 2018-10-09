@@ -26,8 +26,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import static eu.europa.ec.edelivery.smp.error.ErrorBusinessCode.OUT_OF_RANGE;
-import static eu.europa.ec.edelivery.smp.error.ErrorBusinessCode.WRONG_FIELD;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.OUT_OF_RANGE;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.WRONG_FIELD;
 import static eu.europa.ec.smp.api.Identifiers.*;
 
 /**
