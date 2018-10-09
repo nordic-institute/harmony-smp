@@ -1,11 +1,13 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 
+import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_USERNAME_LENGTH;
@@ -14,30 +16,21 @@ import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_USE
  * @author Joze Rihtarsic
  * @since 4.1
  */
-
-@Entity
-@Table(name = "smp_user")
 public class UserRO implements Serializable {
 
 
     private static final long serialVersionUID = -4971552086560325302L;
-    @Id
-    @Column(name = "username")
     private String username;
-    @Column(name = "password")
     private String password;
-    @Column(name = "isadmin")
-    private boolean isAdmin;
+    private String email;
+    LocalDateTime passwordChanged;
+    private boolean active = true;
+    private String role;
 
     public UserRO(){
 
     }
 
-    public UserRO(String username, String password, boolean isAdmin) {
-        this.username = username;
-        this.password = password;
-        this.isAdmin = isAdmin;
-    }
 
     public String getUsername() {
         return username;
@@ -55,25 +48,35 @@ public class UserRO implements Serializable {
         this.password = password;
     }
 
-    public boolean isAdmin() {
-        return isAdmin;
+    public String getEmail() {
+        return email;
     }
 
-    public void setAdmin(boolean admin) {
-        isAdmin = admin;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UserRO userRO = (UserRO) o;
-        return Objects.equals(username, userRO.username);
+    public LocalDateTime getPasswordChanged() {
+        return passwordChanged;
     }
 
-    @Override
-    public int hashCode() {
+    public void setPasswordChanged(LocalDateTime passwordChanged) {
+        this.passwordChanged = passwordChanged;
+    }
 
-        return Objects.hash(username);
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 }

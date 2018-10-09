@@ -14,8 +14,6 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
@@ -24,12 +22,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static org.junit.Assert.*;
@@ -40,13 +34,13 @@ import static org.junit.Assert.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class ServiceDomainIntegrationTest extends AbstractServiceIntegrationTest {
+public class DomainServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();
 
     @Autowired
-    protected ServiceDomain testInstance;
+    protected DomainService testInstance;
 
     @Before
     @Transactional

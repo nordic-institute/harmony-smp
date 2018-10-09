@@ -60,7 +60,7 @@ public class ServiceGroupService {
     private UserDao userDao;
 
     @Autowired
-    private ServiceDomain serviceDomain;
+    private DomainService domainService;
 
     @Autowired
     private SmlConnector smlConnector;
@@ -110,7 +110,7 @@ public class ServiceGroupService {
             throw ex;
         }
         // get domain
-        DBDomain dmn = serviceDomain.getDomain(domain);
+        DBDomain dmn = domainService.getDomain(domain);
         // get servicegroup
         Optional<DBServiceGroup> dbServiceGroup = serviceGroupDao.findServiceGroup(normalizedParticipantId.getValue(),
                 normalizedParticipantId.getScheme());

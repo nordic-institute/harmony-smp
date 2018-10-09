@@ -33,8 +33,10 @@
         <jdbc.url>jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE</jdbc.url>
         <jdbc.user>smp</jdbc.user>
         <jdbc.password>smp</jdbc.password>
+        <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
         <target-database>H2</target-database>
         <jdbc.read-connections.max>10</jdbc.read-connections.max>
+        <spring.jpa.generate-ddl>true</spring.jpa.generate-ddl>
 
     </properties>
 

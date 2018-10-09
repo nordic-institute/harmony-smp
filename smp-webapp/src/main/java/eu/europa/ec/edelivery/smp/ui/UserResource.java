@@ -3,7 +3,7 @@ package eu.europa.ec.edelivery.smp.ui;
 
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
-import eu.europa.ec.edelivery.smp.services.ServiceUIData;
+import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class UserResource {
     private static final Logger LOGGER = LoggerFactory.getLogger(UserResource.class);
 
     @Autowired
-    private ServiceUIData serviceUIData;
+    private UIUserService uiUserService;
 
     @PostConstruct
     protected void init() {
@@ -42,6 +42,6 @@ public class UserResource {
             ) {
 
 
-        return  serviceUIData.getUserList(page,pageSize, orderBy, orderType );
+        return  uiUserService.getTableList(page,pageSize, orderBy, orderType );
     }
 }

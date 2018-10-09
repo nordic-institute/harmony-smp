@@ -42,7 +42,7 @@ public class DomainDao extends BaseDao<DBDomain> {
     public Optional<DBDomain> getTheOnlyDomain() {
         try {
             // expected is only one domain,
-            TypedQuery<DBDomain> query = em.createNamedQuery("DBDomain.getAll", DBDomain.class);
+            TypedQuery<DBDomain> query = memEManager.createNamedQuery("DBDomain.getAll", DBDomain.class);
             return Optional.of(query.getSingleResult());
         } catch (NonUniqueResultException e) {
             return Optional.empty();
@@ -58,7 +58,7 @@ public class DomainDao extends BaseDao<DBDomain> {
      * @throws IllegalStateException if no domain is configured
      */
     public List<DBDomain> getAllDomains() {
-        TypedQuery<DBDomain> query = em.createNamedQuery("DBDomain.getAll", DBDomain.class);
+        TypedQuery<DBDomain> query = memEManager.createNamedQuery("DBDomain.getAll", DBDomain.class);
         return query.getResultList();
     }
 
@@ -71,7 +71,7 @@ public class DomainDao extends BaseDao<DBDomain> {
      */
     public Optional<DBDomain> getDomainByCode(String domainCode) {
         try {
-            TypedQuery<DBDomain> query = em.createNamedQuery("DBDomain.getDomainByCode", DBDomain.class);
+            TypedQuery<DBDomain> query = memEManager.createNamedQuery("DBDomain.getDomainByCode", DBDomain.class);
             query.setParameter("domainCode", domainCode);
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {
@@ -89,7 +89,7 @@ public class DomainDao extends BaseDao<DBDomain> {
      */
     @Transactional
     public boolean removeByDomainCode(String code) {
-        int removedRecords = em.createNamedQuery("DBDomain.removeByDomainCode")
+        int removedRecords = memEManager.createNamedQuery("DBDomain.removeByDomainCode")
                 .setParameter("domainCode", code)
                 .executeUpdate();
         return removedRecords > 0;

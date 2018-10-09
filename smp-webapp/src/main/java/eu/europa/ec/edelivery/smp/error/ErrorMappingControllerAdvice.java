@@ -51,8 +51,8 @@ public class ErrorMappingControllerAdvice {
 
     @ExceptionHandler(SMPRuntimeException.class)
     public ResponseEntity handleSMPRuntimeException(SMPRuntimeException ex) {
-        ResponseEntity response = buildAndWarn(INTERNAL_SERVER_ERROR, ex.getErrorCode().getErrorBusinessCode(), "Unexpected technical error occurred.", ex);
-        log.error("Unhandled exception occurred, unique ID: "+((ErrorResponse) response.getBody()).getErrorUniqueId(), ex);
+        ResponseEntity response = buildAndWarn(HttpStatus.resolve(ex.getErrorCode().getHttpCode()), ex.getErrorCode().getErrorBusinessCode(), ex.getMessage(), ex);
+        log.error( ex.getMessage() + ": "+((ErrorResponse) response.getBody()).getErrorUniqueId(), ex);
         return response;
     }
 
@@ -96,6 +96,7 @@ public class ErrorMappingControllerAdvice {
 
 
     private ResponseEntity buildAndWarn(HttpStatus status, ErrorBusinessCode businessCode, String msg, Exception exception) {
+
         ResponseEntity response = ErrorResponseBuilder.status(status)
                 .businessCode(businessCode)
                 .errorDescription(msg)

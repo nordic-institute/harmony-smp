@@ -52,7 +52,7 @@ public class ServiceMetadataService {
     private ServiceGroupDao serviceGroupDao;
 
     @Autowired
-    private ServiceDomain serviceDomain;
+    private DomainService domainService;
 
     @Autowired
     private ServiceMetadataSigner signer;
@@ -99,7 +99,7 @@ public class ServiceMetadataService {
                     normalizedServiceGroupId.getScheme());
         }
         //test and retrieve domain
-        DBDomain dbDomain = serviceDomain.getDomain(domain);
+        DBDomain dbDomain = domainService.getDomain(domain);
 
         Optional<DBServiceMetadata> doc =  serviceMetadataDao.findServiceMetadata(normalizedServiceGroupId.getValue(),
                 normalizedServiceGroupId.getScheme(), normalizedDocId.getValue(), normalizedDocId.getScheme());
