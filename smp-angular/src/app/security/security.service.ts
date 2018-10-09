@@ -14,7 +14,7 @@ export class SecurityService {
   constructor (private http: Http, private securityEventService: SecurityEventService, private domainService: DomainService) {
   }
 
-  logi(username: string, password: string) {
+  login(username: string, password: string) {
     this.domainService.resetDomain();
     let headers = new Headers({'Content-Type': 'application/json'});
     return this.http.post('rest/security/authentication',
@@ -34,7 +34,7 @@ export class SecurityService {
         });
   }
 
-  logou() {
+  logout() {
     console.log('Logging out');
     this.domainService.resetDomain();
     this.http.delete('rest/security/authentication').subscribe((res: Response) => {
