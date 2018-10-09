@@ -1,31 +1,18 @@
-
 <smp-search-table
   page_id= 'user_id'
   title= 'Users'
   [columnPicker] = "columnPicker"
-  url="ui/user"
+  [url]="'ui/user'"
   [additionalToolButtons]="additionalToolButtons"
   [searchTableController]="userController"
   [searchPanel]="searchPanel"
-  [filter]="filter"
+  [filter]="filter">
 
->
-
-
-  <ng-template #additionalToolButtons >
-
-  </ng-template>
+  <ng-template #additionalToolButtons></ng-template>
 
   <ng-template #searchPanel>
     <md-input-container>
-      <input mdInput placeholder="Username" name="Username" [(ngModel)]="filter.messageId"
-             #messageId="ngModel" id="messageid_id">
+      <input mdInput placeholder="Username" name="Username" [(ngModel)]="filter.userName" #messageId="ngModel">
     </md-input-container>
-    <md-input-container>
-      <input mdInput placeholder="isAdmin" name="isAdmin" [(ngModel)]="filter.messageId"
-             #messageId="ngModel" id="participanschema_id">
-    </md-input-container>
-
   </ng-template>
-
 </smp-search-table>
