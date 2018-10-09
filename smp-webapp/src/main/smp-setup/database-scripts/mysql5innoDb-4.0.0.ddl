@@ -10,9 +10,7 @@
 -- See the Licence for the specific language governing permissions and limitations under the Licence.
 
 CREATE TABLE smp_domain (
-  domainId              VARCHAR(50)
-                        CHARACTER SET utf8
-                        COLLATE utf8_bin NOT NULL,
+  domainId              VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   bdmslClientCertHeader VARCHAR(4000)
                         CHARACTER SET utf8
                         COLLATE utf8_bin NULL,
@@ -42,7 +40,7 @@ CREATE TABLE smp_service_group (
                            CHARACTER SET utf8
                            COLLATE utf8_bin NOT NULL
                            DEFAULT 'domain1',
-  extension                TEXT             NULL DEFAULT NULL,
+  xmlContent                TEXT             NULL DEFAULT NULL,
   PRIMARY KEY (businessIdentifier, businessIdentifierScheme),
   CONSTRAINT FK_srv_group_domain FOREIGN KEY (domainId)
     REFERENCES smp_domain (domainId)

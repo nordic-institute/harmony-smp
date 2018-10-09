@@ -1,278 +1,264 @@
+--
 -- Copyright 2018 European Commission | CEF eDelivery
 --
--- Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+-- Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the Licence);
 -- You may not use this work except in compliance with the Licence.
 --
 -- You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
 --
--- Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
+-- Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an AS IS basis,
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the Licence for the specific language governing permissions and limitations under the Licence.
 
-CREATE TABLE smp_domain (
-  domainId              VARCHAR(50)
-                        CHARACTER SET utf8
-                        COLLATE utf8_bin NOT NULL,
-  bdmslClientCertHeader VARCHAR(4000)
-                        CHARACTER SET utf8
-                        COLLATE utf8_bin NULL,
-  bdmslClientCertAlias  VARCHAR(50)
-                        CHARACTER SET utf8
-                        COLLATE utf8_bin NULL,
-  bdmslSmpId            VARCHAR(50)
-                        CHARACTER SET utf8
-                        COLLATE utf8_bin NOT NULL,
-  signatureCertAlias    VARCHAR(50)
-                        CHARACTER SET utf8
-                        COLLATE utf8_bin NULL,
-  PRIMARY KEY(domainId)
+
+/************************************************
+* CREATE TABLES
+************************************************/
+CREATE TABLE SMP_CONFIGURATION  (
+  PROPERTY VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+	VALUE VARCHAR(4000) CHARACTER SET utf8 COLLATE utf8_bin,
+	DESCRIPTION VARCHAR(4000) CHARACTER SET utf8 COLLATE utf8_bin,
+	CREATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	LAST_UPDATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	CONSTRAINT SMP_CONFIGURATION_PKEY PRIMARY KEY (PROPERTY)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+CREATE TABLE SMP_DOMAIN  (
+  ID DECIMAL(38,0) NOT NULL,
+	DOMAIN_CODE VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+	SML_SUBDOMAIN VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+	SML_SMP_ID VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin,
+	SML_PARTC_IDENT_REGEXP VARCHAR(1024) CHARACTER SET utf8 COLLATE utf8_bin,
+	SML_CLIENT_CERT_HEADER VARCHAR(4000) CHARACTER SET utf8 COLLATE utf8_bin,
+	SML_CLIENT_KEY_ALIAS VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_bin,
+	SIGNATURE_KEY_ALIAS VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_bin,
+	CREATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	LAST_UPDATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  CONSTRAINT SMP_DOMAIN_PKEY PRIMARY KEY (ID)
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
 
-CREATE TABLE smp_domain_AUD (
-  domainId              VARCHAR(50)
-                        CHARACTER SET utf8
-                        COLLATE utf8_bin NOT NULL,
-  bdmslClientCertHeader VARCHAR(4000)
-                        CHARACTER SET utf8
-                        COLLATE utf8_bin NULL,
-  bdmslClientCertAlias  VARCHAR(50)
-                        CHARACTER SET utf8
-                        COLLATE utf8_bin NULL,
-  bdmslSmpId            VARCHAR(50)
-                        CHARACTER SET utf8
-                        COLLATE utf8_bin NOT NULL,
-  signatureCertAlias    VARCHAR(50)
-                        CHARACTER SET utf8
-                        COLLATE utf8_bin NULL,
-  REV integer not null,
-  REVTYPE tinyint,
-  PRIMARY KEY(domainId, REV)
+CREATE UNIQUE INDEX SMP_DOMAIN_CODE_IDX ON SMP_DOMAIN (DOMAIN_CODE);
+CREATE UNIQUE INDEX SMP_DOMAIN_CODE_IDX ON SMP_DOMAIN (SML_SUBDOMAIN);
+
+
+
+CREATE TABLE SMP_SERVICE_GROUP (
+  ID DECIMAL(38,0) NOT NULL,
+	FK_DOMAIN_ID DECIMAL(38,0) NOT NULL,
+	PARTICIPANT_IDENTIFIER VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+	PARTICIPANT_SCHEME VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin,
+	EXTENSION LONGTEXT,
+	CREATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	LAST_UPDATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	CONSTRAINT SMP_SERVICE_GROUP_PKEY PRIMARY KEY (ID),
+	CONSTRAINT SMP_SG_DOMAIN_ID_FKEY FOREIGN KEY (FK_DOMAIN_ID) REFERENCES SMP_DOMAIN ( ID)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+/**speedup search */
+CREATE INDEX SMP_SG_PART_ID_IDX ON SMP_SERVICE_GROUP (PARTICIPANT_IDENTIFIER);
+CREATE INDEX SMP_SG_PART_SCH_IDX ON SMP_SERVICE_GROUP (PARTICIPANT_SCHEME);
+CREATE UNIQUE INDEX SMP_SG_UNIQ_PARTC_IDX ON SMP_SERVICE_GROUP (FK_DOMAIN_ID, PARTICIPANT_SCHEME, PARTICIPANT_IDENTIFIER);
+
+
+CREATE TABLE SMP_SERVICE_METADATA (
+  ID DECIMAL(38,0) NOT NULL,
+	FK_SG_ID DECIMAL(38,0) NOT NULL,
+	DOCUMENT_IDENTIFIER VARCHAR(500) CHARACTER SET utf8 COLLATE utf8_bin,
+	DOCUMENT_SCHEME VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin,
+	XML_CONTENT LONGTEXT,
+	CREATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	LAST_UPDATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	CONSTRAINT SMP_SERVICE_METADATA_PKEY PRIMARY KEY (ID),
+	CONSTRAINT MT_SG_ID_FKEY FOREIGN KEY (FK_SG_ID) REFERENCES SMP_SERVICE_GROUP (ID)
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
 
+/**speedup search */
+CREATE INDEX SMP_MD_DOC_ID_IDX ON SMP_SERVICE_METADATA (DOCUMENT_IDENTIFIER);
+CREATE INDEX SMP_MD_DOC_SCH_IDX ON SMP_SERVICE_METADATA (DOCUMENT_SCHEME);
+CREATE UNIQUE INDEX SMP_MD_UNIQ_DOC_IDX ON SMP_SERVICE_METADATA (FK_SG_ID, DOCUMENT_SCHEME, DOCUMENT_IDENTIFIER);
 
-CREATE TABLE smp_service_group (
-  businessIdentifier       VARCHAR(50)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  businessIdentifierScheme VARCHAR(100)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  domainId                 VARCHAR(50)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL
-                           DEFAULT 'domain1',
-  extension                TEXT             NULL DEFAULT NULL,
-  PRIMARY KEY (businessIdentifier, businessIdentifierScheme),
-  CONSTRAINT FK_srv_group_domain FOREIGN KEY (domainId)
-    REFERENCES smp_domain (domainId)
+CREATE TABLE SMP_CERTIFICATE (
+  ID DECIMAL(38,0) NOT NULL,
+	CERTIFICATE_ID VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+	VALID_FROM DATETIME NOT NULL,
+	VALID_UNTIL DATETIME NOT NULL,
+	PEM_ENCODING LONGTEXT,
+	NEW_CERT_CHANGE_DATE DATETIME,
+	NEW_CERT_ID DECIMAL(38,0),
+	CREATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	LAST_UPDATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	CONSTRAINT SMP_CERTIFICATE_PKEY PRIMARY KEY (ID)
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
-CREATE TABLE smp_service_group_AUD (
-  businessIdentifier       VARCHAR(50)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  businessIdentifierScheme VARCHAR(100)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  domainId                 VARCHAR(50)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL
-                           DEFAULT 'domain1',
-  extension                TEXT             NULL DEFAULT NULL,
-  REV integer not null,
-  REVTYPE tinyint,
-  PRIMARY KEY (businessIdentifier, businessIdentifierScheme, REV)
+CREATE UNIQUE INDEX SMP_CERTIFICATE_ID_IDX ON SMP_CERTIFICATE (CERTIFICATE_ID);
+
+CREATE TABLE SMP_USER (
+  ID DECIMAL(38,0) NOT NULL,
+	USERNAME VARCHAR(256) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+	PASSWORD VARCHAR(256) CHARACTER SET utf8 COLLATE utf8_bin,
+	FK_CERTIFICATE_ID DECIMAL(38,0),
+	ROLE VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+	ACTIVE TINYINT DEFAULT 1 NOT NULL,
+	CREATED_ON DATETIME NOT NULL,
+	LAST_UPDATED_ON DATETIME NOT NULL,
+	CONSTRAINT SMP_USER_PKEY PRIMARY KEY (ID),
+	CONSTRAINT USER_CERTIFICATE_ID_FKEY FOREIGN KEY (ID) REFERENCES SMP_CERTIFICATE (ID),
+	CONSTRAINT CHECK_ACTIVE_VALUE CHECK (ACTIVE = 0 OR ACTIVE = 1)
 )
   ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
 
-CREATE TABLE smp_service_metadata (
-  documentIdentifier       VARCHAR(500)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  documentIdentifierScheme VARCHAR(100)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  businessIdentifier       VARCHAR(50)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  businessIdentifierScheme VARCHAR(100)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  xmlcontent               TEXT,
-  PRIMARY KEY (documentIdentifier, documentIdentifierScheme, businessIdentifier, businessIdentifierScheme),
-  KEY FK_service_metadata_service_group (businessIdentifier, businessIdentifierScheme),
-  CONSTRAINT FK_service_metadata_service_group FOREIGN KEY (businessIdentifier, businessIdentifierScheme) REFERENCES smp_service_group (businessIdentifier, businessIdentifierScheme)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-)
-  ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
+CREATE UNIQUE INDEX SMP_USER_USERNAME_IDX ON SMP_USER (USERNAME);
 
-CREATE TABLE smp_service_metadata_AUD (
-  documentIdentifier       VARCHAR(500)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  documentIdentifierScheme VARCHAR(100)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  businessIdentifier       VARCHAR(50)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  businessIdentifierScheme VARCHAR(100)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  xmlcontent               TEXT,
-  REV integer not null,
-  REVTYPE tinyint,
-  PRIMARY KEY (documentIdentifier, documentIdentifierScheme, businessIdentifier, businessIdentifierScheme, REV)
-)
-  ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
-
-
-CREATE TABLE smp_user (
-  username VARCHAR(256)         NOT NULL,
-  password VARCHAR(256),
-  isadmin  TINYINT(1) DEFAULT 0 NOT NULL,
-  PRIMARY KEY (username)
-)
-  ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
-
-CREATE TABLE smp_user_AUD (
-  username VARCHAR(256)         NOT NULL,
-  password VARCHAR(256),
-  isadmin  TINYINT(1) DEFAULT 0 NOT NULL,
-  REV integer not null,
-  REVTYPE tinyint,
-  PRIMARY KEY (username, REV)
-)
-  ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
-
-
-CREATE TABLE smp_ownership (
-  username                 VARCHAR(256)     NOT NULL,
-  businessIdentifier       VARCHAR(50)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  businessIdentifierScheme VARCHAR(100)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  KEY FK_ownership_service_group (businessIdentifier, businessIdentifierScheme),
-  KEY FK_ownership_user (username),
-  CONSTRAINT FK_ownership_service_group FOREIGN KEY (businessIdentifier, businessIdentifierScheme) REFERENCES smp_service_group (businessIdentifier, businessIdentifierScheme)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT FK_ownership_user FOREIGN KEY (username) REFERENCES smp_user (username)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-)
-  ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
-
-
-CREATE TABLE smp_ownership_AUD (
-  username                 VARCHAR(256)     NOT NULL,
-  businessIdentifier       VARCHAR(50)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  businessIdentifierScheme VARCHAR(100)
-                           CHARACTER SET utf8
-                           COLLATE utf8_bin NOT NULL,
-  REV integer not null,
-  REVTYPE tinyint,
-  PRIMARY KEY (username, businessIdentifier, businessIdentifierScheme, REV)
-)
-  ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
-
-
-CREATE TABLE SMP_REV_INFO (
-  ID INT AUTO_INCREMENT NOT NULL,
-  TIMESTAMP BIGINT NULL,
-  REVISION_DATE timestamp NULL,
-  username VARCHAR(255) NULL,
-  CONSTRAINT PK_SMP_REV_INFO PRIMARY KEY (ID)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8;
-
-
-
-DELIMITER //
-
-DROP PROCEDURE IF EXISTS validate_new_user //
-CREATE PROCEDURE validate_new_user (IN new_user_is_admin TINYINT(1))
-BEGIN
-    IF new_user_is_admin <> 0 AND new_user_is_admin <> 1
-    THEN
-      SIGNAL SQLSTATE '99999'
-      SET MESSAGE_TEXT = '0 or 1 are the only allowed values for ISADMIN column';
-    END IF;
-  END //
-
-DROP PROCEDURE IF EXISTS validate_new_domain //
-CREATE PROCEDURE validate_new_domain (IN new_bdmsl_client_cert_alias varchar(50), IN new_bdmsl_client_cert_header varchar(4000))
-BEGIN
-    IF ((new_bdmsl_client_cert_alias > '' OR new_bdmsl_client_cert_alias = null) AND (new_bdmsl_client_cert_header > '' OR new_bdmsl_client_cert_header = null))
-    THEN
-      SIGNAL SQLSTATE '99999'
-      SET MESSAGE_TEXT = 'Both BDMSL authentication ways cannot be switched ON at the same time: bdmslClientCertAlias and bdmslClientCertHeader';
-    END IF;
-  END //
-
-
-DROP TRIGGER IF EXISTS smp_domain_check_bdmsl_auth_before_insert //
-DROP TRIGGER IF EXISTS smp_domain_check_bdmsl_auth_before_update //
-CREATE TRIGGER smp_domain_check_bdmsl_auth_before_update
-BEFORE UPDATE ON smp_domain
-FOR EACH ROW
-  BEGIN
-    call validate_new_domain(NEW.bdmslClientCertAlias, NEW.bdmslClientCertHeader);
-  END //
-CREATE TRIGGER smp_domain_check_bdmsl_auth_before_insert
-BEFORE INSERT ON smp_domain
-FOR EACH ROW
-  BEGIN
-    call validate_new_domain(NEW.bdmslClientCertAlias, NEW.bdmslClientCertHeader);
-  END //
-
-
-DROP TRIGGER IF EXISTS smp_user_check_is_admin_value_before_insert //
-DROP TRIGGER IF EXISTS smp_user_check_is_admin_value_before_update //
-
-CREATE TRIGGER smp_user_check_is_admin_value_before_insert
-BEFORE INSERT ON smp_user
-FOR EACH ROW
-  BEGIN
-	call validate_new_user(NEW.ISADMIN);
-  END //
-CREATE TRIGGER smp_user_check_is_admin_value_before_update
-BEFORE UPDATE ON smp_user
-FOR EACH ROW
-  BEGIN
-	call validate_new_user(NEW.ISADMIN);
-  END //
-
-DELIMITER ;
-
-create table hibernate_sequence(
-    next_val BIGINT NOT NULL
+CREATE TABLE SMP_OWNERSHIP (
+	FK_USER_ID DOUBLE NOT NULL,
+	FK_SG_ID DOUBLE NOT NULL,
+	CONSTRAINT OWN_USER_SG_PKEY PRIMARY KEY (FK_USER_ID,FK_SG_ID )
 );
 
-INSERT INTO hibernate_sequence(next_val) values(1);
+/************************************************
+* CREATE AUDIT TABLES
+************************************************/
+CREATE TABLE SMP_REV_INFO (
+  ID DECIMAL(38, 0) NOT NULL,
+  TIMESTAMP DECIMAL(38, 0),
+  REVISION_DATE DATETIME(6),
+  USERNAME VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin,
+  CONSTRAINT PK_SMP_REV_INFO PRIMARY KEY (ID)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
 
-INSERT INTO smp_domain(domainId, bdmslSmpId) VALUES('domain1', 'DEFAULT-SMP-ID');
--- default admin user with password "changeit"
-INSERT INTO smp_user(username, password, isadmin) VALUES ('smp_admin', '$2a$10$SZXMo7K/wA.ULWxH7uximOxeNk4mf3zU6nxJx/2VfKA19QlqwSpNO', '1');
+CREATE TABLE SMP_CONFIGURATION_AUD  (
+  PROPERTY VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+	VALUE VARCHAR(4000) CHARACTER SET utf8 COLLATE utf8_bin,
+	DESCRIPTION VARCHAR(4000) CHARACTER SET utf8 COLLATE utf8_bin,
+	CREATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	LAST_UPDATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	REV INTEGER NOT NULL,
+  REVTYPE SMALLINT,
+	CONSTRAINT SMP_CONFIGURATION_AUD_PKEY PRIMARY KEY (PROPERTY,REV)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+CREATE TABLE SMP_DOMAIN_AUD  (
+  ID DECIMAL(38,0) NOT NULL,
+	DOMAIN_CODE VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+	SML_SUBDOMAIN VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin,
+	SML_SMP_ID VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin,
+	SML_PARTC_IDENT_REGEXP VARCHAR(1024) CHARACTER SET utf8 COLLATE utf8_bin,
+	SML_CLIENT_CERT_HEADER VARCHAR(4000) CHARACTER SET utf8 COLLATE utf8_bin,
+	SML_CLIENT_KEY_ALIAS VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_bin,
+	SIGNATURE_KEY_ALIAS VARCHAR(50) CHARACTER SET utf8 COLLATE utf8_bin,
+	CREATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	LAST_UPDATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	REV INTEGER NOT NULL,
+  REVTYPE SMALLINT,
+  CONSTRAINT SMP_DOMAIN_AUD_PKEY PRIMARY KEY (ID,REV)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+CREATE TABLE SMP_SERVICE_GROUP_AUD (
+  ID DECIMAL(38,0) NOT NULL,
+	FK_DOMAIN_ID DOUBLE NOT NULL,
+	PARTICIPANT_IDENTIFIER VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+	PARTICIPANT_SCHEME VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin,
+	EXTENSION LONGTEXT,
+	CREATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	LAST_UPDATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	REV INTEGER NOT NULL,
+  REVTYPE SMALLINT,
+	CONSTRAINT SMP_SERVICE_GROUP_AUD_PKEY PRIMARY KEY (ID,REV)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+CREATE TABLE SMP_SERVICE_METADATA_AUD(
+  ID DECIMAL(38,0) NOT NULL,
+	FK_SG_ID DOUBLE NOT NULL,
+	DOCUMENT_IDENTIFIER VARCHAR(500) CHARACTER SET utf8 COLLATE utf8_bin,
+	DOCUMENT_SCHEME VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_bin,
+	XML_CONTENT LONGTEXT,
+	CREATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	LAST_UPDATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	REV INTEGER NOT NULL,
+  REVTYPE SMALLINT,
+	CONSTRAINT SMP_SERVICE_METADATA_AUD_PKEY PRIMARY KEY (ID,REV)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+CREATE TABLE SMP_CERTIFICATE_AUD (
+  ID DECIMAL(38,0) NOT NULL,
+	CERTIFICATE_ID VARCHAR(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+	VALID_FROM DATETIME NOT NULL,
+	VALID_UNTIL DATETIME NOT NULL,
+	PEM_ENCODING LONGTEXT,
+	NEW_CERT_CHANGE_DATE DATETIME,
+	NEW_CERT_ID DECIMAL(38,0),
+	CREATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	LAST_UPDATED_ON DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	REV INTEGER NOT NULL,
+  REVTYPE SMALLINT,
+	CONSTRAINT SMP_CERTIFICATE_AUD_PKEY PRIMARY KEY (ID,REV)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+CREATE TABLE SMP_USER_AUD (
+  ID DECIMAL(38,0) NOT NULL,
+	USERNAME VARCHAR(256) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+	PASSWORD VARCHAR(256) CHARACTER SET utf8 COLLATE utf8_bin,
+	FK_CERTIFICATE_ID DOUBLE,
+	ROLE VARCHAR(20) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+	ACTIVE TINYINT DEFAULT 1 NOT NULL,
+	CREATED_ON DATETIME NOT NULL,
+	LAST_UPDATED_ON DATETIME NOT NULL,
+	REV INTEGER NOT NULL,
+  REVTYPE SMALLINT,
+	CONSTRAINT SMP_USER_AUD_PKEY PRIMARY KEY (ID,REV)
+)
+  ENGINE = InnoDB
+  DEFAULT CHARSET = utf8;
+
+CREATE TABLE SMP_OWNERSHIP_AUD (
+	FK_USER_ID DOUBLE NOT NULL,
+	FK_SG_ID DOUBLE NOT NULL,
+	REV INTEGER NOT NULL,
+  REVTYPE SMALLINT,
+	CONSTRAINT OWN_USER_SG_AUD_PKEY PRIMARY KEY (FK_USER_ID,FK_SG_ID,REV )
+);
+
+
+CREATE TABLE SMP_SEQUENCE_TABLE(
+  sequence_name VARCHAR(64) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  next_val BIGINT NOT NULL
+);
+
+
+INSERT INTO SMP_SEQUENCE_TABLE(sequence_name, next_val) values('SMP_CONFIGURATION_SEQ', 1);
+INSERT INTO SMP_SEQUENCE_TABLE(sequence_name, next_val) values('SMP_DOMAIN_SEQ',1);
+INSERT INTO SMP_SEQUENCE_TABLE(sequence_name, next_val) values('SMP_SERVICE_GROUP_SEQ', 1);
+INSERT INTO SMP_SEQUENCE_TABLE(sequence_name, next_val) values('SMP_SERVICE_METADATA_SEQ',1);
+INSERT INTO SMP_SEQUENCE_TABLE(sequence_name, next_val) values('SMP_CERTIFICATE_SEQ',1);
+INSERT INTO SMP_SEQUENCE_TABLE(sequence_name, next_val) values('SMP_USER_SEQ',1);
+INSERT INTO SMP_SEQUENCE_TABLE(sequence_name, next_val) values('SMP_REV_SEQ',1);
+
+
+
 
 commit;

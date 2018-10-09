@@ -13,64 +13,134 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.conversion.ExtensionConverter;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
-import eu.europa.ec.edelivery.smp.exceptions.WrongInputFieldException;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.testutil.DBAssertion;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
+import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
-import org.springframework.test.context.jdbc.Sql;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
+import java.util.Optional;
 
-import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.toDbModel;
 import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.unmarshal;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.USER_IS_NOT_OWNER;
+import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocumentAsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.springframework.util.StringUtils.isEmpty;
+import static org.junit.Assert.*;
 
 /**
  * Created by gutowpa on 18/01/2018.
  */
-@Sql({"classpath:/service_integration_test_data.sql",
-        "classpath:/service_integration_multiple_domains_test_data.sql"})
-public class ServiceGroupServiceMultipleDomainsIntegrationTest extends AbstractServiceGroupServiceIntegrationTest {
+public class ServiceGroupServiceMultipleDomainsIntegrationTest extends AbstractServiceIntegrationTest {
 
-    ;
+    @Rule
+    public ExpectedException expectedExeption = ExpectedException.none();
 
-    @Test(expected = WrongInputFieldException.class)
-    public void explictlySpecifiedDomainIsRequiredWhenSavingInMultipleDomainConfiguration() throws IOException {
-        saveServiceGroup();
+    @Autowired
+    protected ServiceGroupService testInstance;
+
+
+    @Before
+    public void prepareDatabase() {
+        super.prepareDatabaseForMultipeDomainEnv();
     }
 
     @Test
-    public void saveAndReadPositiveScenarioForMultipleDomain() throws IOException {
+    public void getServiceGroupForAllDomainTest() {
         // given
-        ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_XML_PATH));
-        serviceGroupService.saveServiceGroup(inServiceGroup, TestConstants.SECOND_DOMAIN_ID, TestConstants.ADMIN_USERNAME, TestConstants.ADMIN_USERNAME);
+        ParticipantIdentifierType serviceGroupId = new ParticipantIdentifierType();
+        serviceGroupId.setValue(TEST_SG_ID_2);
+        serviceGroupId.setScheme(TEST_SG_SCHEMA_2);
 
         // when
-        DBServiceGroup dbServiceGroup = serviceGroupDao.find(toDbModel(TestConstants.SERVICE_GROUP_ID));
+        ServiceGroup sg = testInstance.getServiceGroup(serviceGroupId);
 
         // then
-        DBDomain dbDomain = dbServiceGroup.getDomain();
-        assertEquals(TestConstants.SECOND_DOMAIN_ID, dbDomain.getId());
-        assertEquals(TestConstants.SECOND_DOMAIN_CERT_HEADER, dbDomain.getBdmslClientCertHeader());
-        assertEquals(TestConstants.SECOND_DOMAIN_SIGNING_ALIAS, dbDomain.getSignatureCertAlias());
-        assertEquals(TestConstants.SECOND_DOMAIN_SMP_ID, dbDomain.getBdmslSmpId());
-        assertTrue(isEmpty(dbDomain.getBdmslClientCertAlias()));
+        assertNotNull(sg);
+        assertEquals(TEST_SG_ID_2, sg.getParticipantIdentifier().getValue());
+        assertEquals(TEST_SG_SCHEMA_2, sg.getParticipantIdentifier().getScheme());
+        assertEquals(1, sg.getExtensions().size());
     }
 
-    @Test(expected = WrongInputFieldException.class)
-    public void changingDomainOfExistingServiceGroupIsNotAllowed() throws Throwable {
+
+    @Test
+    public void createAndReadPositiveScenarioForMultipleDomain() throws IOException {
+        // given
+        ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_POLAND_XML_PATH));
+        Optional<DBServiceGroup> dbsg = serviceGroupDao.findServiceGroup(TEST_SG_ID_PL, TEST_SG_SCHEMA_2);
+        assertFalse(dbsg.isPresent()); // test if exists - it must not :)
+
+        // when
+        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, TEST_DOMAIN_CODE_2, TestConstants.USERNAME_1,
+                TestConstants.USERNAME_1);
+        Optional<DBServiceGroup> optRes = dbAssertion.findAndInitServiceGroup(TEST_SG_ID_PL, TEST_SG_SCHEMA_2);
+
+        // then
+        assertTrue(bCreated);
+        assertTrue(optRes.isPresent());
+        DBServiceGroup dbServiceGroup = optRes.get();
+        assertEquals(1, dbServiceGroup.getServiceGroupDomains().size());
+        assertEquals(TEST_DOMAIN_CODE_2, dbServiceGroup.getServiceGroupDomains().get(0).getDomain().getDomainCode());
+        assertEquals(inServiceGroup.getParticipantIdentifier().getValue(), dbServiceGroup.getParticipantIdentifier());
+        assertEquals(inServiceGroup.getParticipantIdentifier().getScheme(), dbServiceGroup.getParticipantScheme());
+
+    }
+
+    @Test
+    public void updateAndReadPositiveScenarioForMultipleDomain() throws IOException, JAXBException, XMLStreamException {
+        // given
+        ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_TEST2_XML_PATH));
+        Optional<DBServiceGroup> dbsg = serviceGroupDao.findServiceGroup(TEST_SG_ID_2, TEST_SG_SCHEMA_2);
+        assertTrue(dbsg.isPresent()); // test if exists
+        String extension = dbsg.get().getExtension(); // test if exists
+        String newExtension = ExtensionConverter.marshalExtensions(inServiceGroup.getExtensions());
+        assertNotEquals(extension, newExtension); // extension updated
+
+        // when
+        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, TEST_DOMAIN_CODE_1, TestConstants.USERNAME_1,
+                TestConstants.USERNAME_1);
+        serviceGroupDao.clearPersistenceContext();
+
+        Optional<DBServiceGroup> optRes = dbAssertion.findAndInitServiceGroup(TEST_SG_ID_2, TEST_SG_SCHEMA_2);
+
+        // then
+        assertFalse(bCreated);
+        assertTrue(optRes.isPresent());
+        DBServiceGroup dbServiceGroup = optRes.get();
+        assertEquals(1, dbServiceGroup.getServiceGroupDomains().size());
+        assertEquals(TEST_DOMAIN_CODE_1, dbServiceGroup.getServiceGroupDomains().get(0).getDomain().getDomainCode());
+        assertEquals(inServiceGroup.getParticipantIdentifier().getValue(), dbServiceGroup.getParticipantIdentifier());
+        assertEquals(inServiceGroup.getParticipantIdentifier().getScheme(), dbServiceGroup.getParticipantScheme());
+        assertEquals(newExtension, dbServiceGroup.getExtension()); // extension updated
+    }
+
+    @Test
+    public void userIsNotOwnerOfServiceGroup() throws Throwable {
         //given
-        saveServiceGroup();
-        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_XML_PATH));
+        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_TEST2_XML_PATH));
+        DBUser u3 = TestDBUtils.createDBUserByCertificate(TestConstants.USER_CERT_3);
+        userDao.persistFlushDetach(u3);
+
+        expectedExeption.expect(SMPRuntimeException.class);
+        expectedExeption.expectMessage(USER_IS_NOT_OWNER.getMessage(USER_CERT_3, TEST_SG_ID_2, TEST_SG_SCHEMA_2));
 
         //when-then
-        serviceGroupService.saveServiceGroup(newServiceGroup, TestConstants.SECOND_DOMAIN_ID, TestConstants.ADMIN_USERNAME, TestConstants.ADMIN_USERNAME);
+        testInstance.saveServiceGroup(newServiceGroup, TEST_DOMAIN_CODE_2, TestConstants.USER_CERT_3, TestConstants.USER_CERT_3);
     }
-
 
 }

@@ -13,15 +13,30 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
-import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupExtension;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import eu.europa.ec.edelivery.smp.testutil.XmlTestUtils;
+import org.hamcrest.Matchers;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.xml.sax.SAXParseException;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.UnmarshalException;
+import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_EXTENSION_FOR_SG;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.SG_NOT_EXISTS;
 import static org.junit.Assert.*;
 
 /**
@@ -29,10 +44,62 @@ import static org.junit.Assert.*;
  */
 public class ServiceGroupConverterTest {
 
-    private static final String RES_PATH = "/eu/europa/ec/edelivery/smp/conversion/";
+    private static final String RES_PATH = "/examples/conversion/";
+
+    @Rule
+    public ExpectedException expectedExeption = ExpectedException.none();
 
     @Test
-    public void testUnmashallingServiceGroup() throws IOException, JAXBException {
+    public void toServiceGroupTest() {
+        // set
+        DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
+
+        //when
+        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(sg);
+        assertNotNull(serviceGroup);
+        assertEquals(sg.getParticipantIdentifier(), serviceGroup.getParticipantIdentifier().getValue());
+        assertEquals(sg.getParticipantScheme(), serviceGroup.getParticipantIdentifier().getScheme());
+        assertEquals(1, serviceGroup.getExtensions().size());
+    }
+
+    @Test
+    public void toServiceGroupTestMultiExtensions() throws UnsupportedEncodingException, JAXBException, XMLStreamException {
+        // set
+        DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
+        sg.setExtension(TestDBUtils.generateExtension() + TestDBUtils.generateExtension());
+
+        //when-then
+        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(sg);
+        assertNotNull(serviceGroup);
+        assertEquals(sg.getParticipantIdentifier(), serviceGroup.getParticipantIdentifier().getValue());
+        assertEquals(sg.getParticipantScheme(), serviceGroup.getParticipantIdentifier().getScheme());
+        assertEquals(2, serviceGroup.getExtensions().size());
+    }
+
+    @Test
+    public void toServiceGroupTestIsEmpty() {
+        // set
+        //when
+        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(null);
+        assertNull(serviceGroup);
+    }
+
+    @Test
+    public void testInvalidExtension() {
+        //given
+        DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
+        sg.setExtension("<This > is invalid extensions");
+        expectedExeption.expect(SMPRuntimeException.class);
+        expectedExeption.expectCause(Matchers.isA(UnmarshalException.class));
+        expectedExeption.expectMessage(Matchers.startsWith("Invalid extension for service group"));
+
+        //when-then
+        ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(sg);
+    }
+
+
+    @Test
+    public void testUnmashallingServiceGroup() throws IOException {
         //given
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "ServiceGroupOK.xml");
 
@@ -46,18 +113,33 @@ public class ServiceGroupConverterTest {
     }
 
     @Test
+    public void testExtractExtensionsPayload() throws IOException, JAXBException {
+        //given
+        String expectedExt = "<Extension xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\" xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\"><ex:dummynode xmlns:ex=\"http://test.eu\">Sample not mandatory extension</ex:dummynode></Extension>";
+        String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "ServiceGroupWithExtension.xml");
+        assertTrue(inputDoc.contains(expectedExt));
+        ServiceGroup serviceGroup = ServiceGroupConverter.unmarshal(inputDoc);
+
+        //when
+        String val  = ServiceGroupConverter.extractExtensionsPayload(serviceGroup);
+
+        //then
+        assertNotNull(val);
+        assertEquals(expectedExt, val);
+    }
+
+    @Test
     public void testVulnerabilityParsingDTD() throws IOException {
+
+        expectedExeption.expect(SMPRuntimeException.class);
+        expectedExeption.expectCause(Matchers.isA(SAXParseException.class));
+        expectedExeption.expectMessage(Matchers.containsString("DOCTYPE is disallowed"));
         //given
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "ServiceGroupWithDOCTYPE.xml");
 
         //when then
-        try {
-            ServiceGroupConverter.unmarshal(inputDoc);
-        } catch (XmlParsingException e) {
-            assertTrue(e.getMessage().contains("DOCTYPE is disallowed"));
-            assertTrue(e.getCause() instanceof SAXParseException);
-            return;
-        }
+        ServiceGroupConverter.unmarshal(inputDoc);
+
         fail("DOCTYPE declaration must be blocked to prevent from XXE attacks");
     }
 }

@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.error;
 
 import ec.services.smp._1.ErrorResponse;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;

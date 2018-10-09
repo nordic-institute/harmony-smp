@@ -13,25 +13,18 @@ import java.util.Objects;
  * @since 4.1
  */
 
-@Entity
-@Table(name = "smp_service_group")
+
 public class ServiceGroupRO implements Serializable {
 
 
     private static final long serialVersionUID = -7523221767041516157L;
-    @EmbeddedId
-    ServiceGroupROId serviceGroupROId;
+    private String participantIdentifier;
+    private String participantScheme;
+    private boolean smlRegistered = false;
 
-    @Column(name = "domainId")
+
     private String domain;
 
-    public ServiceGroupROId getServiceGroupROId() {
-        return serviceGroupROId;
-    }
-
-    public void setServiceGroupROId(ServiceGroupROId serviceGroupROId) {
-        this.serviceGroupROId = serviceGroupROId;
-    }
 
     public String getDomain() {
         return domain;
@@ -41,68 +34,27 @@ public class ServiceGroupRO implements Serializable {
         this.domain = domain;
     }
 
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ServiceGroupRO that = (ServiceGroupRO) o;
-        return Objects.equals(serviceGroupROId, that.serviceGroupROId);
+    public String getParticipantIdentifier() {
+        return participantIdentifier;
     }
 
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(serviceGroupROId);
+    public void setParticipantIdentifier(String participantIdentifier) {
+        this.participantIdentifier = participantIdentifier;
     }
 
-    @Embeddable
-    public static class ServiceGroupROId implements Serializable {
-        private static final long serialVersionUID = 7895751676689305736L;
-        @Column(name = "businessIdentifier")
-        private String participantId;
-        @Column(name = "businessIdentifierScheme")
-        private String participantSchema;
+    public String getParticipantScheme() {
+        return participantScheme;
+    }
 
-        public ServiceGroupROId(){
+    public void setParticipantScheme(String participantScheme) {
+        this.participantScheme = participantScheme;
+    }
 
-        }
+    public boolean isSmlRegistered() {
+        return smlRegistered;
+    }
 
-        public ServiceGroupROId(String participantId, String participantSchema) {
-            this.participantId = participantId;
-            this.participantSchema = participantSchema;
-        }
-
-        public String getParticipantId() {
-            return participantId;
-        }
-
-        public void setParticipantId(String participantId) {
-            this.participantId = participantId;
-        }
-
-        public String getParticipantSchema() {
-            return participantSchema;
-        }
-
-        public void setParticipantSchema(String participanSchema) {
-            this.participantSchema = participanSchema;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (o == null || getClass() != o.getClass()) return false;
-            ServiceGroupROId that = (ServiceGroupROId) o;
-            return Objects.equals(participantId, that.participantId) &&
-                    Objects.equals(participantSchema, that.participantSchema);
-        }
-
-        @Override
-        public int hashCode() {
-
-            return Objects.hash(participantId, participantSchema);
-        }
+    public void setSmlRegistered(boolean smlRegistered) {
+        this.smlRegistered = smlRegistered;
     }
 }
