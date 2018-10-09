@@ -46,7 +46,7 @@ public class ServiceMetadataDao extends BaseDao<DBServiceMetadata> {
     public Optional<DBServiceMetadata> findServiceMetadata(String participantId, String participantSchema, String documentId, String documentSchema){
 
         try {
-            TypedQuery<DBServiceMetadata> query = em.createNamedQuery("DBServiceMetadata.getBySGIdentifierAndSMDdentifier", DBServiceMetadata.class);
+            TypedQuery<DBServiceMetadata> query = memEManager.createNamedQuery("DBServiceMetadata.getBySGIdentifierAndSMDdentifier", DBServiceMetadata.class);
             query.setParameter("partcId", participantId);
             query.setParameter("partcSch", participantSchema);
             query.setParameter("docId", documentId);
@@ -62,7 +62,7 @@ public class ServiceMetadataDao extends BaseDao<DBServiceMetadata> {
 
     public List<DBServiceMetadata> getAllMetadataForServiceGroup(String participantId,
                                                          String participantSchema) {
-        TypedQuery<DBServiceMetadata> query = em.createNamedQuery("DBServiceMetadata.getBySGIdentifier", DBServiceMetadata.class);
+        TypedQuery<DBServiceMetadata> query = memEManager.createNamedQuery("DBServiceMetadata.getBySGIdentifier", DBServiceMetadata.class);
         query.setParameter("partcId", participantId);
         query.setParameter("partcSch", participantSchema);
         return query.getResultList();
