@@ -4,7 +4,7 @@
     <parent>
         <groupId>eu.europa.ec.edelivery</groupId>
         <artifactId>smp-parent-pom</artifactId>
-        <version>4.0.1-SNAPSHOT</version>
+        <version>4.1.0-SNAPSHOT</version>
         <relativePath>../smp-parent-pom/pom.xml</relativePath>
     </parent>
     <artifactId>smp-soapui-tests</artifactId>
@@ -48,7 +48,7 @@
                             <value>localhost|127.*|[::1]</value>
                         </property>
                     </soapuiProperties>
-                    <testFailIgnore>false</testFailIgnore>
+                    <testFailIgnore>true</testFailIgnore>
                     <projectFile>${project.basedir}/soapui/SMP4.0-Generic-soapui-project.xml</projectFile>
                     <testSuite>PASSING_AUTO_BAMBOO</testSuite>
                     <!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->	

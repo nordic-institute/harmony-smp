@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
-import static eu.europa.ec.edelivery.smp.error.ErrorBusinessCode.WRONG_FIELD;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode.WRONG_FIELD;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
 
