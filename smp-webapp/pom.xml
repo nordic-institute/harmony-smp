@@ -3,7 +3,7 @@
     <parent>
         <groupId>eu.europa.ec.edelivery</groupId>
         <artifactId>smp-parent-pom</artifactId>
-        <version>4.0.1-SNAPSHOT</version>
+        <version>4.1.0-SNAPSHOT</version>
         <relativePath>../smp-parent-pom/pom.xml</relativePath>
     </parent>
     <artifactId>smp</artifactId>
@@ -21,13 +21,23 @@
         <ftp.port>2059</ftp.port>
         <ftp.remotedir>/ec/test/server/weblogic/u010/home/digciedt/data/CIPA-EDEL_DEV/autodeploy</ftp.remotedir>
 
-        <!-- database-->
+        <!-- database - - >
         <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
-        <jdbc.url>jdbc:mysql://localhost:3306/smp</jdbc.url>
-        <jdbc.user>smp</jdbc.user>
-        <jdbc.password>smp</jdbc.password>
+        <jdbc.url>jdbc:mysql://localhost/smpdbdev</jdbc.url>
+        <jdbc.user>smpdev</jdbc.user>
+        <jdbc.password>smpdev</jdbc.password>
         <target-database>MySQL</target-database>
         <jdbc.read-connections.max>10</jdbc.read-connections.max>
+ -->
+        <jdbc.driver>org.h2.Driver</jdbc.driver>
+        <jdbc.url>jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE</jdbc.url>
+        <jdbc.user>smp</jdbc.user>
+        <jdbc.password>smp</jdbc.password>
+        <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
+        <target-database>H2</target-database>
+        <jdbc.read-connections.max>10</jdbc.read-connections.max>
+        <spring.jpa.generate-ddl>true</spring.jpa.generate-ddl>
+
     </properties>
 
     <dependencies>
@@ -74,12 +84,31 @@
             <artifactId>mockito-core</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
             <artifactId>hamcrest-junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

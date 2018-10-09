@@ -16,13 +16,11 @@ package eu.europa.ec.edelivery.smp.exceptions;
 /**
  * This exceptions is thrown if the provided user name does not exist.
  */
-public class InvalidOwnerException extends RuntimeException {
+public class InvalidOwnerException extends SMPRuntimeException {
 
-    public InvalidOwnerException(String username) {
-        this(username, null);
+    public InvalidOwnerException(ErrorCode ec, String msg) {
+        super(ec,msg);
     }
-    public InvalidOwnerException(String username, String message) {
-        super("Invalid owner '" + username + "'. " + message!=null?message:"" );
-    }
+
 
 }

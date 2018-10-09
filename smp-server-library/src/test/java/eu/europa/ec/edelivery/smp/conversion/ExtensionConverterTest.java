@@ -39,7 +39,7 @@ public class ExtensionConverterTest {
 
     private static final String WRAPPED_FORMAT = "<ExtensionsWrapper xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">%s</ExtensionsWrapper>";
 
-    private static final String RES_PATH = "/eu/europa/ec/cipa/smp/server/util/";
+    private static final String RES_PATH = "/examples/extensions/";
 
     private static final String UTF8_SEQUENCE = "ẞßÄäËëÏïÖöÜüẄẅŸÿЁёЇїӜӝ-Zażółć gęślą jaźń-ÆæØøÅå-ÀÆÇßãÿαΩƒ";
 
@@ -63,7 +63,7 @@ public class ExtensionConverterTest {
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionMarshalMore.xml");
 
         // when
-        String xmlResult = ExtensionConverter.marshalExtensions(list);
+        String xmlResult = ExtensionConverter.marshalExtensions(list, true);
 
         // then
         String wrappedXmlResult = String.format(WRAPPED_FORMAT, xmlResult);

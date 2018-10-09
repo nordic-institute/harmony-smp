@@ -13,11 +13,12 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
-import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupId;
-import eu.europa.ec.edelivery.smp.exceptions.ConversionException;
-import eu.europa.ec.edelivery.smp.exceptions.SMPInitializationException;
-import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
+import eu.europa.ec.edelivery.smp.exceptions.*;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -36,6 +37,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_EXTENSION_FOR_SG;
+import static eu.europa.ec.edelivery.smp.logging.SMPMessageCode.BUS_INVALID_XML;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -51,14 +54,16 @@ public class ServiceGroupConverter {
     }
 
     private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupConverter.class);
 
     private static final ThreadLocal<Unmarshaller> jaxbUnmarshaller = ThreadLocal.withInitial( () -> {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(ServiceGroup.class);
             return jaxbContext.createUnmarshaller();
         }catch(JAXBException ex) {
-            throw new SMPInitializationException("Could not create ServiceGroup Unmarshaller!", ex);
+            LOG.error("Error occured while initializing JAXBContext for ServiceMetadata. Cause message:", ex);
         }
+        return null;
     } );
 
 
@@ -66,24 +71,45 @@ public class ServiceGroupConverter {
         return jaxbUnmarshaller.get();
     }
 
+    /**
+     * Method umarshal ServiceGroup from xml string
+     * @param serviceGroupXml
+     * @return
+     */
     public static ServiceGroup unmarshal(String serviceGroupXml) {
         try {
             Document serviceGroupDoc = parse(serviceGroupXml);
             return getUnmarshaller().unmarshal(serviceGroupDoc, ServiceGroup.class).getValue();
-        } catch (ParserConfigurationException | IOException | SAXException | JAXBException e) {
-            throw new XmlParsingException(e);
+        } catch (ParserConfigurationException | IOException | SAXException | JAXBException ex) {
+            throw new SMPRuntimeException(ErrorCode.XML_PARSE_EXCEPTION,ex,ServiceGroup.class.getName(), ExceptionUtils.getRootCauseMessage(ex));
         }
     }
 
-    public static ServiceGroup toServiceGroup(DBServiceGroup dbServiceGroup){
+    /**
+     * Method returns Oasis ServiceGroup entity with  extension and
+     * empty ServiceMetadataReferenceCollectionType. If extension can not be converted to jaxb object than
+     * ConversionException is thrown.
+     *
+     * @param dsg - database service group entity
+     * @return Oasis ServiceGroup entity or null if parameter is null
+     */
+    public static ServiceGroup toServiceGroup(DBServiceGroup dsg){
+
+        if (dsg==null){
+            return null;
+        }
+
         ServiceGroup serviceGroup = new ServiceGroup();
-        ParticipantIdentifierType identifier = new ParticipantIdentifierType(dbServiceGroup.getId().getBusinessIdentifier(), dbServiceGroup.getId().getBusinessIdentifierScheme());
+        ParticipantIdentifierType identifier = new ParticipantIdentifierType(dsg.getParticipantIdentifier(), dsg.getParticipantScheme());
         serviceGroup.setParticipantIdentifier(identifier);
-        try {
-            List<ExtensionType> extensions = ExtensionConverter.unmarshalExtensions(dbServiceGroup.getExtension());
-            serviceGroup.getExtensions().addAll(extensions);
-        } catch (JAXBException e) {
-            throw new ConversionException(e);
+        if (!StringUtils.isBlank(dsg.getExtension())){
+            try {
+                List<ExtensionType> extensions = ExtensionConverter.unmarshalExtensions(dsg.getExtension());
+                serviceGroup.getExtensions().addAll(extensions);
+            } catch (JAXBException e) {
+                 throw new SMPRuntimeException(INVALID_EXTENSION_FOR_SG, e, dsg.getParticipantIdentifier(),
+                         dsg.getParticipantScheme(),ExceptionUtils.getRootCauseMessage(e));
+            }
         }
         serviceGroup.setServiceMetadataReferenceCollection(new ServiceMetadataReferenceCollectionType(new ArrayList()));
         return serviceGroup;
@@ -101,15 +127,14 @@ public class ServiceGroupConverter {
         return documentBuilderFactory.newDocumentBuilder();
     }
 
-    public static String extractExtensionsPayload(ServiceGroup serviceGroup) {
+    public static String extractExtensionsPayload(ServiceGroup sg) {
         try {
-            return ExtensionConverter.marshalExtensions(serviceGroup.getExtensions());
+            return ExtensionConverter.marshalExtensions(sg.getExtensions());
         } catch (JAXBException | XMLStreamException | UnsupportedEncodingException e) {
-            throw new ConversionException(e);
+            throw new SMPRuntimeException(INVALID_EXTENSION_FOR_SG, e,
+                    sg.getParticipantIdentifier().getValue(), sg.getParticipantIdentifier().getScheme(),
+                    ExceptionUtils.getRootCauseMessage(e));
         }
     }
 
-    public static DBServiceGroupId toDbModel(ParticipantIdentifierType serviceGroupId){
-        return new DBServiceGroupId(serviceGroupId.getScheme(), serviceGroupId.getValue());
-    }
 }

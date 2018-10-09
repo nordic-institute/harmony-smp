@@ -13,8 +13,11 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.cxf.staxutils.PrettyPrintXMLStreamWriter;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.XmlElement;
@@ -37,29 +40,55 @@ import static java.nio.charset.StandardCharsets.UTF_8;
  * Created by migueti on 13/02/2017.
  */
 public class ExtensionConverter {
-
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupConverter.class);
     private static final String WRAPPED_FORMAT = "<ExtensionsWrapper xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">%s</ExtensionsWrapper>";
+    private static final QName EXT_TYPE_QNAME = new QName("http://docs.oasis-open.org/bdxr/ns/SMP/2016/05", "Extension");
 
+    /**
+     * Create root extension wrapper to made marshal and unmarshal easier.
+     */
     @XmlRootElement(name = "ExtensionsWrapper")
     private static class ExtensionsWrapper {
         @XmlElement(name = "Extension")
         List<ExtensionType> extensions;
     }
 
-    private static final QName EXT_TYPE_QNAME = new QName("http://docs.oasis-open.org/bdxr/ns/SMP/2016/05", "Extension");
+    /**
+     * Create static thread safe umarshaller.
+     */
+    private static final ThreadLocal<Unmarshaller> extensionUnmarshaller = ThreadLocal.withInitial( () -> {
+        try {
+            JAXBContext jaxbContext = JAXBContext.newInstance(ExtensionsWrapper.class, ExtensionType.class);
+            return jaxbContext.createUnmarshaller();
+        }catch(JAXBException ex) {
+            LOG.error("Error occured while initializing JAXBContext for ServiceMetadata. Cause message:", ex);
+        }
+        return null;
+    });
 
-    protected static String marshalExtensions(List<ExtensionType> extensions) throws JAXBException, XMLStreamException, UnsupportedEncodingException {
+    private static Unmarshaller getUnmarshaller() {
+        return extensionUnmarshaller.get();
+    }
+
+    public static String marshalExtensions(List<ExtensionType> extensions) throws JAXBException, XMLStreamException, UnsupportedEncodingException {
+        return marshalExtensions(extensions, false);
+    }
+
+
+
+
+    public static String marshalExtensions(List<ExtensionType> extensions, boolean prettyPrint ) throws JAXBException, XMLStreamException, UnsupportedEncodingException {
         if (extensions == null) {
             return null;
         }
         StringBuilder stringBuilder = new StringBuilder();
         for (ExtensionType aExtension : extensions) {
-            stringBuilder.append(ExtensionConverter.marshalExtension(aExtension));
+            stringBuilder.append(ExtensionConverter.marshalExtension(aExtension, prettyPrint));
         }
         return stringBuilder.toString();
     }
 
-    private static String marshalExtension(ExtensionType extension) throws JAXBException, XMLStreamException, UnsupportedEncodingException {
+    private static String marshalExtension(ExtensionType extension, boolean prettyPrint ) throws JAXBException, XMLStreamException, UnsupportedEncodingException {
         if (extension == null) {
             return null;
         }
@@ -72,9 +101,11 @@ public class ExtensionConverter {
         XMLStreamWriter xmlStreamWriter = null;
         PrettyPrintXMLStreamWriter xsw = null;
         try {
-            xmlStreamWriter = xof.createXMLStreamWriter(baos);
-            xsw = new PrettyPrintXMLStreamWriter(xmlStreamWriter, 4);
-            jaxbMarshaller.marshal(jaxbElement, xsw);
+            xmlStreamWriter =  xof.createXMLStreamWriter(baos);
+            if (prettyPrint) {
+                xsw = new PrettyPrintXMLStreamWriter(xmlStreamWriter, 4);
+            }
+            jaxbMarshaller.marshal(jaxbElement,prettyPrint?xsw: xmlStreamWriter);
         } finally {
             if (xmlStreamWriter != null) {
                 xmlStreamWriter.close();
@@ -89,8 +120,7 @@ public class ExtensionConverter {
     protected static List<ExtensionType> unmarshalExtensions(String xml) throws JAXBException {
         String wrappedExtensionsStr = String.format(WRAPPED_FORMAT, xml);
         InputStream inStream = new ByteArrayInputStream(wrappedExtensionsStr.getBytes(UTF_8));
-        JAXBContext jaxbContext = JAXBContext.newInstance(ExtensionsWrapper.class);
-        Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+        Unmarshaller jaxbUnmarshaller = getUnmarshaller();
         JAXBElement<ExtensionsWrapper> wrappedExtensions = jaxbUnmarshaller.unmarshal(new StreamSource(inStream), ExtensionsWrapper.class);
         if (wrappedExtensions.getValue() != null && wrappedExtensions.getValue().extensions != null) {
             return wrappedExtensions.getValue().extensions;

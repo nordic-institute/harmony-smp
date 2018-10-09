@@ -22,7 +22,8 @@ public class DBRevisionLog {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "revision_generator")
+    @SequenceGenerator(name="revision_generator", sequenceName = "SMP_REVISION_SEQ", allocationSize = 1, initialValue = 1)
     @RevisionNumber
     private long id;
 
@@ -31,7 +32,7 @@ public class DBRevisionLog {
     /**
      * User involve in this modification
      */
-    @Column(name = "username")
+    @Column(name = "USERNAME")
     private String userName;
     /**
      * Date of the modification.

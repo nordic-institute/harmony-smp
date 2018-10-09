@@ -13,12 +13,17 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
-import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadataId;
-import eu.europa.ec.edelivery.smp.exceptions.SMPInitializationException;
-import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
+;
+
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
+import org.slf4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
@@ -36,6 +41,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.*;
 
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_EXTENSION_FOR_SG;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_SMD_XML;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
@@ -53,20 +60,29 @@ public class ServiceMetadataConverter {
     private static final String NS = "http://docs.oasis-open.org/bdxr/ns/SMP/2016/05";
     private static final String DOC_SIGNED_SERVICE_METADATA_EMPTY = "<SignedServiceMetadata xmlns=\""+NS+"\"/>";
     private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceMetadataConverter.class);
+
 
     private static final ThreadLocal<Unmarshaller> jaxbUnmarshaller = ThreadLocal.withInitial( () -> {
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(ServiceMetadata.class);
             return jaxbContext.createUnmarshaller();
         }catch(JAXBException ex) {
-            throw new SMPInitializationException("Could not create ServiceGroup Unmarshaller!", ex);
+            LOG.error("Error occured while initializing JAXBContext for ServiceMetadata. Root Error:" +
+                    ExceptionUtils.getRootCauseMessage(ex), ex);
         }
+        return null;
     } );
 
     private static Unmarshaller getUnmarshaller() {
         return jaxbUnmarshaller.get();
     }
 
+    /**
+     * Method parses serviceMetadata XML and envelopes it to SignedServiceMetadata.
+     * @param serviceMetadataXml
+     * @return w3d dom element
+     */
     public static Document toSignedServiceMetadatadaDocument(String serviceMetadataXml)  {
         try {
             Document docServiceMetadata = parse(serviceMetadataXml);
@@ -74,8 +90,8 @@ public class ServiceMetadataConverter {
             Node imported = root.importNode(docServiceMetadata.getDocumentElement(), true);
             root.getDocumentElement().appendChild(imported);
             return root;
-        }catch(ParserConfigurationException | SAXException | IOException e){
-            throw new XmlParsingException(e);
+        }catch(ParserConfigurationException | SAXException | IOException ex){
+            throw new SMPRuntimeException(INVALID_SMD_XML, ex, ExceptionUtils.getRootCauseMessage(ex));
         }
     }
 
@@ -85,8 +101,8 @@ public class ServiceMetadataConverter {
             Document serviceMetadataDoc = parse(serviceMetadataXml);
             ServiceMetadata serviceMetadata = getUnmarshaller().unmarshal(serviceMetadataDoc, ServiceMetadata.class).getValue();
             return serviceMetadata;
-        } catch (SAXException | IOException | ParserConfigurationException | JAXBException e) {
-            throw new XmlParsingException(e);
+        } catch (SAXException | IOException | ParserConfigurationException | JAXBException ex) {
+            throw new SMPRuntimeException(INVALID_SMD_XML, ex, ExceptionUtils.getRootCauseMessage(ex));
         }
     }
 
@@ -109,10 +125,5 @@ public class ServiceMetadataConverter {
         return dbf.newDocumentBuilder();
     }
 
-    public static DBServiceMetadataId toDbModel(ParticipantIdentifierType participantId, DocumentIdentifier docId){
-        return new DBServiceMetadataId(participantId.getScheme(),
-                participantId.getValue(),
-                docId.getScheme(),
-                docId.getValue());
-    }
+
 }
