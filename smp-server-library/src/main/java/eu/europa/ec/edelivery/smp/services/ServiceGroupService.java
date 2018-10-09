@@ -15,35 +15,28 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
-import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
-import eu.europa.ec.edelivery.smp.data.model.*;
-import eu.europa.ec.edelivery.smp.exceptions.InvalidOwnerException;
-import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
-import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
-import eu.europa.ec.edelivery.smp.exceptions.WrongInputFieldException;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Pattern;
 
-import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.toDbModel;
-import static eu.europa.ec.smp.api.Identifiers.asString;
-import static java.lang.String.format;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
 import static java.net.URLDecoder.decode;
-import static java.util.Arrays.asList;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 /**
@@ -52,10 +45,10 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Service
 public class ServiceGroupService {
 
-    private static final Pattern DOMAIN_ID_PATTERN = Pattern.compile("[a-zA-Z0-9]{1,50}");
+
     private static final String UTF_8 = "UTF-8";
 
-    private static final Logger LOG = LoggerFactory.getLogger(ServiceGroupService.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupService.class);
 
     @Autowired
     private CaseSensitivityNormalizer caseSensitivityNormalizer;
@@ -67,134 +60,159 @@ public class ServiceGroupService {
     private UserDao userDao;
 
     @Autowired
-    private DomainDao domainDao;
+    private DomainService domainService;
 
     @Autowired
     private SmlConnector smlConnector;
 
-
-    public ServiceGroup getServiceGroup(ParticipantIdentifierType serviceGroupId) {
-        ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
-
-        DBServiceGroup dbServiceGroup = serviceGroupDao.find(toDbModel(normalizedServiceGroupId));
-        if (dbServiceGroup == null) {
-            throw new NotFoundException("ServiceGroup not found: '%s'", asString(serviceGroupId));
+    /**
+     * Method returns ServiceGroup entity for participant with references. If domain is null/empty it returns ServiceMetadata
+     * for all domains else it returns metadata only for particular domain.
+     * If domain is given and participantId is not defined on that domain than NotFoundException if thrown.
+     *
+     * @param participantId
+     * @return ServiceGroup for participant id
+     */
+    public ServiceGroup getServiceGroup(ParticipantIdentifierType participantId) {
+        // normalize participant identifier
+        ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(participantId);
+        Optional<DBServiceGroup> sg = serviceGroupDao.findServiceGroup(normalizedServiceGroupId.getValue(),
+                normalizedServiceGroupId.getScheme());
+        if (!sg.isPresent()){
+            throw new SMPRuntimeException(SG_NOT_EXISTS, normalizedServiceGroupId.getValue(),
+                    normalizedServiceGroupId.getScheme());
         }
-        return ServiceGroupConverter.toServiceGroup(dbServiceGroup);
+        return ServiceGroupConverter.toServiceGroup(sg.get());
     }
 
+    /**
+     * Method save (or update if exists) serviceGroup for domain and servicegroup owner
+     *
+     * @param serviceGroup
+     * @param domain
+     * @param serviceGroupOwner
+     * @param authenticatedUser
+     * @return
+     */
     @Transactional
     public boolean saveServiceGroup(ServiceGroup serviceGroup, String domain, String serviceGroupOwner, String authenticatedUser) {
-        ServiceGroup normalizedServiceGroup = normalizeIdentifierCaseSensitivity(serviceGroup);
-        ParticipantIdentifierType normalizedParticipantId = normalizedServiceGroup.getParticipantIdentifier();
+
+        // normalize participant identifier
+        ParticipantIdentifierType normalizedParticipantId = caseSensitivityNormalizer.normalize(serviceGroup.getParticipantIdentifier());
+        LOG.businessDebug(SMPMessageCode.BUS_SAVE_SERVICE_GROUP,domain,normalizedParticipantId.getValue(), normalizedParticipantId.getScheme()  );
 
         String newOwnerName = defineGroupOwner(serviceGroupOwner, authenticatedUser);
 
-        DBUser newOwner = userDao.find(newOwnerName);
-        if (newOwner == null) {
-            throw new UnknownUserException(newOwnerName);
+        Optional<DBUser> newOwner = userDao.findUserByIdentifier(newOwnerName);
+        if (!newOwner.isPresent()) {
+            SMPRuntimeException ex = new SMPRuntimeException(USER_NOT_EXISTS);
+            LOG.businessError(SMPMessageCode.BUS_SAVE_SERVICE_GROUP_FAILED,domain,normalizedParticipantId.getValue(), normalizedParticipantId.getScheme(), ex.getMessage()  );
+            throw ex;
         }
+        // get domain
+        DBDomain dmn = domainService.getDomain(domain);
+        // get servicegroup
+        Optional<DBServiceGroup> dbServiceGroup = serviceGroupDao.findServiceGroup(normalizedParticipantId.getValue(),
+                normalizedParticipantId.getScheme());
 
-        DBServiceGroup dbServiceGroup = serviceGroupDao.find(toDbModel(normalizedParticipantId));
 
+        String extensions = ServiceGroupConverter.extractExtensionsPayload(serviceGroup);
 
-        validateDomain(dbServiceGroup, domain);
-        String extensions = ServiceGroupConverter.extractExtensionsPayload(normalizedServiceGroup);
-
-        if (dbServiceGroup != null) {
+        if (dbServiceGroup.isPresent()) {
+            // service already exists.
+            // check if user has rights to modified
             // test service owner
-            validateOwnership(newOwnerName, dbServiceGroup);
+            DBServiceGroup sg = dbServiceGroup.get();
+            validateOwnership(newOwnerName, sg);
+            //check is domain exists
+            Optional<DBServiceGroupDomain> sgd = dbServiceGroup.get().getServiceGroupForDomain(dmn.getDomainCode());
+            if (!sgd.isPresent()){
+                SMPRuntimeException ex = new SMPRuntimeException(SG_NOT_REGISTRED_FOR_DOMAIN,domain,normalizedParticipantId.getValue(), normalizedParticipantId.getScheme());
+                LOG.businessError(SMPMessageCode.BUS_SAVE_SERVICE_GROUP_FAILED,domain,normalizedParticipantId.getValue(), normalizedParticipantId.getScheme(), ex.getMessage()  );
+                throw ex;
+            }
             //update extensions
-            dbServiceGroup.setExtension(extensions);
-            serviceGroupDao.persistFlushDetach(dbServiceGroup);
+            dbServiceGroup.get().setExtension(extensions);
+            serviceGroupDao.update(sg);
             return false;
         } else {
             //Save ServiceGroup
-            dbServiceGroup = new DBServiceGroup(new DBServiceGroupId(normalizedParticipantId.getScheme(), normalizedParticipantId.getValue()));
-            dbServiceGroup.setExtension(extensions);
-            DBDomain dbDomain = findDomain(domain);
-            dbServiceGroup.setDomain(dbDomain);
-
-            // Save the ownership information
-            DBOwnershipId dbOwnershipID = new DBOwnershipId(newOwnerName, normalizedParticipantId.getScheme(), normalizedParticipantId.getValue());
-            DBOwnership dbOwnership = new DBOwnership(dbOwnershipID, newOwner, dbServiceGroup);
-            dbServiceGroup.setOwnerships(new HashSet(asList(dbOwnership)));
-
-            serviceGroupDao.persistFlushDetach(dbServiceGroup);
-
-            smlConnector.registerInDns(normalizedParticipantId, dbDomain);
+            DBServiceGroup newSg = new DBServiceGroup();
+            newSg.setParticipantIdentifier(normalizedParticipantId.getValue());
+            newSg.setParticipantScheme(normalizedParticipantId.getScheme());
+            newSg.setExtension(extensions);
+            newSg.addDomain(dmn); // add initial domain
+            newSg.getUsers().add(newOwner.get());
+            newSg.setSmlRegistered(false);
+            // persist (make sure this is not in transaction)
+            serviceGroupDao.persistFlushDetach(newSg);
+            // register to SML
+            boolean registered = smlConnector.registerInDns(normalizedParticipantId, dmn);
+            if (registered) {
+                // update status in database
+                newSg.setSmlRegistered(true);
+                serviceGroupDao.update(newSg);
+            }
             return true;
         }
     }
 
-    protected String defineGroupOwner(String serviceGroupOwner, String authenticatedUser){
+    /**
+     * Method returns URL decoded serviceGroupOwner if not null/empty, else return authenticated user. If
+     * User dan not be decoded InvalidOwnerException is thrown.
+     *
+     * @param serviceGroupOwner
+     * @param authenticatedUser
+     * @return database owner string.
+     */
+    protected String defineGroupOwner(final String serviceGroupOwner, final String authenticatedUser) {
         try {
             return isNotBlank(serviceGroupOwner) ? decode(serviceGroupOwner, UTF_8) : authenticatedUser;
         } catch (UnsupportedEncodingException | IllegalArgumentException ex) {
-            LOG.error("Error occurred while decoding serviceGroupOwner '" + serviceGroupOwner+"'", ex);
-            throw new InvalidOwnerException(serviceGroupOwner, "Unsupported or invalid encoding: " + ex.getMessage());
-        }
-    }
+            LOG.error("Error occurred while decoding serviceGroupOwner '" + serviceGroupOwner + "'", ex);
+            throw new SMPRuntimeException(INVALID_ENCODING, serviceGroupOwner, "Unsupported or invalid encoding: " + ex.getMessage());
 
-    protected void validateOwnership(String newOwnerName, DBServiceGroup dbServiceGroup){
-        Set<DBOwnership> owSet =  dbServiceGroup.getOwnerships();
-        Optional<DBOwnership> owner =  owSet.stream().filter(dbOwnership -> dbOwnership.getUser().getUsername().equals(newOwnerName)).findFirst();
-        // test serviceGroupOwner but use newOwnerName - because it is decoded
-        if (newOwnerName!=null && !owner.isPresent()){
-            String msg = "User: " +newOwnerName+ " is not owner of service group: " +dbServiceGroup.getId().getBusinessIdentifierScheme() + "::" + dbServiceGroup.getId().getBusinessIdentifier();
-            LOG.error(msg);
-            throw new InvalidOwnerException(newOwnerName, msg);
         }
 
     }
 
-    private DBDomain findDomain(String domain) {
-        if (isNotBlank(domain)) {
-            DBDomain dbDomain = domainDao.find(domain);
-            if (dbDomain == null) {
-                throw new WrongInputFieldException("Requested domain does not exist: " + domain);
-            }
-            return dbDomain;
-        }
-        Optional<DBDomain> dbDomain = domainDao.getTheOnlyDomain();
-        if (dbDomain.isPresent()) {
-            return dbDomain.get();
-        }
-        throw new WrongInputFieldException("SMP is configured to use multiple domains, but no Domain is specified in request. Please specify Domain in request.");
-    }
+    /**
+     * Method validates if user owner with identifier is owner of servicegroup
+     * @param  ownerIdentifier
+     * @param dbsg
+     */
+    protected void validateOwnership(String ownerIdentifier, DBServiceGroup dbsg){
 
-
-    private void validateDomain(DBServiceGroup dbServiceGroup, String domain) {
-        if (domain == null) {
-            return;
+        Optional<DBUser> own = userDao.findUserByIdentifier(ownerIdentifier);
+        if (!own.isPresent()){
+            throw new  SMPRuntimeException(USER_NOT_EXISTS);
         }
-        if (!DOMAIN_ID_PATTERN.matcher(domain).matches()) {
-            throw new WrongInputFieldException(format("Provided Domain ID [%s] does not match required pattern: %s", domain, DOMAIN_ID_PATTERN));
-        }
-        //blockPotentialDomainChange
-        if (dbServiceGroup != null && !domain.equalsIgnoreCase(dbServiceGroup.getDomain().getId())) {
-            throw new WrongInputFieldException("The same SarviceGroup cannot exist under 2 different domains. ServiceGroup cannot be switched between domains. Remove domain parameter from request if you want to update existing ServiceGroup.");
+        if (!dbsg.getUsers().contains(own.get())){
+            throw new  SMPRuntimeException(USER_IS_NOT_OWNER,ownerIdentifier,
+                    dbsg.getParticipantIdentifier(), dbsg.getParticipantScheme() );
         }
     }
 
-    private ServiceGroup normalizeIdentifierCaseSensitivity(ServiceGroup serviceGroup) {
-        final ServiceGroup sg = new ServiceGroup();
-        sg.setParticipantIdentifier(caseSensitivityNormalizer.normalize(serviceGroup.getParticipantIdentifier()));
-        sg.setServiceMetadataReferenceCollection(serviceGroup.getServiceMetadataReferenceCollection());
-        sg.getExtensions().addAll(serviceGroup.getExtensions());
-        return sg;
-    }
 
     @Transactional
     public void deleteServiceGroup(ParticipantIdentifierType serviceGroupId) {
         final ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
 
-        DBServiceGroup dbServiceGroup = serviceGroupDao.find(toDbModel(normalizedServiceGroupId));
-        if (dbServiceGroup == null) {
-            throw new NotFoundException("ServiceGroup not found: '%s'", asString(serviceGroupId));
-        }
-        serviceGroupDao.remove(dbServiceGroup);
+        Optional<DBServiceGroup> dbServiceGroup = serviceGroupDao.findServiceGroup(normalizedServiceGroupId.getValue(),
+                normalizedServiceGroupId.getScheme());
 
-        smlConnector.unregisterFromDns(normalizedServiceGroupId, dbServiceGroup.getDomain());
+        if (!dbServiceGroup.isPresent()) {
+            throw new SMPRuntimeException(SG_NOT_EXISTS, normalizedServiceGroupId.getValue(),
+                    normalizedServiceGroupId.getScheme());
+        }
+        DBServiceGroup dsg = dbServiceGroup.get();
+        serviceGroupDao.removeServiceGroup(dsg);
+        // TODO
+        // fist unregister - test if dsg was registered
+        // if registered and integration is false - raise an error
+        // delete servicegroup
+        // unregister for all domains{
+        // serviceGroupDao.removeServiceGroup(dsg);
+         //smlConnector.unregisterFromDns(normalizedServiceGroupId, dsg.getDomain());
     }
 }

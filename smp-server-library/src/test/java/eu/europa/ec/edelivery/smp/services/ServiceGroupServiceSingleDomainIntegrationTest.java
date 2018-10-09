@@ -14,120 +14,160 @@
 package eu.europa.ec.edelivery.smp.services;
 
 
+import eu.europa.ec.edelivery.smp.conversion.ExtensionConverter;
 import eu.europa.ec.edelivery.smp.data.model.*;
-import eu.europa.ec.edelivery.smp.exceptions.InvalidOwnerException;
-import eu.europa.ec.edelivery.smp.exceptions.NotFoundException;
-import eu.europa.ec.edelivery.smp.exceptions.UnknownUserException;
-import eu.europa.ec.edelivery.smp.exceptions.WrongInputFieldException;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import org.hamcrest.core.StringStartsWith;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceType;
-import org.springframework.test.context.jdbc.Sql;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.bind.JAXBException;
+import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
-import java.util.regex.Matcher;
+import java.util.Optional;
 
-import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.toDbModel;
 import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.unmarshal;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
 import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocumentAsString;
-import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.marshall;
-import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
 
-import static java.util.Arrays.asList;
-import static org.junit.Assert.*;
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
+import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
+import static org.junit.Assert.*;
 
 /**
  * Created by gutowpa on 17/01/2018.
  */
+public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServiceIntegrationTest {
 
-@Sql("classpath:/service_integration_test_data.sql")
-public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServiceGroupServiceIntegrationTest {
-
+    @Autowired
+    protected ServiceGroupService testInstance;
 
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();
 
+    @Before
+    @Transactional
+    public void prepareDatabase() {
+        prepareDatabaseForSignleDomainEnv();
+    }
     @Test
-    public void makeSureServiceGroupDoesNotExistAlready(){
-        DBServiceGroup dbServiceGroup = serviceGroupDao.find(toDbModel(SERVICE_GROUP_ID));
-        if(dbServiceGroup != null){
-            throw new IllegalStateException("Underlying DB already contains test data that should not be there. Remove them manually.");
-        }
+    public void createAndReadPositiveScenarioForNullDomain() throws IOException {
+        // given
+        ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_POLAND_XML_PATH));
+        Optional<DBServiceGroup> dbsg = serviceGroupDao.findServiceGroup(TEST_SG_ID_PL, TEST_SG_SCHEMA_2);
+        assertFalse(dbsg.isPresent()); // test if exists
+        DBDomain domain = domainDao.getTheOnlyDomain().get();
+        assertNotNull(domain);
+        // when
+        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, null, TestConstants.USERNAME_1,
+                TestConstants.USERNAME_1);
+
+        Optional<DBServiceGroup> optRes= serviceGroupDao.findServiceGroup(TEST_SG_ID_PL, TEST_SG_SCHEMA_2);
+
+        // then
+        assertTrue(bCreated);
+        dbAssertion.assertServiceGroupForOnlyDomain(inServiceGroup.getParticipantIdentifier().getValue(),
+                inServiceGroup.getParticipantIdentifier().getScheme(),domain.getDomainCode());
+
+    }
+
+   @Test
+    public void createAndReadPositiveScenarioForWithDomain() throws IOException {
+       // given
+       ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_POLAND_XML_PATH));
+       Optional<DBServiceGroup> dbsg = serviceGroupDao.findServiceGroup(TEST_SG_ID_PL, TEST_SG_SCHEMA_2);
+       assertFalse(dbsg.isPresent()); // test if exists
+       DBDomain domain = domainDao.getTheOnlyDomain().get();
+       assertNotNull(domain);
+
+       // when
+       boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, domain.getDomainCode(), TestConstants.USERNAME_1,
+               TestConstants.USERNAME_1);
+
+
+       Optional<DBServiceGroup> optRes= serviceGroupDao.findServiceGroup(TEST_SG_ID_PL, TEST_SG_SCHEMA_2);
+
+       // then
+       assertTrue(bCreated);
+       dbAssertion.assertServiceGroupForOnlyDomain(inServiceGroup.getParticipantIdentifier().getValue(),
+               inServiceGroup.getParticipantIdentifier().getScheme(),domain.getDomainCode());
     }
 
     @Test
-    public void saveAndReadPositiveScenario() throws IOException, JAXBException {
-        //when
-        ServiceGroup inServiceGroup = saveServiceGroup();
-        ServiceGroup outServiceGroup = serviceGroupService.getServiceGroup(SERVICE_GROUP_ID);
+    public void updateAndReadPositiveScenario() throws IOException, JAXBException, XMLStreamException {
+        // given
+        ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_TEST2_XML_PATH));
+        Optional<DBServiceGroup> dbsg = serviceGroupDao.findServiceGroup(TEST_SG_ID_2, TEST_SG_SCHEMA_2);
+        assertTrue(dbsg.isPresent()); // test if exists
+        DBDomain domain = domainDao.getTheOnlyDomain().get();
+        assertNotNull(domain);
 
-        //then
-        assertFalse(inServiceGroup == outServiceGroup);
-        assertEquals(marshall(inServiceGroup), marshall(outServiceGroup));
+        String extension = dbsg.get().getExtension(); // test if exists
+        String newExtension  = ExtensionConverter.marshalExtensions(inServiceGroup.getExtensions());
+        assertNotEquals(extension, newExtension); // extension updated
 
-        em.flush();
-        DBOwnership outOwnership = ownershipDao.find(new DBOwnershipId(ADMIN_USERNAME, SERVICE_GROUP_ID.getScheme(), SERVICE_GROUP_ID.getValue()));
-        assertEquals(ADMIN_USERNAME, outOwnership.getUser().getUsername());
+        // when
+        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, domain.getDomainCode(), TestConstants.USERNAME_1,
+                TestConstants.USERNAME_1);
+
+
+        Optional<DBServiceGroup> optRes= serviceGroupDao.findServiceGroup(TEST_SG_ID_PL, TEST_SG_SCHEMA_2);
+
+        // then
+        assertFalse(bCreated);
+        dbAssertion.assertServiceGroupExtensionEqual(inServiceGroup.getParticipantIdentifier().getValue(),
+                inServiceGroup.getParticipantIdentifier().getScheme(),
+                newExtension);
     }
 
-    @Test(expected = NotFoundException.class)
-    public void notFoundExceptionThrownWhenReadingNotExisting() {
-        serviceGroupService.getServiceGroup(asParticipantId("not-existing::service-group"));
+    @Test
+    public void serviceGroupNotExistsWhenRetrievingSG() {
+        // given
+        expectedExeption.expect(SMPRuntimeException.class);
+        expectedExeption.expectMessage(SG_NOT_EXISTS.getMessage("service-group", "not-existing"));
+        // when-then
+        testInstance.getServiceGroup(asParticipantId("not-existing::service-group") );
     }
 
     @Test
     public void saveAndDeletePositiveScenario() throws IOException {
-        //given
-        saveServiceGroup();
-        em.flush();
+        // given
+        ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_POLAND_XML_PATH));
+        boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, null, TestConstants.USERNAME_1,
+                TestConstants.USERNAME_1);
+        assertTrue(bCreated);
+        serviceGroupDao.clearPersistenceContext();
 
         //when
-        serviceGroupService.deleteServiceGroup(SERVICE_GROUP_ID);
-        em.flush();
+        testInstance.deleteServiceGroup(inServiceGroup.getParticipantIdentifier());
+        serviceGroupDao.clearPersistenceContext();
 
         //then
-        try {
-            serviceGroupService.getServiceGroup(SERVICE_GROUP_ID);
-        } catch (NotFoundException e) {
-            return;
-        }
-        fail("ServiceGroup has not been deleted");
-    }
+        expectedExeption.expect(SMPRuntimeException.class);
+        // get by null domain so: (all registered domains)
+        expectedExeption.expectMessage(SG_NOT_EXISTS.getMessage( inServiceGroup.getParticipantIdentifier().getValue(),
+                inServiceGroup.getParticipantIdentifier().getScheme()));
 
-    @Test
-    public void updatePositiveScenario() throws IOException, JAXBException {
-        //given
-        ServiceGroup oldServiceGroup = saveServiceGroup();
+        ServiceGroup sg = testInstance.getServiceGroup(inServiceGroup.getParticipantIdentifier());
 
-        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
-        ExtensionType newExtension = new ExtensionType();
-        newExtension.setExtensionID("new extension ID");
-        newServiceGroup.getExtensions().add(newExtension);
-
-        //when
-        serviceGroupService.saveServiceGroup(newServiceGroup, null, ADMIN_USERNAME, ADMIN_USERNAME);
-        ServiceGroup resultServiceGroup = serviceGroupService.getServiceGroup(SERVICE_GROUP_ID);
-
-        //then
-        assertNotEquals(marshall(oldServiceGroup), marshall(resultServiceGroup));
-        assertEquals(marshall(newServiceGroup), marshall(resultServiceGroup));
     }
 
     @Test
     public void defineGroupOwnerWhenOwnerIsNull(){
         String testUser = "user";
-        String result = serviceGroupService.defineGroupOwner(null, testUser);
+        String result = testInstance.defineGroupOwner(null, testUser);
         assertEquals(testUser, result);
 
-        result = serviceGroupService.defineGroupOwner("", testUser);
+        result = testInstance.defineGroupOwner("", testUser);
         assertEquals(testUser, result);
     }
 
@@ -135,168 +175,106 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
     public void defineGroupOwnerWhenOwnerIsNotNull(){
         String testUser = "user";
         String testOwner = "owner";
-        String result = serviceGroupService.defineGroupOwner(testOwner, testUser);
+        String result = testInstance.defineGroupOwner(testOwner, testUser);
         assertEquals(testOwner, result);
     }
 
-    @Test
-    public void validateOwnershipHasRightOwner(){
-        String testOwner = "owner";
-
-        DBServiceGroup dbServiceGroup = new DBServiceGroup(new DBServiceGroupId("",""));
-
-        DBUser duser = new DBUser();
-        duser.setUsername(testOwner);
-        DBOwnershipId dbOwnershipID = new DBOwnershipId(testOwner, "", "");
-        DBOwnership dbOwnership = new DBOwnership();
-        dbOwnership.setId(dbOwnershipID);
-        dbOwnership.setUser(duser);
-
-        DBUser user0 = new DBUser();
-        user0.setUsername("otherOwner");
-        DBOwnershipId dbOwnershipID0 = new DBOwnershipId("otherOwner", "", "");
-        DBOwnership dbOwnership0 = new DBOwnership();
-        dbOwnership0.setId(dbOwnershipID0);
-        dbOwnership0.setUser(user0);
-
-        dbServiceGroup.setOwnerships(new HashSet(asList(dbOwnership0, dbOwnership)));
-
-        serviceGroupService.validateOwnership(testOwner, dbServiceGroup);
-
-    }
 
     @Test
-    public void validateOwnershipHasInvalidOwner(){
-        String testOwner = "owner";
-        DBServiceGroup dbServiceGroup = new DBServiceGroup(new DBServiceGroupId("",""));
+    public void updateInvalidUserException() throws IOException, JAXBException {
 
-        expectedExeption.expect(InvalidOwnerException.class);
-        expectedExeption.expectMessage("User: " +testOwner+ " is not owner of service group: ");
+        // given
+        ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_TEST2_XML_PATH));
+        Optional<DBServiceGroup>  dbsg = dbAssertion.findAndInitServiceGroup(TEST_SG_ID_2, TEST_SG_SCHEMA_2);
+        Optional<DBUser> dbUser = userDao.findUserByIdentifier(TestConstants.USER_CERT_2);
+        assertTrue(dbsg.isPresent()); // test if exists
+        assertTrue(dbUser.isPresent()); // test if exists
+        assertFalse(dbsg.get().getUsers().contains(dbUser.get())); // test not owner
 
-        DBUser duser = new DBUser();
-        duser.setUsername("otherOwner");
-        DBOwnershipId dbOwnershipID0 = new DBOwnershipId("otherOwner", "", "");
-        DBOwnership dbOwnership0 = new DBOwnership();
-        dbOwnership0.setId(dbOwnershipID0);
-        dbOwnership0.setUser(duser);
+        //then
+        expectedExeption.expect(SMPRuntimeException.class);
+        // get by null domain so: (all registered domains)
+        expectedExeption.expectMessage(USER_IS_NOT_OWNER.getMessage(TestConstants.USER_CERT_2,
 
+                dbsg.get().getParticipantIdentifier(), dbsg.get().getParticipantScheme()));
 
-        dbServiceGroup.setOwnerships(new HashSet(asList(dbOwnership0)));
-
-        serviceGroupService.validateOwnership(testOwner, dbServiceGroup);
-
+        // when
+        testInstance.saveServiceGroup(inServiceGroup,null,
+                TestConstants.USER_CERT_2, TestConstants.USER_CERT_2);
     }
 
     @Test
     public void updateUnknownUserException() throws IOException, JAXBException {
 
-        String invalidServiceUser = "WrongOwner";
-        //given
-        ServiceGroup oldServiceGroup = saveServiceGroup();
+        // given
+        ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_TEST2_XML_PATH));
+        Optional<DBServiceGroup>  dbsg = dbAssertion.findAndInitServiceGroup(TEST_SG_ID_2, TEST_SG_SCHEMA_2);
+        Optional<DBUser> dbUser = userDao.findUserByIdentifier(TestConstants.USER_CERT_3);
+        assertTrue(dbsg.isPresent()); // test if note exists
+        assertFalse(dbUser.isPresent()); // test if exists
 
-        expectedExeption.expect(UnknownUserException.class);
-        expectedExeption.expectMessage("Unknown user '"+invalidServiceUser+"'");
+        //then
+        expectedExeption.expect(SMPRuntimeException.class);
+        // get by null domain so: (all registered domains)
+        expectedExeption.expectMessage(USER_NOT_EXISTS.getMessage());
 
-        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
-        ExtensionType newExtension = new ExtensionType();
-        newExtension.setExtensionID("new extension ID the second");
-        newServiceGroup.getExtensions().add(newExtension);
-
-        //when
-        serviceGroupService.saveServiceGroup(newServiceGroup, null, invalidServiceUser, ADMIN_USERNAME);
+        // when
+        testInstance.saveServiceGroup(inServiceGroup, null,
+                TestConstants.USER_CERT_3, TestConstants.USER_CERT_3);
     }
 
     @Test
-    public void updateInvalidUserException() throws IOException, JAXBException {
-
-        //given
-        ServiceGroup oldServiceGroup = saveServiceGroup();
-        expectedExeption.expect(InvalidOwnerException.class);
-        expectedExeption.expectMessage("User: "+CERT_USER+" is not owner of service group: participant-scheme-qns::urn:poland:ncpb");
-
-        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
-
-        //when
-        serviceGroupService.saveServiceGroup(newServiceGroup, null, CERT_USER, ADMIN_USERNAME);
-
-    }
-
-    @Test
-    public void updateEncodedInvalidUserException() throws IOException, JAXBException {
-
-        //given
-        ServiceGroup oldServiceGroup = saveServiceGroup();
-        expectedExeption.expect(InvalidOwnerException.class);
-        expectedExeption.expectMessage("User: "+CERT_USER+" is not owner of service group: participant-scheme-qns::urn:poland:ncpb");
-
-        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
-
-        //when
-        serviceGroupService.saveServiceGroup(newServiceGroup, null, CERT_USER_ENCODED, ADMIN_USERNAME);
-
-    }
-
-    @Test
-    public void updateInvalidUserEncodingException() throws IOException, JAXBException {
+    public void updateInvalidUserEncodingException() throws IOException {
         String  username = "test::20%atest";
         //given
-        ServiceGroup oldServiceGroup = saveServiceGroup();
-        expectedExeption.expect(InvalidOwnerException.class);
+        ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_TEST2_XML_PATH));
+        expectedExeption.expect(SMPRuntimeException.class);
         expectedExeption.expectMessage(StringStartsWith.startsWith("Unsupported or invalid encoding"));
 
-        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
-        ExtensionType newExtension = new ExtensionType();
-        newExtension.setExtensionID("new extension ID the second");
-        newServiceGroup.getExtensions().add(newExtension);
-
         //when
-        serviceGroupService.saveServiceGroup(newServiceGroup, null, username, ADMIN_USERNAME);
+        testInstance.saveServiceGroup(inServiceGroup, null, username, username);
 
+    }
+
+  @Test
+    public void savingUnderNotExistingDomainIsNotAllowed() throws Throwable {
+        //given
+        String domain="NOTEXISTINGDOMAIN";
+        ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_POLAND_XML_PATH));
+        expectedExeption.expect(SMPRuntimeException.class);
+        expectedExeption.expectMessage(DOMAIN_NOT_EXISTS.getMessage(domain));
+
+        //execute
+        testInstance.saveServiceGroup(inServiceGroup, domain, USERNAME_1, USERNAME_1);
+    }
+
+    @Test
+    public void onlyASCIICharactersAllowedInDomainId() throws Throwable {
+        //given
+        String domain="notAllowedChars:-_;#$";
+        ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_POLAND_XML_PATH));
+        expectedExeption.expect(SMPRuntimeException.class);
+        expectedExeption.expectMessage(INVALID_DOMAIN_CODE.getMessage(domain,
+                DomainService.DOMAIN_ID_PATTERN.pattern()));
+
+        //execute
+        testInstance.saveServiceGroup(inServiceGroup, domain, USERNAME_1, USERNAME_1);
     }
 
     @Test
     public void urlsAreHandledByWebLayer() throws Throwable {
-        //given
-        saveServiceGroup();
 
         //when
-        ServiceGroup serviceGroup = serviceGroupService.getServiceGroup(SERVICE_GROUP_ID);
-
+        ParticipantIdentifierType pt = new ParticipantIdentifierType();
+        pt.setValue(TEST_SG_ID_2);
+        pt.setScheme(TEST_SG_SCHEMA_2);
+        // execute
+        ServiceGroup serviceGroup = testInstance.getServiceGroup(pt);
+        assertNotNull(serviceGroup);
         //then
         List<ServiceMetadataReferenceType> serviceMetadataReferences = serviceGroup.getServiceMetadataReferenceCollection().getServiceMetadataReferences();
         //URLs are handled in by the REST webservices layer
         assertEquals(0, serviceMetadataReferences.size());
-    }
-
-    @Test(expected = WrongInputFieldException.class)
-    public void savingUnderNotExistingDomainIsNotAllowed() throws Throwable {
-        //given
-        saveServiceGroup();
-        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
-
-        //when-then
-        serviceGroupService.saveServiceGroup(newServiceGroup,"NOTEXISTINGDOMAIN", ADMIN_USERNAME, ADMIN_USERNAME);
-    }
-
-    @Test(expected = WrongInputFieldException.class)
-    public void onlyASCIICharactersAllowedInDomainId() throws Throwable {
-        //given
-        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
-
-        //when-then
-        serviceGroupService.saveServiceGroup(newServiceGroup,"notAllowedChars:-_;#$", ADMIN_USERNAME, ADMIN_USERNAME);
-    }
-
-    @Test
-    public void savingUnderTheOnlyDomainSpecifiedExpliciteIsAllowed() throws Throwable {
-        //given
-        ServiceGroup newServiceGroup = unmarshal(loadDocumentAsString(SERVICE_GROUP_XML_PATH));
-
-        //when
-        serviceGroupService.saveServiceGroup(newServiceGroup,"domain1", ADMIN_USERNAME, ADMIN_USERNAME);
-
-        //then
-        assertNotNull(serviceGroupService.getServiceGroup(SERVICE_GROUP_ID));
     }
 
 }

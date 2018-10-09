@@ -36,7 +36,7 @@ CREATE TABLE smp_service_group (
   businessIdentifier       VARCHAR(50) NOT NULL,
   businessIdentifierScheme VARCHAR(100) NOT NULL,
   domainId                 VARCHAR(50) DEFAULT 'domain1' NOT NULL ,
-  extension                TEXT             NULL DEFAULT NULL,
+  xmlContent                TEXT             NULL DEFAULT NULL,
   PRIMARY KEY (businessIdentifier, businessIdentifierScheme),
   CONSTRAINT FK_srv_group_domain FOREIGN KEY (domainId)
     REFERENCES smp_domain (domainId)
@@ -46,7 +46,7 @@ CREATE TABLE smp_service_group_AUD (
   businessIdentifier       VARCHAR(50) NOT NULL,
   businessIdentifierScheme VARCHAR(100) NOT NULL,
   domainId                 VARCHAR(50) NOT NULL,
-  extension                TEXT             NULL DEFAULT NULL,
+  xmlContent                TEXT             NULL DEFAULT NULL,
   REV integer not null,
   REVTYPE tinyint,
   PRIMARY KEY (businessIdentifier, businessIdentifierScheme, REV)

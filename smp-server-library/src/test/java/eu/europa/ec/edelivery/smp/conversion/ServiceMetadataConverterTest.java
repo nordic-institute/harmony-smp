@@ -13,13 +13,18 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
-import eu.europa.ec.edelivery.smp.exceptions.XmlParsingException;
+
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.testutil.XmlTestUtils;
+import org.hamcrest.Matchers;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.RedirectType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceEndpointList;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceInformationType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
+import org.opensaml.core.xml.XMLRuntimeException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -40,7 +45,10 @@ import static org.junit.Assert.*;
 public class ServiceMetadataConverterTest {
 
     private static final String NS = "http://docs.oasis-open.org/bdxr/ns/SMP/2016/05";
-    private static final String RES_PATH = "/eu/europa/ec/edelivery/smp/conversion/";
+    private static final String RES_PATH = "/examples/conversion/";
+
+    @Rule
+    public ExpectedException expectedExeption = ExpectedException.none();
 
     @Test
     public void testUnmarshalServiceInformation() throws IOException, SAXException, ParserConfigurationException, JAXBException {
@@ -93,8 +101,11 @@ public class ServiceMetadataConverterTest {
         assertEquals("SAMPLE CERTIFICATE VALUE", redirect.getCertificateUID());
     }
 
-    @Test(expected = XmlParsingException.class)
+    @Test
     public void testUnmarshalMalformedInput() throws ParserConfigurationException, IOException, SAXException, JAXBException {
+
+        expectedExeption.expect(SMPRuntimeException.class);
+        expectedExeption.expectMessage(Matchers.startsWith("Invalid service metada. Error"));
         //when
         ServiceMetadataConverter.unmarshal("this is malformed XML body");
     }
@@ -133,25 +144,28 @@ public class ServiceMetadataConverterTest {
         assertEquals(inputDoc, resultServiceMetadata);
     }
 
-    @Test(expected = XmlParsingException.class)
+    @Test
     public void testToSignedServiceMetadataDocumentMalformedInput() throws ParserConfigurationException, IOException, SAXException, JAXBException {
+
+        expectedExeption.expect(SMPRuntimeException.class);
+        expectedExeption.expectMessage(Matchers.startsWith("Invalid service metada. Error:"));
         //when
         ServiceMetadataConverter.toSignedServiceMetadatadaDocument("this is malformed XML body");
     }
 
     @Test
     public void testVulnerabilityParsingDTD() throws IOException {
+
         //given
+        expectedExeption.expect(SMPRuntimeException.class);
+        expectedExeption.expectMessage(Matchers.containsString("DOCTYPE is disallowed"));
+        expectedExeption.expectCause(Matchers.isA(SAXParseException.class));
+
+
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "ServiceMetadataWithDOCTYPE.xml");
 
-        //when then
-        try {
-            ServiceMetadataConverter.unmarshal(inputDoc);
-        }catch(XmlParsingException e){
-            assertTrue(e.getMessage().contains("DOCTYPE is disallowed"));
-            assertTrue(e.getCause() instanceof SAXParseException);
-            return;
-        }
+        ServiceMetadataConverter.unmarshal(inputDoc);
+
         fail("DOCTYPE declaration must be blocked to prevent from XXE attacks");
     }
 }

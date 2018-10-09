@@ -13,7 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.error.exceptions;
 
-import eu.europa.ec.edelivery.smp.error.ErrorBusinessCode;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorBusinessCode;
 
 /**
  * Created by migueti on 13/01/2017.
