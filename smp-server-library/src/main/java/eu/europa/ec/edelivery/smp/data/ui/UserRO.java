@@ -1,14 +1,9 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
-
-import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_USERNAME_LENGTH;
 
 /**
  * @author Joze Rihtarsic
@@ -23,7 +18,7 @@ public class UserRO implements Serializable {
     private static final long serialVersionUID = -4971552086560325302L;
     @Id
     @Column(name = "username")
-    private String username;
+    private String userName;
     @Column(name = "password")
     private String password;
     @Column(name = "isadmin")
@@ -33,18 +28,18 @@ public class UserRO implements Serializable {
 
     }
 
-    public UserRO(String username, String password, boolean isAdmin) {
-        this.username = username;
+    public UserRO(String userName, String password, boolean isAdmin) {
+        this.userName = userName;
         this.password = password;
         this.isAdmin = isAdmin;
     }
 
-    public String getUsername() {
-        return username;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getPassword() {
@@ -68,12 +63,12 @@ public class UserRO implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         UserRO userRO = (UserRO) o;
-        return Objects.equals(username, userRO.username);
+        return Objects.equals(userName, userRO.userName);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(username);
+        return Objects.hash(userName);
     }
 }

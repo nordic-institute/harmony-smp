@@ -64,7 +64,7 @@ public class ServiceUIDataIntegrationTest {
         for (int i = 0; i < 20; i++) {
             UserRO ent = new UserRO();
             ent.setAdmin(false);
-            ent.setUsername("Username" + i);
+            ent.setUserName("Username" + i);
             ent.setPassword("Password");
             serviceUIData.persistUser(ent);
         }
@@ -128,7 +128,7 @@ public class ServiceUIDataIntegrationTest {
 
         UserRO ent = new UserRO();
         ent.setAdmin(false);
-        ent.setUsername("Username");
+        ent.setUserName("Username");
         ent.setPassword("Password");
 
         long cnt = serviceUIData.getUserList(0, 10, null, null).getCount();

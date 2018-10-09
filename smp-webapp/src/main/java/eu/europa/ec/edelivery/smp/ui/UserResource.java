@@ -33,7 +33,7 @@ public class UserResource {
     @PutMapping(produces = {"application/json"})
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
-    public ServiceResult<UserRO> getUserist(
+    public ServiceResult<UserRO> getUsers(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
             @RequestParam(value = "orderBy", required = false) String orderBy,
