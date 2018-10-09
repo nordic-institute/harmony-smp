@@ -24,7 +24,7 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.MISSING_DOMAIN;
  */
 
 @Service
-public class ServiceDomain {
+public class DomainService {
 
     public static final Pattern DOMAIN_ID_PATTERN = Pattern.compile("[a-zA-Z0-9]{1,50}");
 

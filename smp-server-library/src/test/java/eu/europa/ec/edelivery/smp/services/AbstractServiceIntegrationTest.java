@@ -22,7 +22,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.transaction.annotation.Transactional;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_SG_ID_2;
@@ -38,7 +37,7 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_SG_SCHEMA_2
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {H2JPATestConfiguration.class,PropertiesSingleDomainTestConfig.class,
         CaseSensitivityNormalizer.class,SmlConnector.class,ServiceMetadataSigner.class,
-        ServiceGroupService.class,ServiceDomain.class, ServiceMetadataService.class,
+        ServiceGroupService.class, DomainService.class, ServiceMetadataService.class,
         ServiceGroupDao.class,ServiceMetadataDao.class, DomainDao.class, UserDao.class,DBAssertion.class})
 @Sql(scripts = "classpath:cleanup-database.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig
         (transactionMode = SqlConfig.TransactionMode.ISOLATED,

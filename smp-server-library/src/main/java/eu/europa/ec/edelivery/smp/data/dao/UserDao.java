@@ -44,7 +44,7 @@ public class UserDao extends BaseDao<DBUser> {
         // all users are  SERVICEGROUP_ADMIN
         lstRes.add(DBUserAuthority.S_ROLE_SERVICEGROUP_ADMIN);
 
-        List<DBUserAuthority> lst = em
+        List<DBUserAuthority> lst = memEManager
                 .createNamedQuery("DBUserAuthority.getRolesForUsernameNativeQuery")
                 .setParameter( "username",username)
                 .getResultList();
@@ -98,7 +98,7 @@ public class UserDao extends BaseDao<DBUser> {
             return  Optional.empty();
         }
         try {
-            TypedQuery<DBUser> query = em.createNamedQuery("DBUser.getUserByUsernameInsensitive", DBUser.class);
+            TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUserByUsernameInsensitive", DBUser.class);
             query.setParameter("username", username.trim());
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {
@@ -116,7 +116,7 @@ public class UserDao extends BaseDao<DBUser> {
      */
     public Optional<DBUser> findUserByCertificateId(String certificateId) {
         try {
-            TypedQuery<DBUser> query = em.createNamedQuery("DBUser.getUserByCertificateId", DBUser.class);
+            TypedQuery<DBUser> query = memEManager.createNamedQuery("DBUser.getUserByCertificateId", DBUser.class);
             query.setParameter("certificateId", certificateId);
             return Optional.of(query.getSingleResult());
         } catch (NoResultException e) {

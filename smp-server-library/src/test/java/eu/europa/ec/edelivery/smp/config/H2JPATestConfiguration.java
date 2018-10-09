@@ -1,17 +1,12 @@
 package eu.europa.ec.edelivery.smp.config;
 
 
-import eu.europa.ec.edelivery.smp.data.dao.ui.UiDaoService;
-import eu.europa.ec.edelivery.smp.services.ServiceUIData;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
-import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
-import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -26,7 +21,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 @Configuration
-@PropertySource("./persistence-test-mysql.properties")
+@PropertySource("./persistence-test-h2.properties")
 @EnableTransactionManagement
 public class H2JPATestConfiguration {
     @Autowired
@@ -66,7 +61,6 @@ public class H2JPATestConfiguration {
         HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
         hibernateJpaVendorAdapter.setShowSql(false);
         hibernateJpaVendorAdapter.setGenerateDdl(true);
-        hibernateJpaVendorAdapter.setDatabase(Database.MYSQL);
         return hibernateJpaVendorAdapter;
     }
 
@@ -78,15 +72,4 @@ public class H2JPATestConfiguration {
     }
 
 
-    @Bean
-    public ServiceUIData serviceUIData(){
-        ServiceUIData serviceMetadat = new ServiceUIData();
-        return serviceMetadat;
-    }
-
-    @Bean
-    public UiDaoService uiDaoService(){
-        UiDaoService uiDaoService = new UiDaoService();
-        return uiDaoService;
-    }
 }

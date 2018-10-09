@@ -42,7 +42,7 @@ public class ServiceGroupDao extends BaseDao<DBServiceGroup> {
 
 
         try {
-            TypedQuery<DBServiceGroup> query = em.createNamedQuery("DBServiceGroup.getServiceGroup", DBServiceGroup.class);
+            TypedQuery<DBServiceGroup> query = memEManager.createNamedQuery("DBServiceGroup.getServiceGroup", DBServiceGroup.class);
             query.setParameter("participantIdentifier", participantId);
             query.setParameter("participantScheme", schema);
             DBServiceGroup res = query.getSingleResult();
@@ -78,7 +78,7 @@ public class ServiceGroupDao extends BaseDao<DBServiceGroup> {
         em.createNamedQuery("DBServiceGroup.deleteById")
                 .setParameter("id", dbServiceGroup.getId()).executeUpdate()>0;
  */
-        em.remove(em.contains(dbServiceGroup) ? dbServiceGroup : em.merge(dbServiceGroup));
+        memEManager.remove(memEManager.contains(dbServiceGroup) ? dbServiceGroup : memEManager.merge(dbServiceGroup));
     }
 
 

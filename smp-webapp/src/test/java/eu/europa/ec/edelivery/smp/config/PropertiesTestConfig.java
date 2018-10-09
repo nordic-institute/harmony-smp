@@ -34,6 +34,14 @@ public class PropertiesTestConfig {
         PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
 
         Properties localProps = new Properties();
+        localProps.setProperty("jdbc.driverClassName", "org.h2.Driver");
+        localProps.setProperty("jdbc.url", "jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE");
+        localProps.setProperty( "jdbc.user", "smp");
+        localProps.setProperty( "jdbc.pass", "smp");
+        localProps.setProperty( "spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+        localProps.setProperty( "spring.jpa.generate-ddl", "true");
+        localProps.setProperty( "spring.jpa.properties.hibernate.hbm2ddl.auto", "create");
+
         localProps.setProperty("xmldsig.keystore.classpath", SIGNING_KEYSTORE_PATH);
         localProps.setProperty("xmldsig.keystore.password", "test123");
         propertiesConfig.setProperties(localProps);

@@ -18,7 +18,6 @@ import eu.europa.ec.edelivery.smp.conversion.ExtensionConverter;
 import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
-import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.hamcrest.core.StringStartsWith;
 import org.junit.Before;
 import org.junit.Rule;
@@ -256,7 +255,7 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_POLAND_XML_PATH));
         expectedExeption.expect(SMPRuntimeException.class);
         expectedExeption.expectMessage(INVALID_DOMAIN_CODE.getMessage(domain,
-                ServiceDomain.DOMAIN_ID_PATTERN.pattern()));
+                DomainService.DOMAIN_ID_PATTERN.pattern()));
 
         //execute
         testInstance.saveServiceGroup(inServiceGroup, domain, USERNAME_1, USERNAME_1);

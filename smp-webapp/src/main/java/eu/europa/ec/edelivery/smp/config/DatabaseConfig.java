@@ -19,6 +19,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -61,12 +62,12 @@ public class DatabaseConfig {
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean smpEntityManagerFactory() {
+    public LocalContainerEntityManagerFactoryBean smpEntityManagerFactory( DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
         Properties prop = new Properties();
         prop.setProperty("org.hibernate.envers.store_data_at_delete", "true");
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
-        lef.setDataSource(dataSource());
-        lef.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        lef.setDataSource(dataSource);
+        lef.setJpaVendorAdapter(jpaVendorAdapter);
         lef.setPackagesToScan("eu.europa.ec.edelivery.smp.data.model");
         lef.setJpaProperties(prop);
         //lef.setPersistenceXmlLocation("classpath:META-INF/smp-persistence.xml");
@@ -79,5 +80,12 @@ public class DatabaseConfig {
         transactionManager.setEntityManagerFactory(emf);
 
         return transactionManager;
+    }
+
+    @Bean
+    public JpaVendorAdapter jpaVendorAdapter() {
+        HibernateJpaVendorAdapter hibernateJpaVendorAdapter = new HibernateJpaVendorAdapter();
+        hibernateJpaVendorAdapter.setGenerateDdl(true);
+        return hibernateJpaVendorAdapter;
     }
 }

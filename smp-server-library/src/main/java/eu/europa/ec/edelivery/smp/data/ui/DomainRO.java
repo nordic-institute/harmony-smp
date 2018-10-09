@@ -10,89 +10,88 @@ import java.util.Objects;
  * @since 4.1
  */
 
-@Entity
-@Table(name = "smp_domain")
 public class DomainRO implements Serializable {
 
 
     private static final long serialVersionUID = -9008583888835630560L;
-    @Id
-    @Column(name = "domainId")
-    private String domainId;
-    @Column(name = "bdmslClientCertHeader")
-    private String bdmslClientCertHeader;
-    @Column(name = "bdmslClientCertAlias")
-    private String bdmslClientCertAlias;
-    @Column(name = "bdmslSmpId")
-    private String bdmslSmpId;
-    @Column(name = "signatureCertAlias")
-    private String signatureCertAlias;
+
+    Long id;
+
+    String domainCode;
+    String smlSubdomain;
+    String smlSmpId;
+    String smlParticipantIdentifierRegExp;
+    String smlClientCertHeader;
+    String smlClientKeyAlias;
+    String signatureKeyAlias;
+ ;
 
 
-    public DomainRO(){
+    public DomainRO() {
 
     }
 
-
-    public DomainRO(String domainId, String bdmslClientCertHeader, String bdmslClientCertAlias, String bdmslSmpId, String signatureCertAlias) {
-        this.domainId = domainId;
-        this.bdmslClientCertHeader = bdmslClientCertHeader;
-        this.bdmslClientCertAlias = bdmslClientCertAlias;
-        this.bdmslSmpId = bdmslSmpId;
-        this.signatureCertAlias = signatureCertAlias;
+    public Long getId() {
+        return id;
     }
 
-    public String getDomainId() {
-        return domainId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public void setDomainId(String domainId) {
-        this.domainId = domainId;
+    public String getDomainCode() {
+        return domainCode;
     }
 
-    public String getBdmslClientCertHeader() {
-        return bdmslClientCertHeader;
+    public void setDomainCode(String domainCode) {
+        this.domainCode = domainCode;
     }
 
-    public void setBdmslClientCertHeader(String bdmslClientCertHeader) {
-        this.bdmslClientCertHeader = bdmslClientCertHeader;
+    public String getSmlSubdomain() {
+        return smlSubdomain;
     }
 
-    public String getBdmslClientCertAlias() {
-        return bdmslClientCertAlias;
+    public void setSmlSubdomain(String smlSubdomain) {
+        this.smlSubdomain = smlSubdomain;
     }
 
-    public void setBdmslClientCertAlias(String bdmslClientCertAlias) {
-        this.bdmslClientCertAlias = bdmslClientCertAlias;
+    public String getSmlSmpId() {
+        return smlSmpId;
     }
 
-    public String getBdmslSmpId() {
-        return bdmslSmpId;
+    public void setSmlSmpId(String smlSmpId) {
+        this.smlSmpId = smlSmpId;
     }
 
-    public void setBdmslSmpId(String bdmslSmpId) {
-        this.bdmslSmpId = bdmslSmpId;
+    public String getSmlParticipantIdentifierRegExp() {
+        return smlParticipantIdentifierRegExp;
     }
 
-    public String getSignatureCertAlias() {
-        return signatureCertAlias;
+    public void setSmlParticipantIdentifierRegExp(String smlParticipantIdentifierRegExp) {
+        this.smlParticipantIdentifierRegExp = smlParticipantIdentifierRegExp;
     }
 
-    public void setSignatureCertAlias(String signatureCertAlias) {
-        this.signatureCertAlias = signatureCertAlias;
+    public String getSmlClientCertHeader() {
+        return smlClientCertHeader;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        DomainRO domainRO = (DomainRO) o;
-        return Objects.equals(domainId, domainRO.domainId) &&
-                Objects.equals(bdmslSmpId, domainRO.bdmslSmpId);
+    public void setSmlClientCertHeader(String smlClientCertHeader) {
+        this.smlClientCertHeader = smlClientCertHeader;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(domainId, bdmslSmpId);
+    public String getSmlClientKeyAlias() {
+        return smlClientKeyAlias;
+    }
+
+    public void setSmlClientKeyAlias(String smlClientKeyAlias) {
+        this.smlClientKeyAlias = smlClientKeyAlias;
+    }
+
+    public String getSignatureKeyAlias() {
+        return signatureKeyAlias;
+    }
+
+    public void setSignatureKeyAlias(String signatureKeyAlias) {
+        this.signatureKeyAlias = signatureKeyAlias;
     }
 }
