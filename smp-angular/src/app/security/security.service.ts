@@ -6,16 +6,15 @@ import {User} from './user.model';
 import {ReplaySubject} from 'rxjs';
 import {SecurityEventService} from './security-event.service';
 import {DomainService} from './domain.service';
+import {Role} from "./role.model";
 
 @Injectable()
 export class SecurityService {
-  static ROLE_AP_ADMIN = 'ROLE_AP_ADMIN';
-  static ROLE_DOMAIN_ADMIN = 'ROLE_ADMIN';
 
   constructor (private http: Http, private securityEventService: SecurityEventService, private domainService: DomainService) {
   }
 
-  login (username: string, password: string) {
+  logi(username: string, password: string) {
     this.domainService.resetDomain();
     let headers = new Headers({'Content-Type': 'application/json'});
     return this.http.post('rest/security/authentication',
@@ -35,7 +34,7 @@ export class SecurityService {
         });
   }
 
-  logout () {
+  logou() {
     console.log('Logging out');
     this.domainService.resetDomain();
     this.http.delete('rest/security/authentication').subscribe((res: Response) => {
@@ -48,11 +47,11 @@ export class SecurityService {
       });
   }
 
-  getCurrentUser (): User {
+  getCurrentUser(): User {
     return JSON.parse(localStorage.getItem('currentUser'));
   }
 
-  private getCurrentUsernameFromServer (): Observable<string> {
+  private getCurrentUsernameFromServer(): Observable<string> {
     let subject = new ReplaySubject();
     this.http.get('rest/security/user')
       .subscribe((res: Response) => {
@@ -64,7 +63,7 @@ export class SecurityService {
     return subject.asObservable();
   }
 
-  isAuthenticated (callServer: boolean = false): Observable<boolean> {
+  isAuthenticated(callServer: boolean = false): Observable<boolean> {
     let subject = new ReplaySubject();
     if (callServer) {
       //we get the username from the server to trigger the redirection to the login screen in case the user is not authenticated
@@ -84,19 +83,19 @@ export class SecurityService {
     return subject.asObservable();
   }
 
-  isCurrentUserSuperAdmin (): boolean {
-    return this.isCurrentUserInRole([SecurityService.ROLE_AP_ADMIN]);
+  isCurrentUserSuperAdmin(): boolean {
+    return this.isCurrentUserInRole([Role.SYSTEM_ADMINISTRATOR]);
   }
 
-  isCurrentUserAdmin (): boolean {
-    return this.isCurrentUserInRole([SecurityService.ROLE_DOMAIN_ADMIN, SecurityService.ROLE_AP_ADMIN]);
+  isCurrentUserAdmin(): boolean {
+    return this.isCurrentUserInRole([Role.SYSTEM_ADMINISTRATOR, Role.SMP_ADMINISTRATOR]);
   }
 
-  isCurrentUserInRole (roles: Array<string>): boolean {
+  isCurrentUserInRole(roles: Array<Role>): boolean {
     let hasRole = false;
     const currentUser = this.getCurrentUser();
     if (currentUser && currentUser.authorities) {
-      roles.forEach((role: string) => {
+      roles.forEach((role: Role) => {
         if (currentUser.authorities.indexOf(role) !== -1) {
           hasRole = true;
         }
@@ -105,7 +104,7 @@ export class SecurityService {
     return hasRole;
   }
 
-  isAuthorized (roles: Array<string>): Observable<boolean> {
+  isAuthorized(roles: Array<Role>): Observable<boolean> {
     let subject = new ReplaySubject();
 
     this.isAuthenticated(false).subscribe((isAuthenticated: boolean) => {
