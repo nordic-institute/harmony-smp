@@ -7,7 +7,7 @@ import javax.persistence.*;
 @NamedNativeQueries({
         @NamedNativeQuery(
                 name = "DBUserAuthority.getRolesForUsernameNativeQuery",
-                query = "SELECT 'ROLE_SMP_ADMIN' AS AUTHORITY FROM smp_user WHERE isadmin = 1 and username=:username " +
+                query = "SELECT 'SMP_ADMIN' AS AUTHORITY FROM smp_user WHERE isadmin = 1 and username=:username " +
                         "UNION ALL " +
                         "SELECT CONCAT(businessIdentifierScheme, CONCAT('::', businessIdentifier)) AS AUTHORITY FROM smp_ownership  WHERE username=:username",
                 resultSetMapping = "RoleDTO"

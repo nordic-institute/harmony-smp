@@ -38,7 +38,7 @@ public class BdxSmpOasisValidatorTest {
     @Parameters({"ServiceMetadata_OK.xml","ServiceGroup_OK.xml"})
     public void testValidatePositive(String xmlFilename) throws IOException, XmlInvalidAgainstSchemaException {
         // given
-        String xmlBody = loadXMLFile(xmlFilename);
+        byte[] xmlBody = loadXMLFileAsByteArray(xmlFilename);
 
         // when
         BdxSmpOasisValidator.validateXSD(xmlBody);
@@ -61,7 +61,7 @@ public class BdxSmpOasisValidatorTest {
     @Parameters(method = "negativeCases")
     public void testValidateNegative(String xmlFilename, String output) throws IOException {
         // given
-        String xmlBody = loadXMLFile(xmlFilename);
+        byte[] xmlBody = loadXMLFileAsByteArray(xmlFilename);
 
         // when
         try {
@@ -77,5 +77,10 @@ public class BdxSmpOasisValidatorTest {
     public String loadXMLFile(String path) throws IOException {
         URL fileUrl = BdxSmpOasisValidatorTest.class.getResource("/XMLValidation/"+path);
         return IOUtils.toString(fileUrl.openStream(), UTF_8);
+    }
+
+    public byte[] loadXMLFileAsByteArray(String path) throws IOException {
+        URL fileUrl = BdxSmpOasisValidatorTest.class.getResource("/XMLValidation/"+path);
+        return IOUtils.toByteArray(fileUrl.openStream());
     }
 }

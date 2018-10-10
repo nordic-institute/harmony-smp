@@ -74,6 +74,6 @@ public class ErrorMappingControllerAdviceTest {
                 new XmlInvalidAgainstSchemaException("XmlInvalidAgainstSchemaExceptionMessage", null));
 
         assertEquals(BAD_REQUEST, re.getStatusCode());
-        assertEquals(ErrorBusinessCode.XML_INVALID.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
+        assertEquals(ErrorBusinessCode.XSD_INVALID.toString(), ((ErrorResponse)re.getBody()).getBusinessCode());
     }
 }
