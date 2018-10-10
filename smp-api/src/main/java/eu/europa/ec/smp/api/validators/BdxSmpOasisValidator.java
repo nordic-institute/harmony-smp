@@ -22,6 +22,8 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URL;
@@ -59,9 +61,9 @@ public class BdxSmpOasisValidator {
         return validator.get();
     }
 
-    public static void validateXSD(String xmlBody) throws XmlInvalidAgainstSchemaException {
+    public static void validateXSD(byte[] xmlBody) throws XmlInvalidAgainstSchemaException {
         try {
-            getValidator().validate(new StreamSource(new StringReader(xmlBody)));
+            getValidator().validate(new StreamSource(new ByteArrayInputStream(xmlBody)));
         } catch (SAXException | IOException e) {
             throw new XmlInvalidAgainstSchemaException(e.getMessage(), e);
         }

@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
+import eu.europa.ec.edelivery.smp.SMPRole;
 import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import eu.europa.ec.edelivery.smp.services.ServiceMetadataService;
@@ -77,12 +78,12 @@ public class ServiceGroupController {
 
 
     @PutMapping
-    @Secured("ROLE_SMP_ADMIN")
+   // @Secured({SMPRole.S_ROLE_SMP_ADMIN, SMPRole.S_ROLE_SYSTEM_ADMIN})
     public ResponseEntity saveServiceGroup(
             @PathVariable String serviceGroupId,
             @RequestHeader(name = "ServiceGroup-Owner", required = false) String serviceGroupOwner,
             @RequestHeader(name = "Domain", required = false) String domain,
-            @RequestBody String body) throws XmlInvalidAgainstSchemaException {
+            @RequestBody byte[] body) throws XmlInvalidAgainstSchemaException {
 
         log.info("PUT ServiceGroup: {} domain {} owner {} \n{}", serviceGroupId,domain, serviceGroupOwner, body);
 
@@ -100,7 +101,7 @@ public class ServiceGroupController {
     }
 
     @DeleteMapping
-    @Secured("ROLE_SMP_ADMIN")
+    @Secured({SMPRole.S_ROLE_SYSTEM_ADMIN, SMPRole.S_ROLE_SMP_ADMIN})
     public void deleteServiceGroup(@PathVariable String serviceGroupId) {
 
         log.info("DELETE ServiceGroup: {}", serviceGroupId);

@@ -55,7 +55,7 @@ public class SecurityConfigurationTest {
 
     public static final String TEST_USERNAME_CLEAR_PASS = "test_user_clear_pass";
     public static final String TEST_USERNAME_HASHED_PASS = "test_user_hashed_pass";
-    public static final String PASSWORD = "gutek123";
+    public static final String PASSWORD = "test123";
 
     public static final String BLUE_COAT_VALID_HEADER = "sno=66&subject=C=BE,O=org,CN=comon name&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
     public static final String TEST_USERNAME_BLUE_COAT = "CN=comon name,O=org,C=BE:0000000000000066";
