@@ -11,6 +11,6 @@ export class UserService {
   getUserRoles$() {
     // return this.http.get('rest/user/userroles');
     // TODO create the endpoint
-    return Observable.of({json: () => [Role.SMP_ADMINISTRATOR, Role.SERVICE_GROUP_ADMINISTRATOR, Role.SYSTEM_ADMINISTRATOR]});
+    return Observable.of({json: () => [Role.SYSTEM_ADMINISTRATOR, Role.SMP_ADMINISTRATOR, Role.SERVICE_GROUP_ADMINISTRATOR]});
   }
 }
