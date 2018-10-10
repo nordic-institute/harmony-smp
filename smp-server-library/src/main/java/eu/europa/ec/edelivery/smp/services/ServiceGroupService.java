@@ -116,7 +116,7 @@ public class ServiceGroupService {
                 normalizedParticipantId.getScheme());
 
 
-        String extensions = ServiceGroupConverter.extractExtensionsPayload(serviceGroup);
+        byte[] extensions = ServiceGroupConverter.extractExtensionsPayload(serviceGroup);
 
         if (dbServiceGroup.isPresent()) {
             // service already exists.

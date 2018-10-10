@@ -45,11 +45,11 @@ public class TestDBUtils {
         return grp;
     }
 
-    public static String generateDocumentSample(String partcId, String partcSch, String docId, String docSch, String desc){
-        return String.format(SIMPLE_DOCUMENT_XML,partcSch, partcId,docSch, docId, desc);
+    public static  byte[]  generateDocumentSample(String partcId, String partcSch, String docId, String docSch, String desc){
+        return String.format(SIMPLE_DOCUMENT_XML,partcSch, partcId,docSch, docId, desc).getBytes();
     }
-    public static String generateExtension(){
-        return String.format(SIMPLE_EXTENSION_XML, UUID.randomUUID().toString());
+    public static byte[] generateExtension(){
+        return String.format(SIMPLE_EXTENSION_XML, UUID.randomUUID().toString()).getBytes();
     }
 
     public static DBServiceGroup createDBServiceGroup(String id, String sch) {

@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -71,7 +72,7 @@ public class ServiceGroupDaoMetadataIntegrationTest extends ServiceGroupDaoInteg
         DBServiceGroup res2 = testInstance.findServiceGroup(sg.getParticipantIdentifier(), sg.getParticipantScheme()).get();
         assertNotNull(res2);
         assertEquals(1, res2.getServiceGroupDomains().get(0).getServiceMetadata().size());
-        assertEquals(md.getXmlContent(), res2.getServiceGroupDomains().get(0).getServiceMetadata().get(0).getXmlContent());
+        assertTrue(Arrays.equals(md.getXmlContent(), res2.getServiceGroupDomains().get(0).getServiceMetadata().get(0).getXmlContent()));
     }
 
     @Test
@@ -82,7 +83,7 @@ public class ServiceGroupDaoMetadataIntegrationTest extends ServiceGroupDaoInteg
         DBServiceGroup res = testInstance.findServiceGroup(sg.getParticipantIdentifier(), sg.getParticipantScheme()).get();
         DBServiceMetadata md = res.getServiceGroupDomains().get(0).getServiceMetadata(0);
 
-        String str = TestDBUtils.generateDocumentSample(sg.getParticipantIdentifier(),sg.getParticipantScheme(),
+        byte[]  str = TestDBUtils.generateDocumentSample(sg.getParticipantIdentifier(),sg.getParticipantScheme(),
                 md.getDocumentIdentifier(),md.getDocumentIdentifierScheme(),UUID.randomUUID().toString());
         assertNotEquals (str, md.getXmlContent());
         //when
@@ -94,7 +95,7 @@ public class ServiceGroupDaoMetadataIntegrationTest extends ServiceGroupDaoInteg
         DBServiceGroup res2 = testInstance.findServiceGroup(sg.getParticipantIdentifier(), sg.getParticipantScheme()).get();
         assertNotNull(res2);
         assertEquals(1, res2.getServiceGroupDomains().get(0).getServiceMetadata().size());
-        assertEquals(str, res2.getServiceGroupDomains().get(0).getServiceMetadata().get(0).getXmlContent());
+        assertTrue(Arrays.equals(str, res2.getServiceGroupDomains().get(0).getServiceMetadata().get(0).getXmlContent()));
 
     }
 

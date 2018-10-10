@@ -13,7 +13,7 @@
     <description>Interation tests suit for SMP</description>
 
     <properties>
-        <url>http://localhost:8080/cipa-smp-full-webapp</url>
+        <url>http://localhost:8080/smp</url>
     </properties>
 
     <build>
@@ -51,7 +51,9 @@
                     <testFailIgnore>true</testFailIgnore>
                     <projectFile>${project.basedir}/soapui/SMP4.0-Generic-soapui-project.xml</projectFile>
                     <testSuite>PASSING_AUTO_BAMBOO</testSuite>
-                    <!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->	
+                    <!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->
+                    <testCase>SMP078-Basic Flow-UTF-8 in Body</testCase>
+
                     <projectProperties>
                         <value>url=${url}</value>
                     </projectProperties>

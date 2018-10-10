@@ -87,7 +87,7 @@ public class ServiceMetadataService {
      * @return True if new ServiceMetadata was created. False if existing one was updated.
      */
     @Transactional
-    public boolean saveServiceMetadata(String domain, ParticipantIdentifierType serviceGroupId, DocumentIdentifier documentId, String xmlContent) {
+    public boolean saveServiceMetadata(String domain, ParticipantIdentifierType serviceGroupId, DocumentIdentifier documentId, byte[] xmlContent) {
 
         ParticipantIdentifierType normalizedServiceGroupId = caseSensitivityNormalizer.normalize(serviceGroupId);
         DocumentIdentifier normalizedDocId = caseSensitivityNormalizer.normalize(documentId);

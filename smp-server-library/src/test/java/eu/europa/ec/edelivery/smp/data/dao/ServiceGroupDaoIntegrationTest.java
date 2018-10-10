@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.transaction.Transactional;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -57,7 +58,7 @@ public class ServiceGroupDaoIntegrationTest extends ServiceGroupDaoIntegrationBa
         DBDomain d = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
 
         DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
-        String extension = String.format(TestConstants.SIMPLE_EXTENSION_XML, UUID.randomUUID().toString());
+        byte[] extension = String.format(TestConstants.SIMPLE_EXTENSION_XML, UUID.randomUUID().toString()).getBytes();
         sg.setExtension(extension);
         sg.addDomain(d);
 
@@ -70,14 +71,14 @@ public class ServiceGroupDaoIntegrationTest extends ServiceGroupDaoIntegrationBa
         assertEquals(sg, res); // test equal method - same entity
         assertEquals(sg.getParticipantIdentifier(), res.getParticipantIdentifier()); // test equal method - same entity
         assertEquals(sg.getParticipantScheme(), res.getParticipantScheme()); // test equal method - same entity
-        assertEquals(extension, res.getExtension()); // test loaded Domain
+        assertTrue(Arrays.equals(extension, res.getExtension())); // test loaded Domain
     }
 
     @Test
     public void updateServiceGroupExtension() {
         // given
         DBServiceGroup sg = createAndSaveNewServiceGroup();
-        String extension1 = String.format(TestConstants.SIMPLE_EXTENSION_XML, UUID.randomUUID().toString());
+        byte[] extension1 = String.format(TestConstants.SIMPLE_EXTENSION_XML, UUID.randomUUID().toString()).getBytes();
         // when
         DBServiceGroup res = testInstance.findServiceGroup(sg.getParticipantIdentifier(), sg.getParticipantScheme()).get();
         res.setExtension(extension1);
@@ -89,7 +90,7 @@ public class ServiceGroupDaoIntegrationTest extends ServiceGroupDaoIntegrationBa
         assertEquals(res, res2); // test equal method - same entity
         assertEquals(res.getParticipantIdentifier(), res2.getParticipantIdentifier()); // test equal method - same entity
         assertEquals(res.getParticipantScheme(), res2.getParticipantScheme()); // test equal method - same entity
-        assertEquals(extension1, res2.getExtension()); // test loaded Domain
+        assertTrue(Arrays.equals(extension1, res2.getExtension())); // test loaded Domain
     }
 
     @Test

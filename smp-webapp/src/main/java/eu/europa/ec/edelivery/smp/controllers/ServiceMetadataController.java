@@ -69,7 +69,7 @@ public class ServiceMetadataController {
             @PathVariable String serviceGroupId,
             @PathVariable String serviceMetadataId,
             @RequestHeader(name = "Domain", required = false) String domain,
-            @RequestBody String body) throws XmlInvalidAgainstSchemaException {
+            @RequestBody byte[] body) throws XmlInvalidAgainstSchemaException {
 
         log.info("PUT ServiceMetadata: {} - {}\n{}", serviceGroupId, serviceMetadataId, body);
 

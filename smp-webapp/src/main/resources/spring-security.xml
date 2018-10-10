@@ -40,8 +40,8 @@
             <password-encoder hash="bcrypt"/>
             <jdbc-user-service id="smpJdbcUserDetailsService"
                                data-source-ref="dataSource"
-                               users-by-username-query="SELECT USERNAME, COALESCE(PASSWORD, 'dummy'), ACTIVE FROM SMP_USER WHERE USERNAME = ?"
-                               authorities-by-username-query="SELECT all_roles.USERNAME, all_roles.authority from ( SELECT USERNAME, 'ROLE_SERVICEGROUP_ADMIN' AS AUTHORITY FROM SMP_USER UNION ALL SELECT USERNAME, 'ROLE_SMP_ADMIN' AS AUTHORITY FROM SMP_USER WHERE ROLE = 'ROLE_SMP_ADMIN') all_roles WHERE USERNAME = ?"/>
+                                   users-by-username-query="SELECT username, COALESCE(PASSWORD, 'dummy'), ACTIVE FROM SMP_USER WHERE USERNAME = ?"
+                               authorities-by-username-query="select username, ROLE  FROM SMP_USER where USERNAME = ?"/>
         </authentication-provider>
 
         <authentication-provider ref="preauthAuthProvider"/>

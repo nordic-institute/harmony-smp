@@ -17,7 +17,7 @@ package eu.europa.ec.edelivery.smp.exceptions;
  * Created by migueti on 16/01/2017.
  */
 public enum ErrorBusinessCode {
-    XML_INVALID,
+    XSD_INVALID,
     MISSING_FIELD,
     WRONG_FIELD,
     OUT_OF_RANGE,

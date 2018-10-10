@@ -55,13 +55,13 @@ import javax.persistence.PersistenceContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter.unmarshal;
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
-import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocumentAsString;
-import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.marshall;
+import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.*;
 import static eu.europa.ec.smp.api.Identifiers.asDocumentId;
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
 import static org.junit.Assert.*;
@@ -107,8 +107,8 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
 
 
         //given
-        String inServiceMetadataXml = loadDocumentAsString(SERVICE_METADATA_XML_PATH);
-        String expectedSignedServiceMetadataXml = loadDocumentAsString(SIGNED_SERVICE_METADATA_XML_PATH);
+        byte[]  inServiceMetadataXml = loadDocumentAsByteArray(SERVICE_METADATA_XML_PATH);
+        byte[] expectedSignedServiceMetadataXml = loadDocumentAsByteArray(SIGNED_SERVICE_METADATA_XML_PATH);
         List<DocumentIdentifier> docIdsBefore = testInstance.findServiceMetadataIdentifiers(PT_ID);
         assertEquals(0, docIdsBefore.size());
 
@@ -121,7 +121,7 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
         assertEquals(1, docIdsAfter.size());
         assertEquals(DOC_ID.getValue().toLowerCase(), docIdsAfter.get(0).getValue()); // normalized
         assertEquals(DOC_ID.getScheme().toLowerCase(), docIdsAfter.get(0).getScheme()); // normalized
-        assertEquals(expectedSignedServiceMetadataXml, ServiceMetadataConverter.toString(outServiceMetadataDoc));
+        assertTrue(Arrays.equals(expectedSignedServiceMetadataXml, ServiceMetadataConverter.toByteArray(outServiceMetadataDoc) ));
     }
 
     @Test
@@ -148,7 +148,7 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
     @Test
     public void saveAndDeletePositiveScenario() throws IOException {
         //given
-        String inServiceMetadataXml = loadDocumentAsString(SERVICE_METADATA_XML_PATH);
+        byte[]  inServiceMetadataXml = loadDocumentAsByteArray(SERVICE_METADATA_XML_PATH);
         testInstance.saveServiceMetadata(null, PT_ID, DOC_ID, inServiceMetadataXml);
         List<DocumentIdentifier> docIdsBefore = testInstance.findServiceMetadataIdentifiers(PT_ID);
         assertEquals(1, docIdsBefore.size());
@@ -174,13 +174,13 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
     @Test
     public void updatePositiveScenario() throws IOException, JAXBException, TransformerException {
         //given
-        String oldServiceMetadataXml = loadDocumentAsString(SERVICE_METADATA_XML_PATH);
+        byte[]  oldServiceMetadataXml = loadDocumentAsByteArray(SERVICE_METADATA_XML_PATH);
         testInstance.saveServiceMetadata(null, PT_ID, DOC_ID, oldServiceMetadataXml);
 
-        ServiceMetadata newServiceMetadata = unmarshal(loadDocumentAsString(SERVICE_METADATA_XML_PATH));
+        ServiceMetadata newServiceMetadata = unmarshal(loadDocumentAsByteArray(SERVICE_METADATA_XML_PATH));
         EndpointType endpoint = newServiceMetadata.getServiceInformation().getProcessList().getProcesses().get(0).getServiceEndpointList().getEndpoints().get(0);
         endpoint.setServiceDescription("New Description");
-        String newServiceMetadataXml = marshall(newServiceMetadata);
+        byte[] newServiceMetadataXml = marshallToByteArray(newServiceMetadata);
         testInstance.saveServiceMetadata(null, PT_ID, DOC_ID, newServiceMetadataXml);
 
         //when
@@ -193,14 +193,14 @@ public class ServiceMetadataIntegrationTest extends AbstractServiceIntegrationTe
     @Test
     public void findServiceMetadataIdsPositiveScenario() throws IOException, JAXBException, TransformerException {
         //given
-        String serviceMetadataXml1 = loadDocumentAsString(SERVICE_METADATA_XML_PATH);
+        byte[] serviceMetadataXml1 = loadDocumentAsByteArray(SERVICE_METADATA_XML_PATH);
         testInstance.saveServiceMetadata(null, PT_ID, DOC_ID, serviceMetadataXml1);
 
         String secondDocIdValue = "second-doc-id";
         DocumentIdentifier secondDocId = new DocumentIdentifier(secondDocIdValue, DOC_ID.getScheme());
-        ServiceMetadata serviceMetadata2 = unmarshal(loadDocumentAsString(SERVICE_METADATA_XML_PATH));
+        ServiceMetadata serviceMetadata2 = unmarshal(loadDocumentAsByteArray(SERVICE_METADATA_XML_PATH));
         serviceMetadata2.getServiceInformation().getDocumentIdentifier().setValue(secondDocIdValue);
-        String serviceMetadataXml2 = marshall(serviceMetadata2);
+        byte[] serviceMetadataXml2 = marshallToByteArray(serviceMetadata2);
         testInstance.saveServiceMetadata(null, PT_ID, secondDocId, serviceMetadataXml2);
 
         //when
