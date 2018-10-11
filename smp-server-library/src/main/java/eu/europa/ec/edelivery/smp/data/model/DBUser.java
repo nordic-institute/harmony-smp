@@ -17,14 +17,8 @@ import org.hibernate.envers.Audited;
 
 
 import javax.persistence.*;
-import java.io.Serializable;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
-
-import static eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths.MAX_USERNAME_LENGTH;
 
 @Entity
 @Audited
@@ -41,6 +35,7 @@ public class DBUser extends BaseEntity {
     @SequenceGenerator(name = "usr_generator", sequenceName = "SMP_USER_SEQ")
     @Column(name = "ID")
     Long id;
+
     @Column(name = "USERNAME", length = CommonColumnsLengths.MAX_USERNAME_LENGTH, unique = true)
     private String username;
     @Column(name = "PASSWORD", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
@@ -59,6 +54,11 @@ public class DBUser extends BaseEntity {
 
     @OneToOne(mappedBy = "dbUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = true)
     private DBCertificate certificate;
+
+    @Column(name = "CREATED_ON" , nullable = false)
+    LocalDateTime createdOn;
+    @Column(name = "LAST_UPDATED_ON", nullable = false)
+    LocalDateTime lastUpdatedOn;
 
     public DBUser() {
     }
@@ -154,4 +154,34 @@ public class DBUser extends BaseEntity {
         return Objects.hash(super.hashCode(), id, username, certificate);
     }
 
+    @PrePersist
+    public void prePersist() {
+        if(createdOn == null) {
+            createdOn = LocalDateTime.now();
+        }
+        lastUpdatedOn = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        lastUpdatedOn = LocalDateTime.now();
+    }
+
+    // @Where annotation not working with entities that use inheritance
+    // https://hibernate.atlassian.net/browse/HHH-12016
+    public LocalDateTime getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(LocalDateTime createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public LocalDateTime getLastUpdatedOn() {
+        return lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(LocalDateTime lastUpdatedOn) {
+        this.lastUpdatedOn = lastUpdatedOn;
+    }
 }
