@@ -2,6 +2,8 @@
     create table SMP_CERTIFICATE (
        ID bigint not null,
         CERTIFICATE_ID varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
+        CREATED_ON datetime not null,
+        LAST_UPDATED_ON datetime not null,
         VALID_FROM datetime,
         VALID_TO datetime,
         primary key (ID)
@@ -12,6 +14,8 @@
         REV bigint not null,
         REVTYPE tinyint,
         CERTIFICATE_ID varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
+        CREATED_ON datetime,
+        LAST_UPDATED_ON datetime,
         VALID_FROM datetime,
         VALID_TO datetime,
         primary key (ID, REV)
@@ -19,7 +23,9 @@
 
     create table SMP_DOMAIN (
        ID bigint not null,
+        CREATED_ON datetime not null,
         DOMAIN_CODE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null,
+        LAST_UPDATED_ON datetime not null,
         SIGNATURE_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_CLIENT_CERT_HEADER varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_CLIENT_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -33,7 +39,9 @@
        ID bigint not null,
         REV bigint not null,
         REVTYPE tinyint,
+        CREATED_ON datetime,
         DOMAIN_CODE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        LAST_UPDATED_ON datetime,
         SIGNATURE_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_CLIENT_CERT_HEADER varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_CLIENT_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -79,6 +87,8 @@
 
     create table SMP_SERVICE_GROUP (
        ID bigint not null,
+        CREATED_ON datetime not null,
+        LAST_UPDATED_ON datetime not null,
         PARTICIPANT_IDENTIFIER varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null,
         PARTICIPANT_SCHEME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null,
         SML_REGISTRED bit not null,
@@ -89,6 +99,8 @@
        ID bigint not null,
         REV bigint not null,
         REVTYPE tinyint,
+        CREATED_ON datetime,
+        LAST_UPDATED_ON datetime,
         PARTICIPANT_IDENTIFIER varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         PARTICIPANT_SCHEME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_REGISTRED bit,
@@ -97,6 +109,8 @@
 
     create table SMP_SERVICE_GROUP_DOMAIN (
        ID bigint not null,
+        CREATED_ON datetime not null,
+        LAST_UPDATED_ON datetime not null,
         FK_DOMAIN_ID bigint,
         FK_SG_ID bigint,
         primary key (ID)
@@ -106,6 +120,8 @@
        ID bigint not null,
         REV bigint not null,
         REVTYPE tinyint,
+        CREATED_ON datetime,
+        LAST_UPDATED_ON datetime,
         FK_DOMAIN_ID bigint,
         FK_SG_ID bigint,
         primary key (ID, REV)
@@ -125,8 +141,10 @@
 
     create table SMP_SERVICE_METADATA (
        ID bigint not null,
+        CREATED_ON datetime not null,
         DOCUMENT_IDENTIFIER varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin not null,
         DOCUMENT_SCHEME varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin,
+        LAST_UPDATED_ON datetime not null,
         FK_SG_DOM_ID bigint not null,
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -135,8 +153,10 @@
        ID bigint not null,
         REV bigint not null,
         REVTYPE tinyint,
+        CREATED_ON datetime,
         DOCUMENT_IDENTIFIER varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin,
         DOCUMENT_SCHEME varchar(500)  CHARACTER SET utf8 COLLATE utf8_bin,
+        LAST_UPDATED_ON datetime,
         FK_SG_DOM_ID bigint,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -149,6 +169,8 @@
 
     create table SMP_SERVICE_METADATA_XML (
        ID bigint not null,
+        CREATED_ON datetime not null,
+        LAST_UPDATED_ON datetime not null,
         XML_CONTENT longblob,
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -157,13 +179,17 @@
        ID bigint not null,
         REV bigint not null,
         REVTYPE tinyint,
+        CREATED_ON datetime,
+        LAST_UPDATED_ON datetime,
         XML_CONTENT longblob,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
     create table SMP_SG_EXTENSION (
        ID bigint not null,
+        CREATED_ON datetime not null,
         EXTENSION longblob,
+        LAST_UPDATED_ON datetime not null,
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -171,14 +197,18 @@
        ID bigint not null,
         REV bigint not null,
         REVTYPE tinyint,
+        CREATED_ON datetime,
         EXTENSION longblob,
+        LAST_UPDATED_ON datetime,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
     create table SMP_USER (
        ID bigint not null,
         ACTIVE bit not null,
+        CREATED_ON datetime not null,
         EMAIL varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        LAST_UPDATED_ON datetime not null,
         PASSWORD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         PASSWORD_CHANGED datetime,
         ROLE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
@@ -191,7 +221,9 @@
         REV bigint not null,
         REVTYPE tinyint,
         ACTIVE bit,
+        CREATED_ON datetime,
         EMAIL varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        LAST_UPDATED_ON datetime,
         PASSWORD varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         PASSWORD_CHANGED datetime,
         ROLE varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,

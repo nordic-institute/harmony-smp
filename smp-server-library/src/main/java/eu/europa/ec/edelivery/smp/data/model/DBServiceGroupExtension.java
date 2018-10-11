@@ -3,6 +3,7 @@ package eu.europa.ec.edelivery.smp.data.model;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -21,7 +22,6 @@ import java.util.Objects;
 })
 public class DBServiceGroupExtension extends BaseEntity {
 
-
     @Id
     private Long id;
 
@@ -33,6 +33,11 @@ public class DBServiceGroupExtension extends BaseEntity {
     @JoinColumn(name = "ID")
     @MapsId
     DBServiceGroup dbServiceGroup;
+
+    @Column(name = "CREATED_ON" , nullable = false)
+    LocalDateTime createdOn;
+    @Column(name = "LAST_UPDATED_ON", nullable = false)
+    LocalDateTime lastUpdatedOn;
 
     @Override
     public Long getId() {
@@ -72,5 +77,36 @@ public class DBServiceGroupExtension extends BaseEntity {
     public int hashCode() {
 
         return Objects.hash(super.hashCode(), id);
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if(createdOn == null) {
+            createdOn = LocalDateTime.now();
+        }
+        lastUpdatedOn = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        lastUpdatedOn = LocalDateTime.now();
+    }
+
+    // @Where annotation not working with entities that use inheritance
+    // https://hibernate.atlassian.net/browse/HHH-12016
+    public LocalDateTime getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(LocalDateTime createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public LocalDateTime getLastUpdatedOn() {
+        return lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(LocalDateTime lastUpdatedOn) {
+        this.lastUpdatedOn = lastUpdatedOn;
     }
 }

@@ -8,6 +8,8 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
     create table SMP_CERTIFICATE (
        ID number(19,0) not null,
         CERTIFICATE_ID varchar2(4000 char),
+        CREATED_ON timestamp not null,
+        LAST_UPDATED_ON timestamp not null,
         VALID_FROM timestamp,
         VALID_TO timestamp,
         primary key (ID)
@@ -18,6 +20,8 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
         REV number(19,0) not null,
         REVTYPE number(3,0),
         CERTIFICATE_ID varchar2(4000 char),
+        CREATED_ON timestamp,
+        LAST_UPDATED_ON timestamp,
         VALID_FROM timestamp,
         VALID_TO timestamp,
         primary key (ID, REV)
@@ -25,7 +29,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
 
     create table SMP_DOMAIN (
        ID number(19,0) not null,
+        CREATED_ON timestamp not null,
         DOMAIN_CODE varchar2(256 char) not null,
+        LAST_UPDATED_ON timestamp not null,
         SIGNATURE_KEY_ALIAS varchar2(256 char),
         SML_CLIENT_CERT_HEADER varchar2(256 char),
         SML_CLIENT_KEY_ALIAS varchar2(256 char),
@@ -39,7 +45,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
        ID number(19,0) not null,
         REV number(19,0) not null,
         REVTYPE number(3,0),
+        CREATED_ON timestamp,
         DOMAIN_CODE varchar2(256 char),
+        LAST_UPDATED_ON timestamp,
         SIGNATURE_KEY_ALIAS varchar2(256 char),
         SML_CLIENT_CERT_HEADER varchar2(256 char),
         SML_CLIENT_KEY_ALIAS varchar2(256 char),
@@ -73,6 +81,8 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
 
     create table SMP_SERVICE_GROUP (
        ID number(19,0) not null,
+        CREATED_ON timestamp not null,
+        LAST_UPDATED_ON timestamp not null,
         PARTICIPANT_IDENTIFIER varchar2(256 char) not null,
         PARTICIPANT_SCHEME varchar2(256 char) not null,
         SML_REGISTRED number(1,0) not null,
@@ -83,6 +93,8 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
        ID number(19,0) not null,
         REV number(19,0) not null,
         REVTYPE number(3,0),
+        CREATED_ON timestamp,
+        LAST_UPDATED_ON timestamp,
         PARTICIPANT_IDENTIFIER varchar2(256 char),
         PARTICIPANT_SCHEME varchar2(256 char),
         SML_REGISTRED number(1,0),
@@ -91,6 +103,8 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
 
     create table SMP_SERVICE_GROUP_DOMAIN (
        ID number(19,0) not null,
+        CREATED_ON timestamp not null,
+        LAST_UPDATED_ON timestamp not null,
         FK_DOMAIN_ID number(19,0),
         FK_SG_ID number(19,0),
         primary key (ID)
@@ -100,6 +114,8 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
        ID number(19,0) not null,
         REV number(19,0) not null,
         REVTYPE number(3,0),
+        CREATED_ON timestamp,
+        LAST_UPDATED_ON timestamp,
         FK_DOMAIN_ID number(19,0),
         FK_SG_ID number(19,0),
         primary key (ID, REV)
@@ -107,8 +123,10 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
 
     create table SMP_SERVICE_METADATA (
        ID number(19,0) not null,
+        CREATED_ON timestamp not null,
         DOCUMENT_IDENTIFIER varchar2(500 char) not null,
         DOCUMENT_SCHEME varchar2(500 char),
+        LAST_UPDATED_ON timestamp not null,
         FK_SG_DOM_ID number(19,0) not null,
         primary key (ID)
     );
@@ -117,14 +135,18 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
        ID number(19,0) not null,
         REV number(19,0) not null,
         REVTYPE number(3,0),
+        CREATED_ON timestamp,
         DOCUMENT_IDENTIFIER varchar2(500 char),
         DOCUMENT_SCHEME varchar2(500 char),
+        LAST_UPDATED_ON timestamp,
         FK_SG_DOM_ID number(19,0),
         primary key (ID, REV)
     );
 
     create table SMP_SERVICE_METADATA_XML (
        ID number(19,0) not null,
+        CREATED_ON timestamp not null,
+        LAST_UPDATED_ON timestamp not null,
         XML_CONTENT blob,
         primary key (ID)
     );
@@ -133,13 +155,17 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
        ID number(19,0) not null,
         REV number(19,0) not null,
         REVTYPE number(3,0),
+        CREATED_ON timestamp,
+        LAST_UPDATED_ON timestamp,
         XML_CONTENT blob,
         primary key (ID, REV)
     );
 
     create table SMP_SG_EXTENSION (
        ID number(19,0) not null,
+        CREATED_ON timestamp not null,
         EXTENSION blob,
+        LAST_UPDATED_ON timestamp not null,
         primary key (ID)
     );
 
@@ -147,14 +173,18 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
        ID number(19,0) not null,
         REV number(19,0) not null,
         REVTYPE number(3,0),
+        CREATED_ON timestamp,
         EXTENSION blob,
+        LAST_UPDATED_ON timestamp,
         primary key (ID, REV)
     );
 
     create table SMP_USER (
        ID number(19,0) not null,
         ACTIVE number(1,0) not null,
+        CREATED_ON timestamp not null,
         EMAIL varchar2(256 char),
+        LAST_UPDATED_ON timestamp not null,
         PASSWORD varchar2(256 char),
         PASSWORD_CHANGED timestamp,
         ROLE varchar2(256 char),
@@ -167,7 +197,9 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
         REV number(19,0) not null,
         REVTYPE number(3,0),
         ACTIVE number(1,0),
+        CREATED_ON timestamp,
         EMAIL varchar2(256 char),
+        LAST_UPDATED_ON timestamp,
         PASSWORD varchar2(256 char),
         PASSWORD_CHANGED timestamp,
         ROLE varchar2(256 char),
