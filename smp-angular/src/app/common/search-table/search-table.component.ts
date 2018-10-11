@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, OnInit, TemplateRef, ViewChild} from "@angular/core";
-import {Http, URLSearchParams, Response} from "@angular/http";
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, TemplateRef, ViewChild} from "@angular/core";
+import {Http, Response, URLSearchParams} from "@angular/http";
 import {SearchTableResult} from "./search-table-result.model";
 import {Observable} from "rxjs";
 import {AlertService} from "../../alert/alert.service";
@@ -8,13 +8,18 @@ import {ColumnPicker} from "../column-picker/column-picker.model";
 import {RowLimiter} from "../row-limiter/row-limiter.model";
 import {AlertComponent} from "../../alert/alert.component";
 import {SearchTableController} from "./search-table-controller";
+import {finalize, map} from "rxjs/operators";
+import {SearchTableEntity} from "./search-table-entity.model";
+import {SearchTableEntityStatus} from "./search-table-entity-status.model";
+import {CancelDialogComponent} from "../cancel-dialog/cancel-dialog.component";
+import {SaveDialogComponent} from "../save-dialog/save-dialog.component";
+import {DownloadService} from "../../download/download.service";
 
 @Component({
   selector: 'smp-search-table',
   templateUrl: './search-table.component.html',
   styleUrls: ['./search-table.component.css']
 })
-
 export class SearchTableComponent implements OnInit {
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
 
@@ -28,26 +33,26 @@ export class SearchTableComponent implements OnInit {
   @Input() searchTableController: SearchTableController;
   @Input() filter: any = {};
 
-  columnActions:any;
+  loading = false;
+
+  columnActions: any;
 
   rowLimiter: RowLimiter = new RowLimiter();
 
-  selected = [];
+  rowNumber: number;
 
-  loading: boolean = false;
-  rows = [];
+  rows: Array<SearchTableEntity> = [];
+  selected: Array<SearchTableEntity> = [];
+
   count: number = 0;
   offset: number = 0;
-  //default value
   orderBy: string = null;
-  //default value
-  asc: boolean = false;
+  asc = false;
 
-  msgStatus: Array<String>;
-
-  messageResent = new EventEmitter(false);
-
-  constructor(protected http: Http, protected alertService: AlertService, public dialog: MdDialog) {
+  constructor(protected http: Http,
+              protected alertService: AlertService,
+              private downloadService: DownloadService,
+              public dialog: MdDialog) {
   }
 
   ngOnInit() {
@@ -57,24 +62,30 @@ export class SearchTableComponent implements OnInit {
       width: 80,
       sortable: false
     };
-    /**
-     * Add actions to last column
-     */
+
+    // Add actions to last column
     if (this.columnPicker) {
       this.columnPicker.allColumns.push(this.columnActions);
-
       this.columnPicker.selectedColumns.push(this.columnActions);
     }
     this.page(this.offset, this.rowLimiter.pageSize, this.orderBy, this.asc);
   }
 
-  getTableDataEntries(offset: number, pageSize: number, orderBy: string, asc: boolean): Observable< SearchTableResult > {
+  getRowClass(row): string {
+    return row.deleted ? 'deleted' : '';
+  }
+
+  getTableDataEntries$(offset: number, pageSize: number, orderBy: string, asc: boolean): Observable<SearchTableResult> {
     let searchParams: URLSearchParams = new URLSearchParams();
     searchParams.set('page', offset.toString());
     searchParams.set('pageSize', pageSize.toString());
     searchParams.set('orderBy', orderBy);
 
     //filters
+    if (this.filter.userName) {
+      searchParams.set('userName', this.filter.userName);
+    }
+
     if (this.filter.participantId) {
       searchParams.set('participantId', this.filter.participantId);
     }
@@ -82,7 +93,6 @@ export class SearchTableComponent implements OnInit {
     if (this.filter.participantSchema) {
       searchParams.set('participantSchema', this.filter.participantSchema);
     }
-
 
     if(this.filter.domain) {
       searchParams.set('domain', this.filter.domain )
@@ -92,114 +102,212 @@ export class SearchTableComponent implements OnInit {
       searchParams.set('asc', asc.toString());
     }
 
+    // TODO move to the HTTP service
+    this.loading = true;
     return this.http.get(this.url, {
       search: searchParams
-    }).map((response: Response) =>
-      response.json()
+    }).pipe(
+      map((response: Response) => response.json()),
+      finalize(() => {
+        this.loading = false;
+      })
     );
   }
 
-  page(offset, pageSize, orderBy, asc) {
-    this.loading = true;
-
-    this.getTableDataEntries(offset, pageSize, orderBy, asc).subscribe((result: SearchTableResult ) => {
-      console.log("service group response:" + result);
+  page(offset: number, pageSize: number, orderBy: string, asc: boolean) {
+    this.getTableDataEntries$(offset, pageSize, orderBy, asc).subscribe((result: SearchTableResult ) => {
       this.offset = offset;
       this.rowLimiter.pageSize = pageSize;
       this.orderBy = orderBy;
       this.asc = asc;
-      this.count = result.count;
-      this.selected = [];
 
+      this.unselectRows();
+      const count = result.count;
       const start = offset * pageSize;
-      const end = start + pageSize;
+      const end = Math.min(start + pageSize, count);
       const newRows = [...result.serviceEntities];
 
       let index = 0;
       for (let i = start; i < end; i++) {
-        newRows[i] = result.serviceEntities[index++];
+        newRows[i] = {...result.serviceEntities[index++],
+          status: SearchTableEntityStatus.PERSISTED,
+          deleted: false
+        };
       }
-
       this.rows = newRows;
 
-      this.loading = false;
-
-      if(this.count > AlertComponent.MAX_COUNT_CSV) {
+      if(count > AlertComponent.MAX_COUNT_CSV) {
         this.alertService.error("Maximum number of rows reached for downloading CSV");
       }
     }, (error: any) => {
-      console.log("error getting the message log:" + error);
-      this.loading = false;
-      this.alertService.error("Error occured:" + error);
+      this.alertService.error("Error occurred:" + error);
     });
   }
 
   onPage(event) {
-    console.log('Page Event', event);
     this.page(event.offset, event.pageSize, this.orderBy, this.asc);
   }
 
   onSort(event) {
-    console.log('Sort Event', event);
-    let ascending = true;
-    if (event.newValue === 'desc') {
-      ascending = false;
-    }
+    let ascending = event.newValue !== 'desc';
     this.page(this.offset, this.rowLimiter.pageSize, event.column.prop, ascending);
   }
 
   onSelect({selected}) {
-    // console.log('Select Event', selected, this.selected);
+    this.selected = [...selected];
+    if(this.editButtonEnabled) {
+      this.rowNumber = this.selected[0]["$$index"];
+    }
   }
 
   onActivate(event) {
-    // console.log('Activate Event', event);
-
     if ("dblclick" === event.type) {
       this.details(event.row);
     }
   }
 
   changePageSize(newPageLimit: number) {
-    console.log('New page limit:', newPageLimit);
     this.page(0, newPageLimit, this.orderBy, this.asc);
   }
 
   search() {
-    console.log("Searching using filter:" + this.filter);
     this.page(0, this.rowLimiter.pageSize, this.orderBy, this.asc);
   }
-
-  isRowSelected() {
-    if (this.selected)
-      return true;
-
-    return false;
-  }
-
 
   details(selectedRow: any) {
     this.searchTableController.showDetails(selectedRow);
   }
 
-  newButtonAction(){
-
+  onEditRowActionClicked(rowNumber: number) {
+    this.editSearchTableEntity(rowNumber);
   }
 
-  editButtonAction(){
-    this.editRowButtonAction( this.selected[0]);
+  onDeleteRowActionClicked(row: SearchTableEntity) {
+    this.deleteSearchTableEntities([row]);
   }
 
-  deleteButtonAction(){
-      // delete all seleted rows
+  onNewButtonClicked() {
+    const formRef: MdDialogRef<any> = this.searchTableController.newDialog({
+      data: { edit: false }
+    });
+    formRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.rows = [...this.rows, {...formRef.componentInstance.current}];
+      } else {
+        this.unselectRows();
+      }
+    });
   }
 
-  editRowButtonAction(row: any){
-    this.details(row);
+  onDeleteButtonClicked() {
+    this.deleteSearchTableEntities(this.selected);
   }
 
-  deleteRowButtonAction(row: any){
-
+  onEditButtonClicked() {
+    if (this.rowNumber >= 0 && this.rows[this.rowNumber] && this.rows[this.rowNumber].deleted) {
+      this.alertService.error('You cannot edit a deleted entry.', false);
+      return;
+    }
+    this.editSearchTableEntity(this.rowNumber);
   }
 
+  onSaveButtonClicked(withDownloadCSV: boolean) {
+    try {
+      // TODO: add validation support to existing controllers
+      // const isValid = this.userValidatorService.validateUsers(this.users);
+      // if (!isValid) return;
+
+      this.dialog.open(SaveDialogComponent).afterClosed().subscribe(result => {
+        if (result) {
+          // this.unselectRows();
+          const modifiedUsers = this.rows.filter(el => el.status !== SearchTableEntityStatus.PERSISTED);
+          // this.isBusy = true;
+          this.http.put(/*UserComponent.USER_USERS_URL TODO: use PUT url*/'', modifiedUsers).subscribe(res => {
+            // this.isBusy = false;
+            // this.getUsers();
+            this.alertService.success('The operation \'update\' completed successfully.', false);
+            if (withDownloadCSV) {
+              this.downloadService.downloadNative(/*UserComponent.USER_CSV_URL TODO: use CSV url*/ '');
+            }
+          }, err => {
+            // this.isBusy = false;
+            // this.getUsers();
+            this.alertService.exception('The operation \'update\' not completed successfully.', err, false);
+          });
+        } else {
+          if (withDownloadCSV) {
+            this.downloadService.downloadNative(/*UserComponent.USER_CSV_URL TODO: use CSV url*/ '');
+          }
+        }
+      });
+    } catch (err) {
+      // this.isBusy = false;
+      this.alertService.exception('The operation \'update\' completed with errors.', err);
+    }
+  }
+
+  onCancelButtonClicked() {
+    this.dialog.open(CancelDialogComponent).afterClosed().subscribe(result => {
+      if (result) {
+        this.page(this.offset, this.rowLimiter.pageSize, this.orderBy, this.asc);
+      }
+    });
+  }
+
+  getRowsAsString(): number {
+    return this.rows.length;
+  }
+
+  get editButtonEnabled(): boolean {
+    return this.selected && this.selected.length == 1 && !this.selected[0].deleted;
+  }
+
+  get deleteButtonEnabled(): boolean {
+    return this.selected && this.selected.length > 0 && !this.selected.every(el => el.deleted);
+  }
+
+  get submitButtonsEnabled(): boolean {
+    const rowsDeleted = !!this.rows.find(row => row.deleted);
+    const dirty = rowsDeleted || !!this.rows.find(el => el.status !== SearchTableEntityStatus.PERSISTED);
+    return dirty;
+  }
+
+  private editSearchTableEntity(rowNumber: number) {
+    const row = this.rows[rowNumber];
+    const formRef: MdDialogRef<any> = this.searchTableController.newDialog({
+      data: {edit: true, row}
+    });
+    formRef.afterClosed().subscribe(result => {
+      if (result) {
+        const status = row.status === SearchTableEntityStatus.PERSISTED
+          ? SearchTableEntityStatus.UPDATED
+          : row.status;
+        this.rows[rowNumber] = {...formRef.componentInstance.current, status};
+        this.rows = [...this.rows];
+      }
+    });
+  }
+
+  private deleteSearchTableEntities(rows: Array<SearchTableEntity>) {
+    // TODO: add validation support to existing controllers
+    // if (this.searchTableController.validateDeleteOperation(rows)) {
+    //   this.alertService.error('You cannot delete the logged in user: ' + this.securityService.getCurrentUser().username);
+    //   return;
+    // }
+
+    for (const row of rows) {
+      if (row.status === SearchTableEntityStatus.NEW) {
+        this.rows.splice(this.rows.indexOf(row), 1);
+      } else {
+        row.status = SearchTableEntityStatus.REMOVED;
+        row.deleted = true;
+      }
+    }
+
+    this.unselectRows()
+  }
+
+  private unselectRows() {
+    this.selected = [];
+  }
 }
