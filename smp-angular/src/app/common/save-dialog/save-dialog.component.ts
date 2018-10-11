@@ -3,7 +3,8 @@ import {MdDialogRef} from "@angular/material";
 
 @Component({
   selector: 'app-messagefilter-dialog',
-  templateUrl: './save-dialog.component.html'
+  templateUrl: './save-dialog.component.html',
+  styleUrls: ['./save-dialog.component.css']
 })
 export class SaveDialogComponent {
 
