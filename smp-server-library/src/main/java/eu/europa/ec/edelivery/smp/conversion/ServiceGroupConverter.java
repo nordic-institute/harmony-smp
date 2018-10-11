@@ -86,6 +86,20 @@ public class ServiceGroupConverter {
     }
 
     /**
+     * Method umarshal ServiceGroup from xml bytearraz
+     * @param serviceGroupXml
+     * @return
+     */
+    public static ServiceGroup unmarshal(byte[] serviceGroupXml) {
+        try {
+            Document serviceGroupDoc = parse(serviceGroupXml);
+            return getUnmarshaller().unmarshal(serviceGroupDoc, ServiceGroup.class).getValue();
+        } catch (ParserConfigurationException | IOException | SAXException | JAXBException ex) {
+            throw new SMPRuntimeException(ErrorCode.XML_PARSE_EXCEPTION,ex,ServiceGroup.class.getName(), ExceptionUtils.getRootCauseMessage(ex));
+        }
+    }
+
+    /**
      * Method returns Oasis ServiceGroup entity with  extension and
      * empty ServiceMetadataReferenceCollectionType. If extension can not be converted to jaxb object than
      * ConversionException is thrown.
@@ -102,7 +116,7 @@ public class ServiceGroupConverter {
         ServiceGroup serviceGroup = new ServiceGroup();
         ParticipantIdentifierType identifier = new ParticipantIdentifierType(dsg.getParticipantIdentifier(), dsg.getParticipantScheme());
         serviceGroup.setParticipantIdentifier(identifier);
-        if (!StringUtils.isBlank(dsg.getExtension())){
+        if (dsg.getExtension()!=null){
             try {
                 List<ExtensionType> extensions = ExtensionConverter.unmarshalExtensions(dsg.getExtension());
                 serviceGroup.getExtensions().addAll(extensions);
@@ -120,6 +134,11 @@ public class ServiceGroupConverter {
         return getDocumentBuilder().parse(inputStream);
     }
 
+
+    private static Document parse(byte[] serviceGroupXml) throws ParserConfigurationException, IOException, SAXException {
+        InputStream inputStream = new ByteArrayInputStream(serviceGroupXml);
+        return getDocumentBuilder().parse(inputStream);
+    }
     private static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {
         DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
         documentBuilderFactory.setNamespaceAware(true);
@@ -127,10 +146,10 @@ public class ServiceGroupConverter {
         return documentBuilderFactory.newDocumentBuilder();
     }
 
-    public static String extractExtensionsPayload(ServiceGroup sg) {
+    public static byte[] extractExtensionsPayload(ServiceGroup sg) {
         try {
             return ExtensionConverter.marshalExtensions(sg.getExtensions());
-        } catch (JAXBException | XMLStreamException | UnsupportedEncodingException e) {
+        } catch (JAXBException | XMLStreamException | IOException  e) {
             throw new SMPRuntimeException(INVALID_EXTENSION_FOR_SG, e,
                     sg.getParticipantIdentifier().getValue(), sg.getParticipantIdentifier().getScheme(),
                     ExceptionUtils.getRootCauseMessage(e));

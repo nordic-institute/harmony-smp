@@ -127,14 +127,14 @@ public class DBServiceMetadata extends BaseEntity {
     }
 
     @Transient
-    public String getXmlContent() {
+    public byte[] getXmlContent() {
         return getServiceMetadataXml() != null ? getServiceMetadataXml().getXmlContent() : null;
     }
 
     @Transient
-    public void setXmlContent(String extension) {
+    public void setXmlContent(byte[] extension) {
 
-        if (StringUtils.isBlank(extension)) {
+        if (extension == null) {
             if (this.serviceMetadataXml != null) {
                 this.serviceMetadataXml.setXmlContent(null);
             }

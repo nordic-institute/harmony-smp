@@ -14,18 +14,14 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
-import eu.europa.ec.edelivery.smp.data.model.DBUserAuthority;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Repository;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_CERT_ID_MULTIPLE_ENTRY;
@@ -38,23 +34,6 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_USER
 public class UserDao extends BaseDao<DBUser> {
 
 
-    public List<GrantedAuthority> getUserRoles(String username) {
-
-        List<GrantedAuthority> lstRes = new ArrayList<>();
-        // all users are  SERVICEGROUP_ADMIN
-        lstRes.add(DBUserAuthority.S_ROLE_SERVICEGROUP_ADMIN);
-
-        List<DBUserAuthority> lst = memEManager
-                .createNamedQuery("DBUserAuthority.getRolesForUsernameNativeQuery")
-                .setParameter( "username",username)
-                .getResultList();
-
-        if (!lst.isEmpty()){
-            lstRes.addAll(lst);
-        }
-        System.out.println("Got roles: " + lstRes.size() + " " + lstRes);
-        return lstRes;
-    }
 
     /**
      * Perstis user to database. Before that test if user has identifiers

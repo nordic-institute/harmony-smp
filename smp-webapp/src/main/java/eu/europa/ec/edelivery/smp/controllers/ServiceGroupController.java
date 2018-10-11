@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.controllers;
 
+import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import eu.europa.ec.edelivery.smp.services.ServiceMetadataService;
@@ -33,7 +34,6 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
@@ -77,14 +77,14 @@ public class ServiceGroupController {
 
 
     @PutMapping
-    @Secured("ROLE_SMP_ADMIN")
+    @Secured({SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_SMP_ADMIN})
     public ResponseEntity saveServiceGroup(
             @PathVariable String serviceGroupId,
             @RequestHeader(name = "ServiceGroup-Owner", required = false) String serviceGroupOwner,
             @RequestHeader(name = "Domain", required = false) String domain,
-            @RequestBody String body) throws XmlInvalidAgainstSchemaException {
+            @RequestBody byte[] body) throws XmlInvalidAgainstSchemaException {
 
-        log.info("PUT ServiceGroup: {} domain {} owner {} \n{}", serviceGroupId,domain, serviceGroupOwner, body);
+        log.info("PUT ServiceGroup: {} domain {} owner {} \n{}", serviceGroupId,domain, serviceGroupOwner, new String(body));
 
         // Validations
         BdxSmpOasisValidator.validateXSD(body);
@@ -100,7 +100,7 @@ public class ServiceGroupController {
     }
 
     @DeleteMapping
-    @Secured("ROLE_SMP_ADMIN")
+    @Secured({SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_SMP_ADMIN})
     public void deleteServiceGroup(@PathVariable String serviceGroupId) {
 
         log.info("DELETE ServiceGroup: {}", serviceGroupId);
