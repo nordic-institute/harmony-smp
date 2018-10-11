@@ -16,7 +16,7 @@ public class UserRO implements Serializable {
 
 
     private static final long serialVersionUID = -4971552086560325302L;
-    private String userName;
+    private String username;
     private String password;
     private String email;
     LocalDateTime passwordChanged;
@@ -28,12 +28,12 @@ public class UserRO implements Serializable {
     }
 
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getPassword() {
