@@ -122,7 +122,6 @@ public class SignatureUtil {
             InputStream is = ((Reference) i.next()).getDigestInputStream();
             // Display the data.
             byte[] a = IOUtils.readFully(is, 0, true);
-            System.out.println(new String(a));
         }
 
         // Check core validation status.

@@ -102,7 +102,6 @@ public class ServiceGroupService {
         LOG.businessDebug(SMPMessageCode.BUS_SAVE_SERVICE_GROUP,domain,normalizedParticipantId.getValue(), normalizedParticipantId.getScheme()  );
 
         String newOwnerName = defineGroupOwner(serviceGroupOwner, authenticatedUser);
-
         Optional<DBUser> newOwner = userDao.findUserByIdentifier(newOwnerName);
         if (!newOwner.isPresent()) {
             SMPRuntimeException ex = new SMPRuntimeException(USER_NOT_EXISTS);
@@ -191,6 +190,19 @@ public class ServiceGroupService {
             throw new  SMPRuntimeException(USER_IS_NOT_OWNER,ownerIdentifier,
                     dbsg.getParticipantIdentifier(), dbsg.getParticipantScheme() );
         }
+    }
+
+    /**
+     * Method validates if user owner with identifier is owner of servicegroup
+     * @param  ownerIdentifier
+     * @param dbsg
+     */
+    @Transactional
+    public boolean isServiceGroupOwner(String ownerIdentifier, String serviceGroupIdentifier ){
+        ParticipantIdentifierType pt = caseSensitivityNormalizer.normalizeParticipant(serviceGroupIdentifier);
+        Optional<DBServiceGroup> osg = serviceGroupDao.findServiceGroup(pt.getValue(), pt.getScheme());
+        Optional<DBUser> own = userDao.findUserByIdentifier(ownerIdentifier);
+        return osg.isPresent() && own.isPresent() && osg.get().getUsers().contains(own.get());
     }
 
 

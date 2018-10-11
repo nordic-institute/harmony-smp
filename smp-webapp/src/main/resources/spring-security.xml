@@ -36,17 +36,23 @@
 
 
     <authentication-manager alias="smpAuthenticationManager">
-        <authentication-provider>
+        <!-- authentication-provider>
             <password-encoder hash="bcrypt"/>
             <jdbc-user-service id="smpJdbcUserDetailsService"
                                data-source-ref="dataSource"
                                    users-by-username-query="SELECT username, COALESCE(PASSWORD, 'dummy'), ACTIVE FROM SMP_USER WHERE USERNAME = ?"
                                authorities-by-username-query="select username, ROLE  FROM SMP_USER where USERNAME = ?"/>
-        </authentication-provider>
-
+        </authentication-provider -->
+        <authentication-provider ref="smpAuthProvider"/>
         <authentication-provider ref="preauthAuthProvider"/>
 
     </authentication-manager>
+
+    <!-- user detail service is used only in preAhtProviders for cert authentication that is why search is only on cert table-->
+    <jdbc-user-service id="smpJdbcUserDetailsService"
+                       data-source-ref="dataSource"
+                       users-by-username-query="SELECT c.CERTIFICATE_ID AS USERNAME, 'dummy' AS PASWORD, u.ACTIVE FROM SMP_CERTIFICATE c INNER JOIN SMP_USER u ON (u.id = c.id) WHERE c.CERTIFICATE_ID = ?"
+                       authorities-by-username-query="SELECT c.CERTIFICATE_ID AS USERNAME, u.ROLE FROM SMP_CERTIFICATE c INNER JOIN SMP_USER u ON (u.id = c.id) WHERE c.CERTIFICATE_ID = ?"/>
 
     <b:bean id="preauthAuthProvider"
             class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
@@ -74,5 +80,10 @@
     <b:bean id="httpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall">
         <b:property name="allowUrlEncodedSlash" value="${encodedSlashesAllowedInUrl}"/>
     </b:bean>
+
+    <b:bean id="smpAuthProvider" class="eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider">
+    </b:bean>
+
+
 
 </b:beans>
