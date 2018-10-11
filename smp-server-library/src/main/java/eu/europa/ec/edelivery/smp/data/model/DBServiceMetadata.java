@@ -13,17 +13,12 @@
 
 package eu.europa.ec.edelivery.smp.data.model;
 
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Objects;
-
-import static javax.persistence.FetchType.EAGER;
-
 
 
 @Entity
@@ -71,6 +66,11 @@ public class DBServiceMetadata extends BaseEntity {
             fetch = FetchType.LAZY,
             orphanRemoval = true)
     private DBServiceMetadataXml serviceMetadataXml;
+
+    @Column(name = "CREATED_ON" , nullable = false)
+    LocalDateTime createdOn;
+    @Column(name = "LAST_UPDATED_ON", nullable = false)
+    LocalDateTime lastUpdatedOn;
 
 
     public DBServiceMetadata() {
@@ -160,5 +160,36 @@ public class DBServiceMetadata extends BaseEntity {
     public int hashCode() {
 
         return Objects.hash(super.hashCode(), id);
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if(createdOn == null) {
+            createdOn = LocalDateTime.now();
+        }
+        lastUpdatedOn = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        lastUpdatedOn = LocalDateTime.now();
+    }
+
+    // @Where annotation not working with entities that use inheritance
+    // https://hibernate.atlassian.net/browse/HHH-12016
+    public LocalDateTime getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(LocalDateTime createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public LocalDateTime getLastUpdatedOn() {
+        return lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(LocalDateTime lastUpdatedOn) {
+        this.lastUpdatedOn = lastUpdatedOn;
     }
 }

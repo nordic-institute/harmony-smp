@@ -25,41 +25,14 @@ import java.util.Objects;
  */
 public abstract class BaseEntity {
 
-    @Column(name = "CREATED_ON" , nullable = false)
-    LocalDateTime createdOn;
-    @Column(name = "LAST_UPDATED_ON", nullable = false)
-    LocalDateTime lastUpdatedOn;
-
 
     public abstract Object getId();
 
-    @PrePersist
-    public void prePersist() {
-        if(createdOn == null) {
-            createdOn = LocalDateTime.now();
-        }
-        lastUpdatedOn = LocalDateTime.now();
-    }
-    @PreUpdate
-    public void preUpdate() {
-        lastUpdatedOn = LocalDateTime.now();
-    }
+    // @Where annotation not working with entities that use inheritance
+    // https://hibernate.atlassian.net/browse/HHH-12016
+    public abstract LocalDateTime getCreatedOn();
+    public abstract LocalDateTime getLastUpdatedOn();
 
-    public LocalDateTime getCreatedOn() {
-        return createdOn;
-    }
-
-    public void setCreatedOn(LocalDateTime createdOn) {
-        this.createdOn = createdOn;
-    }
-
-    public LocalDateTime getLastUpdatedOn() {
-        return lastUpdatedOn;
-    }
-
-    public void setLastUpdatedOn(LocalDateTime lastUpdatedOn) {
-        this.lastUpdatedOn = lastUpdatedOn;
-    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

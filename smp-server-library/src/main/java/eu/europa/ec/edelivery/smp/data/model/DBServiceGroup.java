@@ -14,10 +14,7 @@
 package eu.europa.ec.edelivery.smp.data.model;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.envers.Audited;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -58,7 +55,6 @@ public class DBServiceGroup extends BaseEntity {
     List<DBServiceGroupDomain> serviceGroupDomains= new ArrayList<>();
 
 
-
     // fetch in on demand - reduce performance issue on big SG table (set it better option)
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "SMP_OWNERSHIP",
@@ -79,6 +75,12 @@ public class DBServiceGroup extends BaseEntity {
 
     @OneToOne(mappedBy = "dbServiceGroup", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private DBServiceGroupExtension serviceGroupExtension;
+
+    @Column(name = "CREATED_ON" , nullable = false)
+    LocalDateTime createdOn;
+    @Column(name = "LAST_UPDATED_ON", nullable = false)
+    LocalDateTime lastUpdatedOn;
+
 
     public DBServiceGroup() {
     }
@@ -224,5 +226,36 @@ public class DBServiceGroup extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(super.hashCode(), id, participantIdentifier, participantScheme);
+    }
+
+    @PrePersist
+    public void prePersist() {
+        if(createdOn == null) {
+            createdOn = LocalDateTime.now();
+        }
+        lastUpdatedOn = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        lastUpdatedOn = LocalDateTime.now();
+    }
+
+    // @Where annotation not working with entities that use inheritance
+    // https://hibernate.atlassian.net/browse/HHH-12016
+    public LocalDateTime getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(LocalDateTime createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public LocalDateTime getLastUpdatedOn() {
+        return lastUpdatedOn;
+    }
+
+    public void setLastUpdatedOn(LocalDateTime lastUpdatedOn) {
+        this.lastUpdatedOn = lastUpdatedOn;
     }
 }
