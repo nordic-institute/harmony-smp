@@ -1,8 +1,6 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;

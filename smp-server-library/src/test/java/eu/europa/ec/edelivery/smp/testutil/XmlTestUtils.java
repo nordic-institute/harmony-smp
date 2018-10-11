@@ -40,6 +40,11 @@ public class XmlTestUtils {
 
     private static final String UTF_8 = "UTF-8";
 
+    public static byte[] loadDocumentAsByteArray(String docResourcePath) throws IOException {
+        InputStream inputStream = XmlTestUtils.class.getResourceAsStream(docResourcePath);
+        return IOUtils.toByteArray(inputStream);
+    }
+
     public static String loadDocumentAsString(String docResourcePath) throws IOException {
         InputStream inputStream = XmlTestUtils.class.getResourceAsStream(docResourcePath);
         return IOUtils.toString(inputStream, UTF_8);
@@ -62,6 +67,21 @@ public class XmlTestUtils {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         trans.transform(new DOMSource(doc), new StreamResult(stream));
         return stream.toString(UTF_8);
+    }
+    public static  byte[] marshallToByteArray(Node doc) throws TransformerException, UnsupportedEncodingException {
+        TransformerFactory tf = TransformerFactory.newInstance();
+        Transformer trans = tf.newTransformer();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        trans.transform(new DOMSource(doc), new StreamResult(stream));
+        return stream.toByteArray();
+    }
+
+    public static byte[] marshallToByteArray(ServiceMetadata serviceMetadata) throws JAXBException {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        JAXBContext jaxbContext = JAXBContext.newInstance(ServiceMetadata.class);
+        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+        jaxbMarshaller.marshal(serviceMetadata, stream);
+        return stream.toByteArray();
     }
 
     public static String marshall(ServiceMetadata serviceMetadata) throws JAXBException {

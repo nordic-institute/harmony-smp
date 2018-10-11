@@ -27,7 +27,7 @@ public class DBServiceGroupExtension extends BaseEntity {
 
     @Lob
     @Column(name = "EXTENSION")
-    String extension;
+    byte[] extension;
 
     @OneToOne
     @JoinColumn(name = "ID")
@@ -51,11 +51,11 @@ public class DBServiceGroupExtension extends BaseEntity {
         this.dbServiceGroup = dbServiceGroup;
     }
 
-    public String getExtension() {
+    public byte[] getExtension() {
         return extension;
     }
 
-    public void setExtension(String extension) {
+    public void setExtension(byte[] extension) {
         this.extension = extension;
     }
 

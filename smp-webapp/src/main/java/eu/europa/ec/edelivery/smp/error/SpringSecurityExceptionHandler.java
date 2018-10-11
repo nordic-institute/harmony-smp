@@ -54,7 +54,7 @@ public class SpringSecurityExceptionHandler extends BasicAuthenticationEntryPoin
                          AuthenticationException authException) throws IOException, ServletException {
         String errorMsg = authException.getMessage();
         if(authException instanceof BadCredentialsException){
-            errorMsg += " - Provided username/password or client certificate is invalid";
+            errorMsg += " - Provided username/password or client certificate are invalid";
         }
         handle(response, authException, errorMsg);
     }

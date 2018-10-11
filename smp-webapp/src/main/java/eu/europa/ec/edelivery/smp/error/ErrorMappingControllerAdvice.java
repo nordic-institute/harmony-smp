@@ -91,7 +91,7 @@ public class ErrorMappingControllerAdvice {
 
     @ExceptionHandler(XmlInvalidAgainstSchemaException.class)
     public ResponseEntity handleXmlInvalidAgainstSchemaException(XmlInvalidAgainstSchemaException ex) {
-        return buildAndWarn(BAD_REQUEST, XML_INVALID, ex.getMessage(), ex);
+        return buildAndWarn(BAD_REQUEST, XSD_INVALID, ex.getMessage(), ex);
     }
 
 

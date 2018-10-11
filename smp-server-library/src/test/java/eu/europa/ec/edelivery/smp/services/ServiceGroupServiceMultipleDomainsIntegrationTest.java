@@ -35,6 +35,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.unmarshal;
@@ -107,8 +108,8 @@ public class ServiceGroupServiceMultipleDomainsIntegrationTest extends AbstractS
         ServiceGroup inServiceGroup = unmarshal(loadDocumentAsString(TestConstants.SERVICE_GROUP_TEST2_XML_PATH));
         Optional<DBServiceGroup> dbsg = serviceGroupDao.findServiceGroup(TEST_SG_ID_2, TEST_SG_SCHEMA_2);
         assertTrue(dbsg.isPresent()); // test if exists
-        String extension = dbsg.get().getExtension(); // test if exists
-        String newExtension = ExtensionConverter.marshalExtensions(inServiceGroup.getExtensions());
+        byte[] extension = dbsg.get().getExtension(); // test if exists
+        byte[] newExtension = ExtensionConverter.marshalExtensions(inServiceGroup.getExtensions());
         assertNotEquals(extension, newExtension); // extension updated
 
         // when
@@ -126,7 +127,7 @@ public class ServiceGroupServiceMultipleDomainsIntegrationTest extends AbstractS
         assertEquals(TEST_DOMAIN_CODE_1, dbServiceGroup.getServiceGroupDomains().get(0).getDomain().getDomainCode());
         assertEquals(inServiceGroup.getParticipantIdentifier().getValue(), dbServiceGroup.getParticipantIdentifier());
         assertEquals(inServiceGroup.getParticipantIdentifier().getScheme(), dbServiceGroup.getParticipantScheme());
-        assertEquals(newExtension, dbServiceGroup.getExtension()); // extension updated
+        assertTrue(Arrays.equals(newExtension, dbServiceGroup.getExtension())); // extension updated
     }
 
     @Test

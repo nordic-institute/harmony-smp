@@ -1,14 +1,12 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 
-import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
-import javax.persistence.*;
+
+
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Objects;
+
 
 /**
  * @author Joze Rihtarsic

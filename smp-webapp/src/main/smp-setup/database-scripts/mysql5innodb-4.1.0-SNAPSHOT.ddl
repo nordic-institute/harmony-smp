@@ -149,7 +149,7 @@
 
     create table SMP_SERVICE_METADATA_XML (
        ID bigint not null,
-        XML_CONTENT longtext,
+        XML_CONTENT longblob,
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -157,13 +157,13 @@
        ID bigint not null,
         REV bigint not null,
         REVTYPE tinyint,
-        XML_CONTENT longtext,
+        XML_CONTENT longblob,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
     create table SMP_SG_EXTENSION (
        ID bigint not null,
-        EXTENSION longtext,
+        EXTENSION longblob,
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -171,7 +171,7 @@
        ID bigint not null,
         REV bigint not null,
         REVTYPE tinyint,
-        EXTENSION longtext,
+        EXTENSION longblob,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

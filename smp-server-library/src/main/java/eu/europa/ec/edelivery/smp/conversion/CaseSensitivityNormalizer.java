@@ -66,7 +66,11 @@ public class CaseSensitivityNormalizer {
     }
 
     public String normalizeParticipantId(String participantId) {
-        return asString(normalize(asParticipantId(participantId)));
+        return asString(normalizeParticipant(participantId));
+    }
+
+    public ParticipantIdentifierType normalizeParticipant(String participantId) {
+        return normalize(asParticipantId(participantId));
     }
 
     private static void toLowerCaseStringList(List<String> strings) {

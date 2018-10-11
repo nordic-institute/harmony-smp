@@ -125,7 +125,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
 
     create table SMP_SERVICE_METADATA_XML (
        ID number(19,0) not null,
-        XML_CONTENT clob,
+        XML_CONTENT blob,
         primary key (ID)
     );
 
@@ -133,13 +133,13 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
        ID number(19,0) not null,
         REV number(19,0) not null,
         REVTYPE number(3,0),
-        XML_CONTENT clob,
+        XML_CONTENT blob,
         primary key (ID, REV)
     );
 
     create table SMP_SG_EXTENSION (
        ID number(19,0) not null,
-        EXTENSION clob,
+        EXTENSION blob,
         primary key (ID)
     );
 
@@ -147,7 +147,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
        ID number(19,0) not null,
         REV number(19,0) not null,
         REVTYPE number(3,0),
-        EXTENSION clob,
+        EXTENSION blob,
         primary key (ID, REV)
     );
 

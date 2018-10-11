@@ -98,7 +98,7 @@
             <artifactId>hamcrest-junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
             <version>RELEASE</version>
@@ -109,7 +109,7 @@
             <artifactId>spring-boot-autoconfigure</artifactId>
             <version>RELEASE</version>
             <scope>compile</scope>
-        </dependency>
+        </dependency-->
     </dependencies>
 
     <build>
