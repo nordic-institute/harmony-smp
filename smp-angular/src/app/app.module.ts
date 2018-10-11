@@ -69,6 +69,8 @@ import {DomainDetailsDialogComponent} from "./domain/domain-details-dialog/domai
 import {UserDetailsDialogComponent} from "./user/user-details-dialog/user-details-dialog.component";
 import {DownloadService} from "./download/download.service";
 import {TrustStoreService} from "./trust-store/trust-store.service";
+import {UserService} from "./user/user.service";
+import {RoleService} from "./security/role.service";
 
 export function extendedHttpClientFactory(xhrBackend: XHRBackend, requestOptions: RequestOptions, httpEventService: HttpEventService) {
   return new ExtendedHttpClient(xhrBackend, requestOptions, httpEventService);
@@ -158,6 +160,8 @@ export function extendedHttpClientFactory(xhrBackend: XHRBackend, requestOptions
     AlertService,
     DownloadService,
     TrustStoreService,
+    UserService,
+    RoleService,
     {
       provide: Http,
       useFactory: extendedHttpClientFactory,

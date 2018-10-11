@@ -1,6 +1,6 @@
 import { SmpAngular2WebPage } from './app.po';
 
-describe('domibus-MSH-web App', function() {
+describe('smp-MSH-web App', function() {
   let page: SmpAngular2WebPage;
 
   beforeEach(() => {
