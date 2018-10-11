@@ -74,11 +74,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @Rollback(true)
 @Sql("classpath:/webapp_integration_test_data.sql")
-public class SignatureValidatorTest/* extends AbstractTest*/ {
+public class SignatureValidatorTest {
 
     private static final String C14N_METHOD = CanonicalizationMethod.INCLUSIVE;
     private static final String PARSER_DISALLOW_DTD_PARSING_FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
-    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("test_admin", "gutek123");
+    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("test_admin", "test123");
 
     @Autowired
     private WebApplicationContext webAppContext;

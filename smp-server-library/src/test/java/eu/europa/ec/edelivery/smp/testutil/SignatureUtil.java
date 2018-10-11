@@ -177,7 +177,6 @@ public class SignatureUtil {
         // Marshalling and parsing the document - signature validation fails without this stinky "magic".
         // _Probably_ SUN's implementation doesn't import correctly signatures between two different documents.
         String strUnwrapped = marshall(docUnwrapped);
-        System.out.println(strUnwrapped);
         return parseDocument(strUnwrapped);
     }
 

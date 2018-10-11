@@ -66,7 +66,7 @@ public class ServiceGroupConverterTest {
     public void toServiceGroupTestMultiExtensions() throws UnsupportedEncodingException, JAXBException, XMLStreamException {
         // set
         DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
-        sg.setExtension(TestDBUtils.generateExtension() + TestDBUtils.generateExtension());
+        sg.setExtension(ExtensionConverter.concatByteArrays(TestDBUtils.generateExtension(), TestDBUtils.generateExtension()));
 
         //when-then
         ServiceGroup serviceGroup = ServiceGroupConverter.toServiceGroup(sg);
@@ -88,7 +88,7 @@ public class ServiceGroupConverterTest {
     public void testInvalidExtension() {
         //given
         DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
-        sg.setExtension("<This > is invalid extensions");
+        sg.setExtension("<This > is invalid extensions".getBytes());
         expectedExeption.expect(SMPRuntimeException.class);
         expectedExeption.expectCause(Matchers.isA(UnmarshalException.class));
         expectedExeption.expectMessage(Matchers.startsWith("Invalid extension for service group"));
@@ -121,11 +121,11 @@ public class ServiceGroupConverterTest {
         ServiceGroup serviceGroup = ServiceGroupConverter.unmarshal(inputDoc);
 
         //when
-        String val  = ServiceGroupConverter.extractExtensionsPayload(serviceGroup);
+        byte[] val  = ServiceGroupConverter.extractExtensionsPayload(serviceGroup);
 
         //then
         assertNotNull(val);
-        assertEquals(expectedExt, val);
+        assertEquals(expectedExt, new String(val,"UTF-8"));
     }
 
     @Test

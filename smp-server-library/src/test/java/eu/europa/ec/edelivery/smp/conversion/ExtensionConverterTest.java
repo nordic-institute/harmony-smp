@@ -50,7 +50,7 @@ public class ExtensionConverterTest {
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionMarshal.xml");
 
         // when
-        String xmlResult = ExtensionConverter.marshalExtensions(list);
+        byte[] xmlResult = ExtensionConverter.marshalExtensions(list);
 
         // then
         assertThat(xmlResult, CompareMatcher.isIdenticalTo(inputDoc));
@@ -63,23 +63,23 @@ public class ExtensionConverterTest {
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionMarshalMore.xml");
 
         // when
-        String xmlResult = ExtensionConverter.marshalExtensions(list, true);
+        byte[] xmlResult = ExtensionConverter.marshalExtensions(list, true);
 
         // then
-        String wrappedXmlResult = String.format(WRAPPED_FORMAT, xmlResult);
+        String wrappedXmlResult = String.format(WRAPPED_FORMAT, new String(xmlResult, "UTF-8"));
         String wrappedInputDoc = String.format(WRAPPED_FORMAT, inputDoc);
         assertThat(wrappedXmlResult, CompareMatcher.isIdenticalTo(wrappedInputDoc));
     }
 
     @Test
-    public void testUtf8Handling() throws JAXBException, XMLStreamException, UnsupportedEncodingException {
+    public void testUtf8Handling() throws JAXBException, XMLStreamException, IOException {
         // given
         ExtensionType extension = new ExtensionType();
         extension.setExtensionName(UTF8_SEQUENCE);
         List<ExtensionType> extensions = Arrays.asList(extension);
 
         //when
-        String extensionsXml = ExtensionConverter.marshalExtensions(extensions);
+        byte[] extensionsXml = ExtensionConverter.marshalExtensions(extensions);
         List<ExtensionType> resultExtensions = ExtensionConverter.unmarshalExtensions(extensionsXml);
 
         //then
@@ -89,7 +89,7 @@ public class ExtensionConverterTest {
     @Test
     public void testUnmarshal() throws IOException, JAXBException {
         // given
-        String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionMarshal.xml");
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "extensionMarshal.xml");
 
         // when
         List<ExtensionType> extensions = ExtensionConverter.unmarshalExtensions(inputDoc);
@@ -101,7 +101,7 @@ public class ExtensionConverterTest {
     @Test
     public void testUnmarshalTwoExtensions() throws IOException, JAXBException {
         // given
-        String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionMarshalMore.xml");
+        byte[] inputDoc = XmlTestUtils.loadDocumentAsByteArray(RES_PATH + "extensionMarshalMore.xml");
 
         // when
         List<ExtensionType> extensions = ExtensionConverter.unmarshalExtensions(inputDoc);

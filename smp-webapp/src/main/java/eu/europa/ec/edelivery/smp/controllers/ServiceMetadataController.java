@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.controllers;
 
 import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
+import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import eu.europa.ec.edelivery.smp.services.ServiceMetadataService;
 import eu.europa.ec.edelivery.smp.validation.ServiceMetadataValidator;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
@@ -49,6 +50,9 @@ public class ServiceMetadataController {
     private ServiceMetadataService serviceMetadataService;
 
     @Autowired
+    private ServiceGroupService serviceGroupService;
+
+    @Autowired
     private ServiceMetadataPathBuilder pathBuilder;
 
     @GetMapping(produces = "text/xml; charset=UTF-8")
@@ -64,14 +68,15 @@ public class ServiceMetadataController {
     }
 
     @PutMapping
-    @PreAuthorize("hasAnyAuthority('ROLE_SMP_ADMIN', @caseSensitivityNormalizer.normalizeParticipantId(#serviceGroupId))")
+    @PreAuthorize("hasAnyAuthority(T(eu.europa.ec.edelivery.smp.auth.SMPAuthority).S_AUTHORITY_SMP_ADMIN) OR" +
+            " @serviceGroupService.isServiceGroupOwner(authentication.name, #serviceGroupId)")
     public ResponseEntity saveServiceMetadata(
             @PathVariable String serviceGroupId,
             @PathVariable String serviceMetadataId,
             @RequestHeader(name = "Domain", required = false) String domain,
-            @RequestBody String body) throws XmlInvalidAgainstSchemaException {
+            @RequestBody byte[] body) throws XmlInvalidAgainstSchemaException {
 
-        log.info("PUT ServiceMetadata: {} - {}\n{}", serviceGroupId, serviceMetadataId, body);
+        log.info("PUT ServiceMetadata: {} - {}\n{}", serviceGroupId, serviceMetadataId, new String(body));
 
         serviceMetadataValidator.validate(serviceGroupId, serviceMetadataId, body);
 
@@ -83,7 +88,8 @@ public class ServiceMetadataController {
     }
 
     @DeleteMapping
-    @PreAuthorize("hasAnyAuthority('ROLE_SMP_ADMIN', @caseSensitivityNormalizer.normalizeParticipantId(#serviceGroupId))")
+     @PreAuthorize("hasAnyAuthority(T(eu.europa.ec.edelivery.smp.auth.SMPAuthority).S_AUTHORITY_SMP_ADMIN) OR" +
+              " @serviceGroupService.isServiceGroupOwner(authentication.name, #serviceGroupId)")
     public ResponseEntity deleteServiceMetadata(@PathVariable String serviceGroupId,
                                                 @PathVariable String serviceMetadataId,
                                                 @RequestHeader(name = "Domain", required = false) String domain ) {

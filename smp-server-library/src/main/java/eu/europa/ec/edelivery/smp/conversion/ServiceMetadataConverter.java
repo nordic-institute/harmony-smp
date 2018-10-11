@@ -83,10 +83,10 @@ public class ServiceMetadataConverter {
      * @param serviceMetadataXml
      * @return w3d dom element
      */
-    public static Document toSignedServiceMetadatadaDocument(String serviceMetadataXml)  {
+    public static Document toSignedServiceMetadatadaDocument(byte[] serviceMetadataXml)  {
         try {
             Document docServiceMetadata = parse(serviceMetadataXml);
-            Document root = parse(DOC_SIGNED_SERVICE_METADATA_EMPTY);
+            Document root = parse(DOC_SIGNED_SERVICE_METADATA_EMPTY.getBytes());
             Node imported = root.importNode(docServiceMetadata.getDocumentElement(), true);
             root.getDocumentElement().appendChild(imported);
             return root;
@@ -96,7 +96,7 @@ public class ServiceMetadataConverter {
     }
 
 
-    public static ServiceMetadata unmarshal(String serviceMetadataXml){
+    public static ServiceMetadata unmarshal(byte[] serviceMetadataXml){
         try {
             Document serviceMetadataDoc = parse(serviceMetadataXml);
             ServiceMetadata serviceMetadata = getUnmarshaller().unmarshal(serviceMetadataDoc, ServiceMetadata.class).getValue();
@@ -106,8 +106,8 @@ public class ServiceMetadataConverter {
         }
     }
 
-    private static Document parse(String serviceMetadataXml) throws SAXException, IOException, ParserConfigurationException {
-        InputStream inputStream = new ByteArrayInputStream(serviceMetadataXml.getBytes(UTF_8));
+    private static Document parse(byte[] serviceMetadataXml) throws SAXException, IOException, ParserConfigurationException {
+        InputStream inputStream = new ByteArrayInputStream(serviceMetadataXml);
         return getDocumentBuilder().parse(inputStream);
     }
 
@@ -116,6 +116,13 @@ public class ServiceMetadataConverter {
         StringWriter writer = new StringWriter();
         transformer.transform(new DOMSource(doc), new StreamResult(writer));
         return writer.toString();
+    }
+
+    public static byte[] toByteArray(Document doc) throws TransformerException, UnsupportedEncodingException {
+        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        transformer.transform(new DOMSource(doc), new StreamResult(stream));
+        return stream.toByteArray();
     }
 
     private static DocumentBuilder getDocumentBuilder() throws ParserConfigurationException {

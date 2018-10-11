@@ -21,20 +21,20 @@ public enum ErrorCode {
     INVALID_USER_NO_IDENTIFIERS (400,"SMP:120",ErrorBusinessCode.MISSING_FIELD,"Invalid user - no identifiers!"),
     ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY(500,"SMP:121",ErrorBusinessCode.TECHNICAL,"More than one user entry (username: '%s') is defined in database!"),
     ILLEGAL_STATE_CERT_ID_MULTIPLE_ENTRY(504,"SMP:122",ErrorBusinessCode.TECHNICAL,"More than one certificate entry (cert. id: '%s') is defined in database!"),
-    USER_NOT_EXISTS(404,"SMP:123",ErrorBusinessCode.NOT_FOUND,"User not exists or wrong password!"), // OWASP recommendation\
+    USER_NOT_EXISTS(400,"SMP:123",ErrorBusinessCode.USER_NOT_FOUND,"User not exists or wrong password!"), // OWASP recommendation\
     USER_IS_NOT_OWNER(400,"SMP:124",ErrorBusinessCode.UNAUTHORIZED,"User %s is not owner of service group (part. id: %s, part. sch.: '%s')!"), // OWASP recommendation
 
 
     // service group error
     ILLEGAL_STATE_SG_MULTIPLE_ENTRY (500,"SMP:130",ErrorBusinessCode.TECHNICAL,"More than one service group ( part. id: %s, part. sch.: '%s') is defined in database!"),
-    SG_NOT_EXISTS(404,"SMP:131",ErrorBusinessCode.NOT_FOUND,"Service group not exists (dpart. id: '%s', part. sch.: '%s')!"),
+    SG_NOT_EXISTS(404,"SMP:131",ErrorBusinessCode.NOT_FOUND,"ServiceGroup not found (dpart. id: '%s', part. sch.: '%s')!"),
     SG_NOT_REGISTRED_FOR_DOMAIN(400,"SMP:131",ErrorBusinessCode.NOT_FOUND,"Service group not registred for domain (domain: %s, part. id:~ '%s', part. sch.: '%s')!"),
-    INVALID_EXTENSION_FOR_SG (400,"SMP:132",ErrorBusinessCode.XML_INVALID,"Invalid extension for service group (part. id: '%s', part. sch.: '%s'). Error: %s!"),
+    INVALID_EXTENSION_FOR_SG (400,"SMP:132",ErrorBusinessCode.XSD_INVALID,"Invalid extension for service group (part. id: '%s', part. sch.: '%s'). Error: %s!"),
     // service metadata error
     ILLEGAL_STATE_SMD_MULTIPLE_ENTRY (500,"SMP:140",ErrorBusinessCode.TECHNICAL,"More than one service metadata ( doc. id: %s, doc. sch.: '%s') for participant ( part. id %s, part. sch. : '%s') is defined in database!"),
-    METADATA_NOT_EXISTS(404,"SMP:141",ErrorBusinessCode.NOT_FOUND,"ServiceMetadata not exist(part. id: '%s', part. sch.: '%s',doc. id: '%s', doc. sch.: '%s')!"),
-    SMD_NOT_EXISTS_FOR_DOMAIN(404,"SMP:142",ErrorBusinessCode.NOT_FOUND,"ServiceMetadata not exists for domain (domain: %s, part. id: '%s', part. sch.: '%s')!"),
-    INVALID_SMD_XML (400,"SMP:143",ErrorBusinessCode.XML_INVALID,"Invalid service metada. Error: %s"),
+    METADATA_NOT_EXISTS(404,"SMP:141",ErrorBusinessCode.NOT_FOUND,"ServiceMetadata not found (part. id: '%s', part. sch.: '%s',doc. id: '%s', doc. sch.: '%s')!"),
+    SMD_NOT_EXISTS_FOR_DOMAIN(404,"SMP:142",ErrorBusinessCode.NOT_FOUND,"ServiceMetadata not found for domain (domain: %s, part. id: '%s', part. sch.: '%s')!"),
+    INVALID_SMD_XML (400,"SMP:143",ErrorBusinessCode.XSD_INVALID,"Invalid service metada. Error: %s"),
 
     // SML integration
     SML_INTEGRATION_EXCEPTION (500,"SMP:150",ErrorBusinessCode.TECHNICAL,"Could not create new DNS entry through SML! Error: %s "),

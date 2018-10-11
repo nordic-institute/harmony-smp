@@ -26,7 +26,7 @@ public class DBServiceMetadataXml extends BaseEntity {
 
     @Lob
     @Column(name = "XML_CONTENT")
-    String xmlContent;
+    byte[] xmlContent;
 
     @OneToOne
     @JoinColumn(name = "ID")
@@ -50,11 +50,11 @@ public class DBServiceMetadataXml extends BaseEntity {
         this.serviceMetadata = smd;
     }
 
-    public String getXmlContent() {
+    public byte[] getXmlContent() {
         return xmlContent;
     }
 
-    public void setXmlContent(String xmlContent) {
+    public void setXmlContent(byte[] xmlContent) {
         this.xmlContent = xmlContent;
     }
 

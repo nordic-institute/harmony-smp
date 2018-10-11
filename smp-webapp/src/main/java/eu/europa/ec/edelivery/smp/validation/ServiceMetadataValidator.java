@@ -40,7 +40,7 @@ public class ServiceMetadataValidator {
 
     public void validate(String serviceGroupIdStr,
                          String serviceMetadataIdStr,
-                         String serviceMetadataBody
+                         byte[] serviceMetadataBody
     ) throws XmlInvalidAgainstSchemaException {
 
         BdxSmpOasisValidator.validateXSD(serviceMetadataBody);

@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -111,9 +112,9 @@ public class ServiceGroupServiceSingleDomainIntegrationTest extends AbstractServ
         DBDomain domain = domainDao.getTheOnlyDomain().get();
         assertNotNull(domain);
 
-        String extension = dbsg.get().getExtension(); // test if exists
-        String newExtension  = ExtensionConverter.marshalExtensions(inServiceGroup.getExtensions());
-        assertNotEquals(extension, newExtension); // extension updated
+        byte[] extension = dbsg.get().getExtension(); // test if exists
+        byte[] newExtension  = ExtensionConverter.marshalExtensions(inServiceGroup.getExtensions());
+        assertFalse(Arrays.equals(extension, newExtension)); // extension updated
 
         // when
         boolean bCreated = testInstance.saveServiceGroup(inServiceGroup, domain.getDomainCode(), TestConstants.USERNAME_1,

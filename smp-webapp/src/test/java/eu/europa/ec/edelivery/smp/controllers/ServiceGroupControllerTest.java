@@ -73,7 +73,7 @@ public class ServiceGroupControllerTest {
 
     private static final String OTHER_OWNER_NAME_URL_ENCODED = "CN=utf-8_%C5%BC_SMP,O=EC,C=BE:0000000000000666";
 
-    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("test_admin", "gutek123");
+    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("test_admin", "test123");
 
     @Autowired
     private WebApplicationContext webAppContext;
@@ -227,7 +227,7 @@ public class ServiceGroupControllerTest {
                 .contentType(APPLICATION_XML_VALUE)
                 .header(HTTP_HEADER_KEY_SERVICE_GROUP_OWNER, "not-existing-user")
                 .content(SERVICE_GROUP_INPUT_BODY))
-                .andExpect(status().isNotFound());
+                .andExpect(status().isBadRequest());
     }
 
 }

@@ -181,13 +181,13 @@ public class DBServiceGroup extends BaseEntity {
     }
 
     @Transient
-    public String getExtension() {
+    public byte[] getExtension() {
         return getServiceGroupExtension() != null ? getServiceGroupExtension().getExtension() : null;
     }
 
-    public void setExtension(String extension) {
+    public void setExtension(byte[] extension) {
 
-        if (StringUtils.isBlank(extension)) {
+        if (extension == null) {
             if (this.serviceGroupExtension != null) {
                 this.serviceGroupExtension.setExtension(null);
             }

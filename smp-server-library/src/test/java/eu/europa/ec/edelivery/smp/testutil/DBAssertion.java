@@ -6,6 +6,7 @@ import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupDomain;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
@@ -39,13 +40,13 @@ public class DBAssertion {
     }
 
     @Transactional
-    public void assertServiceGroupExtensionEqual(String partId, String partSchema, String expectedExt){
-        String ext = getExtensionForServiceGroup(partId, partSchema);
-        assertEquals(expectedExt,ext);
+    public void assertServiceGroupExtensionEqual(String partId, String partSchema,  byte[] expectedExt){
+        byte[] ext = getExtensionForServiceGroup(partId, partSchema);
+         assertTrue(Arrays.equals(expectedExt,ext));
     }
 
     @Transactional
-    public String getExtensionForServiceGroup(String partId, String partSchema){
+    public byte[] getExtensionForServiceGroup(String partId, String partSchema){
         DBServiceGroup sg= serviceGroupDao.findServiceGroup(partId, partSchema).get();
         return sg.getExtension();
     }
