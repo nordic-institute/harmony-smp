@@ -60,13 +60,6 @@ public class SecurityConfigurationTest {
     public static final String BLUE_COAT_VALID_HEADER = "sno=66&subject=C=BE,O=org,CN=comon name&validfrom=Dec 6 17:41:42 2016 GMT&validto=Jul 9 23:59:00 2050 GMT&issuer=C=x,O=y,CN=z";
     public static final String TEST_USERNAME_BLUE_COAT = "CN=comon name,O=org,C=BE:0000000000000066";
 
-    //both passwords represent the same value - clear and hashed
-    /*
-    private DBUser userHashedPass = createUser(TEST_USERNAME_HASHED_PASS, "$2a$06$k.Q/6anG4Eq/nNTZ0C1UIuAKxpr6ra5oaMkMSrlESIyA5jKEsUdyS");
-    private DBUser userClearPass = createUser(TEST_USERNAME_CLEAR_PASS, PASSWORD);
-    private DBUser userBlueCoat = createUser(TEST_USERNAME_BLUE_COAT, null);
-    */
-
     @Autowired
     private WebApplicationContext context;
 

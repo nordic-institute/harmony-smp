@@ -127,7 +127,6 @@ public class SMPSchemaGenerator {
             try {
                 directory = new File(Thread.currentThread().getContextClassLoader().getResource(pckgname.replace('.', '/')).getFile());
             } catch (NullPointerException x) {
-                System.out.println("Nullpointer");
                 throw new ClassNotFoundException(pckgname + " does not appear to be a valid package");
             }
             if (directory.exists()) {
@@ -139,8 +138,7 @@ public class SMPSchemaGenerator {
                         classes.add(Class.forName(pckgname + '.' + files[i].substring(0, files[i].length() - 6)));
                     }
                 }
-            } else {
-                System.out.println("Directory does not exist");
+            } else { ;
                 throw new ClassNotFoundException("Package: "+pckgname + " does not eixsts!");
             }
 
