@@ -1,6 +1,8 @@
 import {SearchTableController} from "../common/search-table/search-table-controller";
-import {MdDialog, MdDialogRef} from "@angular/material";
+import {MdDialog, MdDialogConfig, MdDialogRef} from "@angular/material";
 import {DomainDetailsDialogComponent} from "./domain-details-dialog/domain-details-dialog.component";
+import {DomainRo} from "./domain-ro.model";
+import {SearchTableEntityStatus} from "../common/search-table/search-table-entity-status.model";
 
 export class DomainController implements SearchTableController {
 
@@ -17,4 +19,19 @@ export class DomainController implements SearchTableController {
   public edit(row: any) { }
 
   public  delete(row: any) { }
+
+  public newDialog(config?: MdDialogConfig): MdDialogRef<DomainDetailsDialogComponent> {
+    return this.dialog.open(DomainDetailsDialogComponent, config);
+  }
+
+  public newRow(): DomainRo {
+    return {
+      domainId: '',
+      bdmslClientCertHeader: '',
+      bdmslClientCertAlias: '',
+      bdmslSmpId: '',
+      signatureCertAlias: '',
+      status: SearchTableEntityStatus.NEW
+    }
+  }
 }
