@@ -7,7 +7,6 @@ import {AlertService} from "../alert/alert.service";
 import {UserController} from "./user-controller";
 
 @Component({
-  moduleId: module.id,
   templateUrl:'./user.component.html',
   styleUrls: ['./user.component.css']
 })
@@ -30,23 +29,29 @@ export class UserComponent implements OnInit {
     this.columnPicker.allColumns = [
       {
         name: 'Username',
-        prop: 'username',
-        width: 275
+        prop: 'userName',
+        canAutoResize: true
       },
       {
-        name: 'isAdmin',
-        prop: 'isadmin',
-        width: 40
+        name: 'Role',
+        prop: 'role',
+        canAutoResize: true
+      },
+      {
+        name: 'Password',
+        prop: 'password',
+        canAutoResize: true,
+        sortable: false,
+        width: 25
       }
     ];
 
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
-      return ["Username", "isAdmin"].indexOf(col.name) != -1
+      return ['Username', 'Role'].indexOf(col.name) != -1
     });
   }
 
   details(row: any) {
     this.userController.showDetails(row);
-
   }
 }
