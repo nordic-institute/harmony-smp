@@ -98,7 +98,9 @@
 							<testSuite>PASSING_AUTO_BAMBOO</testSuite>
 							<!--If you want to execute single test case <testCase>SMP001-Create ServiceGroup-Basic Flow-Admin Service Group specified</testCase>-->	
 							<projectProperties>
-								<value>url=${url}</value>
+                                <value>url=${url}</value>
+                                <value>SMPAdminUser=${SMPAdminUser}</value>
+                                <value>SMPAdminPassword=${SMPAdminPassword}</value>
 							</projectProperties>
                         </configuration>
 

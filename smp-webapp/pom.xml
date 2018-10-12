@@ -25,14 +25,14 @@
         <jdbc.driver>com.mysql.jdbc.Driver</jdbc.driver>
         <jdbc.url>jdbc:mysql://localhost/smpdbdev</jdbc.url>
         <jdbc.user>smpdev</jdbc.user>
-        <jdbc.password>smpdev</jdbc.password>
+        <jdbc.password>****</jdbc.password>
         <target-database>MySQL</target-database>
         <jdbc.read-connections.max>10</jdbc.read-connections.max>
  -->
         <jdbc.driver>org.h2.Driver</jdbc.driver>
         <jdbc.url>jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE</jdbc.url>
         <jdbc.user>smp</jdbc.user>
-        <jdbc.password>smp</jdbc.password>
+        <jdbc.password>****</jdbc.password>
         <hibernate.dialect>org.hibernate.dialect.H2Dialect</hibernate.dialect>
         <target-database>H2</target-database>
         <jdbc.read-connections.max>10</jdbc.read-connections.max>
