@@ -1,6 +1,6 @@
-import {async, ComponentFixture, TestBed} from "@angular/core/testing";
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {TrustStoreUploadComponent} from "./trust-store-upload.component";
+import {TrustStoreUploadComponent} from './trust-store-upload.component';
 
 describe('TrustStoreUploadComponent', () => {
   let component: TrustStoreUploadComponent;

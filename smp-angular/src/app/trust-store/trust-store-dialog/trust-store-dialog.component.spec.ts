@@ -1,6 +1,6 @@
-import {async, ComponentFixture, TestBed} from "@angular/core/testing";
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {TrustStoreDialogComponent} from "./trust-store-dialog.component";
+import {TrustStoreDialogComponent} from './trust-store-dialog.component';
 
 describe('TrustStoreDialogComponent', () => {
   let component: TrustStoreDialogComponent;

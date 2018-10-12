@@ -15,23 +15,23 @@
   </ng-template>
 
   <ng-template #searchPanel>
-    <md-input-container>
-      <input mdInput placeholder="Domain Id" name="Domain Id" [(ngModel)]="filter.messageId"
+    <mat-form-field>
+      <input matInput placeholder="Domain Id" name="Domain Id" [(ngModel)]="filter.messageId"
              #messageId="ngModel" id="Domain_id">
-    </md-input-container>
-    <md-input-container>
-      <input mdInput placeholder="SMP Id" name="SMP Id" [(ngModel)]="filter.messageId"
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="SMP Id" name="SMP Id" [(ngModel)]="filter.messageId"
              #messageId="ngModel" id="SMPid">
-    </md-input-container>
-    <md-input-container>
-    <input mdInput placeholder="ClientCert Header" name="ClientCert Header" [(ngModel)]="filter.messageId"
+    </mat-form-field>
+    <mat-form-field>
+    <input matInput placeholder="ClientCert Header" name="ClientCert Header" [(ngModel)]="filter.messageId"
            #messageId="ngModel" id="ClientCert_header">
-    </md-input-container>
+    </mat-form-field>
 
-    <md-input-container>
-    <input mdInput placeholder="ClientCert Alias" name="ClientCert Alias" [(ngModel)]="filter.messageId"
+    <mat-form-field>
+    <input matInput placeholder="ClientCert Alias" name="ClientCert Alias" [(ngModel)]="filter.messageId"
            #messageId="ngModel" id="ClientCert_Alias">
-    </md-input-container>
+    </mat-form-field>
 
   </ng-template>
 

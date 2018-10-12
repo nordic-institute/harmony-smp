@@ -1,10 +1,10 @@
 import {Component, EventEmitter, OnInit, TemplateRef, ViewChild} from '@angular/core';
-import {MdDialog, MdDialogRef} from "@angular/material";
-import {ColumnPicker} from "../../common/column-picker/column-picker.model";
-import {ServiceGroupController} from "../service-group-controller";
-import {RowLimiter} from "../../common/row-limiter/row-limiter.model";
-import {ServiceGroupExtensionDialogComponent} from "../service-group-extension-dialog/service-group-extension-dialog.component";
-import {ServiceGroupMetadataDialogComponent} from "../service-group-metadata-dialog/service-group-metadata-dialog.component";
+import {MatDialog, MatDialogRef} from '@angular/material';
+import {ColumnPicker} from '../../common/column-picker/column-picker.model';
+import {ServiceGroupController} from '../service-group-controller';
+import {RowLimiter} from '../../common/row-limiter/row-limiter.model';
+import {ServiceGroupExtensionDialogComponent} from '../service-group-extension-dialog/service-group-extension-dialog.component';
+import {ServiceGroupMetadataDialogComponent} from '../service-group-metadata-dialog/service-group-metadata-dialog.component';
 
 @Component({
   selector: 'app-messagelog-dialog',
@@ -32,7 +32,7 @@ export class ServiceGroupMetadataListDialogComponent implements OnInit {
 
   messageResent = new EventEmitter(false);
 
-  constructor(public dialogRef: MdDialogRef<ServiceGroupMetadataListDialogComponent>, public dialog: MdDialog) {
+  constructor(public dialogRef: MatDialogRef<ServiceGroupMetadataListDialogComponent>, public dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -91,7 +91,7 @@ export class ServiceGroupMetadataListDialogComponent implements OnInit {
   deleteButtonAction (){}
 
   details() {
-    let dialogRef: MdDialogRef<ServiceGroupMetadataDialogComponent> = this.dialog.open(ServiceGroupMetadataDialogComponent);
+    let dialogRef: MatDialogRef<ServiceGroupMetadataDialogComponent> = this.dialog.open(ServiceGroupMetadataDialogComponent);
     //dialogRef.componentInstance.servicegroup = row;
     dialogRef.afterClosed().subscribe(result => {
       //Todo:

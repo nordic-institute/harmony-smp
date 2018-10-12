@@ -1,38 +1,38 @@
-<h2 md-dialog-title>ServiceGroup details</h2>
-<md-dialog-content style="height:260px;width:650px">
-  <md-card>
-    <md-card-content>
-      <md-input-container style="width:100%">
-        <input mdInput placeholder="Participant Id" value="{{servicegroup.serviceGroupROId.participantId}}" readonly/>
-      </md-input-container>
+<h2 mat-dialog-title>ServiceGroup details</h2>
+<mat-dialog-content style="height:260px;width:650px">
+  <mat-card>
+    <mat-card-content>
+      <mat-form-field style="width:100%">
+        <input matInput placeholder="Participant Id" value="{{servicegroup.serviceGroupROId.participantId}}" readonly/>
+      </mat-form-field>
 
-      <md-input-container style="width:100%">
-        <input mdInput placeholder="Participant schema" value="{{servicegroup.serviceGroupROId.participantSchema}}" readonly/>
-      </md-input-container>
+      <mat-form-field style="width:100%">
+        <input matInput placeholder="Participant schema" value="{{servicegroup.serviceGroupROId.participantSchema}}" readonly/>
+      </mat-form-field>
 
-      <md-input-container style="width:100%">
-        <input mdInput placeholder="Domain" value="{{servicegroup.domain}}" readonly/>
-      </md-input-container>
+      <mat-form-field style="width:100%">
+        <input matInput placeholder="Domain" value="{{servicegroup.domain}}" readonly/>
+      </mat-form-field>
 
-    </md-card-content>
-  </md-card>
+    </mat-card-content>
+  </mat-card>
 
-</md-dialog-content>
+</mat-dialog-content>
 
-<md-dialog-actions>
+<mat-dialog-actions>
   <div class="group-action-button" >
-  <button id="ServiceGroupsSaveButton" md-raised-button color="primary" (click)="dialogRef.close({})"
+  <button id="ServiceGroupsSaveButton" mat-raised-button color="primary" (click)="dialogRef.close({})"
           style="margin-top:10px">
-    <md-icon>save</md-icon>
+    <mat-icon>save</mat-icon>
     <span>Save</span>
   </button>
 
 
-  <button id="ServiceGroupsCloseButton" md-raised-button color="primary" (click)="dialogRef.close({})"
+  <button id="ServiceGroupsCloseButton" mat-raised-button color="primary" (click)="dialogRef.close({})"
           style="margin-top:10px">
-    <md-icon>close</md-icon>
+    <mat-icon>close</mat-icon>
     <span>Close</span>
   </button>
   </div>
-</md-dialog-actions>
+</mat-dialog-actions>
 

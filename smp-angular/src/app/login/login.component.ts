@@ -1,12 +1,12 @@
-﻿import {Component, OnDestroy, OnInit} from "@angular/core";
-import {Router, ActivatedRoute} from "@angular/router";
-import {SecurityService} from "../security/security.service";
-import {HttpEventService} from "../http/http-event.service";
-import {AlertService} from "../alert/alert.service";
-import {SecurityEventService} from "../security/security-event.service";
-import {User} from "../security/user.model";
-import {MdDialogRef, MdDialog} from "@angular/material";
-import {DefaultPasswordDialogComponent} from "app/security/default-password-dialog/default-password-dialog.component";
+﻿import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Router, ActivatedRoute} from '@angular/router';
+import {SecurityService} from '../security/security.service';
+import {HttpEventService} from '../http/http-event.service';
+import {AlertService} from '../alert/alert.service';
+import {SecurityEventService} from '../security/security-event.service';
+import {User} from '../security/user.model';
+import {MatDialogRef, MatDialog} from '@angular/material';
+import {DefaultPasswordDialogComponent} from 'app/security/default-password-dialog/default-password-dialog.component';
 
 @Component({
   moduleId: module.id,
@@ -25,7 +25,7 @@ export class LoginComponent implements OnInit, OnDestroy {
               private httpEventService: HttpEventService,
               private alertService: AlertService,
               private securityEventService: SecurityEventService,
-              private dialog: MdDialog) {
+              private dialog: MatDialog) {
   }
 
   ngOnInit() {

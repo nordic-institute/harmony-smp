@@ -1,6 +1,6 @@
-import {async, ComponentFixture, TestBed} from "@angular/core/testing";
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {PageHelperComponent} from "./page-helper.component";
+import {PageHelperComponent} from './page-helper.component';
 
 describe('PageHelperComponent', () => {
   let component: PageHelperComponent;
