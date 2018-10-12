@@ -1,31 +1,29 @@
 ﻿import {Injectable} from '@angular/core';
-import {Http, Headers, Response} from '@angular/http';
-import {Observable} from 'rxjs/Observable';
-import 'rxjs/add/operator/map';
+import {Observable, ReplaySubject} from 'rxjs';
 import {User} from './user.model';
-import {ReplaySubject} from 'rxjs';
 import {SecurityEventService} from './security-event.service';
 import {DomainService} from './domain.service';
-import {Role} from "./role.model";
+import {Role} from './role.model';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 @Injectable()
 export class SecurityService {
 
-  constructor (private http: Http, private securityEventService: SecurityEventService, private domainService: DomainService) {
+  constructor (private http: HttpClient, private securityEventService: SecurityEventService, private domainService: DomainService) {
   }
 
   login(username: string, password: string) {
     this.domainService.resetDomain();
-    let headers = new Headers({'Content-Type': 'application/json'});
-    return this.http.post('rest/security/authentication',
+    let headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
+    return this.http.post<string>('rest/security/authentication',
       JSON.stringify({
         username: username,
         password: password
       }),
-      {headers: headers})
-      .subscribe((response: Response) => {
+      { headers })
+      .subscribe((response: string) => {
           console.log('Login success');
-          localStorage.setItem('currentUser', JSON.stringify(response.json()));
+          localStorage.setItem('currentUser', response);
           this.securityEventService.notifyLoginSuccessEvent(response);
         },
         (error: any) => {
@@ -52,10 +50,10 @@ export class SecurityService {
   }
 
   private getCurrentUsernameFromServer(): Observable<string> {
-    let subject = new ReplaySubject();
-    this.http.get('rest/security/user')
-      .subscribe((res: Response) => {
-        subject.next(res.text());
+    let subject = new ReplaySubject<string>();
+    this.http.get<string>('rest/security/user')
+      .subscribe((res: string) => {
+        subject.next(res);
       }, (error: any) => {
         //console.log('getCurrentUsernameFromServer:' + error);
         subject.next(null);
@@ -64,7 +62,7 @@ export class SecurityService {
   }
 
   isAuthenticated(callServer: boolean = false): Observable<boolean> {
-    let subject = new ReplaySubject();
+    let subject = new ReplaySubject<boolean>();
     if (callServer) {
       //we get the username from the server to trigger the redirection to the login screen in case the user is not authenticated
       this.getCurrentUsernameFromServer()
@@ -105,7 +103,7 @@ export class SecurityService {
   }
 
   isAuthorized(roles: Array<Role>): Observable<boolean> {
-    let subject = new ReplaySubject();
+    let subject = new ReplaySubject<boolean>();
 
     this.isAuthenticated(false).subscribe((isAuthenticated: boolean) => {
       if (isAuthenticated && roles) {

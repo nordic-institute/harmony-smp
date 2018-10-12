@@ -1,5 +1,6 @@
 import {Directive, ElementRef, OnInit, OnDestroy} from '@angular/core';
-import {Md2Datepicker} from 'md2';
+import {MatDatepicker, MatDatepickerInput} from '@angular/material';
+
 
 @Directive({
   selector: '[appClearInvalid]'
@@ -7,7 +8,7 @@ import {Md2Datepicker} from 'md2';
 export class ClearInvalidDirective implements OnInit, OnDestroy {
   private input: any;
 
-  constructor(private el: ElementRef, private host: Md2Datepicker) {
+  constructor(private el: ElementRef, private host: MatDatepickerInput<Date>) {
   }
 
   onBlurHandler(event) {

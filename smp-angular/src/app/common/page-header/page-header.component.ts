@@ -1,6 +1,6 @@
-import {Component, EventEmitter, Input, OnInit} from "@angular/core";
-import {DomainService} from "../../security/domain.service";
-import {Domain} from "../../security/domain.model";
+import {Component, EventEmitter, Input, OnInit} from '@angular/core';
+import {DomainService} from '../../security/domain.service';
+import {Domain} from '../../security/domain.model';
 
 @Component({
   selector: 'page-header',

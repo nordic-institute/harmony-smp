@@ -1,5 +1,5 @@
-<h2 md-dialog-title>ServiceGroup Metadata list</h2>
-<md-dialog-content style="height:460px;width:950px">
+<h2 mat-dialog-title>ServiceGroup Metadata list</h2>
+<mat-dialog-content style="height:460px;width:950px">
 
 
   <ngx-datatable
@@ -29,47 +29,47 @@
 
   <ng-template #rowActions let-row="row" let-value="value" ngx-datatable-cell-template>
 
-    <button md-icon-button color="primary"
+    <button mat-icon-button color="primary"
             (click)="editRowButtonAction(row)" id="editButtonRow{{row.$$index}}_id" tooltip="Edit">
-      <md-icon>edit</md-icon>
+      <mat-icon>edit</mat-icon>
     </button>
 
 
-    <button md-icon-button color="primary" (click)="deleteRowButtonAction(row)"
+    <button mat-icon-button color="primary" (click)="deleteRowButtonAction(row)"
             id="deleteButtonRow{{row.$$index}}_id" tooltip="Delete">
-      <md-icon>delete</md-icon>
+      <mat-icon>delete</mat-icon>
     </button>
   </ng-template>
 
-</md-dialog-content>
+</mat-dialog-content>
 
-<md-dialog-actions>
+<mat-dialog-actions>
   <div class="group-action-button">
 
-    <button md-raised-button color="primary" (click)="newButtonAction()"
+    <button mat-raised-button color="primary" (click)="newButtonAction()"
             id="add_id">
-      <md-icon>add</md-icon>
+      <mat-icon>add</mat-icon>
       <span>New</span>
     </button>
 
-    <button md-raised-button color="primary" [disabled]="!isRowSelected()" (click)="editButtonAction()"
+    <button mat-raised-button color="primary" [disabled]="!isRowSelected()" (click)="editButtonAction()"
             id="edit_id">
-      <md-icon>edit</md-icon>
+      <mat-icon>edit</mat-icon>
       <span>Edit</span>
     </button>
 
-    <button md-raised-button color="primary" [disabled]="!isRowSelected()" (click)="deleteButtonAction()"
+    <button mat-raised-button color="primary" [disabled]="!isRowSelected()" (click)="deleteButtonAction()"
             id="resendbutton_id">
-      <md-icon>delete</md-icon>
+      <mat-icon>delete</mat-icon>
       <span>Delete</span>
     </button>
     <div style="background-color: #03A9F4; display: inline-block; width: 3px; height: 20px; margin-right: 8px">&nbsp;
     </div>
-    <button id="ServiceGroupMetadataListCloseButton" md-raised-button color="primary" (click)="dialogRef.close({})"
+    <button id="ServiceGroupMetadataListCloseButton" mat-raised-button color="primary" (click)="dialogRef.close({})"
             style="margin-top:10px">
-      <md-icon>close</md-icon>
+      <mat-icon>close</mat-icon>
       <span>Close</span>
     </button>
   </div>
-</md-dialog-actions>
+</mat-dialog-actions>
 

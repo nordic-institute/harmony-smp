@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MdDialogRef} from "@angular/material";
+import {MatDialogRef} from '@angular/material';
 
 @Component({
   selector: 'servicegroup-extension-dialog',
@@ -10,7 +10,7 @@ export class ServiceGroupExtensionDialogComponent {
   servicegroup;
   dateFormat: String = 'yyyy-MM-dd HH:mm:ssZ';
 
-  constructor(public dialogRef: MdDialogRef<ServiceGroupExtensionDialogComponent>) {
+  constructor(public dialogRef: MatDialogRef<ServiceGroupExtensionDialogComponent>) {
   }
 
 }

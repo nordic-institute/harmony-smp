@@ -1,7 +1,7 @@
-﻿import {Injectable} from "@angular/core";
-import {Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot} from "@angular/router";
-import {SecurityService} from "../security/security.service";
-import {ReplaySubject} from "rxjs";
+﻿import {Injectable} from '@angular/core';
+import {Router, CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router';
+import {SecurityService} from '../security/security.service';
+import {ReplaySubject} from 'rxjs';
 
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
@@ -10,7 +10,7 @@ export class AuthenticatedGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    const subject = new ReplaySubject();
+    const subject = new ReplaySubject<boolean>();
     this.securityService.isAuthenticated(true).subscribe((isAuthenticated: boolean) => {
       if(isAuthenticated) {
         subject.next(true);

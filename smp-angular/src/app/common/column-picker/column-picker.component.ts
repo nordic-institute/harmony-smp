@@ -1,5 +1,4 @@
-import {Component, EventEmitter, Input, Output} from "@angular/core";
-import {isNullOrUndefined} from "util";
+import {Component, EventEmitter, Input, Output} from '@angular/core';
 
 @Component({
   selector: 'app-column-picker',
@@ -47,7 +46,7 @@ export class ColumnPickerComponent {
 
   setLastColumn(array : Array<any>, colName : any) {
     let col = array.find(x => x.name === colName);
-    if(!isNullOrUndefined(col)) {
+    if(col !== null && col !== undefined) {
       let posCol = array.indexOf(col);
       array.splice(posCol, 1);
       array.push(col);

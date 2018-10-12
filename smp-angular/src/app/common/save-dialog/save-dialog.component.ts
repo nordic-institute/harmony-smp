@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MdDialogRef} from "@angular/material";
+import {MatDialogRef} from '@angular/material';
 
 @Component({
   selector: 'app-messagefilter-dialog',
@@ -8,7 +8,7 @@ import {MdDialogRef} from "@angular/material";
 })
 export class SaveDialogComponent {
 
-  constructor(public dialogRef: MdDialogRef<SaveDialogComponent>) {
+  constructor(public dialogRef: MatDialogRef<SaveDialogComponent>) {
   }
 
 }

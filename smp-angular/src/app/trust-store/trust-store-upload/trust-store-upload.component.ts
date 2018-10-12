@@ -1,9 +1,7 @@
-import {Component, EventEmitter, Inject, ViewChild} from "@angular/core";
-import {MD_DIALOG_DATA, MdDialogRef} from "@angular/material";
-import {TrustStoreService} from "../trust-store.service";
-import {AlertService} from "../../alert/alert.service";
-import {isNullOrUndefined, isString} from "util";
-import {isEmpty} from "rxjs/operator/isEmpty";
+import {Component, EventEmitter, Inject, ViewChild} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {TrustStoreService} from '../trust-store.service';
+import {AlertService} from '../../alert/alert.service';
 
 @Component({
   selector: 'app-trustore-upload',
@@ -18,9 +16,9 @@ export class TrustStoreUploadComponent {
   onTruststoreUploaded = new EventEmitter();
   enableSubmit = false;
 
-  constructor(public dialogRef: MdDialogRef<TrustStoreUploadComponent>,
+  constructor(public dialogRef: MatDialogRef<TrustStoreUploadComponent>,
               private trustStoreService: TrustStoreService, private alertService: AlertService,
-              @Inject(MD_DIALOG_DATA) public data: any) {
+              @Inject(MAT_DIALOG_DATA) public data: any) {
   }
 
   public checkFile() {
@@ -30,7 +28,7 @@ export class TrustStoreUploadComponent {
   public submit() {
     let fi = this.fileInput.nativeElement;
     this.trustStoreService.saveTrustStore(fi.files[0], this.password).subscribe(res => {
-        this.alertService.success(res.text(), false);
+        this.alertService.success(res, false);
         this.onTruststoreUploaded.emit();
       },
       err => {
