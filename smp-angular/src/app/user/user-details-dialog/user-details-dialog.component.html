@@ -1,60 +1,108 @@
-<h2 md-dialog-title>{{formTitle}}</h2>
-<md-dialog-content style="height:260px;width:650px">
-  <md-card>
-    <md-card-content>
-      <div style="margin-top:15px;">
-        <md-input-container style="width:100%">
-          <input mdInput placeholder="Username" name="userName" id="userName" [value]="current.userName" (blur)="updateUserName($event)" [formControl]="userForm.controls['userName']" maxlength="255" required>
-          <div *ngIf="userForm.controls['userName'].hasError('required') && userForm.controls['userName'].touched" style="color:red; font-size: 70%">You should type an username</div>
-        </md-input-container>
-      </div>
+<h2 mat-dialog-title>{{formTitle}}</h2>
+<mat-dialog-content>
+  <!--<table>-->
+    <!--<tr>-->
+      <!--<td width="50%" valign="top">-->
+  <!--<mat-grid-list cols="2" gutterSize="40px">-->
+    <!--<mat-grid-tile class="panel">-->
+      <mat-card>
+        <mat-card-content>
+          <mat-slide-toggle mat-no-ink class="mat-primary" ngModel="userSwitch">
+            User Details
+          </mat-slide-toggle>
+          <div class="panel">
+            <div style="margin-top:15px;">
+              <mat-form-field style="width:100%">
+                <input matInput placeholder="Username" name="userName" id="userName" [value]="current.userName" (blur)="updateUserName($event)" [formControl]="userForm.controls['userName']" maxlength="255" required>
+                <div *ngIf="userForm.controls['userName'].hasError('required') && userForm.controls['userName'].touched" style="color:red; font-size: 70%">You should type an username</div>
+              </mat-form-field>
+            </div>
 
-      <div style="margin-top:10px;">
-        <md2-select mdInput placeholder="Role" [style.width]="'100%'" [formControl]="userForm.controls['role']"
-                    [(ngModel)]="role" required>
-          <md2-option *ngFor="let item of existingRoles" [value]="item">{{getRoleLabel(item)}}</md2-option>
-        </md2-select>
-        <div *ngIf="userForm.controls['role'].hasError('required') && userForm.controls['role'].touched" style="color:red; font-size: 70%">You need to choose at least one role for this user</div>
-      </div>
+            <div style="margin-top:10px;">
+              <mat-select matInput placeholder="Role" [style.width]="'100%'" [formControl]="userForm.controls['role']"
+                          [(ngModel)]="role" required>
+                <mat-option *ngFor="let item of existingRoles" [value]="item">{{getRoleLabel(item)}}</mat-option>
+              </mat-select>
+              <div *ngIf="userForm.controls['role'].hasError('required') && userForm.controls['role'].touched" style="color:red; font-size: 70%">You need to choose at least one role for this user</div>
+            </div>
 
-      <div style="margin-top:15px;">
-        <md-input-container [style.width]="'100%'">
-          <input mdInput placeholder="Password" name="password" type="password" [value]="current.password" (blur)="updatePassword($event)" [formControl]="userForm.controls['password']" [pattern]="passwordPattern" [required]="!editMode">
-          <div *ngIf="!editMode && userForm.controls['password'].hasError('required') && userForm.controls['password'].touched" style="color:red; font-size: 70%">You should type a password</div>
-          <div *ngIf="userForm.controls['password'].dirty && userForm.controls['password'].hasError('pattern') && userForm.controls['password'].touched" style="color:red; font-size: 70%">
-            Password should follow all of these rules:<br>
-            - Minimum length: 8 characters<br>
-            - Maximum length: 32 characters<br>
-            - At least one letter in lowercase<br>
-            - At least one letter in uppercase<br>
-            - At least one digit<br>
-            - At least one special character
+            <div style="margin-top:15px;">
+              <mat-form-field [style.width]="'100%'">
+                <input matInput placeholder="Password" name="password" type="password" [value]="current.password" (blur)="updatePassword($event)" [formControl]="userForm.controls['password']" [pattern]="passwordPattern" [required]="!editMode">
+                <div *ngIf="!editMode && userForm.controls['password'].hasError('required') && userForm.controls['password'].touched" style="color:red; font-size: 70%">You should type a password</div>
+                <div *ngIf="userForm.controls['password'].dirty && userForm.controls['password'].hasError('pattern') && userForm.controls['password'].touched" style="color:red; font-size: 70%">
+                  Password should follow all of these rules:<br>
+                  - Minimum length: 8 characters<br>
+                  - Maximum length: 32 characters<br>
+                  - At least one letter in lowercase<br>
+                  - At least one letter in uppercase<br>
+                  - At least one digit<br>
+                  - At least one special character
+                </div>
+              </mat-form-field>
+            </div>
+
+            <div>
+              <mat-form-field [style.width]="'100%'">
+                <input matInput placeholder="Confirmation" name="confirmation" type="password" [value]="current.confirmation" [formControl]="userForm.controls['confirmation']" [required]="!editMode">
+                <div *ngIf="!editMode && userForm.controls['confirmation'].hasError('required') && userForm.controls['confirmation'].touched" style="color:red; font-size: 70%">You should type a password</div>
+                <div *ngIf="userForm.errors?.confirmation && userForm.controls['confirmation'].touched" style="color:red; font-size: 70%">Passwords do not match</div>
+              </mat-form-field>
+            </div>
           </div>
-        </md-input-container>
-      </div>
+        </mat-card-content>
+      </mat-card>
+    <!--</mat-grid-tile>-->
+      <!--</td>-->
 
-      <div>
-        <md-input-container [style.width]="'100%'">
-          <input mdInput placeholder="Confirmation" name="confirmation" type="password" [value]="current.confirmation" [formControl]="userForm.controls['confirmation']" [required]="!editMode">
-          <div *ngIf="!editMode && userForm.controls['confirmation'].hasError('required') && userForm.controls['confirmation'].touched" style="color:red; font-size: 70%">You should type a password</div>
-          <div *ngIf="userForm.errors?.confirmation && userForm.controls['confirmation'].touched" style="color:red; font-size: 70%">Passwords do not match</div>
-        </md-input-container>
-      </div>
-
-    </md-card-content>
-  </md-card>
-
-</md-dialog-content>
+      <!--<td width="50%" valign="top">-->
+    <!--<mat-grid-tile class="panel">-->
+      <mat-card>
+        <mat-card-content>
+          <mat-slide-toggle mat-no-ink class="mat-primary" ngModel="certificateSwitch">
+            Certificate
+          </mat-slide-toggle>
+          <div class="panel">
+            <fieldset [disabled]="true" style="border: none;">
+              <mat-form-field style="width:100%">
+                <input matInput placeholder="Subject Name" name="subjectName" value="{{current.certificate?.subject}}" id="subjectName_id">
+              </mat-form-field>
+              <mat-form-field style="width:40%">
+                <input matInput placeholder="Valid From" name="validityFrom" value="{{current.certificate?.validFrom | smpDate: dateFormat}}" id="validityFrom_id">
+              </mat-form-field>
+              <mat-form-field style="width:40%">
+                <input matInput placeholder="Valid To" name="validityTo" value="{{current.certificate?.validUntil | smpDate: dateFormat}}" id="validityTo_id">
+              </mat-form-field>
+              <mat-form-field style="width:100%">
+                <input matInput placeholder="Issuer" name="issuer" value="{{current.certificate?.issuer}}" id="issuer_id">
+              </mat-form-field>
+              <mat-form-field style="width:100%">
+                <input matInput placeholder="Fingerprints" name="fingerPrint" value="{{current.certificate?.fingerprints}}" id="fingerPrint_id">
+              </mat-form-field>
+            </fieldset>
+            <label class="custom-file-upload">
+              <input #fileInput type="file" id="custom-file-upload" accept=".cer" (change)="uploadCertificate()" [disabled]="!certificateSwitch">
+              <span class="custom-file-upload-inner">Import</span>
+            </label>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    <!--</mat-grid-tile>-->
+  <!--</mat-grid-list>-->
+      <!--</td>-->
+    <!--</tr>-->
+  <!--</table>-->
+</mat-dialog-content>
 
 <table class="buttonsRow">
   <tr>
     <td>
-      <button md-raised-button color="primary" [md-dialog-close]="true" (click)="submitForm()" [disabled]="!userForm.valid">
-        <md-icon>check_circle</md-icon>
+      <button mat-raised-button color="primary" [mat-dialog-close]="true" (click)="submitForm()" [disabled]="!userForm.valid">
+        <mat-icon>check_circle</mat-icon>
         <span>OK</span>
       </button>
-      <button md-raised-button color="primary" md-dialog-close>
-        <md-icon>cancel</md-icon>
+      <button mat-raised-button color="primary" mat-dialog-close>
+        <mat-icon>cancel</mat-icon>
         <span>Cancel</span>
       </button>
     </td>

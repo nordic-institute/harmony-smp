@@ -1,15 +1,15 @@
-import {SearchTableController} from "../common/search-table/search-table-controller";
-import {MdDialog, MdDialogConfig, MdDialogRef} from "@angular/material";
-import {DomainDetailsDialogComponent} from "./domain-details-dialog/domain-details-dialog.component";
-import {DomainRo} from "./domain-ro.model";
-import {SearchTableEntityStatus} from "../common/search-table/search-table-entity-status.model";
+import {SearchTableController} from '../common/search-table/search-table-controller';
+import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import {DomainDetailsDialogComponent} from './domain-details-dialog/domain-details-dialog.component';
+import {DomainRo} from './domain-ro.model';
+import {SearchTableEntityStatus} from '../common/search-table/search-table-entity-status.model';
 
 export class DomainController implements SearchTableController {
 
-  constructor(public dialog: MdDialog) { }
+  constructor(public dialog: MatDialog) { }
 
   public showDetails(row: any) {
-    let dialogRef: MdDialogRef<DomainDetailsDialogComponent> = this.dialog.open(DomainDetailsDialogComponent);
+    let dialogRef: MatDialogRef<DomainDetailsDialogComponent> = this.dialog.open(DomainDetailsDialogComponent);
     dialogRef.componentInstance.domain = row;
     dialogRef.afterClosed().subscribe(result => {
       //Todo:
@@ -20,7 +20,7 @@ export class DomainController implements SearchTableController {
 
   public  delete(row: any) { }
 
-  public newDialog(config?: MdDialogConfig): MdDialogRef<DomainDetailsDialogComponent> {
+  public newDialog(config?: MatDialogConfig): MatDialogRef<DomainDetailsDialogComponent> {
     return this.dialog.open(DomainDetailsDialogComponent, config);
   }
 
