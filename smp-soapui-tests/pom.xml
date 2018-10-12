@@ -15,6 +15,8 @@
     <properties>
         <!-- url>http://localhost:7001/smp</url -->
         <url>http://localhost:8080/smp</url>
+        <SMPAdminUser></SMPAdminUser>
+        <SMPAdminPassword></SMPAdminPassword>
     </properties>
 
     <build>
@@ -56,6 +58,8 @@
                     <!-- testCase>SMP079-EDELIVERY-2806-Basic Flow-BlueCote UTF8 chars</testCase -->
                     <projectProperties>
                         <value>url=${url}</value>
+                        <value>SMPAdminUser=${SMPAdminUser}</value>
+                        <value>SMPAdminPassword=${SMPAdminPassword}</value>
                     </projectProperties>
                 </configuration>
                 <dependencies>
