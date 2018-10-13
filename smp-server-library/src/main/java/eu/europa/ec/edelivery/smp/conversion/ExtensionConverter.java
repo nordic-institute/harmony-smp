@@ -17,7 +17,6 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.cxf.staxutils.PrettyPrintXMLStreamWriter;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 
 import javax.xml.bind.*;
 import javax.xml.bind.annotation.XmlElement;
@@ -27,11 +26,12 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.stream.StreamSource;
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * Created by migueti on 13/02/2017.
