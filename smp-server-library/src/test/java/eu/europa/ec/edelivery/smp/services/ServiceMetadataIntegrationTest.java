@@ -13,45 +13,26 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.config.H2JPATestConfiguration;
-import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
-import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
-import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
 import eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter;
-import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
-import eu.europa.ec.edelivery.smp.data.dao.ServiceMetadataDao;
-import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
-import eu.europa.ec.edelivery.smp.config.SmpServicesTestConfig;
-import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import eu.europa.ec.edelivery.smp.sml.SmlConnector;
-import eu.europa.ec.edelivery.smp.testutil.DBAssertion;
-import eu.europa.ec.edelivery.smp.testutil.TestConstants;
-import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
-import org.busdox.transport.identifiers._1.DocumentIdentifierType;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.*;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.EndpointType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityNotFoundException;
-import javax.persistence.PersistenceContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
@@ -61,10 +42,10 @@ import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter.unmarshal;
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
-import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.*;
-import static eu.europa.ec.smp.api.Identifiers.asDocumentId;
-import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
-import static org.junit.Assert.*;
+import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocumentAsByteArray;
+import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.marshallToByteArray;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by gutowpa on 15/11/2017.

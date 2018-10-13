@@ -25,8 +25,8 @@ import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
-import static org.junit.Assert.*;
+import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_DOMAIN_CODE_1;
+import static org.junit.Assert.assertEquals;
 
 /**
  *  Purpose of class is to test ServiceGroupService base methods
