@@ -1,5 +1,5 @@
-import {Component} from "@angular/core";
-import {MdDialogRef} from "@angular/material";
+import {Component} from '@angular/core';
+import {MatDialogRef} from '@angular/material';
 
 @Component({
   selector: 'app-default-password-dialog',
@@ -8,6 +8,6 @@ import {MdDialogRef} from "@angular/material";
 })
 export class DefaultPasswordDialogComponent {
 
-  constructor(public dialogRef: MdDialogRef<DefaultPasswordDialogComponent>) { }
+  constructor(public dialogRef: MatDialogRef<DefaultPasswordDialogComponent>) { }
 
 }

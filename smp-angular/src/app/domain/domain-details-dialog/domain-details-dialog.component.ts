@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MdDialogRef} from "@angular/material";
+import {MatDialogRef} from '@angular/material';
 
 @Component({
   selector: 'domain-details-dialog',
@@ -10,6 +10,6 @@ export class DomainDetailsDialogComponent {
   domain;
   dateFormat: String = 'yyyy-MM-dd HH:mm:ssZ';
 
-  constructor(public dialogRef: MdDialogRef<DomainDetailsDialogComponent>) {
+  constructor(public dialogRef: MatDialogRef<DomainDetailsDialogComponent>) {
   }
 }

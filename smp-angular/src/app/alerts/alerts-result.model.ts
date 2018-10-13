@@ -1,4 +1,4 @@
-import {AlertsEntry} from "./alerts-entry.model";
+import {AlertsEntry} from './alerts-entry.model';
 
 export interface AlertsResult {
   alertsEntries: Array<AlertsEntry>;

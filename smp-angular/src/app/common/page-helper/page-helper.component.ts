@@ -1,7 +1,6 @@
-import {Component, OnInit} from "@angular/core";
-import {MdDialog} from "@angular/material";
-import {NavigationStart, Router} from "@angular/router";
-import {isNullOrUndefined} from "util";
+import {Component, OnInit} from '@angular/core';
+import {MatDialog} from '@angular/material';
+import {NavigationStart, Router} from '@angular/router';
 
 @Component({
   selector: 'page-helper',
@@ -13,7 +12,7 @@ export class PageHelperComponent implements OnInit {
   helpPages: Map<String, String> = new Map<String, String>();
   activateHelp: boolean = false;
 
-  constructor(public dialog: MdDialog, private router: Router) {
+  constructor(public dialog: MatDialog, private router: Router) {
   }
 
   ngOnInit() {
@@ -28,7 +27,7 @@ export class PageHelperComponent implements OnInit {
       if (event instanceof NavigationStart) {
         console.log("Navigation change [" + event.url + "]");
         let page = this.helpPages.get(event.url);
-        if (isNullOrUndefined(page)) {
+        if (page === null || page === undefined) {
           this.activateHelp = false;
         } else {
           this.activateHelp = true;

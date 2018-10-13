@@ -1,5 +1,5 @@
-<md-sidenav-container >
-  <md-sidenav mode="side" opened="true" ngClass="{{menuClass}}">
+<mat-sidenav-container >
+  <mat-sidenav mode="side" opened="true" ngClass="{{menuClass}}">
     <!-- sidenav content -->
     <div id="topLogo">
       <img src="assets/images/smp_logo_icon.svg" [attr.height]="fullMenu ? '74px' : '40px'" [attr.width]="fullMenu ? '74px' : '40px'"/>
@@ -8,32 +8,32 @@
       </div>
     </div>
 
-    <button md-raised-button class="sideNavButton" [routerLink]="['/']" id="messages_id">
-      <md-icon md-tooltip="Search participants" mdTooltipDisabled="{{fullMenu}}" mdTooltipPosition="right">search</md-icon>
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/']" id="messages_id">
+      <mat-icon matTooltip="Search participants" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">search</mat-icon>
       <span>Participants</span>
     </button>
 
-    <button md-raised-button class="sideNavButton" [routerLink]="['/user']" *ngIf="hasAdmin()" id="user_id">
-      <md-icon md-tooltip="Users" mdTooltipDisabled="{{fullMenu}}" mdTooltipPosition="right">people</md-icon>
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/user']" *ngIf="hasAdmin()" id="user_id">
+      <mat-icon matTooltip="Users" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">people</mat-icon>
       <span>Users</span>
     </button>
 
-    <button md-raised-button class="sideNavButton" [routerLink]="['/truststore']" *ngIf="hasAdmin()" id="truststore_id">
-      <md-icon md-tooltip="Truststore" mdTooltipDisabled="{{fullMenu}}" mdTooltipPosition="right">vpn_key</md-icon>
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/truststore']" *ngIf="hasAdmin()" id="truststore_id">
+      <mat-icon matTooltip="Truststore" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">vpn_key</mat-icon>
       <span>Keystore</span>
     </button>
-    <button md-raised-button class="sideNavButton" [routerLink]="['/domain']" *ngIf="hasAdmin()" id="domain_id">
-      <md-icon md-tooltip="Domain" mdTooltipDisabled="{{fullMenu}}" mdTooltipPosition="right">domain</md-icon>
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/domain']" *ngIf="hasAdmin()" id="domain_id">
+      <mat-icon matTooltip="Domain" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">domain</mat-icon>
       <span>Domain</span>
     </button>
 
     <div class="collapse-button">
-      <button *ngIf="fullMenu" md-raised-button id="expand_id" (click)="toggleMenu()">
-        <md-icon md-tooltip="Collapse" mdTooltipPosition="right">chevron_left</md-icon>
+      <button *ngIf="fullMenu" mat-raised-button id="expand_id" (click)="toggleMenu()">
+        <mat-icon matTooltip="Collapse" matTooltipDisabled="right">chevron_left</mat-icon>
       </button>
 
-      <button *ngIf="!fullMenu" md-raised-button id="collapse_id" (click)="toggleMenu()">
-        <md-icon md-tooltip="Esxpand" mdTooltipPosition="right">chevron_right</md-icon>
+      <button *ngIf="!fullMenu" mat-raised-button id="collapse_id" (click)="toggleMenu()">
+        <mat-icon matTooltip="Esxpand" matTooltipDisabled="right">chevron_right</mat-icon>
       </button>
     </div>
 
@@ -52,7 +52,7 @@
       </div>
     </div>
 
-  </md-sidenav>
+  </mat-sidenav>
 
   <!-- primary content -->
   <div id=".my-content" style="position:absolute; bottom:5px; top:5px; right: 5px; left: 5px">
@@ -67,36 +67,36 @@
         <page-helper></page-helper>
       </div>
       <div id="sandwichMenu">
-        <button md-icon-button [md-menu-trigger-for]="settingsMenu" id="settingsmenu_id" md-tooltip="Menu">
-          <md-icon>menu</md-icon>
+        <button mat-icon-button [mat-menu-trigger-for]="settingsMenu" id="settingsmenu_id" matTooltip="Menu">
+          <mat-icon>menu</mat-icon>
         </button>
 
-        <md-menu x-position="before" #settingsMenu="mdMenu">
+        <mat-menu x-position="before" #settingsMenu="matMenu">
 
           <div *ngIf="currentUser">
 
-            <button md-menu-item disabled="true" id="currentuser_id">
-              <md-icon>person</md-icon>
+            <button mat-menu-item disabled="true" id="currentuser_id">
+              <mat-icon>person</mat-icon>
               <span>{{currentUser}}</span>
             </button>
 
             <hr/>
 
-            <button md-menu-item (click)="logout($event)" id="logout_id">
-              <md-icon>power_settings_new</md-icon>
+            <button mat-menu-item (click)="logout($event)" id="logout_id">
+              <mat-icon>power_settings_new</mat-icon>
               <span>Logout</span>
             </button>
 
           </div>
 
           <div *ngIf="!currentUser" style="text-align: center; vertical-align: middle;margin: 2px;">
-            <button md-menu-item disabled="true">
-              <md-icon>person_outline</md-icon>
+            <button mat-menu-item disabled="true">
+              <mat-icon>person_outline</mat-icon>
               <span>Not logged in</span>
             </button>
           </div>
 
-        </md-menu>
+        </mat-menu>
       </div>
     </div>
     <div id="routerHolder" style="min-height: 100%" >
@@ -105,4 +105,4 @@
     <alert></alert>
   </div>
 
-</md-sidenav-container>
+</mat-sidenav-container>

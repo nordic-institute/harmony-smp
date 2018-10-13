@@ -11,8 +11,8 @@
   <ng-template #additionalToolButtons></ng-template>
 
   <ng-template #searchPanel>
-    <md-input-container>
-      <input mdInput placeholder="Username" name="Username" [(ngModel)]="filter.userName" #messageId="ngModel">
-    </md-input-container>
+    <mat-form-field>
+      <input matInput placeholder="Username" name="Username" [(ngModel)]="filter.userName" #messageId="ngModel">
+    </mat-form-field>
   </ng-template>
 </smp-search-table>
