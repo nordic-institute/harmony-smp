@@ -55,8 +55,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         SmpWebAppConfig.class,
         SpringSecurityConfig.class})
 @WebAppConfiguration
-@Transactional
-@Rollback(true)
 @Sql("classpath:/cleanup-database.sql")
 @Sql("classpath:/webapp_integration_test_data.sql")
 @SqlConfig(encoding = "UTF-8")
@@ -104,16 +102,16 @@ public class ServiceGroupControllerTest {
 
     @Test
     public void adminCanCreateServiceGroup() throws Exception {
-     /*   mvc.perform(put(URL_PATH)
+        mvc.perform(put(URL_PATH)
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
                 .content(SERVICE_GROUP_INPUT_BODY))
-                .andExpect(status().isCreated());*/
+                .andExpect(status().isCreated());
     }
 
     @Test
     public void adminCanUpdateServiceGroup() throws Exception {
-     /*   mvc.perform(put(URL_PATH)
+        mvc.perform(put(URL_PATH)
                 .header(HTTP_HEADER_KEY_DOMAIN, HTTP_DOMAIN)
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
@@ -124,12 +122,12 @@ public class ServiceGroupControllerTest {
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
                 .content(SERVICE_GROUP_INPUT_BODY))
-                .andExpect(status().isOk());*/
+                .andExpect(status().isOk());
     }
 
     @Test
     public void existingServiceGroupCanBeRetrievedByEverybody() throws Exception {
-      /*  mvc.perform(put(URL_PATH)
+        mvc.perform(put(URL_PATH)
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
                 .content(SERVICE_GROUP_INPUT_BODY))
@@ -137,7 +135,7 @@ public class ServiceGroupControllerTest {
 
         mvc.perform(get(URL_PATH))
                 .andExpect(content().xml(SERVICE_GROUP_INPUT_BODY));
-                */
+
     }
 
     @Test
@@ -153,7 +151,6 @@ public class ServiceGroupControllerTest {
 
     @Test
     public void adminCanDeleteServiceGroup() throws Exception {
-        /*
         mvc.perform(put(URL_PATH).header("Domain", "domain")
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
@@ -165,8 +162,8 @@ public class ServiceGroupControllerTest {
                 .andExpect(status().isOk());
         mvc.perform(get(URL_PATH))
                 .andExpect(status().isNotFound());
-                */
     }
+
     @Test
     public void malformedInputReturnsBadRequest() throws Exception {
         mvc.perform(put(URL_PATH)
@@ -188,6 +185,7 @@ public class ServiceGroupControllerTest {
                 .content(getSampleServiceGroupBodyWithScheme(scheme)))
                 .andExpect(status().isBadRequest());
     }
+
     @Test
     public void creatingServiceGroupUnderBadFormatedDomainReturnsBadRequest() throws Exception {
         mvc.perform(put(URL_PATH)
@@ -212,12 +210,12 @@ public class ServiceGroupControllerTest {
 
     @Test
     public void adminCanAssignNewServiceGroupToOtherOwner() throws Exception {
-     /*   mvc.perform(put(URL_PATH)
+        mvc.perform(put(URL_PATH)
                 .with(ADMIN_CREDENTIALS)
                 .contentType(APPLICATION_XML_VALUE)
                 .header(HTTP_HEADER_KEY_SERVICE_GROUP_OWNER, OTHER_OWNER_NAME_URL_ENCODED)
                 .content(SERVICE_GROUP_INPUT_BODY))
-                .andExpect(status().isCreated());*/
+                .andExpect(status().isCreated());
     }
 
     @Test

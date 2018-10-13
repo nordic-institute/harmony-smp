@@ -46,8 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         SpringSecurityTestConfig.class
 })
 @WebAppConfiguration
-@Transactional
-@Rollback(true)
+@Sql("classpath:/cleanup-database.sql")
 @Sql("classpath:/webapp_integration_test_data.sql")
 public class SecurityConfigurationTest {
 
