@@ -15,7 +15,9 @@ package eu.europa.ec.edelivery.smp.services;
 
 
 import eu.europa.ec.edelivery.smp.conversion.ExtensionConverter;
-import eu.europa.ec.edelivery.smp.data.model.*;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
+import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import org.hamcrest.core.StringStartsWith;
@@ -38,9 +40,8 @@ import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter.unmarshal;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
-import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocumentAsString;
-
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
+import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocumentAsString;
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
 import static org.junit.Assert.*;
 

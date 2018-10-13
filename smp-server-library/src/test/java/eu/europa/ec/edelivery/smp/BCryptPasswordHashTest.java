@@ -13,7 +13,6 @@
 
 package eu.europa.ec.edelivery.smp;
 
-import eu.europa.ec.edelivery.smp.BCryptPasswordHash;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

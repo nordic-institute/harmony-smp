@@ -24,7 +24,6 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.RedirectType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceEndpointList;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceInformationType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
-import org.opensaml.core.xml.XMLRuntimeException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
