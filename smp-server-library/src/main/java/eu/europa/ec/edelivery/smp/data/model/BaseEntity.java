@@ -13,10 +13,6 @@
 
 package eu.europa.ec.edelivery.smp.data.model;
 
-import javax.persistence.Column;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
