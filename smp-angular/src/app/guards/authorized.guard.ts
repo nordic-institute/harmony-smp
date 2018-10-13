@@ -1,8 +1,8 @@
-﻿import {Injectable} from "@angular/core";
-import {CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot} from "@angular/router";
-import {SecurityService} from "../security/security.service";
-import {ReplaySubject} from "rxjs";
-import {Role} from "../security/role.model";
+﻿import {Injectable} from '@angular/core';
+import {CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router';
+import {SecurityService} from '../security/security.service';
+import {ReplaySubject} from 'rxjs';
+import {Role} from '../security/role.model';
 
 @Injectable()
 export class AuthorizedGuard implements CanActivate {
@@ -13,7 +13,7 @@ export class AuthorizedGuard implements CanActivate {
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
     console.debug("AuthorizedGuard");
     let allowedRoles = this.getAllowedRoles(route);
-    let subject = new ReplaySubject();
+    let subject = new ReplaySubject<boolean>();
     this.securityService.isAuthorized(allowedRoles).subscribe((isAuthorized:boolean) => {
       console.debug("AuthorizedGuard canActivate [" + isAuthorized + "]");
       subject.next(isAuthorized);

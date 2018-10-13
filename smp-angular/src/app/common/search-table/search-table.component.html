@@ -2,22 +2,22 @@
   <page-header id="{{id}}_header_id">{{title}}</page-header>
 
   <div class="selectionCriteria">
-    <md-card>
-      <md-card-content>
+    <mat-card>
+      <mat-card-content>
         <div class="panel">
           <form name="filterForm" #filterForm="ngForm" (ngSubmit)="search()">
             <ng-container *ngTemplateOutlet="searchPanel"></ng-container>
 
             <div class="searchArea">
-              <button md-raised-button color="primary" [disabled]="!filterForm.form.valid" id="searchbutton_id">
-                <md-icon>search</md-icon>
+              <button mat-raised-button color="primary" [disabled]="!filterForm.form.valid" id="searchbutton_id">
+                <mat-icon>search</mat-icon>
                 <span>Search</span>
               </button>
             </div>
           </form>
         </div>
-      </md-card-content>
-    </md-card>
+      </mat-card-content>
+    </mat-card>
   </div>
 
   <div class="panel" style="position: absolute; top: 270px; bottom: 5px; left: 5px; right: 5px;">
@@ -60,24 +60,24 @@
       </ngx-datatable>
 
       <div class="group-action-button">
-        <button id="cancelButton" md-raised-button (click)="onCancelButtonClicked()" color="primary" [disabled]="!submitButtonsEnabled">
-          <md-icon>cancel</md-icon>
+        <button id="cancelButton" mat-raised-button (click)="onCancelButtonClicked()" color="primary" [disabled]="!submitButtonsEnabled">
+          <mat-icon>cancel</mat-icon>
           <span>Cancel</span>
         </button>
-        <button id="saveButton" md-raised-button (click)="onSaveButtonClicked(false)" color="primary" [disabled]="!submitButtonsEnabled">
-          <md-icon>save</md-icon>
+        <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked(false)" color="primary" [disabled]="!submitButtonsEnabled">
+          <mat-icon>save</mat-icon>
           <span>Save</span>
         </button>
-        <button id="newButton" md-raised-button (click)="onNewButtonClicked()" [disabled]="loading" color="primary">
-          <md-icon>add</md-icon>
+        <button id="newButton" mat-raised-button (click)="onNewButtonClicked()" [disabled]="loading" color="primary">
+          <mat-icon>add</mat-icon>
           <span>New</span>
         </button>
-        <button id="editButton" md-raised-button (click)="onEditButtonClicked()" [disabled]="!editButtonEnabled || loading" color="primary">
-          <md-icon>edit</md-icon>
+        <button id="editButton" mat-raised-button (click)="onEditButtonClicked()" [disabled]="!editButtonEnabled || loading" color="primary">
+          <mat-icon>edit</mat-icon>
           <span>Edit</span>
         </button>
-        <button id="deleteButton" md-raised-button (click)="onDeleteButtonClicked()" [disabled]="!deleteButtonEnabled || loading" color="primary">
-          <md-icon>delete</md-icon>
+        <button id="deleteButton" mat-raised-button (click)="onDeleteButtonClicked()" [disabled]="!deleteButtonEnabled || loading" color="primary">
+          <mat-icon>delete</mat-icon>
           <span>Delete</span>
         </button>
 
@@ -87,13 +87,13 @@
 
       <ng-template #rowActions let-row="row" ngx-datatable-cell-template>
         <div>
-          <button md-icon-button color="primary" [disabled]="row.deleted || loading"
+          <button mat-icon-button color="primary" [disabled]="row.deleted || loading"
                   (click)="onEditRowActionClicked(row.$$index)" tooltip="Edit">
-            <md-icon>edit</md-icon>
+            <mat-icon>edit</mat-icon>
           </button>
-          <button md-icon-button color="primary" [disabled]="row.deleted || loading"
+          <button mat-icon-button color="primary" [disabled]="row.deleted || loading"
                   (click)="onDeleteRowActionClicked(row)" tooltip="Delete">
-            <md-icon>delete</md-icon>
+            <mat-icon>delete</mat-icon>
           </button>
         </div>
       </ng-template>

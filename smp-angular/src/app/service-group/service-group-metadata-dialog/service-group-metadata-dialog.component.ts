@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {MdDialogRef} from "@angular/material";
+import {MatDialogRef} from '@angular/material';
 
 @Component({
   selector: 'app-messagelog-dialog',
@@ -8,7 +8,7 @@ import {MdDialogRef} from "@angular/material";
 })
 export class ServiceGroupMetadataDialogComponent {
 
-  constructor(public dialogRef: MdDialogRef<ServiceGroupMetadataDialogComponent>) {
+  constructor(public dialogRef: MatDialogRef<ServiceGroupMetadataDialogComponent>) {
   }
 
 }

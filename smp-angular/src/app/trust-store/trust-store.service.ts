@@ -1,8 +1,9 @@
-import {Http, Response} from "@angular/http";
-import {AlertService} from "app/alert/alert.service";
-import {Injectable} from "@angular/core";
-import {Observable} from "rxjs/Observable";
-import {TrustStoreEntry} from "./trust-store-entry.model";
+import {HttpClient, HttpResponse} from '@angular/common/http';
+import {AlertService} from 'app/alert/alert.service';
+import {Injectable} from '@angular/core';
+import {Observable} from 'rxjs';
+import {TrustStoreEntry} from './trust-store-entry.model';
+import {catchError} from 'rxjs/operators';
 
 /**
  * @Author Dussart Thomas
@@ -12,33 +13,27 @@ export class TrustStoreService {
 
   url = "rest/truststore";
 
-  constructor(private http: Http, private alertService: AlertService) {
+  constructor(private http: HttpClient, private alertService: AlertService) {
   }
 
   getEntries(): Observable<TrustStoreEntry[]> {
-    return this.http.get(this.url + '/list')
-      .map(this.extractData)
-      .catch(this.handleError);
+    return this.http.get<TrustStoreEntry[]>(this.url + '/list')
+      .pipe(catchError(err => this.handleError(err)));
   }
 
-  saveTrustStore(file, password): Observable<Response> {
+  saveTrustStore(file, password): Observable<string> {
     let input = new FormData();
     input.append('truststore', file);
     input.append('password', password);
-    return this.http.post(this.url + '/save', input);
+    return this.http.post<string>(this.url + '/save', input);
   }
 
-  private extractData(res: Response) {
-    let body = res.json();
-    return body || {};
-  }
-
-  private handleError(error: Response | any) {
+  private handleError(error) {
     this.alertService.error(error, false);
     let errMsg: string;
-    if (error instanceof Response) {
-      const body = error.json() || '';
-      const err = body.error || JSON.stringify(body);
+    if (error instanceof HttpResponse) {
+      const body = error || '';
+      const err = body['error'] || JSON.stringify(body);
       errMsg = `${error.status} - ${error.statusText || ''} ${err}`;
     } else {
       errMsg = error.message ? error.message : error.toString();

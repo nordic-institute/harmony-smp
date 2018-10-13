@@ -1,5 +1,5 @@
-<h2 md-dialog-title>ServiceGroup Metadata</h2>
-<md-dialog-content style="height:460px;width:950px">
+<h2 mat-dialog-title>ServiceGroup Metadata</h2>
+<mat-dialog-content style="height:460px;width:950px">
   <textarea style="width: 100%; height: 95%">&lt;ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"&gt;
     &lt;ServiceInformation&gt;
         &lt;ParticipantIdentifier scheme="participantSchema"&gt;participantIdentifier&lt;/ParticipantIdentifier&gt;
@@ -36,20 +36,20 @@
     &lt;/ServiceInformation&gt;
 &lt;/ServiceMetadata&gt;</textarea>
 
-</md-dialog-content>
+</mat-dialog-content>
 
-<md-dialog-actions>
+<mat-dialog-actions>
   <div class="group-action-button">
-    <button id="ServiceGroupsSaveButton" md-raised-button color="primary" (click)="dialogRef.close({})"
+    <button id="ServiceGroupsSaveButton" mat-raised-button color="primary" (click)="dialogRef.close({})"
             style="margin-top:10px">
-      <md-icon>save</md-icon>
+      <mat-icon>save</mat-icon>
       <span>Save</span>
     </button>
 
-    <button id="ServiceGroupsCloseButton" md-raised-button color="primary" (click)="dialogRef.close({})"
+    <button id="ServiceGroupsCloseButton" mat-raised-button color="primary" (click)="dialogRef.close({})"
             style="margin-top:10px">
-      <md-icon>close</md-icon>
+      <mat-icon>close</mat-icon>
       <span>Close</span>
     </button>
   </div>
-</md-dialog-actions>
+</mat-dialog-actions>

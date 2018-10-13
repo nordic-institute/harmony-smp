@@ -1,15 +1,18 @@
-import {Component, Inject} from '@angular/core';
-import {MD_DIALOG_DATA, MdDialogRef} from "@angular/material";
-import {AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from "@angular/forms";
-import {UserService} from "../user.service";
-import {Role} from "../../security/role.model";
-import {RoleService} from "../../security/role.service";
-import {UserRo} from "../user-ro.model";
-import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
+import {Component, Inject, ViewChild} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {UserService} from '../user.service';
+import {Role} from '../../security/role.model';
+import {RoleService} from '../../security/role.service';
+import {UserRo} from '../user-ro.model';
+import {SearchTableEntityStatus} from '../../common/search-table/search-table-entity-status.model';
+import {AlertService} from '../../alert/alert.service';
+import {CertificateService} from '../certificate.service';
 
 @Component({
   selector: 'user-details-dialog',
-  templateUrl: './user-details-dialog.component.html'
+  templateUrl: './user-details-dialog.component.html',
+  styleUrls: ['user-details-dialog.component.css']
 })
 export class UserDetailsDialogComponent {
 
@@ -23,9 +26,14 @@ export class UserDetailsDialogComponent {
   formTitle: string;
   userRoles = [];
   existingRoles = [];
-  confirmation = '';
   current: UserRo & { confirmation?: string };
   userForm: FormGroup;
+
+  userSwitch: boolean;
+  certificateSwitch: boolean;
+
+  @ViewChild('fileInput')
+  private fileInput;
 
   private passwordConfirmationValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
     const password = control.get('password');
@@ -33,10 +41,12 @@ export class UserDetailsDialogComponent {
     return password && confirmation && password.value !== confirmation.value ? { confirmation: true } : null;
   };
 
-  constructor(private dialogRef: MdDialogRef<UserDetailsDialogComponent>,
+  constructor(private dialogRef: MatDialogRef<UserDetailsDialogComponent>,
               private userService: UserService,
+              private certificateService: CertificateService,
+              private alertService: AlertService,
               private roleService: RoleService,
-              @Inject(MD_DIALOG_DATA) public data: any,
+              @Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder) {
     this.editMode = data.edit;
     this.formTitle = this.editMode ?  UserDetailsDialogComponent.EDIT_MODE: UserDetailsDialogComponent.NEW_MODE;
@@ -44,21 +54,24 @@ export class UserDetailsDialogComponent {
     this.current = this.editMode
       ? {
         ...data.row,
-        confirmation: data.row.password
+        confirmation: data.row.password,
+        certificate: data.row.certificate,
       }
       : {
         userName: '',
+        email: '',
         password: '',
         confirmation: '',
         role: '',
-        status: SearchTableEntityStatus.NEW
+        status: SearchTableEntityStatus.NEW,
+        certificate: {},
       };
 
     this.userForm = fb.group({
       'userName': new FormControl({value: this.current.userName, disabled: this.editMode}, this.editMode ? Validators.nullValidator : null),
       'role': new FormControl(this.current.role, Validators.required),
       'password': new FormControl(this.current.password, [Validators.required, Validators.pattern(this.passwordPattern)]),
-      'confirmation': new FormControl(this.current.password, Validators.pattern(this.passwordPattern))
+      'confirmation': new FormControl(this.current.password, Validators.pattern(this.passwordPattern)),
     }, {
       validator: this.passwordConfirmationValidator
     });
@@ -94,5 +107,32 @@ export class UserDetailsDialogComponent {
     } else {
       return allRoles.filter(role => role !== Role.SYSTEM_ADMINISTRATOR);
     }
+  }
+
+  uploadCertificate () {
+    const fi = this.fileInput.nativeElement;
+    const file = fi.files[0];
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const arrayBuffer = reader.result;
+      const array = new Uint8Array(arrayBuffer);
+      const binaryString = String.fromCharCode.apply(null, array);
+
+      // TODO define userName or use some sort of userId
+      this.certificateService.uploadCertificate$({content: binaryString}, 'TODO')
+        .subscribe(res => {
+            this.current.certificate = res;
+          },
+          err => {
+            this.alertService.exception('Error uploading certificate file ' + file.name, err);
+          }
+        );
+    };
+    reader.onerror = (err) => {
+      this.alertService.exception('Error reading certificate file ' + file.name, err);
+    };
+
+    reader.readAsArrayBuffer(file);
   }
 }

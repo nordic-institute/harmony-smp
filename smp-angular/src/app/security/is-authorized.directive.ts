@@ -1,6 +1,6 @@
 import {Directive, ElementRef, Input, OnInit} from '@angular/core';
 import {SecurityService} from './security.service';
-import {Role} from "./role.model";
+import {Role} from './role.model';
 
 @Directive({
     selector:'[isAuthorized]'

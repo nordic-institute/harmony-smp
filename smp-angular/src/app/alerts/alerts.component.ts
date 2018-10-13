@@ -1,17 +1,16 @@
-import {Component, OnInit, TemplateRef, ViewChild} from "@angular/core";
-import {ColumnPicker} from "../common/column-picker/column-picker.model";
-import {RowLimiter} from "../common/row-limiter/row-limiter.model";
-import {isNullOrUndefined} from "util";
-import {DownloadService} from "../download/download.service";
-import {AlertComponent} from "../alert/alert.component";
-import {Observable} from "rxjs/Observable";
-import {AlertsResult} from "./alerts-result.model";
-import {Http, URLSearchParams, Response, Headers} from "@angular/http";
-import {AlertService} from "../alert/alert.service";
-import {AlertsEntry} from "./alerts-entry.model";
-import {CancelDialogComponent} from "../common/cancel-dialog/cancel-dialog.component";
-import {MdDialog} from "@angular/material";
-import {SaveDialogComponent} from "../common/save-dialog/save-dialog.component";
+import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {ColumnPicker} from '../common/column-picker/column-picker.model';
+import {RowLimiter} from '../common/row-limiter/row-limiter.model';
+import {DownloadService} from '../download/download.service';
+import {AlertComponent} from '../alert/alert.component';
+import {Observable} from 'rxjs';
+import {AlertsResult} from './alerts-result.model';
+import {AlertService} from '../alert/alert.service';
+import {AlertsEntry} from './alerts-entry.model';
+import {CancelDialogComponent} from '../common/cancel-dialog/cancel-dialog.component';
+import {MatDatepickerInputEvent, MatDialog} from '@angular/material';
+import {SaveDialogComponent} from '../common/save-dialog/save-dialog.component';
+import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 
 @Component({
   moduleId: module.id,
@@ -60,7 +59,7 @@ export class AlertsComponent implements OnInit {
   timestampReportingToMinDate: Date = null;
   timestampReportingToMaxDate: Date = new Date();
 
-  constructor(private http: Http, private alertService: AlertService, public dialog: MdDialog, private downloadService: DownloadService) {
+  constructor(private http: HttpClient, private alertService: AlertService, public dialog: MatDialog, private downloadService: DownloadService) {
   }
 
   ngOnInit() {
@@ -85,42 +84,42 @@ export class AlertsComponent implements OnInit {
   }
 
   getAlertsEntries(offset: number, pageSize: number, orderBy: string, asc: boolean): Observable<AlertsResult> {
-    let searchParams: URLSearchParams = new URLSearchParams();
-    searchParams.set('page', offset.toString());
-    searchParams.set('pageSize', pageSize.toString());
-    searchParams.set('orderBy', orderBy);
+    let params: HttpParams = new HttpParams();
+    params.set('page', offset.toString());
+    params.set('pageSize', pageSize.toString());
+    params.set('orderBy', orderBy);
 
     // filters
     if(this.filter.processed) {
-      searchParams.set('processed', this.filter.processed==='PROCESSED'?'true':'false');
+      params.set('processed', this.filter.processed==='PROCESSED'?'true':'false');
     }
 
     if(this.filter.alertType) {
-      searchParams.set('alertType', this.filter.alertType);
+      params.set('alertType', this.filter.alertType);
     }
 
     if(this.filter.alertId) {
-      searchParams.set('alertId', this.filter.alertId);
+      params.set('alertId', this.filter.alertId);
     }
 
     if(this.filter.alertLevel) {
-      searchParams.set('alertLevel', this.filter.alertLevel);
+      params.set('alertLevel', this.filter.alertLevel);
     }
 
     if(this.filter.creationFrom) {
-      searchParams.set('creationFrom', this.filter.creationFrom.getTime());
+      params.set('creationFrom', this.filter.creationFrom.getTime());
     }
 
     if(this.filter.creationTo) {
-      searchParams.set('creationTo', this.filter.creationTo.getTime());
+      params.set('creationTo', this.filter.creationTo.getTime());
     }
 
     if(this.filter.reportingFrom) {
-      searchParams.set('reportingFrom', this.filter.reportingFrom.getTime());
+      params.set('reportingFrom', this.filter.reportingFrom.getTime());
     }
 
     if(this.filter.reportingTo) {
-      searchParams.set('reportingTo', this.filter.reportingTo.getTime());
+      params.set('reportingTo', this.filter.reportingTo.getTime());
     }
 
     if(this.dynamicFilters.length > 0) {
@@ -131,18 +130,14 @@ export class AlertsComponent implements OnInit {
       for(let filter in this.dynamicFilters) {
         d[filter] = this.dynamicFilters[filter];
       }
-      searchParams.set('parameters', d.toString());
+      params.set('parameters', d.toString());
     }
 
     if (asc != null) {
-      searchParams.set('asc', asc.toString());
+      params.set('asc', asc.toString());
     }
 
-    return this.http.get(AlertsComponent.ALERTS_URL, {
-      search: searchParams
-    }).map((response: Response) =>
-      response.json()
-    );
+    return this.http.get<AlertsResult>(AlertsComponent.ALERTS_URL, { params });
   }
 
   page(offset, pageSize, orderBy, asc) {
@@ -237,7 +232,7 @@ export class AlertsComponent implements OnInit {
   }
 
   getDynamicParameters(alertType:string): string[] {
-    if(!isNullOrUndefined(alertType) && alertType != '') {
+    if(alertType) {
       // just for testing begin: MOCK
       if(alertType == 'MSG_COMMUNICATION_FAILURE') {
         return ['MSG_COMM1', 'MSG_COMM2', 'MSG_COMM3']
@@ -250,19 +245,19 @@ export class AlertsComponent implements OnInit {
     }
   }
 
-  onTimestampCreationFromChange(event) {
+  onTimestampCreationFromChange(event: MatDatepickerInputEvent<Date>) {
     this.timestampCreationToMinDate = event.value;
   }
 
-  onTimestampCreationToChange(event) {
+  onTimestampCreationToChange(event: MatDatepickerInputEvent<Date>) {
     this.timestampCreationFromMaxDate = event.value;
   }
 
-  onTimestampReportingFromChange(event) {
+  onTimestampReportingFromChange(event: MatDatepickerInputEvent<Date>) {
     this.timestampReportingToMinDate = event.value;
   }
 
-  onTimestampReportingToChange(event) {
+  onTimestampReportingToChange(event: MatDatepickerInputEvent<Date>) {
     this.timestampReportingFromMaxDate = event.value;
   }
 
@@ -352,7 +347,7 @@ export class AlertsComponent implements OnInit {
   }
 
   public isAlertTypeDefined(): boolean {
-    return !isNullOrUndefined(this.filter.alertType) && this.filter.alertType != '';
+    return this.filter.alertType;
   }
 
   cancel() {
@@ -366,11 +361,11 @@ export class AlertsComponent implements OnInit {
   }
 
   save(withDownloadCSV: boolean) {
-    let headers = new Headers({'Content-Type': 'application/json'});
+    let headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
     let dialogRef = this.dialog.open(SaveDialogComponent);
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.http.put(AlertsComponent.ALERTS_URL, JSON.stringify(this.rows), {headers: headers}).subscribe(res => {
+        this.http.put(AlertsComponent.ALERTS_URL, JSON.stringify(this.rows), {headers}).subscribe(res => {
           this.alertService.success("The operation 'update alerts' completed successfully.", false);
           this.page(this.offset, this.rowLimiter.pageSize, this.orderBy, this.asc);
           if(withDownloadCSV) {

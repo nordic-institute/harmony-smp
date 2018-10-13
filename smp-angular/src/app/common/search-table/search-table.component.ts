@@ -1,19 +1,19 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, TemplateRef, ViewChild} from "@angular/core";
-import {Http, Response, URLSearchParams} from "@angular/http";
-import {SearchTableResult} from "./search-table-result.model";
-import {Observable} from "rxjs";
-import {AlertService} from "../../alert/alert.service";
-import {MdDialog, MdDialogRef} from "@angular/material";
-import {ColumnPicker} from "../column-picker/column-picker.model";
-import {RowLimiter} from "../row-limiter/row-limiter.model";
-import {AlertComponent} from "../../alert/alert.component";
-import {SearchTableController} from "./search-table-controller";
-import {finalize, map} from "rxjs/operators";
-import {SearchTableEntity} from "./search-table-entity.model";
-import {SearchTableEntityStatus} from "./search-table-entity-status.model";
-import {CancelDialogComponent} from "../cancel-dialog/cancel-dialog.component";
-import {SaveDialogComponent} from "../save-dialog/save-dialog.component";
-import {DownloadService} from "../../download/download.service";
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {SearchTableResult} from './search-table-result.model';
+import {Observable} from 'rxjs';
+import {AlertService} from '../../alert/alert.service';
+import {MatDialog, MatDialogRef} from '@angular/material';
+import {ColumnPicker} from '../column-picker/column-picker.model';
+import {RowLimiter} from '../row-limiter/row-limiter.model';
+import {AlertComponent} from '../../alert/alert.component';
+import {SearchTableController} from './search-table-controller';
+import {finalize, map} from 'rxjs/operators';
+import {SearchTableEntity} from './search-table-entity.model';
+import {SearchTableEntityStatus} from './search-table-entity-status.model';
+import {CancelDialogComponent} from '../cancel-dialog/cancel-dialog.component';
+import {SaveDialogComponent} from '../save-dialog/save-dialog.component';
+import {DownloadService} from '../../download/download.service';
+import {HttpClient, HttpParams} from '@angular/common/http';
 
 @Component({
   selector: 'smp-search-table',
@@ -49,10 +49,10 @@ export class SearchTableComponent implements OnInit {
   orderBy: string = null;
   asc = false;
 
-  constructor(protected http: Http,
+  constructor(protected http: HttpClient,
               protected alertService: AlertService,
               private downloadService: DownloadService,
-              public dialog: MdDialog) {
+              public dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -76,38 +76,35 @@ export class SearchTableComponent implements OnInit {
   }
 
   getTableDataEntries$(offset: number, pageSize: number, orderBy: string, asc: boolean): Observable<SearchTableResult> {
-    let searchParams: URLSearchParams = new URLSearchParams();
-    searchParams.set('page', offset.toString());
-    searchParams.set('pageSize', pageSize.toString());
-    searchParams.set('orderBy', orderBy);
+    let params: HttpParams = new HttpParams();
+    params.set('page', offset.toString());
+    params.set('pageSize', pageSize.toString());
+    params.set('orderBy', orderBy);
 
     //filters
     if (this.filter.userName) {
-      searchParams.set('userName', this.filter.userName);
+      params.set('userName', this.filter.userName);
     }
 
     if (this.filter.participantId) {
-      searchParams.set('participantId', this.filter.participantId);
+      params.set('participantId', this.filter.participantId);
     }
 
     if (this.filter.participantSchema) {
-      searchParams.set('participantSchema', this.filter.participantSchema);
+      params.set('participantSchema', this.filter.participantSchema);
     }
 
     if(this.filter.domain) {
-      searchParams.set('domain', this.filter.domain )
+      params.set('domain', this.filter.domain )
     }
 
     if (asc != null) {
-      searchParams.set('asc', asc.toString());
+      params.set('asc', asc.toString());
     }
 
     // TODO move to the HTTP service
     this.loading = true;
-    return this.http.get(this.url, {
-      search: searchParams
-    }).pipe(
-      map((response: Response) => response.json()),
+    return this.http.get<SearchTableResult>(this.url, { params }).pipe(
       finalize(() => {
         this.loading = false;
       })
@@ -187,7 +184,7 @@ export class SearchTableComponent implements OnInit {
   }
 
   onNewButtonClicked() {
-    const formRef: MdDialogRef<any> = this.searchTableController.newDialog({
+    const formRef: MatDialogRef<any> = this.searchTableController.newDialog({
       data: { edit: false }
     });
     formRef.afterClosed().subscribe(result => {
@@ -274,7 +271,7 @@ export class SearchTableComponent implements OnInit {
 
   private editSearchTableEntity(rowNumber: number) {
     const row = this.rows[rowNumber];
-    const formRef: MdDialogRef<any> = this.searchTableController.newDialog({
+    const formRef: MatDialogRef<any> = this.searchTableController.newDialog({
       data: {edit: true, row}
     });
     formRef.afterClosed().subscribe(result => {
