@@ -1,8 +1,8 @@
-﻿import {Injectable} from "@angular/core";
-import {ActivatedRouteSnapshot, RouterStateSnapshot} from "@angular/router";
-import {SecurityService} from "../security/security.service";
-import {AuthorizedGuard} from "./authorized.guard";
-import {Role} from "../security/role.model";
+﻿import {Injectable} from '@angular/core';
+import {ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router';
+import {SecurityService} from '../security/security.service';
+import {AuthorizedGuard} from './authorized.guard';
+import {Role} from '../security/role.model';
 
 @Injectable()
 export class AuthorizedAdminGuard extends AuthorizedGuard {

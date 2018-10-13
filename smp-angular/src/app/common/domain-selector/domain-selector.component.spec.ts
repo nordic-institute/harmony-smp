@@ -1,6 +1,6 @@
-import {async, ComponentFixture, TestBed} from "@angular/core/testing";
+import {async, ComponentFixture, TestBed} from '@angular/core/testing';
 
-import {DomainSelectorComponent} from "./domain-selector.component";
+import {DomainSelectorComponent} from './domain-selector.component';
 
 describe('DomainSelectorComponent', () => {
   let component: DomainSelectorComponent;

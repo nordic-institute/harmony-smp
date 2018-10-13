@@ -1,8 +1,7 @@
 ﻿import {Injectable} from '@angular/core';
-import {Http, Headers, Response} from '@angular/http';
-import {Observable} from 'rxjs/Observable';
+import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
+import {Observable} from 'rxjs';
 import {ReplaySubject} from 'rxjs';
-import 'rxjs/add/operator/map';
 import {Domain} from './domain.model';
 
 @Injectable()
@@ -15,14 +14,14 @@ export class DomainService {
   private isMultiDomainSubject: ReplaySubject<boolean>;
   private domainSubject: ReplaySubject<Domain>;
 
-  constructor (private http: Http) {
+  constructor (private http: HttpClient) {
   }
 
   isMultiDomain (): Observable<boolean> {
     if (!this.isMultiDomainSubject) {
       this.isMultiDomainSubject = new ReplaySubject<boolean>();
-      this.http.get(DomainService.MULTI_TENANCY_URL).subscribe((res: Response) => {
-        this.isMultiDomainSubject.next(res.json());
+      this.http.get(DomainService.MULTI_TENANCY_URL).subscribe((res: HttpResponse<boolean>) => {
+        this.isMultiDomainSubject.next(res.body);
       }, (error: any) => {
         console.log('get isMultiDomain:' + error);
         this.isMultiDomainSubject.next(false);
@@ -34,8 +33,8 @@ export class DomainService {
   getCurrentDomain (): Observable<Domain> {
     if (!this.domainSubject) {
       this.domainSubject = new ReplaySubject<Domain>();
-      this.http.get(DomainService.CURRENT_DOMAIN_URL).subscribe((res: Response) => {
-        this.domainSubject.next(res.json());
+      this.http.get(DomainService.CURRENT_DOMAIN_URL).subscribe((res: HttpResponse<Domain>) => {
+        this.domainSubject.next(res.body);
       }, (error: any) => {
         console.log('getCurrentDomain:' + error);
         this.domainSubject.next(null);
@@ -52,7 +51,7 @@ export class DomainService {
   }
 
   getDomains (): Observable<Domain[]> {
-    return this.http.get(DomainService.DOMAIN_LIST_URL).map((res: Response) => res.json());
+    return this.http.get<Domain[]>(DomainService.DOMAIN_LIST_URL);
   }
 
   setCurrentDomain (domain: Domain) {

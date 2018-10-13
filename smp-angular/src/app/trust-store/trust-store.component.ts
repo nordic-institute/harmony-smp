@@ -1,16 +1,14 @@
-import {Component, OnInit, TemplateRef, ViewChild} from "@angular/core";
-import "rxjs/add/operator/map";
-import "rxjs/add/operator/catch";
-import {TrustStoreService} from "./trust-store.service";
-import {TrustStoreEntry} from "./trust-store-entry.model";
-import {TrustStoreDialogComponent} from "./trust-store-dialog/trust-store-dialog.component";
-import {MdDialog, MdDialogRef} from "@angular/material";
-import {TrustStoreUploadComponent} from "./trust-store-upload/trust-store-upload.component";
-import {ColumnPicker} from "../common/column-picker/column-picker.model";
-import {RowLimiter} from "../common/row-limiter/row-limiter.model";
-import {DownloadService} from "../download/download.service";
-import {AlertComponent} from "../alert/alert.component";
-import {AlertService} from "../alert/alert.service";
+import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
+import {TrustStoreService} from './trust-store.service';
+import {TrustStoreEntry} from './trust-store-entry.model';
+import {TrustStoreDialogComponent} from './trust-store-dialog/trust-store-dialog.component';
+import {MatDialog, MatDialogRef} from '@angular/material';
+import {TrustStoreUploadComponent} from './trust-store-upload/trust-store-upload.component';
+import {ColumnPicker} from '../common/column-picker/column-picker.model';
+import {RowLimiter} from '../common/row-limiter/row-limiter.model';
+import {DownloadService} from '../download/download.service';
+import {AlertComponent} from '../alert/alert.component';
+import {AlertService} from '../alert/alert.service';
 
 @Component({
   selector: 'app-truststore',
@@ -34,7 +32,7 @@ export class TrustStoreComponent implements OnInit {
   static readonly TRUSTSTORE_URL: string = "rest/truststore";
   static readonly TRUSTSTORE_CSV_URL: string = TrustStoreComponent.TRUSTSTORE_URL + "/csv";
 
-  constructor(private trustStoreService: TrustStoreService, public dialog: MdDialog, public alertService: AlertService, private downloadService: DownloadService) {
+  constructor(private trustStoreService: TrustStoreService, public dialog: MatDialog, public alertService: AlertService, private downloadService: DownloadService) {
   }
 
   ngOnInit(): void {
@@ -94,7 +92,7 @@ export class TrustStoreComponent implements OnInit {
   }
 
   details(selectedRow: any) {
-    let dialogRef: MdDialogRef<TrustStoreDialogComponent> = this.dialog.open(TrustStoreDialogComponent, {data: {trustStoreEntry: selectedRow}});
+    let dialogRef: MatDialogRef<TrustStoreDialogComponent> = this.dialog.open(TrustStoreDialogComponent, {data: {trustStoreEntry: selectedRow}});
     dialogRef.afterClosed().subscribe(result => {
 
     });
@@ -106,7 +104,7 @@ export class TrustStoreComponent implements OnInit {
   }
 
   openEditTrustStore() {
-    let dialogRef: MdDialogRef<TrustStoreUploadComponent> = this.dialog.open(TrustStoreUploadComponent);
+    let dialogRef: MatDialogRef<TrustStoreUploadComponent> = this.dialog.open(TrustStoreUploadComponent);
     dialogRef.componentInstance.onTruststoreUploaded.subscribe(updated => {
         this.getTrustStoreEntries();
     });

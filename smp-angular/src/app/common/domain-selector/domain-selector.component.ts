@@ -2,7 +2,7 @@ import {Component, OnInit, Input} from '@angular/core';
 import {SecurityService} from '../../security/security.service';
 import {DomainService} from '../../security/domain.service';
 import {Domain} from '../../security/domain.model';
-import {MdDialog} from '@angular/material';
+import {MatDialog} from '@angular/material';
 import {CancelDialogComponent} from '../cancel-dialog/cancel-dialog.component';
 
 @Component({
@@ -20,7 +20,7 @@ export class DomainSelectorComponent implements OnInit {
   @Input()
   currentComponent: any;
 
-  constructor (private domainService: DomainService, private securityService: SecurityService, private dialog: MdDialog) {
+  constructor (private domainService: DomainService, private securityService: SecurityService, private dialog: MatDialog) {
   }
 
   ngOnInit () {

@@ -1,10 +1,11 @@
-import {Component, OnInit, ViewChild} from "@angular/core";
-import {SecurityService} from "./security/security.service";
-import {Router, RouterOutlet} from "@angular/router";
-import {SecurityEventService} from "./security/security-event.service";
-import {Title} from "@angular/platform-browser";
-import {Http, Response} from "@angular/http";
-import {Observable} from "rxjs/Observable";
+import {Component, OnInit, ViewChild} from '@angular/core';
+import {SecurityService} from './security/security.service';
+import {Router, RouterOutlet} from '@angular/router';
+import {SecurityEventService} from './security/security-event.service';
+import {Title} from '@angular/platform-browser';
+import {Http, Response} from '@angular/http';
+import {Observable} from 'rxjs';
+import {HttpClient, HttpResponse} from '@angular/common/http';
 
 @Component({
   selector: 'app-root',
@@ -24,12 +25,12 @@ export class AppComponent implements OnInit {
   constructor(private securityService: SecurityService,
               private router: Router,
               private securityEventService: SecurityEventService,
-              private http: Http,
+              private http: HttpClient,
               private titleService: Title) {
-    let applicationNameResponse: Observable<Response> = this.http.get('rest/application/name');
+    let applicationNameResponse: Observable<string> = this.http.get<string>('rest/application/name');
 
-    applicationNameResponse.subscribe((name: Response) => {
-      this.titleService.setTitle(name.json());
+    applicationNameResponse.subscribe((name: string) => {
+      this.titleService.setTitle(name);
     });
   }
 
