@@ -15,7 +15,6 @@ package eu.europa.ec.edelivery.smp.data.model;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.envers.Audited;
 
-
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Objects;

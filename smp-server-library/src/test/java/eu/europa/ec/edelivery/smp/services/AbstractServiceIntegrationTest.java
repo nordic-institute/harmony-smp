@@ -24,8 +24,6 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
-import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_SG_ID_2;
-import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_SG_SCHEMA_2;
 
 /**
  * Purpose of class is to setup integration test properties and init database.

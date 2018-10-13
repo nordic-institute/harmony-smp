@@ -71,8 +71,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         SpringSecurityConfig.class
 })
 @WebAppConfiguration
-@Transactional
-@Rollback(true)
+@Sql("classpath:/cleanup-database.sql")
 @Sql("classpath:/webapp_integration_test_data.sql")
 public class SignatureValidatorTest {
 

@@ -34,13 +34,10 @@ import javax.net.ssl.KeyManager;
 import javax.net.ssl.X509KeyManager;
 import java.security.PrivateKey;
 import java.security.cert.X509Certificate;
-import java.util.List;
 import java.util.Map;
 
 import static eu.europa.ec.edelivery.smp.testutil.LocalPropertiesTestUtil.buildLocalProperties;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Created by gutowpa on 08/01/2018.

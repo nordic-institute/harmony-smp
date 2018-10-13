@@ -34,7 +34,6 @@ import java.lang.reflect.Modifier;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Database abstract resource file. Class implements all common methods for all resources.
@@ -44,7 +43,7 @@ import java.util.Map;
  */
 public abstract class BaseDao<E extends BaseEntity> {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupService.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(BaseDao.class);
 
     @PersistenceContext
     protected EntityManager memEManager;
@@ -57,6 +56,18 @@ public abstract class BaseDao<E extends BaseEntity> {
 
     public E find(Object primaryKey) {
         return memEManager.find(entityClass, primaryKey);
+    }
+
+    /**
+     * test database for isAlive function
+     *
+     * @param entity
+     */
+    @Transactional
+    public void testPersist(E entity, String message) {
+        memEManager.persist(entity);
+        memEManager.flush();
+        throw new RuntimeException(message);
     }
 
 
@@ -152,12 +163,12 @@ public abstract class BaseDao<E extends BaseEntity> {
                         && !m.getReturnType().equals(Void.TYPE)
                         && (mName.startsWith("get") || mName.startsWith("is"))) {
                     String fieldName = mName.substring(mName.startsWith("get") ? 3 : 2);
-                    // get retur parameter
+                    // get return parameter
                     Object searchValue;
                     try {
                         searchValue = m.invoke(searchParams, new Object[]{});
                     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                        // LOG.error(l, ex);
+                        LOG.error("Error setting retrieveing search parameters", ex);
                         continue;
                     }
 
@@ -179,6 +190,7 @@ public abstract class BaseDao<E extends BaseEntity> {
                             cls.getMethod("set" + fieldName, new Class[]{m.getReturnType()});
                         } catch (NoSuchMethodException | SecurityException ex) {
                             // method does not have setter // ignore other methods
+                            LOG.error("Field '"+fieldName+"' does not have a setter!", ex);
                             continue;
                         }
 
@@ -275,6 +287,7 @@ public abstract class BaseDao<E extends BaseEntity> {
             }
             lstResult = q.getResultList();
         } catch (NoResultException ex) {
+            LOG.warn("No result for '"+filterType.getName()+"' does not have a setter!", ex);
             lstResult = new ArrayList<>();
         }
 
@@ -296,8 +309,7 @@ public abstract class BaseDao<E extends BaseEntity> {
         CriteriaQuery<Long> cqCount = createSearchCriteria(filters, null, true,
                 null,
                 null);
-        Long res = memEManager.createQuery(cqCount).getSingleResult();
-        return res;
+        return memEManager.createQuery(cqCount).getSingleResult();
     }
 
 

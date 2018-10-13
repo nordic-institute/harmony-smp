@@ -82,7 +82,7 @@ public class ServiceMetadataController {
 
         boolean newServiceMetadataCreated = serviceMetadataService.saveServiceMetadata(domain, asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId), body);
 
-        log.info("PUT ServiceMetadata finished: {} - {}\n{}", serviceGroupId, serviceMetadataId, body);
+        log.info("PUT ServiceMetadata finished: {} - {}", serviceGroupId, serviceMetadataId);
 
         return newServiceMetadataCreated ? created(pathBuilder.getCurrentUri()).build() : ok().build();
     }
