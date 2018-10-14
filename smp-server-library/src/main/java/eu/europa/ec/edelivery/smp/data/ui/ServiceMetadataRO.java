@@ -7,48 +7,45 @@ import java.io.Serializable;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-
-
-public class ServiceMetadataRO implements Serializable {
+public class ServiceMetadataRO extends BaseRO {
 
 
     private static final long serialVersionUID = 67944640449327185L;
-    private String participantId;
-    private String participantSchema;
-    private String documentIdScheme;
-    private String documentIdValue;
 
+    String documentIdentifier;
+    String documentIdentifierScheme;
+    String smlSubdomain;
+    String domainCode;
 
-        public String getParticipantId() {
-            return participantId;
-        }
+    public String getDocumentIdentifier() {
+        return documentIdentifier;
+    }
 
-        public void setParticipantId(String participantId) {
-            this.participantId = participantId;
-        }
+    public void setDocumentIdentifier(String documentIdentifier) {
+        this.documentIdentifier = documentIdentifier;
+    }
 
-        public String getParticipantSchema() {
-            return participantSchema;
-        }
+    public String getDocumentIdentifierScheme() {
+        return documentIdentifierScheme;
+    }
 
-        public void setParticipantSchema(String participantSchema) {
-            this.participantSchema = participantSchema;
-        }
+    public void setDocumentIdentifierScheme(String documentIdentifierScheme) {
+        this.documentIdentifierScheme = documentIdentifierScheme;
+    }
 
-        public String getDocumentIdScheme() {
-            return documentIdScheme;
-        }
+    public String getSmlSubdomain() {
+        return smlSubdomain;
+    }
 
-        public void setDocumentIdScheme(String documentIdScheme) {
-            this.documentIdScheme = documentIdScheme;
-        }
+    public void setSmlSubdomain(String smlSubdomain) {
+        this.smlSubdomain = smlSubdomain;
+    }
 
-        public String getDocumentIdValue() {
-            return documentIdValue;
-        }
+    public String getDomainCode() {
+        return domainCode;
+    }
 
-        public void setDocumentIdValue(String documentIdValue) {
-            this.documentIdValue = documentIdValue;
-        }
-
+    public void setDomainCode(String domainCode) {
+        this.domainCode = domainCode;
+    }
 }

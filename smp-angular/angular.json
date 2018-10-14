@@ -3,8 +3,8 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "domibus-MSH-web": {
-      "root": "",
+    "SMP-UI": {
+      "root": "ui/",
       "sourceRoot": "src",
       "projectType": "application",
       "architect": {
@@ -49,18 +49,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "domibus-MSH-web:build"
+            "browserTarget": "SMP-UI:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "domibus-MSH-web:build:production"
+              "browserTarget": "SMP-UI:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "domibus-MSH-web:build"
+            "browserTarget": "SMP-UI:build"
           }
         },
         "test": {
@@ -93,7 +93,7 @@
         }
       }
     },
-    "domibus-MSH-web-e2e": {
+    "SMP-UI-e2e": {
       "root": "e2e",
       "sourceRoot": "e2e",
       "projectType": "application",
@@ -102,7 +102,7 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "./protractor.conf.js",
-            "devServerTarget": "domibus-MSH-web:serve"
+            "devServerTarget": "SMP-UI:serve"
           }
         },
         "lint": {
@@ -117,7 +117,7 @@
       }
     }
   },
-  "defaultProject": "domibus-MSH-web",
+  "defaultProject": "SMP-UI",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",

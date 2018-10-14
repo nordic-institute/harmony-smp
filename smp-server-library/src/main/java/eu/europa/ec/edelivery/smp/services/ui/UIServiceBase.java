@@ -22,11 +22,13 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIServiceBase.class);
 
     private final Class<R> roClass;
+    private final Class<E> dbClass;
 
 
     public UIServiceBase() {
         Class[] clsArg = GenericTypeResolver.resolveTypeArguments(getClass(), UIServiceBase.class);
         roClass =(Class<R>)clsArg[1];
+        dbClass =(Class<E>)clsArg[0];
 
     }
 
@@ -43,26 +45,29 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
     @Transactional
     public ServiceResult<R> getTableList(int page, int pageSize,
                                          String sortField,
-                                         String sortOrder) {
+                                         String sortOrder,
+                                         Object filter) {
 
         ServiceResult<R> sg = new ServiceResult<>();
         sg.setPage(page<0?0:page);
         sg.setPageSize(pageSize);
-        long iCnt = getDatabaseDao().getDataListCount(null);
+        long iCnt = getDatabaseDao().getDataListCount(filter);
         sg.setCount(iCnt);
 
         if (iCnt > 0) {
             int iStartIndex = pageSize<0?-1:page * pageSize;
-            List<E> lst = getDatabaseDao().getDataList(iStartIndex, pageSize, sortField, sortOrder, null);
+            List<E> lst = getDatabaseDao().getDataList(iStartIndex, pageSize, sortField, sortOrder, filter);
 
             List<R>  lstRo = new ArrayList<>();
             for (E d : lst) {
-                try {
-                    R dro = roClass.newInstance();
-                    BeanUtils.copyProperties(dro,d);
+                R dro = convertToRo(d);
+                 try {
+                    BeanUtils.setProperty(dro, "index", iStartIndex++);
                     lstRo.add(dro);
-                } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
-                    LOG.error("Error occured while retrieving list for " +roClass.getName(), e );
+                } catch (InvocationTargetException | IllegalAccessException e) {
+                     String msg = "Error occured while retrieving list for " +roClass.getName();
+                    LOG.error(msg, e );
+                    throw new RuntimeException(msg, e);
                 }
 
 
@@ -70,6 +75,39 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
             sg.getServiceEntities().addAll(lstRo);
         }
         return sg;
+    }
+
+    /**
+     * Simple method for converting types. Property name and property type must match
+     * @param d
+     * @return
+     */
+    public R convertToRo(E d) {
+        try {
+            R dro = roClass.newInstance();
+            BeanUtils.copyProperties(dro, d);
+            return dro;
+         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
+            String msg = "Error occured while converting to RO Entity for " +roClass.getName();
+            LOG.error(msg, e );
+            throw new RuntimeException(msg, e);
+        }
+    }
+    /*
+     * Simple method for converting types. Property name and property type must match
+     * @param d
+     * @return
+             */
+    public E convertFromRo(R d) {
+        try {
+            E e = dbClass.newInstance();
+            BeanUtils.copyProperties(e, d);
+            return e;
+        } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
+            String msg = "Error occured while converting to DB entity for " +dbClass.getName();
+            LOG.error(msg, e );
+            throw new RuntimeException(msg, e);
+        }
     }
 
     protected abstract BaseDao<E> getDatabaseDao();

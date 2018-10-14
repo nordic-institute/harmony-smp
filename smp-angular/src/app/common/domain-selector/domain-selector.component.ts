@@ -24,13 +24,14 @@ export class DomainSelectorComponent implements OnInit {
   }
 
   ngOnInit () {
+    /*
     this.domainService.isMultiDomain().subscribe((isMultiDomain: boolean) => {
       if (isMultiDomain && this.securityService.isCurrentUserSuperAdmin()) {
         this.showDomains = true;
         this.domainService.getCurrentDomain().subscribe((domain: Domain) => this.domainCode = this.currentDomainCode = domain ? domain.code : null);
         this.domainService.getDomains().subscribe((domains: Domain[]) => this.domains = domains);
       }
-    });
+    });*/
   }
 
   changeDomain () {

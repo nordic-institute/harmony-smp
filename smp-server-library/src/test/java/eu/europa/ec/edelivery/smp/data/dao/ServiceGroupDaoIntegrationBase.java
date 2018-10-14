@@ -25,12 +25,8 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@ContextConfiguration(classes = {H2JPATestConfiguration.class, ServiceGroupDao.class, DomainDao.class, UserDao.class})
-@Sql(scripts = "classpath:cleanup-database.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig
-        (transactionMode = SqlConfig.TransactionMode.ISOLATED,
-                transactionManager = "transactionManager",
-                dataSource = "h2DataSource"))
-public class ServiceGroupDaoIntegrationBase {
+
+public abstract class ServiceGroupDaoIntegrationBase extends AbstractBaseDao{
     @Autowired
     ServiceGroupDao testInstance;
 

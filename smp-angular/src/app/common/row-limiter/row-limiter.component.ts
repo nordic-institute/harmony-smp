@@ -22,6 +22,7 @@ export class RowLimiterComponent implements OnInit {
   }
 
   changePageSize(newPageLimit:number) {
+
     this.onPageSizeChanged.emit(newPageLimit);
     console.log('New page limit:', newPageLimit);
   }
