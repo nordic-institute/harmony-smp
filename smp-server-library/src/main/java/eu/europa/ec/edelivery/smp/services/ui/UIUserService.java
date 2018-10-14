@@ -27,14 +27,15 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      * @param pageSize
      * @param sortField
      * @param sortOrder
+     * @param filter
      * @return
      */
     @Transactional
     public ServiceResult<UserRO> getTableList(int page, int pageSize,
                                                  String sortField,
-                                                 String sortOrder) {
+                                                 String sortOrder, Object filter) {
 
-        return super.getTableList(page, pageSize, sortField, sortOrder);
+        return super.getTableList(page, pageSize, sortField, sortOrder, filter);
     }
 
 }

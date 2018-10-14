@@ -23,6 +23,7 @@ html, body {
 .mat-button, .mat-raised-button, .mat-icon-button {
   font-family: 'Open Sans', sans-serif !important;
   font-weight: bolder !important;
+  margin: 0 2px  !important;
 }
 
 .text-select {
@@ -119,6 +120,7 @@ mat-sidenav[_ngcontent-c0] {
   border-radius: 0;
   line-height: 50px !important;
   letter-spacing: 1px;
+
 }
 
 .sideNavButton {

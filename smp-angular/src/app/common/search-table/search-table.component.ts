@@ -15,16 +15,23 @@ import {SaveDialogComponent} from '../save-dialog/save-dialog.component';
 import {DownloadService} from '../../download/download.service';
 import {HttpClient, HttpParams} from '@angular/common/http';
 
+
 @Component({
   selector: 'smp-search-table',
   templateUrl: './search-table.component.html',
   styleUrls: ['./search-table.component.css']
 })
+
+
 export class SearchTableComponent implements OnInit {
+  @ViewChild('searchTable') searchTable: any;
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
+  @ViewChild('rowExpand') rowExpand: TemplateRef<any>;
+  @ViewChild('rowIndex') rowIndex: TemplateRef<any>;
 
   @Input() @ViewChild('additionalToolButtons') additionalToolButtons: TemplateRef<any>;
   @Input() @ViewChild('searchPanel') searchPanel: TemplateRef<any>;
+  @Input() @ViewChild('tableRowDetailContainer') tableRowDetailContainer: TemplateRef<any>;
 
   @Input() id: String = "";
   @Input() title: String = "";
@@ -32,10 +39,14 @@ export class SearchTableComponent implements OnInit {
   @Input() url: string = '';
   @Input() searchTableController: SearchTableController;
   @Input() filter: any = {};
+  @Input() showActionButtons: boolean = true;
+  @Input() showSearchPanel: boolean = true;
 
   loading = false;
 
   columnActions: any;
+  columnExpandDetails: any;
+  columnIndex: any;
 
   rowLimiter: RowLimiter = new RowLimiter();
 
@@ -56,17 +67,39 @@ export class SearchTableComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.columnIndex = {
+      cellTemplate: this.rowIndex,
+      name: 'Index',
+      width: 50,
+      sortable: false
+    };
+
     this.columnActions = {
       cellTemplate: this.rowActions,
       name: 'Actions',
       width: 80,
       sortable: false
     };
+    this.columnExpandDetails= {
+      cellTemplate: this.rowExpand,
+      name: ' ',
+      width: 20,
+      sortable: false
+    };
 
     // Add actions to last column
     if (this.columnPicker) {
-      this.columnPicker.allColumns.push(this.columnActions);
-      this.columnPicker.selectedColumns.push(this.columnActions);
+      this.columnPicker.allColumns.unshift(this.columnIndex);
+      this.columnPicker.selectedColumns.unshift(this.columnIndex);
+
+      if (!!this.tableRowDetailContainer){
+        this.columnPicker.allColumns.unshift(this.columnExpandDetails);
+        this.columnPicker.selectedColumns.unshift(this.columnExpandDetails);
+      }
+      if (this.showActionButtons) {
+        this.columnPicker.allColumns.push(this.columnActions);
+        this.columnPicker.selectedColumns.push(this.columnActions);
+      }
     }
     this.page(this.offset, this.rowLimiter.pageSize, this.orderBy, this.asc);
   }
@@ -76,30 +109,16 @@ export class SearchTableComponent implements OnInit {
   }
 
   getTableDataEntries$(offset: number, pageSize: number, orderBy: string, asc: boolean): Observable<SearchTableResult> {
-    let params: HttpParams = new HttpParams();
-    params.set('page', offset.toString());
-    params.set('pageSize', pageSize.toString());
-    params.set('orderBy', orderBy);
 
-    //filters
-    if (this.filter.userName) {
-      params.set('userName', this.filter.userName);
-    }
+    let params: HttpParams = new HttpParams()
+       .set('page', offset.toString())
+       .set('pageSize', pageSize.toString());
 
-    if (this.filter.participantId) {
-      params.set('participantId', this.filter.participantId);
-    }
 
-    if (this.filter.participantSchema) {
-      params.set('participantSchema', this.filter.participantSchema);
-    }
-
-    if(this.filter.domain) {
-      params.set('domain', this.filter.domain )
-    }
-
-    if (asc != null) {
-      params.set('asc', asc.toString());
+    for (let filterProperty in this.filter) {
+      if (this.filter.hasOwnProperty(filterProperty)) {
+        params = params.set(filterProperty, this.filter[filterProperty]);
+      }
     }
 
     // TODO move to the HTTP service
@@ -119,21 +138,14 @@ export class SearchTableComponent implements OnInit {
       this.asc = asc;
 
       this.unselectRows();
-      const count = result.count;
-      const start = offset * pageSize;
-      const end = Math.min(start + pageSize, count);
-      const newRows = [...result.serviceEntities];
-
-      let index = 0;
-      for (let i = start; i < end; i++) {
-        newRows[i] = {...result.serviceEntities[index++],
+      this.count = result.count; // must be set else table can not calculate page numbers
+      this.rows = result.serviceEntities.map(serviceEntity => {
+        return {...serviceEntity,
           status: SearchTableEntityStatus.PERSISTED,
-          deleted: false
-        };
-      }
-      this.rows = newRows;
+          deleted: false}
+      });
 
-      if(count > AlertComponent.MAX_COUNT_CSV) {
+      if(this.count > AlertComponent.MAX_COUNT_CSV) {
         this.alertService.error("Maximum number of rows reached for downloading CSV");
       }
     }, (error: any) => {
@@ -159,11 +171,12 @@ export class SearchTableComponent implements OnInit {
 
   onActivate(event) {
     if ("dblclick" === event.type) {
-      this.details(event.row);
+      this.editSearchTableEntityRow(event.row);
     }
   }
 
   changePageSize(newPageLimit: number) {
+    alert("new page size");
     this.page(0, newPageLimit, this.orderBy, this.asc);
   }
 
@@ -171,13 +184,6 @@ export class SearchTableComponent implements OnInit {
     this.page(0, this.rowLimiter.pageSize, this.orderBy, this.asc);
   }
 
-  details(selectedRow: any) {
-    this.searchTableController.showDetails(selectedRow);
-  }
-
-  onEditRowActionClicked(rowNumber: number) {
-    this.editSearchTableEntity(rowNumber);
-  }
 
   onDeleteRowActionClicked(row: SearchTableEntity) {
     this.deleteSearchTableEntities([row]);
@@ -190,6 +196,9 @@ export class SearchTableComponent implements OnInit {
     formRef.afterClosed().subscribe(result => {
       if (result) {
         this.rows = [...this.rows, {...formRef.componentInstance.current}];
+        //this.rows = this.rows.concat(formRef.componentInstance.current);
+        this.count++;
+       // this.searchTable.refresh();
       } else {
         this.unselectRows();
       }
@@ -217,12 +226,13 @@ export class SearchTableComponent implements OnInit {
       this.dialog.open(SaveDialogComponent).afterClosed().subscribe(result => {
         if (result) {
           // this.unselectRows();
-          const modifiedUsers = this.rows.filter(el => el.status !== SearchTableEntityStatus.PERSISTED);
+          const modifiedRowEntities = this.rows.filter(el => el.status !== SearchTableEntityStatus.PERSISTED);
           // this.isBusy = true;
-          this.http.put(/*UserComponent.USER_USERS_URL TODO: use PUT url*/'', modifiedUsers).subscribe(res => {
+          this.http.put(/*UserComponent.USER_USERS_URL TODO: use PUT url*/this.url, modifiedRowEntities).subscribe(res => {
             // this.isBusy = false;
             // this.getUsers();
             this.alertService.success('The operation \'update\' completed successfully.', false);
+            this.onRefresh();
             if (withDownloadCSV) {
               this.downloadService.downloadNative(/*UserComponent.USER_CSV_URL TODO: use CSV url*/ '');
             }
@@ -243,10 +253,14 @@ export class SearchTableComponent implements OnInit {
     }
   }
 
+  onRefresh() {
+    this.page(this.offset, this.rowLimiter.pageSize, this.orderBy, this.asc);
+  }
+
   onCancelButtonClicked() {
     this.dialog.open(CancelDialogComponent).afterClosed().subscribe(result => {
       if (result) {
-        this.page(this.offset, this.rowLimiter.pageSize, this.orderBy, this.asc);
+        this.onRefresh();
       }
     });
   }
@@ -284,6 +298,10 @@ export class SearchTableComponent implements OnInit {
       }
     });
   }
+  private editSearchTableEntityRow(row: SearchTableEntity) {
+      let rowNumber = this.rows.indexOf(row);
+      this.editSearchTableEntity(rowNumber);
+  }
 
   private deleteSearchTableEntities(rows: Array<SearchTableEntity>) {
     // TODO: add validation support to existing controllers
@@ -306,5 +324,14 @@ export class SearchTableComponent implements OnInit {
 
   private unselectRows() {
     this.selected = [];
+  }
+
+  toggleExpandRow(selectedRow: any){
+    //this.searchTableController.toggleExpandRow(selectedRow);
+    this.searchTable.rowDetail.toggleExpandRow(selectedRow);
+  }
+
+  onDetailToggle (event){
+
   }
 }

@@ -3,22 +3,25 @@ import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {DomainDetailsDialogComponent} from './domain-details-dialog/domain-details-dialog.component';
 import {DomainRo} from './domain-ro.model';
 import {SearchTableEntityStatus} from '../common/search-table/search-table-entity-status.model';
+import {UserDetailsDialogComponent} from "../user/user-details-dialog/user-details-dialog.component";
 
 export class DomainController implements SearchTableController {
 
-  constructor(public dialog: MatDialog) { }
+  constructor(public dialog: MatDialog) {
+  }
 
   public showDetails(row: any) {
     let dialogRef: MatDialogRef<DomainDetailsDialogComponent> = this.dialog.open(DomainDetailsDialogComponent);
-    dialogRef.componentInstance.domain = row;
     dialogRef.afterClosed().subscribe(result => {
       //Todo:
     });
   }
 
-  public edit(row: any) { }
+  public edit(row: any) {
+  }
 
-  public  delete(row: any) { }
+  public delete(row: any) {
+  }
 
   public newDialog(config?: MatDialogConfig): MatDialogRef<DomainDetailsDialogComponent> {
     return this.dialog.open(DomainDetailsDialogComponent, config);
@@ -26,11 +29,13 @@ export class DomainController implements SearchTableController {
 
   public newRow(): DomainRo {
     return {
-      domainId: '',
-      bdmslClientCertHeader: '',
-      bdmslClientCertAlias: '',
-      bdmslSmpId: '',
-      signatureCertAlias: '',
+      domainCode: '',
+      smlSubdomain: '',
+      smlSmpId: '',
+      smlParticipantIdentifierRegExp: '',
+      smlClientCertHeader: '',
+      smlClientKeyAlias: '',
+      signatureKeyAlias: '',
       status: SearchTableEntityStatus.NEW
     }
   }

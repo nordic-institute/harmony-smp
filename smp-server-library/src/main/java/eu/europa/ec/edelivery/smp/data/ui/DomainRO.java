@@ -8,13 +8,12 @@ import java.io.Serializable;
  * @since 4.1
  */
 
-public class DomainRO implements Serializable {
+public class DomainRO extends BaseRO  {
 
 
     private static final long serialVersionUID = -9008583888835630560L;
 
     Long id;
-
     String domainCode;
     String smlSubdomain;
     String smlSmpId;
@@ -22,7 +21,6 @@ public class DomainRO implements Serializable {
     String smlClientCertHeader;
     String smlClientKeyAlias;
     String signatureKeyAlias;
- ;
 
 
     public DomainRO() {
@@ -92,4 +90,5 @@ public class DomainRO implements Serializable {
     public void setSignatureKeyAlias(String signatureKeyAlias) {
         this.signatureKeyAlias = signatureKeyAlias;
     }
+
 }
