@@ -2,6 +2,8 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Joze Rihtarsic
@@ -9,13 +11,15 @@ import java.io.Serializable;
  */
 
 
-public class ServiceGroupRO implements Serializable {
+public class ServiceGroupRO extends BaseRO {
 
 
     private static final long serialVersionUID = -7523221767041516157L;
     private String participantIdentifier;
     private String participantScheme;
     private boolean smlRegistered = false;
+    private List<ServiceMetadataRO> lstServiceMetadata = new ArrayList<>();
+
 
 
     private String domain;
@@ -52,4 +56,10 @@ public class ServiceGroupRO implements Serializable {
     public void setSmlRegistered(boolean smlRegistered) {
         this.smlRegistered = smlRegistered;
     }
+
+
+    public List<ServiceMetadataRO> getServiceMetadata() {
+        return lstServiceMetadata;
+    }
+
 }

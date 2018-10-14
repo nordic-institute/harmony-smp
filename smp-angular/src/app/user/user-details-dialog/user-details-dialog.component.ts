@@ -25,6 +25,8 @@ export class UserDetailsDialogComponent {
   editMode: boolean;
   formTitle: string;
   userRoles = [];
+  role: string; // temporally added by JRC just to compile the code
+  dateFormat: string; // temporally added by JRC just to compile the code
   existingRoles = [];
   current: UserRo & { confirmation?: string };
   userForm: FormGroup;

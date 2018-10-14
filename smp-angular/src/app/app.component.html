@@ -8,24 +8,25 @@
       </div>
     </div>
 
-    <button mat-raised-button class="sideNavButton" [routerLink]="['/']" id="messages_id">
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/']" id="search_id">
       <mat-icon matTooltip="Search participants" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">search</mat-icon>
-      <span>Participants</span>
+      <span>Search</span>
+    </button>
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/']" id="edit_id">
+      <mat-icon matTooltip="Search participants" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">edit</mat-icon>
+      <span>Edit</span>
+    </button>
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/domain']" id="domain_id">
+      <mat-icon matTooltip="Domain" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">domain</mat-icon>
+      <span>Domain</span>
     </button>
 
-    <button mat-raised-button class="sideNavButton" [routerLink]="['/user']" *ngIf="hasAdmin()" id="user_id">
+    <!-- button mat-raised-button class="sideNavButton" [routerLink]="['/user']" *ngIf="hasAdmin()" id="user_id" -->
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/user']" id="user_id">
       <mat-icon matTooltip="Users" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">people</mat-icon>
       <span>Users</span>
     </button>
 
-    <button mat-raised-button class="sideNavButton" [routerLink]="['/truststore']" *ngIf="hasAdmin()" id="truststore_id">
-      <mat-icon matTooltip="Truststore" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">vpn_key</mat-icon>
-      <span>Keystore</span>
-    </button>
-    <button mat-raised-button class="sideNavButton" [routerLink]="['/domain']" *ngIf="hasAdmin()" id="domain_id">
-      <mat-icon matTooltip="Domain" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">domain</mat-icon>
-      <span>Domain</span>
-    </button>
 
     <div class="collapse-button">
       <button *ngIf="fullMenu" mat-raised-button id="expand_id" (click)="toggleMenu()">
@@ -99,10 +100,11 @@
         </mat-menu>
       </div>
     </div>
+    <alert style="position:fixed; left:220px; top:0;right:0;z-index: 500"></alert>
     <div id="routerHolder" style="min-height: 100%" >
         <router-outlet></router-outlet>
     </div>
-    <alert></alert>
+
   </div>
 
 </mat-sidenav-container>

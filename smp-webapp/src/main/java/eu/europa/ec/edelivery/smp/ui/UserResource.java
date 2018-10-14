@@ -17,7 +17,7 @@ import javax.annotation.PostConstruct;
  */
 
 @RestController
-@RequestMapping(value = "/ui/user")
+@RequestMapping(value = "/ui/rest/user")
 public class UserResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserResource.class);
@@ -42,6 +42,6 @@ public class UserResource {
             ) {
 
 
-        return  uiUserService.getTableList(page,pageSize, orderBy, orderType );
+        return  uiUserService.getTableList(page,pageSize, orderBy, orderType, null);
     }
 }

@@ -1,46 +1,63 @@
-<h2 mat-dialog-title>Domain details</h2>
-<mat-dialog-content style="height:460px;width:650px">
+<h2 mat-dialog-title>{{formTitle}}</h2>
+<mat-dialog-content>
+
   <mat-card>
     <mat-card-content>
-      <mat-form-field style="width:100%">
-        <input matInput placeholder="Domain id" value="{{domain.domainId}}" readonly/>
-      </mat-form-field>
+      <div class="panel">
+        <fieldset style="border: none;">
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="Domain Code ()" name="domainCode" value="{{current.domainCode}}" id="domainCode_id"
+                   (blur)="updateDomainCode($event)" [formControl]="domainForm.controls['domainCode']" maxlength="255" required>
+            <div *ngIf="(!editMode && domainForm.controls['domainCode'].touched || editMode) &&  domainForm.controls['domainCode'].hasError('pattern')" style="color:red; font-size: 70%">
+             Domain could must contain only chars.
+            </div>
+          </mat-form-field>
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="SML domain (Part of DNS Zone: ex.eHealth: 'ehealth', peppol: '', ..)" name="smlSubdomain" value="{{current.smlSubdomain}}" id="smldomain_id"
+                   (blur)="updateSmlDomain($event)" [formControl]="domainForm.controls['smlSubdomain']" maxlength="255" required>
+            <div *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('pattern')" style="color:red; font-size: 70%">
+              SML domain must be valid DNS part (AlphaNumeric with optional char -).
+            </div>
+          </mat-form-field>
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="SML SMP identifier (SMP ID used for SML )" name="smlSmpId" value="{{current.smlSmpId}}" id="smlSMPId_id"
+                   (blur)="updateSmlSmpId($event)" [formControl]="domainForm.controls['smlSmpId']" maxlength="255" required>
+            <div *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('pattern')" style="color:red; font-size: 70%">
+              SML SMP ID  must be valid DNS part (AlphaNumeric with optional char -).
+            </div>
 
-      <mat-form-field style="width:100%">
-        <input matInput placeholder="SML SMP id" value="{{domain.bdmslSmpId}}" readonly/>
-      </mat-form-field>
-
-      <mat-form-field style="width:100%">
-        <input matInput placeholder="ClienCert header" value="{{domain.bdmslClientCertHeader}}" readonly/>
-      </mat-form-field>
-
-      <mat-form-field style="width:100%">
-        <input matInput placeholder="ClienCert alias" value="{{domain.bdmslClientCertAlias}}" readonly/>
-      </mat-form-field>
-
-      <mat-form-field style="width:100%">
-        <input matInput placeholder="Signature alias" value="{{domain.signatureCertAlias}}" readonly/>
-      </mat-form-field>
-
+          </mat-form-field>
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="SML Client certificate" name="Client certificate" value="{{current.smlClientKeyAlias}}" id="smlClientKeyAlias_id"
+                   (blur)="updateSmlClientKeyAlias($event)" [formControl]="domainForm.controls['smlClientKeyAlias']" maxlength="255" required>
+          </mat-form-field>
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="Response signature Certificate" name="signatureKeyAlias" value="{{current.signatureKeyAlias}}" id="signatureKeyAlias_id"
+                   (blur)="updateSignatureKeyAlias($event)" [formControl]="domainForm.controls['signatureKeyAlias']" maxlength="255" required>
+          </mat-form-field>
+        </fieldset>
+        <!-- label class="custom-file-upload">
+          <input #fileInput type="file" id="custom-file-upload" accept=".cer" (change)="uploadCertificate()" >
+          <span class="custom-file-upload-inner">Import</span>
+        </label-->
+      </div>
     </mat-card-content>
   </mat-card>
-
 </mat-dialog-content>
 
-<mat-dialog-actions>
-  <div class="group-action-button" >
-  <button id="ServiceGroupsSaveButton" mat-raised-button color="primary" (click)="dialogRef.close({})"
-          style="margin-top:10px">
-    <mat-icon>save</mat-icon>
-    <span>Save</span>
-  </button>
-
-
-  <button id="ServiceGroupsCloseButton" mat-raised-button color="primary" (click)="dialogRef.close({})"
-          style="margin-top:10px">
-    <mat-icon>close</mat-icon>
-    <span>Close</span>
-  </button>
-  </div>
-</mat-dialog-actions>
+<table class="buttonsRow">
+  <tr>
+    <td>
+      <button mat-raised-button color="primary" [mat-dialog-close]="true" (click)="submitForm()" [disabled]="!domainForm.valid">
+        <mat-icon>ok</mat-icon>
+        <span>OK</span>
+      </button>
+      <button mat-raised-button color="primary" mat-dialog-close>
+        <mat-icon>cancel</mat-icon>
+        <span>Cancel</span>
+      </button>
+    </td>
+  </tr>
+</table>
+<div  style="text-align: right; font-size: 70%">* required fields</div>
 
