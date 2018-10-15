@@ -17,16 +17,15 @@ import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.criterion.MatchMode;
 import org.springframework.core.GenericTypeResolver;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -44,6 +43,8 @@ import java.util.List;
 public abstract class BaseDao<E extends BaseEntity> {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(BaseDao.class);
+
+    protected String defaultSortMethod;
 
     @PersistenceContext
     protected EntityManager memEManager;
@@ -114,11 +115,10 @@ public abstract class BaseDao<E extends BaseEntity> {
     /**
      * Clear the persistence context, causing all managed entities to become detached.
      * Changes made to entities that have not been flushed to the database will not be persisted.
-     *
+     * <p>
      * Main purpose is to clear cache for unit testing
-     *
      */
-    public void clearPersistenceContext(){
+    public void clearPersistenceContext() {
         memEManager.clear();
     }
 
@@ -126,7 +126,7 @@ public abstract class BaseDao<E extends BaseEntity> {
      * Method generates CriteriaQuery for search or count. If filter property value should match multiple values eg: column in (:list)
      * than filter method must end with List and returned value must be list. If property is comparable (decimal, int, date)
      * if filter method ends with From, than predicate greaterThanOrEqualTo is set to quer. If Method end To, than
-     * predicate cb.lessThan is setted. If filter property  has null value, than filter parameter is ignored.
+     * predicate cb.lessThan is set. If filter property  has null value, than filter parameter is ignored.
      *
      * @param searchParams
      * @param forCount
@@ -134,11 +134,10 @@ public abstract class BaseDao<E extends BaseEntity> {
      * @param sortOrder
      * @return
      */
-    protected < D> CriteriaQuery createSearchCriteria(Object searchParams, Class<D> filterType,
-                                                        boolean forCount, String sortField, String sortOrder) {
+    protected <D> CriteriaQuery createSearchCriteria(Object searchParams, Class<D> filterType,
+                                                     boolean forCount, String sortField, String sortOrder) {
         CriteriaBuilder cb = memEManager.getCriteriaBuilder();
-        CriteriaQuery cq = forCount ? cb.createQuery(Long.class
-        ) : cb.createQuery(entityClass);
+        CriteriaQuery cq = forCount ? cb.createQuery(Long.class) : cb.createQuery(entityClass);
         Root<E> om = cq.from(filterType == null ? entityClass : filterType);
         if (forCount) {
             cq.select(cb.count(om));
@@ -149,86 +148,117 @@ public abstract class BaseDao<E extends BaseEntity> {
                 cq.orderBy(cb.desc(om.get(sortField)));
             }
         } else {
-            // cq.orderBy(cb.desc(om.get("Id")));
+            if (!StringUtils.isBlank(defaultSortMethod)) {
+                cq.orderBy(cb.desc(om.get(defaultSortMethod)));
+            }
         }
-        List<Predicate> lstPredicate = new ArrayList<>();
+
+
         // set order by
         if (searchParams != null) {
-            Class cls = searchParams.getClass();
-            Method[] methodList = cls.getMethods();
-            for (Method m : methodList) {
-                // only getters (public, starts with get, no arguments)
-                String mName = m.getName();
-                if (Modifier.isPublic(m.getModifiers()) && m.getParameterCount() == 0
-                        && !m.getReturnType().equals(Void.TYPE)
-                        && (mName.startsWith("get") || mName.startsWith("is"))) {
-                    String fieldName = mName.substring(mName.startsWith("get") ? 3 : 2);
-                    // get return parameter
-                    Object searchValue;
-                    try {
-                        searchValue = m.invoke(searchParams, new Object[]{});
-                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                        LOG.error("Error setting retrieveing search parameters", ex);
-                        continue;
-                    }
-
-                    if (searchValue == null) {
-                        continue;
-                    }
-
-                    if (fieldName.endsWith("List") && searchValue instanceof List) {
-                        String property = fieldName.substring(0, fieldName.lastIndexOf(
-                                "List"));
-                        if (!((List) searchValue).isEmpty()) {
-                            lstPredicate.add(om.get(property).in(
-                                    ((List) searchValue).toArray()));
-                        } else {
-                            lstPredicate.add(om.get(property).isNull());
-                        }
-                    } else {
-                        try {
-                            cls.getMethod("set" + fieldName, new Class[]{m.getReturnType()});
-                        } catch (NoSuchMethodException | SecurityException ex) {
-                            // method does not have setter // ignore other methods
-                            LOG.error("Field '"+fieldName+"' does not have a setter!", ex);
-                            continue;
-                        }
-
-                        if (fieldName.endsWith("From") && searchValue instanceof Comparable) {
-                            lstPredicate.add(cb.greaterThanOrEqualTo(
-                                    om.get(fieldName.substring(0, fieldName.
-                                            lastIndexOf("From"))),
-                                    (Comparable) searchValue));
-                        } else if (fieldName.endsWith("To") && searchValue instanceof Comparable) {
-                            lstPredicate.add(cb.lessThan(
-                                    om.
-                                            get(fieldName.substring(0, fieldName.lastIndexOf(
-                                                    "To"))),
-                                    (Comparable) searchValue));
-                        } else if (searchValue instanceof String) {
-                            if (!((String) searchValue).isEmpty()) {
-                                lstPredicate.add(cb.equal(om.get(fieldName), searchValue));
-                            }
-                        } else if (searchValue instanceof BigInteger) {
-                            lstPredicate.add(cb.equal(om.get(fieldName), searchValue));
-                        } else {
-                            LOG.warn("Unknown search value type %s for method %s! "
-                                            + "Parameter is ignored!",
-                                    searchValue, fieldName);
-                        }
-                    }
-
-                }
-            }
+            List<Predicate> lstPredicate = createPredicates(searchParams, om, cb);
             if (!lstPredicate.isEmpty()) {
-                Predicate[] tblPredicate = lstPredicate.stream().toArray(
-                        Predicate[]::new);
+                Predicate[] tblPredicate = lstPredicate.stream().toArray(Predicate[]::new);
                 cq.where(cb.and(tblPredicate));
             }
         }
         return cq;
     }
 
+    /**
+     * Method crates list of predicates for Query
+     *
+     * @param searchParams - filter object
+     * @param om
+     * @param cb
+     * @return
+     */
+    protected List<Predicate> createPredicates(Object searchParams, Root<E> om, CriteriaBuilder cb) {
+        List<Predicate> lstPredicate = new ArrayList<>();
+
+        Class cls = searchParams.getClass();
+        Method[] methodList = cls.getMethods();
+        for (Method m : methodList) {
+            // only getters (public, starts with get, no arguments)
+            String mName = m.getName();
+
+            if (Modifier.isPublic(m.getModifiers()) && m.getParameterCount() == 0
+                    && !m.getReturnType().equals(Void.TYPE)
+                    && !mName.equalsIgnoreCase("getClass")
+                    && (mName.startsWith("get") || mName.startsWith("is"))) {
+                String fieldName = mName.substring(mName.startsWith("get") ? 3 : 2);
+                // get return parameter
+                Object searchValue;
+                try {
+                    searchValue = m.invoke(searchParams, new Object[]{});
+                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                    LOG.error("Error setting retrieveing search parameters", ex);
+                    continue;
+                }
+
+                if (searchValue == null) {
+                    continue;
+                }
+
+                if (fieldName.endsWith("List") && searchValue instanceof List) {
+                    Path path = getPath(om, fieldName, "List");
+                    if (!((List) searchValue).isEmpty()) {
+                        lstPredicate.add(path.in(
+                                ((List) searchValue).toArray()));
+                    } else {
+                        lstPredicate.add(path.isNull());
+                    }
+                } else {
+                    try {
+                        cls.getMethod("set" + fieldName, new Class[]{m.getReturnType()});
+                    } catch (NoSuchMethodException | SecurityException ex) {
+                        // method does not have setter // ignore other methods
+                        LOG.error("Field '" + fieldName + "' does not have a setter!", ex);
+                        continue;
+                    }
+
+                    if (fieldName.endsWith("From") && searchValue instanceof Comparable) {
+                        lstPredicate.add(cb.greaterThanOrEqualTo(
+                                getPath(om, fieldName, "From"),
+                                (Comparable) searchValue));
+                    } else if (fieldName.endsWith("To") && searchValue instanceof Comparable) {
+                        lstPredicate.add(cb.lessThan(getPath(om, fieldName, "To"),
+                                (Comparable) searchValue));
+                    } else if (searchValue instanceof String && fieldName.endsWith("Like")) {
+                        if (!((String) searchValue).isEmpty()) {
+                            lstPredicate.add(cb.like(getPath(om, fieldName, "Like"), "%" + (String) searchValue + "%"));
+                        }
+                    } else if (searchValue instanceof String) {
+                        if (!((String) searchValue).isEmpty()) {
+                            lstPredicate.add(cb.equal(getPath(om, fieldName), searchValue));
+                        }
+                    } else if (searchValue instanceof BigInteger) {
+                        lstPredicate.add(cb.equal(getPath(om, fieldName), searchValue));
+                    } else if (searchValue instanceof Long) {
+                        lstPredicate.add(cb.equal(getPath(om, fieldName), searchValue));
+                    } else {
+                        LOG.warn("Unknown search value type %s for method %s! Parameter is ignored!",
+                                searchValue, fieldName);
+                    }
+                }
+
+            }
+        }
+        return lstPredicate;
+    }
+
+
+    public Path getPath(Root<E> om, String fieldName) {
+        return getPath(om, fieldName, null);
+    }
+
+    public Path getPath(Root<E> om, String fieldName, String trimRight) {
+        String fn = StringUtils.uncapitalize(fieldName);
+        if (!StringUtils.isBlank(trimRight)) {
+            fn = fn.substring(0, fn.lastIndexOf(trimRight));
+        }
+        return om.get(fn);
+    }
 
     /**
      * Method returns paginated entity list with give pagination parameters and filters.
@@ -246,8 +276,8 @@ public abstract class BaseDao<E extends BaseEntity> {
      */
 
     public List<E> getDataList(int startingAt, int maxResultCnt,
-                                   String sortField,
-                                   String sortOrder, Object filters) {
+                               String sortField,
+                               String sortOrder, Object filters) {
 
         return getDataList(startingAt, maxResultCnt, sortField, sortOrder,
                 filters, null);
@@ -269,9 +299,9 @@ public abstract class BaseDao<E extends BaseEntity> {
      * @return List
      */
     public <D> List<E> getDataList(int startingAt,
-                                      int maxResultCnt,
-                                      String sortField,
-                                      String sortOrder, Object filters, Class<D> filterType) {
+                                   int maxResultCnt,
+                                   String sortField,
+                                   String sortOrder, Object filters, Class<D> filterType) {
 
         List<E> lstResult;
         try {
@@ -287,7 +317,7 @@ public abstract class BaseDao<E extends BaseEntity> {
             }
             lstResult = q.getResultList();
         } catch (NoResultException ex) {
-            LOG.warn("No result for '"+filterType.getName()+"' does not have a setter!", ex);
+            LOG.warn("No result for '" + filterType.getName() + "' does not have a setter!", ex);
             lstResult = new ArrayList<>();
         }
 
@@ -300,7 +330,7 @@ public abstract class BaseDao<E extends BaseEntity> {
      * than filter method must end with List and returned value must be list. If property is comparable (decimal, int, date)
      * if filter method ends with From, than predicate greaterThanOrEqualTo is set to quer. If Method end To, than
      * predicate cb.lessThan is setted. If filter property  has null value, than filter parameter is ignored.
-
+     *
      * @param filters
      * @return
      */
@@ -311,7 +341,6 @@ public abstract class BaseDao<E extends BaseEntity> {
                 null);
         return memEManager.createQuery(cqCount).getSingleResult();
     }
-
 
 
 }

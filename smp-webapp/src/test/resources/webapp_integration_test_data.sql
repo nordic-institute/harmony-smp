@@ -25,8 +25,9 @@ insert into SMP_SERVICE_GROUP(ID, PARTICIPANT_IDENTIFIER, PARTICIPANT_SCHEME,SML
 insert into SMP_SERVICE_GROUP(ID, PARTICIPANT_IDENTIFIER, PARTICIPANT_SCHEME,SML_REGISTRED, CREATED_ON, LAST_UPDATED_ON) values (200000, 'urn:brazil:ncpb', 'ehealth-actorid-qns', 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 --insert into SMP_SERVICE_GROUP(ID, PARTICIPANT_IDENTIFIER, PARTICIPANT_SCHEME,SML_REGISTRED) values (3, 'urn:poland:ncpb', 'ehealth-participantid-qns', 1);
 
-insert into SMP_DOMAIN (ID, DOMAIN_CODE, SML_SUBDOMAIN, SIGNATURE_KEY_ALIAS, CREATED_ON, LAST_UPDATED_ON) values (1, 'domain','subdomain','sig-key',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
---insert into SMP_OWNERSHIP (FK_SG_ID, FK_USER_ID) values (3, 1);
+insert into SMP_DOMAIN (ID, DOMAIN_CODE, SML_SUBDOMAIN, SML_SMP_ID, SIGNATURE_KEY_ALIAS, CREATED_ON, LAST_UPDATED_ON) values (1, 'domain','subdomain', 'CEF-SMP-001','sig-key',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+
+ --insert into SMP_OWNERSHIP (FK_SG_ID, FK_USER_ID) values (3, 1);
 --insert into SMP_SERVICE_GROUP_DOMAIN (ID, FK_SG_ID, FK_DOMAIN_ID) values (1, 3, 1);
 -- insert into smp_ownership(username, businessidentifier, businessidentifierscheme) values ('CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08', 'urn:australia:ncpb', 'ehealth-actorid-qns');
 

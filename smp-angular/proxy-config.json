@@ -1,6 +1,6 @@
 {
-  "/ui/**": {
-    "target": "http://localhost:8080/smp/",
+  "/rest/**": {
+    "target": "http://localhost:8080/smp/ui/",
     "changeOrigin": true,
     "secure": false,
     "logLevel": "debug"
