@@ -41,6 +41,7 @@ export class SearchTableComponent implements OnInit {
   @Input() filter: any = {};
   @Input() showActionButtons: boolean = true;
   @Input() showSearchPanel: boolean = true;
+  @Input() showIndexColumn: boolean = false;
 
   loading = false;
 
@@ -71,6 +72,7 @@ export class SearchTableComponent implements OnInit {
       cellTemplate: this.rowIndex,
       name: 'Index',
       width: 50,
+      maxWidth:80,
       sortable: false
     };
 
@@ -78,24 +80,29 @@ export class SearchTableComponent implements OnInit {
       cellTemplate: this.rowActions,
       name: 'Actions',
       width: 80,
+      maxWidth:80,
       sortable: false
     };
     this.columnExpandDetails= {
       cellTemplate: this.rowExpand,
       name: ' ',
-      width: 20,
+      width: 40,
+      maxWidth:50,
       sortable: false
     };
 
     // Add actions to last column
     if (this.columnPicker) {
-      this.columnPicker.allColumns.unshift(this.columnIndex);
-      this.columnPicker.selectedColumns.unshift(this.columnIndex);
-
+      // prepend columns
       if (!!this.tableRowDetailContainer){
         this.columnPicker.allColumns.unshift(this.columnExpandDetails);
         this.columnPicker.selectedColumns.unshift(this.columnExpandDetails);
       }
+      if (this.showIndexColumn){
+        this.columnPicker.allColumns.unshift(this.columnIndex);
+        this.columnPicker.selectedColumns.unshift(this.columnIndex);
+      }
+
       if (this.showActionButtons) {
         this.columnPicker.allColumns.push(this.columnActions);
         this.columnPicker.selectedColumns.push(this.columnActions);

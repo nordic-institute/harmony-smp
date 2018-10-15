@@ -57,7 +57,7 @@
       <!-- Row Detail Template -->
       <ngx-datatable-row-detail id="rowDetail" [rowHeight]="'auto'" #searchTableDetailRow
                                 (toggle)="onDetailToggle($event)">
-        <ng-template let-row="row" let-expanded="expanded" ngx-datatable-row-detail-template>
+        <ng-template let-row="row" let-expanded="expanded" let-enabled="enabled"  ngx-datatable-row-detail-template>
           <ng-container [ngTemplateOutlet]="tableRowDetailContainer"
                         [ngTemplateOutletContext]="{row:row}"></ng-container>
         </ng-template>
@@ -81,13 +81,12 @@
       </div>
     </ng-template>
 
-    <ng-template #rowExpand let-row="row" let-expanded="expanded" ngx-datatable-cell-template>
-      <a
+    <ng-template #rowExpand let-row="row" let-expanded="expanded" let-disabled="disabled" ngx-datatable-cell-template >
+      <span *ngIf="!!disabled">( )</span>
+      <a *ngIf="!disabled" class="table-button-expand"
         href="javascript:void(0)"
-        [class.datatable-icon-right]="!expanded"
-        [class.datatable-icon-down]="expanded"
         title="Expand/Collapse Row"
-        (click)="toggleExpandRow(row)">
+        (click)="toggleExpandRow(row)">{{expanded?'(-)':'(+)'}}
       </a>
     </ng-template>
   </div>
