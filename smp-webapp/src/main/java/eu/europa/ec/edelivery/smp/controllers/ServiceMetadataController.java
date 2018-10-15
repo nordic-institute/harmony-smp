@@ -86,7 +86,7 @@ public class ServiceMetadataController {
             @RequestBody byte[] body) throws XmlInvalidAgainstSchemaException {
 
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        String host = getRemoveHost(httpReq);
+        String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_SERVICE_METADATA,authentUser, host, domain, serviceGroupId, serviceMetadataId);
 
         serviceMetadataValidator.validate(serviceGroupId, serviceMetadataId, body);
@@ -108,7 +108,7 @@ public class ServiceMetadataController {
 
 
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        String host = getRemoveHost(httpReq);
+        String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_SERVICE_METADATA,authentUser, host, domain, serviceGroupId, serviceMetadataId);
 
         serviceMetadataService.deleteServiceMetadata(domain, asParticipantId(serviceGroupId), asDocumentId(serviceMetadataId));
@@ -117,7 +117,7 @@ public class ServiceMetadataController {
         return ok().build();
     }
 
-    public String getRemoveHost(HttpServletRequest httpReq){
+    public String getRemoteHost(HttpServletRequest httpReq){
         String host = httpReq.getHeader("X-Forwarded-For");
         return StringUtils.isBlank(host)?httpReq.getRemoteHost():host;
     }
