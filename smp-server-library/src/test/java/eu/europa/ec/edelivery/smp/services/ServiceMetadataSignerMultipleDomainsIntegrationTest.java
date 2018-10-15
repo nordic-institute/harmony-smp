@@ -14,7 +14,6 @@
 package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.config.PropertiesMultipleDomainTestConfig;
-import eu.europa.ec.edelivery.smp.config.SmpServicesTestConfig;
 import eu.europa.ec.edelivery.smp.testutil.SignatureUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;

@@ -12,7 +12,6 @@
  */
 package eu.europa.ec.edelivery.smp.services;
 
-import eu.europa.ec.edelivery.smp.exceptions.DocumentSigningException;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.slf4j.Logger;

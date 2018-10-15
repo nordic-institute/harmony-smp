@@ -9,6 +9,7 @@ import eu.europa.ec.edelivery.smp.logging.api.MessageCode;
  */
 public enum SMPMessageCode implements MessageCode {
 
+
     BUS_SAVE_SERVICE_GROUP ("BUS-001", "Start inserting/updating ServiceGroup for part. Id: {} part. schema {}."),
     BUS_SAVE_SERVICE_GROUP_FAILED ("BUS-002", "Inserting/updating ServiceGroup for part. Id: {} part. schema {} failed! Error: [{}]"),
 
@@ -16,6 +17,10 @@ public enum SMPMessageCode implements MessageCode {
 
 
     SEC_UNSECURED_LOGIN_ALLOWED("SEC-001", "Unsecure login is allowed, no authentication will be performed"),
+    SEC_USER_AUTHENTICATED("SEC-002", "User {} is authenticated with role {}."),
+    SEC_USER_NOT_EXISTS("SEC-003", "User {} not exists."),
+    SEC_INVALID_PASSWORD("SEC-004", "User {} has invalid password."),
+
     ;
 
     String code;

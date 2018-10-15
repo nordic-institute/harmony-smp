@@ -14,7 +14,6 @@
 package eu.europa.ec.edelivery.smp.smlintegration;
 
 import eu.europa.ec.bdmsl.ws.soap.*;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,10 +31,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 /**

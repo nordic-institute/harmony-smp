@@ -17,9 +17,7 @@ import eu.europa.ec.edelivery.smp.config.H2JPATestConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.*;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
@@ -31,15 +29,11 @@ import org.springframework.test.util.ReflectionTestUtils;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceUnit;
-import javax.persistence.Query;
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static eu.europa.ec.edelivery.smp.testutil.TestDBUtils.*;
+import static eu.europa.ec.edelivery.smp.testutil.TestDBUtils.createDBDomain;
 import static org.junit.Assert.assertTrue;
 
 

@@ -23,15 +23,13 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  *  Purpose of class is to test ServiceGroupService base methods

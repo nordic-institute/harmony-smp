@@ -5,7 +5,6 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
-import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.junit.Before;
@@ -24,8 +23,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
-import static eu.europa.ec.edelivery.smp.testutil.TestConstants.USERNAME_3;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  *  Purpose of class is to test all resource methods with database.

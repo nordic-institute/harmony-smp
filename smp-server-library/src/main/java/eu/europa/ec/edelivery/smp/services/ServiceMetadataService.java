@@ -33,7 +33,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.conversion.ServiceMetadataConverter.toSignedServiceMetadatadaDocument;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.METADATA_NOT_EXISTS;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.SG_NOT_EXISTS;
 
 
 /**
