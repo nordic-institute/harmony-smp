@@ -11,7 +11,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.transaction.Transactional;
 import java.util.Optional;
 
-import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
+import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_SG_ID_1;
+import static eu.europa.ec.edelivery.smp.testutil.TestConstants.TEST_SG_SCHEMA_1;
 import static org.junit.Assert.*;
 
 
