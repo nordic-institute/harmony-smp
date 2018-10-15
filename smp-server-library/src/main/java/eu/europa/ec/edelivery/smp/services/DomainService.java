@@ -12,9 +12,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.DOMAIN_NOT_EXISTS;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INVALID_DOMAIN_CODE;
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.MISSING_DOMAIN;
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
 
 
 /**

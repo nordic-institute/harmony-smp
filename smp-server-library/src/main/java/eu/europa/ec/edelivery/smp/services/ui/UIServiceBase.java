@@ -2,35 +2,36 @@ package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
-import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.core.GenericTypeResolver;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-
+/**
+ * @author Joze Rihtarsic
+ * @since 4.1
+ */
 abstract class UIServiceBase<E extends BaseEntity, R> {
 
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIServiceBase.class);
+
     private final Class<R> roClass;
-    private final Class<E> dbClass;
 
 
     public UIServiceBase() {
         Class[] clsArg = GenericTypeResolver.resolveTypeArguments(getClass(), UIServiceBase.class);
-        dbClass =(Class<E>)clsArg[0];
         roClass =(Class<R>)clsArg[1];
 
     }
 
     /**
-     * Method returns Domain resource object list for page.
+     * Method returns UI  resource object list for page.
      *
      * @param page
      * @param pageSize
@@ -61,12 +62,11 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
                     BeanUtils.copyProperties(dro,d);
                     lstRo.add(dro);
                 } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
-                    e.printStackTrace();
+                    LOG.error("Error occured while retrieving list for " +roClass.getName(), e );
                 }
 
 
             }
-
             sg.getServiceEntities().addAll(lstRo);
         }
         return sg;

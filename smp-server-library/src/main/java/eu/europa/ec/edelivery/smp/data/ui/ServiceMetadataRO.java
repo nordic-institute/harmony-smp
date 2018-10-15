@@ -1,10 +1,7 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 
-
-import javax.persistence.*;
 import java.io.Serializable;
-import java.util.Objects;
 
 /**
  * @author Joze Rihtarsic
