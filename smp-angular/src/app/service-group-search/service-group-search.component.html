@@ -1,0 +1,109 @@
+<smp-search-table
+  page_id='search_id'
+  title='Search'
+  [columnPicker]="columnPicker"
+  url="rest/search"
+  [additionalToolButtons]="additionalToolButtons"
+  [searchPanel]="searchPanel"
+  [filter]="filter"
+  [searchTableController]="serviceGroupSearchController"
+  [tableRowDetailContainer]="tableRowDetailContainer"
+  [showActionButtons]="false"
+  [showIndexColumn]="true"
+>
+
+
+  <ng-template #rowExtensionAction let-row="row" let-value="value" ngx-datatable-cell-template>
+
+    <button mat-button color="primary"
+            (click)="extensionRowButtonAction(row)" id="extensionRowButtonAction{{row.$$index}}_id" tooltip="Extension">
+      <mat-icon>code</mat-icon>
+      <span>Extension</span>
+    </button>
+
+  </ng-template>
+
+  <ng-template #rowSMPUrlLinkAction let-row="row" let-value="value" ngx-datatable-cell-template>
+    <a target="_blank"
+       href="{{contextPath}}{{row.participantScheme}}::{{row.participantIdentifier}}" >Open URL</a>
+
+  </ng-template>
+
+
+  <ng-template #searchPanel>
+    <mat-form-field>
+      <input matInput placeholder="Participant Identifier" name="ParticipantIdentifier"
+             [(ngModel)]="filter.participantIdentifier"
+             #messageId="ngModel" id="participantIdentifier">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Participant scheme" name="patricipantScheme" [(ngModel)]="filter.participantScheme"
+             #messageId="ngModel" id="participantScheme">
+    </mat-form-field>
+    <mat-select placeholder="Domain " [(ngModel)]="filter.domain" name="domain"
+                id="domain_id">
+      <mat-option [value]="''">
+      </mat-option>
+      <mat-option *ngFor="let domain of domainlist" [value]="domain.smlSubdomain">
+        {{domain.smlSubdomain}}
+      </mat-option>
+    </mat-select>
+  </ng-template>
+
+
+
+
+  <ng-template #additionalToolButtons>
+    <!-- button mat-raised-button color="primary"
+            id="extensionbutton_id">
+      <mat-icon>code</mat-icon>
+      <span>Extension</span>
+    </button -->
+  </ng-template>
+
+  <ng-template #tableRowDetailContainer let-row="row">
+
+    <div *ngIf="row.serviceMetadata.length===0" style="padding-left:20px;">
+      No service metadata
+    </div>
+    <div *ngIf="row.serviceMetadata.length !== 0" >
+
+      <!-- ngx-datatable
+        class='material striped'
+        style="width: 80%"
+        [loadingIndicator]="loading"
+        [rows]='row.serviceMetadata'
+        [columns]='[{name:"Domain", prop:"domainCode", maxWidth: 250 },{name:"Document identifier scheme",prop:"documentIdentifierScheme",maxWidth: 350},{name:"Document identifier", prop:"documentIdentifier"},{name:"OASIS SMP URL",maxWidth: 350}]'
+        [columnMode]='"force"'
+        [headerHeight]='50'
+        [footerHeight]='50'
+        [rowHeight]='"auto"'>
+        <ng-template #rowMetadataSMPUrlLinkAction let-row="smdRow" let-value="value" ngx-datatable-cell-template>
+
+          <a target="_blank"
+             href="{{contextPath}}{{row.participantScheme}}::{{row.participantIdentifier}}/services/{{smdRow.documentIdentifierScheme}}::{{smdRow.documentIdentifier}}" >Open URL</a>
+
+        </ng-template>
+      </ngx-datatable -->
+
+      <table style="width: 80%">
+        <tr>
+          <th>Domain</th>
+          <th>Document identifier scheme</th>
+          <th>Document identifier</th>
+          <th>OASIS SMP URL</th>
+        </tr>
+        <tr *ngFor="let smd of row.serviceMetadata">
+          <td style="width: 100em">{{smd.domainCode}}</td>
+          <td style="width: 250em">{{smd.documentIdentifierScheme}}</td>
+          <td >{{smd.documentIdentifier}}</td>
+          <td style="width: 50em">
+            <a target="_blank"
+               href="{{contextPath}}{{row.participantScheme}}::{{row.participantIdentifier}}/services/{{smd.documentIdentifierScheme}}::{{smd.documentIdentifier}}">OASIS ServiceMetadata URL</a>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </ng-template>
+
+</smp-search-table>

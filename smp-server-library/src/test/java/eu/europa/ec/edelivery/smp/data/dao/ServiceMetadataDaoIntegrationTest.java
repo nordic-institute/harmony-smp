@@ -32,15 +32,7 @@ import static org.junit.Assert.assertTrue;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {H2JPATestConfiguration.class, ServiceMetadataDao.class, DomainDao.class, UserDao.class,
-        ServiceGroupDao.class})
-@Sql(scripts = "classpath:cleanup-database.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig
-        (transactionMode = SqlConfig.TransactionMode.ISOLATED,
-                transactionManager = "transactionManager",
-                dataSource = "h2DataSource"))
-public class ServiceMetadataDaoIntegrationTest {
+public class ServiceMetadataDaoIntegrationTest extends AbstractBaseDao {
 
     @Autowired
     ServiceMetadataDao testInstance;

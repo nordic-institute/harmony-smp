@@ -29,32 +29,39 @@ export class DomainComponent implements OnInit {
 
     this.columnPicker.allColumns = [
       {
-        name: 'Domain Id',
-        prop: 'domainId',
+        name: 'Domain code',
+        prop: 'domainCode',
+        width: 275
+
+      },
+      {
+        name: 'SML Domain',
+        prop: 'smlSubdomain',
         width: 275
       },
       {
-        name: 'ClientCert Header',
-        prop: 'bdmslClientCertHeader',
-      },
-      {
-        name: 'ClientCert Alias',
-        prop: 'bdmslClientCertAlias',
-      },
-      {
-        name: 'SMP Id',
-        prop: 'bdmslSmpId',
+        name: 'SML SMP Id',
+        prop: 'smlSmpId',
         width: 120
       },
       {
+        name: 'ClientCert Header',
+        prop: 'smlClientCertHeader',
+      },
+      {
+        name: 'ClientCert Alias',
+        prop: 'smlClientKeyAlias',
+      },
+
+      {
         name: 'Signature CertAlias',
-        prop: 'signatureCertAlias',
+        prop: 'signatureKeyAlias',
         width: 120
       },
     ];
 
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
-      return ["Domain Id", "ClientCert Header", "ClientCert Alias", "SMP Id"].indexOf(col.name) != -1
+      return ["Domain code", "SML Domain", "SML SMP Id", "ClientCert Header", "ClientCert Alias", "Signature CertAlias"].indexOf(col.name) != -1
     });
   }
 

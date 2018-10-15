@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class UserRO implements Serializable {
+public class UserRO extends BaseRO {
 
 
     private static final long serialVersionUID = -4971552086560325302L;

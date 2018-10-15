@@ -15,12 +15,16 @@ package eu.europa.ec.edelivery.smp.controllers;
 
 import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.conversion.ServiceGroupConverter;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.logging.SMPMessageCode;
 import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import eu.europa.ec.edelivery.smp.services.ServiceMetadataService;
 import eu.europa.ec.edelivery.smp.validation.ServiceGroupValidator;
 import eu.europa.ec.smp.api.Identifiers;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
+import org.apache.commons.lang.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
@@ -29,14 +33,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
 import java.util.List;
 
+import static eu.europa.ec.edelivery.smp.controllers.WebConstans.HTTP_PARAM_DOMAIN;
+import static eu.europa.ec.edelivery.smp.controllers.WebConstans.HTTP_PARAM_OWNER;
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
+import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -46,10 +56,9 @@ import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("/{serviceGroupId}")
-@Order
 public class ServiceGroupController {
 
-    private static final Logger log = LoggerFactory.getLogger(ServiceGroupController.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupController.class);
 
     @Autowired
     private ServiceGroupValidator serviceGroupValidator;
@@ -65,26 +74,29 @@ public class ServiceGroupController {
 
 
     @GetMapping(produces = "text/xml; charset=UTF-8")
-    public ServiceGroup getServiceGroup(@PathVariable String serviceGroupId) {
-        log.info("GET ServiceGrooup: {}", serviceGroupId);
+    public ServiceGroup getServiceGroup(HttpServletRequest httpReq, @PathVariable String serviceGroupId) {
+        String host = httpReq.getRemoteHost();
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_SERVICE_GROUP,host, serviceGroupId);
 
         ServiceGroup serviceGroup = serviceGroupService.getServiceGroup(asParticipantId(serviceGroupId));
         addReferences(serviceGroup);
 
-        log.info("Finished GET ServiceGrooup: {}", serviceGroupId);
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_END_SERVICE_GROUP,host, serviceGroupId);
         return serviceGroup;
     }
 
 
     @PutMapping
     @Secured({SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_SMP_ADMIN})
-    public ResponseEntity saveServiceGroup(
+    public ResponseEntity saveServiceGroup(HttpServletRequest httpReq,
             @PathVariable String serviceGroupId,
-            @RequestHeader(name = "ServiceGroup-Owner", required = false) String serviceGroupOwner,
-            @RequestHeader(name = "Domain", required = false) String domain,
+            @RequestHeader(name = HTTP_PARAM_OWNER, required = false) String serviceGroupOwner,
+            @RequestHeader(name = HTTP_PARAM_DOMAIN, required = false) String domain,
             @RequestBody byte[] body) throws XmlInvalidAgainstSchemaException {
 
-        log.info("PUT ServiceGroup: {} domain {} owner {} \n{}", serviceGroupId,domain, serviceGroupOwner, new String(body));
+        String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        String host = getRemoteHost(httpReq);
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_SERVICE_GROUP,authentUser, host, serviceGroupOwner, domain, serviceGroupId);
 
         // Validations
         BdxSmpOasisValidator.validateXSD(body);
@@ -92,23 +104,24 @@ public class ServiceGroupController {
         serviceGroupValidator.validate(serviceGroupId, serviceGroup);
 
         // Service action
-         boolean newServiceGroupCreated = serviceGroupService.saveServiceGroup(serviceGroup, domain, serviceGroupOwner, SecurityContextHolder.getContext().getAuthentication().getName());
+         boolean newServiceGroupCreated = serviceGroupService.saveServiceGroup(serviceGroup, domain, serviceGroupOwner, authentUser);
 
-        log.info("Finished PUT ServiceGroup: {}", serviceGroupId);
-
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_SERVICE_GROUP,authentUser, host, serviceGroupOwner, domain, serviceGroupId, newServiceGroupCreated);
         return newServiceGroupCreated ? created(pathBuilder.getCurrentUri()).build() : ok().build();
     }
 
     @DeleteMapping
     @Secured({SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_SMP_ADMIN})
-    public void deleteServiceGroup(@PathVariable String serviceGroupId) {
+    public void deleteServiceGroup(HttpServletRequest httpReq, @PathVariable String serviceGroupId) {
+        String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
+        String host = getRemoteHost(httpReq);
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_SERVICE_GROUP,authentUser, host, serviceGroupId);
 
-        log.info("DELETE ServiceGroup: {}", serviceGroupId);
 
         final ParticipantIdentifierType aServiceGroupID = Identifiers.asParticipantId(serviceGroupId);
         serviceGroupService.deleteServiceGroup(aServiceGroupID);
 
-        log.info("Finished DELETE ServiceGroup: {}", serviceGroupId);
+        LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_END_SERVICE_GROUP,authentUser, host, serviceGroupId);
     }
 
     private void addReferences(ServiceGroup serviceGroup) {
@@ -119,6 +132,11 @@ public class ServiceGroupController {
             String url = pathBuilder.buildSelfUrl(participantId, docId);
             referenceIds.add(new ServiceMetadataReferenceType(url));
         }
+    }
+
+    public String getRemoteHost(HttpServletRequest httpReq){
+        String host = httpReq.getHeader("X-Forwarded-For");
+        return StringUtils.isBlank(host)?httpReq.getRemoteHost():host;
     }
 
 }

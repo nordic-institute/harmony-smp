@@ -7,30 +7,18 @@ import {Domain} from './domain.model';
 @Injectable()
 export class DomainService {
 
-  static readonly MULTI_TENANCY_URL: string = 'rest/application/multitenancy';
   static readonly CURRENT_DOMAIN_URL: string = 'rest/security/user/domain';
   static readonly DOMAIN_LIST_URL: string = 'rest/application/domains';
 
-  private isMultiDomainSubject: ReplaySubject<boolean>;
   private domainSubject: ReplaySubject<Domain>;
 
   constructor (private http: HttpClient) {
   }
 
-  isMultiDomain (): Observable<boolean> {
-    if (!this.isMultiDomainSubject) {
-      this.isMultiDomainSubject = new ReplaySubject<boolean>();
-      this.http.get(DomainService.MULTI_TENANCY_URL).subscribe((res: HttpResponse<boolean>) => {
-        this.isMultiDomainSubject.next(res.body);
-      }, (error: any) => {
-        console.log('get isMultiDomain:' + error);
-        this.isMultiDomainSubject.next(false);
-      });
-    }
-    return this.isMultiDomainSubject.asObservable();
-  }
+
 
   getCurrentDomain (): Observable<Domain> {
+    /*
     if (!this.domainSubject) {
       this.domainSubject = new ReplaySubject<Domain>();
       this.http.get(DomainService.CURRENT_DOMAIN_URL).subscribe((res: HttpResponse<Domain>) => {
@@ -41,6 +29,8 @@ export class DomainService {
       });
     }
     return this.domainSubject.asObservable();
+    */
+    return null;
   }
 
   resetDomain (): void {
@@ -51,7 +41,10 @@ export class DomainService {
   }
 
   getDomains (): Observable<Domain[]> {
+    /*
     return this.http.get<Domain[]>(DomainService.DOMAIN_LIST_URL);
+    */
+    return null;
   }
 
   setCurrentDomain (domain: Domain) {

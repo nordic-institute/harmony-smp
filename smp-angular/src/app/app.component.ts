@@ -3,7 +3,6 @@ import {SecurityService} from './security/security.service';
 import {Router, RouterOutlet} from '@angular/router';
 import {SecurityEventService} from './security/security-event.service';
 import {Title} from '@angular/platform-browser';
-import {Http, Response} from '@angular/http';
 import {Observable} from 'rxjs';
 import {HttpClient, HttpResponse} from '@angular/common/http';
 
@@ -27,10 +26,13 @@ export class AppComponent implements OnInit {
               private securityEventService: SecurityEventService,
               private http: HttpClient,
               private titleService: Title) {
+
     let applicationNameResponse: Observable<string> = this.http.get<string>('rest/application/name');
 
     applicationNameResponse.subscribe((name: string) => {
       this.titleService.setTitle(name);
+
+
     });
   }
 

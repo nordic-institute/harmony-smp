@@ -1,20 +1,19 @@
 import {RouterModule, Routes} from '@angular/router';
 import {LoginComponent} from './login/login.component';
-import {ServiceGroupComponent} from './service-group/service-group.component';
+import {ServiceGroupSearchComponent} from './service-group-search/service-group-search.component';
+import {ServiceGroupComponent} from './service-group-edit/service-group.component';
 import {DomainComponent} from './domain/domain.component';
 import {AuthenticatedGuard} from './guards/authenticated.guard';
-import {AuthorizedAdminGuard} from './guards/authorized-admin.guard';
 import {UserComponent} from './user/user.component';
-import {TrustStoreComponent} from 'app/trust-store/trust-store.component';
 
 
 const appRoutes: Routes = [
-  {path: '', component: ServiceGroupComponent},
-  {path: 'servicegroup', component: ServiceGroupComponent},
+  {path: '', component: ServiceGroupSearchComponent},
+  {path: 'search', component: ServiceGroupSearchComponent},
+  {path: 'edit', component: ServiceGroupComponent},
   {path: 'domain', component: DomainComponent},
   {path: 'user', component: UserComponent},
 
-  {path: 'truststore', component: TrustStoreComponent, canActivate: [AuthenticatedGuard, AuthorizedAdminGuard]},
 
   {path: 'login', component: LoginComponent},
   {path: '**', component: ServiceGroupComponent, canActivate: [AuthenticatedGuard]}

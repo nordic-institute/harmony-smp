@@ -43,7 +43,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
         // given
 
         //when
-        ServiceResult<ServiceGroupRO> res = testInstance.getTableList(-1,-1,null, null);
+        ServiceResult<ServiceGroupRO> res = testInstance.getTableList(-1,-1,null, null,null);
         // then
         assertNotNull(res);
         assertEquals(0, res.getCount().intValue());
@@ -59,7 +59,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
         // given
         insertDataObjects(15);
         //when
-        ServiceResult<ServiceGroupRO> res = testInstance.getTableList(-1,-1,null, null);
+        ServiceResult<ServiceGroupRO> res = testInstance.getTableList(-1,-1,null, null, null);
 
 
         // then
