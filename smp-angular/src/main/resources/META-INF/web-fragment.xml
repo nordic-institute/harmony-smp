@@ -8,9 +8,9 @@
 
   <distributable/>
   <ordering>
-    <before>
+    <after>
       <others/>
-    </before>
+    </after>
   </ordering>
 
 </web-fragment>

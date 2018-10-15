@@ -79,8 +79,8 @@ export class SearchTableComponent implements OnInit {
     this.columnActions = {
       cellTemplate: this.rowActions,
       name: 'Actions',
-      width: 80,
-      maxWidth:80,
+      width: 120,
+      maxWidth:150,
       sortable: false
     };
     this.columnExpandDetails= {

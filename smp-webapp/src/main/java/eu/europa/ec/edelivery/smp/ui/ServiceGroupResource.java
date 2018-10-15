@@ -40,7 +40,7 @@ public class ServiceGroupResource {
             @RequestParam(value = "orderType", defaultValue = "asc", required = false) String orderType,
             @RequestParam(value = "participantId", required = false) String participantId,
             @RequestParam(value = "participantSchema", required = false) String participantSchema,
-            @RequestParam(value = "domain", required = true) String domain
+            @RequestParam(value = "domain", required = false) String domain
             ) {
 
 
