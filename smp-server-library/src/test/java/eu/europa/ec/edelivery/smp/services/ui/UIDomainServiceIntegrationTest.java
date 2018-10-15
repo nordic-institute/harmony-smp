@@ -42,7 +42,7 @@ public class UIDomainServiceIntegrationTest extends AbstractServiceIntegrationTe
         // given
 
         //when
-        ServiceResult<DomainRO> res = testInstance.getTableList(-1,-1,null, null);
+        ServiceResult<DomainRO> res = testInstance.getTableList(-1,-1,null, null, null);
         // then
         assertNotNull(res);
         assertEquals(0, res.getCount().intValue());
@@ -58,7 +58,7 @@ public class UIDomainServiceIntegrationTest extends AbstractServiceIntegrationTe
         // given
         insertDataObjects(15);
         //when
-        ServiceResult<DomainRO> res = testInstance.getTableList(-1,-1,null, null);
+        ServiceResult<DomainRO> res = testInstance.getTableList(-1,-1,null, null,null);
 
 
         // then

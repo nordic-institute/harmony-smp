@@ -28,13 +28,7 @@ import static org.junit.Assert.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {H2JPATestConfiguration.class, UserDao.class})
-@Sql(scripts = "classpath:cleanup-database.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig
-        (transactionMode = SqlConfig.TransactionMode.ISOLATED,
-                transactionManager = "transactionManager",
-                dataSource = "h2DataSource"))
-public class UserDaoIntegrationTest {
+public class UserDaoIntegrationTest extends AbstractBaseDao{
 
     @Autowired
     UserDao testInstance;

@@ -17,7 +17,7 @@ import javax.annotation.PostConstruct;
  */
 
 @RestController
-@RequestMapping(value = "/ui/servicegroup")
+@RequestMapping(value = "/ui/rest/servicegroup")
 public class ServiceGroupResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceGroupResource.class);
@@ -40,10 +40,10 @@ public class ServiceGroupResource {
             @RequestParam(value = "orderType", defaultValue = "asc", required = false) String orderType,
             @RequestParam(value = "participantId", required = false) String participantId,
             @RequestParam(value = "participantSchema", required = false) String participantSchema,
-            @RequestParam(value = "domain", required = false) String domainwe
+            @RequestParam(value = "domain", required = false) String domain
             ) {
 
 
-        return uiServiceGroupService.getTableList(page,pageSize, orderBy, orderType );
+        return uiServiceGroupService.getTableList(page,pageSize, orderBy, orderType, null );
     }
 }

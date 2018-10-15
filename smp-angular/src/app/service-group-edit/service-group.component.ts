@@ -1,7 +1,6 @@
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog, MatDialogRef} from '@angular/material';
-import {ServiceGroupDetailsDialogComponent} from './service-group-details-dialog/service-group-details-dialog.component';
 import {AlertService} from '../alert/alert.service';
 import {ServiceGroupController} from './service-group-controller';
 import {HttpClient} from '@angular/common/http';

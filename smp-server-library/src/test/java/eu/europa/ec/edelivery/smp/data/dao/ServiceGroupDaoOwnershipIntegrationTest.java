@@ -22,7 +22,6 @@ import static org.junit.Assert.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@RunWith(SpringJUnit4ClassRunner.class)
 public class ServiceGroupDaoOwnershipIntegrationTest extends ServiceGroupDaoIntegrationBase {
 
 

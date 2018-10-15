@@ -10,10 +10,27 @@ import eu.europa.ec.edelivery.smp.logging.api.MessageCode;
 public enum SMPMessageCode implements MessageCode {
 
 
-    BUS_SAVE_SERVICE_GROUP ("BUS-001", "Start inserting/updating ServiceGroup for part. Id: {} part. schema {}."),
-    BUS_SAVE_SERVICE_GROUP_FAILED ("BUS-002", "Inserting/updating ServiceGroup for part. Id: {} part. schema {} failed! Error: [{}]"),
+    BUS_HTTP_PUT_SERVICE_GROUP ("BUS-001", "Http PUT ServiceGroup from user {} from host: {} for owner: {}. ServiceGroup with domain: {}, id: {}."),
+    BUS_HTTP_PUT_END_SERVICE_GROUP ("BUS-002", "End http PUT ServiceGroup from user {}, host: {}, owner {}. ServiceGroup with domain {}, id: {}, created {}"),
+    BUS_HTTP_DELETE_SERVICE_GROUP ("BUS-003", "Http DELETE ServiceGroup from user {} from host: {}. ServiceGroup id: {}."),
+    BUS_HTTP_DELETE_END_SERVICE_GROUP ("BUS-004", "End Http DELETE ServiceGroup from user {} from host: {}. ServiceGroup id: {}."),
+    BUS_HTTP_GET_SERVICE_GROUP ("BUS-005", "Http GET ServiceGroup from host: {}, ServiceGroup id: {}."),
+    BUS_HTTP_GET_END_SERVICE_GROUP ("BUS-006", "End Http GET ServiceGroup from host: {}, ServiceGroup id: {}."),
 
-    BUS_INVALID_XML("BUS-010", "Invalid XML for {}. Error: [{}]"),
+
+    BUS_HTTP_PUT_SERVICE_METADATA ("BUS-007", "Http PUT ServiceGroupMetadata from user {} from host: {}. ServiceGroup with domain: {}, ServiceGroup id: {} , metadata id {}."),
+    BUS_HTTP_PUT_END_SERVICE_METADATA ("BUS-008", "End http PUT ServiceGroupMetadata from user {}, host: {}. ServiceGroup with domain {}, ServiceGroup id: {} , metadata id {}, created {}"),
+    BUS_HTTP_DELETE_SERVICE_METADATA ("BUS-009", "Http DELETE ServiceGroupMetadata from user {} from host: {}. ServiceGroup id: {} , metadata id {}."),
+    BUS_HTTP_DELETE_END_SERVICE_METADATA ("BUS-010", "End Http DELETE ServiceGroupMetadata from user {} from host: {}. ServiceGroup id: {} , metadata id {}."),
+
+    BUS_HTTP_GET_SERVICE_METADATA ("BUS-011", "Http GET ServiceGroup from host: {}, ServiceGroup id: {}, metadata id {}."),
+    BUS_HTTP_GET_END_SERVICE_METADATA ("BUS-012", "End Http GET ServiceGroup from host: {}, ServiceGroup id: {}, metadata id {}."),
+
+    BUS_SAVE_SERVICE_GROUP ("BUS-013", "Start inserting/updating ServiceGroup for domain {}, part. Id: {} part. schema {}."),
+    BUS_SAVE_SERVICE_GROUP_FAILED ("BUS-014", "Inserting/updating ServiceGroup for domain {}, part. Id: {} part. schema {} failed! Error: [{}]"),
+
+
+    BUS_INVALID_XML("BUS-030", "Invalid XML for {}. Error: [{}]"),
 
 
     SEC_UNSECURED_LOGIN_ALLOWED("SEC-001", "Unsecure login is allowed, no authentication will be performed"),

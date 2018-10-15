@@ -1,13 +1,12 @@
-<div style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 5px;">
-  <page-header id="{{id}}_header_id">{{title}}</page-header>
+<div fxLayout="column" style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 5px;">
+  <page-header flex id="{{id}}_header_id">{{title}}</page-header>
 
-  <div class="selectionCriteria">
+  <div *ngIf="showSearchPanel" fxFlex="20" class="selectionCriteria">
     <mat-card>
       <mat-card-content>
         <div class="panel">
           <form name="filterForm" #filterForm="ngForm" (ngSubmit)="search()">
             <ng-container *ngTemplateOutlet="searchPanel"></ng-container>
-
             <div class="searchArea">
               <button mat-raised-button color="primary" [disabled]="!filterForm.form.valid" id="searchbutton_id">
                 <mat-icon>search</mat-icon>
@@ -20,51 +19,87 @@
     </mat-card>
   </div>
 
-  <div class="panel" style="position: absolute; top: 270px; bottom: 5px; left: 5px; right: 5px;">
-    <div class="group-filter-button">
+  <div class="panel" fxFlex fxLayout="column">
+    <div class="group-filter-button" fxFlex="50px">
       <span class="row-button">
         <app-row-limiter [pageSizes]="rowLimiter.pageSizes"
                          (onPageSizeChanged)="changePageSize($event.value)"></app-row-limiter>
       </span>
-      <span class="column-filter-button">
+      <!-- no need for this span class="column-filter-button">
         <app-column-picker [allColumns]="columnPicker.allColumns" [selectedColumns]="columnPicker.selectedColumns"
                            (onSelectedColumnsChanged)="columnPicker.changeSelectedColumns($event)"></app-column-picker>
-      </span>
+      </span -->
     </div>
-    <!-- temporal solution <div - absolut - wrapping> for stretch table height to fit screen size: scrollbarV does not work - virtual scrolling has
-    row bugs.-->
-    <div class="panel">
-      <ngx-datatable
-        id="searchTable"
-        class="material striped"
-        [rowClass]="getRowClass"
-        [rows]="rows"
-        [columns]="columnPicker.selectedColumns"
-        [columnMode]="'force'"
-        [headerHeight]="50"
-        [footerHeight]="50"
-        [rowHeight]="'auto'"
-        [scrollbarH]="true"
-        [externalPaging]="true"
-        [externalSorting]="true"
-        [loadingIndicator]="loading"
-        [count]="rows.length"
-        [offset]="offset"
-        [limit]="rowLimiter.pageSize"
-        (page)="onPage($event)"
-        (sort)="onSort($event)"
-        [selected]="selected"
-        [selectionType]="'multi'"
-        (activate)="onActivate($event)"
-        (select)="onSelect($event)">
-      </ngx-datatable>
+    <ngx-datatable #searchTable fxFlex id="searchTable"
+                   class="material striped"
+                   [rowClass]="getRowClass"
+                   [rows]="rows"
+                   [columns]="columnPicker.selectedColumns"
+                   [columnMode]="'force'"
+                   [headerHeight]="50"
+                   [footerHeight]="50"
+                   [rowHeight]="'auto'"
+                   [scrollbarH]="true"
+                   [scrollbarV]="true"
+                   [virtualization]="false"
+                   [externalPaging]="true"
+                   [externalSorting]="true"
+                   [loadingIndicator]="loading"
+                   [count]="count"
+                   [offset]="offset"
+                   [limit]="rowLimiter.pageSize"
+                   (page)="onPage($event)"
+                   (sort)="onSort($event)"
+                   [selected]="selected"
+                   [selectionType]="'single'"
+                   (activate)="onActivate($event)"
+                   (select)="onSelect($event)">
+      <!-- Row Detail Template -->
+      <ngx-datatable-row-detail id="rowDetail" [rowHeight]="'auto'" #searchTableDetailRow
+                                (toggle)="onDetailToggle($event)">
+        <ng-template let-row="row" let-expanded="expanded" let-enabled="enabled"  ngx-datatable-row-detail-template>
+          <ng-container [ngTemplateOutlet]="tableRowDetailContainer"
+                        [ngTemplateOutletContext]="{row:row}"></ng-container>
+        </ng-template>
+      </ngx-datatable-row-detail>
+    </ngx-datatable>
 
-      <div class="group-action-button">
-        <button id="cancelButton" mat-raised-button (click)="onCancelButtonClicked()" color="primary" [disabled]="!submitButtonsEnabled">
+    <ng-template #rowIndex let-row="row" ngx-datatable-cell-template>
+      <span>{{row.index}}</span>
+    </ng-template>
+
+    <ng-template #rowActions let-row="row" ngx-datatable-cell-template>
+      <div>
+        <button mat-icon-button color="primary" [disabled]="row.deleted || loading"
+                (click)="editSearchTableEntityRow(row)" tooltip="Edit">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="primary" [disabled]="row.deleted || loading"
+                (click)="onDeleteRowActionClicked(row)" tooltip="Delete">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </div>
+    </ng-template>
+
+    <ng-template #rowExpand let-row="row" let-expanded="expanded" let-disabled="disabled" ngx-datatable-cell-template >
+      <span *ngIf="!!disabled">( )</span>
+      <a *ngIf="!disabled" class="table-button-expand"
+        href="javascript:void(0)"
+        title="Expand/Collapse Row"
+        (click)="toggleExpandRow(row)">{{expanded?'(-)':'(+)'}}
+      </a>
+    </ng-template>
+  </div>
+  <div fxFlex="50px">
+    <ng-container *ngIf=showActionButtons>
+
+        <button id="cancelButton" mat-raised-button (click)="onCancelButtonClicked()" color="primary"
+                [disabled]="!submitButtonsEnabled">
           <mat-icon>cancel</mat-icon>
           <span>Cancel</span>
         </button>
-        <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked(false)" color="primary" [disabled]="!submitButtonsEnabled">
+        <button id="saveButton" mat-raised-button (click)="onSaveButtonClicked(false)" color="primary"
+                [disabled]="!submitButtonsEnabled">
           <mat-icon>save</mat-icon>
           <span>Save</span>
         </button>
@@ -72,31 +107,17 @@
           <mat-icon>add</mat-icon>
           <span>New</span>
         </button>
-        <button id="editButton" mat-raised-button (click)="onEditButtonClicked()" [disabled]="!editButtonEnabled || loading" color="primary">
+        <button id="editButton" mat-raised-button (click)="onEditButtonClicked()"
+                [disabled]="!editButtonEnabled || loading" color="primary">
           <mat-icon>edit</mat-icon>
           <span>Edit</span>
         </button>
-        <button id="deleteButton" mat-raised-button (click)="onDeleteButtonClicked()" [disabled]="!deleteButtonEnabled || loading" color="primary">
+        <button id="deleteButton" mat-raised-button (click)="onDeleteButtonClicked()"
+                [disabled]="!deleteButtonEnabled || loading" color="primary">
           <mat-icon>delete</mat-icon>
           <span>Delete</span>
         </button>
-
-        <ng-container *ngTemplateOutlet="additionalToolButtons"></ng-container>
-
-      </div>
-
-      <ng-template #rowActions let-row="row" ngx-datatable-cell-template>
-        <div>
-          <button mat-icon-button color="primary" [disabled]="row.deleted || loading"
-                  (click)="onEditRowActionClicked(row.$$index)" tooltip="Edit">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button color="primary" [disabled]="row.deleted || loading"
-                  (click)="onDeleteRowActionClicked(row)" tooltip="Delete">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
-      </ng-template>
-    </div>
+    </ng-container>
+    <ng-container *ngTemplateOutlet="additionalToolButtons"></ng-container>
   </div>
 </div>

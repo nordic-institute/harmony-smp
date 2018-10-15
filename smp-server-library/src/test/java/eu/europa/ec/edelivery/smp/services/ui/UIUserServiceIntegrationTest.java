@@ -42,7 +42,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         // given
 
         //when
-        ServiceResult<UserRO> res = testInstance.getTableList(-1,-1,null, null);
+        ServiceResult<UserRO> res = testInstance.getTableList(-1,-1,null, null,null);
         // then
         assertNotNull(res);
         assertEquals(0, res.getCount().intValue());
@@ -58,7 +58,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         // given
         insertDataObjects(15);
         //when
-        ServiceResult<UserRO> res = testInstance.getTableList(-1,-1,null, null);
+        ServiceResult<UserRO> res = testInstance.getTableList(-1,-1,null, null,null);
 
 
         // then
