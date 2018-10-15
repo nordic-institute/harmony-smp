@@ -46,6 +46,7 @@ import java.util.List;
 import static eu.europa.ec.edelivery.smp.controllers.WebConstans.HTTP_PARAM_DOMAIN;
 import static eu.europa.ec.edelivery.smp.controllers.WebConstans.HTTP_PARAM_OWNER;
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
+import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -55,7 +56,6 @@ import static org.springframework.http.ResponseEntity.ok;
 
 @RestController
 @RequestMapping("/{serviceGroupId}")
-@Order
 public class ServiceGroupController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupController.class);

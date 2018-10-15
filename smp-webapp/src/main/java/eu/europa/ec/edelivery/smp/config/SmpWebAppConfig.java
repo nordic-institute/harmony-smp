@@ -49,8 +49,7 @@ public class SmpWebAppConfig implements WebMvcConfigurer {
 
         registry.setOrder(HIGHEST_PRECEDENCE)
                 .addResourceHandler("/index.html", "/favicon-16x16.png").addResourceLocations("/static_resources/");
-        registry.setOrder(HIGHEST_PRECEDENCE-1)
-                .addResourceHandler("/ui/").addResourceLocations("/ui/index.html"); // ui mapping to index.html
+
         registry.setOrder(HIGHEST_PRECEDENCE-2)
                 .addResourceHandler("/ui/rest/").addResourceLocations("/"); // ui rest resources
         registry.setOrder(HIGHEST_PRECEDENCE-3)

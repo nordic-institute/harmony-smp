@@ -153,6 +153,7 @@ public abstract class BaseDao<E extends BaseEntity> {
             }
         }
 
+
         // set order by
         if (searchParams != null) {
             List<Predicate> lstPredicate = createPredicates(searchParams, om, cb);
