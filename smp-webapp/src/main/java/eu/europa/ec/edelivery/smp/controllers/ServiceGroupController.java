@@ -95,7 +95,7 @@ public class ServiceGroupController {
             @RequestBody byte[] body) throws XmlInvalidAgainstSchemaException {
 
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        String host = getRemoveHost(httpReq);
+        String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_PUT_SERVICE_GROUP,authentUser, host, serviceGroupOwner, domain, serviceGroupId);
 
         // Validations
@@ -114,7 +114,7 @@ public class ServiceGroupController {
     @Secured({SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_SMP_ADMIN})
     public void deleteServiceGroup(HttpServletRequest httpReq, @PathVariable String serviceGroupId) {
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
-        String host = getRemoveHost(httpReq);
+        String host = getRemoteHost(httpReq);
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_DELETE_SERVICE_GROUP,authentUser, host, serviceGroupId);
 
 
@@ -134,7 +134,7 @@ public class ServiceGroupController {
         }
     }
 
-    public String getRemoveHost(HttpServletRequest httpReq){
+    public String getRemoteHost(HttpServletRequest httpReq){
         String host = httpReq.getHeader("X-Forwarded-For");
         return StringUtils.isBlank(host)?httpReq.getRemoteHost():host;
     }
