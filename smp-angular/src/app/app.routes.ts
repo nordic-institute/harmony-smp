@@ -4,13 +4,13 @@ import {ServiceGroupSearchComponent} from './service-group-search/service-group-
 import {ServiceGroupComponent} from './service-group-edit/service-group.component';
 import {DomainComponent} from './domain/domain.component';
 import {AuthenticatedGuard} from './guards/authenticated.guard';
-import {AuthorizedAdminGuard} from './guards/authorized-admin.guard';
 import {UserComponent} from './user/user.component';
 
 
 const appRoutes: Routes = [
   {path: '', component: ServiceGroupSearchComponent},
   {path: 'search', component: ServiceGroupSearchComponent},
+  {path: 'edit', component: ServiceGroupComponent},
   {path: 'domain', component: DomainComponent},
   {path: 'user', component: UserComponent},
 

@@ -7,7 +7,6 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from "rxjs/index";
 import {SearchTableResult} from "../common/search-table/search-table-result.model";
 import {DomainRo} from "../domain/domain-ro.model";
-import {SearchTableEntityStatus} from "../common/search-table/search-table-entity-status.model";
 
 @Component({
   moduleId: module.id,
@@ -29,7 +28,6 @@ export class ServiceGroupSearchComponent implements OnInit {
 
   constructor(protected http: HttpClient, protected alertService: AlertService, public dialog: MatDialog) {
     this.domainObserver = this.http.get<SearchTableResult>('rest/domain');
-
     this.domainObserver.subscribe((domains: SearchTableResult) => {
       this.domainlist = new Array(domains.serviceEntities.length)
         .map((v, index) => domains.serviceEntities[index] as DomainRo);
@@ -51,34 +49,37 @@ export class ServiceGroupSearchComponent implements OnInit {
       {
         name: 'Metadata count',
         prop: 'serviceMetadata.length',
-        width: 60
+        width: 60,
+        maxWidth: 80
       },
       {
         name: 'Participant scheme',
         prop: 'participantScheme',
+        maxWidth: 300
       },
       {
         name: 'Participant identifier',
         prop: 'participantIdentifier',
-        width: 275
       },
       {
         cellTemplate: this.rowSMPUrlLinkAction,
-        name: 'SMP Url',
-        width: 80,
+        name: 'OASIS ServiceGroup URL',
+        width: 150,
+        maxWidth: 250,
         sortable: false
       },
+      /*
       {
         cellTemplate: this.rowExtensionAction,
         name: 'Extension',
         width: 80,
         sortable: false
-      }
+      }*/
     ];
 
 
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
-      return ["Metadata count", "Participant scheme", "Participant identifier","SMP Url", "Extension"].indexOf(col.name) != -1
+      return ["Metadata count", "Participant scheme", "Participant identifier","OASIS ServiceGroup URL"].indexOf(col.name) != -1
     });
   }
 
