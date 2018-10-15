@@ -29,7 +29,7 @@
     "@angular/flex-layout": "^6.0.0-beta.16",
     "@swimlane/ngx-datatable": "^13.0.0",
     "core-js": "^2.5.7",
-    "file-saver": "^1.3.3",
+    "file-saver": "1.3.3",
     "hammerjs": "^2.0.8",
     "rxjs": "^6.3.3",
     "ts-helpers": "^1.1.2",
