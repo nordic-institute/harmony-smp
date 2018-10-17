@@ -9,7 +9,6 @@ export class CertificateService {
   constructor(private http: HttpClient) {}
 
   uploadCertificate$(payload): Observable<CertificateRo> {
-    return this.http.put<CertificateRo>('rest/certificate', payload);
+    return this.http.post<CertificateRo>('rest/user/certdata', payload);
   }
-
 }

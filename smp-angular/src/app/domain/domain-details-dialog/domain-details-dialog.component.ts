@@ -17,7 +17,7 @@ export class DomainDetailsDialogComponent {
 
   static readonly NEW_MODE = 'New Domain';
   static readonly EDIT_MODE = 'Domain Edit';
-  readonly dnsDomainPattern = '^(?!(\\d|-|_)+)[a-zA-Z0-9-]{1,63}$';
+  readonly dnsDomainPattern = '^(?!(\\d|-|_).+)[a-zA-Z0-9-]{1,63}$';
   readonly domainCodePattern = '^[a-zA-Z]{1,255}$';
 
   editMode: boolean;
@@ -25,8 +25,6 @@ export class DomainDetailsDialogComponent {
   current: DomainRo & { confirmation?: string };
   domainForm: FormGroup;
 
-  userSwitch: boolean;
-  certificateSwitch: boolean;
 
   domain;
 
@@ -44,12 +42,11 @@ export class DomainDetailsDialogComponent {
       }
       : {
         domainCode: '',
-        email: '',
-        password: '',
-        confirmation: '',
-        role: '',
+        smlSubdomain: '',
+        smlSmpId: '',
+        smlClientKeyAlias: '',
+        signatureKeyAlias: '',
         status: SearchTableEntityStatus.NEW,
-        certificate: {},
       };
 
     this.domainForm = fb.group({
@@ -57,7 +54,7 @@ export class DomainDetailsDialogComponent {
       'domainCode': new FormControl({value: this.current.domainCode, disabled: this.editMode}, [Validators.pattern(this.domainCodePattern)]),
       'smlSubdomain': new FormControl({value: this.current.smlSubdomain, disabled: this.editMode},  [Validators.pattern(this.dnsDomainPattern)]),
       'smlSmpId': new FormControl({value: this.current.smlSmpId}, [Validators.required, Validators.pattern(this.dnsDomainPattern)]),
-      'smlClientKeyAlias': new FormControl({value: this.current.signatureKeyAlias}, null),
+      'smlClientKeyAlias': new FormControl({value: this.current.smlClientKeyAlias}, null),
       'signatureKeyAlias': new FormControl({value: this.current.signatureKeyAlias}, null),
 
 

@@ -1,0 +1,98 @@
+<smp-search-table
+  page_id='edit_id'
+  title='Edit'
+  [columnPicker]="columnPicker"
+  [url]="baseUrl"
+  [additionalToolButtons]="additionalToolButtons"
+  [searchPanel]="searchPanel"
+  [filter]="filter"
+  [searchTableController]="serviceGroupEditController"
+  [tableRowDetailContainer]="tableRowDetailContainer"
+>
+
+  <ng-template #rowMetadataAction let-row="row" let-value="value" ngx-datatable-cell-template>
+
+    <button mat-button color="primary"
+            (click)="metadataRowButtonAction(row)" id="metadataRowButtonAction{{row.$$index}}_id" tooltip="Metadata">
+      <mat-icon>view_list</mat-icon>
+      <span>Metadata</span>
+    </button>
+
+  </ng-template>
+
+
+  <ng-template #searchPanel>
+    <mat-form-field>
+      <input matInput placeholder="Participant Id" name="messageId" [(ngModel)]="filter.messageId"
+             #messageId="ngModel" id="messageid_id">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Participant schema" name="patricipantSchema" [(ngModel)]="filter.messageId"
+             #messageId="ngModel" id="participanschema_id">
+    </mat-form-field>
+    <mat-select placeholder="Domain " [(ngModel)]="filter.messageStatus" name="messageStatus"
+               id="messagestatus_id">
+      <mat-option [value]="''">
+      </mat-option>
+      <mat-option *ngFor="let mstatus of msgStatus" [value]="mstatus">
+        {{mstatus}}
+      </mat-option>
+    </mat-select>
+  </ng-template>
+
+
+  <ng-template #additionalToolButtons>
+    <div style="background-color: #03A9F4; display: inline-block; width: 3px; height: 100%; margin-right: 8px">&nbsp;
+    </div>
+    <button mat-raised-button color="primary"
+            id="metadatabutton_id">
+      <mat-icon>view_list</mat-icon>
+      <span>Metadata</span>
+    </button>
+
+  </ng-template>
+
+  <ng-template #tableRowDetailContainer let-row="row">
+
+    <div *ngIf="row.serviceMetadata.length===0" style="padding-left:20px;">
+      No service metadata
+    </div>
+    <div *ngIf="row.serviceMetadata.length !== 0" >
+      <ngx-datatable
+        class='material striped'
+        style="width: 80%"
+        [loadingIndicator]="loading"
+        [rows]='row.serviceMetadata'
+        [columnMode]='"force"'
+        [headerHeight]='50'
+        [footerHeight]='50'
+        [rowHeight]='"auto"'>
+        <ngx-datatable-column prop="domainCode" name="Domain" maxWidth="250" ></ngx-datatable-column>
+        <ngx-datatable-column prop="documentIdentifierScheme" name="Document identifier scheme" maxWidth="350" ></ngx-datatable-column>
+        <ngx-datatable-column prop="documentIdentifier" name="Document identifier" maxWidth="250" ></ngx-datatable-column>
+        <ngx-datatable-column [cellTemplate]="rowMetadataSMPUrlLinkAction" name="URL" maxWidth="250" ></ngx-datatable-column>
+        <ngx-datatable-column [cellTemplate]="rowMetadataActions" name="Actions" maxWidth="150" ></ngx-datatable-column>
+
+        <ng-template #rowMetadataSMPUrlLinkAction let-rowSmd="row" ngx-datatable-cell-template>
+          <a target="_blank"
+             href="{{contextPath}}{{row.participantScheme}}::{{row.participantIdentifier}}/services/{{rowSmd.documentIdentifierScheme}}::{{rowSmd.documentIdentifier}}" >Open URL</a>
+        </ng-template>
+      </ngx-datatable>
+
+      <ng-template #rowMetadataActions let-rowSmd="row" ngx-datatable-cell-template>
+        <div>
+          <button mat-icon-button color="primary" [disabled]="rowSmd.deleted || loading"
+                  (click)="onEditMetadataRow(rowSmd)" tooltip="Edit">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="primary" [disabled]="rowSmd.deleted || loading"
+                  (click)="onDeleteMetadataRowActionClicked(rowSmd)" tooltip="Delete">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </ng-template>
+
+    </div>
+  </ng-template>
+
+</smp-search-table>

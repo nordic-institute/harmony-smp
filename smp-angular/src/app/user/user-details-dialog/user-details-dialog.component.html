@@ -9,8 +9,8 @@
 
       <div class="panel">
         <mat-form-field class="username">
-          <input matInput placeholder="Username" [formControl]="userForm.controls['userName']" maxlength="255" required>
-          <div *ngIf="userForm.controls['userName'].hasError('required') && userForm.controls['userName'].touched" class="has-error">You should type an username</div>
+          <input matInput placeholder="Username" [formControl]="userForm.controls['username']" maxlength="255" required>
+          <div *ngIf="userForm.controls['username'].hasError('required') && userForm.controls['username'].touched" class="has-error">You should type an username</div>
         </mat-form-field>
 
         <mat-form-field class="role">

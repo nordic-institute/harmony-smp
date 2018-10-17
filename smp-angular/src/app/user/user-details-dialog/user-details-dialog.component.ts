@@ -33,6 +33,8 @@ export class UserDetailsDialogComponent {
   @ViewChild('fileInput')
   private fileInput;
 
+
+
   private passwordConfirmationValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
     const userToggle = control.get('userToggle');
     const password = control.get('password');
@@ -80,7 +82,7 @@ export class UserDetailsDialogComponent {
           fingerprints: data.row.fingerprints,
         }
       }: {
-        userName: '',
+        username: '',
         email: '',
         password: '',
         confirmation: '',
@@ -89,11 +91,11 @@ export class UserDetailsDialogComponent {
         certificate: {},
       };
 
-    const userDetailsToggled: boolean = user && !!user.userName;
+    const userDetailsToggled: boolean = user && !!user.username;
 
     this.userForm = fb.group({
       'userToggle': new FormControl(userDetailsToggled),
-      'userName': new FormControl({ value: user.userName, disabled: this.editMode || !userDetailsToggled }, this.editMode ? Validators.nullValidator : null),
+      'username': new FormControl({ value: user.username, disabled: this.editMode || !userDetailsToggled }, this.editMode ? Validators.nullValidator : null),
       'role': new FormControl({ value: user.role, disabled: !userDetailsToggled }, Validators.required),
       'password': new FormControl({ value: user.password, disabled: !userDetailsToggled }, [Validators.required, Validators.pattern(this.passwordPattern)]),
       'confirmation': new FormControl({ value: user.password, disabled: !userDetailsToggled }, Validators.pattern(this.passwordPattern)),
@@ -130,22 +132,20 @@ export class UserDetailsDialogComponent {
       const array = new Uint8Array(arrayBuffer);
       const binaryString = String.fromCharCode.apply(null, array);
 
-      // TODO define userName or use some sort of userId
-      // this.certificateService.uploadCertificate$({content: binaryString})
-        // .subscribe((res: CertificateRo) => {
-            // TODO user real service
+      this.certificateService.uploadCertificate$({content: binaryString})
+        .subscribe((res: CertificateRo) => {
             this.userForm.patchValue({
-              'subject': 'subject',
-              'validFrom': this.datePipe.transform(new Date().toString(), this.dateFormat),
-              'validUntil': this.datePipe.transform(new Date().toString(), this.dateFormat),
-              'issuer': 'issues',
-              'fingerprints': 'fingerprints'
+              'subject': res.subject,
+              'validFrom': this.datePipe.transform(res.validFrom.toString(), this.dateFormat),
+              'validUntil': this.datePipe.transform(res.validUntil.toString(), this.dateFormat),
+              'issuer': res.issuer,
+              'fingerprints': res.fingerprints
             });
-          // },
-          // err => {
-          //   this.alertService.exception('Error uploading certificate file ' + file.name, err);
-          // }
-        // );
+          },
+          err => {
+            this.alertService.exception('Error uploading certificate file ' + file.name, err);
+          }
+        );
     };
     reader.onerror = (err) => {
       this.alertService.exception('Error reading certificate file ' + file.name, err);
@@ -156,7 +156,7 @@ export class UserDetailsDialogComponent {
 
   onUserToggleChanged({checked}: MatSlideToggleChange) {
     const action = checked ? 'enable' : 'disable';
-    this.userForm.get('userName')[action]();
+    this.userForm.get('username')[action]();
     this.userForm.get('role')[action]();
     this.userForm.get('password')[action]();
     this.userForm.get('confirmation')[action]();

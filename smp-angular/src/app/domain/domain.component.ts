@@ -5,6 +5,7 @@ import {MatDialog, MatDialogRef} from '@angular/material';
 import {AlertService} from '../alert/alert.service';
 import {DomainController} from './domain-controller';
 import {HttpClient} from '@angular/common/http';
+import {SmpConstants} from "../smp.constants";
 
 @Component({
   moduleId: module.id,
@@ -17,9 +18,11 @@ export class DomainComponent implements OnInit {
   @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>;
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
 
+  baseUrl = SmpConstants.REST_DOMAIN;
   columnPicker: ColumnPicker = new ColumnPicker();
   domainController: DomainController;
   filter: any = {};
+
 
   constructor(protected http: HttpClient, protected alertService: AlertService, public dialog: MatDialog) {
   }

@@ -23,13 +23,16 @@ insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_O
 -- set the ids to higher values - tests are using sequnce which stars from 1
 insert into SMP_SERVICE_GROUP(ID, PARTICIPANT_IDENTIFIER, PARTICIPANT_SCHEME,SML_REGISTRED, CREATED_ON, LAST_UPDATED_ON) values (100000, 'urn:australia:ncpb', 'ehealth-actorid-qns', 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 insert into SMP_SERVICE_GROUP(ID, PARTICIPANT_IDENTIFIER, PARTICIPANT_SCHEME,SML_REGISTRED, CREATED_ON, LAST_UPDATED_ON) values (200000, 'urn:brazil:ncpb', 'ehealth-actorid-qns', 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
---insert into SMP_SERVICE_GROUP(ID, PARTICIPANT_IDENTIFIER, PARTICIPANT_SCHEME,SML_REGISTRED) values (3, 'urn:poland:ncpb', 'ehealth-participantid-qns', 1);
+
+-- set ownership
+insert into SMP_OWNERSHIP (FK_SG_ID, FK_USER_ID) values (100000, 2);
+insert into SMP_OWNERSHIP (FK_SG_ID, FK_USER_ID) values (200000, 2);
 
 insert into SMP_DOMAIN (ID, DOMAIN_CODE, SML_SUBDOMAIN, SML_SMP_ID, SIGNATURE_KEY_ALIAS, CREATED_ON, LAST_UPDATED_ON) values (1, 'domain','subdomain', 'CEF-SMP-001','sig-key',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 
- --insert into SMP_OWNERSHIP (FK_SG_ID, FK_USER_ID) values (3, 1);
---insert into SMP_SERVICE_GROUP_DOMAIN (ID, FK_SG_ID, FK_DOMAIN_ID) values (1, 3, 1);
--- insert into smp_ownership(username, businessidentifier, businessidentifierscheme) values ('CN=EHEALTH_SMP_TEST_BRAZIL,O=European Commission,C=BE:48b681ee8e0dcc08', 'urn:australia:ncpb', 'ehealth-actorid-qns');
+insert into SMP_SERVICE_GROUP_DOMAIN (ID, FK_SG_ID, FK_DOMAIN_ID, CREATED_ON, LAST_UPDATED_ON) values (1000,200000, 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 
+insert into SMP_SERVICE_GROUP_DOMAIN (ID, FK_SG_ID, FK_DOMAIN_ID, CREATED_ON, LAST_UPDATED_ON) values (1001,100000, 1,CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+insert into SMP_SERVICE_METADATA (ID, FK_SG_DOM_ID, DOCUMENT_IDENTIFIER, DOCUMENT_SCHEME, LAST_UPDATED_ON, CREATED_ON)  values (1000,1001,'doc_7','busdox-docid-qns',CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 
 
