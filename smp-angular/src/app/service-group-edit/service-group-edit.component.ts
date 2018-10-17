@@ -18,7 +18,6 @@ import {SearchTableResult} from "../common/search-table/search-table-result.mode
 export class ServiceGroupEditComponent implements OnInit {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>
-  @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
   @ViewChild('rowSMPUrlLinkAction') rowSMPUrlLinkAction: TemplateRef<any>
 
@@ -71,13 +70,6 @@ export class ServiceGroupEditComponent implements OnInit {
         prop: 'participantIdentifier',
       },
       {
-        cellTemplate: this.rowExtensionAction,
-        name: 'Extension',
-        width: 80,
-        maxwidth: 120,
-        sortable: false
-      },
-      {
         cellTemplate: this.rowSMPUrlLinkAction,
         name: 'OASIS ServiceGroup URL',
         width: 150,
@@ -88,12 +80,8 @@ export class ServiceGroupEditComponent implements OnInit {
     ];
 
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
-      return ["Metadata size", 'Owners size', "Participant scheme", "Participant identifier", "Extension", "OASIS ServiceGroup URL"].indexOf(col.name) != -1
+      return ["Metadata size", 'Owners size', "Participant scheme", "Participant identifier", "OASIS ServiceGroup URL"].indexOf(col.name) != -1
     });
-  }
-
-  extensionRowButtonAction(row: any){
-    this.serviceGroupEditController.showExtension(row);
   }
 
   metadataRowButtonAction(row: any){
