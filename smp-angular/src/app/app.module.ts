@@ -64,7 +64,6 @@ import {DomainSelectorComponent} from './common/domain-selector/domain-selector.
 import {AlertsComponent} from './alerts/alerts.component';
 
 import {SearchTableComponent} from './common/search-table/search-table.component';
-import {ServiceGroupExtensionDialogComponent} from './service-group-edit/service-group-extension-dialog/service-group-extension-dialog.component';
 import {ServiceGroupMetadataDialogComponent} from './service-group-edit/service-group-metadata-dialog/service-group-metadata-dialog.component';
 import {DomainDetailsDialogComponent} from './domain/domain-details-dialog/domain-details-dialog.component';
 import {UserDetailsDialogComponent} from './user/user-details-dialog/user-details-dialog.component';
@@ -88,7 +87,6 @@ import {CertificateService} from './user/certificate.service';
     IsAuthorized,
     SaveDialogComponent,
     ServiceGroupMetadataDialogComponent,
-    ServiceGroupExtensionDialogComponent,
     CancelDialogComponent,
     RowLimiterComponent,
     DatePipe,
@@ -108,7 +106,6 @@ import {CertificateService} from './user/certificate.service';
     AppComponent,
     ServiceGroupMetadataDialogComponent,
     ServiceGroupDetailsDialogComponent,
-    ServiceGroupExtensionDialogComponent,
     DomainDetailsDialogComponent,
     UserDetailsDialogComponent,
     CancelDialogComponent,

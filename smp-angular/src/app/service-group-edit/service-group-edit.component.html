@@ -20,15 +20,6 @@
 
   </ng-template>
 
-  <ng-template #rowExtensionAction let-row="row" let-value="value" ngx-datatable-cell-template>
-
-    <button mat-button color="primary"
-            (click)="extensionRowButtonAction(row)" id="extensionRowButtonAction{{row.$$index}}_id" tooltip="Extension">
-      <mat-icon>code</mat-icon>
-      <span>Extension</span>
-    </button>
-
-  </ng-template>
 
   <ng-template #searchPanel>
     <mat-form-field>
@@ -59,11 +50,6 @@
       <span>Metadata</span>
     </button>
 
-    <button mat-raised-button color="primary"
-            id="extensionbutton_id">
-      <mat-icon>code</mat-icon>
-      <span>Extension</span>
-    </button>
   </ng-template>
 
   <ng-template #tableRowDetailContainer let-row="row">
