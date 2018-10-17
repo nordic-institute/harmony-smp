@@ -55,7 +55,7 @@ import static org.springframework.http.ResponseEntity.ok;
  */
 
 @RestController
-@RequestMapping("/{serviceGroupId}")
+@RequestMapping("/{serviceGroupId:^(?!ui).*}")
 public class ServiceGroupController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupController.class);
@@ -75,6 +75,8 @@ public class ServiceGroupController {
 
     @GetMapping(produces = "text/xml; charset=UTF-8")
     public ServiceGroup getServiceGroup(HttpServletRequest httpReq, @PathVariable String serviceGroupId) {
+
+
         String host = httpReq.getRemoteHost();
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_SERVICE_GROUP,host, serviceGroupId);
 

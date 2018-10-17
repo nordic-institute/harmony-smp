@@ -1,3 +1,4 @@
+///<reference path="../smp.constants.ts"/>
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
 import {MatDialog, MatDialogRef} from '@angular/material';
@@ -7,6 +8,7 @@ import {HttpClient} from '@angular/common/http';
 import {Observable} from "rxjs/index";
 import {SearchTableResult} from "../common/search-table/search-table-result.model";
 import {DomainRo} from "../domain/domain-ro.model";
+import {SmpConstants} from "../smp.constants";
 
 @Component({
   moduleId: module.id,
@@ -25,9 +27,10 @@ export class ServiceGroupSearchComponent implements OnInit {
   domainlist: Array<any>;
   domainObserver:  Observable< SearchTableResult> ;
   contextPath: string = location.pathname.substring(0,location.pathname.length -3); // remove /ui s
+  baseUrl: string = SmpConstants.REST_SEARCH;
 
   constructor(protected http: HttpClient, protected alertService: AlertService, public dialog: MatDialog) {
-    this.domainObserver = this.http.get<SearchTableResult>('rest/domain');
+    this.domainObserver = this.http.get<SearchTableResult>(SmpConstants.REST_DOMAIN);
     this.domainObserver.subscribe((domains: SearchTableResult) => {
       this.domainlist = new Array(domains.serviceEntities.length)
         .map((v, index) => domains.serviceEntities[index] as DomainRo);
@@ -39,7 +42,7 @@ export class ServiceGroupSearchComponent implements OnInit {
   }
 
   ngOnDestroy() {
-  //  this.domainObserver.unsubscribe();
+
   }
 
   ngOnInit() {
@@ -47,10 +50,10 @@ export class ServiceGroupSearchComponent implements OnInit {
 
     this.columnPicker.allColumns = [
       {
-        name: 'Metadata count',
+        name: 'Metadata size',
         prop: 'serviceMetadata.length',
-        width: 60,
-        maxWidth: 80
+        width: 80,
+        maxWidth: 120
       },
       {
         name: 'Participant scheme',
@@ -79,7 +82,7 @@ export class ServiceGroupSearchComponent implements OnInit {
 
 
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
-      return ["Metadata count", "Participant scheme", "Participant identifier","OASIS ServiceGroup URL"].indexOf(col.name) != -1
+      return ["Metadata size", "Participant scheme", "Participant identifier","OASIS ServiceGroup URL"].indexOf(col.name) != -1
     });
   }
 

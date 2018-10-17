@@ -1,38 +1,83 @@
-<h2 mat-dialog-title>ServiceGroup details</h2>
-<mat-dialog-content style="height:260px;width:650px">
-  <mat-card>
-    <mat-card-content>
-      <mat-form-field style="width:100%">
-        <input matInput placeholder="Participant Id" value="{{servicegroup.serviceGroupROId.participantId}}" readonly/>
-      </mat-form-field>
+<h2 mat-dialog-title>{{formTitle}}</h2>
 
-      <mat-form-field style="width:100%">
-        <input matInput placeholder="Participant schema" value="{{servicegroup.serviceGroupROId.participantSchema}}" readonly/>
-      </mat-form-field>
+<mat-dialog-content style="height:600px;width:1100px">
+  <div fxLayout="row">
+    <div fxLayout="column">
+      <mat-card fxFlex="200px">
+        <mat-card-title>Identifier</mat-card-title>
+        <mat-card-content>
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="Participant identifier" name="participantIdentifier"
+                   value="{{current.participantIdentifier}}" id="participantIdentifier_id"
+                   (blur)="updateParticipantIdentifier($event)"
+                   [formControl]="dialogForm.controls['participantIdentifier']" maxlength="255" required>
+            <div
+              *ngIf="(!editMode && dialogForm.controls['participantIdentifier'].touched || editMode) &&  dialogForm.controls['participantIdentifier'].hasError('required')"
+              style="color:red; font-size: 70%">
+              Participant identifier must not be empty.
+            </div>
+          </mat-form-field>
 
-      <mat-form-field style="width:100%">
-        <input matInput placeholder="Domain" value="{{servicegroup.domain}}" readonly/>
-      </mat-form-field>
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="Participant scheme" name="participantScheme"
+                   value="{{current.participantScheme}}" id="participantScheme_id"
+                   (blur)="updateParticipantScheme($event)" [formControl]="dialogForm.controls['participantScheme']"
+                   maxlength="255" required>
+            <div
+              *ngIf="(!editMode && dialogForm.controls['participantScheme'].touched || editMode) &&  dialogForm.controls['participantScheme'].hasError('required')"
+              style="color:red; font-size: 70%">
+              Participant scheme must not be empty.
+            </div>
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+      <mat-card>
+        <mat-card-title>Owners</mat-card-title>
+        <mat-card-content>
+          <p>Selected user count: {{usersSelected.selectedOptions.selected.length}}</p>
+        <mat-selection-list #usersSelected [compareWith]="compareUserById"
+                            (selectionChange)="userListChanged(usersSelected.selectedOptions.selected,$event)"
+                            [formControl]="formControlUsers"
+                            style="height: 200px;  overflow-y: scroll; overflow-x: auto;">
+          <mat-list-option *ngFor="let user of userlist" [value]='user'>
+            {{user.id}} - {{user.username?user.username:user.id}}
+          </mat-list-option>
+        </mat-selection-list>
+        <div
+          *ngIf="(!editMode && dialogForm.controls['users'].touched || editMode) &&  dialogForm.controls['users'].hasError('minCountOwners')"
+          style="color:red; font-size: 70%">
+          At least one user (owner) must be selected!
+        </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
 
-    </mat-card-content>
-  </mat-card>
-
+    <mat-card fxFlex="60">
+      <mat-card-title>Extension</mat-card-title>
+      <mat-card-content>
+        <p>
+          Extension is automatically wrapped to root element to form vaild XML! No ExtensionWrapper element is needed.
+        </p>
+        <mat-form-field>
+          <textarea id="extensionTextArea" resizeable="false" placeholder="Extension"  name="extension" ></textarea>
+        </mat-form-field>
+      </mat-card-content>
+    </mat-card>
+  </div>
 </mat-dialog-content>
 
 <mat-dialog-actions>
-  <div class="group-action-button" >
-  <button id="ServiceGroupsSaveButton" mat-raised-button color="primary" (click)="dialogRef.close({})"
-          style="margin-top:10px">
-    <mat-icon>save</mat-icon>
-    <span>Save</span>
-  </button>
+  <div class="group-action-button">
+    <button mat-raised-button color="primary" [mat-dialog-close]="true" (click)="submitForm()"
+            [disabled]="!dialogForm.valid">
+      <mat-icon>check_circle</mat-icon>
+      <span>OK</span>
+    </button>
 
-
-  <button id="ServiceGroupsCloseButton" mat-raised-button color="primary" (click)="dialogRef.close({})"
-          style="margin-top:10px">
-    <mat-icon>close</mat-icon>
-    <span>Close</span>
-  </button>
+    <button mat-raised-button color="primary" mat-dialog-close>
+      <mat-icon>cancel</mat-icon>
+      <span>Cancel</span>
+    </button>
   </div>
 </mat-dialog-actions>
-
+<div style="text-align: right; font-size: 70%">* required fields</div>
