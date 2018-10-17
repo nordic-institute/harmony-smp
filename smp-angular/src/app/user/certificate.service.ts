@@ -8,8 +8,14 @@ export class CertificateService {
 
   constructor(private http: HttpClient) {}
 
-  uploadCertificate$(payload, userName: string): Observable<CertificateRo> {
-    return this.http.put<CertificateRo>(`rest/user/${userName}/certificate`, payload);
+  uploadCertificate$(payload, username: string): Observable<CertificateRo> {
+    return this.http.put<CertificateRo>(`rest/user/${username}/certificate`, payload);
   }
 
+
+
+  onUpload(file) {
+
+    return this.http.post<CertificateRo>('rest/user/certdata',file, )
+  }
 }

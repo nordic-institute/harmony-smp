@@ -18,6 +18,18 @@
 
 /deep/ .deleted span[title] {
   text-decoration: line-through !important;
+  font-weight: bold;
+}
+/deep/ .newTableRow span[title] {
+
+  color: darkgreen !important;
+  font-weight: bold;
+}
+/deep/ .updatedTableRow span[title] {
+  font-weight: bold;
+}
+/deep/ .tableRow span[title] {
+  font-weight: normal;
 }
 
 .group-action-button {

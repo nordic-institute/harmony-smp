@@ -39,6 +39,15 @@ public class DBCertificate extends BaseEntity {
     private LocalDateTime validFrom;
     @Column(name = "VALID_TO")
     private LocalDateTime validTo;
+
+    @Column(name = "subject", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512)
+    private String  subject;
+    @Column(name = "issuer", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512)
+    private String  issuer;
+    @Column(name = "serialNumber", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128)
+    private String  serialNumber;
+
+
     @Column(name = "CREATED_ON" , nullable = false)
     LocalDateTime createdOn;
     @Column(name = "LAST_UPDATED_ON", nullable = false)
@@ -93,6 +102,31 @@ public class DBCertificate extends BaseEntity {
         this.dbUser = dbUser;
     }
 
+
+    public String getSubject() {
+        return subject;
+    }
+
+    public void setSubject(String subject) {
+        this.subject = subject;
+    }
+
+    public String getIssuer() {
+        return issuer;
+    }
+
+    public void setIssuer(String issuer) {
+        this.issuer = issuer;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -138,4 +172,5 @@ public class DBCertificate extends BaseEntity {
     public void setLastUpdatedOn(LocalDateTime lastUpdatedOn) {
         this.lastUpdatedOn = lastUpdatedOn;
     }
+
 }

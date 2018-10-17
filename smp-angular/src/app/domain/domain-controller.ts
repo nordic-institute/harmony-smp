@@ -29,6 +29,7 @@ export class DomainController implements SearchTableController {
 
   public newRow(): DomainRo {
     return {
+      index: null,
       domainCode: '',
       smlSubdomain: '',
       smlSmpId: '',

@@ -13,8 +13,8 @@
           <div class="panel">
             <div style="margin-top:15px;">
               <mat-form-field style="width:100%">
-                <input matInput placeholder="Username" name="userName" id="userName" [value]="current.userName" (blur)="updateUserName($event)" [formControl]="userForm.controls['userName']" maxlength="255" required>
-                <div *ngIf="userForm.controls['userName'].hasError('required') && userForm.controls['userName'].touched" style="color:red; font-size: 70%">You should type an username</div>
+                <input matInput placeholder="Username" name="username" id="username" [value]="current.username" (blur)="updateUserName($event)" [formControl]="userForm.controls['username']" maxlength="255" required>
+                <div *ngIf="userForm.controls['username'].hasError('required') && userForm.controls['username'].touched" style="color:red; font-size: 70%">You should type an username</div>
               </mat-form-field>
             </div>
 
@@ -80,6 +80,13 @@
                 <input matInput placeholder="Fingerprints" name="fingerPrint" value="{{current.certificate?.fingerprints}}" id="fingerPrint_id">
               </mat-form-field>
             </fieldset>
+
+            <input
+              type="file" (change)="onFileChanged($event)"
+              #fileInput>
+            <button (click)="onUpload()">Upload!</button>
+
+
             <label class="custom-file-upload">
               <input #fileInput type="file" id="custom-file-upload" accept=".cer" (change)="uploadCertificate()" [disabled]="!certificateSwitch">
               <span class="custom-file-upload-inner">Import</span>

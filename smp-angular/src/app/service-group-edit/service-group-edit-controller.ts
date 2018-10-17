@@ -1,24 +1,23 @@
 import {SearchTableController} from '../common/search-table/search-table-controller';
 import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {ServiceGroupDetailsDialogComponent} from './service-group-details-dialog/service-group-details-dialog.component';
-import {AlertService} from '../alert/alert.service';
 import {ServiceGroupExtensionDialogComponent} from './service-group-extension-dialog/service-group-extension-dialog.component';
-import {ServiceGroupMetadataListDialogComponent} from './service-group-metadata-list-dialog/service-group-metadata-list-dialog.component';
-import {UserDetailsDialogComponent} from '../user/user-details-dialog/user-details-dialog.component';
-import {SearchTableEntity} from '../common/search-table/search-table-entity.model';
-import {ServiceGroupRo} from './service-group-ro.model';
+import {ServiceGroupEditRo} from './service-group-edit-ro.model';
 import {SearchTableEntityStatus} from '../common/search-table/search-table-entity-status.model';
+import {ServiceMetadataEditRo} from "./service-metadata-edit-ro.model";
+import {DomainDetailsDialogComponent} from "../domain/domain-details-dialog/domain-details-dialog.component";
 
-export class ServiceGroupController implements SearchTableController {
+export class ServiceGroupEditController implements SearchTableController {
 
   constructor(public dialog: MatDialog) { }
 
-  public showDetails(row: any) {
-    let dialogRef: MatDialogRef<ServiceGroupDetailsDialogComponent> = this.newDialog();
-    dialogRef.componentInstance.servicegroup = row;
+  public showDetails( row: any, config?: MatDialogConfig,) {
+    let dialogRef: MatDialogRef<ServiceGroupDetailsDialogComponent>
+      = this.dialog.open(ServiceGroupDetailsDialogComponent);
     dialogRef.afterClosed().subscribe(result => {
       //Todo:
     });
+
   }
 
   public showExtension(row: any) {
@@ -30,11 +29,7 @@ export class ServiceGroupController implements SearchTableController {
   }
 
   public showMetadataList(row: any) {
-    let dialogRef: MatDialogRef<ServiceGroupMetadataListDialogComponent> = this.dialog.open(ServiceGroupMetadataListDialogComponent);
-   // dialogRef.componentInstance.servicegroup = row;
-    dialogRef.afterClosed().subscribe(result => {
-      //Todo:
-    });
+
   }
 
 
@@ -46,13 +41,16 @@ export class ServiceGroupController implements SearchTableController {
     return this.dialog.open(ServiceGroupDetailsDialogComponent, config);
   }
 
-  public newRow(): ServiceGroupRo {
+  public newRow(): ServiceGroupEditRo {
     return {
-      domain: '',
-      serviceGroupROId: {
-        participantId: '',
-        participantSchema: ''
-      },
+      id: null,
+      index: null,
+      participantIdentifier:'',
+      participantScheme: '',
+      domainCode: '',
+      smlSubdomain: '',
+      serviceMetadata:[],
+      users: [],
       status: SearchTableEntityStatus.NEW
     };
   }
