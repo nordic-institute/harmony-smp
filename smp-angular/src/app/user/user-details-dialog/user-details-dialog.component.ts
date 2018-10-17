@@ -8,6 +8,10 @@ import {UserRo} from '../user-ro.model';
 import {SearchTableEntityStatus} from '../../common/search-table/search-table-entity-status.model';
 import {AlertService} from '../../alert/alert.service';
 import {CertificateService} from '../certificate.service';
+import {Observable} from "rxjs/index";
+import {CertificateRo} from "../certificate-ro.model";
+import {SearchTableResult} from "../../common/search-table/search-table-result.model";
+
 
 @Component({
   selector: 'user-details-dialog',
@@ -37,6 +41,8 @@ export class UserDetailsDialogComponent {
   @ViewChild('fileInput')
   private fileInput;
 
+
+
   private passwordConfirmationValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
     const password = control.get('password');
     const confirmation = control.get('confirmation');
@@ -60,7 +66,7 @@ export class UserDetailsDialogComponent {
         certificate: data.row.certificate,
       }
       : {
-        userName: '',
+        username: '',
         email: '',
         password: '',
         confirmation: '',
@@ -70,12 +76,10 @@ export class UserDetailsDialogComponent {
       };
 
     this.userForm = fb.group({
-      'userName': new FormControl({value: this.current.userName, disabled: this.editMode}, this.editMode ? Validators.nullValidator : null),
+      'username': new FormControl({value: this.current.username, disabled: this.editMode}, this.editMode ? Validators.nullValidator : null),
       'role': new FormControl(this.current.role, Validators.required),
       'password': new FormControl(this.current.password, [Validators.required, Validators.pattern(this.passwordPattern)]),
-      'confirmation': new FormControl(this.current.password, Validators.pattern(this.passwordPattern)),
-    }, {
-      validator: this.passwordConfirmationValidator
+      'confirmation': new FormControl(this.current.password, Validators.pattern(this.passwordPattern)), }, {  validator: this.passwordConfirmationValidator
     });
 
     this.userService.getUserRoles$().subscribe(userRoles => {
@@ -91,7 +95,7 @@ export class UserDetailsDialogComponent {
   }
 
   updateUserName(event) {
-    this.current.userName = event.target.value;
+    this.current.username = event.target.value;
   }
 
   updatePassword(event) {
@@ -136,5 +140,22 @@ export class UserDetailsDialogComponent {
     };
 
     reader.readAsArrayBuffer(file);
+  }
+
+
+  // example
+  selectedFile: File;
+  obrs:  Observable< CertificateRo> ;
+  certData:  CertificateRo;
+  onFileChanged(event) {
+    this.selectedFile = event.target.files[0]
+  }
+
+  onUpload() {
+     this.obrs = this.certificateService.onUpload(this.selectedFile);
+    this.obrs.subscribe((cert: CertificateRo) => {
+      this.certData = cert;
+    });
+
   }
 }

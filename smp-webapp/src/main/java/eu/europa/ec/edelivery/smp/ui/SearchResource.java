@@ -50,8 +50,6 @@ public class SearchResource {
         ServiceGroupFilter sgf = new ServiceGroupFilter();
         sgf.setParticipantIdentifierLike(participantIdentifier);
         sgf.setParticipantSchemeLike(participantScheme);
-
-
         return uiServiceGroupService.getTableList(page,pageSize, orderBy, orderType, sgf );
     }
 }

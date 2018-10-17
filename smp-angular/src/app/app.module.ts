@@ -42,12 +42,11 @@ import {AlertService} from './alert/alert.service';
 import {FooterComponent} from './footer/footer.component';
 import {SmpInfoService} from './app-info/smp-info.service';
 import {AuthorizedAdminGuard} from './guards/authorized-admin.guard';
-import {ServiceGroupComponent} from './service-group-edit/service-group.component';
+import {ServiceGroupEditComponent} from './service-group-edit/service-group-edit.component';
 import {ServiceGroupSearchComponent} from './service-group-search/service-group-search.component';
 import {DomainComponent} from './domain/domain.component';
 import {UserComponent} from './user/user.component';
 import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
-import {ServiceGroupMetadataListDialogComponent} from './service-group-edit/service-group-metadata-list-dialog/service-group-metadata-list-dialog.component';
 import {RowLimiterComponent} from './common/row-limiter/row-limiter.component';
 import {DatePipe} from './custom-date/date.pipe';
 import {CapitalizeFirstPipe} from './common/capitalize-first.pipe';
@@ -79,7 +78,7 @@ import {CertificateService} from './user/certificate.service';
     AppComponent,
     LoginComponent,
     HomeComponent,
-    ServiceGroupComponent,
+    ServiceGroupEditComponent,
     ServiceGroupSearchComponent,
     DomainComponent,
     DomainDetailsDialogComponent,
@@ -88,7 +87,6 @@ import {CertificateService} from './user/certificate.service';
     FooterComponent,
     IsAuthorized,
     SaveDialogComponent,
-    ServiceGroupMetadataListDialogComponent,
     ServiceGroupMetadataDialogComponent,
     ServiceGroupExtensionDialogComponent,
     CancelDialogComponent,
@@ -108,7 +106,6 @@ import {CertificateService} from './user/certificate.service';
   ],
   entryComponents: [
     AppComponent,
-    ServiceGroupMetadataListDialogComponent,
     ServiceGroupMetadataDialogComponent,
     ServiceGroupDetailsDialogComponent,
     ServiceGroupExtensionDialogComponent,

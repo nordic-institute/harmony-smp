@@ -25,7 +25,9 @@ export class UserController implements SearchTableController {
 
   public newRow(): UserRo {
     return {
-      userName: '',
+      id: null,
+      index: null,
+      username: '',
       email: '',
       role: '',
       status: SearchTableEntityStatus.NEW
