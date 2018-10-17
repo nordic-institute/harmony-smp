@@ -1,15 +1,28 @@
 package eu.europa.ec.edelivery.smp.ui;
 
 
+import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
+import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.io.InputStream;
+import java.security.cert.CertificateException;
+import java.util.Arrays;
 
 /**
  * @author Joze Rihtarsic
@@ -20,7 +33,7 @@ import javax.annotation.PostConstruct;
 @RequestMapping(value = "/ui/rest/user")
 public class UserResource {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserResource.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UserResource.class);
 
     @Autowired
     private UIUserService uiUserService;
@@ -43,5 +56,25 @@ public class UserResource {
 
 
         return  uiUserService.getTableList(page,pageSize, orderBy, orderType, null);
+    }
+
+    @PutMapping(produces = {"application/json"})
+    @RequestMapping(method = RequestMethod.PUT)
+    public void updateUserList(@RequestBody(required = true) UserRO[] updateEntities ){
+        LOG.info("Update user list, count: {}" + updateEntities.length);
+        uiUserService.updateUserList(Arrays.asList(updateEntities));
+    }
+
+
+    @RequestMapping(path = "certdata", method = RequestMethod.POST)
+    public CertificateRO uploadFile(@RequestBody byte[] data) {
+        LOG.info("Got certificate data: " + data.length);
+        try {
+            return uiUserService.getCertificateData(data);
+        } catch (CertificateException e) {
+            LOG.error("Error occured while parsing certificate.", e);
+        }
+        return null;
+
     }
 }

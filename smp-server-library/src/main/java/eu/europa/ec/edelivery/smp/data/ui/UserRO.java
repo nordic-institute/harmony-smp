@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 public class UserRO extends BaseRO {
 
 
+
     private static final long serialVersionUID = -4971552086560325302L;
     private String username;
     private String password;
@@ -22,11 +23,20 @@ public class UserRO extends BaseRO {
     LocalDateTime passwordChanged;
     private boolean active = true;
     private String role;
+    private Long id;
+    private CertificateRO certificateData;
 
     public UserRO(){
 
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getUsername() {
         return username;
@@ -74,5 +84,13 @@ public class UserRO extends BaseRO {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public CertificateRO getCertificateData() {
+        return certificateData;
+    }
+
+    public void setCertificateData(CertificateRO certificate) {
+        this.certificateData = certificate;
     }
 }

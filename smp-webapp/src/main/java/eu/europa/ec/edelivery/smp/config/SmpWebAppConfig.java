@@ -38,7 +38,7 @@ public class SmpWebAppConfig implements WebMvcConfigurer {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("/index.html");
-        registry.addRedirectViewController("/ui/","/ui/index.html");
+        registry.addViewController("/ui/").setViewName("/ui/index.html");
 
         //Home page used by SMP 2.x and 3.x - needed for backward compatibility in some EC's environments
         registry.addViewController("/web/index.html").setViewName("/index.html");
