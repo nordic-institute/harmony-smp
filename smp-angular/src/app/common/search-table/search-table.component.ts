@@ -183,7 +183,6 @@ export class SearchTableComponent implements OnInit {
   }
 
   changePageSize(newPageLimit: number) {
-    alert("new page size");
     this.page(0, newPageLimit, this.orderBy, this.asc);
   }
 
