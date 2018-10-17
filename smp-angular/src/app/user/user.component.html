@@ -1,18 +1,13 @@
 <smp-search-table
-  page_id= 'user_id'
-  title= 'Users'
-  [columnPicker] = "columnPicker"
+  page_id="user_id"
+  title="Users"
+  [columnPicker]="columnPicker"
   [url]="'rest/user'"
   [additionalToolButtons]="additionalToolButtons"
   [searchTableController]="userController"
-  [searchPanel]="searchPanel"
+  [showSearchPanel]="false"
   [filter]="filter">
 
   <ng-template #additionalToolButtons></ng-template>
 
-  <ng-template #searchPanel>
-    <mat-form-field>
-      <input matInput placeholder="Username" name="Username" [(ngModel)]="filter.userName" #messageId="ngModel">
-    </mat-form-field>
-  </ng-template>
 </smp-search-table>

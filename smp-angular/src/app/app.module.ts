@@ -71,7 +71,6 @@ import {DomainDetailsDialogComponent} from './domain/domain-details-dialog/domai
 import {UserDetailsDialogComponent} from './user/user-details-dialog/user-details-dialog.component';
 import {DownloadService} from './download/download.service';
 import {UserService} from './user/user.service';
-import {RoleService} from './security/role.service';
 import {CertificateService} from './user/certificate.service';
 
 @NgModule({
@@ -156,7 +155,7 @@ import {CertificateService} from './user/certificate.service';
     DownloadService,
     UserService,
     CertificateService,
-    RoleService,
+    DatePipe,
     {
       provide: ExtendedHttpClient,
       useFactory: extendedHttpClientCreator,
