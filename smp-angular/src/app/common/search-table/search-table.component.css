@@ -20,15 +20,15 @@
   text-decoration: line-through !important;
   font-weight: bold;
 }
-/deep/ .newTableRow span[title] {
+/deep/ .table-row-new span[title] {
 
   color: darkgreen !important;
   font-weight: bold;
 }
-/deep/ .updatedTableRow span[title] {
+/deep/ .table-row-updated span[title] {
   font-weight: bold;
 }
-/deep/ .tableRow span[title] {
+/deep/ .table-row span[title] {
   font-weight: normal;
 }
 
