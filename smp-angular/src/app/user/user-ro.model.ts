@@ -2,7 +2,7 @@ import {SearchTableEntity} from '../common/search-table/search-table-entity.mode
 import {CertificateRo} from './certificate-ro.model';
 
 export interface UserRo extends SearchTableEntity {
-  userName: string;
+  username: string;
   email: string;
   password?: string;
   role: string;
