@@ -29,5 +29,8 @@ public class CommonColumnsLengths {
     public static final int MAX_SML_SUBDOMAIN_LENGTH = 256;
     public static final int MAX_SML_SMP_ID_LENGTH = 256;
     public static final int MAX_USER_ROLE_LENGTH = 256;
+    public static final int MAX_TEXT_LENGTH_512 = 512;
+    public static final int MAX_TEXT_LENGTH_128 = 128;
+
 
 }

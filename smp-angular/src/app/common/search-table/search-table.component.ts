@@ -111,9 +111,14 @@ export class SearchTableComponent implements OnInit {
     this.page(this.offset, this.rowLimiter.pageSize, this.orderBy, this.asc);
   }
 
-  getRowClass(row): string {
-    return row.deleted ? 'deleted' : '';
+  getRowClass(row) {
+    return {
+      'table-row-new': (row.status === SearchTableEntityStatus.NEW),
+      'table-row-updated': (row.status === SearchTableEntityStatus.UPDATED),
+      'deleted': (row.status === SearchTableEntityStatus.REMOVED)
+    };
   }
+
 
   getTableDataEntries$(offset: number, pageSize: number, orderBy: string, asc: boolean): Observable<SearchTableResult> {
 

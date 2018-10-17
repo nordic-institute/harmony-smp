@@ -3,7 +3,10 @@
        ID bigint not null,
         CERTIFICATE_ID varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
         CREATED_ON datetime not null,
+        issuer varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
         LAST_UPDATED_ON datetime not null,
+        serialNumber varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
+        subject varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
         VALID_FROM datetime,
         VALID_TO datetime,
         primary key (ID)
@@ -15,7 +18,10 @@
         REVTYPE tinyint,
         CERTIFICATE_ID varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
         CREATED_ON datetime,
+        issuer varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
         LAST_UPDATED_ON datetime,
+        serialNumber varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
+        subject varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
         VALID_FROM datetime,
         VALID_TO datetime,
         primary key (ID, REV)
