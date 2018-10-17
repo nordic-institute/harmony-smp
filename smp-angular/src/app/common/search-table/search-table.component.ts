@@ -113,8 +113,8 @@ export class SearchTableComponent implements OnInit {
 
   getRowClass(row) {
     return {
-      'newTableRow': (row.status === SearchTableEntityStatus.NEW),
-      'updatedTableRow': (row.status === SearchTableEntityStatus.UPDATED),
+      'table-row-new': (row.status === SearchTableEntityStatus.NEW),
+      'table-row-updated': (row.status === SearchTableEntityStatus.UPDATED),
       'deleted': (row.status === SearchTableEntityStatus.REMOVED)
     };
   }

@@ -2,7 +2,6 @@ import {SearchTableEntity} from "../common/search-table/search-table-entity.mode
 import {ServiceGroupDetailsDialogComponent} from "./service-group-details-dialog/service-group-details-dialog.component";
 
 export interface ServiceMetadataEditRo extends SearchTableEntity  {
-  id: number;
   documentIdentifier: string;
   documentIdentifierScheme: string;
   smlSubdomain: string;

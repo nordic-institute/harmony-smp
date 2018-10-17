@@ -27,16 +27,16 @@
     <display-name>eDelivery SMP</display-name>
 
     <servlet>
-        <servlet-name>fistPage</servlet-name>
+        <servlet-name>firstPage</servlet-name>
         <jsp-file>/static_resources/index.html</jsp-file>
     </servlet>
 
     <servlet-mapping>
-        <servlet-name>fistPage</servlet-name>
+        <servlet-name>firstPage</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>fistPage</servlet-name>
+        <servlet-name>firstPage</servlet-name>
         <url-pattern>/web/index.html</url-pattern>
     </servlet-mapping>
 
