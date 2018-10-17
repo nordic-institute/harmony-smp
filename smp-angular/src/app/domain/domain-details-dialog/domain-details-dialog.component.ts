@@ -4,7 +4,6 @@ import {UserRo} from "../../user/user-ro.model";
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {DomainRo} from "../domain-ro.model";
 import {AlertService} from "../../alert/alert.service";
-import {RoleService} from "../../security/role.service";
 import {UserDetailsDialogComponent} from "../../user/user-details-dialog/user-details-dialog.component";
 import {CertificateService} from "../../user/certificate.service";
 import {UserService} from "../../user/user.service";
