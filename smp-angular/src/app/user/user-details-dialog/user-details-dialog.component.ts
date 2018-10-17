@@ -1,5 +1,5 @@
 import {Component, Inject, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef, MatSlideToggleChange} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialogRef, MatSlideToggle, MatSlideToggleChange} from '@angular/material';
 import {FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {UserService} from '../user.service';
 import {Role} from '../../security/role.model';
@@ -30,16 +30,31 @@ export class UserDetailsDialogComponent {
   existingRoles = [];
   userForm: FormGroup;
 
-  userSwitch: boolean;
-  certificateSwitch: boolean;
-
   @ViewChild('fileInput')
   private fileInput;
 
   private passwordConfirmationValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
+    const userToggle = control.get('userToggle');
     const password = control.get('password');
     const confirmation = control.get('confirmation');
-    return password && confirmation && password.value !== confirmation.value ? { confirmation: true } : null;
+    return userToggle && password && confirmation && userToggle.value && password.value !== confirmation.value ? { confirmationMatch: true } : null;
+  };
+
+  private atLeastOneToggleCheckedValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
+    const userToggle = control.get('userToggle');
+    const certificateToggle = control.get('certificateToggle');
+    return userToggle && certificateToggle && !userToggle.value && !certificateToggle.value ? { userDetailsOrCertificateRequired: true} : null;
+  };
+
+  private certificateValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
+    const certificateToggle = control.get('certificateToggle');
+    const subject = control.get('subject');
+    const validFrom = control.get('validFrom');
+    const validUntil = control.get('validUntil');
+    const issuer = control.get('issuer');
+    const fingerprints = control.get('fingerprints');
+    return certificateToggle && subject && validFrom && validUntil && issuer && fingerprints
+        && certificateToggle.value && !(subject.value && validFrom.value && validUntil.value && issuer.value && fingerprints.value) ? { certificateDetailsRequired: true} : null;
   };
 
   constructor(private dialogRef: MatDialogRef<UserDetailsDialogComponent>,
@@ -57,9 +72,14 @@ export class UserDetailsDialogComponent {
         ...data.row,
         password: '', // ensures the user password is cleared before editing
         confirmation: '',
-        certificate: data.row.certificate || {},
-      }
-      : {
+        certificate: {
+          subject: data.row.subject,
+          validFrom: data.row.validFrom,
+          validUntil: data.row.validUntil,
+          issuer: data.row.issuer,
+          fingerprints: data.row.fingerprints,
+        }
+      }: {
         userName: '',
         email: '',
         password: '',
@@ -69,19 +89,23 @@ export class UserDetailsDialogComponent {
         certificate: {},
       };
 
-    this.userForm = fb.group({
-      'userName': new FormControl({value: user.userName, disabled: this.editMode}, this.editMode ? Validators.nullValidator : null),
-      'role': new FormControl(user.role, Validators.required),
-      'password': new FormControl(user.password, [Validators.required, Validators.pattern(this.passwordPattern)]),
-      'confirmation': new FormControl(user.password, Validators.pattern(this.passwordPattern)),
+    const userDetailsToggled: boolean = user && !!user.userName;
 
-      'subject': new FormControl({ value: user.certificate.subject, disabled: true }),
-      'validFrom': new FormControl({ value: user.certificate.validFrom, disabled: true }),
-      'validUntil': new FormControl({ value: user.certificate.validUntil, disabled: true }),
-      'issuer': new FormControl({ value: user.certificate.issuer, disabled: true }),
-      'fingerprints': new FormControl({ value: user.certificate.fingerprints, disabled: true }),
+    this.userForm = fb.group({
+      'userToggle': new FormControl(userDetailsToggled),
+      'userName': new FormControl({ value: user.userName, disabled: this.editMode || !userDetailsToggled }, this.editMode ? Validators.nullValidator : null),
+      'role': new FormControl({ value: user.role, disabled: !userDetailsToggled }, Validators.required),
+      'password': new FormControl({ value: user.password, disabled: !userDetailsToggled }, [Validators.required, Validators.pattern(this.passwordPattern)]),
+      'confirmation': new FormControl({ value: user.password, disabled: !userDetailsToggled }, Validators.pattern(this.passwordPattern)),
+
+      'certificateToggle': new FormControl(user && user.certificate && !!user.certificate.subject),
+      'subject': new FormControl({ value: user.certificate.subject, disabled: true }, Validators.required),
+      'validFrom': new FormControl({ value: user.certificate.validFrom, disabled: true }, Validators.required),
+      'validUntil': new FormControl({ value: user.certificate.validUntil, disabled: true }, Validators.required),
+      'issuer': new FormControl({ value: user.certificate.issuer, disabled: true }, Validators.required),
+      'fingerprints': new FormControl({ value: user.certificate.fingerprints, disabled: true }, Validators.required),
     }, {
-      validator: this.passwordConfirmationValidator
+      validator: [this.passwordConfirmationValidator, this.atLeastOneToggleCheckedValidator, this.certificateValidator]
     });
 
     this.userService.getUserRoles$().subscribe(userRoles => {
@@ -115,7 +139,7 @@ export class UserDetailsDialogComponent {
               'validFrom': this.datePipe.transform(new Date().toString(), this.dateFormat),
               'validUntil': this.datePipe.transform(new Date().toString(), this.dateFormat),
               'issuer': 'issues',
-              'fingerprints': 'fingerprints',
+              'fingerprints': 'fingerprints'
             });
           // },
           // err => {
