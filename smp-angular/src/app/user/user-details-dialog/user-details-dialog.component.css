@@ -14,3 +14,13 @@
 .certificate-valid-from, .certificate-valid-until {
   width: 40%;
 }
+
+.required-fields {
+  text-align: right;
+  font-size: 70%
+}
+
+.has-error {
+  color:red;
+  font-size: 70%;
+}
