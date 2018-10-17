@@ -9,7 +9,10 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
        ID number(19,0) not null,
         CERTIFICATE_ID varchar2(4000 char),
         CREATED_ON timestamp not null,
+        issuer varchar2(512 char),
         LAST_UPDATED_ON timestamp not null,
+        serialNumber varchar2(128 char),
+        subject varchar2(512 char),
         VALID_FROM timestamp,
         VALID_TO timestamp,
         primary key (ID)
@@ -21,7 +24,10 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
         REVTYPE number(3,0),
         CERTIFICATE_ID varchar2(4000 char),
         CREATED_ON timestamp,
+        issuer varchar2(512 char),
         LAST_UPDATED_ON timestamp,
+        serialNumber varchar2(128 char),
+        subject varchar2(512 char),
         VALID_FROM timestamp,
         VALID_TO timestamp,
         primary key (ID, REV)

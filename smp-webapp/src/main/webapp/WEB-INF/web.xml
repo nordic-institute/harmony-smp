@@ -24,7 +24,22 @@
     -->
 
 
-    <display-name>SMP - OASIS REST services</display-name>
+    <display-name>eDelivery SMP</display-name>
+
+    <servlet>
+        <servlet-name>fistPage</servlet-name>
+        <jsp-file>/static_resources/index.html</jsp-file>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>fistPage</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>fistPage</servlet-name>
+        <url-pattern>/web/index.html</url-pattern>
+    </servlet-mapping>
+
 
     <servlet>
         <servlet-name>smpRestServlet</servlet-name>
@@ -42,6 +57,7 @@
         <servlet-name>smpRestServlet</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
+
 
 
     <!-- SpringSecurity & Application Context-->

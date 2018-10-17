@@ -77,6 +77,7 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
         return sg;
     }
 
+
     /**
      * Simple method for converting types. Property name and property type must match
      * @param d

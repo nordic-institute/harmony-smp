@@ -28,7 +28,7 @@ export class UserComponent implements OnInit {
     this.columnPicker.allColumns = [
       {
         name: 'Username',
-        prop: 'userName',
+        prop: 'username',
         canAutoResize: true
       },
       {

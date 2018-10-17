@@ -15,22 +15,23 @@ public class ServiceGroupRO extends BaseRO {
 
 
     private static final long serialVersionUID = -7523221767041516157L;
+    private Long id;
     private String participantIdentifier;
     private String participantScheme;
     private boolean smlRegistered = false;
     private List<ServiceMetadataRO> lstServiceMetadata = new ArrayList<>();
+    private List<UserRO> lstUser = new ArrayList<>();
 
 
 
-    private String domain;
 
 
-    public String getDomain() {
-        return domain;
+    public Long getId() {
+        return id;
     }
 
-    public void setDomain(String domain) {
-        this.domain = domain;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getParticipantIdentifier() {
@@ -60,6 +61,9 @@ public class ServiceGroupRO extends BaseRO {
 
     public List<ServiceMetadataRO> getServiceMetadata() {
         return lstServiceMetadata;
+    }
+    public List<UserRO> getUsers() {
+        return lstUser;
     }
 
 }
