@@ -32,21 +32,19 @@ export class UserComponent implements OnInit {
         canAutoResize: true
       },
       {
+        name: 'Certificate',
+        prop: 'subject',
+        canAutoResize: true
+      },
+      {
         name: 'Role',
         prop: 'role',
         canAutoResize: true
       },
-      {
-        name: 'Password',
-        prop: 'password',
-        canAutoResize: true,
-        sortable: false,
-        width: 25
-      }
     ];
 
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
-      return ['Username', 'Role'].indexOf(col.name) != -1
+      return ['Username', 'Certificate', 'Role'].indexOf(col.name) != -1
     });
   }
 

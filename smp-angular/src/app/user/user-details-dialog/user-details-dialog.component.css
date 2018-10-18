@@ -3,21 +3,24 @@
 }
 
 .custom-file-upload {
-  border: 1px solid #ccc;
   display: inline-block;
-  padding: 6px 12px;
   cursor: pointer;
-  background-color: #2196f3;
 }
 
-.custom-file-upload-inner {
-  color: white;
-  cursor: pointer;
-  background-color: #2196f3;
+.username, .role, .password, .password-confirmation, .certificate-subject, .certificate-issuer, .certificate-serial-number {
+  width: 100%;
 }
 
-.custom-file-upload[disabled] {
-  color: red;
-  cursor: not-allowed;
-  background-color: grey;
+.certificate-valid-from, .certificate-valid-to {
+  width: 40%;
+}
+
+.required-fields {
+  text-align: right;
+  font-size: 70%
+}
+
+.has-error {
+  color:red;
+  font-size: 70%;
 }
