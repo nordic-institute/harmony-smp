@@ -4,6 +4,8 @@ import {MatDialog, MatDialogRef} from '@angular/material';
 import {AlertService} from '../alert/alert.service';
 import {UserController} from './user-controller';
 import {HttpClient} from '@angular/common/http';
+import {Role} from "../security/role.model";
+import {UserRo} from "./user-ro.model";
 
 @Component({
   templateUrl:'./user.component.html',
@@ -11,9 +13,7 @@ import {HttpClient} from '@angular/common/http';
 })
 export class UserComponent implements OnInit {
 
-  @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>
-  @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>
-  @ViewChild('rowActions') rowActions: TemplateRef<any>;
+  @ViewChild('roleCellTemplate') roleCellTemplate: TemplateRef<any>
 
   columnPicker: ColumnPicker = new ColumnPicker();
   userController: UserController;
@@ -37,6 +37,7 @@ export class UserComponent implements OnInit {
         canAutoResize: true
       },
       {
+        cellTemplate: this.roleCellTemplate,
         name: 'Role',
         prop: 'role',
         canAutoResize: true
@@ -50,5 +51,9 @@ export class UserComponent implements OnInit {
 
   details(row: any) {
     this.userController.showDetails(row);
+  }
+
+  getRoleLabel(role: string): Role {
+    return Role[role];
   }
 }
