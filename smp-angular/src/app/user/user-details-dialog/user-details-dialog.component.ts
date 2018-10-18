@@ -1,5 +1,5 @@
 import {Component, Inject, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef, MatSlideToggle, MatSlideToggleChange} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialogRef, MatSlideToggleChange} from '@angular/material';
 import {FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {UserService} from '../user.service';
 import {Role} from '../../security/role.model';
@@ -52,11 +52,11 @@ export class UserDetailsDialogComponent {
     const certificateToggle = control.get('certificateToggle');
     const subject = control.get('subject');
     const validFrom = control.get('validFrom');
-    const validUntil = control.get('validUntil');
+    const validTo = control.get('validTo');
     const issuer = control.get('issuer');
     const fingerprints = control.get('fingerprints');
-    return certificateToggle && subject && validFrom && validUntil && issuer && fingerprints
-        && certificateToggle.value && !(subject.value && validFrom.value && validUntil.value && issuer.value && fingerprints.value) ? { certificateDetailsRequired: true} : null;
+    return certificateToggle && subject && validFrom && validTo && issuer && fingerprints
+        && certificateToggle.value && !(subject.value && validFrom.value && validTo.value && issuer.value && fingerprints.value) ? { certificateDetailsRequired: true} : null;
   };
 
   constructor(private dialogRef: MatDialogRef<UserDetailsDialogComponent>,
@@ -77,7 +77,7 @@ export class UserDetailsDialogComponent {
         certificate: {
           subject: data.row.subject,
           validFrom: data.row.validFrom,
-          validUntil: data.row.validUntil,
+          validTo: data.row.validTo,
           issuer: data.row.issuer,
           fingerprints: data.row.fingerprints,
         }
@@ -103,7 +103,7 @@ export class UserDetailsDialogComponent {
       'certificateToggle': new FormControl(user && user.certificate && !!user.certificate.subject),
       'subject': new FormControl({ value: user.certificate.subject, disabled: true }, Validators.required),
       'validFrom': new FormControl({ value: user.certificate.validFrom, disabled: true }, Validators.required),
-      'validUntil': new FormControl({ value: user.certificate.validUntil, disabled: true }, Validators.required),
+      'validTo': new FormControl({ value: user.certificate.validTo, disabled: true }, Validators.required),
       'issuer': new FormControl({ value: user.certificate.issuer, disabled: true }, Validators.required),
       'fingerprints': new FormControl({ value: user.certificate.fingerprints, disabled: true }, Validators.required),
     }, {
@@ -122,22 +122,16 @@ export class UserDetailsDialogComponent {
     this.dialogRef.close(true);
   }
 
-  uploadCertificate() {
-    const fi = this.fileInput.nativeElement;
-    const file = fi.files[0];
+  uploadCertificate(event) {
+    const file = event.target.files[0];
 
     const reader = new FileReader();
     reader.onload = (e) => {
-      const arrayBuffer = reader.result;
-      const array = new Uint8Array(arrayBuffer);
-      const binaryString = String.fromCharCode.apply(null, array);
-
-      this.certificateService.uploadCertificate$({content: binaryString})
-        .subscribe((res: CertificateRo) => {
+      this.certificateService.uploadCertificate$(reader.result).subscribe((res: CertificateRo) => {
             this.userForm.patchValue({
               'subject': res.subject,
               'validFrom': this.datePipe.transform(res.validFrom.toString(), this.dateFormat),
-              'validUntil': this.datePipe.transform(res.validUntil.toString(), this.dateFormat),
+              'validTo': this.datePipe.transform(res.validTo.toString(), this.dateFormat),
               'issuer': res.issuer,
               'fingerprints': res.fingerprints
             });
@@ -151,7 +145,7 @@ export class UserDetailsDialogComponent {
       this.alertService.exception('Error reading certificate file ' + file.name, err);
     };
 
-    reader.readAsArrayBuffer(file);
+    reader.readAsBinaryString(file);
   }
 
   onUserToggleChanged({checked}: MatSlideToggleChange) {
