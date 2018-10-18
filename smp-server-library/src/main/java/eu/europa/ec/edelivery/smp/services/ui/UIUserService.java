@@ -126,44 +126,18 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             String subject = cert.getSubjectDN().getName();
             String issuer = cert.getIssuerDN().getName();
             String hash = cert.getIssuerDN().getName();
-            String fingerprints = extractFingerprints(cert);
             BigInteger serial = cert.getSerialNumber();
             String certId = getCertificateIdFromCertificate(subject,issuer, serial );
             CertificateRO cro = new CertificateRO();
             cro.setCertificateId(certId);
             cro.setSubject(subject);
             cro.setIssuer(issuer);
-            cro.setFingerprints(fingerprints);
             // set serial as HEX
             cro.setSerialNumber(serial.toString(16));
             cro.setValidFrom(LocalDateTime.ofInstant(cert.getNotBefore().toInstant(), ZoneId.systemDefault()));
             cro.setValidTo(LocalDateTime.ofInstant(cert.getNotAfter().toInstant(), ZoneId.systemDefault()));
 
             return cro;
-    }
-
-    private String extractFingerprints(final X509Certificate certificate) {
-        if (certificate == null)
-            return null;
-
-        MessageDigest md = null;
-        try {
-            md = MessageDigest.getInstance("SHA-1");
-        } catch (NoSuchAlgorithmException e) {
-            LOG.warn("Error initializing MessageDigest ", e);
-            throw new SMPRuntimeException(ErrorCode.INVALID_CERTIFICATE_MESSAGE_DIGEST, e);
-        }
-        byte[] der = new byte[0];
-        try {
-            der = certificate.getEncoded();
-        } catch (CertificateEncodingException e) {
-            LOG.warn("Error encoding certificate ", e);
-            throw new SMPRuntimeException(ErrorCode.INVALID_CERTIFICATE_ENCODING, e);
-        }
-        md.update(der);
-        byte[] digest = md.digest();
-        String digestHex = DatatypeConverter.printHexBinary(digest);
-        return digestHex.toLowerCase();
     }
 
     public String getCertificateIdFromCertificate(String subject, String issuer, BigInteger serial ){
