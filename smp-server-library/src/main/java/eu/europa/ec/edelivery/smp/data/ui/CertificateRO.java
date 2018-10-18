@@ -1,16 +1,6 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
-
-
-
-
-import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
-
-import javax.persistence.Column;
-import javax.persistence.Id;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
-
 
 /**
  * @author Joze Rihtarsic
@@ -18,19 +8,17 @@ import java.time.LocalDateTime;
  */
 public class CertificateRO extends BaseRO {
 
-
-
     private static final long serialVersionUID = -4971552086560325302L;
 
     private String certificateId;
     private String subject;
     private String issuer;
     private String serialNumber;
+    private String fingerprints;
     private LocalDateTime validFrom;
     private LocalDateTime validTo;
 
     public CertificateRO(){
-
     }
 
     public static long getSerialVersionUID() {
@@ -67,6 +55,14 @@ public class CertificateRO extends BaseRO {
 
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
+    }
+
+    public String getFingerprints() {
+        return fingerprints;
+    }
+
+    public void setFingerprints(String fingerprints) {
+        this.fingerprints = fingerprints;
     }
 
     public LocalDateTime getValidFrom() {
