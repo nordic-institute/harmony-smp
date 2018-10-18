@@ -1,24 +1,12 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
-
-
-
-
-import eu.europa.ec.edelivery.smp.data.model.CommonColumnsLengths;
-
-import javax.persistence.Column;
-import javax.persistence.Id;
-import java.math.BigInteger;
 import java.time.LocalDateTime;
-
 
 /**
  * @author Joze Rihtarsic
  * @since 4.1
  */
 public class CertificateRO extends BaseRO {
-
-
 
     private static final long serialVersionUID = -4971552086560325302L;
 
@@ -30,7 +18,6 @@ public class CertificateRO extends BaseRO {
     private LocalDateTime validTo;
 
     public CertificateRO(){
-
     }
 
     public static long getSerialVersionUID() {
