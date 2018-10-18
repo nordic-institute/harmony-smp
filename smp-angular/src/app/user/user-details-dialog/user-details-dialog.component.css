@@ -11,7 +11,7 @@
   width: 100%;
 }
 
-.certificate-valid-from, .certificate-valid-until {
+.certificate-valid-from, .certificate-valid-to {
   width: 40%;
 }
 

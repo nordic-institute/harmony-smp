@@ -54,8 +54,8 @@
         <mat-form-field class="certificate-valid-from">
           <input matInput placeholder="Valid From" [formControl]="userForm.controls['validFrom']">
         </mat-form-field>
-        <mat-form-field class="certificate-valid-until">
-          <input matInput placeholder="Valid To" [formControl]="userForm.controls['validUntil']">
+        <mat-form-field class="certificate-valid-to">
+          <input matInput placeholder="Valid To" [formControl]="userForm.controls['validTo']">
         </mat-form-field>
         <mat-form-field class="certificate-issuer">
           <input matInput placeholder="Issuer" [formControl]="userForm.controls['issuer']">
@@ -65,7 +65,7 @@
         </mat-form-field>
 
         <label class="custom-file-upload">
-          <input #fileInput type="file" id="custom-file-upload" accept=".cer" (change)="uploadCertificate()" [disabled]="!userForm.controls['certificateToggle']?.value">
+          <input #fileInput type="file" id="custom-file-upload" accept=".cer" (change)="uploadCertificate($event)" [disabled]="!userForm.controls['certificateToggle']?.value">
           <button mat-flat-button color="primary" (click)="fileInput.click()" [disabled]="!userForm.controls['certificateToggle']?.value">Import</button>
         </label>
       </div>

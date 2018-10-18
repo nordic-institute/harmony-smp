@@ -451,6 +451,11 @@
 				<artifactId>jackson-annotations</artifactId>
 				<version>${jackson.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>com.fasterxml.jackson.datatype</groupId>
+				<artifactId>jackson-datatype-jsr310</artifactId>
+				<version>${jackson.version}</version>
+			</dependency>
 			<!-- End Jackson-->
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -676,7 +681,7 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<!-- fork needs to be false to compile JAXB resources. Otherwise the 
+					<!-- fork needs to be false to compile JAXB resources. Otherwise the
 						problem with the forward slash in package-info.java on Windows occurs! -->
 					<fork>false</fork>
 					<source>1.8</source>
