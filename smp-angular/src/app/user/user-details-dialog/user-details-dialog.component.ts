@@ -33,8 +33,6 @@ export class UserDetailsDialogComponent {
   @ViewChild('fileInput')
   private fileInput;
 
-
-
   private passwordConfirmationValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
     const userToggle = control.get('userToggle');
     const password = control.get('password');
@@ -54,9 +52,9 @@ export class UserDetailsDialogComponent {
     const validFrom = control.get('validFrom');
     const validTo = control.get('validTo');
     const issuer = control.get('issuer');
-    const fingerprints = control.get('fingerprints');
-    return certificateToggle && subject && validFrom && validTo && issuer && fingerprints
-        && certificateToggle.value && !(subject.value && validFrom.value && validTo.value && issuer.value && fingerprints.value) ? { certificateDetailsRequired: true} : null;
+    const serialNumber = control.get('serialNumber');
+    return certificateToggle && subject && validFrom && validTo && issuer && serialNumber
+        && certificateToggle.value && !(subject.value && validFrom.value && validTo.value && issuer.value && serialNumber.value) ? { certificateDetailsRequired: true} : null;
   };
 
   constructor(private dialogRef: MatDialogRef<UserDetailsDialogComponent>,
@@ -79,7 +77,7 @@ export class UserDetailsDialogComponent {
           validFrom: data.row.validFrom,
           validTo: data.row.validTo,
           issuer: data.row.issuer,
-          fingerprints: data.row.fingerprints,
+          serialNumber: data.row.serialNumber,
         }
       }: {
         username: '',
@@ -105,7 +103,7 @@ export class UserDetailsDialogComponent {
       'validFrom': new FormControl({ value: user.certificate.validFrom, disabled: true }, Validators.required),
       'validTo': new FormControl({ value: user.certificate.validTo, disabled: true }, Validators.required),
       'issuer': new FormControl({ value: user.certificate.issuer, disabled: true }, Validators.required),
-      'fingerprints': new FormControl({ value: user.certificate.fingerprints, disabled: true }, Validators.required),
+      'serialNumber': new FormControl({ value: user.certificate.serialNumber, disabled: true }, Validators.required),
     }, {
       validator: [this.passwordConfirmationValidator, this.atLeastOneToggleCheckedValidator, this.certificateValidator]
     });
@@ -133,7 +131,7 @@ export class UserDetailsDialogComponent {
               'validFrom': this.datePipe.transform(res.validFrom.toString(), this.dateFormat),
               'validTo': this.datePipe.transform(res.validTo.toString(), this.dateFormat),
               'issuer': res.issuer,
-              'fingerprints': res.fingerprints
+              'serialNumber': res.serialNumber
             });
           },
           err => {
