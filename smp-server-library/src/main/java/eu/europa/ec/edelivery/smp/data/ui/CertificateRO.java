@@ -14,7 +14,6 @@ public class CertificateRO extends BaseRO {
     private String subject;
     private String issuer;
     private String serialNumber;
-    private String fingerprints;
     private LocalDateTime validFrom;
     private LocalDateTime validTo;
 
@@ -55,14 +54,6 @@ public class CertificateRO extends BaseRO {
 
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
-    }
-
-    public String getFingerprints() {
-        return fingerprints;
-    }
-
-    public void setFingerprints(String fingerprints) {
-        this.fingerprints = fingerprints;
     }
 
     public LocalDateTime getValidFrom() {

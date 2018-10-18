@@ -7,7 +7,7 @@
   cursor: pointer;
 }
 
-.username, .role, .password, .password-confirmation, .certificate-subject, .certificate-issuer, .certificate-fingerprint {
+.username, .role, .password, .password-confirmation, .certificate-subject, .certificate-issuer, .certificate-serial-number {
   width: 100%;
 }
 
