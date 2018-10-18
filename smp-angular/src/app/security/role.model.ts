@@ -2,13 +2,13 @@ export enum Role {
   /**
    * The system administrator (a.k.a. the "super admin") role
    */
-  SYSTEM_ADMINISTRATOR = 'System Administrator',
+  SYSTEM_ADMIN = 'System Administrator',
   /**
-   * The SMP Administrator role. It is assimilable to the {@link SERVICE_GROUP_ADMINISTRATOR} role for now.
+   * The SMP Administrator role. It is assimilable to the {@link SERVICE_GROUP_ADMIN} role for now.
     */
-  SMP_ADMINISTRATOR = 'SMP Administrator',
+  SMP_ADMIN = 'SMP Administrator',
   /**
    * The ServiceGroup administrator role
    */
-  SERVICE_GROUP_ADMINISTRATOR = 'ServiceGroup Administrator',
+  SERVICE_GROUP_ADMIN = 'ServiceGroup Administrator',
 }
