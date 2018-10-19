@@ -1,8 +1,10 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
+import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
@@ -10,6 +12,10 @@ import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,10 +23,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, ServiceGroupRO> {
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIServiceGroupService.class);
 
+    @Autowired
+    DomainDao domainDao;
 
     @Autowired
     ServiceGroupDao serviceGroupDao;
@@ -45,18 +55,30 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
      */
     @Transactional
     public ServiceResult<ServiceGroupRO> getTableList(int page, int pageSize,
-                                                 String sortField,
-                                                 String sortOrder, Object filter) {
+                                                      String sortField,
+                                                      String sortOrder, ServiceGroupFilter filter, String domainCode) {
+
+        DBDomain d  = null;
+        if (!StringUtils.isBlank(domainCode)){
+            Optional<DBDomain> od = domainDao.getDomainByCode(domainCode);
+            if (od.isPresent()){
+                d = od.get();
+            } else {
+                LOG.error("Domain with code {} does not exists ", domainCode);
+            }
+
+        }
+
 
         ServiceResult<ServiceGroupRO> sg = new ServiceResult<>();
         sg.setPage(page < 0 ? 0 : page);
         sg.setPageSize(pageSize);
-        long iCnt = getDatabaseDao().getDataListCount(filter);
+        long iCnt = serviceGroupDao.getServiceGroupCount(filter, d);
         sg.setCount(iCnt);
 
         if (iCnt > 0) {
             int iStartIndex = pageSize < 0 ? -1 : page * pageSize;
-            List<DBServiceGroup> lst = getDatabaseDao().getDataList(iStartIndex, pageSize, sortField, sortOrder, filter);
+            List<DBServiceGroup> lst = serviceGroupDao.getServiceGroupList(iStartIndex, pageSize, sortField, sortOrder, filter, d);
 
             List<ServiceGroupRO> lstRo = new ArrayList<>();
             for (DBServiceGroup dbServiceGroup : lst) {

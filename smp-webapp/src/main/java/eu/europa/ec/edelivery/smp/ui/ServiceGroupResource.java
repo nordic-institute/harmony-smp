@@ -7,12 +7,13 @@ import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIServiceGroupService;
+import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
+import javax.annotation .PostConstruct;
 import java.util.Arrays;
 
 /**
@@ -24,7 +25,7 @@ import java.util.Arrays;
 @RequestMapping(value = "/ui/rest/servicegroup")
 public class ServiceGroupResource {
 
-    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(DomainResource.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceGroupResource.class);
 
     @Autowired
     private UIServiceGroupService uiServiceGroupService;
@@ -42,11 +43,16 @@ public class ServiceGroupResource {
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
             @RequestParam(value = "orderBy", required = false) String orderBy,
             @RequestParam(value = "orderType", defaultValue = "asc", required = false) String orderType,
-            @RequestParam(value = "participantId", required = false) String participantId,
-            @RequestParam(value = "participantSchema", required = false) String participantSchema,
+            @RequestParam(value = "participantId", required = false) String participantIdentifier,
+            @RequestParam(value = "participantSchema", required = false) String participantScheme,
             @RequestParam(value = "domain", required = false) String domain
     ) {
-        return uiServiceGroupService.getTableList(page, pageSize, orderBy, orderType, null);
+        LOG.info("Search for page: {}, page size: {}, part. id: {}, part sch: {}, domain {}",page, pageSize, participantIdentifier, participantScheme, domain );
+        ServiceGroupFilter sgf = new ServiceGroupFilter();
+        sgf.setParticipantIdentifierLike(participantIdentifier);
+        sgf.setParticipantSchemeLike(participantScheme);
+
+        return uiServiceGroupService.getTableList(page,pageSize, orderBy, orderType, sgf, domain);
     }
 
     @ResponseBody

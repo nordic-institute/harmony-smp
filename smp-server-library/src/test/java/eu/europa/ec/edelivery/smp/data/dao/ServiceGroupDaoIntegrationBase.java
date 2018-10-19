@@ -5,6 +5,7 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -56,13 +57,27 @@ public abstract class ServiceGroupDaoIntegrationBase extends AbstractBaseDao{
 
    @Transactional
    public DBServiceGroup createAndSaveNewServiceGroup(){
+       return createAndSaveNewServiceGroup(TEST_DOMAIN_CODE_1, TestConstants.TEST_SG_ID_1, TestConstants.TEST_SG_SCHEMA_1);
+   }
 
-       DBDomain d = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
-       DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
+   private DBServiceGroup createAndSaveNewServiceGroup(String domain, String participantId, String participantSchema){
+       DBDomain d = domainDao.getDomainByCode(domain).get();
+       DBServiceGroup sg = TestDBUtils.createDBServiceGroup(participantId, participantSchema);
        sg.addDomain(d);
        testInstance.persistFlushDetach(sg);
        return sg;
    }
+
+
+    @Transactional
+    public void createAndSaveNewServiceGroups(int iCount, String domain, String participant){
+
+        int i =0;
+        while (i++ < iCount){
+            createAndSaveNewServiceGroup(domain,  participant+":"+i, TestConstants.TEST_SG_SCHEMA_1);
+
+        }
+    }
 
     @Transactional
     public DBServiceGroup createAndSaveNewServiceGroupWithMetadata(){

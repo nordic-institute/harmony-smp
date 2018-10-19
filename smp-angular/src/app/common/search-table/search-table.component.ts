@@ -30,6 +30,7 @@ export class SearchTableComponent implements OnInit {
   @ViewChild('rowIndex') rowIndex: TemplateRef<any>;
 
   @Input() @ViewChild('additionalToolButtons') additionalToolButtons: TemplateRef<any>;
+  @Input() @ViewChild('additionalRowActionButtons') additionalRowActionButtons: TemplateRef<any>;
   @Input() @ViewChild('searchPanel') searchPanel: TemplateRef<any>;
   @Input() @ViewChild('tableRowDetailContainer') tableRowDetailContainer: TemplateRef<any>;
 
@@ -65,6 +66,7 @@ export class SearchTableComponent implements OnInit {
               protected alertService: AlertService,
               private downloadService: DownloadService,
               public dialog: MatDialog) {
+
   }
 
   ngOnInit() {
@@ -79,8 +81,8 @@ export class SearchTableComponent implements OnInit {
     this.columnActions = {
       cellTemplate: this.rowActions,
       name: 'Actions',
-      width: 120,
-      maxWidth:150,
+      width: 250,
+      maxWidth:250,
       sortable: false
     };
     this.columnExpandDetails= {
@@ -108,7 +110,6 @@ export class SearchTableComponent implements OnInit {
         this.columnPicker.selectedColumns.push(this.columnActions);
       }
     }
-    this.page(this.offset, this.rowLimiter.pageSize, this.orderBy, this.asc);
   }
 
   getRowClass(row) {
@@ -156,10 +157,10 @@ export class SearchTableComponent implements OnInit {
           status: SearchTableEntityStatus.PERSISTED,
           deleted: false}
       });
-
+      /*
       if(this.count > AlertComponent.MAX_COUNT_CSV) {
         this.alertService.error("Maximum number of rows reached for downloading CSV");
-      }
+      }*/
     }, (error: any) => {
       this.alertService.error("Error occurred:" + error);
     });
@@ -207,10 +208,10 @@ export class SearchTableComponent implements OnInit {
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
-        this.rows = [...this.rows, {...formRef.componentInstance.current}];
+        this.rows = [...this.rows, {...formRef.componentInstance.getCurrent()}];
         //this.rows = this.rows.concat(formRef.componentInstance.current);
         this.count++;
-       // this.searchTable.refresh();
+       // this.searchtable.refresh();
       } else {
         this.unselectRows();
       }
@@ -305,11 +306,20 @@ export class SearchTableComponent implements OnInit {
         const status = row.status === SearchTableEntityStatus.PERSISTED
           ? SearchTableEntityStatus.UPDATED
           : row.status;
-        this.rows[rowNumber] = {...formRef.componentInstance.current, status};
-        this.rows = [...this.rows];
+         this.rows[rowNumber] = {...formRef.componentInstance.getCurrent(), status};
+         this.rows = [...this.rows];
       }
     });
   }
+  public updateTableRow(rowNumber:number, row:any, status:SearchTableEntityStatus ) {
+    this.rows[rowNumber] = {...row, status};
+    this.rows = [...this.rows];
+  }
+  public getRowNumber(row:any){
+    return  this.rows.indexOf(row);
+  }
+
+
   private editSearchTableEntityRow(row: SearchTableEntity) {
       let rowNumber = this.rows.indexOf(row);
       this.editSearchTableEntity(rowNumber);
@@ -326,6 +336,7 @@ export class SearchTableComponent implements OnInit {
       if (row.status === SearchTableEntityStatus.NEW) {
         this.rows.splice(this.rows.indexOf(row), 1);
       } else {
+        this.searchTableController.delete(row);
         row.status = SearchTableEntityStatus.REMOVED;
         row.deleted = true;
       }

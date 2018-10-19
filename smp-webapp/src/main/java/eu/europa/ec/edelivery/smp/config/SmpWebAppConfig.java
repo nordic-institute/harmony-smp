@@ -34,15 +34,14 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
         "eu.europa.ec.edelivery.smp.ui"})
 @Import({GlobalMethodSecurityConfig.class, ErrorMappingControllerAdvice.class})
 public class SmpWebAppConfig implements WebMvcConfigurer {
-
+/*
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("/index.html");
         registry.addViewController("/ui/").setViewName("/ui/index.html");
-
         //Home page used by SMP 2.x and 3.x - needed for backward compatibility in some EC's environments
         registry.addViewController("/web/index.html").setViewName("/index.html");
-    }
+    }*/
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

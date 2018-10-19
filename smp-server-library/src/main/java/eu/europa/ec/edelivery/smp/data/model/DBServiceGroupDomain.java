@@ -46,6 +46,10 @@ public class DBServiceGroupDomain extends BaseEntity {
 
     // list<> and set<> does not make any difference in hi
     // hibernate performance this case!
+    // this list could also be on ServiceGroup entity because it does not make any difference for
+    // dynamic discovery but it is here just user -service group admin to know for which
+    // domain he orignally registred a service - to make metadata more organized...
+
     @OneToMany(mappedBy = "serviceGroupDomain", cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY)

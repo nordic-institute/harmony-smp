@@ -1,4 +1,4 @@
-package eu.europa.ec.edelivery.smp.ui.filters;
+package eu.europa.ec.edelivery.smp.services.ui.filters;
 
 public class ServiceGroupFilter {
     private String participantIdentifier;

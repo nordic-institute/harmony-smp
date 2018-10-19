@@ -9,10 +9,11 @@ import {Observable} from "rxjs/index";
 import {SearchTableResult} from "../common/search-table/search-table-result.model";
 import {DomainRo} from "../domain/domain-ro.model";
 import {SmpConstants} from "../smp.constants";
+import {GlobalLookups} from "../common/global-lookups";
 
 @Component({
   moduleId: module.id,
-  templateUrl:'./service-group-search.component.html',
+  templateUrl: './service-group-search.component.html',
   styleUrls: ['./service-group-search.component.css']
 })
 export class ServiceGroupSearchComponent implements OnInit {
@@ -25,20 +26,11 @@ export class ServiceGroupSearchComponent implements OnInit {
   serviceGroupSearchController: ServiceGroupSearchController;
   filter: any = {};
   domainlist: Array<any>;
-  domainObserver:  Observable< SearchTableResult> ;
-  contextPath: string = location.pathname.substring(0,location.pathname.length -3); // remove /ui s
+  contextPath: string = location.pathname.substring(0, location.pathname.length - 3); // remove /ui s
   baseUrl: string = SmpConstants.REST_SEARCH;
 
-  constructor(protected http: HttpClient, protected alertService: AlertService, public dialog: MatDialog) {
-    this.domainObserver = this.http.get<SearchTableResult>(SmpConstants.REST_DOMAIN);
-    this.domainObserver.subscribe((domains: SearchTableResult) => {
-      this.domainlist = new Array(domains.serviceEntities.length)
-        .map((v, index) => domains.serviceEntities[index] as DomainRo);
+  constructor(protected lookups: GlobalLookups, protected http: HttpClient, protected alertService: AlertService, public dialog: MatDialog) {
 
-      this.domainlist = domains.serviceEntities.map(serviceEntity => {
-        return {...serviceEntity}
-      });
-    });
   }
 
   ngOnDestroy() {
@@ -46,6 +38,15 @@ export class ServiceGroupSearchComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.lookups.getDomainLookupObservable().subscribe((domains: SearchTableResult) => {
+      this.domainlist = new Array(domains.serviceEntities.length)
+        .map((v, index) => domains.serviceEntities[index] as DomainRo);
+
+      this.domainlist = domains.serviceEntities.map(serviceEntity => {
+        return {...serviceEntity}
+      });
+    });
+
     this.serviceGroupSearchController = new ServiceGroupSearchController(this.dialog);
 
     this.columnPicker.allColumns = [
@@ -71,18 +72,11 @@ export class ServiceGroupSearchComponent implements OnInit {
         maxWidth: 250,
         sortable: false
       },
-      /*
-      {
-        cellTemplate: this.rowExtensionAction,
-        name: 'Extension',
-        width: 80,
-        sortable: false
-      }*/
     ];
 
 
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
-      return ["Metadata size", "Participant scheme", "Participant identifier","OASIS ServiceGroup URL"].indexOf(col.name) != -1
+      return ["Metadata size", "Participant scheme", "Participant identifier", "OASIS ServiceGroup URL"].indexOf(col.name) != -1
     });
   }
 

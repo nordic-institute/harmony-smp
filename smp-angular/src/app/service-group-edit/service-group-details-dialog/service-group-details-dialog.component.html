@@ -1,11 +1,12 @@
 <h2 mat-dialog-title>{{formTitle}}</h2>
 
-<mat-dialog-content style="height:600px;width:1100px">
+<mat-dialog-content style="height:620px;width:1200px">
   <div fxLayout="row">
     <div fxLayout="column">
       <mat-card fxFlex="200px">
-        <mat-card-title>Identifier</mat-card-title>
-        <mat-card-content>
+        <!-- mat-card-title>Identifier</mat-card-title -->
+        <mat-card-content style="height: 100px">
+          <div class="panel">
           <mat-form-field style="width:100%">
             <input matInput placeholder="Participant identifier" name="participantIdentifier"
                    value="{{current.participantIdentifier}}" id="participantIdentifier_id"
@@ -29,25 +30,54 @@
               Participant scheme must not be empty.
             </div>
           </mat-form-field>
+          </div>
         </mat-card-content>
       </mat-card>
       <mat-card>
-        <mat-card-title>Owners</mat-card-title>
+        <!-- mat-card-title>Owners/Domains</mat-card-title -->
         <mat-card-content>
-          <p>Selected user count: {{usersSelected.selectedOptions.selected.length}}</p>
-        <mat-selection-list #usersSelected [compareWith]="compareUserById"
-                            (selectionChange)="userListChanged(usersSelected.selectedOptions.selected,$event)"
-                            [formControl]="formControlUsers"
-                            style="height: 200px;  overflow-y: scroll; overflow-x: auto;">
-          <mat-list-option *ngFor="let user of userlist" [value]='user'>
-            {{user.id}} - {{user.username?user.username:user.id}}
-          </mat-list-option>
-        </mat-selection-list>
-        <div
-          *ngIf="(!editMode && dialogForm.controls['users'].touched || editMode) &&  dialogForm.controls['users'].hasError('minCountOwners')"
-          style="color:red; font-size: 70%">
-          At least one user (owner) must be selected!
-        </div>
+
+          <mat-accordion>
+            <mat-expansion-panel [expanded]="true">
+              <mat-expansion-panel-header>
+                <mat-panel-title>Owners</mat-panel-title>
+                <mat-panel-description>
+                  Selected user count: {{usersSelected.selectedOptions.selected.length}}
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <mat-selection-list  #usersSelected [compareWith]="compareTableItemById"
+                                  (selectionChange)="userListChanged(usersSelected.selectedOptions.selected,$event)"
+                                  [formControl]="formControlUsers"
+                                  style="height: 200px;  overflow-y: scroll; overflow-x: auto;">
+                <mat-list-option *ngFor="let user of userlist" [value]='user'>
+                  {{user.id}} - {{user.username?user.username:user.id}}
+                </mat-list-option>
+              </mat-selection-list>
+            </mat-expansion-panel>
+
+            <mat-expansion-panel >
+              <mat-expansion-panel-header>
+                <mat-panel-title>Domains</mat-panel-title>
+                <mat-panel-description>
+                  Selected domain count: {{domainSelected.selectedOptions.selected.length}}
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <mat-selection-list  #domainSelected [compareWith]="compareTableItemById"
+                                   [formControl]="formControlDomain"
+                                   style="height: 200px;  overflow-y: scroll; overflow-x: auto;">
+                <mat-list-option *ngFor="let domain of domainList" [value]='domain'>
+                  {{domain.domainCode}} ({{domain.smlSubdomain}})
+                </mat-list-option>
+              </mat-selection-list>
+            </mat-expansion-panel>
+          </mat-accordion>
+
+
+          <div
+            *ngIf="(!editMode && dialogForm.controls['users'].touched || editMode) &&  dialogForm.controls['users'].hasError('minSelectedListCount')"
+            style="color:red; font-size: 70%">
+            At least one user (owner) must be selected!
+          </div>
         </mat-card-content>
       </mat-card>
     </div>
@@ -58,9 +88,9 @@
         <p>
           Extension is automatically wrapped to root element to form vaild XML! No ExtensionWrapper element is needed.
         </p>
-        <mat-form-field>
-          <textarea id="extensionTextArea" resizeable="false" placeholder="Extension"  name="extension" ></textarea>
-        </mat-form-field>
+        <!--mat-form-field>
+          < textarea id="extensionTextArea" resizeable="false" placeholder="Extension" name="extension"></textarea>
+        </mat-form-field -->
       </mat-card-content>
     </mat-card>
   </div>

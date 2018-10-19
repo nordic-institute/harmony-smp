@@ -6,7 +6,7 @@ import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIServiceGroupService;
-import eu.europa.ec.edelivery.smp.ui.filters.ServiceGroupFilter;
+import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +50,7 @@ public class SearchResource {
         ServiceGroupFilter sgf = new ServiceGroupFilter();
         sgf.setParticipantIdentifierLike(participantIdentifier);
         sgf.setParticipantSchemeLike(participantScheme);
-        return uiServiceGroupService.getTableList(page,pageSize, orderBy, orderType, sgf );
+
+        return uiServiceGroupService.getTableList(page,pageSize, orderBy, orderType, sgf, domain);
     }
 }
