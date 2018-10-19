@@ -74,6 +74,34 @@ public class ServiceMetadataValidator {
         validateServiceInformation(serviceInformation);
     }
 
+    public ServiceInformationType validate(String serviceGroupIdStr,
+                         byte[] serviceMetadataBody
+    ) throws XmlInvalidAgainstSchemaException {
+
+        BdxSmpOasisValidator.validateXSD(serviceMetadataBody);
+
+        ParticipantIdentifierType serviceGroupId = asParticipantId(serviceGroupIdStr);
+        ServiceMetadata serviceMetadata = ServiceMetadataConverter.unmarshal(serviceMetadataBody);
+        ServiceInformationType serviceInformation = serviceMetadata.getServiceInformation();
+
+        if (serviceInformation == null) {
+            String errorMessage = "Missing service information";
+            throw new BadRequestException(WRONG_FIELD, errorMessage);
+        }
+
+
+
+        if (!serviceGroupId.equals(serviceInformation.getParticipantIdentifier())) {
+            String errorMessage = String.format("Save service metadata was called with bad Participant ID parameters. Message body param: %s URL param: %s",
+                    asString(serviceInformation.getParticipantIdentifier()),
+                    asString(serviceGroupId));
+            log.info(errorMessage);
+            throw new BadRequestException(WRONG_FIELD, errorMessage);
+        }
+        validateServiceInformation(serviceInformation);
+        return serviceInformation;
+    }
+
     private void validateServiceInformation(ServiceInformationType serviceInformation) {
         ProcessListType processList = serviceInformation.getProcessList();
         if (processList == null) {

@@ -17,6 +17,8 @@ public class ServiceMetadataRO extends BaseRO {
     String smlSubdomain;
     String domainCode;
 
+    String xmlContent;
+
     public String getDocumentIdentifier() {
         return documentIdentifier;
     }
@@ -47,5 +49,13 @@ public class ServiceMetadataRO extends BaseRO {
 
     public void setDomainCode(String domainCode) {
         this.domainCode = domainCode;
+    }
+
+    public String getXmlContent() {
+        return xmlContent;
+    }
+
+    public void setXmlContent(String xmlContent) {
+        this.xmlContent = xmlContent;
     }
 }

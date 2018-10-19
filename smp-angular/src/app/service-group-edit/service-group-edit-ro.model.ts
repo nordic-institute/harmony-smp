@@ -1,6 +1,7 @@
 import { ServiceMetadataEditRo } from './service-metadata-edit-ro.model';
 import {SearchTableEntity} from "../common/search-table/search-table-entity.model";
 import {UserRo} from "../user/user-ro.model";
+import {DomainRo} from "../domain/domain-ro.model";
 
 export interface ServiceGroupEditRo extends SearchTableEntity {
   id: number;
@@ -9,5 +10,6 @@ export interface ServiceGroupEditRo extends SearchTableEntity {
   domainCode:'',
   smlSubdomain:'',
   serviceMetadata: Array<ServiceMetadataEditRo>;
+  domains: Array<DomainRo>;
   users: Array<UserRo>;
 }

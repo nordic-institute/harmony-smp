@@ -71,6 +71,9 @@
 
     <ng-template #rowActions let-row="row" ngx-datatable-cell-template>
       <div>
+        <ng-container [ngTemplateOutlet]="additionalRowActionButtons"
+                      [ngTemplateOutletContext]="{row:row}"></ng-container>
+
         <button mat-icon-button color="primary" [disabled]="row.deleted || loading"
                 (click)="editSearchTableEntityRow(row)" tooltip="Edit">
           <mat-icon>edit</mat-icon>

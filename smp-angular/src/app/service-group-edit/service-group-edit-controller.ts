@@ -5,43 +5,70 @@ import {ServiceGroupEditRo} from './service-group-edit-ro.model';
 import {SearchTableEntityStatus} from '../common/search-table/search-table-entity-status.model';
 import {ServiceMetadataEditRo} from "./service-metadata-edit-ro.model";
 import {DomainDetailsDialogComponent} from "../domain/domain-details-dialog/domain-details-dialog.component";
+import {ServiceGroupMetadataDialogComponent} from "./service-group-metadata-dialog/service-group-metadata-dialog.component";
 
 export class ServiceGroupEditController implements SearchTableController {
 
-  constructor(public dialog: MatDialog) { }
+  constructor(public dialog: MatDialog) {
+  }
 
-  public showDetails( row: any, config?: MatDialogConfig,) {
+  public showDetails(row: any, config?: MatDialogConfig,) {
     let dialogRef: MatDialogRef<ServiceGroupDetailsDialogComponent>
       = this.dialog.open(ServiceGroupDetailsDialogComponent);
     dialogRef.afterClosed().subscribe(result => {
       //Todo:
     });
-
-  }
-
-  public showMetadataList(row: any) {
-
   }
 
 
-  public edit(row: any) { }
+  public edit(row: any) {
+  }
 
-  public delete(row: any) { }
+  public delete(row: any) {
+
+    // set all rows as deleted
+    let sgRow =  row as ServiceGroupEditRo;
+    sgRow.serviceMetadata.forEach(function(part, index, metaDataList) {
+      metaDataList[index].status = SearchTableEntityStatus.REMOVED;
+      metaDataList[index].deleted=true;
+    });
+
+  }
 
   public newDialog(config?: MatDialogConfig): MatDialogRef<ServiceGroupDetailsDialogComponent> {
     return this.dialog.open(ServiceGroupDetailsDialogComponent, config);
+  }
+
+  public newMetadataDialog(config?: MatDialogConfig): MatDialogRef<ServiceGroupMetadataDialogComponent> {
+    return this.dialog.open(ServiceGroupMetadataDialogComponent, config);
   }
 
   public newRow(): ServiceGroupEditRo {
     return {
       id: null,
       index: null,
-      participantIdentifier:'',
+      participantIdentifier: '',
       participantScheme: '',
       domainCode: '',
       smlSubdomain: '',
-      serviceMetadata:[],
+      serviceMetadata: [],
       users: [],
+      domains: [],
+      status: SearchTableEntityStatus.NEW
+    };
+  }
+
+  public newServiceMetadataRow(): ServiceMetadataEditRo {
+    return {
+      id:null,
+      documentIdentifier: '',
+      documentIdentifierScheme: '',
+      smlSubdomain: '',
+      domainCode: '',
+      processSchema: '',
+      processIdentifier: '',
+      endpointUrl: '',
+      endpointCertificate: '',
       status: SearchTableEntityStatus.NEW
     };
   }

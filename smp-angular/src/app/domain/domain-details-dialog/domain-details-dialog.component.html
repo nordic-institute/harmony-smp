@@ -1,48 +1,59 @@
 <h2 mat-dialog-title>{{formTitle}}</h2>
 <mat-dialog-content>
-
+  <form [formGroup]="domainForm">
   <mat-card>
+    <mat-card-title>Domain properties</mat-card-title>
     <mat-card-content>
-      <div class="panel">
         <fieldset style="border: none;">
           <mat-form-field style="width:100%">
-            <input matInput placeholder="Domain Code ()" name="domainCode" value="{{current.domainCode}}" id="domainCode_id"
-                   (blur)="updateDomainCode($event)" [formControl]="domainForm.controls['domainCode']" maxlength="255" required>
+            <input matInput placeholder="Domain Code (For WS API integration: the Domain property.)" name="domainCode" id="domainCode_id"
+                   [formControl]="domainForm.controls['domainCode']" maxlength="255" required>
             <div *ngIf="(!editMode && domainForm.controls['domainCode'].touched || editMode) &&  domainForm.controls['domainCode'].hasError('pattern')" style="color:red; font-size: 70%">
-             Domain could must contain only chars.
+             Domain could must contain only chars and numbers.
             </div>
           </mat-form-field>
           <mat-form-field style="width:100%">
-            <input matInput placeholder="SML domain (Part of DNS Zone: ex.eHealth: 'ehealth', peppol: '', ..)" name="smlSubdomain" value="{{current.smlSubdomain}}" id="smldomain_id"
-                   (blur)="updateSmlDomain($event)" [formControl]="domainForm.controls['smlSubdomain']" maxlength="255" required>
+            <input matInput placeholder="SML domain (Part of DNS Zone: ex.eHealth: 'ehealth', peppol: '', ..)" name="smlSubdomain"  id="smldomain_id"
+                    [formControl]="domainForm.controls['smlSubdomain']" maxlength="255" >
             <div *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('pattern')" style="color:red; font-size: 70%">
-              SML domain must be valid DNS part (AlphaNumeric with optional char -).
+              SML domain must be valid DNS part (AlphaNumeric with optional char - or must be empty for peppol).
             </div>
           </mat-form-field>
           <mat-form-field style="width:100%">
-            <input matInput placeholder="SML SMP identifier (SMP ID used for SML )" name="smlSmpId" value="{{current.smlSmpId}}" id="smlSMPId_id"
-                   (blur)="updateSmlSmpId($event)" [formControl]="domainForm.controls['smlSmpId']" maxlength="255" required>
-            <div *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('pattern')" style="color:red; font-size: 70%">
-              SML SMP ID  must be valid DNS part (AlphaNumeric with optional char -).
-            </div>
-
-          </mat-form-field>
-          <mat-form-field style="width:100%">
-            <input matInput placeholder="SML Client certificate" name="Client certificate" value="{{current.smlClientKeyAlias}}" id="smlClientKeyAlias_id"
-                   (blur)="updateSmlClientKeyAlias($event)" [formControl]="domainForm.controls['smlClientKeyAlias']" maxlength="255" required>
-          </mat-form-field>
-          <mat-form-field style="width:100%">
-            <input matInput placeholder="Response signature Certificate" name="signatureKeyAlias" value="{{current.signatureKeyAlias}}" id="signatureKeyAlias_id"
-                   (blur)="updateSignatureKeyAlias($event)" [formControl]="domainForm.controls['signatureKeyAlias']" maxlength="255" required>
+            <input matInput placeholder="Response signature Certificate" name="signatureKeyAlias" id="signatureKeyAlias_id"
+                   [formControl]="domainForm.controls['signatureKeyAlias']" maxlength="255" >
           </mat-form-field>
         </fieldset>
-        <!-- label class="custom-file-upload">
-          <input #fileInput type="file" id="custom-file-upload" accept=".cer" (change)="uploadCertificate()" >
-          <span class="custom-file-upload-inner">Import</span>
-        </label-->
-      </div>
     </mat-card-content>
   </mat-card>
+    <mat-card>
+      <mat-card-title>SML integration data</mat-card-title>
+      <mat-card-content>
+        <fieldset style="border: none;">
+            <mat-form-field style="width:100%">
+              <input matInput placeholder="SML SMP identifier (SMP ID used for SML )" name="smlSmpId" id="smlSMPId_id"
+                     [formControl]="domainForm.controls['smlSmpId']" maxlength="255" required>
+              <div *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('pattern')" style="color:red; font-size: 70%">
+                SML SMP ID  must be valid DNS part (AlphaNumeric with optional char -).
+              </div>
+
+            </mat-form-field>
+            <mat-form-field style="width:100%">
+              <input matInput placeholder="ClientCert Header" name="Client certificate" id="smlClientHeader_id"
+                     [formControl]="domainForm.controls['smlClientKeyAlias']" maxlength="255" >
+            </mat-form-field>
+            <mat-form-field style="width:100%">
+              <input matInput placeholder="ClientCert Alias" name="Client certificate" id="smlClientKeyAlias_id"
+                     [formControl]="domainForm.controls['smlClientKeyAlias']" maxlength="255" >
+            </mat-form-field>
+          </fieldset>
+          <!-- label class="custom-file-upload">
+            <input #fileInput type="file" id="custom-file-upload" accept=".cer" (change)="uploadCertificate()" >
+            <span class="custom-file-upload-inner">Import</span>
+          </label-->
+      </mat-card-content>
+    </mat-card>
+  </form>
 </mat-dialog-content>
 
 <table class="buttonsRow">

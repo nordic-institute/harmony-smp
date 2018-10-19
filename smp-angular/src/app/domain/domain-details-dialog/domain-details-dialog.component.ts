@@ -18,15 +18,13 @@ export class DomainDetailsDialogComponent {
 
   static readonly NEW_MODE = 'New Domain';
   static readonly EDIT_MODE = 'Domain Edit';
-  readonly dnsDomainPattern = '^(?!(\\d|-|_).+)[a-zA-Z0-9-]{1,63}$';
-  readonly domainCodePattern = '^[a-zA-Z]{1,255}$';
+  readonly dnsDomainPattern = '^(?![0-9]+$)(?!.*-$)(?!-)[a-zA-Z0-9-]{0,63}$';
+  readonly domainCodePattern = '^[a-zA-Z0-9]{1,255}$';
 
   editMode: boolean;
   formTitle: string;
   current: DomainRo & { confirmation?: string };
   domainForm: FormGroup;
-
-
   domain;
 
 
@@ -52,16 +50,22 @@ export class DomainDetailsDialogComponent {
 
     this.domainForm = fb.group({
 
-      'domainCode': new FormControl({value: this.current.domainCode, disabled: this.editMode}, [Validators.pattern(this.domainCodePattern)]),
-      'smlSubdomain': new FormControl({value: this.current.smlSubdomain, disabled: this.editMode},  [Validators.pattern(this.dnsDomainPattern)]),
-      'smlSmpId': new FormControl({value: this.current.smlSmpId}, [Validators.required, Validators.pattern(this.dnsDomainPattern)]),
-      'smlClientKeyAlias': new FormControl({value: this.current.smlClientKeyAlias}, null),
-      'signatureKeyAlias': new FormControl({value: this.current.signatureKeyAlias}, null),
-
+      'domainCode': new FormControl({value:'', disabled: this.editMode}, [Validators.pattern(this.domainCodePattern)]),
+      'smlSubdomain': new FormControl({value: '', disabled: this.editMode},  [Validators.pattern(this.dnsDomainPattern)]),
+      'smlSmpId': new FormControl({value: ''}, [Validators.pattern(this.dnsDomainPattern)]),
+      'smlClientKeyAlias': new FormControl({value: ''}, null),
+      'signatureKeyAlias': new FormControl({value:''}, null),
 
     }, {
       //validator: this.passwordConfirmationValidator
     });
+    this.domainForm.controls['domainCode'].setValue(this.current.domainCode);
+    this.domainForm.controls['smlSubdomain'].setValue(this.current.smlSubdomain);
+    this.domainForm.controls['smlSmpId'].setValue(this.current.smlSmpId);
+    this.domainForm.controls['smlClientKeyAlias'].setValue(this.current.smlClientKeyAlias);
+    this.domainForm.controls['signatureKeyAlias'].setValue(this.current.signatureKeyAlias);
+
+
   }
   submitForm() {
     this.checkValidity(this.domainForm)
@@ -81,7 +85,17 @@ export class DomainDetailsDialogComponent {
     });
   }
 
+  public getCurrent(): DomainRo {
 
+    this.current.domainCode = this.domainForm.value['domainCode'];
+    this.current.smlSubdomain = this.domainForm.value['smlSubdomain'];
+    this.current.smlSmpId = this.domainForm.value['smlSmpId'];
+    this.current.smlClientKeyAlias = this.domainForm.value['smlClientKeyAlias'];
+    this.current.signatureKeyAlias = this.domainForm.value['signatureKeyAlias'];
+
+    return this.current;
+
+  }
   updateDomainCode(event) {
     this.current.domainCode = event.target.value;
   }

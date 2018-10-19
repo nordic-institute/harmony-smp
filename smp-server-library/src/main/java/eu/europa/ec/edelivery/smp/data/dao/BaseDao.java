@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
+import eu.europa.ec.edelivery.smp.exceptions.SMPTestIsALiveException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
@@ -65,10 +66,12 @@ public abstract class BaseDao<E extends BaseEntity> {
      * @param entity
      */
     @Transactional
-    public void testPersist(E entity, String message) {
+    public void testPersist(E entity, boolean rollbackWithException, String message) {
         memEManager.persist(entity);
         memEManager.flush();
-        throw new RuntimeException(message);
+        if (rollbackWithException) {
+            throw new SMPTestIsALiveException(message);
+        }
     }
 
 
