@@ -1,4 +1,4 @@
-<smp-search-table
+<smp-search-table #searchTable
   page_id='edit_id'
   title='Edit'
   [columnPicker]="columnPicker"
@@ -8,16 +8,20 @@
   [filter]="filter"
   [searchTableController]="serviceGroupEditController"
   [tableRowDetailContainer]="tableRowDetailContainer"
+  [additionalRowActionButtons]="additionalRowActionButtons"
 >
 
   <ng-template #rowMetadataAction let-row="row" let-value="value" ngx-datatable-cell-template>
-
     <button mat-button color="primary"
             (click)="metadataRowButtonAction(row)" id="metadataRowButtonAction{{row.$$index}}_id" tooltip="Metadata">
       <mat-icon>view_list</mat-icon>
       <span>Metadata</span>
     </button>
+  </ng-template>
 
+  <ng-template #rowSMPUrlLinkAction let-row="row" let-value="value" ngx-datatable-cell-template>
+    <a target="_blank"
+       href="{{contextPath}}{{row.participantScheme}}::{{row.participantIdentifier}}" >Open URL</a>
   </ng-template>
 
 
@@ -30,26 +34,25 @@
       <input matInput placeholder="Participant schema" name="patricipantSchema" [(ngModel)]="filter.messageId"
              #messageId="ngModel" id="participanschema_id">
     </mat-form-field>
-    <mat-select placeholder="Domain " [(ngModel)]="filter.messageStatus" name="messageStatus"
-               id="messagestatus_id">
+
+    <mat-select placeholder="Domain (sml subdomain)" [(ngModel)]="filter.domain" name="domain"
+                id="domain_id">
       <mat-option [value]="''">
       </mat-option>
-      <mat-option *ngFor="let mstatus of msgStatus" [value]="mstatus">
-        {{mstatus}}
+      <mat-option *ngFor="let domain of domainlist" [value]="domain.domainCode">
+        {{domain.domainCode}} ({{domain.smlSubdomain}})
       </mat-option>
     </mat-select>
   </ng-template>
 
 
-  <ng-template #additionalToolButtons>
-    <div style="background-color: #03A9F4; display: inline-block; width: 3px; height: 100%; margin-right: 8px">&nbsp;
-    </div>
-    <button mat-raised-button color="primary"
-            id="metadatabutton_id">
-      <mat-icon>view_list</mat-icon>
-      <span>Metadata</span>
-    </button>
+  <ng-template #additionalToolButtons></ng-template>
 
+  <ng-template #additionalRowActionButtons let-row="row">
+    <button mat-icon-button color="primary" [disabled]="row?.deleted || loading"
+            (click)="onAddMetadataRow(row)" tooltip="Edit">
+      <mat-icon>playlist_add</mat-icon>
+    </button>
   </ng-template>
 
   <ng-template #tableRowDetailContainer let-row="row">
@@ -59,14 +62,14 @@
     </div>
     <div *ngIf="row.serviceMetadata.length !== 0" >
       <ngx-datatable
-        class='material striped'
-        style="width: 80%"
+        class='inner-table material striped'
         [loadingIndicator]="loading"
         [rows]='row.serviceMetadata'
         [columnMode]='"force"'
         [headerHeight]='50'
         [footerHeight]='50'
-        [rowHeight]='"auto"'>
+        [rowHeight]='"auto"'
+        [rowClass]="getRowClass">
         <ngx-datatable-column prop="domainCode" name="Domain" maxWidth="250" ></ngx-datatable-column>
         <ngx-datatable-column prop="documentIdentifierScheme" name="Document identifier scheme" maxWidth="350" ></ngx-datatable-column>
         <ngx-datatable-column prop="documentIdentifier" name="Document identifier" maxWidth="250" ></ngx-datatable-column>
@@ -86,7 +89,7 @@
             <mat-icon>edit</mat-icon>
           </button>
           <button mat-icon-button color="primary" [disabled]="rowSmd.deleted || loading"
-                  (click)="onDeleteMetadataRowActionClicked(rowSmd)" tooltip="Delete">
+                  (click)="onDeleteMetadataRowActionClicked(row, rowSmd)" tooltip="Delete">
             <mat-icon>delete</mat-icon>
           </button>
         </div>

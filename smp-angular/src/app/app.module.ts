@@ -2,7 +2,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
-import { FlexLayoutModule } from "@angular/flex-layout";
+import {FlexLayoutModule} from "@angular/flex-layout";
 import {
   MatButtonModule,
   MatDialogModule,
@@ -17,7 +17,7 @@ import {
   MatDatepicker,
   MatCardModule,
   MatDatepickerModule,
-  MatSlideToggleModule,
+  MatSlideToggleModule, MatTab, MatAccordion, MatTabsModule,
 } from '@angular/material';
 import "hammerjs";
 
@@ -71,6 +71,7 @@ import {DownloadService} from './download/download.service';
 import {UserService} from './user/user.service';
 import {RoleService} from './security/role.service';
 import {CertificateService} from './user/certificate.service';
+import {GlobalLookups} from "./common/global-lookups";
 
 @NgModule({
   declarations: [
@@ -130,6 +131,7 @@ import {CertificateService} from './user/certificate.service';
     MatListModule,
     MatSidenavModule,
     MatSelectModule,
+    MatTabsModule,
     MatSlideToggleModule,
     routing,
     ReactiveFormsModule,
@@ -151,6 +153,7 @@ import {CertificateService} from './user/certificate.service';
     UserService,
     CertificateService,
     RoleService,
+    GlobalLookups,
     {
       provide: ExtendedHttpClient,
       useFactory: extendedHttpClientCreator,

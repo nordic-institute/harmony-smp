@@ -2,6 +2,8 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
+import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
+import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.junit.Test;
@@ -10,6 +12,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.transaction.Transactional;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -158,6 +161,52 @@ public class ServiceGroupDaoIntegrationTest extends ServiceGroupDaoIntegrationBa
         // test
         Optional<DBServiceGroup> optResDel = testInstance.findServiceGroup(TestConstants.TEST_SG_ID_1, TestConstants.TEST_SG_SCHEMA_1);
         assertFalse(optResDel.isPresent());
+    }
+
+    @Test
+    public void testGetServiceGroupListNotEmpty(){
+        // given
+        // add additional domain
+        DBDomain d2 = TestDBUtils.createDBDomain(TEST_DOMAIN_CODE_2);
+        domainDao.persistFlushDetach(d2);
+        createAndSaveNewServiceGroups(10, TEST_DOMAIN_CODE_1, TestConstants.TEST_SG_ID_1);
+        createAndSaveNewServiceGroups(5, TEST_DOMAIN_CODE_2, TestConstants.TEST_SG_ID_2);
+        //when
+        List<DBServiceGroup> res = testInstance.getServiceGroupList(-1,-1,null, null,null, null);
+        // then
+        assertNotNull(res);
+        assertEquals(15, res.size());
+
+    }
+
+    @Test
+    public void testGetServiceGroupListByDomain(){
+        // given
+        // add additional domain
+        DBDomain d2 = TestDBUtils.createDBDomain(TEST_DOMAIN_CODE_2);
+        domainDao.persistFlushDetach(d2);
+        createAndSaveNewServiceGroups(10, TEST_DOMAIN_CODE_1, TestConstants.TEST_SG_ID_1);
+        createAndSaveNewServiceGroups(5, TEST_DOMAIN_CODE_2, TestConstants.TEST_SG_ID_2);
+
+        //when
+        List<DBServiceGroup> res = testInstance.getServiceGroupList(-1,-1,null, null,null, d2);
+        // then
+        assertNotNull(res);
+        assertEquals(5, res.size());
+
+    }
+
+    @Test
+    public void testGetTableListEmpty(){
+
+        // given
+
+        //when
+        List<DBServiceGroup> res = testInstance.getServiceGroupList(-1,-1,null, null,null, null);
+        // then
+        assertNotNull(res);
+        assertTrue(res.isEmpty());
+
     }
 
 }

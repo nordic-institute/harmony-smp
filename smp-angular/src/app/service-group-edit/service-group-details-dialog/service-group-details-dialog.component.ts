@@ -12,6 +12,7 @@ import {SearchTableEntityStatus} from "../../common/search-table/search-table-en
 import {DomainRo} from "../../domain/domain-ro.model";
 import {ServiceGroupEditRo} from "../service-group-edit-ro.model";
 import {ServiceMetadataEditRo} from "../service-metadata-edit-ro.model";
+import {GlobalLookups} from "../../common/global-lookups";
 
 @Component({
   selector: 'app-messagelog-details',
@@ -27,6 +28,7 @@ export class ServiceGroupDetailsDialogComponent {
   userObserver:  Observable< SearchTableResult> ;
   domainObserver:  Observable< SearchTableResult> ;
   userlist: Array<UserRo> = [];
+  domainList: Array<DomainRo> = [];
   editMode: boolean;
   formTitle: string;
   current: ServiceGroupEditRo & { confirmation?: string };
@@ -34,12 +36,13 @@ export class ServiceGroupDetailsDialogComponent {
   dialogForm: FormGroup;
   dialogFormBuilder: FormBuilder;
   formControlUsers: FormControl;
+  formControlDomain: FormControl;
   /*
   selectedDomain: DomainRo;
   domainList: Array<any>;
 */
 
-  minCountOwners(min: number) {
+  minSelectedListCount(min: number) {
     return (c: AbstractControl): {[key: string]: any} => {
       if (c.value.length >= min)
         return null;
@@ -48,13 +51,14 @@ export class ServiceGroupDetailsDialogComponent {
     }
   }
 
-  constructor(protected http: HttpClient, public dialogRef: MatDialogRef<ServiceGroupDetailsDialogComponent>,
-                private alertService: AlertService,
+  constructor(protected http: HttpClient,
+              public dialogRef: MatDialogRef<ServiceGroupDetailsDialogComponent>,
+              private alertService: AlertService,
+              private lookups: GlobalLookups,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder) {
     // init user list
-
-   this.userObserver = this.http.get<SearchTableResult>(SmpConstants.REST_USER);
+    this.userObserver = this.http.get<SearchTableResult>(SmpConstants.REST_USER);
     this.userObserver.subscribe((users: SearchTableResult) => {
       this.userlist = new Array(users.serviceEntities.length)
         .map((v, index) => users.serviceEntities[index] as UserRo);
@@ -62,24 +66,21 @@ export class ServiceGroupDetailsDialogComponent {
       this.userlist = users.serviceEntities.map(serviceEntity => {
         return {...<UserRo>serviceEntity}
       });
-      this.updateData();
+      this.updateUserData();
     });
-    /*
-    // init domains
-    this.domainObserver = this.http.get<SearchTableResult>(SmpConstants.REST_DOMAIN);
-    this.domainObserver.subscribe((domains: SearchTableResult) => {
+    // domain service group
+    this.lookups.getDomainLookupObservable().subscribe((domains: SearchTableResult) => {
       this.domainList = new Array(domains.serviceEntities.length)
-        .map((v, index) => {domains.serviceEntities[index] as DomainRo;
-          if ( this.editMode && v.domainCode ===data.row.domainCode) {
-            this.selectedDomain = v as DomainRo;
-          }
-        });
+        .map((v, index) => domains.serviceEntities[index] as DomainRo);
 
       this.domainList = domains.serviceEntities.map(serviceEntity => {
-        return {...serviceEntity}
+        return {...<DomainRo>serviceEntity}
       });
+      this.updateDomainData();
     });
-*/
+
+
+
     this.dialogFormBuilder = fb;
     this.editMode = data.edit;
     this.formTitle = this.editMode ?  ServiceGroupDetailsDialogComponent.EDIT_MODE: ServiceGroupDetailsDialogComponent.NEW_MODE;
@@ -98,23 +99,26 @@ export class ServiceGroupDetailsDialogComponent {
       };
 
     this.dialogForm = this.dialogFormBuilder.group({
-
       'participantIdentifier': new FormControl({value: this.current.participantIdentifier, disabled: this.editMode}, this.editMode ? Validators.required : null),
       'participantScheme': new FormControl({value: this.current.participantScheme, disabled: this.editMode},  this.editMode ? Validators.required : null),
       'domainCode': new FormControl({value: this.current.domainCode},this.editMode ? Validators.required : null),
 
-      //'users': [new FormControl({value: this.current.users}, [ this.minCountOwners(1)] )],
     });
 
 
   }
 
-  updateData(){
+  updateUserData(){
     this.formControlUsers = new FormControl(this.current.users);
-    this.formControlUsers.setValidators( [ this.minCountOwners(1)]);
-
+    this.formControlUsers.setValidators( [ this.minSelectedListCount(1)]);
     this.dialogForm.addControl("users",this.formControlUsers );
 
+  }
+
+  updateDomainData(){
+    this.formControlDomain = new FormControl(this.current.domains);
+    this.formControlDomain.setValidators( [ this.minSelectedListCount(1)]);
+    this.dialogForm.addControl("domains",this.formControlDomain );
   }
 
 
@@ -150,7 +154,7 @@ export class ServiceGroupDetailsDialogComponent {
       this.current.users.push(usr.value);
     }
   }
-  compareUserById(item1, item2): boolean{
+  compareTableItemById(item1, item2): boolean{
     return item1.id=== item2.id;
   }
 

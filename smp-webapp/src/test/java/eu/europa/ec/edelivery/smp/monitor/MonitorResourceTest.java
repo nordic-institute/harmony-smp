@@ -4,6 +4,7 @@ import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
+import eu.europa.ec.edelivery.smp.exceptions.SMPTestIsALiveException;
 import eu.europa.ec.edelivery.smp.monitor.MonitorResource;
 import org.junit.Before;
 import org.junit.Rule;
@@ -95,7 +96,7 @@ public class MonitorResourceTest {
     public void testDatabase() {
         // given
         expectedEx.expectMessage("TEST_DB_SUCCESSFUL_ROLLBACK MESSAGE");
-        expectedEx.expect(RuntimeException.class);
+        expectedEx.expect(SMPTestIsALiveException.class);
         // when
         boolean bval = testInstance.testDatabase();
         //then
