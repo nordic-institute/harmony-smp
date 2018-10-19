@@ -5,21 +5,18 @@ import {SecurityEventService} from './security-event.service';
 import {DomainService} from './domain.service';
 import {Role} from './role.model';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {SmpConstants} from "../smp.constants";
 
 @Injectable()
 export class SecurityService {
 
-  constructor (private http: HttpClient, private securityEventService: SecurityEventService, private domainService: DomainService) {
+  constructor (private http: HttpClient, private securityEventService: SecurityEventService) {
   }
 
   login(username: string, password: string) {
-    this.domainService.resetDomain();
     let headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
-    return this.http.post<string>('rest/security/authentication',
-      JSON.stringify({
-        username: username,
-        password: password
-      }),
+    return this.http.post<string>(SmpConstants.REST_SECURITY_AUTHENTICATION,
+      JSON.stringify({ username, password }),
       { headers })
       .subscribe((response: string) => {
           console.log('Login success');
@@ -34,8 +31,7 @@ export class SecurityService {
 
   logout() {
     console.log('Logging out');
-    this.domainService.resetDomain();
-    this.http.delete('rest/security/authentication').subscribe((res: Response) => {
+    this.http.delete(SmpConstants.REST_SECURITY_AUTHENTICATION).subscribe((res: Response) => {
         localStorage.removeItem('currentUser');
         this.securityEventService.notifyLogoutSuccessEvent(res);
       },
@@ -51,11 +47,10 @@ export class SecurityService {
 
   private getCurrentUsernameFromServer(): Observable<string> {
     let subject = new ReplaySubject<string>();
-    this.http.get<string>('rest/security/user')
+    this.http.get<string>(SmpConstants.REST_SECURITY_USER)
       .subscribe((res: string) => {
         subject.next(res);
       }, (error: any) => {
-        //console.log('getCurrentUsernameFromServer:' + error);
         subject.next(null);
       });
     return subject.asObservable();
@@ -67,13 +62,10 @@ export class SecurityService {
       //we get the username from the server to trigger the redirection to the login screen in case the user is not authenticated
       this.getCurrentUsernameFromServer()
         .subscribe((user: string) => {
-          console.log('isAuthenticated: getCurrentUsernameFromServer [' + user + ']');
           subject.next(user !== null);
         }, (user: string) => {
-          console.log('isAuthenticated error' + user);
           subject.next(false);
         });
-
     } else {
       let currentUser = this.getCurrentUser();
       subject.next(currentUser !== null);

@@ -10,17 +10,17 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-
 package eu.europa.ec.edelivery.smp.config;
 
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 /**
  * Created by gutowpa on 12/07/2017.
  */
-
 @EnableWebSecurity
 @ImportResource("classpath:spring-security.xml")
+@ComponentScan("eu.europa.ec.edelivery.smp.auth")
 public class SpringSecurityConfig {
 }

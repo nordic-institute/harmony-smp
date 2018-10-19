@@ -7,6 +7,7 @@ import {SecurityEventService} from '../security/security-event.service';
 import {User} from '../security/user.model';
 import {MatDialogRef, MatDialog} from '@angular/material';
 import {DefaultPasswordDialogComponent} from 'app/security/default-password-dialog/default-password-dialog.component';
+import {Subscription} from "rxjs";
 
 @Component({
   moduleId: module.id,
@@ -17,7 +18,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   model: any = {};
   loading = false;
   returnUrl: string;
-  sub: any;
+  sub: Subscription;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -40,7 +41,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.sub = this.securityEventService.onLoginSuccessEvent().subscribe(
       data => {
         console.log("Authentication successfull");
-        this.verifyDefaultLoginUsed();
+        // this.verifyDefaultLoginUsed();
         this.router.navigate([this.returnUrl]);
       });
 
@@ -57,7 +58,7 @@ export class LoginComponent implements OnInit, OnDestroy {
         switch (error.status) {
           case HTTP_UNAUTHORIZED:
           case HTTP_FORBIDDEN:
-            let forbiddenCode = error.json().message;
+            let forbiddenCode = error.message;
             console.log("User forbiden code " + forbiddenCode);
             switch (forbiddenCode) {
               case USER_INACTIVE:
@@ -95,7 +96,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    console.log("Destroying login component");
     this.sub.unsubscribe();
   }
 }

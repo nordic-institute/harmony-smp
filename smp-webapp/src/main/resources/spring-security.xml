@@ -10,30 +10,48 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the Licence for the specific language governing permissions and limitations under the Licence.
   -->
-
 <b:beans xmlns="http://www.springframework.org/schema/security"
          xmlns:b="http://www.springframework.org/schema/beans"
+         xmlns:p="http://www.springframework.org/schema/p"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-
          xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
 
-    <b:bean id="securityExceptionHandler" class="eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler"/>
+    <b:bean id="securityExceptionHandler" class="eu.europa.ec.edelivery.smp.error.SpringSecurityExceptionHandler" />
+    <!--<b:bean id="http403ForbiddenEntryPoint" class="org.springframework.security.web.authentication.Http403ForbiddenEntryPoint" />-->
 
-    <http >
-        <csrf disabled="true"/>
+    <http auto-config="false"
+          use-expressions="true">
+        <csrf request-matcher-ref="csrfURLMatcher" token-repository-ref="tokenRepository"/>
         <http-basic entry-point-ref="securityExceptionHandler"/>
+        <!--<http-basic entry-point-ref="http403ForbiddenEntryPoint"/>-->
         <anonymous granted-authority="ROLE_ANONYMOUS"/>
 
         <custom-filter position="X509_FILTER" ref="x509AuthFilter"/>
         <custom-filter position="PRE_AUTH_FILTER" ref="blueCoatReverseProxyAuthFilter"/>
 
-        <intercept-url method="PUT" access=" ! isAnonymous()" pattern="/*"/>
-        <intercept-url method="DELETE" access=" ! isAnonymous()" pattern="/*"/>
+        <!-- TODO double check these intercep URLs and their access & methods -->
+        <intercept-url pattern="/" access="permitAll"/>
+        <intercept-url pattern="/ui/rest/security/authentication" access="permitAll"/>
+        <intercept-url pattern="/ui/rest/application/info" access="permitAll"/>
+        <intercept-url pattern="/ui/rest/application/name" access="permitAll"/>
+        <intercept-url pattern="/ui/rest/domain/**" access="hasRole('SMP_ADMIN')" />
+        <intercept-url pattern="/ui/rest/user/**" access="hasAnyRole('SMP_ADMIN','SYSTEM_ADMIN')"/>
+        <intercept-url pattern="/ui/rest/search/**" access="hasAnyRole('SMP_ADMIN','SYSTEM_ADMIN')"/>
+        <intercept-url pattern="/ui/rest/edit/**" access="hasAnyRole('SMP_ADMIN','SYSTEM_ADMIN')"/>
+        <intercept-url pattern="/ui/rest/servicegroup/**" access="hasAnyRole('SMP_ADMIN','SYSTEM_ADMIN')"/>
+        <intercept-url pattern="/ui/rest/**" access="hasAnyRole('ROLE_ANONYMOUS', 'SERVICE_GROUP_ADMIN','SMP_ADMIN','SYSTEM_ADMIN')"/>
         <access-denied-handler ref="securityExceptionHandler"/>
-        <headers defaults-disabled="true" />
+        <headers>
+            <frame-options policy="DENY"/>
+            <content-type-options/>
+            <xss-protection enabled="true"/>
+        </headers>
     </http>
 
+    <b:bean id="tokenRepository" class="org.springframework.security.web.csrf.CookieCsrfTokenRepository" p:cookieHttpOnly="false" p:cookiePath="/"/>
+
+    <b:bean id="csrfURLMatcher" class="eu.europa.ec.edelivery.smp.auth.URLCsrfMatcher" p:ignoreUrl="/rest/security/authentication" />
 
     <authentication-manager alias="smpAuthenticationManager">
         <!-- authentication-provider>
@@ -45,7 +63,6 @@
         </authentication-provider -->
         <authentication-provider ref="smpAuthProvider"/>
         <authentication-provider ref="preauthAuthProvider"/>
-
     </authentication-manager>
 
     <!-- user detail service is used only in preAhtProviders for cert authentication that is why search is only on cert table-->
@@ -54,36 +71,28 @@
                        users-by-username-query="SELECT c.CERTIFICATE_ID AS USERNAME, 'dummy' AS PASWORD, u.ACTIVE FROM SMP_CERTIFICATE c INNER JOIN SMP_USER u ON (u.id = c.id) WHERE c.CERTIFICATE_ID = ?"
                        authorities-by-username-query="SELECT c.CERTIFICATE_ID AS USERNAME, u.ROLE FROM SMP_CERTIFICATE c INNER JOIN SMP_USER u ON (u.id = c.id) WHERE c.CERTIFICATE_ID = ?"/>
 
+    <b:bean id="userDetailsServiceWrapper"
+            class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper"
+            p:userDetailsService-ref="smpJdbcUserDetailsService"/>
+
     <b:bean id="preauthAuthProvider"
-            class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">
-        <b:property name="preAuthenticatedUserDetailsService">
-            <b:bean id="userDetailsServiceWrapper"
-                    class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper">
-                <b:property name="userDetailsService" ref="smpJdbcUserDetailsService"/>
-            </b:bean>
-        </b:property>
-    </b:bean>
+            class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider"
+            p:preAuthenticatedUserDetailsService-ref="userDetailsServiceWrapper" />
 
     <b:bean id="blueCoatReverseProxyAuthFilter"
-            class="eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter">
-        <b:property name="authenticationManager" ref="smpAuthenticationManager"/>
-        <b:property name="blueCoatEnabled" value="${authentication.blueCoat.enabled}"/>
-    </b:bean>
+            class="eu.europa.ec.edelivery.security.BlueCoatAuthenticationFilter"
+            p:authenticationManager-ref="smpAuthenticationManager"
+            p:blueCoatEnabled="${authentication.blueCoat.enabled}"/>
 
-    <b:bean id="x509AuthFilter"
-            class="eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter">
-        <b:property name="authenticationManager" ref="smpAuthenticationManager"/>
-    </b:bean>
+    <b:bean id="x509AuthFilter" class="eu.europa.ec.edelivery.security.EDeliveryX509AuthenticationFilter"
+            p:authenticationManager-ref="smpAuthenticationManager"/>
 
     <!-- Slashes in participant or document identifiers are disallowed by default -->
     <http-firewall ref="httpFirewall"/>
-    <b:bean id="httpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall">
-        <b:property name="allowUrlEncodedSlash" value="${encodedSlashesAllowedInUrl}"/>
-    </b:bean>
 
-    <b:bean id="smpAuthProvider" class="eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider">
-    </b:bean>
+    <b:bean id="httpFirewall" class="org.springframework.security.web.firewall.DefaultHttpFirewall"
+            p:allowUrlEncodedSlash="${encodedSlashesAllowedInUrl}"/>
 
-
+    <b:bean id="smpAuthProvider" class="eu.europa.ec.edelivery.smp.auth.SMPAuthenticationProvider" />
 
 </b:beans>
