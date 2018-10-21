@@ -15,6 +15,8 @@ package eu.europa.ec.edelivery.smp.conversion;
 
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
+import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
 import org.apache.cxf.staxutils.PrettyPrintXMLStreamWriter;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ExtensionType;
 
@@ -41,6 +43,8 @@ public class ExtensionConverter {
    // private static final String WRAPPED_FORMAT = "<ExtensionsWrapper xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">%s</ExtensionsWrapper>";
     private static final byte[] WRAPPED_FORMAT_START = "<ExtensionsWrapper xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">".getBytes();
     private static final byte[] WRAPPED_FORMAT_END = "</ExtensionsWrapper>".getBytes();
+    private static final byte[] WRAPPED_SERVICE_GROUP_START = "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\"> <ParticipantIdentifier scheme=\"schema\">value</ParticipantIdentifier><ServiceMetadataReferenceCollection/>".getBytes();
+    private static final byte[] WRAPPED_SERVICE_GROUP_END = "</ServiceGroup>".getBytes();
     private static final QName EXT_TYPE_QNAME = new QName("http://docs.oasis-open.org/bdxr/ns/SMP/2016/05", "Extension");
 
     /**
@@ -119,7 +123,7 @@ public class ExtensionConverter {
         return baos.toByteArray();
     }
 
-    protected static List<ExtensionType> unmarshalExtensions(byte[] xml) throws JAXBException {
+    public static List<ExtensionType> unmarshalExtensions(byte[] xml) throws JAXBException {
 
 
         InputStream inStream = new ByteArrayInputStream(concatByteArrays(WRAPPED_FORMAT_START,xml,WRAPPED_FORMAT_END  ));
@@ -131,6 +135,16 @@ public class ExtensionConverter {
         } else {
             return Collections.emptyList();
         }
+    }
+
+    /**
+     * Method validates extension by schema In order to do that wraps the content to simple servicegroup.
+     *
+     * @param xml
+     */
+    public static  void validateExtensionBySchema(byte[] xml) throws XmlInvalidAgainstSchemaException {
+        byte[] buff = concatByteArrays(WRAPPED_SERVICE_GROUP_START,xml,WRAPPED_SERVICE_GROUP_END);
+        BdxSmpOasisValidator.validateXSD(buff);
     }
 
     /**

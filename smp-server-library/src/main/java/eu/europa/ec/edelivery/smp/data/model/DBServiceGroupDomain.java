@@ -55,6 +55,10 @@ public class DBServiceGroupDomain extends BaseEntity {
             fetch = FetchType.LAZY)
     private List<DBServiceMetadata> serviceMetadata = new ArrayList<>();
 
+
+    @Column(name = "SML_REGISTRED", nullable = false)
+    private boolean smlRegistered = false;
+
     @Column(name = "CREATED_ON" , nullable = false)
     LocalDateTime createdOn;
     @Column(name = "LAST_UPDATED_ON", nullable = false)
@@ -98,6 +102,15 @@ public class DBServiceGroupDomain extends BaseEntity {
         this.domain = domain;
     }
 
+    public boolean isSmlRegistered() {
+        return smlRegistered;
+    }
+
+    public void setSmlRegistered(boolean smlRegistered) {
+        this.smlRegistered = smlRegistered;
+    }
+
+
     public void addServiceMetadata(DBServiceMetadata metadata) {
         serviceMetadata.add(metadata);
         metadata.setServiceGroupDomain(this);
@@ -106,6 +119,14 @@ public class DBServiceGroupDomain extends BaseEntity {
     public void removeServiceMetadata(DBServiceMetadata metadata) {
         serviceMetadata.remove(metadata);
         metadata.setServiceGroupDomain(null);
+    }
+
+    public DBServiceMetadata removeServiceMetadata(String docId, String docSch) {
+        DBServiceMetadata dbServiceMetadata =  getServiceMetadata(docId,docSch );
+        if (dbServiceMetadata!=null) {
+            removeServiceMetadata(dbServiceMetadata);
+        }
+        return dbServiceMetadata;
     }
 
     @Transient

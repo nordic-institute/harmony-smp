@@ -6,9 +6,8 @@ export interface ServiceMetadataEditRo extends SearchTableEntity  {
   documentIdentifierScheme : string;
   smlSubdomain: string;
   domainCode: string;
-  processSchema: string;
-  processIdentifier: string;
-  endpointUrl: string;
-  endpointCertificate: string;
+  domainId: null,
+  xmlContent?:string,
+  xmlContentStatus:number,
 
 }

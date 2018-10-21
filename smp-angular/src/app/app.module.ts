@@ -5,22 +5,20 @@ import {HttpClient, HttpClientModule} from '@angular/common/http';
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {
   MatButtonModule,
+  MatCardModule,
+  MatDatepickerModule,
   MatDialogModule,
+  MatExpansionModule,
   MatIconModule,
   MatInputModule,
   MatListModule,
   MatMenuModule,
   MatSelectModule,
   MatSidenavModule,
-  MatTooltipModule,
-  MatExpansionModule,
-  MatDatepicker,
-  MatCardModule,
-  MatDatepickerModule,
   MatSlideToggleModule,
-  MatTab,
-  MatAccordion,
   MatTabsModule,
+  MatToolbarModule,
+  MatTooltipModule,
 } from '@angular/material';
 import "hammerjs";
 
@@ -72,9 +70,11 @@ import {DomainDetailsDialogComponent} from './domain/domain-details-dialog/domai
 import {UserDetailsDialogComponent} from './user/user-details-dialog/user-details-dialog.component';
 import {DownloadService} from './download/download.service';
 import {UserService} from './user/user.service';
-import {RoleService} from './security/role.service';
 import {CertificateService} from './user/certificate.service';
 import {GlobalLookups} from "./common/global-lookups";
+import {ServiceGroupExtensionWizardDialogComponent} from "./service-group-edit/service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component";
+import {ServiceMetadataWizardDialogComponent} from "./service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-dialog.component";
+import {ConfirmationDialogComponent} from "./common/confirmation-dialog/confirmation-dialog.component";
 
 @NgModule({
   declarations: [
@@ -92,11 +92,14 @@ import {GlobalLookups} from "./common/global-lookups";
     SaveDialogComponent,
     ServiceGroupMetadataDialogComponent,
     CancelDialogComponent,
+    ConfirmationDialogComponent,
     RowLimiterComponent,
     DatePipe,
     CapitalizeFirstPipe,
     DefaultPasswordDialogComponent,
     ServiceGroupDetailsDialogComponent,
+    ServiceGroupExtensionWizardDialogComponent,
+    ServiceMetadataWizardDialogComponent,
     ColumnPickerComponent,
     PageHelperComponent,
     ClearInvalidDirective,
@@ -110,9 +113,12 @@ import {GlobalLookups} from "./common/global-lookups";
     AppComponent,
     ServiceGroupMetadataDialogComponent,
     ServiceGroupDetailsDialogComponent,
+    ServiceGroupExtensionWizardDialogComponent,
+    ServiceMetadataWizardDialogComponent,
     DomainDetailsDialogComponent,
     UserDetailsDialogComponent,
     CancelDialogComponent,
+    ConfirmationDialogComponent,
     SaveDialogComponent,
     DefaultPasswordDialogComponent,
   ],
@@ -128,6 +134,7 @@ import {GlobalLookups} from "./common/global-lookups";
     MatDatepickerModule,
     MatDialogModule,
     MatTooltipModule,
+    MatToolbarModule,
     MatMenuModule,
     MatInputModule,
     MatIconModule,
@@ -155,7 +162,6 @@ import {GlobalLookups} from "./common/global-lookups";
     DownloadService,
     UserService,
     CertificateService,
-    RoleService,
     GlobalLookups,
     DatePipe,
     {

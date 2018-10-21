@@ -1,31 +1,21 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author Joze Rihtarsic
  * @since 4.1
  */
 
 
-public class ServiceGroupRO extends BaseRO {
+public class ServiceGroupDomainRO extends BaseRO {
 
 
-    private static final long serialVersionUID = -7523221767041516157L;
+    private static final long serialVersionUID = -7111221767041516157L;
     private Long id;
-    private String participantIdentifier;
-    private String participantScheme;
-    private boolean smlRegistered = false;
-    private List<ServiceMetadataRO> lstServiceMetadata = new ArrayList<>();
-    private List<UserRO> lstUser = new ArrayList<>();
-    private List<DomainRO> lstDomains = new ArrayList<>();
-    private String extension;
-
-
-
+    private Long domainId;
+    String domainCode;
+    String smlSubdomain;
+    boolean smlRegistered;
 
 
     public Long getId() {
@@ -36,46 +26,35 @@ public class ServiceGroupRO extends BaseRO {
         this.id = id;
     }
 
-    public String getParticipantIdentifier() {
-        return participantIdentifier;
+    public Long getDomainId() {
+        return domainId;
     }
 
-    public void setParticipantIdentifier(String participantIdentifier) {
-        this.participantIdentifier = participantIdentifier;
+    public void setDomainId(Long domainId) {
+        this.domainId = domainId;
     }
 
-    public String getParticipantScheme() {
-        return participantScheme;
+    public String getDomainCode() {
+        return domainCode;
     }
 
-    public void setParticipantScheme(String participantScheme) {
-        this.participantScheme = participantScheme;
+    public void setDomainCode(String domainCode) {
+        this.domainCode = domainCode;
+    }
+
+    public String getSmlSubdomain() {
+        return smlSubdomain;
+    }
+
+    public void setSmlSubdomain(String smlSubdomain) {
+        this.smlSubdomain = smlSubdomain;
     }
 
     public boolean isSmlRegistered() {
         return smlRegistered;
     }
 
-    public void setSmlRegistered(boolean smlRegistered) {
-        this.smlRegistered = smlRegistered;
+    public void setSmlRegistered(boolean registered) {
+        this.smlRegistered = registered;
     }
-
-    public String getExtension() {
-        return extension;
-    }
-
-    public void setExtension(String extension) {
-        this.extension = extension;
-    }
-
-    public List<ServiceMetadataRO> getServiceMetadata() {
-        return lstServiceMetadata;
-    }
-    public List<UserRO> getUsers() {
-        return lstUser;
-    }
-    public List<DomainRO> getDomains() {
-        return lstDomains;
-    }
-
 }

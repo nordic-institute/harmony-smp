@@ -1,6 +1,16 @@
 
-export interface ServiceGroupExtensionRo  {
-  serviceGroupId: number;
-  extension: string;
-  errorMessage?: string;
+export interface ServiceMetadataWizardRo  {
+  participantIdentifierScheme: string;
+  participantIdentifier: string;
+  documentIdentifierScheme: string;
+  documentIdentifier: string;
+  processSchema: string;
+  processIdentifier: string;
+  transportProfile: string;
+  endpointUrl: string;
+  certificate: string;
+  serviceDescription: string;
+  technicalContactUrl: string;
+  contentXML: string
+  errorMessage: string
 }

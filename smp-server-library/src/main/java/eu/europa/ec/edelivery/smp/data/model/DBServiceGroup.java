@@ -70,8 +70,7 @@ public class DBServiceGroup extends BaseEntity {
 
     @Column(name = "PARTICIPANT_SCHEME", length = CommonColumnsLengths.MAX_PARTICIPANT_IDENTIFIER_SCHEME_LENGTH, nullable = false)
     String participantScheme;
-    @Column(name = "SML_REGISTRED", nullable = false)
-    private boolean smlRegistered = false;
+
 
     @OneToOne(mappedBy = "dbServiceGroup", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private DBServiceGroupExtension serviceGroupExtension;
@@ -123,14 +122,6 @@ public class DBServiceGroup extends BaseEntity {
         return this.users;
     }
 
-    public boolean isSmlRegistered() {
-        return smlRegistered;
-    }
-
-    public void setSmlRegistered(boolean smlRegistered) {
-        this.smlRegistered = smlRegistered;
-    }
-
     public DBServiceGroupExtension getServiceGroupExtension() {
         return serviceGroupExtension;
     }
@@ -171,6 +162,18 @@ public class DBServiceGroup extends BaseEntity {
             dsg.setDomain(null);
             dsg.setServiceGroup(null);
         }
+    }
+
+    public Optional<DBServiceGroupDomain> findServiceGroupDomainForMetadata(String docId, String docSch){
+        for (DBServiceGroupDomain serviceGroupDomain : serviceGroupDomains) {
+            for (DBServiceMetadata dbServiceMetadata : serviceGroupDomain.getServiceMetadata()) {
+                if (Objects.equals(docId, dbServiceMetadata.getDocumentIdentifier())
+                        && Objects.equals(docId, dbServiceMetadata.getDocumentIdentifier()) ) {
+                    return Optional.of(serviceGroupDomain);
+                }
+            }
+        }
+        return Optional.empty();
     }
 
 

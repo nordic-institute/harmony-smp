@@ -91,7 +91,6 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
         LAST_UPDATED_ON timestamp not null,
         PARTICIPANT_IDENTIFIER varchar2(256 char) not null,
         PARTICIPANT_SCHEME varchar2(256 char) not null,
-        SML_REGISTRED number(1,0) not null,
         primary key (ID)
     );
 
@@ -103,7 +102,6 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
         LAST_UPDATED_ON timestamp,
         PARTICIPANT_IDENTIFIER varchar2(256 char),
         PARTICIPANT_SCHEME varchar2(256 char),
-        SML_REGISTRED number(1,0),
         primary key (ID, REV)
     );
 
@@ -111,6 +109,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
        ID number(19,0) not null,
         CREATED_ON timestamp not null,
         LAST_UPDATED_ON timestamp not null,
+        SML_REGISTRED number(1,0) not null,
         FK_DOMAIN_ID number(19,0),
         FK_SG_ID number(19,0),
         primary key (ID)
@@ -122,6 +121,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
         REVTYPE number(3,0),
         CREATED_ON timestamp,
         LAST_UPDATED_ON timestamp,
+        SML_REGISTRED number(1,0),
         FK_DOMAIN_ID number(19,0),
         FK_SG_ID number(19,0),
         primary key (ID, REV)

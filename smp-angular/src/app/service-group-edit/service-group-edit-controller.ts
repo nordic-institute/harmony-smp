@@ -4,7 +4,6 @@ import {ServiceGroupDetailsDialogComponent} from './service-group-details-dialog
 import {ServiceGroupEditRo} from './service-group-edit-ro.model';
 import {SearchTableEntityStatus} from '../common/search-table/search-table-entity-status.model';
 import {ServiceMetadataEditRo} from "./service-metadata-edit-ro.model";
-import {DomainDetailsDialogComponent} from "../domain/domain-details-dialog/domain-details-dialog.component";
 import {ServiceGroupMetadataDialogComponent} from "./service-group-metadata-dialog/service-group-metadata-dialog.component";
 
 export class ServiceGroupEditController implements SearchTableController {
@@ -49,11 +48,10 @@ export class ServiceGroupEditController implements SearchTableController {
       index: null,
       participantIdentifier: '',
       participantScheme: '',
-      domainCode: '',
-      smlSubdomain: '',
       serviceMetadata: [],
       users: [],
-      domains: [],
+      serviceGroupDomains: [],
+      extensionStatus: SearchTableEntityStatus.NEW,
       status: SearchTableEntityStatus.NEW
     };
   }
@@ -65,12 +63,12 @@ export class ServiceGroupEditController implements SearchTableController {
       documentIdentifierScheme: '',
       smlSubdomain: '',
       domainCode: '',
-      processSchema: '',
-      processIdentifier: '',
-      endpointUrl: '',
-      endpointCertificate: '',
-      status: SearchTableEntityStatus.NEW
+      domainId:null,
+      status: SearchTableEntityStatus.NEW,
+      xmlContentStatus: SearchTableEntityStatus.NEW,
     };
   }
+
+  public dataSaved() {}
 
 }

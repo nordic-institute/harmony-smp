@@ -2,25 +2,16 @@ package eu.europa.ec.edelivery.smp.ui;
 
 
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
-import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
 
@@ -71,7 +62,7 @@ public class UserResource {
         LOG.info("Got certificate data: " + data.length);
         try {
             return uiUserService.getCertificateData(data);
-        } catch (CertificateException e) {
+        } catch (IOException | CertificateException e) {
             LOG.error("Error occured while parsing certificate.", e);
         }
         return null;

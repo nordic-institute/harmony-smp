@@ -6,8 +6,8 @@ import java.io.Serializable;
 
 public class BaseRO  implements Serializable {
 
-    private int status;
-    private int index = EntityROStatus.PERSISTED.getStatusNumber();
+    private int status = EntityROStatus.PERSISTED.getStatusNumber();
+    private int index;
 
     public int getStatus() {
         return status;

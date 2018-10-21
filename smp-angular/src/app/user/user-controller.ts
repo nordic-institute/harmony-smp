@@ -33,4 +33,7 @@ export class UserController implements SearchTableController {
       status: SearchTableEntityStatus.NEW
     }
   }
+
+  public dataSaved() {
+  }
 }

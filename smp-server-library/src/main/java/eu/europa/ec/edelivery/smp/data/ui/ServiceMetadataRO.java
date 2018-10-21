@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 
-import java.io.Serializable;
+import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 
 /**
  * @author Joze Rihtarsic
@@ -11,14 +11,40 @@ public class ServiceMetadataRO extends BaseRO {
 
 
     private static final long serialVersionUID = 67944640449327185L;
-
+    private Long id;
     String documentIdentifier;
     String documentIdentifierScheme;
+    Long serviceGroupDomainId;
+   // Long domainId;
     String smlSubdomain;
     String domainCode;
-
+    private int xmlContentStatus = EntityROStatus.PERSISTED.getStatusNumber();
     String xmlContent;
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Long getServiceGroupDomainId() {
+        return serviceGroupDomainId;
+    }
+
+    public void setServiceGroupDomainId(Long serviceGroupDomainId) {
+        this.serviceGroupDomainId = serviceGroupDomainId;
+    }
+/*
+    public Long getDomainId() {
+        return domainId;
+    }
+
+    public void setDomainId(Long domainId) {
+        this.domainId = domainId;
+    }
+*/
     public String getDocumentIdentifier() {
         return documentIdentifier;
     }
@@ -57,5 +83,13 @@ public class ServiceMetadataRO extends BaseRO {
 
     public void setXmlContent(String xmlContent) {
         this.xmlContent = xmlContent;
+    }
+
+    public int getXmlContentStatus() {
+        return xmlContentStatus;
+    }
+
+    public void setXmlContentStatus(int xmlContentStatus) {
+        this.xmlContentStatus = xmlContentStatus;
     }
 }

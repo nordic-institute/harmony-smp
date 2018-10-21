@@ -1,23 +1,11 @@
-import {ChangeDetectorRef, Component, Inject, OnInit} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {Observable} from "rxjs/internal/Observable";
-import {SearchTableResult} from "../common/search-table/search-table-result.model";
-import {HttpClient} from "@angular/common/http";
-import {SmpConstants} from "../smp.constants";
-import {UserRo} from "../user/user-ro.model";
-import {AlertService} from "../alert/alert.service";
-import {DomainDetailsDialogComponent} from "../domain/domain-details-dialog/domain-details-dialog.component";
-import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
-import {SearchTableEntityStatus} from "../common/search-table/search-table-entity-status.model";
-import {DomainRo} from "../domain/domain-ro.model";
-import {ServiceGroupEditRo} from "./service-group-edit-ro.model";
-import {ServiceMetadataEditRo} from "./service-metadata-edit-ro.model";
-import {GlobalLookups} from "../common/global-lookups";
+import {Component} from '@angular/core';
+import {MatDialogRef} from '@angular/material';
+import {FormBuilder, FormControl, FormGroup} from "@angular/forms";
 
 @Component({
-  selector: 'app-messagelog-details',
-  templateUrl: './service-group-metadata-wizard-dialog/service-group-extension-wizard-dialog.component.html',
-  styleUrls: ['./service-group-metadata-wizard-dialog/service-group-extension-wizard-dialog.component.css']
+  selector: 'service-group-metadata-wizard',
+  templateUrl: './service-group-extension-wizard-dialog.component.html',
+  styleUrls:  ['./service-group-extension-wizard-dialog.component.css']
 })
 export class ServiceGroupExtensionWizardDialogComponent  {
   dialogForm: FormGroup;

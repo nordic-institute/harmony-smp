@@ -1,72 +1,126 @@
-<h2 mat-dialog-title>ServiceGroup Metadata</h2>
-<mat-dialog-content  style="height:460px;width:950px">
+<h2 mat-dialog-title>{{formTitle}}</h2>
+<mat-dialog-content style="height:750px;width:1200px">
+  <div fxLayout="column">
+    <mat-card   >
 
-  <mat-tab-group fxFlex="column">
-    <mat-tab label="Metadata data">
-      <mat-form-field style="width:100%">
-        <input matInput placeholder="Document identifier schema" name="documentIdentifierScheme" id="documentIdentifierScheme_id"
-               [formControl]="dialogForm.controls['documentIdentifierScheme']" maxlength="255">
+      <mat-card-content >
+        <div class="panel">
+          <mat-form-field  style="width:30%">
+            <input matInput placeholder="Participant schema" name="patricipantSchema"  id="participanSchema_id"
+                   [formControl]="dialogForm.controls['participantScheme']"
+            >
+          </mat-form-field>
+          <mat-form-field style="width:40%">
+            <input matInput placeholder="Participant Identifier" name="participantIdentifier"  id="participantIdentifier_id"
+                   [formControl]="dialogForm.controls['participantIdentifier']">
+          </mat-form-field>
+          <mat-select #domainList [compareWith]="compareDomainCode" placeholder="Domain (sml subdomain)" id="domain_id" style="width:20%"
+                      [formControl]="dialogForm.controls['domainCode']">
+            <mat-option *ngFor="let domain of currentServiceGroup.serviceGroupDomains" [value]="domain">
+              {{domain.domainCode}} ({{domain.smlSubdomain}})
+            </mat-option>
+          </mat-select>
+          <div
+            *ngIf="(!editMode && dialogForm.controls['domainCode'].touched || editMode) &&  dialogForm.controls['domainCode'].hasError('required')"
+            style="color:red; font-size: 70%">
+            Domain must be selected.
+          </div>
 
-      </mat-form-field>
-
-      <mat-form-field style="width:100%">
-        <input matInput placeholder="Document identifier" name="documentIdentifier" id="documentIdentifier_id"
-               [formControl]="dialogForm.controls['documentIdentifier']" maxlength="255" required>
-
-        <div *ngIf="(!editMode && dialogForm.controls['documentIdentifier'].touched || editMode) &&  dialogForm.controls['documentIdentifier'].hasError('required')" style="color:red; font-size: 70%">
-          Document identifier must not be empty.
+          <mat-form-field  style="width:30%">
+            <input matInput placeholder="Document schema" name="documentScheme"  id="documentScheme_id"
+                   [formControl]="dialogForm.controls['documentIdentifierScheme']">
+          </mat-form-field>
+            <mat-form-field style="width:55%">
+              <input matInput placeholder="Document identifier" name="documentIdentifier"  id="documentIdentifier_id"
+                     [formControl]="dialogForm.controls['documentIdentifier']">
+            </mat-form-field>
         </div>
-      </mat-form-field>
+      </mat-card-content>
+    </mat-card>
 
-      <mat-form-field style="width:100%">
-        <input matInput placeholder="Process schema" name="processSchema" id="processSchema_id"
-               [formControl]="dialogForm.controls['processSchema']" maxlength="255" required>
 
-        <div *ngIf="(!editMode && dialogForm.controls['processSchema'].touched || editMode) &&  dialogForm.controls['processSchema'].hasError('required')" style="color:red; font-size: 70%">
-          Process identifier must not be empty.
+    <mat-card>
+      <mat-card-content>
+        <mat-toolbar>
+          <mat-toolbar-row>
+            <button mat-raised-button color="primary"
+                    matTooltip="Clear the metadata content."
+                    matTooltipPosition="below"
+                    (click)="onClearServiceMetadata()">
+              <mat-icon>clear</mat-icon>
+              <span>Clear</span>
+            </button>
+            <button mat-raised-button color="primary"
+                    matTooltip="Generates simple XML"
+                    matTooltipPosition="below"
+                    (click)="onGenerateSimpleXML()">
+              <mat-icon>settings_ethernet</mat-icon>
+              <span>Generate XML</span>
+            </button>
+            <!-- button mat-raised-button color="primary"
+                    matTooltip="Opens wizard to configure ServiceMetadata xml."
+                    matTooltipPosition="below"
+                    (click)="onStartWizardDialog()">
+              <mat-icon>add_box</mat-icon>
+              <span>Metadata wizard</span>
+            </button -->
+            <button mat-raised-button color="primary"
+                    atTooltip="Validate serviceMetadata XML."
+                    matTooltipPosition="below"
+                    (click)="onServiceMetadataValidate()">
+              <mat-icon>warning</mat-icon>
+              <span>Validate</span>
+            </button>
+          </mat-toolbar-row>
+        </mat-toolbar>
+
+        <div style="display: block;" style="border:1px; solid: #999999;margin:5px 0; padding:3px;">
+          <div class="textwrapper">
+            <textarea matInput style="width:100%;border: #03A9F4 1px solid" cols="2" rows="25"
+                      resizeable="false"
+                      id="MetadataTextArea"
+                      placeholder="Metadata XML" name="metadataXML"
+                      [formControl]="dialogForm.controls['xmlContent']"
+
+            ></textarea>
+          </div>
+          <div
+            *ngIf="metadataValidationMessage"
+            [style.color]="isMetadataValid?'green':'red'">
+            {{metadataValidationMessage}}
+          </div>
+
         </div>
-      </mat-form-field>
-
-      <mat-form-field style="width:100%">
-        <input matInput placeholder="Process identifier" name="processidentifier" id="processidentifier_id"
-               [formControl]="dialogForm.controls['processIdentifier']" maxlength="255" required>
-
-        <div *ngIf="(!editMode && dialogForm.controls['processIdentifier'].touched || editMode) &&  dialogForm.controls['processIdentifier'].hasError('required')" style="color:red; font-size: 70%">
-          Process identifier must not be empty.
-        </div>
-      </mat-form-field>
-
-      <mat-form-field style="width:100%">
-        <input matInput placeholder="Endpoint Url" name="endpointUrl" id="endpointUrl_id"
-               [formControl]="dialogForm.controls['endpointUrl']" maxlength="255" required>
-
-        <div *ngIf="(!editMode && dialogForm.controls['endpointUrl'].touched || editMode) &&  dialogForm.controls['endpointUrl'].hasError('required')" style="color:red; font-size: 70%">
-          Endpoint URL must not be empty.
-        </div>
-      </mat-form-field>
 
 
+        <!-- mat-form-field>
+          <div>
+          <textarea style="width:100% !important;height: 400px !important;  -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;"
 
-    </mat-tab>
-    <mat-tab label="XML">
-      <h1>Some more tab content</h1>
-      <textarea style="width: 100%; height: 95%"></textarea>
-    </mat-tab>
-  </mat-tab-group>
+                    matInput id="extensionTextArea"
+                    placeholder="Extension" name="extension"
+                    [formControl]="dialogForm.controls['extension']"
+          ></textarea>
+    </div>
+        </mat-form-field -->
+      </mat-card-content>
+    </mat-card>
+  </div>
 </mat-dialog-content>
-
 <mat-dialog-actions>
   <div class="group-action-button">
-    <button id="ServiceGroupsSaveButton" mat-raised-button color="primary" (click)="dialogRef.close({})"
-            style="margin-top:10px">
-      <mat-icon>save</mat-icon>
-      <span>Save</span>
+    <button mat-raised-button color="primary" [mat-dialog-close]="true" (click)="submitForm()"
+            [disabled]="!dialogForm.valid">
+      <mat-icon>check_circle</mat-icon>
+      <span>OK</span>
     </button>
 
-    <button id="ServiceGroupsCloseButton" mat-raised-button color="primary" (click)="dialogRef.close({})"
-            style="margin-top:10px">
-      <mat-icon>close</mat-icon>
-      <span>Close</span>
+    <button mat-raised-button color="primary" mat-dialog-close>
+      <mat-icon>cancel</mat-icon>
+      <span>Cancel</span>
     </button>
   </div>
 </mat-dialog-actions>
+<div style="text-align: right; font-size: 70%">* required fields</div>
