@@ -37,7 +37,7 @@
         <intercept-url pattern="/ui/rest/application/name" access="permitAll"/>
         <intercept-url pattern="/ui/rest/domain/**" access="hasRole('SMP_ADMIN')" />
         <intercept-url pattern="/ui/rest/user/**" access="hasAnyRole('SMP_ADMIN','SYSTEM_ADMIN')"/>
-        <intercept-url pattern="/ui/rest/search/**" access="hasAnyRole('SMP_ADMIN','SYSTEM_ADMIN')"/>
+        <intercept-url pattern="/ui/rest/search/**" access="permitAll"/>
         <intercept-url pattern="/ui/rest/edit/**" access="hasAnyRole('SMP_ADMIN','SYSTEM_ADMIN')"/>
         <intercept-url pattern="/ui/rest/servicegroup/**" access="hasAnyRole('SMP_ADMIN','SYSTEM_ADMIN')"/>
         <intercept-url pattern="/ui/rest/**" access="hasAnyRole('ROLE_ANONYMOUS', 'SERVICE_GROUP_ADMIN','SMP_ADMIN','SYSTEM_ADMIN')"/>
@@ -51,7 +51,7 @@
 
     <b:bean id="tokenRepository" class="org.springframework.security.web.csrf.CookieCsrfTokenRepository" p:cookieHttpOnly="false" p:cookiePath="/"/>
 
-    <b:bean id="csrfURLMatcher" class="eu.europa.ec.edelivery.smp.auth.URLCsrfMatcher" p:ignoreUrl="/rest/security/authentication" />
+    <b:bean id="csrfURLMatcher" class="eu.europa.ec.edelivery.smp.auth.URLCsrfMatcher" p:ignoreUrl="/ui/rest/security/authentication" />
 
     <authentication-manager alias="smpAuthenticationManager">
         <!-- authentication-provider>

@@ -15,12 +15,12 @@ export class SecurityService {
 
   login(username: string, password: string) {
     let headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
-    return this.http.post<string>(SmpConstants.REST_SECURITY_AUTHENTICATION,
+    return this.http.post<User>(SmpConstants.REST_SECURITY_AUTHENTICATION,
       JSON.stringify({ username, password }),
       { headers })
-      .subscribe((response: string) => {
+      .subscribe((response: User) => {
           console.log('Login success');
-          localStorage.setItem('currentUser', response);
+          localStorage.setItem('currentUser', JSON.stringify(response));
           this.securityEventService.notifyLoginSuccessEvent(response);
         },
         (error: any) => {
@@ -86,7 +86,7 @@ export class SecurityService {
     const currentUser = this.getCurrentUser();
     if (currentUser && currentUser.authorities) {
       roles.forEach((role: Role) => {
-        if (currentUser.authorities.indexOf(role) !== -1) {
+        if (currentUser.authorities.indexOf(Role[role]) !== -1) {
           hasRole = true;
         }
       });

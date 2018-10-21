@@ -82,8 +82,7 @@ public class AuthenticationResource {
 
     @RequestMapping(value = "user", method = RequestMethod.GET)
     public String getUser() {
-        User securityUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return securityUser.getUsername();
+        return (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
     }
 
 }
