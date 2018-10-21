@@ -1,13 +1,10 @@
 import {Component, Inject} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
-import {UserRo} from "../../user/user-ro.model";
-import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
+import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {DomainRo} from "../domain-ro.model";
 import {AlertService} from "../../alert/alert.service";
-import {UserDetailsDialogComponent} from "../../user/user-details-dialog/user-details-dialog.component";
-import {CertificateService} from "../../user/certificate.service";
-import {UserService} from "../../user/user.service";
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
+import {GlobalLookups} from "../../common/global-lookups";
 
 @Component({
   selector: 'domain-details-dialog',
@@ -26,14 +23,23 @@ export class DomainDetailsDialogComponent {
   domainForm: FormGroup;
   domain;
 
+  notInList(list: string[], exception: string) {
+    return (c: AbstractControl): { [key: string]: any } => {
+      if (c.value && c.value !== exception && list.includes(c.value))
+        return {'notInList': {valid: false}};
 
-  constructor(private dialogRef: MatDialogRef<DomainDetailsDialogComponent>,
+      return null;
+    }
+  }
+
+  constructor(private lookups: GlobalLookups,
+              private dialogRef: MatDialogRef<DomainDetailsDialogComponent>,
               private alertService: AlertService,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder) {
 
     this.editMode = data.edit;
-    this.formTitle = this.editMode ?  DomainDetailsDialogComponent.EDIT_MODE: DomainDetailsDialogComponent.NEW_MODE;
+    this.formTitle = this.editMode ? DomainDetailsDialogComponent.EDIT_MODE : DomainDetailsDialogComponent.NEW_MODE;
     this.current = this.editMode
       ? {
         ...data.row,
@@ -49,26 +55,33 @@ export class DomainDetailsDialogComponent {
 
     this.domainForm = fb.group({
 
-      'domainCode': new FormControl({value:'', disabled: this.editMode}, [Validators.pattern(this.domainCodePattern)]),
-      'smlSubdomain': new FormControl({value: '', disabled: this.editMode},  [Validators.pattern(this.dnsDomainPattern)]),
-      'smlSmpId': new FormControl({value: ''}, [Validators.pattern(this.dnsDomainPattern)]),
+      'domainCode': new FormControl({value: '', disabled: this.editMode}, [Validators.pattern(this.domainCodePattern),
+        this.notInList(this.lookups.cachedDomainList.map(a => a.domainCode), this.current.domainCode)]),
+      'smlSubdomain': new FormControl({
+        value: '',
+        disabled: this.editMode
+      }, [Validators.pattern(this.dnsDomainPattern),
+        this.notInList(this.lookups.cachedDomainList.map(a => a.smlSubdomain), this.current.smlSubdomain)]),
+      'smlSmpId': new FormControl({value: ''}, [Validators.pattern(this.dnsDomainPattern),
+        this.notInList(this.lookups.cachedDomainList.map(a => a.smlSmpId), this.current.smlSmpId)]),
+      'smlClientCertHeader': new FormControl({value: ''}, null),
       'smlClientKeyAlias': new FormControl({value: ''}, null),
-      'signatureKeyAlias': new FormControl({value:''}, null),
+      'signatureKeyAlias': new FormControl({value: ''}, null),
 
-    }, {
-      //validator: this.passwordConfirmationValidator
     });
     this.domainForm.controls['domainCode'].setValue(this.current.domainCode);
     this.domainForm.controls['smlSubdomain'].setValue(this.current.smlSubdomain);
     this.domainForm.controls['smlSmpId'].setValue(this.current.smlSmpId);
+    this.domainForm.controls['smlClientCertHeader'].setValue(this.current.smlClientCertHeader);
     this.domainForm.controls['smlClientKeyAlias'].setValue(this.current.smlClientKeyAlias);
     this.domainForm.controls['signatureKeyAlias'].setValue(this.current.signatureKeyAlias);
 
 
   }
+
   submitForm() {
     this.checkValidity(this.domainForm)
-     this.dialogRef.close(true);
+    this.dialogRef.close(true);
   }
 
   checkValidity(g: FormGroup) {
@@ -86,21 +99,27 @@ export class DomainDetailsDialogComponent {
 
   public getCurrent(): DomainRo {
 
-    this.current.domainCode = this.domainForm.value['domainCode'];
-    this.current.smlSubdomain = this.domainForm.value['smlSubdomain'];
+    if (!this.editMode) {
+      this.current.domainCode = this.domainForm.value['domainCode'];
+      this.current.smlSubdomain = this.domainForm.value['smlSubdomain'];
+    }
     this.current.smlSmpId = this.domainForm.value['smlSmpId'];
+    this.current.smlClientCertHeader = this.domainForm.value['smlClientCertHeader'];
     this.current.smlClientKeyAlias = this.domainForm.value['smlClientKeyAlias'];
     this.current.signatureKeyAlias = this.domainForm.value['signatureKeyAlias'];
 
     return this.current;
 
   }
+
   updateDomainCode(event) {
     this.current.domainCode = event.target.value;
   }
+
   updateSmlDomain(event) {
     this.current.smlSubdomain = event.target.value;
   }
+
   updateSmlSmpId(event) {
     this.current.smlSmpId = event.target.value;
   }

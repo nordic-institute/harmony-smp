@@ -124,14 +124,14 @@ public class ServiceGroupService {
             DBServiceGroup sg = dbServiceGroup.get();
             validateOwnership(newOwnerName, sg);
             //check is domain exists
-            Optional<DBServiceGroupDomain> sgd = dbServiceGroup.get().getServiceGroupForDomain(dmn.getDomainCode());
+            Optional<DBServiceGroupDomain> sgd = sg.getServiceGroupForDomain(dmn.getDomainCode());
             if (!sgd.isPresent()){
                 SMPRuntimeException ex = new SMPRuntimeException(SG_NOT_REGISTRED_FOR_DOMAIN,domain,normalizedParticipantId.getValue(), normalizedParticipantId.getScheme());
                 LOG.businessError(SMPMessageCode.BUS_SAVE_SERVICE_GROUP_FAILED,domain,normalizedParticipantId.getValue(), normalizedParticipantId.getScheme(), ex.getMessage()  );
                 throw ex;
             }
             //update extensions
-            dbServiceGroup.get().setExtension(extensions);
+            sg.setExtension(extensions);
             serviceGroupDao.update(sg);
             return false;
         } else {
@@ -141,15 +141,16 @@ public class ServiceGroupService {
             newSg.setParticipantScheme(normalizedParticipantId.getScheme());
             newSg.setExtension(extensions);
             newSg.addDomain(dmn); // add initial domain
+            // set initial domain as not registered
+            newSg.getServiceGroupDomains().get(0).setSmlRegistered(false);
             newSg.getUsers().add(newOwner.get());
-            newSg.setSmlRegistered(false);
             // persist (make sure this is not in transaction)
             serviceGroupDao.persistFlushDetach(newSg);
             // register to SML
             boolean registered = smlConnector.registerInDns(normalizedParticipantId, dmn);
             if (registered) {
                 // update status in database
-                newSg.setSmlRegistered(true);
+                newSg.getServiceGroupDomains().get(0).setSmlRegistered(false);
                 serviceGroupDao.update(newSg);
             }
             return true;
@@ -195,7 +196,7 @@ public class ServiceGroupService {
     /**
      * Method validates if user owner with identifier is owner of servicegroup
      * @param  ownerIdentifier
-     * @param dbsg
+     * @param serviceGroupIdentifier
      */
     @Transactional
     public boolean isServiceGroupOwner(String ownerIdentifier, String serviceGroupIdentifier ){

@@ -41,7 +41,7 @@
                 id="domain_id">
       <mat-option [value]="''">
       </mat-option>
-      <mat-option *ngFor="let domain of domainlist" [value]="domain.domainCode">
+      <mat-option *ngFor="let domain of lookups.cachedDomainList" [value]="domain.domainCode">
         {{domain.domainCode}} ({{domain.smlSubdomain}})
       </mat-option>
     </mat-select>

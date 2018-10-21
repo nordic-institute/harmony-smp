@@ -1,6 +1,5 @@
 <div fxLayout="column" style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 5px;">
-  <page-header flex id="{{id}}_header_id">{{title}}</page-header>
-
+  <h1  flex id="{{id}}_header_id" style="margin: 0 !important;">{{title}}</h1>
   <div *ngIf="showSearchPanel" fxFlex="20" class="selectionCriteria">
     <mat-card>
       <mat-card-content>
@@ -22,7 +21,7 @@
   <div class="panel" fxFlex fxLayout="column">
     <div class="group-filter-button" fxFlex="50px">
       <span class="row-button">
-        <app-row-limiter [pageSizes]="rowLimiter.pageSizes"
+        <app-row-limiter  [pageSizes]="rowLimiter.pageSizes"
                          (onPageSizeChanged)="changePageSize($event.value)"></app-row-limiter>
       </span>
       <!-- no need for this for SMP 4.1 <span class="column-filter-button">
@@ -51,7 +50,7 @@
                    (page)="onPage($event)"
                    (sort)="onSort($event)"
                    [selected]="selected"
-                   [selectionType]="'single'"
+                   [selectionType]="'multi'"
                    (activate)="onActivate($event)"
                    (select)="onSelect($event)"
                     >

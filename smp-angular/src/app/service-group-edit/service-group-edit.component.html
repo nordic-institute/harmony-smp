@@ -27,19 +27,19 @@
 
   <ng-template #searchPanel>
     <mat-form-field>
-      <input matInput placeholder="Participant Id" name="messageId" [(ngModel)]="filter.messageId"
-             #messageId="ngModel" id="messageid_id">
+      <input matInput placeholder="Participant Identifier" name="ParticipantIdentifier"
+             [(ngModel)]="filter.participantIdentifier"
+             #messageId="ngModel" id="participantIdentifier">
     </mat-form-field>
     <mat-form-field>
-      <input matInput placeholder="Participant schema" name="patricipantSchema" [(ngModel)]="filter.messageId"
-             #messageId="ngModel" id="participanschema_id">
+      <input matInput placeholder="Participant scheme" name="patricipantScheme" [(ngModel)]="filter.participantScheme"
+             #messageId="ngModel" id="participantScheme">
     </mat-form-field>
-
     <mat-select placeholder="Domain (sml subdomain)" [(ngModel)]="filter.domain" name="domain"
                 id="domain_id">
       <mat-option [value]="''">
       </mat-option>
-      <mat-option *ngFor="let domain of domainlist" [value]="domain.domainCode">
+      <mat-option *ngFor="let domain of lookups.cachedDomainList" [value]="domain.domainCode">
         {{domain.domainCode}} ({{domain.smlSubdomain}})
       </mat-option>
     </mat-select>
@@ -70,11 +70,15 @@
         [footerHeight]='50'
         [rowHeight]='"auto"'
         [rowClass]="getRowClass">
-        <ngx-datatable-column prop="domainCode" name="Domain" maxWidth="250" ></ngx-datatable-column>
+        <ngx-datatable-column [cellTemplate]="rowDomain" name="Domain" maxWidth="250" ></ngx-datatable-column>
         <ngx-datatable-column prop="documentIdentifierScheme" name="Document identifier scheme" maxWidth="350" ></ngx-datatable-column>
         <ngx-datatable-column prop="documentIdentifier" name="Document identifier" maxWidth="250" ></ngx-datatable-column>
         <ngx-datatable-column [cellTemplate]="rowMetadataSMPUrlLinkAction" name="URL" maxWidth="250" ></ngx-datatable-column>
         <ngx-datatable-column [cellTemplate]="rowMetadataActions" name="Actions" maxWidth="150" ></ngx-datatable-column>
+
+        <ng-template #rowDomain let-rowSmd="row" ngx-datatable-cell-template>
+          {{rowSmd.domainCode}} ({{rowSmd.smlSubdomain}})
+        </ng-template>
 
         <ng-template #rowMetadataSMPUrlLinkAction let-rowSmd="row" ngx-datatable-cell-template>
           <a target="_blank"
@@ -85,7 +89,7 @@
       <ng-template #rowMetadataActions let-rowSmd="row" ngx-datatable-cell-template>
         <div>
           <button mat-icon-button color="primary" [disabled]="rowSmd.deleted || loading"
-                  (click)="onEditMetadataRow(rowSmd)" tooltip="Edit">
+                  (click)="onEditMetadataRow(row, rowSmd)" tooltip="Edit">
             <mat-icon>edit</mat-icon>
           </button>
           <button mat-icon-button color="primary" [disabled]="rowSmd.deleted || loading"

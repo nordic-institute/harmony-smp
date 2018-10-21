@@ -1,4 +1,4 @@
-<Extension xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+<Extension xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
     <ExtensionID>id1</ExtensionID>
     <ExtensionName>name1</ExtensionName>
     <ExtensionAgencyName>agencyName1</ExtensionAgencyName>
@@ -7,4 +7,14 @@
     <ExtensionReasonCode>reasonCode1</ExtensionReasonCode>
     <ExtensionReason>reason1</ExtensionReason>
     <ext:example xmlns:ext="http://my.namespace.eu">token1</ext:example>
+</Extension>
+<Extension xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">
+<ExtensionID>id1</ExtensionID>
+<ExtensionName>name1</ExtensionName>
+<ExtensionAgencyName>agencyName1</ExtensionAgencyName>
+<ExtensionAgencyURI>agencyUri1</ExtensionAgencyURI>
+<ExtensionVersionID>versionId1</ExtensionVersionID>
+<ExtensionReasonCode>reasonCode1</ExtensionReasonCode>
+<ExtensionReason>reason1</ExtensionReason>
+<ext:example xmlns:ext="http://my.namespace.eu">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</ext:example>
 </Extension>

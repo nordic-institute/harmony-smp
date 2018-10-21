@@ -10,8 +10,6 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.apache.commons.io.IOUtils;
-import org.hibernate.type.BigIntegerType;
-import org.hibernate.type.descriptor.java.UUIDTypeDescriptor;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -19,13 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -252,9 +252,9 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     }
 
     @Test
-    public void testGetCertificateData() throws IOException, CertificateException {
+    public void testGetCertificateDataPEM() throws IOException, CertificateException {
         // given
-        byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/keystores/SMPtest.crt"));
+        byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/truststore/SMPtest.crt"));
         // when
         CertificateRO cer = testInstance.getCertificateData(buff);
         //then
@@ -265,12 +265,23 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
         assertTrue(cer.getValidFrom().isBefore(cer.getValidTo()));
-
-
     }
 
+    @Test
+    public void testGetCertificateDataDER() throws IOException, CertificateException {
+        // given
+        byte[] buff = IOUtils.toByteArray(new FileInputStream("src/test/resources/truststore/NewPeppolAPaa.crt"));
 
-
-
+        // when
+        CertificateRO cer = testInstance.getCertificateData(buff);
+        //then
+        assertEquals("CN=POP000004,O=European Commission,C=BE:474980c51478cf62761667461aef5e8e", cer.getCertificateId());
+        assertEquals("CN=PEPPOL ACCESS POINT TEST CA - G2, OU=FOR TEST ONLY, O=OpenPEPPOL AISBL, C=BE", cer.getIssuer());
+        assertEquals("C=BE, O=European Commission, OU=PEPPOL TEST AP, CN=POP000004", cer.getSubject());
+        assertEquals("474980c51478cf62761667461aef5e8e", cer.getSerialNumber());
+        assertNotNull(cer.getValidFrom());
+        assertNotNull(cer.getValidTo());
+        assertTrue(cer.getValidFrom().isBefore(cer.getValidTo()));
+    }
 
 }

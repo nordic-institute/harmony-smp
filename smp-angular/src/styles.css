@@ -25,7 +25,9 @@ html, body {
   font-weight: bolder !important;
   margin: 0 2px  !important;
 }
-
+.mat-card{
+  padding: 10px !important;
+}
 .text-select {
   -webkit-user-select: text;
   -moz-user-select: text;
