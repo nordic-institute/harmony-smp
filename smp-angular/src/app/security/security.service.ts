@@ -47,9 +47,9 @@ export class SecurityService {
 
   private getCurrentUsernameFromServer(): Observable<string> {
     let subject = new ReplaySubject<string>();
-    this.http.get<string>(SmpConstants.REST_SECURITY_USER)
-      .subscribe((res: string) => {
-        subject.next(res);
+    this.http.get(SmpConstants.REST_SECURITY_USER, {responseType: 'text'})
+      .subscribe((username: string) => {
+        subject.next(username);
       }, (error: any) => {
         subject.next(null);
       });
@@ -58,11 +58,11 @@ export class SecurityService {
 
   isAuthenticated(callServer: boolean = false): Observable<boolean> {
     let subject = new ReplaySubject<boolean>();
-    if (callServer) {
+      if (callServer) {
       //we get the username from the server to trigger the redirection to the login screen in case the user is not authenticated
       this.getCurrentUsernameFromServer()
-        .subscribe((user: string) => {
-          subject.next(user !== null);
+        .subscribe((username: string) => {
+          subject.next(username !== null);
         }, (user: string) => {
           subject.next(false);
         });
@@ -86,9 +86,10 @@ export class SecurityService {
     const currentUser = this.getCurrentUser();
     if (currentUser && currentUser.authorities) {
       roles.forEach((role: Role) => {
-        if (currentUser.authorities.indexOf(Role[role]) !== -1) {
-          hasRole = true;
-        }
+        const roleKey = Object.keys(Role).find(k => Role[k] === role);
+        hasRole = !!currentUser.authorities.find(authority => {
+          return `${authority}` === `ROLE_${roleKey}`;
+        });
       });
     }
     return hasRole;
