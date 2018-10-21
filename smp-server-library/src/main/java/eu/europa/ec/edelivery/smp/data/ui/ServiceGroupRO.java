@@ -1,7 +1,8 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
 
-import java.io.Serializable;
+import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,11 +20,12 @@ public class ServiceGroupRO extends BaseRO {
     private String participantIdentifier;
     private String participantScheme;
     private boolean smlRegistered = false;
-    private List<ServiceMetadataRO> lstServiceMetadata = new ArrayList<>();
     private List<UserRO> lstUser = new ArrayList<>();
-
-
-
+    private List<ServiceGroupDomainRO> serviceGroupDomains = new ArrayList<>();
+    // for UI  service groups are  in one list.
+    private List<ServiceMetadataRO> serviceMetadata = new ArrayList<>();
+    private int extensionStatus = EntityROStatus.PERSISTED.getStatusNumber();
+    private String extension;
 
 
     public Long getId() {
@@ -58,12 +60,31 @@ public class ServiceGroupRO extends BaseRO {
         this.smlRegistered = smlRegistered;
     }
 
-
-    public List<ServiceMetadataRO> getServiceMetadata() {
-        return lstServiceMetadata;
+    public int getExtensionStatus() {
+        return extensionStatus;
     }
+
+    public void setExtensionStatus(int extensionStatus) {
+        this.extensionStatus = extensionStatus;
+    }
+
+    public String getExtension() {
+        return extension;
+    }
+
+    public void setExtension(String extension) {
+        this.extension = extension;
+    }
+
     public List<UserRO> getUsers() {
         return lstUser;
     }
 
+    public List<ServiceGroupDomainRO> getServiceGroupDomains() {
+        return serviceGroupDomains;
+    }
+
+    public List<ServiceMetadataRO> getServiceMetadata() {
+        return serviceMetadata;
+    }
 }

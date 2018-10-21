@@ -27,7 +27,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by migueti on 13/02/2017.
@@ -36,7 +37,7 @@ public class ExtensionConverterTest {
 
     private static final String WRAPPED_FORMAT = "<ExtensionsWrapper xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">%s</ExtensionsWrapper>";
 
-    private static final String RES_PATH = "/examples/extensions/";
+    public static final String RES_PATH = "/examples/extensions/";
 
     private static final String UTF8_SEQUENCE = "ẞßÄäËëÏïÖöÜüẄẅŸÿЁёЇїӜӝ-Zażółć gęślą jaźń-ÆæØøÅå-ÀÆÇßãÿαΩƒ";
 

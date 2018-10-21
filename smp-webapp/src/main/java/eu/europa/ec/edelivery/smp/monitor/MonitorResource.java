@@ -109,7 +109,6 @@ public class MonitorResource {
         newSg.setParticipantScheme(TEST_PART_SCHEMA);
         newSg.setExtension(TEST_EXTENSION_XML.getBytes());
         newSg.addDomain(lstDomain.get(0)); // add initial domain
-        newSg.setSmlRegistered(false);
         // persist (make sure this is not in transaction)
         serviceGroupDao.testPersist(newSg,true, TEST_DB_SUCCESSFUL_ROLLBACK);
         return false;

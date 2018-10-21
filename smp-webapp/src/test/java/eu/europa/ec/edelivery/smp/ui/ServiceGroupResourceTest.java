@@ -27,11 +27,9 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import static org.junit.Assert.*;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -116,30 +114,11 @@ public class ServiceGroupResourceTest {
         assertEquals(1, res.getUsers().size());
         assertEquals("test_user_hashed_pass", res.getUsers().get(0).getUsername());
 
+        assertEquals(1, res.getServiceGroupDomains().size());
         assertEquals(1, res.getServiceMetadata().size());
         assertEquals("doc_7", res.getServiceMetadata().get(0).getDocumentIdentifier());
+        assertEquals(res.getServiceGroupDomains().get(0).getId(), res.getServiceMetadata().get(0).getServiceGroupDomainId());
     }
 
 
-    @Test
-    public void updateServiceGroupList() throws Exception{
-/*
-        // given when
-        MvcResult result = mvc.perform(put(PATH)).
-                andExpect(status().isOk()).andReturn();
-
-        //them
-        ObjectMapper mapper = new ObjectMapper();
-        ServiceGroupRO res = mapper.readValue(result.getResponse().getContentAsString(), ServiceGroupRO.class);
-
-        assertNotNull(res);
-        assertEquals(100000, res.getId().intValue());
-        assertEquals(PARTICIPANT_IDENTIFIER, res.getParticipantIdentifier());
-        assertEquals(PARTICIPANT_SCHEME, res.getParticipantScheme());
-        assertEquals(1, res.getUsers().size());
-        assertEquals("test_user_hashed_pass", res.getUsers().get(0).getUsername());
-
-        assertEquals(1, res.getServiceMetadata().size());
-        assertEquals("doc_7", res.getServiceMetadata().get(0).getDocumentIdentifier());*/
-    }
 }

@@ -9,7 +9,10 @@
             <input matInput placeholder="Domain Code (For WS API integration: the Domain property.)" name="domainCode" id="domainCode_id"
                    [formControl]="domainForm.controls['domainCode']" maxlength="255" required>
             <div *ngIf="(!editMode && domainForm.controls['domainCode'].touched || editMode) &&  domainForm.controls['domainCode'].hasError('pattern')" style="color:red; font-size: 70%">
-             Domain could must contain only chars and numbers.
+             Domain code must contain only chars and numbers.
+            </div>
+            <div *ngIf="(!editMode && domainForm.controls['domainCode'].touched || editMode) &&  domainForm.controls['domainCode'].hasError('notInList')" style="color:red; font-size: 70%">
+              The Domain code already exists!
             </div>
           </mat-form-field>
           <mat-form-field style="width:100%">
@@ -17,6 +20,9 @@
                     [formControl]="domainForm.controls['smlSubdomain']" maxlength="255" >
             <div *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('pattern')" style="color:red; font-size: 70%">
               SML domain must be valid DNS part (AlphaNumeric with optional char - or must be empty for peppol).
+            </div>
+            <div *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('notInList')" style="color:red; font-size: 70%">
+              The SML subdomain is already defined!
             </div>
           </mat-form-field>
           <mat-form-field style="width:100%">
@@ -34,13 +40,15 @@
               <input matInput placeholder="SML SMP identifier (SMP ID used for SML )" name="smlSmpId" id="smlSMPId_id"
                      [formControl]="domainForm.controls['smlSmpId']" maxlength="255" required>
               <div *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('pattern')" style="color:red; font-size: 70%">
-                SML SMP ID  must be valid DNS part (AlphaNumeric with optional char -).
+                SML SMP ID  must be valid DNS part (AlphaNumeric with optional char -)!
               </div>
-
+              <div *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('notInList')" style="color:red; font-size: 70%">
+                SML SMP ID already exists!
+              </div>
             </mat-form-field>
             <mat-form-field style="width:100%">
               <input matInput placeholder="ClientCert Header" name="Client certificate" id="smlClientHeader_id"
-                     [formControl]="domainForm.controls['smlClientKeyAlias']" maxlength="255" >
+                     [formControl]="domainForm.controls['smlClientCertHeader']" maxlength="255" >
             </mat-form-field>
             <mat-form-field style="width:100%">
               <input matInput placeholder="ClientCert Alias" name="Client certificate" id="smlClientKeyAlias_id"
