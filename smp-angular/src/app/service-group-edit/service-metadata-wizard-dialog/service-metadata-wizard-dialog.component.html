@@ -1,0 +1,72 @@
+<h2 mat-dialog-title>Extension properties</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="dialogForm">
+    <mat-card>
+      <mat-card-content>
+        <fieldset style="border: none;">
+
+
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="Document identifier schema" name="documentIdentifierScheme" id="documentIdentifierScheme_id"
+                   [formControl]="dialogForm.controls['documentIdentifierScheme']" maxlength="255">
+
+          </mat-form-field>
+
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="Document identifier" name="documentIdentifier" id="documentIdentifier_id"
+                   [formControl]="dialogForm.controls['documentIdentifier']" maxlength="255" required>
+
+            <div *ngIf="(!editMode && dialogForm.controls['documentIdentifier'].touched || editMode) &&  dialogForm.controls['documentIdentifier'].hasError('required')" style="color:red; font-size: 70%">
+              Document identifier must not be empty.
+            </div>
+          </mat-form-field>
+
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="Process schema" name="processSchema" id="processSchema_id"
+                   [formControl]="dialogForm.controls['processSchema']" maxlength="255" required>
+
+            <div *ngIf="(!editMode && dialogForm.controls['processSchema'].touched || editMode) &&  dialogForm.controls['processSchema'].hasError('required')" style="color:red; font-size: 70%">
+              Process identifier must not be empty.
+            </div>
+          </mat-form-field>
+
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="Process identifier" name="processidentifier" id="processidentifier_id"
+                   [formControl]="dialogForm.controls['processIdentifier']" maxlength="255" required>
+
+            <div *ngIf="(!editMode && dialogForm.controls['processIdentifier'].touched || editMode) &&  dialogForm.controls['processIdentifier'].hasError('required')" style="color:red; font-size: 70%">
+              Process identifier must not be empty.
+            </div>
+          </mat-form-field>
+
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="Endpoint Url" name="endpointUrl" id="endpointUrl_id"
+                   [formControl]="dialogForm.controls['endpointUrl']" maxlength="255" required>
+
+            <div *ngIf="(!editMode && dialogForm.controls['endpointUrl'].touched || editMode) &&  dialogForm.controls['endpointUrl'].hasError('required')" style="color:red; font-size: 70%">
+              Endpoint URL must not be empty.
+            </div>
+          </mat-form-field>
+
+
+        </fieldset>
+      </mat-card-content>
+    </mat-card>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <div class="group-action-button">
+    <button mat-raised-button color="primary" [mat-dialog-close]="true"
+            [disabled]="!dialogForm.valid">
+      <mat-icon>check_circle</mat-icon>
+      <span>OK</span>
+    </button>
+
+    <button mat-raised-button color="primary" mat-dialog-close>
+      <mat-icon>cancel</mat-icon>
+      <span>Cancel</span>
+    </button>
+  </div>
+</mat-dialog-actions>

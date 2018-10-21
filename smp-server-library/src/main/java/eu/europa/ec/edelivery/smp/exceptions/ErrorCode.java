@@ -23,7 +23,8 @@ public enum ErrorCode {
     ILLEGAL_STATE_CERT_ID_MULTIPLE_ENTRY(504,"SMP:122",ErrorBusinessCode.TECHNICAL,"More than one certificate entry (cert. id: '%s') is defined in database!"),
     USER_NOT_EXISTS(400,"SMP:123",ErrorBusinessCode.USER_NOT_FOUND,"User not exists or wrong password!"), // OWASP recommendation\
     USER_IS_NOT_OWNER(400,"SMP:124",ErrorBusinessCode.UNAUTHORIZED,"User %s is not owner of service group (part. id: %s, part. sch.: '%s')!"), // OWASP recommendation
-
+    INVALID_CERTIFICATE_MESSAGE_DIGEST(500, "SMP:125", ErrorBusinessCode.TECHNICAL, "Could not initialize MessageDigest"),
+    INVALID_CERTIFICATE_ENCODING(500, "SMP:126", ErrorBusinessCode.TECHNICAL, "Could not encode certificate"),
 
     // service group error
     ILLEGAL_STATE_SG_MULTIPLE_ENTRY (500,"SMP:130",ErrorBusinessCode.TECHNICAL,"More than one service group ( part. id: %s, part. sch.: '%s') is defined in database!"),

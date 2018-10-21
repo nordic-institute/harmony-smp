@@ -13,12 +13,24 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import eu.europa.ec.edelivery.smp.error.ErrorMappingControllerAdvice;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.web.servlet.config.annotation.*;
+import org.springframework.context.annotation.Primary;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.util.List;
 
 import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 
@@ -35,6 +47,29 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @Import({GlobalMethodSecurityConfig.class, ErrorMappingControllerAdvice.class})
 public class SmpWebAppConfig implements WebMvcConfigurer {
 /*
+    @Override
+    public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+        // There is no clean way of replacing the default Jackson 2 HttpMessageConverter while keeping the other
+        // default converters (@EnableWebMvc disables auto-configuration and most of the default converters are
+        // not available as Spring beans
+        // org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport.addDefaultHttpMessageConverters)
+        converters.removeIf(httpMessageConverter -> httpMessageConverter instanceof MappingJackson2HttpMessageConverter);
+        converters.add(jackson2HttpMessageConverter());
+    }
+
+    @Bean
+    public MappingJackson2HttpMessageConverter jackson2HttpMessageConverter() {
+        return new MappingJackson2HttpMessageConverter(objectMapper());
+    }
+
+    @Bean
+    @Primary
+    public ObjectMapper objectMapper() {
+        return Jackson2ObjectMapperBuilder.json()
+                .featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+                .build();
+    }
+
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("/index.html");

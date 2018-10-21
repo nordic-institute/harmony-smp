@@ -17,7 +17,10 @@ import {
   MatDatepicker,
   MatCardModule,
   MatDatepickerModule,
-  MatSlideToggleModule, MatTab, MatAccordion, MatTabsModule,
+  MatSlideToggleModule,
+  MatTab,
+  MatAccordion,
+  MatTabsModule,
 } from '@angular/material';
 import "hammerjs";
 
@@ -154,6 +157,7 @@ import {GlobalLookups} from "./common/global-lookups";
     CertificateService,
     RoleService,
     GlobalLookups,
+    DatePipe,
     {
       provide: ExtendedHttpClient,
       useFactory: extendedHttpClientCreator,
