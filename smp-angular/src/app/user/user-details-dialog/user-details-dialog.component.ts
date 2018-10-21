@@ -24,6 +24,8 @@ export class UserDetailsDialogComponent {
   readonly passwordPattern = '^(?=.*[A-Z])(?=.*[ !#$%&\'()*+,-./:;<=>?@\\[^_`{|}~\\\]"])(?=.*[0-9])(?=.*[a-z]).{8,32}$';
   readonly dateFormat: string = 'yyyy-MM-dd HH:mm:ssZ';
 
+  id: number;
+
   editMode: boolean;
   formTitle: string;
   userRoles = [];
@@ -65,7 +67,9 @@ export class UserDetailsDialogComponent {
               @Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder) {
     this.editMode = data.edit;
-    this.formTitle = this.editMode ?  UserDetailsDialogComponent.EDIT_MODE: UserDetailsDialogComponent.NEW_MODE;
+    this.id = data.row && data.row.id;
+
+    this.formTitle = this.editMode ? UserDetailsDialogComponent.EDIT_MODE: UserDetailsDialogComponent.NEW_MODE;
 
     const user: UserRo & { confirmation?: string } = this.editMode
       ? {
@@ -78,14 +82,13 @@ export class UserDetailsDialogComponent {
           validTo: data.row.validTo,
           issuer: data.row.issuer,
           serialNumber: data.row.serialNumber,
-        }
+        },
       }: {
         username: '',
         email: '',
         password: '',
         confirmation: '',
         role: '',
-        status: SearchTableEntityStatus.NEW,
         certificate: {},
       };
 
@@ -94,7 +97,7 @@ export class UserDetailsDialogComponent {
     this.userForm = fb.group({
       'userToggle': new FormControl(userDetailsToggled),
       'username': new FormControl({ value: user.username, disabled: this.editMode || !userDetailsToggled }, this.editMode ? Validators.nullValidator : null),
-      'role': new FormControl({ value: user.role, disabled: !userDetailsToggled }, Validators.required),
+      'role': new FormControl({ value: Role[user.role], disabled: !userDetailsToggled }, Validators.required),
       'password': new FormControl({ value: user.password, disabled: !userDetailsToggled }, [Validators.required, Validators.pattern(this.passwordPattern)]),
       'confirmation': new FormControl({ value: user.password, disabled: !userDetailsToggled }, Validators.pattern(this.passwordPattern)),
 
@@ -113,6 +116,7 @@ export class UserDetailsDialogComponent {
       this.existingRoles = this.editMode
         ? this.getAllowedRoles(this.userRoles, user.role)
         : this.userRoles;
+      console.log(this.userRoles, this.existingRoles);
     });
   }
 
@@ -155,15 +159,22 @@ export class UserDetailsDialogComponent {
   }
 
   get current(): UserRo {
-    return this.userForm.getRawValue();
+    const rawValue = this.userForm.getRawValue();
+
+    return {
+      ...rawValue,
+      id: this.id,
+      role: Object.keys(Role).find(k => Role[k] === rawValue.role), // ugly hack to find the corresponding enum key as a string
+      status: this.id ? SearchTableEntityStatus.UPDATED: SearchTableEntityStatus.NEW,
+    };
   }
 
   // filters out roles so that the user cannot change from system administrator to the other roles or vice-versa
   private getAllowedRoles(allRoles, userRole) {
-    if (userRole === Role.SYSTEM_ADMINISTRATOR) {
-      return [Role.SYSTEM_ADMINISTRATOR];
+    if (userRole === Role.SYSTEM_ADMIN) {
+      return [Role.SYSTEM_ADMIN];
     } else {
-      return allRoles.filter(role => role !== Role.SYSTEM_ADMINISTRATOR);
+      return allRoles.filter(role => role !== Role.SYSTEM_ADMIN);
     }
   }
 }
