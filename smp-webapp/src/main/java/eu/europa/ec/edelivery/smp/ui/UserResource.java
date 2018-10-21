@@ -1,26 +1,22 @@
 package eu.europa.ec.edelivery.smp.ui;
 
-
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
-import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.io.InputStream;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
 
@@ -38,43 +34,31 @@ public class UserResource {
     @Autowired
     private UIUserService uiUserService;
 
-    @PostConstruct
-    protected void init() {
-
-    }
-
-    @PutMapping(produces = {"application/json"})
+    @GetMapping
     @ResponseBody
-    @RequestMapping(method = RequestMethod.GET)
     public ServiceResult<UserRO> getUsers(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
             @RequestParam(value = "orderBy", required = false) String orderBy,
             @RequestParam(value = "orderType", defaultValue = "asc", required = false) String orderType,
-            @RequestParam(value = "user", required = false) String user
-            ) {
-
-
+            @RequestParam(value = "user", required = false) String user) {
         return  uiUserService.getTableList(page,pageSize, orderBy, orderType, null);
     }
 
     @PutMapping(produces = {"application/json"})
-    @RequestMapping(method = RequestMethod.PUT)
     public void updateUserList(@RequestBody(required = true) UserRO[] updateEntities ){
-        LOG.info("Update user list, count: {}" + updateEntities.length);
+        LOG.info("Update user list, count: {}", updateEntities.length);
         uiUserService.updateUserList(Arrays.asList(updateEntities));
     }
 
-
-    @RequestMapping(path = "certdata", method = RequestMethod.POST)
+    @PostMapping(path = "certdata")
     public CertificateRO uploadFile(@RequestBody byte[] data) {
         LOG.info("Got certificate data: " + data.length);
         try {
             return uiUserService.getCertificateData(data);
         } catch (CertificateException e) {
-            LOG.error("Error occured while parsing certificate.", e);
+            LOG.error("Error occurred while parsing certificate.", e);
         }
         return null;
-
     }
 }
