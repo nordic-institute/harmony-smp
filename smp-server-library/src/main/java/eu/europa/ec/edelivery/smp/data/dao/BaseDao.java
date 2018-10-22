@@ -229,7 +229,9 @@ public abstract class BaseDao<E extends BaseEntity> {
                                 (Comparable) searchValue));
                     } else if (searchValue instanceof String && fieldName.endsWith("Like")) {
                         if (!((String) searchValue).isEmpty()) {
-                            lstPredicate.add(cb.like(getPath(om, fieldName, "Like"), "%" + (String) searchValue + "%"));
+                            // like search is also case insensitive
+                            String searchPhraze = ((String) searchValue).toLowerCase().trim();
+                            lstPredicate.add(cb.like(cb.lower(getPath(om, fieldName, "Like")), "%" + searchPhraze + "%"));
                         }
                     } else if (searchValue instanceof String) {
                         if (!((String) searchValue).isEmpty()) {

@@ -1,12 +1,14 @@
 package eu.europa.ec.edelivery.smp.ui;
 
 
+import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataValidationRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIServiceMetadataService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -27,11 +29,13 @@ public class ServiceMetadataResource {
     @ResponseBody
     @PutMapping(produces = {"application/json"})
     @RequestMapping(method = RequestMethod.GET, path = "{serviceMetadataId}")
+    @Secured({SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_SMP_ADMIN, SMPAuthority.S_AUTHORITY_SERVICE_GROUP_ADMIN})
     public ServiceMetadataRO getServiceGroupById(@PathVariable Long serviceMetadataId) {
         return uiServiceMetadataService.getServiceMetadataXMLById(serviceMetadataId);
     }
 
     @RequestMapping(path = "validate", method = RequestMethod.POST)
+    @Secured({SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_SMP_ADMIN, SMPAuthority.S_AUTHORITY_SERVICE_GROUP_ADMIN})
     public ServiceMetadataValidationRO validateServiceMetadata(@RequestBody(required = true) ServiceMetadataValidationRO serviceMetadataValidationRO) {
         return uiServiceMetadataService.validateServiceMetadata(serviceMetadataValidationRO);
     }

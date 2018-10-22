@@ -4,6 +4,7 @@ import {MatDialog, MatDialogRef} from '@angular/material';
 import {AlertService} from '../alert/alert.service';
 import {UserController} from './user-controller';
 import {HttpClient} from '@angular/common/http';
+import {SearchTableComponent} from "../common/search-table/search-table.component";
 
 @Component({
   templateUrl:'./user.component.html',
@@ -14,6 +15,7 @@ export class UserComponent implements OnInit {
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>
   @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
+  @ViewChild('searchTable') searchTable: SearchTableComponent;
 
   columnPicker: ColumnPicker = new ColumnPicker();
   userController: UserController;
@@ -50,5 +52,9 @@ export class UserComponent implements OnInit {
 
   details(row: any) {
     this.userController.showDetails(row);
+  }
+  // for dirty guard...
+  isDirty (): boolean {
+    return this.searchTable.isDirty();
   }
 }

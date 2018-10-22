@@ -57,27 +57,17 @@ public class UIServiceGroupSearchService extends UIServiceBase<DBServiceGroup, S
     @Transactional
     public ServiceResult<ServiceGroupSearchRO> getTableList(int page, int pageSize,
                                                             String sortField,
-                                                            String sortOrder, ServiceGroupFilter filter, String domainCode) {
-
-        DBDomain d = null;
-        if (!StringUtils.isBlank(domainCode)) {
-            Optional<DBDomain> od = domainDao.getDomainByCode(domainCode);
-            if (od.isPresent()) {
-                d = od.get();
-            } else {
-                throw new SMPRuntimeException(DOMAIN_NOT_EXISTS, domainCode);
-            }
-        }
+                                                            String sortOrder, ServiceGroupFilter filter) {
 
         ServiceResult<ServiceGroupSearchRO> sg = new ServiceResult<>();
         sg.setPage(page < 0 ? 0 : page);
         sg.setPageSize(pageSize);
-        long iCnt = serviceGroupDao.getServiceGroupCount(filter, d);
+        long iCnt = serviceGroupDao.getServiceGroupCount(filter);
         sg.setCount(iCnt);
 
         if (iCnt > 0) {
             int iStartIndex = pageSize < 0 ? -1 : page * pageSize;
-            List<DBServiceGroup> lst = serviceGroupDao.getServiceGroupList(iStartIndex, pageSize, sortField, sortOrder, filter, d);
+            List<DBServiceGroup> lst = serviceGroupDao.getServiceGroupList(iStartIndex, pageSize, sortField, sortOrder, filter);
             List<ServiceGroupSearchRO> lstRo = new ArrayList<>();
             for (DBServiceGroup dbServiceGroup : lst) {
                 ServiceGroupSearchRO serviceGroupRo = convertToRo(dbServiceGroup);

@@ -73,27 +73,17 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
     @Transactional
     public ServiceResult<ServiceGroupRO> getTableList(int page, int pageSize,
                                                       String sortField,
-                                                      String sortOrder, ServiceGroupFilter filter, String domainCode) {
+                                                      String sortOrder, ServiceGroupFilter filter) {
 
-        DBDomain d = null;
-        if (!StringUtils.isBlank(domainCode)) {
-            Optional<DBDomain> od = domainDao.getDomainByCode(domainCode);
-            if (od.isPresent()) {
-                d = od.get();
-            } else {
-                throw new SMPRuntimeException(DOMAIN_NOT_EXISTS, domainCode);
-            }
-
-        }
         ServiceResult<ServiceGroupRO> sg = new ServiceResult<>();
         sg.setPage(page < 0 ? 0 : page);
         sg.setPageSize(pageSize);
-        long iCnt = serviceGroupDao.getServiceGroupCount(filter, d);
+        long iCnt = serviceGroupDao.getServiceGroupCount(filter);
         sg.setCount(iCnt);
 
         if (iCnt > 0) {
             int iStartIndex = pageSize < 0 ? -1 : page * pageSize;
-            List<DBServiceGroup> lst = serviceGroupDao.getServiceGroupList(iStartIndex, pageSize, sortField, sortOrder, filter, d);
+            List<DBServiceGroup> lst = serviceGroupDao.getServiceGroupList(iStartIndex, pageSize, sortField, sortOrder, filter);
             List<ServiceGroupRO> lstRo = new ArrayList<>();
             for (DBServiceGroup dbServiceGroup : lst) {
                 ServiceGroupRO serviceGroupRo = convertToRo(dbServiceGroup);
@@ -180,11 +170,11 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         getDatabaseDao().persistFlushDetach(dbServiceGroup);
     }
 
-    private void normalizeIdentifiers(ServiceGroupRO sgo){
-        ParticipantIdentifierType pti = caseSensitivityNormalizer.normalizeParticipant(sgo.getParticipantScheme()+"::"+sgo.getParticipantIdentifier());
+    private void normalizeIdentifiers(ServiceGroupRO sgo) {
+        ParticipantIdentifierType pti = caseSensitivityNormalizer.normalizeParticipant(sgo.getParticipantScheme() + "::" + sgo.getParticipantIdentifier());
         sgo.setParticipantScheme(pti.getScheme());
         sgo.setParticipantIdentifier(pti.getValue());
-        sgo.getServiceMetadata().forEach(smd->{
+        sgo.getServiceMetadata().forEach(smd -> {
             DocumentIdentifier dit = caseSensitivityNormalizer.normalizeDocumentIdentifier(smd.getDocumentIdentifierScheme(), smd.getDocumentIdentifier());
             smd.setDocumentIdentifierScheme(dit.getScheme());
             smd.setDocumentIdentifier(dit.getValue());
@@ -237,7 +227,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         serviceMetadataROList.forEach(serviceMetadataRO -> {
 
             Optional<DBServiceGroupDomain> optionalDbServiceGroupDomain =
-                    dbServiceGroup.findServiceGroupDomainForMetadata(serviceMetadataRO.getDocumentIdentifier(),serviceMetadataRO.getDocumentIdentifierScheme() );
+                    dbServiceGroup.findServiceGroupDomainForMetadata(serviceMetadataRO.getDocumentIdentifier(), serviceMetadataRO.getDocumentIdentifierScheme());
             // remove service metadata
             if (serviceMetadataRO.getStatus() == EntityROStatus.REMOVE.getStatusNumber()) {
                 // if the domain was not removed then remove only metadata
@@ -271,12 +261,12 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
                     }
 
                     if (!Objects.equals(serviceMetadataRO.getDomainCode(), dbServiceGroupDomain.getDomain().getDomainCode())) {
-                       // remove from old doman
+                        // remove from old doman
                         DBServiceMetadata smd = dbServiceGroupDomain.removeServiceMetadata(serviceMetadataRO.getDocumentIdentifier(),
                                 serviceMetadataRO.getDocumentIdentifierScheme());
                         // find new domain and add
                         Optional<DBServiceGroupDomain> optNewDomain = dbServiceGroup.getServiceGroupForDomain(serviceMetadataRO.getDomainCode());
-                        if(optNewDomain.isPresent()) {
+                        if (optNewDomain.isPresent()) {
                             optNewDomain.get().addServiceMetadata(smd);
                         } else {
                             throw new SMPRuntimeException(SG_NOT_REGISTRED_FOR_DOMAIN, serviceMetadataRO.getDomainCode(),
@@ -418,8 +408,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         ServiceMetadata smd = ServiceMetadataConverter.unmarshal(buff);
         DocumentIdentifier di = caseSensitivityNormalizer.normalize(smd.getServiceInformation().getDocumentIdentifier());
         if (Objects.equals(di.getScheme(), serviceMetadataRO.getDocumentIdentifierScheme())
-                && Objects.equals(di.getValue(), serviceMetadataRO.getDocumentIdentifier()))
-        {
+                && Objects.equals(di.getValue(), serviceMetadataRO.getDocumentIdentifier())) {
             return buff;
         } else {
             throw new SMPRuntimeException(IVALID_SMD_DOCUMENT_DATA, di.getValue(), di.getScheme(),
@@ -519,7 +508,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
             if (Objects.equals(dbServiceGroupDomain.getId(), domainRo.getId())) {
                 // double check for domain
                 if (!Objects.equals(dbServiceGroupDomain.getDomain().getId(), domainRo.getDomainId())) {
-                    throw new SMPRuntimeException(INVALID_REQEUST, "Domain mismatch!","Domain id for does not match for servicegroup domain");
+                    throw new SMPRuntimeException(INVALID_REQEUST, "Domain mismatch!", "Domain id for does not match for servicegroup domain");
                 }
                 return dbServiceGroupDomain;
             }

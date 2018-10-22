@@ -5,19 +5,17 @@ import {ServiceGroupEditComponent} from './service-group-edit/service-group-edit
 import {DomainComponent} from './domain/domain.component';
 import {AuthenticatedGuard} from './guards/authenticated.guard';
 import {UserComponent} from './user/user.component';
+import {DirtyGuard} from "./common/dirty.guard";
 
 
 const appRoutes: Routes = [
   {path: '', component: ServiceGroupSearchComponent},
-  {path: 'search', component: ServiceGroupSearchComponent},
-  {path: 'edit', component: ServiceGroupEditComponent},
-  {path: 'domain', component: DomainComponent},
-  {path: 'user', component: UserComponent},
-
-
+  {path: 'search', redirectTo: ''},
+  {path: 'edit', component: ServiceGroupEditComponent,  canActivate: [AuthenticatedGuard], canDeactivate: [DirtyGuard]},
+  {path: 'domain', component: DomainComponent, canActivate: [AuthenticatedGuard], canDeactivate: [DirtyGuard]},
+  {path: 'user', component: UserComponent, canActivate: [AuthenticatedGuard], canDeactivate: [DirtyGuard]},
   {path: 'login', component: LoginComponent},
-  {path: '**', component: ServiceGroupEditComponent, canActivate: [AuthenticatedGuard]}
-
+  {path: '**', redirectTo: ''}
 ];
 
 export const routing = RouterModule.forRoot(appRoutes, {useHash: true});

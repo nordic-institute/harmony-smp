@@ -5,6 +5,10 @@ export class SmpConstants {
   public static readonly REST_SEARCH = 'rest/search';
   public static readonly REST_EDIT = 'rest/servicegroup';
   public static readonly REST_METADATA = 'rest/servicemetadata';
+  public static readonly REST_SECURITY_AUTHENTICATION = 'rest/security/authentication';
+  public static readonly REST_SECURITY_USER = 'rest/security/user';
+  public static readonly REST_APPLICATION = 'rest/application/info';
+
 
   public static readonly REST_CERTIFICATE = `${SmpConstants.REST_USER}/certdata`;
   public static readonly REST_SERVICE_GROUP_EXTENSION = `${SmpConstants.REST_EDIT}/extension`;

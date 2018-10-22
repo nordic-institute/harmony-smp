@@ -37,10 +37,9 @@
       <input matInput placeholder="Participant scheme" name="patricipantScheme" [(ngModel)]="filter.participantScheme"
              #messageId="ngModel" id="participantScheme">
     </mat-form-field>
-    <mat-select placeholder="Domain (sml subdomain)" [(ngModel)]="filter.domain" name="domain"
+    <mat-select placeholder="All Domains" [(ngModel)]="filter.domain" name="domain"
                 id="domain_id">
-      <mat-option [value]="''">
-      </mat-option>
+      <mat-option [value]="''">All Domains</mat-option>
       <mat-option *ngFor="let domain of lookups.cachedDomainList" [value]="domain.domainCode">
         {{domain.domainCode}} ({{domain.smlSubdomain}})
       </mat-option>

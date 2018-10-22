@@ -1,11 +1,8 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
-
-
-
-
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 /**
@@ -20,7 +17,8 @@ public class UserRO extends BaseRO {
     private String username;
     private String password;
     private String email;
-    LocalDateTime passwordChanged;
+    private List<String> authorities;
+    private LocalDateTime passwordChanged;
     private boolean active = true;
     private String role;
     private Long id;
@@ -92,5 +90,12 @@ public class UserRO extends BaseRO {
 
     public void setCertificateData(CertificateRO certificate) {
         this.certificateData = certificate;
+    }
+    public List<String> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(List<String> authorities) {
+        this.authorities = authorities;
     }
 }
