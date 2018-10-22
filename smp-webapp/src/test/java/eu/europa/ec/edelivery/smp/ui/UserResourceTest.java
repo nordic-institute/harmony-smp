@@ -21,6 +21,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -30,6 +31,7 @@ import javax.servlet.ServletContextListener;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -55,7 +57,7 @@ public class UserResourceTest {
     private WebApplicationContext webAppContext;
 
     private MockMvc mvc;
-
+    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("test_admin", "test123");
     @Before
     public void setup() {
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
@@ -74,7 +76,7 @@ public class UserResourceTest {
     @Test
     public void getUserList() throws Exception {
         // given when
-        MvcResult result = mvc.perform(get(PATH)).
+        MvcResult result = mvc.perform(get(PATH).with(ADMIN_CREDENTIALS)).
                 andExpect(status().isOk()).andReturn();
 
         //them

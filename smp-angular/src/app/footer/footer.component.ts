@@ -16,6 +16,7 @@ export class FooterComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
     console.log("FooterComponent onInit");
     this.smpInfoService.getSmpInfo().subscribe((smpInfo: SmpInfo) => {
       this.smpVersion = smpInfo.version;

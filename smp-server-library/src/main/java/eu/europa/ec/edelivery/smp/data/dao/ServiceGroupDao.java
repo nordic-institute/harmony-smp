@@ -15,6 +15,7 @@ package eu.europa.ec.edelivery.smp.data.dao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
 import org.apache.commons.lang3.StringUtils;
@@ -25,9 +26,7 @@ import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by gutowpa on 14/11/2017.
@@ -88,23 +87,23 @@ public class ServiceGroupDao extends BaseDao<DBServiceGroup> {
         memEManager.remove(memEManager.contains(dbServiceGroup) ? dbServiceGroup : memEManager.merge(dbServiceGroup));
     }
 
-    public long getServiceGroupCount(ServiceGroupFilter filters, DBDomain domain) {
+    public long getServiceGroupCount(ServiceGroupFilter filters) {
 
         CriteriaQuery<Long> cqCount = createSearchCriteria(filters, true,
                 null,
-                null, domain);
+                null);
         return memEManager.createQuery(cqCount).getSingleResult();
     }
 
     public List<DBServiceGroup> getServiceGroupList(int startingAt, int maxResultCnt,
                                String sortField,
-                               String sortOrder, ServiceGroupFilter filters, DBDomain domain) {
+                               String sortOrder, ServiceGroupFilter filters) {
 
         List<DBServiceGroup> lstResult;
         try {
             CriteriaQuery<DBServiceGroup> cq = createSearchCriteria(filters,
                     false, sortField,
-                    sortOrder, domain);
+                    sortOrder);
             TypedQuery<DBServiceGroup> q = memEManager.createQuery(cq);
             if (maxResultCnt > 0) {
                 q.setMaxResults(maxResultCnt);
@@ -121,7 +120,7 @@ public class ServiceGroupDao extends BaseDao<DBServiceGroup> {
     }
 
     protected  CriteriaQuery createSearchCriteria(ServiceGroupFilter searchParams,
-                                                  boolean forCount, String sortField, String sortOrder, DBDomain domain) {
+                                                  boolean forCount, String sortField, String sortOrder) {
         CriteriaBuilder cb = memEManager.getCriteriaBuilder();
         CriteriaQuery cq = forCount ? cb.createQuery(Long.class) : cb.createQuery(DBServiceGroup.class);
         Root<DBServiceGroup> serviceGroup = cq.from(DBServiceGroup.class);
@@ -139,14 +138,19 @@ public class ServiceGroupDao extends BaseDao<DBServiceGroup> {
             }
         }
 
-       // Join<DBServiceGroupDomain, DBDomain> serviceGroupDomainJoinDomain = null;
         Join<DBServiceGroup, DBServiceGroupDomain> serviceGroupJoinServiceGroupDomain = null;
-        //Join<DBServiceGroupDomain, DBDomain> serviceGroupDomainJoinDomain = null;
-        if (domain!=null){
-            serviceGroupJoinServiceGroupDomain =  serviceGroup.join("serviceGroupDomains", JoinType.INNER);
-            serviceGroupJoinServiceGroupDomain = serviceGroupJoinServiceGroupDomain.on(cb.equal(serviceGroupJoinServiceGroupDomain.get("domain"), domain));
-        }
+        Predicate ownerPredicate = null;
+        if (searchParams!=null) {
 
+            if (searchParams.getDomain()!=null){
+                serviceGroupJoinServiceGroupDomain =  serviceGroup.join("serviceGroupDomains", JoinType.INNER);
+                serviceGroupJoinServiceGroupDomain = serviceGroupJoinServiceGroupDomain.on(cb.equal(serviceGroupJoinServiceGroupDomain.get("domain"), searchParams.getDomain()));
+            }
+            // limit for owner
+            if (searchParams.getOwner() !=null){
+                ownerPredicate = cb.equal(serviceGroup.join("users"),searchParams.getOwner());
+            }
+        }
 
         // set order by
         if (searchParams != null) {
@@ -154,6 +158,9 @@ public class ServiceGroupDao extends BaseDao<DBServiceGroup> {
 
             if (serviceGroupJoinServiceGroupDomain!=null) {
                 lstPredicate.add(serviceGroupJoinServiceGroupDomain.getOn());
+            }
+            if (ownerPredicate!=null) {
+                lstPredicate.add(ownerPredicate);
             }
 
             if (!lstPredicate.isEmpty()) {

@@ -11,6 +11,6 @@ export class UserService {
   getUserRoles$() {
     // return this.http.get('rest/user/userroles');
     // TODO create the endpoint
-    return of({json: () => [Role.SYSTEM_ADMINISTRATOR, Role.SMP_ADMINISTRATOR, Role.SERVICE_GROUP_ADMINISTRATOR]});
+    return of({json: () => [Role.SYSTEM_ADMIN, Role.SMP_ADMIN, Role.SERVICE_GROUP_ADMIN]});
   }
 }

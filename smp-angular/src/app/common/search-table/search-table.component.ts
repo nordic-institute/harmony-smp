@@ -381,4 +381,8 @@ export class SearchTableComponent implements OnInit {
   onDetailToggle(event) {
 
   }
+
+  isDirty (): boolean {
+    return this.submitButtonsEnabled;
+  }
 }

@@ -29,6 +29,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
   editMode: boolean;
   formTitle: string;
   current: ServiceGroupEditRo & { confirmation?: string };
+  showSpinner: boolean =  false;
 
   dialogForm: FormGroup;
   extensionObserver: Observable<ServiceGroupExtensionRo>;
@@ -132,6 +133,12 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     Object.keys(g.controls).forEach(key => {
       g.get(key).updateValueAndValidity();
     });
+
+    this.onExtensionValidate;
+
+
+
+
   }
 
 
@@ -213,15 +220,17 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     }
     //
     let validationObservable = this.http.post<ServiceGroupExtensionRo>(SmpConstants.REST_SERVICE_GROUP_EXTENSION_VALIDATE, request);
-    validationObservable.subscribe((res: ServiceGroupExtensionRo) => {
+    this.showSpinner = true;
+    validationObservable.toPromise().then((res: ServiceGroupExtensionRo) => {
       if (res.errorMessage) {
         this.extensionValidationMessage = res.errorMessage;
         this.isExtensionValid = false;
+        this.showSpinner = false;
       } else {
         this.extensionValidationMessage = "Extension is valid!";
         this.isExtensionValid = true;
+        this.showSpinner = false;
       }
-
     });
   }
 

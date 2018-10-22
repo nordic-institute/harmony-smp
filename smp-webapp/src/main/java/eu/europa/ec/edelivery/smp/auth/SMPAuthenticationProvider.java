@@ -40,10 +40,10 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             // Do not reveal the status of an existing account. Not to use UsernameNotFoundException
             throw new BadCredentialsException("Login failed; Invalid userID or password");
         }
-        DBUser usr = oUsr.get();
-        String role = usr.getRole();
+        DBUser user = oUsr.get();
+        String role = user.getRole();
         try {
-            if (!BCrypt.checkpw(password, usr.getPassword())) {
+            if (!BCrypt.checkpw(password, user.getPassword())) {
                 LOG.securityWarn(SMPMessageCode.SEC_INVALID_PASSWORD, username);
                 throw new BadCredentialsException("Login failed; Invalid userID or password");
             }
@@ -54,12 +54,11 @@ public class SMPAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException("Login failed; Invalid userID or password");
         }
         LOG.securityInfo(SMPMessageCode.SEC_USER_AUTHENTICATED, username, role);
-        return new UsernamePasswordAuthenticationToken(username, password,Collections.singletonList(new SMPAuthority(role)));
-
+        return new SMPAuthenticationToken(username, password,Collections.singletonList(new SMPAuthority(role)), user);
     }
 
     @Override
     public boolean supports(Class<?> auth) {
-        return auth.equals(UsernamePasswordAuthenticationToken.class);
+        return auth.equals(UsernamePasswordAuthenticationToken.class) || auth.equals(SMPAuthenticationToken.class);
     }
 }

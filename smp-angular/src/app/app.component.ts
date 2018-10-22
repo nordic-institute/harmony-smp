@@ -5,6 +5,7 @@ import {SecurityEventService} from './security/security-event.service';
 import {Title} from '@angular/platform-browser';
 import {Observable} from 'rxjs';
 import {HttpClient, HttpResponse} from '@angular/common/http';
+import {Role} from "./security/role.model";
 
 @Component({
   selector: 'app-root',
@@ -13,7 +14,6 @@ import {HttpClient, HttpResponse} from '@angular/common/http';
 })
 export class AppComponent implements OnInit {
 
-  isAdmin: boolean;
   _currentUser: string;
   fullMenu: boolean = true;
   menuClass: string = this.fullMenu ? "menu-expanded" : "menu-collapsed";
@@ -26,17 +26,17 @@ export class AppComponent implements OnInit {
               private securityEventService: SecurityEventService,
               private http: HttpClient,
               private titleService: Title) {
-
+/*
     let applicationNameResponse: Observable<string> = this.http.get<string>('rest/application/name');
 
     applicationNameResponse.subscribe((name: string) => {
       this.titleService.setTitle(name);
-
-
     });
+    */
   }
 
   ngOnInit() {
+    /*
     this.securityEventService.onLoginSuccessEvent().subscribe(
       data => {
         this.isAdmin = this.securityService.isCurrentUserAdmin();
@@ -51,11 +51,18 @@ export class AppComponent implements OnInit {
       data => {
         this.isAdmin = this.securityService.isCurrentUserAdmin();
         this.router.navigate(['/login']);
-      });
+      });*/
   }
 
-  hasAdmin(): boolean {
-    return this.securityService.isCurrentUserAdmin();
+  isCurrentUserSystemAdmin(): boolean {
+    return this.securityService.isCurrentUserInRole([Role.SYSTEM_ADMIN]);
+  }
+
+  isCurrentUserSMPAdmin(): boolean {
+    return this.securityService.isCurrentUserInRole([ Role.SMP_ADMIN]);
+  }
+  isCurrentUserServiceGroupAdmin(): boolean {
+    return this.securityService.isCurrentUserInRole([ Role.SERVICE_GROUP_ADMIN]);
   }
 
   get currentUser(): string {
@@ -65,7 +72,7 @@ export class AppComponent implements OnInit {
 
   logout(event: Event): void {
     event.preventDefault();
-    this.router.navigate(['/login']).then((ok) => {
+    this.router.navigate(['/search']).then((ok) => {
       if (ok) {
         this.securityService.logout();
       }
