@@ -10,7 +10,7 @@ import {SearchTableComponent} from "../common/search-table/search-table.componen
 import {GlobalLookups} from "../common/global-lookups";
 
 @Component({
-  moduleId: module.id,
+  moduleId: 'edit',
   templateUrl: './service-group-edit.component.html',
   styleUrls: ['./service-group-edit.component.css']
 })
@@ -25,6 +25,7 @@ export class ServiceGroupEditComponent implements OnInit {
   serviceGroupEditController: ServiceGroupEditController;
   filter: any = {};
   baseUrl: string = SmpConstants.REST_EDIT;
+  contextPath: string = location.pathname.substring(0, location.pathname.length - 3); // remove /ui s
 
   constructor(protected lookups: GlobalLookups,
               protected http: HttpClient,
@@ -145,8 +146,6 @@ export class ServiceGroupEditComponent implements OnInit {
 
       }
     });
-    //
-
   }
 
   onDeleteMetadataRowActionClicked(serviceGroupRow: any, metaDataRow: any) {
@@ -167,5 +166,10 @@ export class ServiceGroupEditComponent implements OnInit {
       // this.searchTable.rows[rowNumber] = {...serviceGroupRow, status};
       // this.searchTable.rows = [...this.searchTable.rows];
     }
+  }
+
+  // for dirty guard...
+  isDirty (): boolean {
+    return this.searchTable.isDirty();
   }
 }

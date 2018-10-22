@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
-import {CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, CanDeactivate} from '@angular/router';
-import { Observable } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {ActivatedRouteSnapshot, CanActivate, CanDeactivate, RouterStateSnapshot} from '@angular/router';
+import {Observable} from 'rxjs';
 import {MatDialog} from '@angular/material';
 import {CancelDialogComponent} from './cancel-dialog/cancel-dialog.component';
 
@@ -16,7 +16,8 @@ export class DirtyGuard implements CanActivate, CanDeactivate<any> {
     return true;
   }
 
-  canDeactivate(component: any, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot, nextState?: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
+  canDeactivate(component: any, currentRoute: ActivatedRouteSnapshot, currentState: RouterStateSnapshot,
+                nextState?: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
     if (component.isDirty && !component.isDirty()) return true;
     return this.dialog.open(CancelDialogComponent).afterClosed();
   }

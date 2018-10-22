@@ -160,10 +160,10 @@ export class UserDetailsDialogComponent {
 
   // filters out roles so that the user cannot change from system administrator to the other roles or vice-versa
   private getAllowedRoles(allRoles, userRole) {
-    if (userRole === Role.SYSTEM_ADMINISTRATOR) {
-      return [Role.SYSTEM_ADMINISTRATOR];
+    if (userRole === Role.SYSTEM_ADMIN) {
+      return [Role.SYSTEM_ADMIN];
     } else {
-      return allRoles.filter(role => role !== Role.SYSTEM_ADMINISTRATOR);
+      return allRoles.filter(role => role !== Role.SYSTEM_ADMIN);
     }
   }
 }

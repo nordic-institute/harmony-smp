@@ -7,6 +7,7 @@ import {DomainController} from './domain-controller';
 import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {GlobalLookups} from "../common/global-lookups";
+import {SearchTableComponent} from "../common/search-table/search-table.component";
 
 @Component({
   moduleId: module.id,
@@ -18,6 +19,7 @@ export class DomainComponent implements OnInit {
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
   @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>;
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
+  @ViewChild('searchTable') searchTable: SearchTableComponent;
 
   baseUrl = SmpConstants.REST_DOMAIN;
   columnPicker: ColumnPicker = new ColumnPicker();
@@ -71,5 +73,10 @@ export class DomainComponent implements OnInit {
 
   details(row: any) {
     this.domainController.showDetails(row);
+  }
+
+  // for dirty guard...
+  isDirty (): boolean {
+    return this.searchTable.isDirty();
   }
 }

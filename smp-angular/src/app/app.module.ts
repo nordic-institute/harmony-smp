@@ -75,6 +75,7 @@ import {GlobalLookups} from "./common/global-lookups";
 import {ServiceGroupExtensionWizardDialogComponent} from "./service-group-edit/service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component";
 import {ServiceMetadataWizardDialogComponent} from "./service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-dialog.component";
 import {ConfirmationDialogComponent} from "./common/confirmation-dialog/confirmation-dialog.component";
+import {SpinnerComponent} from "./common/spinner/spinner.component";
 
 @NgModule({
   declarations: [
@@ -88,6 +89,7 @@ import {ConfirmationDialogComponent} from "./common/confirmation-dialog/confirma
     UserComponent,
     AlertComponent,
     FooterComponent,
+    SpinnerComponent,
     IsAuthorized,
     SaveDialogComponent,
     ServiceGroupMetadataDialogComponent,

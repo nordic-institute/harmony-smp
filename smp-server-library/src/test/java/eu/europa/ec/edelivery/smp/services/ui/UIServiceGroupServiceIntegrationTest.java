@@ -4,6 +4,7 @@ package eu.europa.ec.edelivery.smp.services.ui;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
+import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupExtensionRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
@@ -43,14 +44,22 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
     @Autowired
     protected UIServiceMetadataService uiServiceMetadataService;
 
-    protected void insertDataObjects(int size) {
+
+    protected void insertDataObjectsForOwner(int size, DBUser owner) {
         for (int i = 0; i < size; i++) {
-            insertServiceGroup(String.format("%4d", i), true);
+            insertServiceGroup(String.format("%4d", i), true, owner);
         }
     }
 
-    protected DBServiceGroup insertServiceGroup(String id, boolean withExtension) {
+    protected void insertDataObjects(int size) {
+        insertDataObjectsForOwner(size, null);
+    }
+
+    protected DBServiceGroup insertServiceGroup(String id, boolean withExtension, DBUser owner) {
         DBServiceGroup d = TestDBUtils.createDBServiceGroup(String.format("0007:%s:utest", id), TestConstants.TEST_SG_SCHEMA_1, withExtension);
+        if (owner!= null) {
+            d.getUsers().add(owner);
+        }
         serviceGroupDao.persistFlushDetach(d);
         return d;
     }
@@ -298,7 +307,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
 
     @Test
     public void getEmptyExtensionById() throws IOException {
-        DBServiceGroup sg = insertServiceGroup("testExt", false);
+        DBServiceGroup sg = insertServiceGroup("testExt", false, null);
         assertNotNull(sg);
         assertNotNull(sg.getId());
         assertNull(sg.getExtension());
@@ -313,7 +322,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
 
     @Test
     public void getExtensionById() throws IOException {
-        DBServiceGroup sg = insertServiceGroup("testExt", true);
+        DBServiceGroup sg = insertServiceGroup("testExt", true, null);
         assertNotNull(sg);
         assertNotNull(sg.getId());
         assertNotNull(sg.getExtension());

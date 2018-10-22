@@ -16,6 +16,7 @@ public class TestConstants {
     public static final String TEST_SG_ID_1 = "0007:001:utest";
     public static final String TEST_SG_ID_2 = "urn:eu:ncpb:utest";
     public static final String TEST_SG_ID_3 = "0007:002:utest";
+    public static final String TEST_SG_ID_4 = "0007:004:utest";
     public static final String TEST_SG_ID_PL= "urn:poland:ncpb:utest";
     public static final String TEST_SG_ID_PL2= "urn:Poland:ncpb";
 
