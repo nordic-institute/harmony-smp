@@ -270,7 +270,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     @Test
     public void testGetCertificateDataDER() throws IOException, CertificateException {
         // given
-        byte[] buff = IOUtils.toByteArray(new FileInputStream("src/test/resources/truststore/NewPeppolAPaa.crt"));
+        byte[] buff = IOUtils.toByteArray(new FileInputStream("src/test/resources/truststore/NewPeppolAP.crt"));
 
         // when
         CertificateRO cer = testInstance.getCertificateData(buff);
