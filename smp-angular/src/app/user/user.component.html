@@ -11,6 +11,8 @@
   [allowNewItems]="securityService.isCurrentUserSystemAdmin()"
 >
 
+  <ng-template #roleCellTemplate let-value="value" ngx-datatable-cell-template>{{getRoleLabel(value)}}</ng-template>
+
   <ng-template #additionalToolButtons></ng-template>
 
 </smp-search-table>
