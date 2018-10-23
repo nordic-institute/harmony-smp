@@ -51,7 +51,9 @@
                   </div>
                 </mat-panel-description>
               </mat-expansion-panel-header>
-              <mat-selection-list  #usersSelected [compareWith]="compareTableItemById"
+              <mat-selection-list #usersSelected
+                                  [disabled]="!securityService.isCurrentUserSMPAdmin()"
+                                  [compareWith]="compareTableItemById"
                                   [formControl]="dialogForm.controls['users']"
                                   style="height: 200px;  overflow-y: scroll; overflow-x: auto;">
                 <mat-list-option *ngFor="let user of lookups?.cachedUserList" [value]='user'>
@@ -74,7 +76,9 @@
                   </div>
                 </mat-panel-description>
               </mat-expansion-panel-header>
-              <mat-selection-list  #domainSelector [compareWith]="compareDomain"
+              <mat-selection-list  #domainSelector
+                                   [disabled]="!securityService.isCurrentUserSMPAdmin()"
+                                   [compareWith]="compareDomain"
                                    [formControl]="dialogForm.controls['serviceGroupDomains']"
                                    (selectionChange)="onDomainSelectionChanged($event)"
                                    style="height: 200px;  overflow-y: scroll; overflow-x: auto;">
@@ -168,7 +172,7 @@
 
 <mat-dialog-actions>
   <div class="group-action-button">
-    <button mat-raised-button color="primary" [mat-dialog-close]="true" (click)="submitForm()"
+    <button mat-raised-button color="primary" (click)="submitForm()"
             [disabled]="!dialogForm.valid">
       <mat-icon>check_circle</mat-icon>
       <span>OK</span>

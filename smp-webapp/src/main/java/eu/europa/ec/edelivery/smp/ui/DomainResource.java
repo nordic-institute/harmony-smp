@@ -7,15 +7,12 @@ import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIDomainService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
-import java.util.List;
 
 /**
  * @author Joze Rihtarsic
@@ -51,7 +48,7 @@ public class DomainResource {
 
     @PutMapping(produces = {"application/json"})
     @RequestMapping(method = RequestMethod.PUT)
-    @Secured({SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
     public void updateDomainList(@RequestBody(required = true) DomainRO [] updateEntities ){
         LOG.info("GOT LIST OF DomainRO to UPDATE: " + updateEntities.length);
         uiDomainService.updateDomainList(Arrays.asList(updateEntities));

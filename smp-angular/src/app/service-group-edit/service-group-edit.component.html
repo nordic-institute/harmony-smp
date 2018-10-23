@@ -9,6 +9,7 @@
   [searchTableController]="serviceGroupEditController"
   [tableRowDetailContainer]="tableRowDetailContainer"
   [additionalRowActionButtons]="additionalRowActionButtons"
+  [allowNewItems]="securityService.isCurrentUserSMPAdmin()"
 >
 
   <ng-template #rowMetadataAction let-row="row" let-value="value" ngx-datatable-cell-template>

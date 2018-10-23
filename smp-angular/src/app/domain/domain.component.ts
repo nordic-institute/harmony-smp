@@ -8,6 +8,7 @@ import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {GlobalLookups} from "../common/global-lookups";
 import {SearchTableComponent} from "../common/search-table/search-table.component";
+import {SecurityService} from "../security/security.service";
 
 @Component({
   moduleId: module.id,
@@ -27,7 +28,11 @@ export class DomainComponent implements OnInit {
   filter: any = {};
 
 
-  constructor(protected lookups: GlobalLookups, protected http: HttpClient, protected alertService: AlertService, public dialog: MatDialog) {
+  constructor(public securityService: SecurityService,
+              protected lookups: GlobalLookups,
+              protected http: HttpClient,
+              protected alertService: AlertService,
+              public dialog: MatDialog) {
   }
 
   ngOnInit() {

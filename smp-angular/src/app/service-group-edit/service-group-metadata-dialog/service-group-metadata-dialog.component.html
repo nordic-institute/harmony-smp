@@ -27,7 +27,7 @@
           </div>
 
           <mat-form-field  style="width:30%">
-            <input matInput placeholder="Document schema" name="documentScheme"  id="documentScheme_id"
+            <input matInput placeholder="Document identifier scheme" name="documentScheme"  id="documentScheme_id"
                    [formControl]="dialogForm.controls['documentIdentifierScheme']">
           </mat-form-field>
             <mat-form-field style="width:55%">
@@ -111,7 +111,7 @@
 </mat-dialog-content>
 <mat-dialog-actions>
   <div class="group-action-button">
-    <button mat-raised-button color="primary" [mat-dialog-close]="true" (click)="submitForm()"
+    <button mat-raised-button color="primary" (click)="submitForm()"
             [disabled]="!dialogForm.valid">
       <mat-icon>check_circle</mat-icon>
       <span>OK</span>

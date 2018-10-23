@@ -7,7 +7,9 @@
   [additionalToolButtons]="additionalToolButtons"
   [searchTableController]="userController"
   [showSearchPanel]="false"
-  [filter]="filter">
+  [filter]="filter"
+  [allowNewItems]="securityService.isCurrentUserSystemAdmin()"
+>
 
   <ng-template #additionalToolButtons></ng-template>
 

@@ -60,7 +60,7 @@ public class MonitorResource {
 
 
     @RequestMapping(method = RequestMethod.GET,path = "/is-alive")
-    @Secured({SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN,SMPAuthority.S_AUTHORITY_SMP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN,SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN})
     public ResponseEntity isAlive() {
 
         String user = SecurityContextHolder.getContext().getAuthentication().getName();

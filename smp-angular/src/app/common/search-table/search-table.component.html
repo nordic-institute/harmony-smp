@@ -106,7 +106,9 @@
           <mat-icon>save</mat-icon>
           <span>Save</span>
         </button>
-        <button id="newButton" mat-raised-button (click)="onNewButtonClicked()" [disabled]="loading" color="primary">
+       <!-- new button enabled -->
+        <button id="newButton" mat-raised-button (click)="onNewButtonClicked()"
+                [disabled]="loading || !allowNewItems" color="primary">
           <mat-icon>add</mat-icon>
           <span>New</span>
         </button>
