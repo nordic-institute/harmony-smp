@@ -57,7 +57,7 @@ public class UserResourceTest {
     private WebApplicationContext webAppContext;
 
     private MockMvc mvc;
-    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("test_admin", "test123");
+    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
     @Before
     public void setup() {
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
@@ -85,7 +85,7 @@ public class UserResourceTest {
 
 
         assertNotNull(res);
-        assertEquals(6, res.getServiceEntities().size());
+        assertEquals(9, res.getServiceEntities().size());
         res.getServiceEntities().forEach(sgMap-> {
             UserRO  sgro = mapper.convertValue(sgMap, UserRO.class);
             assertNotNull(sgro.getId());

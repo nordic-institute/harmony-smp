@@ -114,8 +114,30 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
   }
 
   submitForm() {
-    this.checkValidity(this.dialogForm)
-    this.dialogRef.close(true);
+    this.checkValidity(this.dialogForm);
+
+    // before closing check the schema
+    let request: ServiceMetadataValidationEditRo = {
+      participantScheme: this.dialogForm.controls['participantScheme'].value,
+      participantIdentifier: this.dialogForm.controls['participantIdentifier'].value,
+      documentIdentifierScheme: this.dialogForm.controls['documentIdentifierScheme'].value,
+      documentIdentifier: this.dialogForm.controls['documentIdentifier'].value,
+      xmlContent: this.dialogForm.controls['xmlContent'].value,
+    }
+    //
+    let validationObservable = this.http.post<ServiceMetadataValidationEditRo>(SmpConstants.REST_METADATA_VALIDATE, request);
+    validationObservable.subscribe((res: ServiceMetadataValidationEditRo) => {
+      if (res.errorMessage) {
+        this.metadataValidationMessage = res.errorMessage;
+        this.isMetadataValid = false;
+      } else {
+        this.metadataValidationMessage = "ServiceMetada is valid!";
+        this.isMetadataValid = true;
+        // now we can close the dialog
+        this.dialogRef.close(true);
+      }
+
+    });
   }
 
 

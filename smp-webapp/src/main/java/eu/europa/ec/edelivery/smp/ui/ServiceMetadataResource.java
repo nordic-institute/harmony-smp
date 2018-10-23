@@ -29,13 +29,13 @@ public class ServiceMetadataResource {
     @ResponseBody
     @PutMapping(produces = {"application/json"})
     @RequestMapping(method = RequestMethod.GET, path = "{serviceMetadataId}")
-    @Secured({SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_SMP_ADMIN, SMPAuthority.S_AUTHORITY_SERVICE_GROUP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
     public ServiceMetadataRO getServiceGroupById(@PathVariable Long serviceMetadataId) {
         return uiServiceMetadataService.getServiceMetadataXMLById(serviceMetadataId);
     }
 
     @RequestMapping(path = "validate", method = RequestMethod.POST)
-    @Secured({SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_SMP_ADMIN, SMPAuthority.S_AUTHORITY_SERVICE_GROUP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
     public ServiceMetadataValidationRO validateServiceMetadata(@RequestBody(required = true) ServiceMetadataValidationRO serviceMetadataValidationRO) {
         return uiServiceMetadataService.validateServiceMetadata(serviceMetadataValidationRO);
     }

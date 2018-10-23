@@ -2,7 +2,7 @@
 import {CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router';
 import {SecurityService} from '../security/security.service';
 import {ReplaySubject} from 'rxjs';
-import {Role} from '../security/role.model';
+import {Authority} from "../security/authority.model";
 
 @Injectable()
 export class AuthorizedGuard implements CanActivate {
@@ -25,6 +25,6 @@ export class AuthorizedGuard implements CanActivate {
   }
 
   getAllowedRoles(route: ActivatedRouteSnapshot) {
-    return route.data["allowedRoles"] as Array<Role>;
+    return route.data["allowedRoles"] as Array<Authority>;
   }
 }

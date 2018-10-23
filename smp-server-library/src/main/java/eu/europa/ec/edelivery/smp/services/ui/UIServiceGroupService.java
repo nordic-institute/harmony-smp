@@ -454,7 +454,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
             userRO.setId(usr.getId());
             userRO.setUsername(usr.getUsername());
             userRO.setActive(usr.isActive());
-            userRO.setEmail(usr.getEmail());
+            userRO.setEmailAddress(usr.getEmailAddress());
             userRO.setRole(usr.getRole());
             serviceGroupRo.getUsers().add(userRO);
         });

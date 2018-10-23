@@ -11,9 +11,9 @@ import {DirtyGuard} from "./common/dirty.guard";
 const appRoutes: Routes = [
   {path: '', component: ServiceGroupSearchComponent},
   {path: 'search', redirectTo: ''},
-  {path: 'edit', component: ServiceGroupEditComponent,  canActivate: [AuthenticatedGuard], canDeactivate: [DirtyGuard]},
+  {path: 'edit', component: ServiceGroupEditComponent,  canActivate: [AuthenticatedGuard],  canDeactivate: [DirtyGuard]},
   {path: 'domain', component: DomainComponent, canActivate: [AuthenticatedGuard], canDeactivate: [DirtyGuard]},
-  {path: 'user', component: UserComponent, canActivate: [AuthenticatedGuard], canDeactivate: [DirtyGuard]},
+  {path: 'user', component: UserComponent,  canActivate: [AuthenticatedGuard], canDeactivate: [DirtyGuard]},
   {path: 'login', component: LoginComponent},
   {path: '**', redirectTo: ''}
 ];

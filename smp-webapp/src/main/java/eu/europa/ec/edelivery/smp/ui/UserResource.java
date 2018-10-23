@@ -40,7 +40,7 @@ public class UserResource {
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
     //update gui to call this when somebody is logged in.
-   // @Secured({SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_SMP_ADMIN, SMPAuthority.S_AUTHORITY_SERVICE_GROUP_ADMIN})
+   // @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
     public ServiceResult<UserRO> getUsers(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
@@ -53,7 +53,7 @@ public class UserResource {
 
     @PutMapping(produces = {"application/json"})
     @RequestMapping(method = RequestMethod.PUT)
-    @Secured({SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
     public void updateUserList(@RequestBody(required = true) UserRO[] updateEntities ){
         LOG.info("Update user list, count: {}" + updateEntities.length);
         uiUserService.updateUserList(Arrays.asList(updateEntities));

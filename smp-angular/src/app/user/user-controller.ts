@@ -28,9 +28,11 @@ export class UserController implements SearchTableController {
       id: null,
       index: null,
       username: '',
-      email: '',
+      emailAddress: '',
       role: '',
-      status: SearchTableEntityStatus.NEW
+      active: true,
+      status: SearchTableEntityStatus.NEW,
+      statusPassword: SearchTableEntityStatus.NEW
     }
   }
 

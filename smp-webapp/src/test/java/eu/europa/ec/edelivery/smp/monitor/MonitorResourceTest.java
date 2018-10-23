@@ -53,7 +53,7 @@ public class MonitorResourceTest {
     public ExpectedException expectedEx = ExpectedException.none();
 
     private static final String URL = "/monitor/is-alive";
-    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("test_admin", "test123");
+    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
     @Autowired
     private WebApplicationContext webAppContext;
 

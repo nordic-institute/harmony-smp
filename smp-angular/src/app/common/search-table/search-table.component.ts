@@ -14,6 +14,7 @@ import {SaveDialogComponent} from '../save-dialog/save-dialog.component';
 import {DownloadService} from '../../download/download.service';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {ConfirmationDialogComponent} from "../confirmation-dialog/confirmation-dialog.component";
+import {SecurityService} from "../../security/security.service";
 
 
 @Component({
@@ -43,6 +44,7 @@ export class SearchTableComponent implements OnInit {
   @Input() showActionButtons: boolean = true;
   @Input() showSearchPanel: boolean = true;
   @Input() showIndexColumn: boolean = false;
+  @Input() allowNewItems: boolean = false;
 
   loading = false;
 

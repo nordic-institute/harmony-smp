@@ -9,6 +9,7 @@
   [searchTableController]="domainController"
   [showSearchPanel]="false"
   [filter]="filter"
+  [allowNewItems]="securityService.isCurrentUserSystemAdmin()"
 
 >
   <ng-template #additionalToolButtons >

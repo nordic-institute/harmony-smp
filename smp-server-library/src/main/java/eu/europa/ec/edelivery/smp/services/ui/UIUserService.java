@@ -79,7 +79,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                 userDao.persistFlushDetach(dbUser);
             } else if (userRO.getStatus() == EntityROStatus.UPDATED.getStatusNumber()) {
                 DBUser dbUser = userDao.find(userRO.getId());
-                dbUser.setEmail(userRO.getEmail());
+                dbUser.setEmailAddress(userRO.getEmailAddress());
                 dbUser.setRole(userRO.getRole());
                 dbUser.setActive(userRO.isActive());
                 // check for new password

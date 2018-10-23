@@ -242,7 +242,7 @@ public abstract class BaseDao<E extends BaseEntity> {
                     } else if (searchValue instanceof Long) {
                         lstPredicate.add(cb.equal(getPath(om, fieldName), searchValue));
                     } else {
-                        LOG.warn("Unknown search value type %s for method %s! Parameter is ignored!",
+                        LOG.info("Unknown search value type {} for method {}! Parameter is ignored!",
                                 searchValue, fieldName);
                     }
                 }

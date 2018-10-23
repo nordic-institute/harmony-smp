@@ -40,7 +40,7 @@ public class DBUser extends BaseEntity {
     @Column(name = "PASSWORD", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
     private String password;
     @Column(name = "EMAIL", length = CommonColumnsLengths.MAX_PASSWORD_LENGTH)
-    private String email;
+    private String emailAddress;
 
     @Column(name = "PASSWORD_CHANGED")
     LocalDateTime passwordChanged;
@@ -119,10 +119,10 @@ public class DBUser extends BaseEntity {
         this.certificate = certificate;
     }
 
-    public String getEmail() {        return email;    }
+    public String getEmailAddress() {        return emailAddress;    }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setEmailAddress(String email) {
+        this.emailAddress = email;
     }
 
     public LocalDateTime getPasswordChanged() {

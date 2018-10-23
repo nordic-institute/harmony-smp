@@ -88,7 +88,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertNotNull(res);
         assertNotNull(res.getServiceEntities().get(0).getId());
         assertNotNull(res.getServiceEntities().get(0).getUsername());
-        assertNotNull(res.getServiceEntities().get(0).getEmail());
+        assertNotNull(res.getServiceEntities().get(0).getEmailAddress());
         assertNull(res.getServiceEntities().get(0).getPassword()); // Service list must not return passwords
         assertNotNull(res.getServiceEntities().get(0).getPasswordChanged());
         assertNotNull(res.getServiceEntities().get(0).getRole());
@@ -124,7 +124,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         UserRO user = new UserRO();
         user.setPassword(UUID.randomUUID().toString());
         user.setUsername(UUID.randomUUID().toString());
-        user.setEmail(UUID.randomUUID().toString());
+        user.setEmailAddress(UUID.randomUUID().toString());
         user.setRole("ROLE");
         user.setStatus(EntityROStatus.NEW.getStatusNumber());
 
@@ -138,7 +138,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertEquals(user.getPassword(), oUsr.get().getPassword());
         assertEquals(user.getUsername(), oUsr.get().getUsername());
         assertEquals(user.getRole(), oUsr.get().getRole());
-        assertEquals(user.getEmail(), oUsr.get().getEmail());
+        assertEquals(user.getEmailAddress(), oUsr.get().getEmailAddress());
         assertNull(oUsr.get().getCertificate());
     }
 
@@ -154,7 +154,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         UserRO user = new UserRO();
         user.setPassword(UUID.randomUUID().toString());
         user.setUsername(UUID.randomUUID().toString());
-        user.setEmail(UUID.randomUUID().toString());
+        user.setEmailAddress(UUID.randomUUID().toString());
         user.setRole("ROLE");
         CertificateRO cert = new CertificateRO();
         cert.setSubject(UUID.randomUUID().toString());
@@ -178,7 +178,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertEquals(user.getPassword(), oUsr.get().getPassword());
         assertEquals(user.getUsername(), oUsr.get().getUsername());
         assertEquals(user.getRole(), oUsr.get().getRole());
-        assertEquals(user.getEmail(), oUsr.get().getEmail());
+        assertEquals(user.getEmailAddress(), oUsr.get().getEmailAddress());
         assertNotNull(oUsr.get().getCertificate());
         assertEquals(cert.getCertificateId(), cert.getCertificateId());
         assertEquals(cert.getSubject(), cert.getSubject());
@@ -200,7 +200,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         DBUser user = new DBUser();
         user.setPassword(UUID.randomUUID().toString());
         user.setUsername(UUID.randomUUID().toString());
-        user.setEmail(UUID.randomUUID().toString());
+        user.setEmailAddress(UUID.randomUUID().toString());
         user.setRole("ROLE");
         DBCertificate cert = new DBCertificate();
         cert.setSubject(UUID.randomUUID().toString());

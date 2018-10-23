@@ -3,9 +3,9 @@ import {SecurityService} from './security/security.service';
 import {Router, RouterOutlet} from '@angular/router';
 import {SecurityEventService} from './security/security-event.service';
 import {Title} from '@angular/platform-browser';
-import {Observable} from 'rxjs';
 import {HttpClient, HttpResponse} from '@angular/common/http';
-import {Role} from "./security/role.model";
+import {Authority} from "./security/authority.model";
+
 
 @Component({
   selector: 'app-root',
@@ -55,14 +55,14 @@ export class AppComponent implements OnInit {
   }
 
   isCurrentUserSystemAdmin(): boolean {
-    return this.securityService.isCurrentUserInRole([Role.SYSTEM_ADMIN]);
+    return this.securityService.isCurrentUserInRole([Authority.SYSTEM_ADMIN]);
   }
 
   isCurrentUserSMPAdmin(): boolean {
-    return this.securityService.isCurrentUserInRole([ Role.SMP_ADMIN]);
+    return this.securityService.isCurrentUserInRole([ Authority.SMP_ADMIN]);
   }
   isCurrentUserServiceGroupAdmin(): boolean {
-    return this.securityService.isCurrentUserInRole([ Role.SERVICE_GROUP_ADMIN]);
+    return this.securityService.isCurrentUserInRole([ Authority.SERVICE_GROUP_ADMIN]);
   }
 
   get currentUser(): string {

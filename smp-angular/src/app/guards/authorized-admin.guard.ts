@@ -2,7 +2,7 @@
 import {ActivatedRouteSnapshot, RouterStateSnapshot} from '@angular/router';
 import {SecurityService} from '../security/security.service';
 import {AuthorizedGuard} from './authorized.guard';
-import {Role} from '../security/role.model';
+import {Authority} from '../security/authority.model';
 
 @Injectable()
 export class AuthorizedAdminGuard extends AuthorizedGuard {
@@ -16,8 +16,8 @@ export class AuthorizedAdminGuard extends AuthorizedGuard {
   }
 
 
-  getAllowedRoles(route: ActivatedRouteSnapshot): Array<Role> {
+  getAllowedRoles(route: ActivatedRouteSnapshot): Array<Authority> {
     // TODO check if we need the SMP admin in here
-    return [Role.SYSTEM_ADMIN , Role.SMP_ADMIN];
+    return [Authority.SYSTEM_ADMIN , Authority.SMP_ADMIN];
   }
 }

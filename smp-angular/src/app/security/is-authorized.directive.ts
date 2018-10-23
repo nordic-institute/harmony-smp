@@ -1,12 +1,12 @@
 import {Directive, ElementRef, Input, OnInit} from '@angular/core';
 import {SecurityService} from './security.service';
-import {Role} from './role.model';
+import {Authority} from "./authority.model";
 
 @Directive({
     selector:'[isAuthorized]'
 })
 export class IsAuthorized implements OnInit {
-    @Input('isAuthorized') role: Role;
+    @Input('isAuthorized') role: Authority;
 
     constructor(private _elementRef:ElementRef, private securityService:SecurityService) {
     }

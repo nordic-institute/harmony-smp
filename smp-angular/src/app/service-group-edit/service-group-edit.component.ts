@@ -8,6 +8,7 @@ import {SmpConstants} from "../smp.constants";
 import {SearchTableEntityStatus} from "../common/search-table/search-table-entity-status.model";
 import {SearchTableComponent} from "../common/search-table/search-table.component";
 import {GlobalLookups} from "../common/global-lookups";
+import {SecurityService} from "../security/security.service";
 
 @Component({
   moduleId: 'edit',
@@ -27,7 +28,8 @@ export class ServiceGroupEditComponent implements OnInit {
   baseUrl: string = SmpConstants.REST_EDIT;
   contextPath: string = location.pathname.substring(0, location.pathname.length - 3); // remove /ui s
 
-  constructor(protected lookups: GlobalLookups,
+  constructor(public securityService: SecurityService,
+              protected lookups: GlobalLookups,
               protected http: HttpClient,
               protected alertService: AlertService,
               public dialog: MatDialog,

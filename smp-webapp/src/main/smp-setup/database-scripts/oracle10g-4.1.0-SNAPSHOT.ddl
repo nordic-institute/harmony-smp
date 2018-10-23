@@ -43,7 +43,7 @@ create sequence SMP_USER_SEQ start with 1 increment by  50;
         SML_CLIENT_KEY_ALIAS varchar2(256 char),
         SML_PARTC_IDENT_REGEXP varchar2(4000 char),
         SML_SMP_ID varchar2(256 char),
-        SML_SUBDOMAIN varchar2(256 char) not null,
+        SML_SUBDOMAIN varchar2(256 char),
         primary key (ID)
     );
 

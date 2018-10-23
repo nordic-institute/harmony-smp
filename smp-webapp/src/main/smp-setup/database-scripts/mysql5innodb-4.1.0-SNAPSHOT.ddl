@@ -37,7 +37,7 @@
         SML_CLIENT_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_PARTC_IDENT_REGEXP varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_SMP_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
-        SML_SUBDOMAIN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null,
+        SML_SUBDOMAIN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
