@@ -1,5 +1,6 @@
 
 <smp-search-table
+  #searchTable
   page_id= 'domain_id'
   title= 'Domains'
   [columnPicker] = "columnPicker"
@@ -8,6 +9,7 @@
   [searchTableController]="domainController"
   [showSearchPanel]="false"
   [filter]="filter"
+  [allowNewItems]="securityService.isCurrentUserSystemAdmin()"
 
 >
   <ng-template #additionalToolButtons >

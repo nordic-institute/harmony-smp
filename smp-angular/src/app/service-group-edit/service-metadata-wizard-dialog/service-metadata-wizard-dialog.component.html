@@ -1,0 +1,119 @@
+<h2 mat-dialog-title>ServiceMetadataWizard</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="dialogForm">
+    <mat-card>
+      <mat-card-content>
+        <div class="panel">
+          <!-- Participant -->
+          <mat-form-field style="width:35%">
+            <input matInput placeholder="Participant identifier schema" name="participantIdentifierScheme"
+                   id="participantIdentifierScheme_id" maxlength="255">
+          </mat-form-field>
+          <mat-form-field style="width:60%">
+            <input matInput placeholder="Participant identifier" name="ParticipantIdentifier" id="ParticipantIdentifier_id"
+                   maxlength="255" required>
+            <div
+              *ngIf="(!editMode && dialogForm.controls['documentIdentifier'].touched || editMode) &&  dialogForm.controls['documentIdentifier'].hasError('required')"
+              style="color:red; font-size: 70%">
+              Document identifier must not be empty.
+            </div>
+          </mat-form-field>
+          <!-- Document -->
+          <mat-form-field style="width:35%">
+            <input matInput placeholder="Document identifier schema" name="documentIdentifierScheme"
+                   id="documentIdentifierScheme_id"
+                   maxlength="255">
+          </mat-form-field>
+
+          <mat-form-field style="width:60%">
+            <input matInput placeholder="Document identifier" name="documentIdentifier" id="documentIdentifier_id"
+                    maxlength="255" required>
+          </mat-form-field>
+          <!-- Process -->
+          <mat-form-field style="width:35%">
+            <input matInput placeholder="Process schema" name="processSchema" id="processSchema_id"
+                   maxlength="255" required>
+          </mat-form-field>
+
+          <mat-form-field style="width:60%">
+            <input matInput placeholder="Process identifier" name="processidentifier" id="processidentifier_id"
+                   maxlength="255" required>
+
+          </mat-form-field>
+<!-- transport -->
+          <mat-form-field style="width:35%">
+            <input matInput placeholder="Transport profile" name="transportProfile" id="transportProfiler_id"
+                    maxlength="255" required>
+          </mat-form-field>
+
+          <mat-form-field style="width:60%">
+            <input matInput placeholder="Endpoint Url" name="endpointUrl" id="endpointUrl_id"
+                   maxlength="255" required>
+          </mat-form-field>
+
+          <div style="display: block;" style="border:1px; solid: #999999;margin:5px 0; padding:3px;">
+            <input
+              type="file" (change)="onFileChanged($event)"
+              #fileInput>
+            <button (click)="onUpload()">Upload!</button>
+            <div class="textwrapper">
+            <textarea matInput style="width:100%;border: #03A9F4 1px solid" cols="2" rows="10"
+                      resizeable="false"
+                      id="metadatacertificate_id"
+                      placeholder="X509Certificate" name="certificate"
+
+            ></textarea>
+            </div>
+            <div
+              *ngIf="certificateValidationMessage"
+              [style.color]="isCertificateValid?'green':'red'">
+              {{certificateValidationMessage}}
+            </div>
+
+          </div>
+
+
+          <!-- -->
+
+
+          <!-- mat-form-field style="width:47%">
+            <input matInput placeholder="ServiceActivationDate" name="serviceActivationDate" id="serviceActivationDate_id"
+                   [formControl]="dialogForm.controls['serviceActivationDate']" maxlength="255" required>
+          </mat-form-field>
+          <mat-form-field style="width:47%">
+            <input matInput placeholder="ServiceExpirationDate" name="serviceExpirationDate" id="serviceExpirationDate"
+                   [formControl]="dialogForm.controls['serviceExpirationDate']" maxlength="255" required>
+          </mat-form-field -->
+
+<!-- ServiceDescription -->
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="Service description" name="serviceDescription" id="serviceDescription_id"
+                   [formControl]="dialogForm.controls['serviceDescription']" maxlength="255" required>
+          </mat-form-field>
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="Technical Contact Url" name="technicalContactUrl" id="technicalContactUrl_id"
+                   [formControl]="dialogForm.controls['technicalContactUrl_id']" maxlength="255" required>
+          </mat-form-field>
+
+
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <div class="group-action-button">
+    <button mat-raised-button color="primary" [mat-dialog-close]="true"
+            [disabled]="!dialogForm.valid">
+      <mat-icon>check_circle</mat-icon>
+      <span>OK</span>
+    </button>
+
+    <button mat-raised-button color="primary" mat-dialog-close>
+      <mat-icon>cancel</mat-icon>
+      <span>Cancel</span>
+    </button>
+  </div>
+</mat-dialog-actions>

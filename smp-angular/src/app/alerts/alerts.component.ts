@@ -206,10 +206,11 @@ export class AlertsComponent implements OnInit {
       this.aTypes = result.alertsType;
 
       this.loading = false;
-
+/*
       if(this.count > AlertComponent.MAX_COUNT_CSV) {
         this.alertService.error("Maximum number of rows reached for downloading CSV");
       }
+      */
     }, (error: any) => {
       console.log("error getting the alerts:" + error);
       this.loading = false;

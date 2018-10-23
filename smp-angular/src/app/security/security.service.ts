@@ -2,20 +2,20 @@
 import {Observable, ReplaySubject} from 'rxjs';
 import {User} from './user.model';
 import {SecurityEventService} from './security-event.service';
-import {DomainService} from './domain.service';
-import {Role} from './role.model';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {SmpConstants} from "../smp.constants";
+import {Authority} from "./authority.model";
 
 @Injectable()
 export class SecurityService {
 
-  constructor (private http: HttpClient, private securityEventService: SecurityEventService, private domainService: DomainService) {
+  constructor (private http: HttpClient, private securityEventService: SecurityEventService) {
   }
 
   login(username: string, password: string) {
-    this.domainService.resetDomain();
+
     let headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
-    return this.http.post<string>('rest/security/authentication',
+    return this.http.post<string>(SmpConstants.REST_SECURITY_AUTHENTICATION,
       JSON.stringify({
         username: username,
         password: password
@@ -23,7 +23,7 @@ export class SecurityService {
       { headers })
       .subscribe((response: string) => {
           console.log('Login success');
-          localStorage.setItem('currentUser', response);
+          localStorage.setItem('currentUser', JSON.stringify(response));
           this.securityEventService.notifyLoginSuccessEvent(response);
         },
         (error: any) => {
@@ -34,8 +34,8 @@ export class SecurityService {
 
   logout() {
     console.log('Logging out');
-    this.domainService.resetDomain();
-    this.http.delete('rest/security/authentication').subscribe((res: Response) => {
+   // this.domainService.resetDomain();
+    this.http.delete(SmpConstants.REST_SECURITY_AUTHENTICATION).subscribe((res: Response) => {
         localStorage.removeItem('currentUser');
         this.securityEventService.notifyLogoutSuccessEvent(res);
       },
@@ -46,12 +46,13 @@ export class SecurityService {
   }
 
   getCurrentUser(): User {
+    let userObj = localStorage.getItem('currentUser');
     return JSON.parse(localStorage.getItem('currentUser'));
   }
 
   private getCurrentUsernameFromServer(): Observable<string> {
     let subject = new ReplaySubject<string>();
-    this.http.get<string>('rest/security/user')
+    this.http.get<string>(SmpConstants.REST_SECURITY_USER)
       .subscribe((res: string) => {
         subject.next(res);
       }, (error: any) => {
@@ -81,19 +82,22 @@ export class SecurityService {
     return subject.asObservable();
   }
 
-  isCurrentUserSuperAdmin(): boolean {
-    return this.isCurrentUserInRole([Role.SYSTEM_ADMIN]);
+  isCurrentUserSystemAdmin(): boolean {
+    return this.isCurrentUserInRole([Authority.SYSTEM_ADMIN]);
   }
 
-  isCurrentUserAdmin(): boolean {
-    return this.isCurrentUserInRole([Role.SYSTEM_ADMIN, Role.SMP_ADMIN]);
+  isCurrentUserSMPAdmin(): boolean {
+    return this.isCurrentUserInRole([ Authority.SMP_ADMIN]);
+  }
+  isCurrentUserServiceGroupAdmin(): boolean {
+    return this.isCurrentUserInRole([ Authority.SERVICE_GROUP_ADMIN]);
   }
 
-  isCurrentUserInRole(roles: Array<Role>): boolean {
+  isCurrentUserInRole(roles: Array<Authority>): boolean {
     let hasRole = false;
     const currentUser = this.getCurrentUser();
     if (currentUser && currentUser.authorities) {
-      roles.forEach((role: Role) => {
+      roles.forEach((role: Authority) => {
         if (currentUser.authorities.indexOf(role) !== -1) {
           hasRole = true;
         }
@@ -102,7 +106,7 @@ export class SecurityService {
     return hasRole;
   }
 
-  isAuthorized(roles: Array<Role>): Observable<boolean> {
+  isAuthorized(roles: Array<Authority>): Observable<boolean> {
     let subject = new ReplaySubject<boolean>();
 
     this.isAuthenticated(false).subscribe((isAuthenticated: boolean) => {

@@ -1,4 +1,4 @@
-<smp-search-table
+<smp-search-table #searchTable
   page_id='edit_id'
   title='Edit'
   [columnPicker]="columnPicker"
@@ -8,48 +8,52 @@
   [filter]="filter"
   [searchTableController]="serviceGroupEditController"
   [tableRowDetailContainer]="tableRowDetailContainer"
+  [additionalRowActionButtons]="additionalRowActionButtons"
+  [allowNewItems]="securityService.isCurrentUserSMPAdmin()"
 >
 
   <ng-template #rowMetadataAction let-row="row" let-value="value" ngx-datatable-cell-template>
-
     <button mat-button color="primary"
             (click)="metadataRowButtonAction(row)" id="metadataRowButtonAction{{row.$$index}}_id" tooltip="Metadata">
       <mat-icon>view_list</mat-icon>
       <span>Metadata</span>
     </button>
+  </ng-template>
 
+  <ng-template #rowSMPUrlLinkAction let-row="row" let-value="value" ngx-datatable-cell-template>
+    <a target="_blank"
+       href="{{contextPath}}{{row.participantScheme}}::{{row.participantIdentifier}}" >Open URL</a>
   </ng-template>
 
 
   <ng-template #searchPanel>
     <mat-form-field>
-      <input matInput placeholder="Participant Id" name="messageId" [(ngModel)]="filter.messageId"
-             #messageId="ngModel" id="messageid_id">
+      <input matInput placeholder="Participant Identifier" name="ParticipantIdentifier"
+             [(ngModel)]="filter.participantIdentifier"
+             #messageId="ngModel" id="participantIdentifier">
     </mat-form-field>
     <mat-form-field>
-      <input matInput placeholder="Participant schema" name="patricipantSchema" [(ngModel)]="filter.messageId"
-             #messageId="ngModel" id="participanschema_id">
+      <input matInput placeholder="Participant scheme" name="patricipantScheme" [(ngModel)]="filter.participantScheme"
+             #messageId="ngModel" id="participantScheme">
     </mat-form-field>
-    <mat-select placeholder="Domain " [(ngModel)]="filter.messageStatus" name="messageStatus"
-               id="messagestatus_id">
+    <mat-select placeholder="Domain (sml subdomain)" [(ngModel)]="filter.domain" name="domain"
+                id="domain_id">
       <mat-option [value]="''">
       </mat-option>
-      <mat-option *ngFor="let mstatus of msgStatus" [value]="mstatus">
-        {{mstatus}}
+      <mat-option *ngFor="let domain of lookups.cachedDomainList" [value]="domain.domainCode">
+        {{domain.domainCode}} ({{domain.smlSubdomain}})
       </mat-option>
     </mat-select>
   </ng-template>
 
 
-  <ng-template #additionalToolButtons>
-    <div style="background-color: #03A9F4; display: inline-block; width: 3px; height: 100%; margin-right: 8px">&nbsp;
-    </div>
-    <button mat-raised-button color="primary"
-            id="metadatabutton_id">
-      <mat-icon>view_list</mat-icon>
-      <span>Metadata</span>
-    </button>
+  <ng-template #additionalToolButtons></ng-template>
 
+  <ng-template #additionalRowActionButtons let-row="row">
+    <button mat-icon-button color="primary" [disabled]="row?.deleted || loading"
+            (click)="onAddMetadataRow(row)" tooltip="Edit">
+      <mat-icon>playlist_add</mat-icon>
+    </button>
   </ng-template>
 
   <ng-template #tableRowDetailContainer let-row="row">
@@ -59,19 +63,23 @@
     </div>
     <div *ngIf="row.serviceMetadata.length !== 0" >
       <ngx-datatable
-        class='material striped'
-        style="width: 80%"
+        class='inner-table material striped'
         [loadingIndicator]="loading"
         [rows]='row.serviceMetadata'
         [columnMode]='"force"'
         [headerHeight]='50'
         [footerHeight]='50'
-        [rowHeight]='"auto"'>
-        <ngx-datatable-column prop="domainCode" name="Domain" maxWidth="250" ></ngx-datatable-column>
+        [rowHeight]='"auto"'
+        [rowClass]="getRowClass">
+        <ngx-datatable-column [cellTemplate]="rowDomain" name="Domain" maxWidth="250" ></ngx-datatable-column>
         <ngx-datatable-column prop="documentIdentifierScheme" name="Document identifier scheme" maxWidth="350" ></ngx-datatable-column>
         <ngx-datatable-column prop="documentIdentifier" name="Document identifier" maxWidth="250" ></ngx-datatable-column>
         <ngx-datatable-column [cellTemplate]="rowMetadataSMPUrlLinkAction" name="URL" maxWidth="250" ></ngx-datatable-column>
         <ngx-datatable-column [cellTemplate]="rowMetadataActions" name="Actions" maxWidth="150" ></ngx-datatable-column>
+
+        <ng-template #rowDomain let-rowSmd="row" ngx-datatable-cell-template>
+          {{rowSmd.domainCode}} ({{rowSmd.smlSubdomain}})
+        </ng-template>
 
         <ng-template #rowMetadataSMPUrlLinkAction let-rowSmd="row" ngx-datatable-cell-template>
           <a target="_blank"
@@ -82,11 +90,11 @@
       <ng-template #rowMetadataActions let-rowSmd="row" ngx-datatable-cell-template>
         <div>
           <button mat-icon-button color="primary" [disabled]="rowSmd.deleted || loading"
-                  (click)="onEditMetadataRow(rowSmd)" tooltip="Edit">
+                  (click)="onEditMetadataRow(row, rowSmd)" tooltip="Edit">
             <mat-icon>edit</mat-icon>
           </button>
           <button mat-icon-button color="primary" [disabled]="rowSmd.deleted || loading"
-                  (click)="onDeleteMetadataRowActionClicked(rowSmd)" tooltip="Delete">
+                  (click)="onDeleteMetadataRowActionClicked(row, rowSmd)" tooltip="Delete">
             <mat-icon>delete</mat-icon>
           </button>
         </div>

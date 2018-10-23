@@ -14,6 +14,7 @@ public class CertificateRO extends BaseRO {
     private String subject;
     private String issuer;
     private String serialNumber;
+    private String encodedValue;
     private LocalDateTime validFrom;
     private LocalDateTime validTo;
 
@@ -70,5 +71,13 @@ public class CertificateRO extends BaseRO {
 
     public void setValidTo(LocalDateTime validTo) {
         this.validTo = validTo;
+    }
+
+    public String getEncodedValue() {
+        return encodedValue;
+    }
+
+    public void setEncodedValue(String encodedValue) {
+        this.encodedValue = encodedValue;
     }
 }

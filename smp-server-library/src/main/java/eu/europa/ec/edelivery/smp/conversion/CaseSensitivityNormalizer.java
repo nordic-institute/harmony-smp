@@ -45,9 +45,7 @@ public class CaseSensitivityNormalizer {
         toLowerCaseStringList(this.caseSensitiveParticipantSchemes);
     }
 
-    public ParticipantIdentifierType normalize(final ParticipantIdentifierType participantIdentifier) {
-        String scheme = participantIdentifier.getScheme();
-        String value = participantIdentifier.getValue();
+    public ParticipantIdentifierType normalizeParticipantIdentifier(String scheme, String value) {
         if (!caseSensitiveParticipantSchemes.contains(scheme.toLowerCase())) {
             scheme = scheme.toLowerCase();
             value = value.toLowerCase();
@@ -55,9 +53,19 @@ public class CaseSensitivityNormalizer {
         return new ParticipantIdentifierType(value, scheme);
     }
 
+    public ParticipantIdentifierType normalize(final ParticipantIdentifierType participantIdentifier) {
+        String scheme = participantIdentifier.getScheme();
+        String value = participantIdentifier.getValue();
+        return normalizeParticipantIdentifier(scheme, value);
+    }
+
     public DocumentIdentifier normalize(final DocumentIdentifier documentIdentifier) {
         String scheme = documentIdentifier.getScheme();
         String value = documentIdentifier.getValue();
+        return normalizeDocumentIdentifier(scheme, value);
+    }
+
+    public DocumentIdentifier normalizeDocumentIdentifier( String scheme, String value) {
         if (!caseSensitiveDocumentSchemes.contains(scheme.toLowerCase())) {
             scheme = scheme.toLowerCase();
             value = value.toLowerCase();

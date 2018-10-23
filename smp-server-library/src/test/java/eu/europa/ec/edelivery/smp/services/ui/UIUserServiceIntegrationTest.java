@@ -10,8 +10,6 @@ import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.apache.commons.io.IOUtils;
-import org.hibernate.type.BigIntegerType;
-import org.hibernate.type.descriptor.java.UUIDTypeDescriptor;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -19,13 +17,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ContextConfiguration;
 
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.math.BigInteger;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalUnit;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.Assert.*;
 
@@ -88,7 +88,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertNotNull(res);
         assertNotNull(res.getServiceEntities().get(0).getId());
         assertNotNull(res.getServiceEntities().get(0).getUsername());
-        assertNotNull(res.getServiceEntities().get(0).getEmail());
+        assertNotNull(res.getServiceEntities().get(0).getEmailAddress());
         assertNull(res.getServiceEntities().get(0).getPassword()); // Service list must not return passwords
         assertNotNull(res.getServiceEntities().get(0).getPasswordChanged());
         assertNotNull(res.getServiceEntities().get(0).getRole());
@@ -124,7 +124,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         UserRO user = new UserRO();
         user.setPassword(UUID.randomUUID().toString());
         user.setUsername(UUID.randomUUID().toString());
-        user.setEmail(UUID.randomUUID().toString());
+        user.setEmailAddress(UUID.randomUUID().toString());
         user.setRole("ROLE");
         user.setStatus(EntityROStatus.NEW.getStatusNumber());
 
@@ -138,7 +138,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertEquals(user.getPassword(), oUsr.get().getPassword());
         assertEquals(user.getUsername(), oUsr.get().getUsername());
         assertEquals(user.getRole(), oUsr.get().getRole());
-        assertEquals(user.getEmail(), oUsr.get().getEmail());
+        assertEquals(user.getEmailAddress(), oUsr.get().getEmailAddress());
         assertNull(oUsr.get().getCertificate());
     }
 
@@ -154,7 +154,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         UserRO user = new UserRO();
         user.setPassword(UUID.randomUUID().toString());
         user.setUsername(UUID.randomUUID().toString());
-        user.setEmail(UUID.randomUUID().toString());
+        user.setEmailAddress(UUID.randomUUID().toString());
         user.setRole("ROLE");
         CertificateRO cert = new CertificateRO();
         cert.setSubject(UUID.randomUUID().toString());
@@ -178,7 +178,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertEquals(user.getPassword(), oUsr.get().getPassword());
         assertEquals(user.getUsername(), oUsr.get().getUsername());
         assertEquals(user.getRole(), oUsr.get().getRole());
-        assertEquals(user.getEmail(), oUsr.get().getEmail());
+        assertEquals(user.getEmailAddress(), oUsr.get().getEmailAddress());
         assertNotNull(oUsr.get().getCertificate());
         assertEquals(cert.getCertificateId(), cert.getCertificateId());
         assertEquals(cert.getSubject(), cert.getSubject());
@@ -200,7 +200,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         DBUser user = new DBUser();
         user.setPassword(UUID.randomUUID().toString());
         user.setUsername(UUID.randomUUID().toString());
-        user.setEmail(UUID.randomUUID().toString());
+        user.setEmailAddress(UUID.randomUUID().toString());
         user.setRole("ROLE");
         DBCertificate cert = new DBCertificate();
         cert.setSubject(UUID.randomUUID().toString());
@@ -252,9 +252,9 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     }
 
     @Test
-    public void testGetCertificateData() throws IOException, CertificateException {
+    public void testGetCertificateDataPEM() throws IOException, CertificateException {
         // given
-        byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/keystores/SMPtest.crt"));
+        byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/truststore/SMPtest.crt"));
         // when
         CertificateRO cer = testInstance.getCertificateData(buff);
         //then
@@ -265,12 +265,23 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
         assertTrue(cer.getValidFrom().isBefore(cer.getValidTo()));
-
-
     }
 
+    @Test
+    public void testGetCertificateDataDER() throws IOException, CertificateException {
+        // given
+        byte[] buff = IOUtils.toByteArray(new FileInputStream("src/test/resources/truststore/NewPeppolAPaa.crt"));
 
-
-
+        // when
+        CertificateRO cer = testInstance.getCertificateData(buff);
+        //then
+        assertEquals("CN=POP000004,O=European Commission,C=BE:474980c51478cf62761667461aef5e8e", cer.getCertificateId());
+        assertEquals("CN=PEPPOL ACCESS POINT TEST CA - G2, OU=FOR TEST ONLY, O=OpenPEPPOL AISBL, C=BE", cer.getIssuer());
+        assertEquals("C=BE, O=European Commission, OU=PEPPOL TEST AP, CN=POP000004", cer.getSubject());
+        assertEquals("474980c51478cf62761667461aef5e8e", cer.getSerialNumber());
+        assertNotNull(cer.getValidFrom());
+        assertNotNull(cer.getValidTo());
+        assertTrue(cer.getValidFrom().isBefore(cer.getValidTo()));
+    }
 
 }

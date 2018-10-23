@@ -1,55 +1,126 @@
-<h2 mat-dialog-title>ServiceGroup Metadata</h2>
-<mat-dialog-content style="height:460px;width:950px">
-  <textarea style="width: 100%; height: 95%">&lt;ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"&gt;
-    &lt;ServiceInformation&gt;
-        &lt;ParticipantIdentifier scheme="participantSchema"&gt;participantIdentifier&lt;/ParticipantIdentifier&gt;
-        &lt;DocumentIdentifier scheme="docSchema"&gt;docTypeIdentifier&lt;/DocumentIdentifier&gt;
-        &lt;ProcessList&gt;
-            &lt;Process&gt;
-                &lt;ProcessIdentifier scheme="cenbii-procid-ubl"&gt;urn:www.cenbii.eu:profile:bii04:ver1.0&lt;/ProcessIdentifier&gt;
-                &lt;ServiceEndpointList&gt;
-                    &lt;Endpoint transportProfile="busdox-transport-start"&gt;
-                        &lt;EndpointURI&gt;https://poland.pl/theService&lt;/EndpointURI&gt;
-                        &lt;RequireBusinessLevelSignature&gt;true&lt;/RequireBusinessLevelSignature&gt;
-                        &lt;ServiceActivationDate&gt;2003-01-01T00:00:00&lt;/ServiceActivationDate&gt;
-                        &lt;ServiceExpirationDate&gt;2020-05-01T00:00:00&lt;/ServiceExpirationDate&gt;
-                        &lt;Certificate&gt;MIICUTCCAbqgAwIBAgIEWoKrxzANBgkqhkiG9w0BAQsFADBtMQswCQYDVQQGEwJCRTEcMBoGA1UECgwTRXVyb3BlYW4gQ29tbWlzc2lvbjEYMBYGA1UECwwPRElHSVQgZURlbGl2ZXJ5MSYwJAYDVQQDDB1TYW1wbGUgU2lnbmF0dXJlcyBDZXJ0aWZpY2F0ZTAeFw0xODAyMTMwOTEzMjBaFw0zODAyMTMwOTEzMjBaMG0xCzAJBgNVBAYTAkJFMRwwGgYDVQQKDBNFdXJvcGVhbiBDb21taXNzaW9uMRgwFgYDVQQLDA9ESUdJVCBlRGVsaXZlcnkxJjAkBgNVBAMMHVNhbXBsZSBTaWduYXR1cmVzIENlcnRpZmljYXRlMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDIWYibbbJ6YT3uLQ0oup8kB1jJO/o16nlRfB3CbCbmpGZ2r+zCh67EMstKLltuk3peJ6QTcSaFV2oS1KLKWxwWsV4iEs5qggA5BTkzUicTsQWw39OcPPe0wniJeXdNUlOUFP2ab0ZQ9UMrJgVtlyF2uLijoKx1XR0mpTKmajh1CQIDAQABMA0GCSqGSIb3DQEBCwUAA4GBABoFFJ+vgOo/78SPv73+MEdxkydn5EMsZ+Q4Vt1BmBaq78RcjeS7LpvPZtRxSzW+w59825BbaOCJ5K0oc6lwOXc+SS0ZI0JK2vMlp/2REFLedqHqnhpSWFKWM0Zrq80o1SzBQHC1hq95RXml6RzzPEEK0Ll0dVH7HXRpekRScGic&lt;/Certificate&gt;
-                        &lt;ServiceDescription&gt;Sample description of invoicing service&lt;/ServiceDescription&gt;
-                        &lt;TechnicalContactUrl&gt;https://example.com&lt;/TechnicalContactUrl&gt;
-                    &lt;/Endpoint&gt;
-                &lt;/ServiceEndpointList&gt;
-                &lt;Extension&gt;
-                    &lt;ExtensionID&gt;optional sample ID&lt;/ExtensionID&gt;
-                    &lt;ExtensionName&gt;UTF-8 characters are handled, i.e. polish special ones: zażółć gęślą jaźń&lt;/ExtensionName&gt;
-                    &lt;ExtensionAgencyID&gt;text&lt;/ExtensionAgencyID&gt;
-                    &lt;ExtensionAgencyName&gt;text&lt;/ExtensionAgencyName&gt;
-                    &lt;ex:dummy xmlns:ex="http://test.eu"&gt;dummy1&lt;/ex:dummy&gt;
-                &lt;/Extension&gt;
-                &lt;Extension&gt;
-                    &lt;ex:dummy xmlns:ex="http://test.eu"&gt;dumm2&lt;/ex:dummy&gt;
-                &lt;/Extension&gt;
-            &lt;/Process&gt;
-        &lt;/ProcessList&gt;
-        &lt;Extension&gt;
-            &lt;ex:dummynode xmlns:ex="http://test.eu"&gt;Sample not mandatory extension&lt;/ex:dummynode&gt;
-        &lt;/Extension&gt;
-    &lt;/ServiceInformation&gt;
-&lt;/ServiceMetadata&gt;</textarea>
+<h2 mat-dialog-title>{{formTitle}}</h2>
+<mat-dialog-content style="height:750px;width:1200px">
+  <div fxLayout="column">
+    <mat-card   >
 
+      <mat-card-content >
+        <div class="panel">
+          <mat-form-field  style="width:30%">
+            <input matInput placeholder="Participant schema" name="patricipantSchema"  id="participanSchema_id"
+                   [formControl]="dialogForm.controls['participantScheme']"
+            >
+          </mat-form-field>
+          <mat-form-field style="width:40%">
+            <input matInput placeholder="Participant Identifier" name="participantIdentifier"  id="participantIdentifier_id"
+                   [formControl]="dialogForm.controls['participantIdentifier']">
+          </mat-form-field>
+          <mat-select #domainList [compareWith]="compareDomainCode" placeholder="Domain (sml subdomain)" id="domain_id" style="width:20%"
+                      [formControl]="dialogForm.controls['domainCode']">
+            <mat-option *ngFor="let domain of currentServiceGroup.serviceGroupDomains" [value]="domain">
+              {{domain.domainCode}} ({{domain.smlSubdomain}})
+            </mat-option>
+          </mat-select>
+          <div
+            *ngIf="(!editMode && dialogForm.controls['domainCode'].touched || editMode) &&  dialogForm.controls['domainCode'].hasError('required')"
+            style="color:red; font-size: 70%">
+            Domain must be selected.
+          </div>
+
+          <mat-form-field  style="width:30%">
+            <input matInput placeholder="Document identifier scheme" name="documentScheme"  id="documentScheme_id"
+                   [formControl]="dialogForm.controls['documentIdentifierScheme']">
+          </mat-form-field>
+            <mat-form-field style="width:55%">
+              <input matInput placeholder="Document identifier" name="documentIdentifier"  id="documentIdentifier_id"
+                     [formControl]="dialogForm.controls['documentIdentifier']">
+            </mat-form-field>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+
+    <mat-card>
+      <mat-card-content>
+        <mat-toolbar>
+          <mat-toolbar-row>
+            <button mat-raised-button color="primary"
+                    matTooltip="Clear the metadata content."
+                    matTooltipPosition="below"
+                    (click)="onClearServiceMetadata()">
+              <mat-icon>clear</mat-icon>
+              <span>Clear</span>
+            </button>
+            <button mat-raised-button color="primary"
+                    matTooltip="Generates simple XML"
+                    matTooltipPosition="below"
+                    (click)="onGenerateSimpleXML()">
+              <mat-icon>settings_ethernet</mat-icon>
+              <span>Generate XML</span>
+            </button>
+            <!-- button mat-raised-button color="primary"
+                    matTooltip="Opens wizard to configure ServiceMetadata xml."
+                    matTooltipPosition="below"
+                    (click)="onStartWizardDialog()">
+              <mat-icon>add_box</mat-icon>
+              <span>Metadata wizard</span>
+            </button -->
+            <button mat-raised-button color="primary"
+                    atTooltip="Validate serviceMetadata XML."
+                    matTooltipPosition="below"
+                    (click)="onServiceMetadataValidate()">
+              <mat-icon>warning</mat-icon>
+              <span>Validate</span>
+            </button>
+          </mat-toolbar-row>
+        </mat-toolbar>
+
+        <div style="display: block;" style="border:1px; solid: #999999;margin:5px 0; padding:3px;">
+          <div class="textwrapper">
+            <textarea matInput style="width:100%;border: #03A9F4 1px solid" cols="2" rows="25"
+                      resizeable="false"
+                      id="MetadataTextArea"
+                      placeholder="Metadata XML" name="metadataXML"
+                      [formControl]="dialogForm.controls['xmlContent']"
+
+            ></textarea>
+          </div>
+          <div
+            *ngIf="metadataValidationMessage"
+            [style.color]="isMetadataValid?'green':'red'">
+            {{metadataValidationMessage}}
+          </div>
+
+        </div>
+
+
+        <!-- mat-form-field>
+          <div>
+          <textarea style="width:100% !important;height: 400px !important;  -webkit-box-sizing: border-box;
+       -moz-box-sizing: border-box;
+            box-sizing: border-box;"
+
+                    matInput id="extensionTextArea"
+                    placeholder="Extension" name="extension"
+                    [formControl]="dialogForm.controls['extension']"
+          ></textarea>
+    </div>
+        </mat-form-field -->
+      </mat-card-content>
+    </mat-card>
+  </div>
 </mat-dialog-content>
-
 <mat-dialog-actions>
   <div class="group-action-button">
-    <button id="ServiceGroupsSaveButton" mat-raised-button color="primary" (click)="dialogRef.close({})"
-            style="margin-top:10px">
-      <mat-icon>save</mat-icon>
-      <span>Save</span>
+    <button mat-raised-button color="primary" (click)="submitForm()"
+            [disabled]="!dialogForm.valid">
+      <mat-icon>check_circle</mat-icon>
+      <span>OK</span>
     </button>
 
-    <button id="ServiceGroupsCloseButton" mat-raised-button color="primary" (click)="dialogRef.close({})"
-            style="margin-top:10px">
-      <mat-icon>close</mat-icon>
-      <span>Close</span>
+    <button mat-raised-button color="primary" mat-dialog-close>
+      <mat-icon>cancel</mat-icon>
+      <span>Cancel</span>
     </button>
   </div>
 </mat-dialog-actions>
+<div style="text-align: right; font-size: 70%">* required fields</div>
