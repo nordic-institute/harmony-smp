@@ -15,7 +15,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.transaction.annotation.Transactional;
@@ -79,7 +78,7 @@ public class AuthenticationResource {
 
    // @PutMapping(produces = {"text/plain"})
     @RequestMapping(value = "user", method = RequestMethod.GET)
-    @Secured({SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_SMP_ADMIN, SMPAuthority.S_AUTHORITY_SERVICE_GROUP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
     public UserRO getUser() {
       //  User securityUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         //return securityUser.getUsername();

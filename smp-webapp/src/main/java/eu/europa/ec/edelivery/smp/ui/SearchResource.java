@@ -56,15 +56,9 @@ public class SearchResource {
         ServiceGroupFilter sgf = new ServiceGroupFilter();
         sgf.setParticipantIdentifierLike(participantIdentifier);
         sgf.setParticipantSchemeLike(participantScheme);
-        // add domain search paramater
-        if (!StringUtils.isBlank(domainCode)) {
-            Optional<DBDomain> od = domainDao.getDomainByCode(domainCode);
-            if (od.isPresent()) {
-                sgf.setDomain(od.get());
-            } else {
-                throw new SMPRuntimeException(DOMAIN_NOT_EXISTS, domainCode);
-            }
-        }
+        // add domain search parameter
+        sgf.setDomain(domainDao.validateDomainCode(domainCode));
+
         return uiServiceGroupService.getTableList(page, pageSize, orderBy, orderType, sgf);
     }
 }

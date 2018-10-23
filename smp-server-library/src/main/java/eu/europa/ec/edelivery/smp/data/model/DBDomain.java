@@ -40,7 +40,7 @@ public class DBDomain extends BaseEntity {
 
     @Column(name = "DOMAIN_CODE", length = CommonColumnsLengths.MAX_DOMAIN_CODE_LENGTH, nullable = false,  unique = true)
     String domainCode;
-    @Column(name = "SML_SUBDOMAIN", length = CommonColumnsLengths.MAX_SML_SUBDOMAIN_LENGTH, nullable = false,  unique = true)
+    @Column(name = "SML_SUBDOMAIN", length = CommonColumnsLengths.MAX_SML_SUBDOMAIN_LENGTH,  unique = true)
     String smlSubdomain;
     @Column(name = "SML_SMP_ID", length = CommonColumnsLengths.MAX_SML_SMP_ID_LENGTH)
     String smlSmpId;

@@ -2,10 +2,9 @@
 import {Observable, ReplaySubject} from 'rxjs';
 import {User} from './user.model';
 import {SecurityEventService} from './security-event.service';
-import {DomainService} from './domain.service';
-import {Role} from './role.model';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
+import {Authority} from "./authority.model";
 
 @Injectable()
 export class SecurityService {
@@ -84,21 +83,21 @@ export class SecurityService {
   }
 
   isCurrentUserSystemAdmin(): boolean {
-    return this.isCurrentUserInRole([Role.SYSTEM_ADMIN]);
+    return this.isCurrentUserInRole([Authority.SYSTEM_ADMIN]);
   }
 
   isCurrentUserSMPAdmin(): boolean {
-    return this.isCurrentUserInRole([ Role.SMP_ADMIN]);
+    return this.isCurrentUserInRole([ Authority.SMP_ADMIN]);
   }
   isCurrentUserServiceGroupAdmin(): boolean {
-    return this.isCurrentUserInRole([ Role.SERVICE_GROUP_ADMIN]);
+    return this.isCurrentUserInRole([ Authority.SERVICE_GROUP_ADMIN]);
   }
 
-  isCurrentUserInRole(roles: Array<Role>): boolean {
+  isCurrentUserInRole(roles: Array<Authority>): boolean {
     let hasRole = false;
     const currentUser = this.getCurrentUser();
     if (currentUser && currentUser.authorities) {
-      roles.forEach((role: Role) => {
+      roles.forEach((role: Authority) => {
         if (currentUser.authorities.indexOf(role) !== -1) {
           hasRole = true;
         }
@@ -107,7 +106,7 @@ export class SecurityService {
     return hasRole;
   }
 
-  isAuthorized(roles: Array<Role>): Observable<boolean> {
+  isAuthorized(roles: Array<Authority>): Observable<boolean> {
     let subject = new ReplaySubject<boolean>();
 
     this.isAuthenticated(false).subscribe((isAuthenticated: boolean) => {

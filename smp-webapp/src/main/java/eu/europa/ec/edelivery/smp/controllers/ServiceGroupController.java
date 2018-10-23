@@ -29,24 +29,18 @@ import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadataReferenceType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
 import java.util.List;
 
 import static eu.europa.ec.edelivery.smp.controllers.WebConstans.HTTP_PARAM_DOMAIN;
 import static eu.europa.ec.edelivery.smp.controllers.WebConstans.HTTP_PARAM_OWNER;
 import static eu.europa.ec.smp.api.Identifiers.asParticipantId;
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 import static org.springframework.http.ResponseEntity.created;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -89,7 +83,7 @@ public class ServiceGroupController {
 
 
     @PutMapping
-    @Secured({SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_SMP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN})
     public ResponseEntity saveServiceGroup(HttpServletRequest httpReq,
             @PathVariable String serviceGroupId,
             @RequestHeader(name = HTTP_PARAM_OWNER, required = false) String serviceGroupOwner,
@@ -113,7 +107,7 @@ public class ServiceGroupController {
     }
 
     @DeleteMapping
-    @Secured({SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_SMP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN})
     public void deleteServiceGroup(HttpServletRequest httpReq, @PathVariable String serviceGroupId) {
         String authentUser = SecurityContextHolder.getContext().getAuthentication().getName();
         String host = getRemoteHost(httpReq);

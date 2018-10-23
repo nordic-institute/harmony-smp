@@ -5,6 +5,7 @@ import {AlertService} from '../alert/alert.service';
 import {UserController} from './user-controller';
 import {HttpClient} from '@angular/common/http';
 import {SearchTableComponent} from "../common/search-table/search-table.component";
+import {SecurityService} from "../security/security.service";
 
 @Component({
   templateUrl:'./user.component.html',
@@ -21,7 +22,10 @@ export class UserComponent implements OnInit {
   userController: UserController;
   filter: any = {};
 
-  constructor(protected http: HttpClient, protected alertService: AlertService, public dialog: MatDialog) {
+  constructor(public securityService: SecurityService,
+              protected http: HttpClient,
+              protected alertService: AlertService,
+              public dialog: MatDialog) {
   }
 
   ngOnInit() {

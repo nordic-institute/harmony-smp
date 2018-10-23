@@ -1,6 +1,5 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
-import eu.europa.ec.edelivery.smp.config.H2JPATestConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
@@ -8,12 +7,7 @@ import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.time.temporal.ChronoUnit;
 import java.util.Optional;
@@ -60,7 +54,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao{
         Optional<DBUser> ou = testInstance.findUserByUsername(TestConstants.USERNAME_1);
         assertTrue(u!=ou.get());
         assertEquals(u, ou.get());
-        assertEquals(u.getEmail(), ou.get().getEmail());
+        assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
         assertEquals(u.getPassword(), ou.get().getPassword());
         assertEquals(u.getRole(), ou.get().getRole());
         assertEquals(u.getUsername(), ou.get().getUsername());
@@ -78,7 +72,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao{
         Optional<DBUser> ou = testInstance.findUserByCertificateId(TestConstants.USER_CERT_1);
         assertTrue(u!=ou.get());
         assertEquals(u, ou.get());
-        assertEquals(u.getEmail(), ou.get().getEmail());
+        assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
         assertEquals(u.getCertificate().getCertificateId(), ou.get().getCertificate().getCertificateId());
         assertEquals(u.getCertificate().getValidFrom().truncatedTo(ChronoUnit.MINUTES), ou.get().getCertificate().getValidFrom().truncatedTo(ChronoUnit.MINUTES));
         assertEquals(u.getCertificate().getValidTo().truncatedTo(ChronoUnit.MINUTES), ou.get().getCertificate().getValidTo().truncatedTo(ChronoUnit.MINUTES));
@@ -96,7 +90,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao{
         Optional<DBUser> ou = testInstance.findUserByIdentifier(TestConstants.USER_CERT_1);
         assertTrue(u!=ou.get());
         assertEquals(u, ou.get());
-        assertEquals(u.getEmail(), ou.get().getEmail());
+        assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
         assertEquals(u.getCertificate().getCertificateId(), ou.get().getCertificate().getCertificateId());
         // some database timestamp objects does not store miliseconds
         assertEquals(u.getCertificate().getValidFrom().truncatedTo(ChronoUnit.MINUTES), ou.get().getCertificate().getValidFrom().truncatedTo(ChronoUnit.MINUTES));
@@ -115,7 +109,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao{
         Optional<DBUser> ou = testInstance.findUserByIdentifier(TestConstants.USERNAME_1);
         assertTrue(u!=ou.get());
         assertEquals(u, ou.get());
-        assertEquals(u.getEmail(), ou.get().getEmail());
+        assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
     }
 
     @Test
@@ -161,7 +155,7 @@ public class UserDaoIntegrationTest extends AbstractBaseDao{
         Optional<DBUser> ou = testInstance.findUserByUsername(TestConstants.USERNAME_1.toUpperCase());
         assertTrue(ou.isPresent());
         assertEquals(u, ou.get());
-        assertEquals(u.getEmail(), ou.get().getEmail());
+        assertEquals(u.getEmailAddress(), ou.get().getEmailAddress());
 
     }
 }
