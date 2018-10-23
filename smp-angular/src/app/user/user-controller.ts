@@ -3,10 +3,11 @@ import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {UserDetailsDialogComponent} from './user-details-dialog/user-details-dialog.component';
 import {UserRo} from './user-ro.model';
 import {SearchTableEntityStatus} from '../common/search-table/search-table-entity-status.model';
+import {GlobalLookups} from "../common/global-lookups";
 
 export class UserController implements SearchTableController {
 
-  constructor(public dialog: MatDialog) { }
+  constructor(protected lookups: GlobalLookups, public dialog: MatDialog) { }
 
   public showDetails(row: any) {
     let dialogRef: MatDialogRef<UserDetailsDialogComponent> = this.dialog.open(UserDetailsDialogComponent);
@@ -37,5 +38,6 @@ export class UserController implements SearchTableController {
   }
 
   public dataSaved() {
+    this.lookups.refreshUserLookup();
   }
 }

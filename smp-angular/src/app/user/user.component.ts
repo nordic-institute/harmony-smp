@@ -6,6 +6,7 @@ import {UserController} from './user-controller';
 import {HttpClient} from '@angular/common/http';
 import {SearchTableComponent} from "../common/search-table/search-table.component";
 import {SecurityService} from "../security/security.service";
+import {GlobalLookups} from "../common/global-lookups";
 
 @Component({
   templateUrl:'./user.component.html',
@@ -22,14 +23,14 @@ export class UserComponent implements OnInit {
   userController: UserController;
   filter: any = {};
 
-  constructor(public securityService: SecurityService,
+  constructor(private lookups: GlobalLookups, public securityService: SecurityService,
               protected http: HttpClient,
               protected alertService: AlertService,
               public dialog: MatDialog) {
   }
 
   ngOnInit() {
-    this.userController = new UserController(this.dialog);
+    this.userController = new UserController(this.lookups, this.dialog);
 
     this.columnPicker.allColumns = [
       {

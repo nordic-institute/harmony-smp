@@ -63,7 +63,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertNotNull(res);
         assertEquals(0, res.getCount().intValue());
         assertEquals(0, res.getPage().intValue());
-        assertEquals(-1, res.getPageSize().intValue());
+        assertEquals(0, res.getPageSize().intValue());
         assertEquals(0, res.getServiceEntities().size());
         assertNull(res.getFilter());
     }
@@ -80,7 +80,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertNotNull(res);
         assertEquals(15, res.getCount().intValue());
         assertEquals(0, res.getPage().intValue());
-        assertEquals(-1, res.getPageSize().intValue());
+        assertEquals(15, res.getPageSize().intValue());
         assertEquals(15, res.getServiceEntities().size());
         assertNull(res.getFilter());
 
@@ -270,7 +270,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     @Test
     public void testGetCertificateDataDER() throws IOException, CertificateException {
         // given
-        byte[] buff = IOUtils.toByteArray(new FileInputStream("src/test/resources/truststore/NewPeppolAPaa.crt"));
+        byte[] buff = IOUtils.toByteArray(new FileInputStream("src/test/resources/truststore/NewPeppolAP.crt"));
 
         // when
         CertificateRO cer = testInstance.getCertificateData(buff);

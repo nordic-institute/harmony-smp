@@ -48,10 +48,14 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
                                          String sortOrder,
                                          Object filter) {
 
+
+        long iCnt = getDatabaseDao().getDataListCount(filter);
+        if (pageSize < 0) { // if page size iz -1 return all results and set pageSize to maxCount
+            pageSize = (int)iCnt;
+        }
         ServiceResult<R> sg = new ServiceResult<>();
         sg.setPage(page<0?0:page);
         sg.setPageSize(pageSize);
-        long iCnt = getDatabaseDao().getDataListCount(filter);
         sg.setCount(iCnt);
 
         if (iCnt > 0) {
