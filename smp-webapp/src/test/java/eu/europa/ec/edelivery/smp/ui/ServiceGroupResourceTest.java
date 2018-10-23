@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
@@ -27,11 +28,11 @@ import org.springframework.web.context.WebApplicationContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import static org.junit.Assert.*;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -59,7 +60,8 @@ public class ServiceGroupResourceTest {
     private WebApplicationContext webAppContext;
 
     private MockMvc mvc;
-
+    private static final RequestPostProcessor SMP_ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
+    private static final RequestPostProcessor SG_ADMIN_CREDENTIALS = httpBasic("sg_admin", "test123");
     @Before
     public void setup() {
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
@@ -76,10 +78,11 @@ public class ServiceGroupResourceTest {
     }
 
     @Test
-    public void getServiceGroupList() throws Exception {
+    public void getServiceGroupListForSMPAdmin() throws Exception {
         // given when
-        MvcResult result = mvc.perform(get(PATH)).
-                andExpect(status().isOk()).andReturn();
+        MvcResult result = mvc.perform(get(PATH)
+                .with(SMP_ADMIN_CREDENTIALS)
+        ).andExpect(status().isOk()).andReturn();
 
         //them
         ObjectMapper mapper = new ObjectMapper();
@@ -94,7 +97,32 @@ public class ServiceGroupResourceTest {
             assertNotNull(sgro.getParticipantScheme());
             assertNotNull(sgro.getParticipantIdentifier());
             assertEquals(1, sgro.getUsers().size());
-            assertEquals("test_user_hashed_pass", sgro.getUsers().get(0).getUsername());
+            assertNotEquals("smp_admin", sgro.getUsers().get(0).getUsername());
+
+        });
+    }
+
+    @Test
+    public void getServiceGroupListForServiceGroupAdmin() throws Exception {
+        // given when
+        MvcResult result = mvc.perform(get(PATH)
+                .with(SG_ADMIN_CREDENTIALS)
+        ).andExpect(status().isOk()).andReturn();
+
+        //them
+        ObjectMapper mapper = new ObjectMapper();
+        ServiceResult res = mapper.readValue(result.getResponse().getContentAsString(), ServiceResult.class);
+
+
+        assertNotNull(res);
+        assertEquals(1, res.getServiceEntities().size());
+        res.getServiceEntities().forEach(sgMap-> {
+            ServiceGroupRO  sgro = mapper.convertValue(sgMap, ServiceGroupRO.class);
+            assertNotNull(sgro.getId());
+            assertNotNull(sgro.getParticipantScheme());
+            assertNotNull(sgro.getParticipantIdentifier());
+            assertEquals(1, sgro.getUsers().size());
+            assertEquals("sg_admin", sgro.getUsers().get(0).getUsername());
         });
     }
 
@@ -102,7 +130,8 @@ public class ServiceGroupResourceTest {
     public void getServiceGroupById() throws Exception{
 
         // given when
-        MvcResult result = mvc.perform(get(PATH+"/100000")).
+        MvcResult result = mvc.perform(get(PATH+"/100000")
+                .with(SMP_ADMIN_CREDENTIALS)).
                 andExpect(status().isOk()).andReturn();
 
         //them
@@ -116,30 +145,11 @@ public class ServiceGroupResourceTest {
         assertEquals(1, res.getUsers().size());
         assertEquals("test_user_hashed_pass", res.getUsers().get(0).getUsername());
 
+        assertEquals(1, res.getServiceGroupDomains().size());
         assertEquals(1, res.getServiceMetadata().size());
         assertEquals("doc_7", res.getServiceMetadata().get(0).getDocumentIdentifier());
+        assertEquals(res.getServiceGroupDomains().get(0).getId(), res.getServiceMetadata().get(0).getServiceGroupDomainId());
     }
 
 
-    @Test
-    public void updateServiceGroupList() throws Exception{
-/*
-        // given when
-        MvcResult result = mvc.perform(put(PATH)).
-                andExpect(status().isOk()).andReturn();
-
-        //them
-        ObjectMapper mapper = new ObjectMapper();
-        ServiceGroupRO res = mapper.readValue(result.getResponse().getContentAsString(), ServiceGroupRO.class);
-
-        assertNotNull(res);
-        assertEquals(100000, res.getId().intValue());
-        assertEquals(PARTICIPANT_IDENTIFIER, res.getParticipantIdentifier());
-        assertEquals(PARTICIPANT_SCHEME, res.getParticipantScheme());
-        assertEquals(1, res.getUsers().size());
-        assertEquals("test_user_hashed_pass", res.getUsers().get(0).getUsername());
-
-        assertEquals(1, res.getServiceMetadata().size());
-        assertEquals("doc_7", res.getServiceMetadata().get(0).getDocumentIdentifier());*/
-    }
 }

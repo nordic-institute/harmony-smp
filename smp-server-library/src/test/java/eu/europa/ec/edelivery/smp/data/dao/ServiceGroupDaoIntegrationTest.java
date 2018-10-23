@@ -2,14 +2,20 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
+import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
+import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceMetadata;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.transaction.Transactional;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -158,6 +164,123 @@ public class ServiceGroupDaoIntegrationTest extends ServiceGroupDaoIntegrationBa
         // test
         Optional<DBServiceGroup> optResDel = testInstance.findServiceGroup(TestConstants.TEST_SG_ID_1, TestConstants.TEST_SG_SCHEMA_1);
         assertFalse(optResDel.isPresent());
+    }
+
+    @Test
+    public void testGetServiceGroupListNotEmpty(){
+        // given
+        // add additional domain
+        DBDomain d2 = TestDBUtils.createDBDomain(TEST_DOMAIN_CODE_2);
+        domainDao.persistFlushDetach(d2);
+        createAndSaveNewServiceGroups(10, TEST_DOMAIN_CODE_1, TestConstants.TEST_SG_ID_1);
+        createAndSaveNewServiceGroups(5, TEST_DOMAIN_CODE_2, TestConstants.TEST_SG_ID_2);
+        //when
+        List<DBServiceGroup> res = testInstance.getServiceGroupList(-1,-1,null, null,null);
+        // then
+        assertNotNull(res);
+        assertEquals(15, res.size());
+
+    }
+
+
+    @Test
+    public void testGetCaseInsensitive(){
+        // given
+        DBServiceGroup sg = createAndSaveNewServiceGroup();
+
+        ServiceGroupFilter sf = new ServiceGroupFilter();
+        sf.setParticipantSchemeLike(sg.getParticipantScheme().toLowerCase());
+        sf.setParticipantIdentifierLike(sg.getParticipantIdentifier().toLowerCase());
+        List<DBServiceGroup> res = testInstance.getServiceGroupList(-1,-1,null, null,sf);
+        assertEquals(1, res.size());
+
+        ServiceGroupFilter sf2 = new ServiceGroupFilter();
+        sf2.setParticipantSchemeLike(sg.getParticipantScheme().toUpperCase());
+        sf2.setParticipantIdentifierLike(sg.getParticipantIdentifier().toUpperCase());
+
+        List<DBServiceGroup> res2 = testInstance.getServiceGroupList(-1,-1,null, null,sf);
+        assertEquals(1, res2.size());
+        assertEquals(res.get(0).getId(), res2.get(0).getId());
+        assertNotEquals(sf.getParticipantIdentifierLike(), sf2.getParticipantIdentifierLike());
+        assertNotEquals(sf.getParticipantSchemeLike(), sf2.getParticipantSchemeLike());
+
+
+    }
+
+    @Test
+    public void testGetServiceGroupListByDomain(){
+        // given
+        // add additional domain
+        DBDomain d2 = TestDBUtils.createDBDomain(TEST_DOMAIN_CODE_2);
+        domainDao.persistFlushDetach(d2);
+        createAndSaveNewServiceGroups(10, TEST_DOMAIN_CODE_1, TestConstants.TEST_SG_ID_1);
+        createAndSaveNewServiceGroups(5, TEST_DOMAIN_CODE_2, TestConstants.TEST_SG_ID_2);
+
+        ServiceGroupFilter sgf = new ServiceGroupFilter();
+        sgf.setDomain(d2);
+
+        //when
+        List<DBServiceGroup> res = testInstance.getServiceGroupList(-1,-1,null, null,sgf);
+        // then
+        assertNotNull(res);
+        assertEquals(5, res.size());
+
+    }
+
+    @Test
+    public void testGetServiceGroupListByOwnerAndDomain(){
+        // given
+        // add additional domain
+        DBUser usr1  =  userDao.findUserByUsername(TestConstants.USERNAME_1).get();
+        DBUser usr2  = userDao.findUserByUsername(TestConstants.USERNAME_3).get();
+        assertNotNull(usr1);
+        assertNotNull(usr2);
+
+        DBDomain d2 = TestDBUtils.createDBDomain(TEST_DOMAIN_CODE_2);
+        domainDao.persistFlushDetach(d2);
+
+        createAndSaveNewServiceGroups(2, TEST_DOMAIN_CODE_1, TestConstants.TEST_SG_ID_1, usr1);
+        createAndSaveNewServiceGroups(3, TEST_DOMAIN_CODE_2, TestConstants.TEST_SG_ID_2, usr1);
+        createAndSaveNewServiceGroups(4, TEST_DOMAIN_CODE_1, TestConstants.TEST_SG_ID_3, usr2);
+        createAndSaveNewServiceGroups(8, TEST_DOMAIN_CODE_2, TestConstants.TEST_SG_ID_4, usr2);
+
+        // test for domain two
+        ServiceGroupFilter sgf = new ServiceGroupFilter();
+        //when
+        sgf.setDomain(d2);
+        List<DBServiceGroup> res = testInstance.getServiceGroupList(-1,-1,null, null,sgf);
+        // then
+        assertNotNull(res);
+        assertEquals(11, res.size());
+
+        //when
+        sgf.setDomain(null);
+        sgf.setOwner(usr1);
+        res = testInstance.getServiceGroupList(-1,-1,null, null,sgf);
+        // then
+        assertNotNull(res);
+        assertEquals(5, res.size());
+        //when
+        sgf.setDomain(d2);
+        sgf.setOwner(usr2);
+        res = testInstance.getServiceGroupList(-1,-1,null, null,sgf);
+        // then
+        assertNotNull(res);
+        assertEquals(8, res.size());
+
+    }
+
+    @Test
+    public void testGetTableListEmpty(){
+
+        // given
+
+        //when
+        List<DBServiceGroup> res = testInstance.getServiceGroupList(-1,-1,null, null,null);
+        // then
+        assertNotNull(res);
+        assertTrue(res.isEmpty());
+
     }
 
 }

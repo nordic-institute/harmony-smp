@@ -17,6 +17,8 @@ public enum ErrorCode {
     INVALID_DOMAIN_CODE(400,"SMP:112",ErrorBusinessCode.FORMAT_ERROR,"Provided Domain Code '%s' does not match required pattern: '%s'"),
     ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY(500,"SMP:113",ErrorBusinessCode.TECHNICAL,"More than one domain entry  (domain: '%s') is defined in database!"),
     MISSING_DOMAIN(400,"SMP:114",ErrorBusinessCode.MISSING_FIELD,"More than one domain registred on SMP. The domain must be defined!"),
+
+
     // user error messages
     INVALID_USER_NO_IDENTIFIERS (400,"SMP:120",ErrorBusinessCode.MISSING_FIELD,"Invalid user - no identifiers!"),
     ILLEGAL_STATE_USERNAME_MULTIPLE_ENTRY(500,"SMP:121",ErrorBusinessCode.TECHNICAL,"More than one user entry (username: '%s') is defined in database!"),
@@ -31,11 +33,19 @@ public enum ErrorCode {
     SG_NOT_EXISTS(404,"SMP:131",ErrorBusinessCode.NOT_FOUND,"ServiceGroup not found (dpart. id: '%s', part. sch.: '%s')!"),
     SG_NOT_REGISTRED_FOR_DOMAIN(400,"SMP:131",ErrorBusinessCode.NOT_FOUND,"Service group not registred for domain (domain: %s, part. id:~ '%s', part. sch.: '%s')!"),
     INVALID_EXTENSION_FOR_SG (400,"SMP:132",ErrorBusinessCode.XSD_INVALID,"Invalid extension for service group (part. id: '%s', part. sch.: '%s'). Error: %s!"),
+    DUPLICATE_DOMAIN_FOR_SG (400,"SMP:133",ErrorBusinessCode.INVALID_INPUT_DATA,"Repeated domain for Service group (part. id: '%s', part. sch.: '%s', domainCode %s, smlDomain %s).!"),
+    MISSING_SG_ID (400,"SMP:134",ErrorBusinessCode.INVALID_INPUT_DATA,"Missing service group(part. id: '%s', part. sch.: '%s'!"),
+
+    INVALID_SG_ID (400,"SMP:135",ErrorBusinessCode.INVALID_INPUT_DATA,"Invalid Id for Service group(part. id: '%s', part. sch.: '%s', id %d).!"),
+
+
     // service metadata error
     ILLEGAL_STATE_SMD_MULTIPLE_ENTRY (500,"SMP:140",ErrorBusinessCode.TECHNICAL,"More than one service metadata ( doc. id: %s, doc. sch.: '%s') for participant ( part. id %s, part. sch. : '%s') is defined in database!"),
     METADATA_NOT_EXISTS(404,"SMP:141",ErrorBusinessCode.NOT_FOUND,"ServiceMetadata not found (part. id: '%s', part. sch.: '%s',doc. id: '%s', doc. sch.: '%s')!"),
     SMD_NOT_EXISTS_FOR_DOMAIN(404,"SMP:142",ErrorBusinessCode.NOT_FOUND,"ServiceMetadata not found for domain (domain: %s, part. id: '%s', part. sch.: '%s')!"),
     INVALID_SMD_XML (400,"SMP:143",ErrorBusinessCode.XSD_INVALID,"Invalid service metada. Error: %s"),
+    IVALID_SMD_DOCUMENT_DATA (400,"SMP:143",ErrorBusinessCode.INVALID_INPUT_DATA,"XML serviceMetadata document (doc. id: '%s', doc. sch.: '%s') " +
+            "do not match metadata request (doc. id: '%s', doc. sch.: '%s')."),
 
     // SML integration
     SML_INTEGRATION_EXCEPTION (500,"SMP:150",ErrorBusinessCode.TECHNICAL,"Could not create new DNS entry through SML! Error: %s "),
@@ -45,6 +55,7 @@ public enum ErrorCode {
 
     JAXB_INITIALIZATION (500,"SMP:511",ErrorBusinessCode.TECHNICAL, "Could not create Unmarshaller for class %s!"),
     XML_PARSE_EXCEPTION (500,"SMP:512",ErrorBusinessCode.TECHNICAL, "Error occured while parsing input stream for %s.  Error: %s!"),
+    INVALID_REQEUST (500,"SMP:513",ErrorBusinessCode.TECHNICAL, "Invalid request %s.  Error: %s!"),
 
     //
     ;

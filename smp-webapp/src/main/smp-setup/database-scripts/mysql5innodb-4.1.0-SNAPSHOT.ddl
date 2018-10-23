@@ -37,7 +37,7 @@
         SML_CLIENT_KEY_ALIAS varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_PARTC_IDENT_REGEXP varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_SMP_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
-        SML_SUBDOMAIN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null,
+        SML_SUBDOMAIN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -97,7 +97,6 @@
         LAST_UPDATED_ON datetime not null,
         PARTICIPANT_IDENTIFIER varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null,
         PARTICIPANT_SCHEME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin not null,
-        SML_REGISTRED bit not null,
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -109,7 +108,6 @@
         LAST_UPDATED_ON datetime,
         PARTICIPANT_IDENTIFIER varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         PARTICIPANT_SCHEME varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
-        SML_REGISTRED bit,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -117,6 +115,7 @@
        ID bigint not null,
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
+        SML_REGISTRED bit not null,
         FK_DOMAIN_ID bigint,
         FK_SG_ID bigint,
         primary key (ID)
@@ -128,6 +127,7 @@
         REVTYPE tinyint,
         CREATED_ON datetime,
         LAST_UPDATED_ON datetime,
+        SML_REGISTRED bit,
         FK_DOMAIN_ID bigint,
         FK_SG_ID bigint,
         primary key (ID, REV)

@@ -1,11 +1,10 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
-
-
-
+import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 /**
@@ -19,12 +18,14 @@ public class UserRO extends BaseRO {
     private static final long serialVersionUID = -4971552086560325302L;
     private String username;
     private String password;
-    private String email;
-    LocalDateTime passwordChanged;
+    private String emailAddress;
+    private List<String> authorities;
+    private LocalDateTime passwordChanged;
     private boolean active = true;
     private String role;
     private Long id;
     private CertificateRO certificateData;
+    private int statusPassword = EntityROStatus.PERSISTED.getStatusNumber();
 
     public UserRO(){
 
@@ -54,12 +55,12 @@ public class UserRO extends BaseRO {
         this.password = password;
     }
 
-    public String getEmail() {
-        return email;
+    public String getEmailAddress() {
+        return emailAddress;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setEmailAddress(String email) {
+        this.emailAddress = email;
     }
 
     public LocalDateTime getPasswordChanged() {
@@ -92,5 +93,20 @@ public class UserRO extends BaseRO {
 
     public void setCertificateData(CertificateRO certificate) {
         this.certificateData = certificate;
+    }
+    public List<String> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(List<String> authorities) {
+        this.authorities = authorities;
+    }
+
+    public int getStatusPassword() {
+        return statusPassword;
+    }
+
+    public void setStatusPassword(int statusPassword) {
+        this.statusPassword = statusPassword;
     }
 }

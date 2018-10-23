@@ -12,15 +12,21 @@
  */
 
 package eu.europa.ec.edelivery.smp.data.dao;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
+import eu.europa.ec.edelivery.smp.data.model.DBServiceGroupDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.*;
 import javax.transaction.Transactional;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Created by gutowpa on 14/11/2017.
@@ -81,7 +87,89 @@ public class ServiceGroupDao extends BaseDao<DBServiceGroup> {
         memEManager.remove(memEManager.contains(dbServiceGroup) ? dbServiceGroup : memEManager.merge(dbServiceGroup));
     }
 
+    public long getServiceGroupCount(ServiceGroupFilter filters) {
 
+        CriteriaQuery<Long> cqCount = createSearchCriteria(filters, true,
+                null,
+                null);
+        return memEManager.createQuery(cqCount).getSingleResult();
+    }
+
+    public List<DBServiceGroup> getServiceGroupList(int startingAt, int maxResultCnt,
+                               String sortField,
+                               String sortOrder, ServiceGroupFilter filters) {
+
+        List<DBServiceGroup> lstResult;
+        try {
+            CriteriaQuery<DBServiceGroup> cq = createSearchCriteria(filters,
+                    false, sortField,
+                    sortOrder);
+            TypedQuery<DBServiceGroup> q = memEManager.createQuery(cq);
+            if (maxResultCnt > 0) {
+                q.setMaxResults(maxResultCnt);
+            }
+            if (startingAt > 0) {
+                q.setFirstResult(startingAt);
+            }
+            lstResult = q.getResultList();
+        } catch (NoResultException ex) {
+            //LOG.warn("No result for '" + filterType.getName() + "' does not have a setter!", ex);
+            lstResult = new ArrayList<>();
+        }
+        return lstResult;
+    }
+
+    protected  CriteriaQuery createSearchCriteria(ServiceGroupFilter searchParams,
+                                                  boolean forCount, String sortField, String sortOrder) {
+        CriteriaBuilder cb = memEManager.getCriteriaBuilder();
+        CriteriaQuery cq = forCount ? cb.createQuery(Long.class) : cb.createQuery(DBServiceGroup.class);
+        Root<DBServiceGroup> serviceGroup = cq.from(DBServiceGroup.class);
+        if (forCount) {
+            cq.select(cb.count(serviceGroup));
+        } else if (sortField != null) {
+            if (sortOrder != null && sortOrder.equalsIgnoreCase("desc")) {
+                cq.orderBy(cb.asc(serviceGroup.get(sortField)));
+            } else {
+                cq.orderBy(cb.desc(serviceGroup.get(sortField)));
+            }
+        } else {
+            if (!StringUtils.isBlank(defaultSortMethod)) {
+                cq.orderBy(cb.desc(serviceGroup.get(defaultSortMethod)));
+            }
+        }
+
+        Join<DBServiceGroup, DBServiceGroupDomain> serviceGroupJoinServiceGroupDomain = null;
+        Predicate ownerPredicate = null;
+        if (searchParams!=null) {
+
+            if (searchParams.getDomain()!=null){
+                serviceGroupJoinServiceGroupDomain =  serviceGroup.join("serviceGroupDomains", JoinType.INNER);
+                serviceGroupJoinServiceGroupDomain = serviceGroupJoinServiceGroupDomain.on(cb.equal(serviceGroupJoinServiceGroupDomain.get("domain"), searchParams.getDomain()));
+            }
+            // limit for owner
+            if (searchParams.getOwner() !=null){
+                ownerPredicate = cb.equal(serviceGroup.join("users"),searchParams.getOwner());
+            }
+        }
+
+        // set order by
+        if (searchParams != null) {
+            List<Predicate> lstPredicate = createPredicates(searchParams, serviceGroup, cb);
+
+            if (serviceGroupJoinServiceGroupDomain!=null) {
+                lstPredicate.add(serviceGroupJoinServiceGroupDomain.getOn());
+            }
+            if (ownerPredicate!=null) {
+                lstPredicate.add(ownerPredicate);
+            }
+
+            if (!lstPredicate.isEmpty()) {
+                Predicate[] tblPredicate = lstPredicate.stream().toArray(Predicate[]::new);
+                cq.where(cb.and(tblPredicate));
+            }
+        }
+        return cq;
+    }
 
 
 

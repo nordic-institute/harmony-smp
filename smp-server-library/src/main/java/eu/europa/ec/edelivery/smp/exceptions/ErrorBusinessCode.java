@@ -27,5 +27,6 @@ public enum ErrorBusinessCode {
     UNAUTHORIZED,
     NOT_FOUND,
     USER_NOT_FOUND,
+    INVALID_INPUT_DATA,
     TECHNICAL;
 }
