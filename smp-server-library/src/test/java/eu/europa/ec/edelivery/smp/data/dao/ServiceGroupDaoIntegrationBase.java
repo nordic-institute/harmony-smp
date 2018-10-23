@@ -5,6 +5,7 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.testutil.TestConstants;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.junit.Before;
 import org.junit.Rule;
@@ -54,15 +55,38 @@ public abstract class ServiceGroupDaoIntegrationBase extends AbstractBaseDao{
         userDao.persistFlushDetach(u3);
     }
 
-   @Transactional
-   public DBServiceGroup createAndSaveNewServiceGroup(){
 
-       DBDomain d = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
-       DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
+   public DBServiceGroup createAndSaveNewServiceGroup(){
+       return createAndSaveNewServiceGroup(TEST_DOMAIN_CODE_1, TestConstants.TEST_SG_ID_1, TestConstants.TEST_SG_SCHEMA_1);
+   }
+
+    private DBServiceGroup createAndSaveNewServiceGroup(String domain, String participantId, String participantSchema){
+        return createAndSaveNewServiceGroup(domain, participantId, participantSchema, null);
+    }
+    @Transactional
+   public DBServiceGroup createAndSaveNewServiceGroup(String domain, String participantId, String participantSchema, DBUser usr){
+       DBDomain d = domainDao.getDomainByCode(domain).get();
+       DBServiceGroup sg = TestDBUtils.createDBServiceGroup(participantId, participantSchema);
+       if (usr!= null) {
+           sg.getUsers().add(usr);
+       }
        sg.addDomain(d);
        testInstance.persistFlushDetach(sg);
        return sg;
    }
+
+
+    public void createAndSaveNewServiceGroups(int iCount, String domain, String participant){
+        createAndSaveNewServiceGroups(iCount, domain, participant, null);
+    }
+
+    @Transactional
+    public void createAndSaveNewServiceGroups(int iCount, String domain, String participant, DBUser usr){
+        int i =0;
+        while (i++ < iCount){
+            createAndSaveNewServiceGroup(domain,  participant+":"+i, TestConstants.TEST_SG_SCHEMA_1, usr);
+        }
+    }
 
     @Transactional
     public DBServiceGroup createAndSaveNewServiceGroupWithMetadata(){

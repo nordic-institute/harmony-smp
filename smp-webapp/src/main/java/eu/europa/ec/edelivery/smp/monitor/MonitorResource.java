@@ -7,12 +7,14 @@ import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
 import eu.europa.ec.edelivery.smp.data.dao.ServiceGroupDao;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
+import eu.europa.ec.edelivery.smp.exceptions.SMPTestIsALiveException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
 import eu.europa.ec.edelivery.smp.validation.ServiceGroupValidator;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import eu.europa.ec.smp.api.validators.BdxSmpOasisValidator;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.cxf.helpers.IOUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ServiceGroup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +60,7 @@ public class MonitorResource {
 
 
     @RequestMapping(method = RequestMethod.GET,path = "/is-alive")
-    @Secured({SMPAuthority.S_AUTHORITY_SYSTEM_ADMIN,SMPAuthority.S_AUTHORITY_SMP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN,SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN})
     public ResponseEntity isAlive() {
 
         String user = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -86,8 +88,10 @@ public class MonitorResource {
         boolean suc = false;
         try {
             suc= testDatabase();
-        }catch (Exception ex){
+        }catch (SMPTestIsALiveException ex){
             suc = Objects.equals(TEST_DB_SUCCESSFUL_ROLLBACK, ex.getMessage());
+        } catch(Throwable th) {
+            LOG.error("Error occured while testing database connection: Msg:" + ExceptionUtils.getRootCauseMessage(th), th);
         }
        return suc?ResponseEntity.ok().build():ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
@@ -105,9 +109,8 @@ public class MonitorResource {
         newSg.setParticipantScheme(TEST_PART_SCHEMA);
         newSg.setExtension(TEST_EXTENSION_XML.getBytes());
         newSg.addDomain(lstDomain.get(0)); // add initial domain
-        newSg.setSmlRegistered(false);
         // persist (make sure this is not in transaction)
-        serviceGroupDao.testPersist(newSg, TEST_DB_SUCCESSFUL_ROLLBACK);
+        serviceGroupDao.testPersist(newSg,true, TEST_DB_SUCCESSFUL_ROLLBACK);
         return false;
     }
 

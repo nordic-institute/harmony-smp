@@ -1,0 +1,39 @@
+<h2 mat-dialog-title>MetadataService Wizard</h2>
+
+<mat-dialog-content>
+  <form [formGroup]="dialogForm">
+    <mat-card>
+      <mat-card-content>
+        <fieldset style="border: none;">
+
+
+          <mat-form-field  *ngFor="let elmnt of elements;"  style="width:100%">
+            <input matInput
+                   placeholder="{{elmnt.name}} - {{elmnt.description}}"
+                   [name]="elmnt.name"
+                   id="{{elmnt.name}}_id"
+                   [formControl]="dialogForm.controls[elmnt.name]" maxlength="255">
+
+          </mat-form-field >
+
+
+        </fieldset>
+      </mat-card-content>
+    </mat-card>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <div class="group-action-button">
+    <button mat-raised-button color="primary" [mat-dialog-close]="true"
+            [disabled]="!dialogForm.valid">
+      <mat-icon>check_circle</mat-icon>
+      <span>OK</span>
+    </button>
+
+    <button mat-raised-button color="primary" mat-dialog-close>
+      <mat-icon>cancel</mat-icon>
+      <span>Cancel</span>
+    </button>
+  </div>
+</mat-dialog-actions>

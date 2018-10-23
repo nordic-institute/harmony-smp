@@ -27,7 +27,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
  * Created by migueti on 13/02/2017.
@@ -36,7 +38,7 @@ public class ExtensionConverterTest {
 
     private static final String WRAPPED_FORMAT = "<ExtensionsWrapper xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\">%s</ExtensionsWrapper>";
 
-    private static final String RES_PATH = "/examples/extensions/";
+    public static final String RES_PATH = "/examples/extensions/";
 
     private static final String UTF8_SEQUENCE = "ẞßÄäËëÏïÖöÜüẄẅŸÿЁёЇїӜӝ-Zażółć gęślą jaźń-ÆæØøÅå-ÀÆÇßãÿαΩƒ";
 
@@ -126,17 +128,17 @@ public class ExtensionConverterTest {
 
     private void checkExtensions(List<ExtensionType> extensions, int size) {
         Assert.assertNotNull(extensions);
-        Assert.assertEquals(size, extensions.size());
+        assertEquals(size, extensions.size());
         int number = 1;
         for (ExtensionType extension : extensions) {
             Assert.assertNotNull(extension);
-            Assert.assertEquals("name" + number, extension.getExtensionName());
-            Assert.assertEquals("versionId" + number, extension.getExtensionVersionID());
-            Assert.assertEquals("reason" + number, extension.getExtensionReason());
-            Assert.assertEquals("reasonCode" + number, extension.getExtensionReasonCode());
-            Assert.assertEquals("id" + number, extension.getExtensionID());
-            Assert.assertEquals("agencyUri" + number, extension.getExtensionAgencyURI());
-            Assert.assertEquals("agencyName" + number, extension.getExtensionAgencyName());
+            assertEquals("name" + number, extension.getExtensionName());
+            assertEquals("versionId" + number, extension.getExtensionVersionID());
+            assertEquals("reason" + number, extension.getExtensionReason());
+            assertEquals("reasonCode" + number, extension.getExtensionReasonCode());
+            assertEquals("id" + number, extension.getExtensionID());
+            assertEquals("agencyUri" + number, extension.getExtensionAgencyURI());
+            assertEquals("agencyName" + number, extension.getExtensionAgencyName());
             assertNull(extension.getExtensionURI());
             number++;
         }

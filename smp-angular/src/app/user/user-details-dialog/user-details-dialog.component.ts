@@ -20,17 +20,16 @@ export class UserDetailsDialogComponent {
   static readonly NEW_MODE = 'New User';
   static readonly EDIT_MODE = 'User Edit';
 
-  // readonly emailPattern = '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}';
+  readonly emailPattern = '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}';
   readonly passwordPattern = '^(?=.*[A-Z])(?=.*[ !#$%&\'()*+,-./:;<=>?@\\[^_`{|}~\\\]"])(?=.*[0-9])(?=.*[a-z]).{8,32}$';
   readonly dateFormat: string = 'yyyy-MM-dd HH:mm:ssZ';
-
-  id: number;
 
   editMode: boolean;
   formTitle: string;
   userRoles = [];
   existingRoles = [];
   userForm: FormGroup;
+  current: UserRo;
 
   @ViewChild('fileInput')
   private fileInput;
@@ -67,11 +66,9 @@ export class UserDetailsDialogComponent {
               @Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder) {
     this.editMode = data.edit;
-    this.id = data.row && data.row.id;
+    this.formTitle = this.editMode ?  UserDetailsDialogComponent.EDIT_MODE: UserDetailsDialogComponent.NEW_MODE;
 
-    this.formTitle = this.editMode ? UserDetailsDialogComponent.EDIT_MODE: UserDetailsDialogComponent.NEW_MODE;
-
-    const user: UserRo & { confirmation?: string } = this.editMode
+    this.current = this.editMode
       ? {
         ...data.row,
         password: '', // ensures the user password is cleared before editing
@@ -82,41 +79,54 @@ export class UserDetailsDialogComponent {
           validTo: data.row.validTo,
           issuer: data.row.issuer,
           serialNumber: data.row.serialNumber,
-        },
+        }
       }: {
+        active: true,
         username: '',
-        email: '',
+        emailAddress: '',
         password: '',
         confirmation: '',
         role: '',
+        status: SearchTableEntityStatus.NEW,
+        statusPassword: SearchTableEntityStatus.NEW,
         certificate: {},
       };
 
-    const userDetailsToggled: boolean = user && !!user.username;
+    const userDetailsToggled: boolean = this.current && !!this.current.username;
+    const passwordToggle: boolean = !this.editMode;
+
 
     this.userForm = fb.group({
+      // common values
+      'active': new FormControl({ value: this.current.active},[]),
+      'emailAddress': new FormControl({ value:this.current.emailAddress },[ Validators.pattern(this.emailPattern)]),
+      'role': new FormControl({ value: this.current.role }, Validators.required),
+      // username/password authentication
       'userToggle': new FormControl(userDetailsToggled),
-      'username': new FormControl({ value: user.username, disabled: this.editMode || !userDetailsToggled }, this.editMode ? Validators.nullValidator : null),
-      'role': new FormControl({ value: Role[user.role], disabled: !userDetailsToggled }, Validators.required),
-      'password': new FormControl({ value: user.password, disabled: !userDetailsToggled }, [Validators.required, Validators.pattern(this.passwordPattern)]),
-      'confirmation': new FormControl({ value: user.password, disabled: !userDetailsToggled }, Validators.pattern(this.passwordPattern)),
-
-      'certificateToggle': new FormControl(user && user.certificate && !!user.certificate.subject),
-      'subject': new FormControl({ value: user.certificate.subject, disabled: true }, Validators.required),
-      'validFrom': new FormControl({ value: user.certificate.validFrom, disabled: true }, Validators.required),
-      'validTo': new FormControl({ value: user.certificate.validTo, disabled: true }, Validators.required),
-      'issuer': new FormControl({ value: user.certificate.issuer, disabled: true }, Validators.required),
-      'serialNumber': new FormControl({ value: user.certificate.serialNumber, disabled: true }, Validators.required),
+      'passwordToggle': new FormControl(passwordToggle),
+      'username': new FormControl({ value: this.current.username, disabled: this.editMode || !userDetailsToggled }, this.editMode ? Validators.nullValidator : null),
+      'password': new FormControl({ value: this.current.password, disabled: !userDetailsToggled && !passwordToggle},
+        [Validators.required, Validators.pattern(this.passwordPattern)]),
+      'confirmation': new FormControl({ value: this.current.password, disabled: !userDetailsToggled  && !passwordToggle},
+        Validators.pattern(this.passwordPattern)),
+      // certificate authentication
+      'certificateToggle': new FormControl(this.current && this.current.certificate && !!this.current.certificate.subject),
+      'subject': new FormControl({ value: this.current.certificate.subject, disabled: true }, Validators.required),
+      'validFrom': new FormControl({ value: this.current.certificate.validFrom, disabled: true }, Validators.required),
+      'validTo': new FormControl({ value: this.current.certificate.validTo, disabled: true }, Validators.required),
+      'issuer': new FormControl({ value: this.current.certificate.issuer, disabled: true }, Validators.required),
+      'serialNumber': new FormControl({ value: this.current.certificate.serialNumber, disabled: true }, Validators.required),
+      'certificateId': new FormControl({ value: this.current.certificate.serialNumber, disabled: true }, Validators.required),
     }, {
       validator: [this.passwordConfirmationValidator, this.atLeastOneToggleCheckedValidator, this.certificateValidator]
     });
 
+
     this.userService.getUserRoles$().subscribe(userRoles => {
       this.userRoles = userRoles.json();
       this.existingRoles = this.editMode
-        ? this.getAllowedRoles(this.userRoles, user.role)
+        ? this.getAllowedRoles(this.userRoles, this.current.role)
         : this.userRoles;
-      console.log(this.userRoles, this.existingRoles);
     });
   }
 
@@ -152,21 +162,23 @@ export class UserDetailsDialogComponent {
 
   onUserToggleChanged({checked}: MatSlideToggleChange) {
     const action = checked ? 'enable' : 'disable';
-    this.userForm.get('username')[action]();
-    this.userForm.get('role')[action]();
+    this.userForm.get('username')[checked && !this.editMode ? 'enable' : 'disable']();
+    //this.userForm.get('role')[action]();
+    //this.userForm.get('password')[action]();
+    //this.userForm.get('confirmation')[action]();
+  }
+
+  onPasswordToggleChanged({checked}: MatSlideToggleChange) {
+    const action = checked ? 'enable' : 'disable';
     this.userForm.get('password')[action]();
     this.userForm.get('confirmation')[action]();
   }
 
-  get current(): UserRo {
-    const rawValue = this.userForm.getRawValue();
 
-    return {
-      ...rawValue,
-      id: this.id,
-      role: Object.keys(Role).find(k => Role[k] === rawValue.role), // ugly hack to find the corresponding enum key as a string
-      status: this.id ? SearchTableEntityStatus.UPDATED: SearchTableEntityStatus.NEW,
-    };
+
+  getCurrent(): UserRo {
+    // update data
+    return this.current;
   }
 
   // filters out roles so that the user cannot change from system administrator to the other roles or vice-versa

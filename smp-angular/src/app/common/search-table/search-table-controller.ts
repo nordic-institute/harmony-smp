@@ -7,4 +7,5 @@ export interface SearchTableController {
   delete(row);
   newRow(): SearchTableEntity;
   newDialog(config?: MatDialogConfig): MatDialogRef<any>;
+  dataSaved();
 }

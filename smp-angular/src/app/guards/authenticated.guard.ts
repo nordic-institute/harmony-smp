@@ -10,6 +10,7 @@ export class AuthenticatedGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
+
     const subject = new ReplaySubject<boolean>();
     this.securityService.isAuthenticated(true).subscribe((isAuthenticated: boolean) => {
       if(isAuthenticated) {
@@ -20,6 +21,7 @@ export class AuthenticatedGuard implements CanActivate {
         subject.next(false);
       }
     });
-    return subject.asObservable()
+    return subject.asObservable();
+
   }
 }

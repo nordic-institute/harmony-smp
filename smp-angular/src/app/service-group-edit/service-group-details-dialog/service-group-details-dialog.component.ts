@@ -1,126 +1,150 @@
-import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {ChangeDetectorRef, Component, Inject, OnInit, ViewChild} from '@angular/core';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';
 import {Observable} from "rxjs/internal/Observable";
-import {SearchTableResult} from "../../common/search-table/search-table-result.model";
 import {HttpClient} from "@angular/common/http";
 import {SmpConstants} from "../../smp.constants";
-import {UserRo} from "../../user/user-ro.model";
 import {AlertService} from "../../alert/alert.service";
-import {DomainDetailsDialogComponent} from "../../domain/domain-details-dialog/domain-details-dialog.component";
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
-import {DomainRo} from "../../domain/domain-ro.model";
 import {ServiceGroupEditRo} from "../service-group-edit-ro.model";
-import {ServiceMetadataEditRo} from "../service-metadata-edit-ro.model";
+import {GlobalLookups} from "../../common/global-lookups";
+import {ServiceGroupExtensionWizardDialogComponent} from "../service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component";
+import {ServiceGroupExtensionRo} from "./service-extension-edit-ro.model";
+import {DomainRo} from "../../domain/domain-ro.model";
+import {ServiceGroupDomainEditRo} from "../service-group-domain-edit-ro.model";
+import {ConfirmationDialogComponent} from "../../common/confirmation-dialog/confirmation-dialog.component";
+import {SecurityService} from "../../security/security.service";
 
 @Component({
-  selector: 'app-messagelog-details',
+  selector: 'service-group-details',
   templateUrl: './service-group-details-dialog.component.html',
   styleUrls: ['./service-group-details-dialog.component.css']
 })
-export class ServiceGroupDetailsDialogComponent {
+export class ServiceGroupDetailsDialogComponent implements OnInit {
 
   static readonly NEW_MODE = 'New ServiceGroup';
   static readonly EDIT_MODE = 'ServiceGroup Edit';
 
+  @ViewChild('domainSelector') domainSelector: any;
 
-  userObserver:  Observable< SearchTableResult> ;
-  domainObserver:  Observable< SearchTableResult> ;
-  userlist: Array<UserRo> = [];
   editMode: boolean;
   formTitle: string;
   current: ServiceGroupEditRo & { confirmation?: string };
+  showSpinner: boolean = false;
 
   dialogForm: FormGroup;
-  dialogFormBuilder: FormBuilder;
-  formControlUsers: FormControl;
-  /*
-  selectedDomain: DomainRo;
-  domainList: Array<any>;
-*/
+  extensionObserver: Observable<ServiceGroupExtensionRo>;
 
-  minCountOwners(min: number) {
-    return (c: AbstractControl): {[key: string]: any} => {
-      if (c.value.length >= min)
+  extensionValidationMessage: String = null;
+  isExtensionValid: boolean = true;
+
+  serviceGroupDomain: ServiceGroupDomainEditRo[];
+
+
+  minSelectedListCount(min: number) {
+    return (c: AbstractControl): { [key: string]: any } => {
+      if (c.value && c.value.length >= min)
         return null;
 
-      return { 'minCountOwners': {valid: false }};
+      return {'minSelectedListCount': {valid: false}};
     }
   }
 
-  constructor(protected http: HttpClient, public dialogRef: MatDialogRef<ServiceGroupDetailsDialogComponent>,
-                private alertService: AlertService,
+  constructor(public securityService: SecurityService,
+              public dialog: MatDialog,
+              protected http: HttpClient,
+              public dialogRef: MatDialogRef<ServiceGroupDetailsDialogComponent>,
+              private alertService: AlertService,
+              public lookups: GlobalLookups,
               @Inject(MAT_DIALOG_DATA) public data: any,
-              private fb: FormBuilder) {
-    // init user list
-
-   this.userObserver = this.http.get<SearchTableResult>(SmpConstants.REST_USER);
-    this.userObserver.subscribe((users: SearchTableResult) => {
-      this.userlist = new Array(users.serviceEntities.length)
-        .map((v, index) => users.serviceEntities[index] as UserRo);
-
-      this.userlist = users.serviceEntities.map(serviceEntity => {
-        return {...<UserRo>serviceEntity}
-      });
-      this.updateData();
-    });
-    /*
-    // init domains
-    this.domainObserver = this.http.get<SearchTableResult>(SmpConstants.REST_DOMAIN);
-    this.domainObserver.subscribe((domains: SearchTableResult) => {
-      this.domainList = new Array(domains.serviceEntities.length)
-        .map((v, index) => {domains.serviceEntities[index] as DomainRo;
-          if ( this.editMode && v.domainCode ===data.row.domainCode) {
-            this.selectedDomain = v as DomainRo;
-          }
-        });
-
-      this.domainList = domains.serviceEntities.map(serviceEntity => {
-        return {...serviceEntity}
-      });
-    });
-*/
-    this.dialogFormBuilder = fb;
-    this.editMode = data.edit;
-    this.formTitle = this.editMode ?  ServiceGroupDetailsDialogComponent.EDIT_MODE: ServiceGroupDetailsDialogComponent.NEW_MODE;
+              private dialogFormBuilder: FormBuilder,
+              private changeDetector: ChangeDetectorRef) {
+    this.editMode = this.data.edit;
+    this.formTitle = this.editMode ? ServiceGroupDetailsDialogComponent.EDIT_MODE : ServiceGroupDetailsDialogComponent.NEW_MODE;
     this.current = this.editMode
       ? {
-        ...data.row,
+        ...this.data.row,
       }
       : {
         id: null,
         participantIdentifier: '',
-        participantScheme:  '',
-        serviceMetadata:[],
-        users:[],
-        domainCode:'',
+        participantScheme: '',
+        serviceMetadata: [],
+        users: [],
+        serviceGroupDomains: [],
+        extension: '',
         status: SearchTableEntityStatus.NEW,
       };
+    // user is new when reopening the new item in edit mode!
+    // allow to change data but warn on error!
 
     this.dialogForm = this.dialogFormBuilder.group({
+      'participantIdentifier': new FormControl({
+          value: '',
+          disabled: this.current.status !== SearchTableEntityStatus.NEW
+        },
+        this.current.status !== SearchTableEntityStatus.NEW ? Validators.required : null),
+      'participantScheme': new FormControl({value: '', disabled: this.current.status !== SearchTableEntityStatus.NEW},
+        this.current.status !== SearchTableEntityStatus.NEW ? Validators.required : null),
+      'serviceGroupDomains': new FormControl({value: []}, [this.minSelectedListCount(1)]),
+      'users': new FormControl({value: []}, [this.minSelectedListCount(1)]),
+      'extension': new FormControl({value: []}, []),
 
-      'participantIdentifier': new FormControl({value: this.current.participantIdentifier, disabled: this.editMode}, this.editMode ? Validators.required : null),
-      'participantScheme': new FormControl({value: this.current.participantScheme, disabled: this.editMode},  this.editMode ? Validators.required : null),
-      'domainCode': new FormControl({value: this.current.domainCode},this.editMode ? Validators.required : null),
 
-      //'users': [new FormControl({value: this.current.users}, [ this.minCountOwners(1)] )],
     });
-
+    // update values
+    this.dialogForm.controls['participantIdentifier'].setValue(this.current.participantIdentifier);
+    this.dialogForm.controls['participantScheme'].setValue(this.current.participantScheme);
+    this.dialogForm.controls['serviceGroupDomains'].setValue(this.current.serviceGroupDomains);
+    this.dialogForm.controls['users'].setValue(this.current.users)
+    this.dialogForm.controls['extension'].setValue(this.current.extension)
 
   }
 
-  updateData(){
-    this.formControlUsers = new FormControl(this.current.users);
-    this.formControlUsers.setValidators( [ this.minCountOwners(1)]);
+  ngOnInit() {
+    // retrieve xml extension for this service group
+    if (this.current.status !== SearchTableEntityStatus.NEW && !this.current.extension) {
+      // init domains
+      this.extensionObserver = this.http.get<ServiceGroupExtensionRo>(SmpConstants.REST_SERVICE_GROUP_EXTENSION + '/' + this.current.id);
+      this.extensionObserver.subscribe((res: ServiceGroupExtensionRo) => {
+        this.dialogForm.get('extension').setValue(res.extension);
+      });
+    }
 
-    this.dialogForm.addControl("users",this.formControlUsers );
-
+    // detect changes for updated values in mat-selection-list (check change detection operations)
+    // else the following error is thrown :xpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value:
+    // 'aria-selected: false'. Current value: 'aria-selected: true'
+    //
+    this.changeDetector.detectChanges()
   }
 
 
   submitForm() {
-    this.checkValidity(this.dialogForm)
-    this.dialogRef.close(true);
+    this.checkValidity(this.dialogForm);
+
+
+    let request: ServiceGroupExtensionRo = {
+      serviceGroupId: this.current.id,
+      extension: this.dialogForm.controls['extension'].value,
+    }
+    //
+    let validationObservable = this.http.post<ServiceGroupExtensionRo>(SmpConstants.REST_SERVICE_GROUP_EXTENSION_VALIDATE, request);
+    this.showSpinner = true;
+    validationObservable.toPromise().then((res: ServiceGroupExtensionRo) => {
+      if (res.errorMessage) {
+        this.extensionValidationMessage = res.errorMessage;
+        this.isExtensionValid = false;
+        this.showSpinner = false;
+      } else {
+        this.extensionValidationMessage = "Extension is valid!";
+        this.isExtensionValid = true;
+        this.showSpinner = false;
+        // we can close the dialog
+        this.dialogRef.close(true);
+      }
+    });
+
+
   }
 
   checkValidity(g: FormGroup) {
@@ -134,27 +158,153 @@ export class ServiceGroupDetailsDialogComponent {
     Object.keys(g.controls).forEach(key => {
       g.get(key).updateValueAndValidity();
     });
+
+
   }
 
 
-  updateParticipantIdentifier(event) {
-    this.current.participantIdentifier = event.target.value;
-  }
-  updateParticipantScheme(event) {
-    this.current.participantScheme = event.target.value;
+  compareTableItemById(item1, item2): boolean {
+    return item1.id === item2.id;
   }
 
-  userListChanged(usersSelected, event){
-    this.current.users = [];
-    for(let usr of usersSelected) {
-      this.current.users.push(usr.value);
+  compareDomain(domain: DomainRo, serviceGroupDomain: ServiceGroupDomainEditRo): boolean {
+    return domain.id === serviceGroupDomain.domainId;
+  }
+
+
+  public getCurrent(): ServiceGroupEditRo {
+    // change this two properties only on new
+    if (this.current.status === SearchTableEntityStatus.NEW) {
+      this.current.participantIdentifier = this.dialogForm.value['participantIdentifier'];
+      this.current.participantScheme = this.dialogForm.value['participantScheme'];
+    } else {
+      this.current.extensionStatus = SearchTableEntityStatus.UPDATED;
+    }
+    this.current.users = this.dialogForm.value['users'];
+    this.current.extension = this.dialogForm.value['extension'];
+
+
+    let domainOptions = this.domainSelector.options._results;
+    domainOptions.forEach(opt => {
+      let domValue = opt.value;
+      let sgd = this.getServiceGroupDomain(domValue.domainCode);
+      // if contains and deselected  - delete
+      if (sgd && !opt.selected) {
+        this.current.serviceMetadata.forEach(metadata => {
+          if (metadata.domainCode === sgd.domainCode) {
+            metadata.status = SearchTableEntityStatus.REMOVED;
+            metadata.deleted = true;
+          }
+        });
+
+        var index = this.current.serviceGroupDomains.indexOf(sgd);
+        if (index !== -1) this.current.serviceGroupDomains.splice(index, 1);
+
+        // delete service group
+      } else if (!sgd && opt.selected) {
+        let newDomain: ServiceGroupDomainEditRo = {
+          id: null,
+          domainId: domValue.id,
+          domainCode: domValue.domainCode,
+          smlSubdomain: domValue.domainCode,
+          smlRegistered: false,
+          serviceMetadataCount: 0,
+          status: SearchTableEntityStatus.NEW,
+        };
+        this.current.serviceGroupDomains.push(newDomain);
+      }
+    });
+    return this.current;
+  }
+
+  onExtensionDelete() {
+    this.dialogForm.controls['extension'].setValue("");
+  }
+
+  onStartWizardDialog() {
+
+    const formRef: MatDialogRef<any> = this.dialog.open(ServiceGroupExtensionWizardDialogComponent);
+    formRef.afterClosed().subscribe(result => {
+      if (result) {
+        let existingXML = this.dialogForm.controls['extension'].value;
+        let val = (existingXML ? existingXML + '\n' : '') + formRef.componentInstance.getExtensionXML();
+        this.dialogForm.controls['extension'].setValue(val);
+      }
+    });
+  }
+
+  public onExtensionValidate() {
+
+    let request: ServiceGroupExtensionRo = {
+      serviceGroupId: this.current.id,
+      extension: this.dialogForm.controls['extension'].value,
+    }
+    //
+    let validationObservable = this.http.post<ServiceGroupExtensionRo>(SmpConstants.REST_SERVICE_GROUP_EXTENSION_VALIDATE, request);
+    this.showSpinner = true;
+    validationObservable.toPromise().then((res: ServiceGroupExtensionRo) => {
+      if (res.errorMessage) {
+        this.extensionValidationMessage = res.errorMessage;
+        this.isExtensionValid = false;
+        this.showSpinner = false;
+      } else {
+        this.extensionValidationMessage = "Extension is valid!";
+        this.isExtensionValid = true;
+        this.showSpinner = false;
+      }
+    });
+
+  }
+
+  onPrettyPrintExtension() {
+    let existingXML = this.dialogForm.controls['extension'].value;
+    let request: ServiceGroupExtensionRo = {
+      serviceGroupId: this.current.id,
+      extension: existingXML,
+    }
+    let validationObservable = this.http.post<ServiceGroupExtensionRo>(SmpConstants.REST_SERVICE_GROUP_EXTENSION_FORMAT, request);
+    validationObservable.subscribe((res: ServiceGroupExtensionRo) => {
+      if (res.errorMessage) {
+        this.extensionValidationMessage = res.errorMessage;
+        this.isExtensionValid = false;
+      } else {
+        this.dialogForm.get('extension').setValue(res.extension);
+        this.isExtensionValid = true;
+      }
+
+    });
+  }
+
+  onDomainSelectionChanged(event) {
+    // if deselected warn  serviceMetadata will be deleted
+    let domainCode = event.option.value.domainCode;
+    if (!event.option.selected) {
+      this.dialog.open(ConfirmationDialogComponent, {
+        data: {
+          title: "Registred serviceMetadata on domain!",
+          description: "Unregistration of domain will also delete it's serviceMetadata. Do you want to continue?"
+        }
+      }).afterClosed().subscribe(result => {
+        if (!result) {
+          event.option.selected = true;
+        }
+      })
+
+
     }
   }
-  compareUserById(item1, item2): boolean{
-    return item1.id=== item2.id;
+
+  public getServiceMetadataCountOnDomain(domainCode: String) {
+    return this.current.serviceMetadata.filter(smd => {
+      return smd.domainCode === domainCode
+    }).length;
   }
 
-  isSelected(id): boolean {
-    return !!this.current.users.find(user => user.id===id);
+  public getServiceGroupDomain(domainCode: String) {
+    return this.current.serviceGroupDomains ?
+      this.current.serviceGroupDomains.find(smd => {
+        return smd.domainCode === domainCode
+      }) : null;
   }
+
 }

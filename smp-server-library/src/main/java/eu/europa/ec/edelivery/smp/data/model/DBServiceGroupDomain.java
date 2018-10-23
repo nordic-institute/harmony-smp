@@ -46,10 +46,18 @@ public class DBServiceGroupDomain extends BaseEntity {
 
     // list<> and set<> does not make any difference in hi
     // hibernate performance this case!
+    // this list could also be on ServiceGroup entity because it does not make any difference for
+    // dynamic discovery but it is here just user -service group admin to know for which
+    // domain he orignally registred a service - to make metadata more organized...
+
     @OneToMany(mappedBy = "serviceGroupDomain", cascade = CascadeType.ALL,
             orphanRemoval = true,
             fetch = FetchType.LAZY)
     private List<DBServiceMetadata> serviceMetadata = new ArrayList<>();
+
+
+    @Column(name = "SML_REGISTRED", nullable = false)
+    private boolean smlRegistered = false;
 
     @Column(name = "CREATED_ON" , nullable = false)
     LocalDateTime createdOn;
@@ -94,6 +102,15 @@ public class DBServiceGroupDomain extends BaseEntity {
         this.domain = domain;
     }
 
+    public boolean isSmlRegistered() {
+        return smlRegistered;
+    }
+
+    public void setSmlRegistered(boolean smlRegistered) {
+        this.smlRegistered = smlRegistered;
+    }
+
+
     public void addServiceMetadata(DBServiceMetadata metadata) {
         serviceMetadata.add(metadata);
         metadata.setServiceGroupDomain(this);
@@ -102,6 +119,14 @@ public class DBServiceGroupDomain extends BaseEntity {
     public void removeServiceMetadata(DBServiceMetadata metadata) {
         serviceMetadata.remove(metadata);
         metadata.setServiceGroupDomain(null);
+    }
+
+    public DBServiceMetadata removeServiceMetadata(String docId, String docSch) {
+        DBServiceMetadata dbServiceMetadata =  getServiceMetadata(docId,docSch );
+        if (dbServiceMetadata!=null) {
+            removeServiceMetadata(dbServiceMetadata);
+        }
+        return dbServiceMetadata;
     }
 
     @Transient

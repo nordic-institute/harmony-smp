@@ -1,11 +1,14 @@
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
-import {MatDialog, MatDialogRef} from '@angular/material';
+import {MatDialog} from '@angular/material';
 
 import {AlertService} from '../alert/alert.service';
 import {DomainController} from './domain-controller';
 import {HttpClient} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
+import {GlobalLookups} from "../common/global-lookups";
+import {SearchTableComponent} from "../common/search-table/search-table.component";
+import {SecurityService} from "../security/security.service";
 
 @Component({
   moduleId: module.id,
@@ -17,6 +20,7 @@ export class DomainComponent implements OnInit {
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
   @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>;
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
+  @ViewChild('searchTable') searchTable: SearchTableComponent;
 
   baseUrl = SmpConstants.REST_DOMAIN;
   columnPicker: ColumnPicker = new ColumnPicker();
@@ -24,11 +28,15 @@ export class DomainComponent implements OnInit {
   filter: any = {};
 
 
-  constructor(protected http: HttpClient, protected alertService: AlertService, public dialog: MatDialog) {
+  constructor(public securityService: SecurityService,
+              protected lookups: GlobalLookups,
+              protected http: HttpClient,
+              protected alertService: AlertService,
+              public dialog: MatDialog) {
   }
 
   ngOnInit() {
-    this.domainController = new DomainController(this.dialog);
+    this.domainController = new DomainController(this.lookups, this.dialog);
 
     this.columnPicker.allColumns = [
       {
@@ -70,5 +78,10 @@ export class DomainComponent implements OnInit {
 
   details(row: any) {
     this.domainController.showDetails(row);
+  }
+
+  // for dirty guard...
+  isDirty (): boolean {
+    return this.searchTable.isDirty();
   }
 }

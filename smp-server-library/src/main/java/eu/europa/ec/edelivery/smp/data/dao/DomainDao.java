@@ -15,6 +15,8 @@ package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.NoResultException;
@@ -24,6 +26,7 @@ import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.DOMAIN_NOT_EXISTS;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY;
 
 /**
@@ -79,6 +82,26 @@ public class DomainDao extends BaseDao<DBDomain> {
         } catch (NonUniqueResultException e) {
             throw new IllegalStateException(ILLEGAL_STATE_DOMAIN_MULTIPLE_ENTRY.getMessage(domainCode));
         }
+    }
+
+    /**
+     * Check if domain for domain code exists. If not SMPRuntimeException with DOMAIN_NOT_EXISTS is thrown.
+     * If code is null or blank - then null is returned.
+     *
+     * @param domainCode
+     * @return
+     */
+    public DBDomain validateDomainCode(String domainCode){
+        DBDomain domain = null;
+        if (!StringUtils.isBlank(domainCode)) {
+            Optional<DBDomain> od = getDomainByCode(domainCode);
+            if (od.isPresent()) {
+                domain = od.get();
+            } else {
+                throw new SMPRuntimeException(DOMAIN_NOT_EXISTS, domainCode);
+            }
+        }
+        return domain;
     }
 
     /**

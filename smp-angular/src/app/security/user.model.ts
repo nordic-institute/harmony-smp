@@ -1,8 +1,8 @@
-import {Role} from './role.model';
+import {Authority} from "./authority.model";
 
 export interface User {
   id: number;
   username: string;
-  authorities: Array<Role>;
+  authorities: Array<Authority>;
   defaultPasswordUsed: boolean;
 }

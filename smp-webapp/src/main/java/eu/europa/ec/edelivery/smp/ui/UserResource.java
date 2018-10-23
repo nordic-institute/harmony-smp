@@ -1,5 +1,7 @@
 package eu.europa.ec.edelivery.smp.ui;
 
+
+import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
@@ -7,16 +9,11 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
+import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
 
@@ -34,31 +31,43 @@ public class UserResource {
     @Autowired
     private UIUserService uiUserService;
 
-    @GetMapping
+    @PostConstruct
+    protected void init() {
+
+    }
+
+    @PutMapping(produces = {"application/json"})
     @ResponseBody
+    @RequestMapping(method = RequestMethod.GET)
+    //update gui to call this when somebody is logged in.
+   // @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
     public ServiceResult<UserRO> getUsers(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
             @RequestParam(value = "orderBy", required = false) String orderBy,
             @RequestParam(value = "orderType", defaultValue = "asc", required = false) String orderType,
-            @RequestParam(value = "user", required = false) String user) {
+            @RequestParam(value = "user", required = false) String user
+            ) {
         return  uiUserService.getTableList(page,pageSize, orderBy, orderType, null);
     }
 
     @PutMapping(produces = {"application/json"})
+    @RequestMapping(method = RequestMethod.PUT)
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
     public void updateUserList(@RequestBody(required = true) UserRO[] updateEntities ){
-        LOG.info("Update user list, count: {}", updateEntities.length);
+        LOG.info("Update user list, count: {}" + updateEntities.length);
         uiUserService.updateUserList(Arrays.asList(updateEntities));
     }
 
-    @PostMapping(path = "certdata")
+    @RequestMapping(path = "certdata", method = RequestMethod.POST)
     public CertificateRO uploadFile(@RequestBody byte[] data) {
         LOG.info("Got certificate data: " + data.length);
         try {
             return uiUserService.getCertificateData(data);
-        } catch (CertificateException e) {
-            LOG.error("Error occurred while parsing certificate.", e);
+        } catch (IOException | CertificateException e) {
+            LOG.error("Error occured while parsing certificate.", e);
         }
         return null;
+
     }
 }

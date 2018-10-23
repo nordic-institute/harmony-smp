@@ -1,5 +1,5 @@
 import {SearchTableController} from '../common/search-table/search-table-controller';
-import {MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
+import {MatDialog, MatDialogConfig} from '@angular/material';
 import {ServiceGroupSearchRo} from './service-group-search-ro.model';
 
 export class ServiceGroupSearchController implements SearchTableController {
@@ -23,4 +23,6 @@ export class ServiceGroupSearchController implements SearchTableController {
   public newRow(): ServiceGroupSearchRo {
     return null;
   }
+
+  public dataSaved() {}
 }

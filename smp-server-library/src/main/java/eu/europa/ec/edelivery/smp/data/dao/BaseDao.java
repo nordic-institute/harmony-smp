@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
+import eu.europa.ec.edelivery.smp.exceptions.SMPTestIsALiveException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ServiceGroupService;
@@ -65,10 +66,12 @@ public abstract class BaseDao<E extends BaseEntity> {
      * @param entity
      */
     @Transactional
-    public void testPersist(E entity, String message) {
+    public void testPersist(E entity, boolean rollbackWithException, String message) {
         memEManager.persist(entity);
         memEManager.flush();
-        throw new RuntimeException(message);
+        if (rollbackWithException) {
+            throw new SMPTestIsALiveException(message);
+        }
     }
 
 
@@ -226,7 +229,9 @@ public abstract class BaseDao<E extends BaseEntity> {
                                 (Comparable) searchValue));
                     } else if (searchValue instanceof String && fieldName.endsWith("Like")) {
                         if (!((String) searchValue).isEmpty()) {
-                            lstPredicate.add(cb.like(getPath(om, fieldName, "Like"), "%" + (String) searchValue + "%"));
+                            // like search is also case insensitive
+                            String searchPhraze = ((String) searchValue).toLowerCase().trim();
+                            lstPredicate.add(cb.like(cb.lower(getPath(om, fieldName, "Like")), "%" + searchPhraze + "%"));
                         }
                     } else if (searchValue instanceof String) {
                         if (!((String) searchValue).isEmpty()) {
@@ -237,7 +242,7 @@ public abstract class BaseDao<E extends BaseEntity> {
                     } else if (searchValue instanceof Long) {
                         lstPredicate.add(cb.equal(getPath(om, fieldName), searchValue));
                     } else {
-                        LOG.warn("Unknown search value type %s for method %s! Parameter is ignored!",
+                        LOG.info("Unknown search value type {} for method {}! Parameter is ignored!",
                                 searchValue, fieldName);
                     }
                 }

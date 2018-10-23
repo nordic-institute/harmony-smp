@@ -16,18 +16,19 @@ public enum SMPMessageCode implements MessageCode {
     BUS_HTTP_DELETE_END_SERVICE_GROUP ("BUS-004", "End Http DELETE ServiceGroup from user {} from host: {}. ServiceGroup id: {}."),
     BUS_HTTP_GET_SERVICE_GROUP ("BUS-005", "Http GET ServiceGroup from host: {}, ServiceGroup id: {}."),
     BUS_HTTP_GET_END_SERVICE_GROUP ("BUS-006", "End Http GET ServiceGroup from host: {}, ServiceGroup id: {}."),
+    BUS_HTTP_GET_END_STATIC_CONTENT ("BUS-007", "End Http GET static content from host: {}, Path: {}."),
 
 
-    BUS_HTTP_PUT_SERVICE_METADATA ("BUS-007", "Http PUT ServiceGroupMetadata from user {} from host: {}. ServiceGroup with domain: {}, ServiceGroup id: {} , metadata id {}."),
-    BUS_HTTP_PUT_END_SERVICE_METADATA ("BUS-008", "End http PUT ServiceGroupMetadata from user {}, host: {}. ServiceGroup with domain {}, ServiceGroup id: {} , metadata id {}, created {}"),
-    BUS_HTTP_DELETE_SERVICE_METADATA ("BUS-009", "Http DELETE ServiceGroupMetadata from user {} from host: {}. ServiceGroup id: {} , metadata id {}."),
-    BUS_HTTP_DELETE_END_SERVICE_METADATA ("BUS-010", "End Http DELETE ServiceGroupMetadata from user {} from host: {}. ServiceGroup id: {} , metadata id {}."),
+    BUS_HTTP_PUT_SERVICE_METADATA ("BUS-008", "Http PUT ServiceGroupMetadata from user {} from host: {}. ServiceGroup with domain: {}, ServiceGroup id: {} , metadata id {}."),
+    BUS_HTTP_PUT_END_SERVICE_METADATA ("BUS-009", "End http PUT ServiceGroupMetadata from user {}, host: {}. ServiceGroup with domain {}, ServiceGroup id: {} , metadata id {}, created {}"),
+    BUS_HTTP_DELETE_SERVICE_METADATA ("BUS-010", "Http DELETE ServiceGroupMetadata from user {} from host: {}. ServiceGroup id: {} , metadata id {}."),
+    BUS_HTTP_DELETE_END_SERVICE_METADATA ("BUS-011", "End Http DELETE ServiceGroupMetadata from user {} from host: {}. ServiceGroup id: {} , metadata id {}."),
 
-    BUS_HTTP_GET_SERVICE_METADATA ("BUS-011", "Http GET ServiceGroup from host: {}, ServiceGroup id: {}, metadata id {}."),
-    BUS_HTTP_GET_END_SERVICE_METADATA ("BUS-012", "End Http GET ServiceGroup from host: {}, ServiceGroup id: {}, metadata id {}."),
+    BUS_HTTP_GET_SERVICE_METADATA ("BUS-012", "Http GET ServiceGroup from host: {}, ServiceGroup id: {}, metadata id {}."),
+    BUS_HTTP_GET_END_SERVICE_METADATA ("BUS-013", "End Http GET ServiceGroup from host: {}, ServiceGroup id: {}, metadata id {}."),
 
-    BUS_SAVE_SERVICE_GROUP ("BUS-013", "Start inserting/updating ServiceGroup for domain {}, part. Id: {} part. schema {}."),
-    BUS_SAVE_SERVICE_GROUP_FAILED ("BUS-014", "Inserting/updating ServiceGroup for domain {}, part. Id: {} part. schema {} failed! Error: [{}]"),
+    BUS_SAVE_SERVICE_GROUP ("BUS-014", "Start inserting/updating ServiceGroup for domain {}, part. Id: {} part. schema {}."),
+    BUS_SAVE_SERVICE_GROUP_FAILED ("BUS-015", "Inserting/updating ServiceGroup for domain {}, part. Id: {} part. schema {} failed! Error: [{}]"),
 
 
     BUS_INVALID_XML("BUS-030", "Invalid XML for {}. Error: [{}]"),

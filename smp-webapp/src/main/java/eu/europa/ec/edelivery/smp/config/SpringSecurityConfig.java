@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
@@ -22,5 +23,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 
 @EnableWebSecurity
 @ImportResource("classpath:spring-security.xml")
+@ComponentScan("eu.europa.ec.edelivery.smp.auth")
 public class SpringSecurityConfig {
 }

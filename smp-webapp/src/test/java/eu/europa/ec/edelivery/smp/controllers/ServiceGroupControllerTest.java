@@ -71,7 +71,7 @@ public class ServiceGroupControllerTest {
 
     private static final String OTHER_OWNER_NAME_URL_ENCODED = "CN=utf-8_%C5%BC_SMP,O=EC,C=BE:0000000000000666";
 
-    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("test_admin", "test123");
+    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
 
     @Autowired
     private WebApplicationContext webAppContext;

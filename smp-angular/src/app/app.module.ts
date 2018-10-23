@@ -2,22 +2,23 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
-import { FlexLayoutModule } from "@angular/flex-layout";
+import {FlexLayoutModule} from "@angular/flex-layout";
 import {
   MatButtonModule,
+  MatCardModule,
+  MatDatepickerModule,
   MatDialogModule,
+  MatExpansionModule,
   MatIconModule,
   MatInputModule,
   MatListModule,
   MatMenuModule,
   MatSelectModule,
   MatSidenavModule,
-  MatTooltipModule,
-  MatExpansionModule,
-  MatDatepicker,
-  MatCardModule,
-  MatDatepickerModule,
   MatSlideToggleModule,
+  MatTabsModule,
+  MatToolbarModule,
+  MatTooltipModule,
 } from '@angular/material';
 import "hammerjs";
 
@@ -70,6 +71,11 @@ import {UserDetailsDialogComponent} from './user/user-details-dialog/user-detail
 import {DownloadService} from './download/download.service';
 import {UserService} from './user/user.service';
 import {CertificateService} from './user/certificate.service';
+import {GlobalLookups} from "./common/global-lookups";
+import {ServiceGroupExtensionWizardDialogComponent} from "./service-group-edit/service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component";
+import {ServiceMetadataWizardDialogComponent} from "./service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-dialog.component";
+import {ConfirmationDialogComponent} from "./common/confirmation-dialog/confirmation-dialog.component";
+import {SpinnerComponent} from "./common/spinner/spinner.component";
 
 @NgModule({
   declarations: [
@@ -83,15 +89,19 @@ import {CertificateService} from './user/certificate.service';
     UserComponent,
     AlertComponent,
     FooterComponent,
+    SpinnerComponent,
     IsAuthorized,
     SaveDialogComponent,
     ServiceGroupMetadataDialogComponent,
     CancelDialogComponent,
+    ConfirmationDialogComponent,
     RowLimiterComponent,
     DatePipe,
     CapitalizeFirstPipe,
     DefaultPasswordDialogComponent,
     ServiceGroupDetailsDialogComponent,
+    ServiceGroupExtensionWizardDialogComponent,
+    ServiceMetadataWizardDialogComponent,
     ColumnPickerComponent,
     PageHelperComponent,
     ClearInvalidDirective,
@@ -105,9 +115,12 @@ import {CertificateService} from './user/certificate.service';
     AppComponent,
     ServiceGroupMetadataDialogComponent,
     ServiceGroupDetailsDialogComponent,
+    ServiceGroupExtensionWizardDialogComponent,
+    ServiceMetadataWizardDialogComponent,
     DomainDetailsDialogComponent,
     UserDetailsDialogComponent,
     CancelDialogComponent,
+    ConfirmationDialogComponent,
     SaveDialogComponent,
     DefaultPasswordDialogComponent,
   ],
@@ -123,12 +136,14 @@ import {CertificateService} from './user/certificate.service';
     MatDatepickerModule,
     MatDialogModule,
     MatTooltipModule,
+    MatToolbarModule,
     MatMenuModule,
     MatInputModule,
     MatIconModule,
     MatListModule,
     MatSidenavModule,
     MatSelectModule,
+    MatTabsModule,
     MatSlideToggleModule,
     routing,
     ReactiveFormsModule,
@@ -149,6 +164,7 @@ import {CertificateService} from './user/certificate.service';
     DownloadService,
     UserService,
     CertificateService,
+    GlobalLookups,
     DatePipe,
     {
       provide: ExtendedHttpClient,

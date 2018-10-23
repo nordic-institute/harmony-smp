@@ -1,10 +1,11 @@
 <mat-sidenav-container >
   <mat-sidenav mode="side" opened="true" ngClass="{{menuClass}}">
+
     <!-- sidenav content -->
     <div id="topLogo">
       <img src="assets/images/smp_logo_icon.svg" [attr.height]="fullMenu ? '74px' : '40px'" [attr.width]="fullMenu ? '74px' : '40px'"/>
       <div id="topLogoText" *ngIf="fullMenu">
-        <h1>eDeliver SMP <span>Administration <br>Console</span></h1>
+        <h1>eDelivery SMP <span>Administration <br>Console</span></h1>
       </div>
     </div>
 
@@ -12,17 +13,17 @@
       <mat-icon matTooltip="Search" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">search</mat-icon>
       <span>Search</span>
     </button>
-    <button mat-raised-button class="sideNavButton" [routerLink]="['/edit']" id="edit_id">
+    <button mat-raised-button class="sideNavButton" *ngIf="isCurrentUserSMPAdmin() || isCurrentUserServiceGroupAdmin()"  [routerLink]="['/edit']" id="edit_id">
       <mat-icon matTooltip="Edit" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">edit</mat-icon>
       <span>Edit</span>
     </button>
-    <button mat-raised-button class="sideNavButton" [routerLink]="['/domain']" id="domain_id">
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/domain']"  *ngIf="isCurrentUserSystemAdmin()" id="domain_id">
       <mat-icon matTooltip="Domain" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">domain</mat-icon>
       <span>Domain</span>
     </button>
 
     <!-- button mat-raised-button class="sideNavButton" [routerLink]="['/user']" *ngIf="hasAdmin()" id="user_id" -->
-    <button mat-raised-button class="sideNavButton" [routerLink]="['/user']" id="user_id">
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/user']" *ngIf="isCurrentUserSystemAdmin()"  id="user_id">
       <mat-icon matTooltip="Users" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">people</mat-icon>
       <span>Users</span>
     </button>
@@ -59,15 +60,14 @@
   <div id=".my-content" style="position:absolute; bottom:5px; top:5px; right: 5px; left: 5px">
 
 
-    <div id="sandwichMenuHolder">
+    <div id="sandwichMenuHolder" style="z-index: 500">
 
 
-      <domain-selector *ngIf="currentUser" [currentComponent]="outlet.activated ? outlet.component : null"></domain-selector>
-
-      <div class="helpMenu">
-        <page-helper></page-helper>
-      </div>
       <div id="sandwichMenu">
+
+        <a *ngIf="!currentUser" [routerLink]="['/login']" > Login   </a>
+        <span *ngIf="currentUser" >User: {{currentUser}}  </span >
+
         <button mat-icon-button [mat-menu-trigger-for]="settingsMenu" id="settingsmenu_id" matTooltip="Menu">
           <mat-icon>menu</mat-icon>
         </button>

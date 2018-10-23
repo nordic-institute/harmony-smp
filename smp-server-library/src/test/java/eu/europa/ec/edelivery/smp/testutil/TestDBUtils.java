@@ -53,10 +53,16 @@ public class TestDBUtils {
     }
 
     public static DBServiceGroup createDBServiceGroup(String id, String sch) {
+        return createDBServiceGroup(id, sch, true);
+    }
+
+    public static DBServiceGroup createDBServiceGroup(String id, String sch, boolean withExtension) {
         DBServiceGroup grp = new DBServiceGroup();
         grp.setParticipantIdentifier(id);
         grp.setParticipantScheme(sch);
-        grp.setExtension(generateExtension());
+        if (withExtension) {
+            grp.setExtension(generateExtension());
+        }
         return grp;
     }
 
@@ -70,7 +76,7 @@ public class TestDBUtils {
         DBUser dbuser = new DBUser();
         dbuser.setUsername(userName);
         dbuser.setRole("test");
-        dbuser.setEmail("test@test.eu");
+        dbuser.setEmailAddress("test@test.eu");
         dbuser.setPasswordChanged(LocalDateTime.now());
         dbuser.setPassword(UUID.randomUUID().toString());
         return dbuser;

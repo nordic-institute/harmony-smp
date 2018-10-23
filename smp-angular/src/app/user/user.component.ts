@@ -4,8 +4,8 @@ import {MatDialog, MatDialogRef} from '@angular/material';
 import {AlertService} from '../alert/alert.service';
 import {UserController} from './user-controller';
 import {HttpClient} from '@angular/common/http';
-import {Role} from "../security/role.model";
-import {UserRo} from "./user-ro.model";
+import {SearchTableComponent} from "../common/search-table/search-table.component";
+import {SecurityService} from "../security/security.service";
 
 @Component({
   templateUrl:'./user.component.html',
@@ -13,13 +13,19 @@ import {UserRo} from "./user-ro.model";
 })
 export class UserComponent implements OnInit {
 
-  @ViewChild('roleCellTemplate') roleCellTemplate: TemplateRef<any>
+  @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>
+  @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>
+  @ViewChild('rowActions') rowActions: TemplateRef<any>;
+  @ViewChild('searchTable') searchTable: SearchTableComponent;
 
   columnPicker: ColumnPicker = new ColumnPicker();
   userController: UserController;
   filter: any = {};
 
-  constructor(protected http: HttpClient, protected alertService: AlertService, public dialog: MatDialog) {
+  constructor(public securityService: SecurityService,
+              protected http: HttpClient,
+              protected alertService: AlertService,
+              public dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -37,7 +43,6 @@ export class UserComponent implements OnInit {
         canAutoResize: true
       },
       {
-        cellTemplate: this.roleCellTemplate,
         name: 'Role',
         prop: 'role',
         canAutoResize: true
@@ -52,8 +57,8 @@ export class UserComponent implements OnInit {
   details(row: any) {
     this.userController.showDetails(row);
   }
-
-  getRoleLabel(role: string): Role {
-    return Role[role];
+  // for dirty guard...
+  isDirty (): boolean {
+    return this.searchTable.isDirty();
   }
 }

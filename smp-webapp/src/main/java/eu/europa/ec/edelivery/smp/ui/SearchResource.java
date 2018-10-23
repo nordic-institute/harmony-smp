@@ -1,18 +1,23 @@
 package eu.europa.ec.edelivery.smp.ui;
 
 
-import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
+import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupSearchRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.services.ui.UIServiceGroupService;
-import eu.europa.ec.edelivery.smp.ui.filters.ServiceGroupFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import eu.europa.ec.edelivery.smp.services.ui.UIServiceGroupSearchService;
+import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
+import java.util.Optional;
+
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.DOMAIN_NOT_EXISTS;
 
 /**
  * @author Joze Rihtarsic
@@ -26,8 +31,9 @@ public class SearchResource {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SearchResource.class);
 
     @Autowired
-    private UIServiceGroupService uiServiceGroupService;
-
+    private UIServiceGroupSearchService uiServiceGroupService;
+    @Autowired
+    private DomainDao domainDao;
     @PostConstruct
     protected void init() {
 
@@ -36,20 +42,23 @@ public class SearchResource {
     @PutMapping(produces = {"application/json"})
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
-    public  ServiceResult<ServiceGroupRO> getServiceGroupList(
+    public ServiceResult<ServiceGroupSearchRO> getServiceGroupList(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
             @RequestParam(value = "orderBy", required = false) String orderBy,
             @RequestParam(value = "orderType", defaultValue = "asc", required = false) String orderType,
             @RequestParam(value = "participantIdentifier", required = false) String participantIdentifier,
             @RequestParam(value = "participantScheme", required = false) String participantScheme,
-            @RequestParam(value = "domain", required = false) String domain
-            ) {
+            @RequestParam(value = "domain", required = false) String domainCode
+    ) {
 
-        LOG.info("Search for page: {}, page size: {}, part. id: {}, part sch: {}, domain {}",page, pageSize, participantIdentifier, participantScheme, domain );
+        LOG.info("Search for page: {}, page size: {}, part. id: {}, part sch: {}, domain {}", page, pageSize, participantIdentifier, participantScheme, domainCode);
         ServiceGroupFilter sgf = new ServiceGroupFilter();
         sgf.setParticipantIdentifierLike(participantIdentifier);
         sgf.setParticipantSchemeLike(participantScheme);
-        return uiServiceGroupService.getTableList(page,pageSize, orderBy, orderType, sgf );
+        // add domain search parameter
+        sgf.setDomain(domainDao.validateDomainCode(domainCode));
+
+        return uiServiceGroupService.getTableList(page, pageSize, orderBy, orderType, sgf);
     }
 }

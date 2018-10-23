@@ -77,5 +77,4 @@ public class ServiceGroupServiceTestService extends AbstractServiceIntegrationTe
         testInstance.validateOwnership(USER_CERT_3, dbsg.get());
 
     }
-
 }
