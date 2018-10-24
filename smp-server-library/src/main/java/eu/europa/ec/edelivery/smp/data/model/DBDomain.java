@@ -28,19 +28,33 @@ import java.time.LocalDateTime;
         @NamedQuery(name = "DBDomain.getDomainByCode", query = "SELECT d FROM DBDomain d WHERE d.domainCode = :domainCode"),
         @NamedQuery(name = "DBDomain.getDomainByID", query = "SELECT d FROM DBDomain d WHERE d.id = :id"),
         @NamedQuery(name = "DBDomain.getAll", query = "SELECT d FROM DBDomain d"),
-        @NamedQuery(name = "DBDomain.removeByDomainCode", query = "DELETE FROM DBDomain d WHERE d.domainCode = :domainCode")
+})
+@NamedNativeQueries({
+        @NamedNativeQuery(name = "DBDomainDeleteValidation.validateDomainUsage",
+                resultSetMapping = "DBDomainDeleteValidationMapping",
+                query = "select D.ID as id, D.DOMAIN_CODE as domainCode, D.SML_SUBDOMAIN as smlSubdomain, COUNT(SGD.ID) as useCount " +
+                        " from SMP_DOMAIN D  INNER JOIN SMP_SERVICE_GROUP_DOMAIN SGD ON (D.ID =SGD.FK_DOMAIN_ID) " +
+                        " WHERE D.ID IN (:domainIds)" +
+                        "GROUP BY D.DOMAIN_CODE, D.SML_SUBDOMAIN;"),
+})
+@SqlResultSetMapping(name = "DBDomainDeleteValidationMapping", classes = {
+        @ConstructorResult(targetClass = DBDomainDeleteValidation.class,
+                columns = {@ColumnResult(name = "id", type = Long.class),
+                        @ColumnResult(name = "domainCode", type = String.class),
+                        @ColumnResult(name = "smlSubdomain", type = String.class),
+                        @ColumnResult(name = "useCount", type = Integer.class)})
 })
 public class DBDomain extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "domain_generator")
-    @SequenceGenerator(name="domain_generator", sequenceName = "SMP_DOMAIN_SEQ", allocationSize = 1, initialValue = 1)
-    @Column(name = "ID" )
+    @SequenceGenerator(name = "domain_generator", sequenceName = "SMP_DOMAIN_SEQ", allocationSize = 1, initialValue = 1)
+    @Column(name = "ID")
     Long id;
 
-    @Column(name = "DOMAIN_CODE", length = CommonColumnsLengths.MAX_DOMAIN_CODE_LENGTH, nullable = false,  unique = true)
+    @Column(name = "DOMAIN_CODE", length = CommonColumnsLengths.MAX_DOMAIN_CODE_LENGTH, nullable = false, unique = true)
     String domainCode;
-    @Column(name = "SML_SUBDOMAIN", length = CommonColumnsLengths.MAX_SML_SUBDOMAIN_LENGTH,  unique = true)
+    @Column(name = "SML_SUBDOMAIN", length = CommonColumnsLengths.MAX_SML_SUBDOMAIN_LENGTH, unique = true)
     String smlSubdomain;
     @Column(name = "SML_SMP_ID", length = CommonColumnsLengths.MAX_SML_SMP_ID_LENGTH)
     String smlSmpId;
@@ -53,7 +67,7 @@ public class DBDomain extends BaseEntity {
     @Column(name = "SIGNATURE_KEY_ALIAS", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
     String signatureKeyAlias;
 
-    @Column(name = "CREATED_ON" , nullable = false)
+    @Column(name = "CREATED_ON", nullable = false)
     LocalDateTime createdOn;
     @Column(name = "LAST_UPDATED_ON", nullable = false)
     LocalDateTime lastUpdatedOn;
@@ -130,7 +144,7 @@ public class DBDomain extends BaseEntity {
 
     @PrePersist
     public void prePersist() {
-        if(createdOn == null) {
+        if (createdOn == null) {
             createdOn = LocalDateTime.now();
         }
         lastUpdatedOn = LocalDateTime.now();

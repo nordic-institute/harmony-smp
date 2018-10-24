@@ -2,7 +2,6 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,7 +23,7 @@ public class UserRO extends BaseRO {
     private boolean active = true;
     private String role;
     private Long id;
-    private CertificateRO certificateData;
+    private CertificateRO certificate;
     private int statusPassword = EntityROStatus.PERSISTED.getStatusNumber();
 
     public UserRO(){
@@ -87,12 +86,12 @@ public class UserRO extends BaseRO {
         this.role = role;
     }
 
-    public CertificateRO getCertificateData() {
-        return certificateData;
+    public CertificateRO getCertificate() {
+        return certificate;
     }
 
-    public void setCertificateData(CertificateRO certificate) {
-        this.certificateData = certificate;
+    public void setCertificate(CertificateRO certificate) {
+        this.certificate = certificate;
     }
     public List<String> getAuthorities() {
         return authorities;

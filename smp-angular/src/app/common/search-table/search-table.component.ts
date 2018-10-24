@@ -14,7 +14,7 @@ import {SaveDialogComponent} from '../save-dialog/save-dialog.component';
 import {DownloadService} from '../../download/download.service';
 import {HttpClient, HttpParams} from '@angular/common/http';
 import {ConfirmationDialogComponent} from "../confirmation-dialog/confirmation-dialog.component";
-import {SecurityService} from "../../security/security.service";
+import {SearchTableValidationResult} from "./search-table-validation-result.model";
 
 
 @Component({
@@ -45,6 +45,8 @@ export class SearchTableComponent implements OnInit {
   @Input() showSearchPanel: boolean = true;
   @Input() showIndexColumn: boolean = false;
   @Input() allowNewItems: boolean = false;
+  @Input() allowDeleteItems: boolean = false;
+
 
   loading = false;
 
@@ -164,25 +166,35 @@ export class SearchTableComponent implements OnInit {
   }
 
   private pageInternal(offset: number, pageSize: number, orderBy: string, asc: boolean) {
-    this.getTableDataEntries$(offset, pageSize, orderBy, asc).subscribe((result: SearchTableResult) => {
-      this.offset = offset;
-      this.rowLimiter.pageSize = pageSize;
-      this.orderBy = orderBy;
-      this.asc = asc;
 
-      this.unselectRows();
-      this.forceRefresh=false;
-      this.count = result.count; // must be set else table can not calculate page numbers
-      this.rows = result.serviceEntities.map(serviceEntity => {
-        return {
-          ...serviceEntity,
-          status: SearchTableEntityStatus.PERSISTED,
-          deleted: false
-        }
-      });
+
+    this.getTableDataEntries$(offset, pageSize, orderBy, asc).subscribe((result: SearchTableResult) => {
+
+      // empty page - probably refresh from delete...check if we can go one page back
+      // try again
+      if (result.count < 1 && offset > 0) {
+        this.pageInternal(offset--, pageSize, orderBy, asc)
+      }
+      else {
+        this.offset = offset;
+        this.rowLimiter.pageSize = pageSize;
+        this.orderBy = orderBy;
+        this.asc = asc;
+        this.unselectRows();
+        this.forceRefresh = false;
+        this.count = result.count; // must be set else table can not calculate page numbers
+        this.rows = result.serviceEntities.map(serviceEntity => {
+          return {
+            ...serviceEntity,
+            status: SearchTableEntityStatus.PERSISTED,
+            deleted: false
+          }
+        });
+      }
     }, (error: any) => {
       this.alertService.error("Error occurred:" + error);
     });
+
   }
 
   onPage(event) {
@@ -317,7 +329,7 @@ export class SearchTableComponent implements OnInit {
   }
 
   get safeRefresh(): boolean {
-    return !(!this.submitButtonsEnabled ||  this.forceRefresh) ;
+    return !(!this.submitButtonsEnabled || this.forceRefresh);
   }
 
   private editSearchTableEntity(rowNumber: number) {
@@ -352,23 +364,24 @@ export class SearchTableComponent implements OnInit {
   }
 
   private deleteSearchTableEntities(rows: Array<SearchTableEntity>) {
-    // TODO: add validation support to existing controllers
-    // if (this.searchTableController.validateDeleteOperation(rows)) {
-    //   this.alertService.error('You cannot delete the logged in user: ' + this.securityService.getCurrentUser().username);
-    //   return;
-    // }
 
-    for (const row of rows) {
-      if (row.status === SearchTableEntityStatus.NEW) {
-        this.rows.splice(this.rows.indexOf(row), 1);
+    this.searchTableController.validateDeleteOperation(rows).subscribe( (res: SearchTableValidationResult) => {
+      if (!res.validOperation) {
+        this.alertService.exception("Delete validation error", res.stringMessage, false);
       } else {
-        this.searchTableController.delete(row);
-        row.status = SearchTableEntityStatus.REMOVED;
-        row.deleted = true;
+        for (const row of rows) {
+          if (row.status === SearchTableEntityStatus.NEW) {
+            this.rows.splice(this.rows.indexOf(row), 1);
+          } else {
+            this.searchTableController.delete(row);
+            row.status = SearchTableEntityStatus.REMOVED;
+            row.deleted = true;
+          }
+        }
+        this.unselectRows();
       }
-    }
+    });
 
-    this.unselectRows()
   }
 
   private unselectRows() {
@@ -384,7 +397,7 @@ export class SearchTableComponent implements OnInit {
 
   }
 
-  isDirty (): boolean {
+  isDirty(): boolean {
     return this.submitButtonsEnabled;
   }
 }

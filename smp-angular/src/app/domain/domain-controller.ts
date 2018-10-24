@@ -4,13 +4,19 @@ import {DomainDetailsDialogComponent} from './domain-details-dialog/domain-detai
 import {DomainRo} from './domain-ro.model';
 import {SearchTableEntityStatus} from '../common/search-table/search-table-entity-status.model';
 import {GlobalLookups} from "../common/global-lookups";
+import {of} from "rxjs/internal/observable/of";
+import {SearchTableValidationResult} from "../common/search-table/search-table-validation-result.model";
+import {SearchTableEntity} from "../common/search-table/search-table-entity.model";
+import {SmpConstants} from "../smp.constants";
+import {HttpClient} from "@angular/common/http";
 
 export class DomainController implements SearchTableController {
 
-  constructor(protected lookups: GlobalLookups, public dialog: MatDialog) {
+  constructor(protected http: HttpClient, protected lookups: GlobalLookups, public dialog: MatDialog) {
   }
 
   public showDetails( row: any) {
+
     let dialogRef: MatDialogRef<DomainDetailsDialogComponent> = this.dialog.open(DomainDetailsDialogComponent);
     dialogRef.afterClosed().subscribe(result => {
       //Todo:
@@ -42,5 +48,17 @@ export class DomainController implements SearchTableController {
   }
   public dataSaved() {
     this.lookups.refreshDomainLookup();
+  }
+
+  validateDeleteOperation(rows: Array<SearchTableEntity>){
+    var deleteRowIds = rows.map(rows => rows.id);
+    return  this.http.post<SearchTableValidationResult>(SmpConstants.REST_DOMAIN_VALIDATE_DELETE, deleteRowIds);
+  }
+
+  public newValidationResult(result: boolean, message: string): SearchTableValidationResult {
+    return {
+      validOperation: result,
+      stringMessage: '',
+    }
   }
 }

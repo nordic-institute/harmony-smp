@@ -54,7 +54,6 @@ export class DomainDetailsDialogComponent {
       };
 
     this.domainForm = fb.group({
-
       'domainCode': new FormControl({value: '', disabled: this.editMode}, [Validators.pattern(this.domainCodePattern),
         this.notInList(this.lookups.cachedDomainList.map(a => a.domainCode), this.current.domainCode)]),
       'smlSubdomain': new FormControl({

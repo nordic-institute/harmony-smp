@@ -36,7 +36,7 @@ export class DomainComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.domainController = new DomainController(this.lookups, this.dialog);
+    this.domainController = new DomainController(this.http, this.lookups, this.dialog);
 
     this.columnPicker.allColumns = [
       {

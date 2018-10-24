@@ -29,7 +29,7 @@
   <div fxLayout="row">
     <mat-card fxFlex="40">
       <mat-card-title>
-        <mat-slide-toggle mat-no-ink class="mat-primary" [formControl]="userForm.controls['userToggle']"
+        <mat-slide-toggle  mat-no-ink class="mat-primary" [formControl]="userForm.controls['userToggle']"
                           (change)="onUserToggleChanged($event)" id="userDetailsToggle_id">
           User/password authentication
         </mat-slide-toggle>
@@ -49,7 +49,7 @@
           </mat-form-field>
 
           <mat-slide-toggle *ngIf="editMode" mat-no-ink class="mat-primary" [formControl]="userForm.controls['passwordToggle']"
-                            (change)="onPasswordToggleChanged($event)" id="upasswordToggle_id">
+                            (change)="onPasswordToggleChanged($event)" id="passwordToggle_id">
             Change password
           </mat-slide-toggle>
 
@@ -89,7 +89,8 @@
     </mat-card>
     <mat-card fxFlex="60">
       <mat-card-title>
-        <mat-slide-toggle mat-no-ink class="mat-primary" [formControl]="userForm.controls['certificateToggle']"
+        <mat-slide-toggle mat-no-ink class="mat-primary" (change)="onCertificateToggleChanged($event)"
+                          [formControl]="userForm.controls['certificateToggle']"
                           id="certificateToggle_id">
           Certificate authentication
         </mat-slide-toggle>
