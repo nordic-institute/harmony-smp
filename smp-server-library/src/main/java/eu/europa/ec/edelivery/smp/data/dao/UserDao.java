@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +24,7 @@ import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_CERT_ID_MULTIPLE_ENTRY;
@@ -43,8 +45,8 @@ public class UserDao extends BaseDao<DBUser> {
     @Override
     @Transactional
     public void persistFlushDetach(DBUser user) {
-        if (StringUtils.isBlank(user.getUsername())
-                && (user.getCertificate()==null || StringUtils.isBlank(user.getCertificate().getCertificateId() )) ) {
+        if (  StringUtils.isBlank(user.getUsername())
+                && (user.getCertificate() == null || StringUtils.isBlank(user.getCertificate().getCertificateId() )) ) {
             throw new SMPRuntimeException(ErrorCode.INVALID_USER_NO_IDENTIFIERS);
         }
         super.persistFlushDetach(user);
@@ -106,4 +108,15 @@ public class UserDao extends BaseDao<DBUser> {
         }
     }
 
+    /**
+     * Validation report for users which owns service group
+     * @param userIds
+     * @return
+     */
+    public List<DBUserDeleteValidation> validateUsersForDelete(List<Long> userIds){
+        TypedQuery<DBUserDeleteValidation> query = memEManager.createNamedQuery("DBUserDeleteValidation.validateUsersForOwnership",
+                DBUserDeleteValidation.class);
+        query.setParameter("idList", userIds);
+        return query.getResultList();
+    }
 }

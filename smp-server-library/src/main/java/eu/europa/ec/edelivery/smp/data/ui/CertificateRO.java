@@ -1,6 +1,8 @@
 package eu.europa.ec.edelivery.smp.data.ui;
 
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import java.util.Date;
 
 /**
  * @author Joze Rihtarsic
@@ -15,10 +17,12 @@ public class CertificateRO extends BaseRO {
     private String issuer;
     private String serialNumber;
     private String encodedValue;
-    private LocalDateTime validFrom;
-    private LocalDateTime validTo;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd,HH:mm", timezone="CET")
+    private Date validFrom;
+    @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd,HH:mm", timezone="CET")
+    private Date validTo;
 
-    public CertificateRO(){
+    public CertificateRO() {
     }
 
     public static long getSerialVersionUID() {
@@ -57,19 +61,19 @@ public class CertificateRO extends BaseRO {
         this.serialNumber = serialNumber;
     }
 
-    public LocalDateTime getValidFrom() {
+    public Date getValidFrom() {
         return validFrom;
     }
 
-    public void setValidFrom(LocalDateTime validFrom) {
+    public void setValidFrom(Date validFrom) {
         this.validFrom = validFrom;
     }
 
-    public LocalDateTime getValidTo() {
+    public Date getValidTo() {
         return validTo;
     }
 
-    public void setValidTo(LocalDateTime validTo) {
+    public void setValidTo(Date validTo) {
         this.validTo = validTo;
     }
 
