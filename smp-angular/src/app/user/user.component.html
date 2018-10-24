@@ -9,6 +9,7 @@
   [showSearchPanel]="false"
   [filter]="filter"
   [allowNewItems]="securityService.isCurrentUserSystemAdmin()"
+  [allowDeleteItems]="securityService.isCurrentUserSystemAdmin()"
 >
 
   <ng-template #roleCellTemplate let-value="value" ngx-datatable-cell-template>{{getRoleLabel(value)}}</ng-template>

@@ -1,9 +1,10 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.config.H2JPATestConfiguration;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
+import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -14,6 +15,8 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.*;
@@ -28,6 +31,9 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
 
     @Autowired
     DomainDao testInstance;
+
+    @Autowired
+    ServiceGroupDao serviceGroupDao;
 
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
@@ -154,6 +160,36 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
         assertTrue(res);
         optDmn = testInstance.getDomainByCode(TestConstants.TEST_DOMAIN_CODE_1);
         assertFalse(optDmn.isPresent());
+    }
 
+
+    @Test
+    public void testValidateUsersForDeleteOKScenario() {
+        // set
+        DBDomain d = TestDBUtils.createDBDomain();
+        testInstance.persistFlushDetach(d);
+
+        // execute
+        List<DBDomainDeleteValidation> lst = testInstance.validateDomainsForDelete(Collections.singletonList(d.getId()));
+        assertTrue(lst.isEmpty());
+    }
+
+    @Test
+    public void testValidateUsersForDeleteUserIsOwner() {
+        // set
+        DBDomain d = TestDBUtils.createDBDomain();
+        testInstance.persistFlushDetach(d);
+
+        DBServiceGroup sg = TestDBUtils.createDBServiceGroup();
+        sg.addDomain(d);
+
+        serviceGroupDao.persistFlushDetach(sg);
+
+
+        // execute
+        List<DBDomainDeleteValidation> lst = testInstance.validateDomainsForDelete(Collections.singletonList(d.getId()));
+        assertEquals(1, lst.size());
+        assertEquals(d.getDomainCode(), lst.get(0).getDomainCode());
+        assertEquals(1, lst.get(0).getCount().intValue());
     }
 }

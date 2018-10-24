@@ -281,7 +281,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     if (!event.option.selected) {
       this.dialog.open(ConfirmationDialogComponent, {
         data: {
-          title: "Registred serviceMetadata on domain!",
+          title: "Registered serviceMetadata on domain!",
           description: "Unregistration of domain will also delete it's serviceMetadata. Do you want to continue?"
         }
       }).afterClosed().subscribe(result => {

@@ -14,6 +14,8 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.data.model.DBDomainDeleteValidation;
+import eu.europa.ec.edelivery.smp.data.model.DBUserDeleteValidation;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.apache.commons.lang.StringUtils;
@@ -91,7 +93,7 @@ public class DomainDao extends BaseDao<DBDomain> {
      * @param domainCode
      * @return
      */
-    public DBDomain validateDomainCode(String domainCode){
+    public DBDomain validateDomainCode(String domainCode) {
         DBDomain domain = null;
         if (!StringUtils.isBlank(domainCode)) {
             Optional<DBDomain> od = getDomainByCode(domainCode);
@@ -111,11 +113,25 @@ public class DomainDao extends BaseDao<DBDomain> {
      * False if entity did not exist, so nothing was changed
      */
     @Transactional
-    public boolean removeByDomainCode(String code) {
-        int removedRecords = memEManager.createNamedQuery("DBDomain.removeByDomainCode")
-                .setParameter("domainCode", code)
-                .executeUpdate();
-        return removedRecords > 0;
+    public boolean removeByDomainCode(String domainCode) {
+        Optional<DBDomain> optd = getDomainByCode(domainCode);
+        if (optd.isPresent()) {
+            memEManager.remove(optd.get());
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Validation report for domain which are used by  service groups from list of domain ids..
+     *  @param domainIds
+     * @return
+     */
+    public List<DBDomainDeleteValidation> validateDomainsForDelete(List<Long> domainIds){
+        TypedQuery<DBDomainDeleteValidation> query = memEManager.createNamedQuery("DBDomainDeleteValidation.validateDomainUsage",
+                DBDomainDeleteValidation.class);
+        query.setParameter("domainIds", domainIds);
+        return query.getResultList();
     }
 
 }

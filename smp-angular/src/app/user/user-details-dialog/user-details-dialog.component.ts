@@ -1,4 +1,4 @@
-import {Component, Inject, ViewChild} from '@angular/core';
+import {Component, Inject, TemplateRef, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef, MatSlideToggleChange} from '@angular/material';
 import {FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
 import {UserService} from '../user.service';
@@ -9,6 +9,7 @@ import {AlertService} from '../../alert/alert.service';
 import {CertificateService} from '../certificate.service';
 import {CertificateRo} from "../certificate-ro.model";
 import {DatePipe} from "../../custom-date/date.pipe";
+import {UserController} from "../user-controller";
 
 @Component({
   selector: 'user-details-dialog',
@@ -16,6 +17,9 @@ import {DatePipe} from "../../custom-date/date.pipe";
   styleUrls: ['user-details-dialog.component.css']
 })
 export class UserDetailsDialogComponent {
+
+
+  @ViewChild('fileInput')  private fileInput;
 
   static readonly NEW_MODE = 'New User';
   static readonly EDIT_MODE = 'User Edit';
@@ -30,9 +34,10 @@ export class UserDetailsDialogComponent {
   existingRoles = [];
   userForm: FormGroup;
   current: UserRo;
+  tempStoreForCertificate: CertificateRo = UserDetailsDialogComponent.newCertificteRo();
+  tempStoreForUser: UserRo = UserDetailsDialogComponent.newUserRo();
 
-  @ViewChild('fileInput')
-  private fileInput;
+
 
   private passwordConfirmationValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
     const userToggle = control.get('userToggle');
@@ -73,13 +78,7 @@ export class UserDetailsDialogComponent {
         ...data.row,
         password: '', // ensures the user password is cleared before editing
         confirmation: '',
-        certificate: {
-          subject: data.row.subject,
-          validFrom: data.row.validFrom,
-          validTo: data.row.validTo,
-          issuer: data.row.issuer,
-          serialNumber: data.row.serialNumber,
-        }
+        certificate:data.row.certificate? data.row.certificate: UserDetailsDialogComponent.newCertificteRo()
       }: {
         active: true,
         username: '',
@@ -89,46 +88,76 @@ export class UserDetailsDialogComponent {
         role: '',
         status: SearchTableEntityStatus.NEW,
         statusPassword: SearchTableEntityStatus.NEW,
-        certificate: {},
+        certificate:  UserDetailsDialogComponent.newCertificteRo(),
       };
 
-    const userDetailsToggled: boolean = this.current && !!this.current.username;
-    const passwordToggle: boolean = !this.editMode;
 
+    // The password authentication is if username exists
+    // if is off on clear than clear the username!
+    const bUserPasswordAuthentication: boolean = !!this.current.username;
+    const bSetPassword: boolean = false;
 
+    // calculate allowed roles
+    this.existingRoles = this.getAllowedRoles(this.current.role);
+
+    // set empty form ! do not bind it to current object !
     this.userForm = fb.group({
       // common values
-      'active': new FormControl({ value: this.current.active},[]),
-      'emailAddress': new FormControl({ value:this.current.emailAddress },[ Validators.pattern(this.emailPattern)]),
-      'role': new FormControl({ value: this.current.role }, Validators.required),
+      'active': new FormControl({ value: ''},[]),
+      'emailAddress': new FormControl({ value:'' },[ Validators.pattern(this.emailPattern)]),
+      'role': new FormControl({ value: '' }, Validators.required),
       // username/password authentication
-      'userToggle': new FormControl(userDetailsToggled),
-      'passwordToggle': new FormControl(passwordToggle),
-      'username': new FormControl({ value: this.current.username, disabled: this.editMode || !userDetailsToggled }, this.editMode ? Validators.nullValidator : null),
-      'password': new FormControl({ value: this.current.password, disabled: !userDetailsToggled && !passwordToggle},
+      'userToggle': new FormControl(bUserPasswordAuthentication),
+      'passwordToggle': new FormControl({value: bSetPassword, disabled:!bUserPasswordAuthentication}),
+      'username': new FormControl({ value: '', disabled: this.editMode || !bUserPasswordAuthentication }, this.editMode ? Validators.nullValidator : null),
+      'password': new FormControl({ value: '', disabled: !bUserPasswordAuthentication || !bSetPassword},
         [Validators.required, Validators.pattern(this.passwordPattern)]),
-      'confirmation': new FormControl({ value: this.current.password, disabled: !userDetailsToggled  && !passwordToggle},
+      'confirmation': new FormControl({ value: '', disabled: !bUserPasswordAuthentication  || !bSetPassword},
         Validators.pattern(this.passwordPattern)),
       // certificate authentication
-      'certificateToggle': new FormControl(this.current && this.current.certificate && !!this.current.certificate.subject),
-      'subject': new FormControl({ value: this.current.certificate.subject, disabled: true }, Validators.required),
-      'validFrom': new FormControl({ value: this.current.certificate.validFrom, disabled: true }, Validators.required),
-      'validTo': new FormControl({ value: this.current.certificate.validTo, disabled: true }, Validators.required),
-      'issuer': new FormControl({ value: this.current.certificate.issuer, disabled: true }, Validators.required),
-      'serialNumber': new FormControl({ value: this.current.certificate.serialNumber, disabled: true }, Validators.required),
-      'certificateId': new FormControl({ value: this.current.certificate.serialNumber, disabled: true }, Validators.required),
+      'certificateToggle': new FormControl(this.current && this.current.certificate && !!this.current.certificate.certificateId),
+      'subject': new FormControl({ value: '', disabled: true }, Validators.required),
+      'validFrom': new FormControl({ value: '', disabled: true }, Validators.required),
+      'validTo': new FormControl({ value: '', disabled: true }, Validators.required),
+      'issuer': new FormControl({ value: '', disabled: true }, Validators.required),
+      'serialNumber': new FormControl({ value: '', disabled: true }, Validators.required),
+      'certificateId': new FormControl({ value: '', disabled: true }, Validators.required),
     }, {
       validator: [this.passwordConfirmationValidator, this.atLeastOneToggleCheckedValidator, this.certificateValidator]
     });
+    // bind values to form! not property
+    this.userForm.controls['active'].setValue(this.current.active);
+    this.userForm.controls['emailAddress'].setValue(this.current.emailAddress);
+    this.userForm.controls['role'].setValue(this.current.role);
+    // username/password authentication
+    this.userForm.controls['username'].setValue(this.current.username);
+    this.userForm.controls['password'].setValue(this.current.password);
+    // certificate authentication
+    this.userForm.controls['subject'].setValue(this.current.certificate.subject);
+    this.userForm.controls['validFrom'].setValue(this.current.certificate.validFrom);
+    this.userForm.controls['validTo'].setValue(this.current.certificate.validTo);
+    this.userForm.controls['issuer'].setValue(this.current.certificate.issuer);
+    this.userForm.controls['serialNumber'].setValue(this.current.certificate.serialNumber);
+    this.userForm.controls['certificateId'].setValue(this.current.certificate.certificateId);
 
+    // if edit mode and user is given - toggle is dissabled
+    // username should  not be changed.!
+    if (this.editMode  && !!this.current.username){
+      this.userForm.controls['userToggle'].disable();
+    }
+
+/*  Do not need retrieve roles from server because client must alreay be aware of
+   the roles...
 
     this.userService.getUserRoles$().subscribe(userRoles => {
       this.userRoles = userRoles.json();
       this.existingRoles = this.editMode
         ? this.getAllowedRoles(this.userRoles, this.current.role)
         : this.userRoles;
-    });
+    });*/
   }
+
+
 
   submitForm() {
     this.dialogRef.close(true);
@@ -140,13 +169,20 @@ export class UserDetailsDialogComponent {
     const reader = new FileReader();
     reader.onload = (e) => {
       this.certificateService.uploadCertificate$(reader.result).subscribe((res: CertificateRo) => {
-            this.userForm.patchValue({
-              'subject': res.subject,
-              'validFrom': this.datePipe.transform(res.validFrom.toString(), this.dateFormat),
-              'validTo': this.datePipe.transform(res.validTo.toString(), this.dateFormat),
-              'issuer': res.issuer,
-              'serialNumber': res.serialNumber
-            });
+            if (res && res.certificateId){
+              this.userForm.patchValue({
+                'subject': res.subject,
+                //'validFrom': this.datePipe.transform(res.validFrom.toString(), this.dateFormat),
+                //'validTo': this.datePipe.transform(res.validTo.toString(), this.dateFormat),
+                'validFrom': res.validFrom,
+                'validTo': res.validTo,
+                'issuer': res.issuer,
+                'serialNumber': res.serialNumber,
+                'certificateId': res.certificateId
+              });
+            } else {
+              this.alertService.exception("Error occured while reading certificate.", "Check if uploaded file has valid certificate type?", false);
+            }
           },
           err => {
             this.alertService.exception('Error uploading certificate file ' + file.name, err);
@@ -160,33 +196,135 @@ export class UserDetailsDialogComponent {
     reader.readAsBinaryString(file);
   }
 
+  onCertificateToggleChanged({checked}: MatSlideToggleChange) {
+
+    if (checked) {
+      // fill from temp
+      this.userForm.controls['certificateId'].setValue( this.tempStoreForCertificate.certificateId);
+      this.userForm.controls['subject'].setValue( this.tempStoreForCertificate.subject);
+      this.userForm.controls['issuer'].setValue( this.tempStoreForCertificate.issuer);
+      this.userForm.controls['serialNumber'].setValue( this.tempStoreForCertificate.serialNumber);
+      this.userForm.controls['validFrom'].setValue( this.tempStoreForCertificate.validFrom);
+      this.userForm.controls['validFrom'].setValue( this.tempStoreForCertificate.validFrom);
+      this.userForm.controls['validTo'].setValue( this.tempStoreForCertificate.validTo);
+    } else {
+      // store data to temp, set values to null
+      this.tempStoreForCertificate.certificateId =  this.userForm.controls['certificateId'].value;
+      this.tempStoreForCertificate.subject =  this.userForm.controls['subject'].value;
+      this.tempStoreForCertificate.issuer =  this.userForm.controls['issuer'].value;
+      this.tempStoreForCertificate.serialNumber =  this.userForm.controls['serialNumber'].value;
+      this.tempStoreForCertificate.validFrom =  this.userForm.controls['validFrom'].value;
+      this.tempStoreForCertificate.validTo =  this.userForm.controls['validTo'].value;
+
+      this.userForm.controls['certificateId'].setValue("");
+      this.userForm.controls['subject'].setValue("");
+      this.userForm.controls['issuer'].setValue("");
+      this.userForm.controls['serialNumber'].setValue("");
+      this.userForm.controls['validFrom'].setValue("");
+      this.userForm.controls['validTo'].setValue("");
+    }
+
+  }
+
   onUserToggleChanged({checked}: MatSlideToggleChange) {
     const action = checked ? 'enable' : 'disable';
-    this.userForm.get('username')[checked && !this.editMode ? 'enable' : 'disable']();
-    //this.userForm.get('role')[action]();
-    //this.userForm.get('password')[action]();
-    //this.userForm.get('confirmation')[action]();
+    this.userForm.get('username')[action]();
+    this.userForm.get('password')[action]();
+    this.userForm.get('confirmation')[action]();
+
+    if(checked){
+      this.userForm.controls['username'].setValue( this.tempStoreForUser.username);
+      this.userForm.controls['password'].setValue( this.tempStoreForUser.password);
+    } else {
+      // store data to temp, set values to null
+      this.tempStoreForUser.username =  this.userForm.controls['username'].value;
+      this.tempStoreForUser.password =  this.userForm.controls['password'].value;
+
+
+      this.userForm.controls['username'].setValue("");
+      this.userForm.controls['password'].setValue("");
+    }
+    this.userForm.controls['passwordToggle'].setValue(checked || !this.editMode);
+
   }
+
 
   onPasswordToggleChanged({checked}: MatSlideToggleChange) {
     const action = checked ? 'enable' : 'disable';
     this.userForm.get('password')[action]();
     this.userForm.get('confirmation')[action]();
+    if (!checked)  {
+      this.userForm.get('password').setValue('');
+      this.userForm.get('confirmation').setValue('');
+    }
   }
 
 
 
-  getCurrent(): UserRo {
+  public getCurrent(): UserRo {
+    this.current.active =this.userForm.get('active').value;
+    this.current.emailAddress =this.userForm.get('emailAddress').value;
+    this.current.role =this.userForm.get('role').value;
+    // certificate data
+    if(this.userForm.get('certificateToggle')) {
+      this.current.certificate.certificateId =  this.userForm.controls['certificateId'].value;
+      this.current.certificate.subject =  this.userForm.controls['subject'].value;
+      this.current.certificate.issuer =  this.userForm.controls['issuer'].value;
+      this.current.certificate.serialNumber =  this.userForm.controls['serialNumber'].value;
+      this.current.certificate.validFrom =  this.userForm.controls['validFrom'].value;
+      this.current.certificate.validTo =  this.userForm.controls['validTo'].value;
+    } else {
+      this.current.certificate = null;
+    }
+    // set username and password for new
+    if (!this.editMode && this.userForm.get('userToggle')) {
+      this.current.username =  this.userForm.controls['username'].value;
+      this.current.password =  this.userForm.controls['password'].value;
+    }
+    // if edit mode and password on  - set password
+    else if (this.editMode && this.userForm.get('passwordToggle')) {
+      this.current.password =  this.userForm.controls['password'].value;
+    }
+
+
     // update data
     return this.current;
   }
 
   // filters out roles so that the user cannot change from system administrator to the other roles or vice-versa
-  private getAllowedRoles(allRoles, userRole) {
-    if (userRole === Role.SYSTEM_ADMIN) {
+  private getAllowedRoles(userRole) {
+    if (!this.editMode){
+      return Object.keys(Role);
+    }
+    else if (userRole === Role.SYSTEM_ADMIN) {
       return [Role.SYSTEM_ADMIN];
     } else {
-      return allRoles.filter(role => role !== Role.SYSTEM_ADMIN);
+      return Object.keys(Role).filter(role => role !== Role.SYSTEM_ADMIN);
+    }
+  }
+
+  public static newCertificteRo(): CertificateRo {
+    return {
+      subject: '',
+      validFrom: null,
+      validTo: null,
+      issuer: '',
+      serialNumber: '',
+      certificateId: '',
+      fingerprints:'',
+    }
+  }
+
+  public static newUserRo():UserRo {
+    return {
+      id: null,
+      index: null,
+      username: '',
+      emailAddress: '',
+      role: '',
+      active: true,
+      status: SearchTableEntityStatus.NEW,
+      statusPassword: SearchTableEntityStatus.NEW
     }
   }
 }
