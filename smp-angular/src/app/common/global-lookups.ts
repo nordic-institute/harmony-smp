@@ -1,69 +1,72 @@
 import {Injectable, OnInit} from '@angular/core';
 import {HttpClient, HttpParams} from "@angular/common/http";
-import {DomainRo} from "../domain/domain-ro.model";
 import {SearchTableResult} from "./search-table/search-table-result.model";
 import {SmpConstants} from "../smp.constants";
 import {Observable} from "rxjs/internal/Observable";
 import {UserRo} from "../user/user-ro.model";
 import {SecurityService} from "../security/security.service";
+import {Role} from "../security/role.model";
+import {AlertService} from "../alert/alert.service";
 
 /**
  * Purpose of object is to fetch lookups as domains and users
  */
 
 @Injectable()
-export class GlobalLookups  implements OnInit {
+export class GlobalLookups implements OnInit {
 
-  domainObserver:  Observable< SearchTableResult>
-  userObserver:  Observable< SearchTableResult>
+  domainObserver: Observable<SearchTableResult>
+  userObserver: Observable<SearchTableResult>
   cachedDomainList: Array<any> = [];
-  cachedUserList: Array<any> = [];
+  cachedServiceGroupOwnerList: Array<any> = [];
 
 
-  constructor(protected securityService: SecurityService,  protected http: HttpClient){
+  constructor(protected alertService: AlertService,  protected securityService: SecurityService, protected http: HttpClient) {
     this.refreshDomainLookup();
     this.refreshUserLookup();
   }
 
   ngOnInit() {
+
   }
 
-  public refreshDomainLookup(){
+  public refreshDomainLookup() {
     let params: HttpParams = new HttpParams()
       .set('page', '-1')
       .set('pageSize', '-1');
     // init domains
-    this.domainObserver = this.http.get<SearchTableResult>(SmpConstants.REST_DOMAIN,{params});
+    this.domainObserver = this.http.get<SearchTableResult>(SmpConstants.REST_DOMAIN, {params});
     this.domainObserver.subscribe((domains: SearchTableResult) => {
-      let gotList = new Array(domains.serviceEntities.length)
-        .map((v, index) => domains.serviceEntities[index] as DomainRo);
       this.cachedDomainList = domains.serviceEntities.map(serviceEntity => {
         return {...serviceEntity}
-
+      },
+      (error:any) => {
+          this.alertService.error("Error occured while loading domain lookup [" + error + "].")
       });
     });
   }
 
-  public refreshUserLookup(){
-    // call service if authenticated
-    if (this.securityService.isAuthenticated(false)) {
+  public refreshUserLookup() {
+    // call only for authenticated users.
+    if (this.securityService.isCurrentUserSMPAdmin()) {
       let params: HttpParams = new HttpParams()
         .set('page', '-1')
-        .set('pageSize', '-1');
+        .set('pageSize', '-1')
+        .set('roles', Role.SMP_ADMIN +","+Role.SERVICE_GROUP_ADMIN);
       // init users
       this.userObserver = this.http.get<SearchTableResult>(SmpConstants.REST_USER, {params});
       this.userObserver.subscribe((users: SearchTableResult) => {
-        let gotList = new Array(users.serviceEntities.length)
-          .map((v, index) => users.serviceEntities[index] as UserRo);
-        this.cachedUserList = users.serviceEntities.map(serviceEntity => {
+        this.cachedServiceGroupOwnerList = users.serviceEntities.map(serviceEntity => {
           return {...serviceEntity}
 
         });
-      });
+      },(error:any) => {
+        // check if unauthorized
+        // just console try latter
+          console.log("Error occured while loading user owners lookup [" + error + "]");
+        });
     }
   }
-
-
 
 
 }
