@@ -22,10 +22,7 @@ import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -63,7 +60,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertNotNull(res);
         assertEquals(0, res.getCount().intValue());
         assertEquals(0, res.getPage().intValue());
-        assertEquals(-1, res.getPageSize().intValue());
+        assertEquals(0, res.getPageSize().intValue());
         assertEquals(0, res.getServiceEntities().size());
         assertNull(res.getFilter());
     }
@@ -80,7 +77,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertNotNull(res);
         assertEquals(15, res.getCount().intValue());
         assertEquals(0, res.getPage().intValue());
-        assertEquals(-1, res.getPageSize().intValue());
+        assertEquals(15, res.getPageSize().intValue());
         assertEquals(15, res.getServiceEntities().size());
         assertNull(res.getFilter());
 
@@ -135,7 +132,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertEquals(iCnt+1, iCntNew);
         Optional<DBUser> oUsr =  userDao.findUserByUsername(user.getUsername());
         assertTrue(oUsr.isPresent());
-        assertEquals(user.getPassword(), oUsr.get().getPassword());
+        assertTrue(BCrypt.checkpw(user.getPassword(), oUsr.get().getPassword())); // password must be encrypted
         assertEquals(user.getUsername(), oUsr.get().getUsername());
         assertEquals(user.getRole(), oUsr.get().getRole());
         assertEquals(user.getEmailAddress(), oUsr.get().getEmailAddress());
@@ -148,8 +145,10 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         insertDataObjects(15);
         long  iCnt = userDao.getDataListCount(null);
 
-        LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-        LocalDateTime future =now.plusYears(1);
+        Calendar calTo = Calendar.getInstance();
+        calTo.add(Calendar.YEAR, 1);
+        Date now = Calendar.getInstance().getTime();
+        Date future =calTo.getTime();
 
         UserRO user = new UserRO();
         user.setPassword(UUID.randomUUID().toString());
@@ -163,7 +162,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         cert.setCertificateId(UUID.randomUUID().toString());
         cert.setValidFrom(now);
         cert.setValidTo(future);
-        user.setCertificateData(cert);
+        user.setCertificate(cert);
 
         user.setStatus(EntityROStatus.NEW.getStatusNumber());
 
@@ -175,8 +174,52 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertEquals(iCnt+1, iCntNew);
         Optional<DBUser> oUsr =  userDao.findUserByUsername(user.getUsername());
         assertTrue(oUsr.isPresent());
-        assertEquals(user.getPassword(), oUsr.get().getPassword());
+        assertTrue(BCrypt.checkpw(user.getPassword(), oUsr.get().getPassword())); // password must be encrypted
         assertEquals(user.getUsername(), oUsr.get().getUsername());
+        assertEquals(user.getRole(), oUsr.get().getRole());
+        assertEquals(user.getEmailAddress(), oUsr.get().getEmailAddress());
+        assertNotNull(oUsr.get().getCertificate());
+        assertEquals(cert.getCertificateId(), cert.getCertificateId());
+        assertEquals(cert.getSubject(), cert.getSubject());
+        assertEquals(cert.getIssuer(), cert.getIssuer());
+        assertEquals(cert.getSerialNumber(), cert.getSerialNumber());
+        assertEquals(now, cert.getValidFrom());
+        assertEquals(future, cert.getValidTo());
+    }
+
+    @Test
+    public void testAddUserWithOnlyCertificate() {
+        // given
+        insertDataObjects(15);
+        long  iCnt = userDao.getDataListCount(null);
+
+        Calendar calTo = Calendar.getInstance();
+        calTo.add(Calendar.YEAR, 1);
+        Date now = Calendar.getInstance().getTime();
+        Date future =calTo.getTime();
+
+        UserRO user = new UserRO();
+
+        user.setRole("ROLE");
+        CertificateRO cert = new CertificateRO();
+        cert.setSubject(UUID.randomUUID().toString());
+        cert.setIssuer(UUID.randomUUID().toString());
+        cert.setSerialNumber(UUID.randomUUID().toString());
+        cert.setCertificateId(UUID.randomUUID().toString());
+        cert.setValidFrom(now);
+        cert.setValidTo(future);
+        user.setCertificate(cert);
+
+        user.setStatus(EntityROStatus.NEW.getStatusNumber());
+
+
+        //when
+        testInstance.updateUserList(Collections.singletonList(user));
+        // then
+        long  iCntNew  = userDao.getDataListCount(null);
+        assertEquals(iCnt+1, iCntNew);
+        Optional<DBUser> oUsr =  userDao.findUserByIdentifier(user.getCertificate().getCertificateId());
+        assertTrue(oUsr.isPresent());
         assertEquals(user.getRole(), oUsr.get().getRole());
         assertEquals(user.getEmailAddress(), oUsr.get().getEmailAddress());
         assertNotNull(oUsr.get().getCertificate());
@@ -192,8 +235,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     @Test
     public void testUserRemoveCertificate() {
         // given
-
-
         LocalDateTime now = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
         LocalDateTime future =now.plusYears(1);
 
@@ -214,10 +255,10 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         ServiceResult<UserRO> urTest  =  testInstance.getTableList(-1,-1,null, null, null);
         assertEquals(1, urTest.getServiceEntities().size());
         UserRO userRO = urTest.getServiceEntities().get(0);
-        assertNotNull(userRO.getCertificateData());
+        assertNotNull(userRO.getCertificate());
 
         //when
-        userRO.setCertificateData(null);
+        userRO.setCertificate(null);
         userRO.setStatus(EntityROStatus.UPDATED.getStatusNumber());
 
         testInstance.updateUserList(Collections.singletonList(userRO));
@@ -225,7 +266,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         ServiceResult<UserRO> res  =  testInstance.getTableList(-1,-1,null, null, null);
         assertEquals(1, urTest.getServiceEntities().size());
         UserRO userResRO = urTest.getServiceEntities().get(0);
-        assertNull(userResRO.getCertificateData());
+        assertNull(userResRO.getCertificate());
 
     }
 
@@ -264,8 +305,26 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertEquals("3", cer.getSerialNumber());
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
-        assertTrue(cer.getValidFrom().isBefore(cer.getValidTo()));
+        assertTrue(cer.getValidFrom().before(cer.getValidTo()));
     }
+
+    @Test
+    public void testGetCertificateDataPEMWithHeader() throws IOException, CertificateException {
+        // given
+        byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/truststore/pem-with-header.crt"));
+        // when
+        CertificateRO cer = testInstance.getCertificateData(buff);
+        //then
+        assertEquals("CN=alice,O=www.freelan.org,C=FR:0000000000000001", cer.getCertificateId());
+        assertEquals("EMAILADDRESS=contact@freelan.org, CN=Freelan Sample Certificate Authority, OU=freelan, O=www.freelan.org, L=Strasbourg, ST=Alsace, C=FR", cer.getIssuer());
+        assertEquals("EMAILADDRESS=contact@freelan.org, CN=alice, OU=freelan, O=www.freelan.org, ST=Alsace, C=FR", cer.getSubject());
+        assertEquals("1", cer.getSerialNumber());
+        assertNotNull(cer.getValidFrom());
+        assertNotNull(cer.getValidTo());
+        assertTrue(cer.getValidFrom().before(cer.getValidTo()));
+    }
+
+
 
     @Test
     public void testGetCertificateDataDER() throws IOException, CertificateException {
@@ -281,7 +340,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertEquals("474980c51478cf62761667461aef5e8e", cer.getSerialNumber());
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
-        assertTrue(cer.getValidFrom().isBefore(cer.getValidTo()));
+        assertTrue(cer.getValidFrom().before(cer.getValidTo()));
     }
 
 }

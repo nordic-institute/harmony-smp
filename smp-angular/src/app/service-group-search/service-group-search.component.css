@@ -17,7 +17,6 @@
   overflow-y: scroll;
 }
 
-
 /deep/ .inner-table {
   margin-left: 100px;
   width: 80%;
@@ -32,3 +31,4 @@
   height: auto !important;;
   line-height: unset !important;
 }
+

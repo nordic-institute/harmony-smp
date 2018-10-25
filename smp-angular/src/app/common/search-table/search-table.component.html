@@ -1,4 +1,4 @@
-<div fxLayout="column" style="position: absolute; top: 5px; bottom: 5px; left: 5px; right: 5px;">
+<div fxLayout="column" fxFill="100" style=" top: 5px; bottom: 5px; left: 5px; right: 5px;">
   <h1  flex id="{{id}}_header_id" style="margin: 0 !important;">{{title}}</h1>
   <div *ngIf="showSearchPanel" fxFlex="20" class="selectionCriteria">
     <mat-card>
@@ -77,7 +77,7 @@
                 (click)="editSearchTableEntityRow(row)" tooltip="Edit">
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-icon-button color="primary" [disabled]="row.deleted || loading"
+        <button *ngIf="allowDeleteItems"  mat-icon-button color="primary" [disabled]="row.deleted || loading"
                 (click)="onDeleteRowActionClicked(row)" tooltip="Delete">
           <mat-icon>delete</mat-icon>
         </button>
@@ -107,7 +107,7 @@
           <span>Save</span>
         </button>
        <!-- new button enabled -->
-        <button id="newButton" mat-raised-button (click)="onNewButtonClicked()"
+        <button *ngIf="allowNewItems" id="newButton" mat-raised-button (click)="onNewButtonClicked()"
                 [disabled]="loading || !allowNewItems" color="primary">
           <mat-icon>add</mat-icon>
           <span>New</span>
@@ -117,8 +117,8 @@
           <mat-icon>edit</mat-icon>
           <span>Edit</span>
         </button>
-        <button id="deleteButton" mat-raised-button (click)="onDeleteButtonClicked()"
-                [disabled]="!deleteButtonEnabled || loading" color="primary">
+        <button *ngIf="allowDeleteItems" id="deleteButton" mat-raised-button (click)="onDeleteButtonClicked()"
+                [disabled]="!deleteButtonEnabled || loading || !allowDeleteItems" color="primary">
           <mat-icon>delete</mat-icon>
           <span>Delete</span>
         </button>

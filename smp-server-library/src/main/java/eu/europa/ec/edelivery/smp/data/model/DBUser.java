@@ -27,6 +27,24 @@ import java.util.Objects;
         @NamedQuery(name = "DBUser.getUserByUsernameInsensitive", query = "SELECT u FROM DBUser u WHERE lower(u.username) = lower(:username)"),
         @NamedQuery(name = "DBUser.getUserByCertificateId", query = "SELECT u FROM DBUser u WHERE u.certificate.certificateId = :certificateId"),
 })
+@NamedNativeQueries({
+        @NamedNativeQuery(name = "DBUserDeleteValidation.validateUsersForOwnership",
+                resultSetMapping="DBUserDeleteValidationMapping",
+                query = "SELECT S.ID as ID, S.USERNAME as USERNAME, " +
+                        "    C.CERTIFICATE_ID as certificateId, COUNT(S.ID) as  ownedCount  FROM " +
+                        " SMP_USER S LEFT JOIN SMP_CERTIFICATE C ON (S.ID=C.ID) " +
+                        " INNER JOIN SMP_OWNERSHIP SG ON (S.ID = SG.FK_USER_ID) " +
+                        " WHERE S.ID IN (:idList)" +
+                        " GROUP BY S.ID, S.USERNAME, C.CERTIFICATE_ID"),
+})
+@SqlResultSetMapping(name="DBUserDeleteValidationMapping", classes = {
+        @ConstructorResult(targetClass = DBUserDeleteValidation.class,
+                columns = {@ColumnResult(name="id" , type=Long.class),
+                        @ColumnResult(name="username",type=String.class),
+                        @ColumnResult(name="certificateId",type=String.class),
+                        @ColumnResult(name="ownedCount",type=Integer.class)})
+})
+
 public class DBUser extends BaseEntity {
 
     @Id
@@ -51,7 +69,8 @@ public class DBUser extends BaseEntity {
     @Column(name = "ROLE", length = CommonColumnsLengths.MAX_USER_ROLE_LENGTH)
     private String role;
 
-    @OneToOne(mappedBy = "dbUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = true)
+    @OneToOne(mappedBy = "dbUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER, optional = true,
+            orphanRemoval = true)
     private DBCertificate certificate;
 
     @Column(name = "CREATED_ON" , nullable = false)

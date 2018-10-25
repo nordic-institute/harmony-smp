@@ -70,6 +70,19 @@ export class AppComponent implements OnInit {
     return user ? user.username : "";
   }
 
+
+  get getCurrentUserRoleDescription(): string {
+      if (this.securityService.isCurrentUserSystemAdmin()){
+        return "System administrator";
+      } else if (this.securityService.isCurrentUserSMPAdmin()){
+        return "SMP administrator";
+      } else if (this.securityService.isCurrentUserServiceGroupAdmin()){
+        return "Service group administrator"
+      }
+      return "";
+  }
+
+
   logout(event: Event): void {
     event.preventDefault();
     this.router.navigate(['/search']).then((ok) => {

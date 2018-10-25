@@ -55,12 +55,12 @@ public class MonitorResource {
 
     private static final String TEST_PART_SCHEMA = "test-actorid-qns";
     private static final String TEST_PART_ID = "urn:test:is:alive";
-    private static final String TEST_EXTENSION_XML ="<Extension xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\"><ex:dummynode xmlns:ex=\"http://test.eu\">Sample not mandatory extension</ex:dummynode></Extension>";
-    private static final String TEST_DB_SUCCESSFUL_ROLLBACK ="TEST_DB_SUCCESSFUL_ROLLBACK MESSAGE";
+    private static final String TEST_EXTENSION_XML = "<Extension xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\"><ex:dummynode xmlns:ex=\"http://test.eu\">Sample not mandatory extension</ex:dummynode></Extension>";
+    private static final String TEST_DB_SUCCESSFUL_ROLLBACK = "TEST_DB_SUCCESSFUL_ROLLBACK MESSAGE";
 
 
-    @RequestMapping(method = RequestMethod.GET,path = "/is-alive")
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN,SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN})
+    @RequestMapping(method = RequestMethod.GET, path = "/is-alive")
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN})
     public ResponseEntity isAlive() {
 
         String user = SecurityContextHolder.getContext().getAuthentication().getName();
@@ -80,26 +80,26 @@ public class MonitorResource {
             BdxSmpOasisValidator.validateXSD(bServiceGroup);
             serviceGroup = ServiceGroupConverter.unmarshal(bServiceGroup);
             serviceGroupValidator
-                    .validate(TEST_PART_SCHEMA+ "::"+TEST_PART_ID, serviceGroup);
+                    .validate(TEST_PART_SCHEMA + "::" + TEST_PART_ID, serviceGroup);
         } catch (XmlInvalidAgainstSchemaException ex) {
             LOG.error("Error reading testing resource file", ex);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
         boolean suc = false;
         try {
-            suc= testDatabase();
-        }catch (SMPTestIsALiveException ex){
+            suc = testDatabase();
+        } catch (SMPTestIsALiveException ex) {
             suc = Objects.equals(TEST_DB_SUCCESSFUL_ROLLBACK, ex.getMessage());
-        } catch(Throwable th) {
+        } catch (RuntimeException th) {
             LOG.error("Error occured while testing database connection: Msg:" + ExceptionUtils.getRootCauseMessage(th), th);
         }
-       return suc?ResponseEntity.ok().build():ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        return suc ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 
     }
 
-    protected boolean testDatabase(){
+    protected boolean testDatabase() {
         List<DBDomain> lstDomain = domainDao.getAllDomains();
-        if (lstDomain.isEmpty()){
+        if (lstDomain.isEmpty()) {
             LOG.error("Bad configuration! At least one domain must be configured!");
             return false;
         }
@@ -110,7 +110,7 @@ public class MonitorResource {
         newSg.setExtension(TEST_EXTENSION_XML.getBytes());
         newSg.addDomain(lstDomain.get(0)); // add initial domain
         // persist (make sure this is not in transaction)
-        serviceGroupDao.testPersist(newSg,true, TEST_DB_SUCCESSFUL_ROLLBACK);
+        serviceGroupDao.testPersist(newSg, true, TEST_DB_SUCCESSFUL_ROLLBACK);
         return false;
     }
 

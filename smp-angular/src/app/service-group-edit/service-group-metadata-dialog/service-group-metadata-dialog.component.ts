@@ -160,7 +160,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
     let exampleXML = '<ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">' +
       '\n    <ServiceInformation>' +
       '\n        <ParticipantIdentifier scheme="' + this.dialogForm.controls['participantScheme'].value + '">' + this.dialogForm.controls['participantIdentifier'].value + '</ParticipantIdentifier>' +
-      '\n        <DocumentIdentifier scheme="' + this.dialogForm.controls['documentIdentifierScheme'].value + '">' + this.dialogForm.controls['documentIdentifier'].value + '</DocumentIdentifier>' +
+      '\n        <DocumentIdentifier scheme="' + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifierScheme'].value) + '">' + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifier'].value) + '</DocumentIdentifier>' +
       '\n        <ProcessList>' +
       '\n            <Process>' +
       '\n                <ProcessIdentifier scheme="[enterProcessType]">[enterProcessName]</ProcessIdentifier>' +
@@ -180,6 +180,14 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
     this.dialogForm.controls['xmlContent'].setValue(exampleXML);
   }
 
+  xmlSpecialChars(unsafe) {
+    return !unsafe?'':unsafe
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;");
+  }
+
   onServiceMetadataValidate() {
 
     let request: ServiceMetadataValidationEditRo = {
@@ -196,7 +204,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
         this.metadataValidationMessage = res.errorMessage;
         this.isMetadataValid = false;
       } else {
-        this.metadataValidationMessage = "ServiceMetada is valid!";
+        this.metadataValidationMessage = "Servicemetadata is valid!";
         this.isMetadataValid = true;
       }
 
