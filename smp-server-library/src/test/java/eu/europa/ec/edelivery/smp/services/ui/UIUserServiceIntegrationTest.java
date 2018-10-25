@@ -309,6 +309,24 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     }
 
     @Test
+    public void testGetCertificateDataPEMWithHeader() throws IOException, CertificateException {
+        // given
+        byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/truststore/pem-with-header.crt"));
+        // when
+        CertificateRO cer = testInstance.getCertificateData(buff);
+        //then
+        assertEquals("CN=alice,O=www.freelan.org,C=FR:0000000000000001", cer.getCertificateId());
+        assertEquals("EMAILADDRESS=contact@freelan.org, CN=Freelan Sample Certificate Authority, OU=freelan, O=www.freelan.org, L=Strasbourg, ST=Alsace, C=FR", cer.getIssuer());
+        assertEquals("EMAILADDRESS=contact@freelan.org, CN=alice, OU=freelan, O=www.freelan.org, ST=Alsace, C=FR", cer.getSubject());
+        assertEquals("1", cer.getSerialNumber());
+        assertNotNull(cer.getValidFrom());
+        assertNotNull(cer.getValidTo());
+        assertTrue(cer.getValidFrom().before(cer.getValidTo()));
+    }
+
+
+
+    @Test
     public void testGetCertificateDataDER() throws IOException, CertificateException {
         // given
         byte[] buff = IOUtils.toByteArray(new FileInputStream("src/test/resources/truststore/NewPeppolAP.crt"));

@@ -33,9 +33,9 @@ import java.time.LocalDateTime;
         @NamedNativeQuery(name = "DBDomainDeleteValidation.validateDomainUsage",
                 resultSetMapping = "DBDomainDeleteValidationMapping",
                 query = "select D.ID as id, D.DOMAIN_CODE as domainCode, D.SML_SUBDOMAIN as smlSubdomain, COUNT(SGD.ID) as useCount " +
-                        " from SMP_DOMAIN D  INNER JOIN SMP_SERVICE_GROUP_DOMAIN SGD ON (D.ID =SGD.FK_DOMAIN_ID) " +
-                        " WHERE D.ID IN (:domainIds)" +
-                        "GROUP BY D.DOMAIN_CODE, D.SML_SUBDOMAIN;"),
+                        "   from SMP_DOMAIN D  INNER JOIN SMP_SERVICE_GROUP_DOMAIN SGD ON (D.ID =SGD.FK_DOMAIN_ID) " +
+                        "   WHERE D.ID IN (:domainIds)" +
+                        "      GROUP BY D.ID, D.DOMAIN_CODE, D.SML_SUBDOMAIN"),
 })
 @SqlResultSetMapping(name = "DBDomainDeleteValidationMapping", classes = {
         @ConstructorResult(targetClass = DBDomainDeleteValidation.class,
@@ -60,7 +60,7 @@ public class DBDomain extends BaseEntity {
     String smlSmpId;
     @Column(name = "SML_PARTC_IDENT_REGEXP", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
     String smlParticipantIdentifierRegExp;
-    @Column(name = "SML_CLIENT_CERT_HEADER", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
+    @Column(name = "SML_CLIENT_CERT_HEADER", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH)
     String smlClientCertHeader;
     @Column(name = "SML_CLIENT_KEY_ALIAS", length = CommonColumnsLengths.MAX_CERT_ALIAS_LENGTH)
     String smlClientKeyAlias;

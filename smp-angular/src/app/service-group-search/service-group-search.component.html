@@ -57,8 +57,7 @@
     </div>
     <div *ngIf="row.serviceMetadata.length !== 0">
       <ngx-datatable
-        class='material striped'
-        style="width: 80%"
+        class='inner-table material striped'
         [loadingIndicator]="loading"
         [rows]='row.serviceMetadata'
         [columnMode]='"force"'

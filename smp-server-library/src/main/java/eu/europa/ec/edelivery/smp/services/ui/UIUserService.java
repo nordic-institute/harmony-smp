@@ -19,16 +19,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.net.URLEncoder;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.sql.Date;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -39,6 +43,8 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
     private static final byte[] S_PEM_START_TAG = "-----BEGIN CERTIFICATE-----\n".getBytes();
     private static final byte[] S_PEM_END_TAG = "\n-----END CERTIFICATE-----".getBytes();
+
+    private static final String S_BLUECOAT_DATEFORMAT ="MMM dd HH:mm:ss yyyy";
 
     @Autowired
     UserDao userDao;
@@ -135,13 +141,39 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         cro.setValidFrom(cert.getNotBefore());
         cro.setValidTo(cert.getNotAfter());
         cro.setEncodedValue(Base64.getMimeEncoder().encodeToString(cert.getEncoded()));
+        // generate bluecoat header
+        SimpleDateFormat sdf = new SimpleDateFormat(S_BLUECOAT_DATEFORMAT);
+        StringWriter sw = new StringWriter();
+        sw.write("sno=");
+        sw.write(serial.toString(16));
+        sw.write("&subject=");
+        sw.write(urlEnodeString(subject));
+        sw.write("&validfrom=");
+        sw.write(urlEnodeString(sdf.format(cert.getNotBefore())+" GTM"));
+        sw.write("&validto=");
+        sw.write(urlEnodeString(sdf.format(cert.getNotAfter())+" GTM"));
+        sw.write("&issuer=");
+        sw.write(urlEnodeString(issuer));
+        cro.setBlueCoatHeader(sw.toString());
 
         return cro;
     }
 
+    private String urlEnodeString(String val){
+        if (StringUtils.isBlank(val)){
+            return "";
+        } else {
+            try {
+                return URLEncoder.encode(val, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                LOG.error("Error occured while url encoding the certificate string:" + val, e );
+            }
+        }
+        return "";
+    }
+
     public boolean isCertificatePemEncoded(byte[] certData) {
         if (certData != null && certData.length > S_PEM_START_TAG.length) {
-
             for (int i = 0; i < certData.length; i++) {
                 if (certData[i] != S_PEM_START_TAG[i]) {
                     return false;
@@ -161,9 +193,11 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      */
     public ByteArrayInputStream createPEMFormat(byte[] certData) throws IOException {
         ByteArrayInputStream is;
-        if (isCertificatePemEncoded(certData)) {
-            is = new ByteArrayInputStream(certData);
+        byte[] pemBuff = getPemEncodedString(certData);
+        if (pemBuff!=null) {
+            is = new ByteArrayInputStream(pemBuff);
         } else {
+            // try to encode
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             bos.write(S_PEM_START_TAG);
             bos.write(Base64.getMimeEncoder().encode(certData));
@@ -171,6 +205,46 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             is = new ByteArrayInputStream(bos.toByteArray());
         }
         return is;
+    }
+
+    /**
+     * pem encoded cartificate can have header_?? this code finds the certificate part and return the part
+     * @param buff
+     * @return
+     */
+    private byte[] getPemEncodedString(byte[] buff){
+        int iStart = indexOf(buff, S_PEM_START_TAG, 0);
+        if (iStart < 0){
+            return null;
+        }
+        int iEnd = indexOf(buff, S_PEM_END_TAG, iStart);
+        if (iEnd<=iStart){
+            return null;
+        }
+        return Arrays.copyOfRange(buff, iStart, iEnd + S_PEM_END_TAG.length);
+
+
+
+    }
+
+    /**
+     * Check if file contains bytearraz
+     * @param outerArray
+     * @param smallerArray
+     * @return
+     */
+    public int indexOf(byte[] outerArray, byte[] smallerArray, int iStart) {
+        for(int i = iStart; i < outerArray.length - smallerArray.length+1; ++i) {
+            boolean found = true;
+            for(int j = 0; j < smallerArray.length; ++j) {
+                if (outerArray[i+j] != smallerArray[j]) {
+                    found = false;
+                    break;
+                }
+            }
+            if (found) return i;
+        }
+        return -1;
     }
 
     public String getCertificateIdFromCertificate(String subject, String issuer, BigInteger serial) {

@@ -13,14 +13,15 @@
 
 package eu.europa.ec.edelivery.smp.data.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
  * Created by gutowpa on 23/01/2018.
  */
-public abstract class BaseEntity {
-
+public abstract class BaseEntity implements Serializable {
+    private static final long serialVersionUID = 1905122041950251200L;
 
     public abstract Object getId();
 
@@ -41,4 +42,6 @@ public abstract class BaseEntity {
     public int hashCode() {
         return Objects.hash(getId());
     }
+
+
 }

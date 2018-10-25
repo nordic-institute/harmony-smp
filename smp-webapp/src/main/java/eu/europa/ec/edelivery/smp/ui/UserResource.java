@@ -12,6 +12,7 @@ import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
+import eu.europa.ec.edelivery.smp.services.ui.filters.UserFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
@@ -47,15 +48,21 @@ public class UserResource {
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
     //update gui to call this when somebody is logged in.
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
+    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN})
     public ServiceResult<UserRO> getUsers(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
             @RequestParam(value = "orderBy", required = false) String orderBy,
             @RequestParam(value = "orderType", defaultValue = "asc", required = false) String orderType,
-            @RequestParam(value = "user", required = false) String user
+            @RequestParam(value = "roles", required = false) String roleList
             ) {
-        return  uiUserService.getTableList(page,pageSize, orderBy, orderType, null);
+        UserFilter filter =null;
+        if (roleList!=null){
+            filter = new UserFilter();
+            filter.setRoleList(Arrays.asList(roleList.split(",")));
+        }
+
+        return  uiUserService.getTableList(page,pageSize, orderBy, orderType, filter);
     }
 
     @PutMapping(produces = {"application/json"})
