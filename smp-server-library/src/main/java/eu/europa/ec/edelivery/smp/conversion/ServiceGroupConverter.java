@@ -62,7 +62,7 @@ public class ServiceGroupConverter {
             JAXBContext jaxbContext = JAXBContext.newInstance(ServiceGroup.class);
             return jaxbContext.createUnmarshaller();
         }catch(JAXBException ex) {
-            LOG.error("Error occured while initializing JAXBContext for ServiceMetadata. Cause message:", ex);
+            LOG.error("Error occurred while initializing JAXBContext for ServiceMetadata. Cause message:", ex);
         }
         return null;
     } );

@@ -97,12 +97,12 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
                 serviceMetadataRO.getParticipantIdentifier());
 
         if (!xmlDI.equals(headerDI)) {
-            serviceMetadataRO.setErrorMessage("Document identifier and schema does not match!");
+            serviceMetadataRO.setErrorMessage("Document identifier and schema do not match!");
             return serviceMetadataRO;
         }
 
         if (!xmlPI.equals(headerPI)) {
-            serviceMetadataRO.setErrorMessage("Participant identifier and schema does not match!");
+            serviceMetadataRO.setErrorMessage("Participant identifier and schema do not match!");
             return serviceMetadataRO;
         }
 

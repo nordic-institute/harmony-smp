@@ -3,6 +3,7 @@ package eu.europa.ec.edelivery.smp.services.ui;
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.model.BaseEntity;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.beanutils.BeanUtils;
@@ -12,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
 /**
  * @author Joze Rihtarsic
@@ -60,7 +63,6 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
 
         if (iCnt > 0) {
             int iStartIndex = pageSize<0?-1:page * pageSize;
-
             if (iStartIndex >= iCnt && page > 0){
                 page = page -1;
                 sg.setPage(page); // go back for a page
@@ -78,9 +80,9 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
                     BeanUtils.setProperty(dro, "index", iStartIndex++);
                     lstRo.add(dro);
                 } catch (InvocationTargetException | IllegalAccessException e) {
-                     String msg = "Error occured while retrieving list for " +roClass.getName();
+                     String msg = "Error occurred while retrieving list for " +roClass.getName();
                     LOG.error(msg, e );
-                    throw new RuntimeException(msg, e);
+                     throw new SMPRuntimeException(INTERNAL_ERROR, "DB list query exception.", msg);
                 }
 
 
@@ -102,9 +104,9 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
             BeanUtils.copyProperties(dro, d);
             return dro;
          } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
-            String msg = "Error occured while converting to RO Entity for " +roClass.getName();
+            String msg = "Error occurred while converting to RO Entity for " +roClass.getName();
             LOG.error(msg, e );
-            throw new RuntimeException(msg, e);
+            throw new SMPRuntimeException(INTERNAL_ERROR, "DB to RO entity conversion.", msg);
         }
     }
     /*
@@ -118,9 +120,9 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
             BeanUtils.copyProperties(e, d);
             return e;
         } catch (InstantiationException | InvocationTargetException | IllegalAccessException e) {
-            String msg = "Error occured while converting to DB entity for " +dbClass.getName();
+            String msg = "Error occurred while converting to DB entity for " +dbClass.getName();
             LOG.error(msg, e );
-            throw new RuntimeException(msg, e);
+            throw new SMPRuntimeException(INTERNAL_ERROR, "RO to DB entity conversion.", msg);
         }
     }
 

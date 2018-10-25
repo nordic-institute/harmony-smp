@@ -48,9 +48,14 @@
                  class="has-error">You should type an username</div>
             <div *ngIf="userForm.controls['username'].hasError('pattern') && userForm.controls['username'].touched"
                  class="has-error">Username can only contain alphanumeric characters (letters A-Z, numbers 0-9) and must have from 4 to 32 characters!</div>
+            <div
+              *ngIf="(!editMode && userForm.controls['username'].touched || editMode) &&  userForm.controls['username'].hasError('notInList')"
+              style="color:red; font-size: 70%">
+              Username already exists!
+            </div>
           </mat-form-field>
 
-          <mat-slide-toggle *ngIf="editMode" mat-no-ink class="mat-primary" [formControl]="userForm.controls['passwordToggle']"
+          <mat-slide-toggle *ngIf="editMode && current.username" mat-no-ink class="mat-primary" [formControl]="userForm.controls['passwordToggle']"
                             (change)="onPasswordToggleChanged($event)" id="passwordToggle_id">
             Change password
           </mat-slide-toggle>
@@ -58,7 +63,7 @@
           <mat-form-field class="password">
             <input matInput placeholder="Password" type="password" [formControl]="userForm.controls['password']"
                    [pattern]="passwordPattern"
-                   id="password_id" [required]="!editMode">
+                   id="password_id" [required]="!editMode || (current.username && userForm.controls['userToggle'].value )">
             <div
               *ngIf="!editMode && userForm.controls['password'].hasError('required') && userForm.controls['password'].touched"
               class="has-error">You should type a password</div>
@@ -77,7 +82,7 @@
 
           <mat-form-field class="password-confirmation">
             <input matInput placeholder="Confirmation" type="password" [formControl]="userForm.controls['confirmation']"
-                   id="usernameconfirmation_id" [required]="!editMode">
+                   id="usernameconfirmation_id" [required]="!editMode || (current.username && userForm.controls['userToggle'].value )">
             <div
               *ngIf="!editMode && userForm.controls['confirmation'].hasError('required') && userForm.controls['confirmation'].touched"
               class="has-error">You should type a password

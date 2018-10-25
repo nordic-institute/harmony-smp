@@ -35,12 +35,12 @@
       </mat-card>
       <mat-card>
         <mat-card-content>
-          <mat-accordion>
-            <mat-expansion-panel *ngIf="securityService.isCurrentUserSMPAdmin()" [expanded]="true" >
-              <mat-expansion-panel-header>
+          <mat-accordion id="accordion_panel_id">
+            <mat-expansion-panel *ngIf="securityService.isCurrentUserSMPAdmin()" [expanded]="true" id="owner_expansion_panel_id">
+              <mat-expansion-panel-header id="owner_expansion_header_id">
                 <mat-panel-title>Owners*
                 </mat-panel-title>
-                <mat-panel-description>
+                <mat-panel-description id="owner_expansion_description_id">
                   <div>
                   Selected user count: {{usersSelected.selectedOptions?.selected.length}}
                   <div
@@ -58,19 +58,20 @@
                                   style="height: 200px;  overflow-y: scroll; overflow-x: auto;">
                 <!--                  // if username is null then there must be an cerificate id! -->
                 <mat-list-option *ngFor="let user of lookups.cachedServiceGroupOwnerList" [value]='user'>
-                  {{user.username?user.username:user.certificate.certificateId}}
+                  {{user.username?user.username:user.certificate?.certificateId}}
                 </mat-list-option>
               </mat-selection-list>
             </mat-expansion-panel>
 
-            <mat-expansion-panel [expanded]="!securityService.isCurrentUserSMPAdmin()">
-              <mat-expansion-panel-header>
+            <mat-expansion-panel [expanded]="!securityService.isCurrentUserSMPAdmin()" id="domain_expansion_panel_id">
+              <mat-expansion-panel-header id="domain_expansion_header_id">
                 <mat-panel-title>Domains*</mat-panel-title>
-                <mat-panel-description>
+                <mat-panel-description id="domain_expansion_description_id">
                   <div>
                     Selected domain count: {{domainSelector.selectedOptions?.selected.length}}
                     <div
-                      *ngIf="(!editMode && dialogForm.controls['serviceGroupDomains'].touched || editMode) &&  dialogForm.controls['serviceGroupDomains'].hasError('minSelectedListCount')"
+                      *ngIf="(!editMode && dialogForm.controls['serviceGroupDomains'].touched || editMode)
+                      &&  dialogForm.controls['serviceGroupDomains'].hasError('minSelectedListCount')"
                       style="color:red; font-size: 70%">
                       At least one domain must be selected!
                     </div>

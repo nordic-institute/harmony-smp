@@ -91,7 +91,7 @@ public class MonitorResource {
         } catch (SMPTestIsALiveException ex) {
             suc = Objects.equals(TEST_DB_SUCCESSFUL_ROLLBACK, ex.getMessage());
         } catch (RuntimeException th) {
-            LOG.error("Error occured while testing database connection: Msg:" + ExceptionUtils.getRootCauseMessage(th), th);
+            LOG.error("Error occurred while testing database connection: Msg:" + ExceptionUtils.getRootCauseMessage(th), th);
         }
         return suc ? ResponseEntity.ok().build() : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
 

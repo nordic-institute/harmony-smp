@@ -62,7 +62,7 @@ public class ServiceMetadataConverter {
             JAXBContext jaxbContext = JAXBContext.newInstance(ServiceMetadata.class);
             return jaxbContext.createUnmarshaller();
         }catch(JAXBException ex) {
-            LOG.error("Error occured while initializing JAXBContext for ServiceMetadata. Root Error:" +
+            LOG.error("Error occurred while initializing JAXBContext for ServiceMetadata. Root Error:" +
                     ExceptionUtils.getRootCauseMessage(ex), ex);
         }
         return null;
