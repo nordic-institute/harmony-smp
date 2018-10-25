@@ -41,18 +41,22 @@ export class GlobalLookups implements OnInit {
         return {...serviceEntity}
       },
       (error:any) => {
-          this.alertService.error("Error occured while loading domain lookup [" + error + "].")
+          this.alertService.error("Error occurred while loading domain lookup [" + error + "].")
       });
     });
   }
 
   public refreshUserLookup() {
     // call only for authenticated users.
-    if (this.securityService.isCurrentUserSMPAdmin()) {
+    if (this.securityService.isCurrentUserSMPAdmin() || this.securityService.isCurrentUserSystemAdmin() ) {
       let params: HttpParams = new HttpParams()
         .set('page', '-1')
-        .set('pageSize', '-1')
-        .set('roles', Role.SMP_ADMIN +","+Role.SERVICE_GROUP_ADMIN);
+        .set('pageSize', '-1');
+
+      // return only smp and service group admins..
+      if (this.securityService.isCurrentUserSMPAdmin() ) {
+        params = params .set('roles', Role.SMP_ADMIN +","+Role.SERVICE_GROUP_ADMIN);
+      }
       // init users
       this.userObserver = this.http.get<SearchTableResult>(SmpConstants.REST_USER, {params});
       this.userObserver.subscribe((users: SearchTableResult) => {
@@ -63,7 +67,7 @@ export class GlobalLookups implements OnInit {
       },(error:any) => {
         // check if unauthorized
         // just console try latter
-          console.log("Error occured while loading user owners lookup [" + error + "]");
+          console.log("Error occurred while loading user owners lookup [" + error + "]");
         });
     }
   }

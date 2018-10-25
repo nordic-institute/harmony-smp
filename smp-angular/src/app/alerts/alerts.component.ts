@@ -214,7 +214,7 @@ export class AlertsComponent implements OnInit {
     }, (error: any) => {
       console.log("error getting the alerts:" + error);
       this.loading = false;
-      this.alertService.error("Error occured:" + error);
+      this.alertService.error("Error occurred:" + error);
     });
   }
 

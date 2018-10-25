@@ -1,6 +1,14 @@
 import {Component, Inject, TemplateRef, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef, MatSlideToggleChange} from '@angular/material';
-import {FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators} from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators
+} from '@angular/forms';
 import {UserService} from '../user.service';
 import {Role} from '../../security/role.model';
 import {UserRo} from '../user-ro.model';
@@ -10,6 +18,7 @@ import {CertificateService} from '../certificate.service';
 import {CertificateRo} from "../certificate-ro.model";
 import {DatePipe} from "../../custom-date/date.pipe";
 import {UserController} from "../user-controller";
+import {GlobalLookups} from "../../common/global-lookups";
 
 @Component({
   selector: 'user-details-dialog',
@@ -65,7 +74,17 @@ export class UserDetailsDialogComponent {
         && certificateToggle.value && !(subject.value && validFrom.value && validTo.value && issuer.value && serialNumber.value) ? { certificateDetailsRequired: true} : null;
   };
 
+  notInList(list: string[]) {
+    return (c: AbstractControl): { [key: string]: any } => {
+      if (c.value && list.includes(c.value))
+        return {'notInList': {valid: false}};
+
+      return null;
+    }
+  }
+
   constructor(private dialogRef: MatDialogRef<UserDetailsDialogComponent>,
+              private lookups: GlobalLookups,
               private userService: UserService,
               private certificateService: CertificateService,
               private alertService: AlertService,
@@ -112,7 +131,9 @@ export class UserDetailsDialogComponent {
       'userToggle': new FormControl(bUserPasswordAuthentication),
       'passwordToggle': new FormControl({value: bSetPassword, disabled:!bUserPasswordAuthentication}),
       'username': new FormControl({ value: '', disabled: this.editMode || !bUserPasswordAuthentication },
-        !this.editMode ? [Validators.nullValidator, Validators.pattern(this.usernamePattern)] : null),
+        !this.editMode || !this.current.username ? [Validators.nullValidator, Validators.pattern(this.usernamePattern),
+          this.notInList(this.lookups.cachedServiceGroupOwnerList.map(a => a.username))] : null),
+      // improve notInList validator
       'password': new FormControl({ value: '', disabled: !bUserPasswordAuthentication || !bSetPassword},
         [Validators.required, Validators.pattern(this.passwordPattern)]),
       'confirmation': new FormControl({ value: '', disabled: !bUserPasswordAuthentication  || !bSetPassword},
@@ -184,7 +205,7 @@ export class UserDetailsDialogComponent {
                 'certificateId': res.certificateId
               });
             } else {
-              this.alertService.exception("Error occured while reading certificate.", "Check if uploaded file has valid certificate type?", false);
+              this.alertService.exception("Error occurred while reading certificate.", "Check if uploaded file has valid certificate type?", false);
             }
           },
           err => {
@@ -280,14 +301,20 @@ export class UserDetailsDialogComponent {
       this.current.certificate = null;
     }
     // set username and password for new
-    if (!this.editMode && this.userForm.get('userToggle')) {
-      this.current.username =  this.userForm.controls['username'].value;
-      this.current.password =  this.userForm.controls['password'].value;
+    if (this.userForm.get('userToggle')) {
+      if (!this.editMode || !this.current.username  ) {
+        this.current.username =  this.userForm.controls['username'].value;
+        this.current.password =  this.userForm.controls['password'].value;
+      }
+      // if edit mode and password on  - set password
+      else if (this.editMode && this.userForm.get('passwordToggle')) {
+        this.current.password =  this.userForm.controls['password'].value;
+      }
+    }else {
+      this.current.username ='';
+      this.current.password ='';
     }
-    // if edit mode and password on  - set password
-    else if (this.editMode && this.userForm.get('passwordToggle')) {
-      this.current.password =  this.userForm.controls['password'].value;
-    }
+
 
 
     // update data

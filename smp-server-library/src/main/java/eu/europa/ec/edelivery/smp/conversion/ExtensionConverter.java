@@ -64,7 +64,7 @@ public class ExtensionConverter {
             JAXBContext jaxbContext = JAXBContext.newInstance(ExtensionsWrapper.class, ExtensionType.class);
             return jaxbContext.createUnmarshaller();
         }catch(JAXBException ex) {
-            LOG.error("Error occured while initializing JAXBContext for ServiceMetadata. Cause message:", ex);
+            LOG.error("Error occurred while initializing JAXBContext for ServiceMetadata. Cause message:", ex);
         }
         return null;
     });
