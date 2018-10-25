@@ -917,7 +917,7 @@ def cleanAndAddHeaderElement(filterForTestSuite,  filterForTestCases, String fie
 			is.setCharacterStream(new StringReader(input));
 			doc = db.parse(is);
 		}catch(Exception ex) {
-			assert (0),"-- returnDOMDocument function -- Error occured while trying to build document from String: "+ex;
+			assert (0),"-- returnDOMDocument function -- Error occurred while trying to build document from String: "+ex;
 		}
 		return(doc);
 	}
@@ -954,7 +954,7 @@ def cleanAndAddHeaderElement(filterForTestSuite,  filterForTestCases, String fie
 		try {
 			validFlag = signature.validate(valContext);
 		}catch(Exception ex) {
-			assert (0),"-- validateSignature function -- Error occured while trying to validate the signature: "+ex;
+			assert (0),"-- validateSignature function -- Error occurred while trying to validate the signature: "+ex;
 		}
 
 		return (validFlag);
@@ -983,7 +983,7 @@ def cleanAndAddHeaderElement(filterForTestSuite,  filterForTestCases, String fie
 		try {
 			validFlag = signature.validate(valContext);
 		}catch(Exception ex) {			
-			assert (0),"-- validateSignatureExtension function -- Error occured while trying to validate the signature: "+ex;
+			assert (0),"-- validateSignatureExtension function -- Error occurred while trying to validate the signature: "+ex;
 		}
 		if(validFlag==false){
 			printErrorSigValDetails(valContext,signature);

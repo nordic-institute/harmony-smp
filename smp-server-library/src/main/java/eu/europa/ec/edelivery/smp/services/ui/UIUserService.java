@@ -90,8 +90,13 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                 dbUser.setEmailAddress(userRO.getEmailAddress());
                 dbUser.setRole(userRO.getRole());
                 dbUser.setActive(userRO.isActive());
+                dbUser.setUsername(userRO.getUsername());
+                if (StringUtils.isBlank(userRO.getUsername()) ){
+                    // if username is empty than clear the password
+                    dbUser.setPassword("");
+                }
                 // check for new password
-                if (!StringUtils.isBlank(userRO.getPassword())) {
+                else if (!StringUtils.isBlank(userRO.getPassword())) {
                     dbUser.setPassword(BCryptPasswordHash.hashPassword(userRO.getPassword()));
                 }
                 // update certificate data
@@ -166,7 +171,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             try {
                 return URLEncoder.encode(val, "UTF-8");
             } catch (UnsupportedEncodingException e) {
-                LOG.error("Error occured while url encoding the certificate string:" + val, e );
+                LOG.error("Error occurred while url encoding the certificate string:" + val, e );
             }
         }
         return "";

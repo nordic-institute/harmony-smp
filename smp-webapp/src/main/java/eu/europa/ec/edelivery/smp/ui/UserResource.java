@@ -80,7 +80,7 @@ public class UserResource {
         try {
             return uiUserService.getCertificateData(data);
         } catch (IOException | CertificateException e) {
-            LOG.error("Error occured while parsing certificate.", e);
+            LOG.error("Error occurred while parsing certificate.", e);
         }
         return null;
 

@@ -82,7 +82,13 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         sg.setCount(iCnt);
 
         if (iCnt > 0) {
-            int iStartIndex = pageSize < 0 ? -1 : page * pageSize;
+            int iStartIndex = pageSize<0?-1:page * pageSize;
+            if (iStartIndex >= iCnt && page > 0){
+                page = page -1;
+                sg.setPage(page); // go back for a page
+                iStartIndex = pageSize<0?-1:page * pageSize;
+            }
+
             List<DBServiceGroup> lst = serviceGroupDao.getServiceGroupList(iStartIndex, pageSize, sortField, sortOrder, filter);
             List<ServiceGroupRO> lstRo = new ArrayList<>();
             for (DBServiceGroup dbServiceGroup : lst) {

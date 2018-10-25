@@ -22,7 +22,7 @@ public class SMPSchemaGenerator {
     private static String filenameTemplate = "%s-%s.ddl";
     private static String smpEntityPackageName = "eu.europa.ec.edelivery.smp.data.model";
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
 
 
         String strDialects  = args[0] ; // comma separated dialects
@@ -30,7 +30,6 @@ public class SMPSchemaGenerator {
         String exportFolder = args.length>2?args[2]:""; // export folder
         SMPSchemaGenerator sg = new SMPSchemaGenerator();
 
-        //execute(args[0], args[1]);
         String[] dialects = strDialects.split(",");
         // execute
         for (String dialect: dialects) {
@@ -48,7 +47,7 @@ public class SMPSchemaGenerator {
      * @param packageNames
      * @param version
      */
-    public void createDDLScript(String exportFolder, String hibernateDialect, List<String> packageNames, String version) {
+    public void createDDLScript(String exportFolder, String hibernateDialect, List<String> packageNames, String version) throws ClassNotFoundException {
         // create export file
         String filename = createFileName(hibernateDialect,version );
 
@@ -118,9 +117,9 @@ public class SMPSchemaGenerator {
      * @param pckgname
      * @return
      */
-    public List<Class> getAllEntityClasses(String pckgname) {
+    public List<Class> getAllEntityClasses(String pckgname) throws ClassNotFoundException {
         ArrayList classes = new ArrayList();
-        try {
+ {
 
             // Get a File object for the package
             File directory = null;
@@ -141,10 +140,6 @@ public class SMPSchemaGenerator {
             } else { ;
                 throw new ClassNotFoundException("Package: "+pckgname + " does not eixsts!");
             }
-
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return classes;
     }
