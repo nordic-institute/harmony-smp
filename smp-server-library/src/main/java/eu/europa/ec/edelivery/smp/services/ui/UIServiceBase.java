@@ -50,12 +50,25 @@ abstract class UIServiceBase<E extends BaseEntity, R> {
 
         ServiceResult<R> sg = new ServiceResult<>();
         sg.setPage(page<0?0:page);
-        sg.setPageSize(pageSize);
+
         long iCnt = getDatabaseDao().getDataListCount(filter);
+        if (pageSize < 0) { // if page size iz -1 return all results and set pageSize to maxCount
+            pageSize = (int)iCnt;
+        }
+        sg.setPageSize(pageSize);
         sg.setCount(iCnt);
 
         if (iCnt > 0) {
             int iStartIndex = pageSize<0?-1:page * pageSize;
+
+            if (iStartIndex >= iCnt && page > 0){
+                page = page -1;
+                sg.setPage(page); // go back for a page
+                iStartIndex = pageSize<0?-1:page * pageSize;
+            }
+
+
+
             List<E> lst = getDatabaseDao().getDataList(iStartIndex, pageSize, sortField, sortOrder, filter);
 
             List<R>  lstRo = new ArrayList<>();

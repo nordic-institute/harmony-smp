@@ -14,6 +14,7 @@ import {DomainRo} from "../../domain/domain-ro.model";
 import {ServiceGroupDomainEditRo} from "../service-group-domain-edit-ro.model";
 import {ConfirmationDialogComponent} from "../../common/confirmation-dialog/confirmation-dialog.component";
 import {SecurityService} from "../../security/security.service";
+import {UserRo} from "../../user/user-ro.model";
 
 @Component({
   selector: 'service-group-details',
@@ -37,8 +38,8 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
 
   extensionValidationMessage: String = null;
   isExtensionValid: boolean = true;
+  userList: UserRo[];
 
-  serviceGroupDomain: ServiceGroupDomainEditRo[];
 
 
   minSelectedListCount(min: number) {
@@ -60,6 +61,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
               private dialogFormBuilder: FormBuilder,
               private changeDetector: ChangeDetectorRef) {
     this.editMode = this.data.edit;
+
     this.formTitle = this.editMode ? ServiceGroupDetailsDialogComponent.EDIT_MODE : ServiceGroupDetailsDialogComponent.NEW_MODE;
     this.current = this.editMode
       ? {
@@ -281,7 +283,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     if (!event.option.selected) {
       this.dialog.open(ConfirmationDialogComponent, {
         data: {
-          title: "Registred serviceMetadata on domain!",
+          title: "Registered serviceMetadata on domain!",
           description: "Unregistration of domain will also delete it's serviceMetadata. Do you want to continue?"
         }
       }).afterClosed().subscribe(result => {

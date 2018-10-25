@@ -5,6 +5,8 @@ import {DomainRo} from "../domain-ro.model";
 import {AlertService} from "../../alert/alert.service";
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
 import {GlobalLookups} from "../../common/global-lookups";
+import {CertificateRo} from "../../user/certificate-ro.model";
+import {CertificateService} from "../../user/certificate.service";
 
 @Component({
   selector: 'domain-details-dialog',
@@ -32,7 +34,8 @@ export class DomainDetailsDialogComponent {
     }
   }
 
-  constructor(private lookups: GlobalLookups,
+  constructor( private certificateService: CertificateService,
+              private lookups: GlobalLookups,
               private dialogRef: MatDialogRef<DomainDetailsDialogComponent>,
               private alertService: AlertService,
               @Inject(MAT_DIALOG_DATA) public data: any,
@@ -54,7 +57,6 @@ export class DomainDetailsDialogComponent {
       };
 
     this.domainForm = fb.group({
-
       'domainCode': new FormControl({value: '', disabled: this.editMode}, [Validators.pattern(this.domainCodePattern),
         this.notInList(this.lookups.cachedDomainList.map(a => a.domainCode), this.current.domainCode)]),
       'smlSubdomain': new FormControl({
@@ -130,6 +132,32 @@ export class DomainDetailsDialogComponent {
 
   updateSignatureKeyAlias(event) {
     this.current.signatureKeyAlias = event.target.value;
+  }
+
+  uploadCertificate(event) {
+    const file = event.target.files[0];
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.certificateService.uploadCertificate$(reader.result).subscribe((res: CertificateRo) => {
+          if (res && res.certificateId){
+            this.domainForm.patchValue({
+              'smlClientCertHeader': res.blueCoatHeader
+            });
+          } else {
+            this.alertService.exception("Error occured while reading certificate.", "Check if uploaded file has valid certificate type?", false);
+          }
+        },
+        err => {
+          this.alertService.exception('Error uploading certificate file ' + file.name, err);
+        }
+      );
+    };
+    reader.onerror = (err) => {
+      this.alertService.exception('Error reading certificate file ' + file.name, err);
+    };
+
+    reader.readAsBinaryString(file);
   }
 
 

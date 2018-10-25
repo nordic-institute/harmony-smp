@@ -108,10 +108,12 @@ public abstract class BaseDao<E extends BaseEntity> {
      */
     @Transactional
     public boolean removeById(Object primaryKey) {
-        int removedRecords = memEManager.createQuery("delete from " + entityClass.getName() + " e where e.id = :primaryKey")
-                .setParameter("primaryKey", primaryKey)
-                .executeUpdate();
-        return removedRecords > 0;
+        // Do not use query delete else envers will not work!!
+        E val = find(primaryKey);
+        if (val!= null) {
+            memEManager.remove(val);
+            return true;
+        } return false;
     }
 
 
