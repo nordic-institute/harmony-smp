@@ -5,6 +5,9 @@ import {ServiceGroupEditRo} from './service-group-edit-ro.model';
 import {SearchTableEntityStatus} from '../common/search-table/search-table-entity-status.model';
 import {ServiceMetadataEditRo} from "./service-metadata-edit-ro.model";
 import {ServiceGroupMetadataDialogComponent} from "./service-group-metadata-dialog/service-group-metadata-dialog.component";
+import {of} from "rxjs/internal/observable/of";
+import {SearchTableValidationResult} from "../common/search-table/search-table-validation-result.model";
+import {SearchTableEntity} from "../common/search-table/search-table-entity.model";
 
 export class ServiceGroupEditController implements SearchTableController {
 
@@ -70,5 +73,15 @@ export class ServiceGroupEditController implements SearchTableController {
   }
 
   public dataSaved() {}
+  validateDeleteOperation(rows: Array<SearchTableEntity>){
+    return of( this.newValidationResult(true, '') );
+  }
+
+  public newValidationResult(result: boolean, message: string): SearchTableValidationResult {
+    return {
+      validOperation: result,
+      stringMessage: message,
+    }
+  }
 
 }

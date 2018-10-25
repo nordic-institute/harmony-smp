@@ -1,6 +1,9 @@
 import {SearchTableController} from '../common/search-table/search-table-controller';
 import {MatDialog, MatDialogConfig} from '@angular/material';
 import {ServiceGroupSearchRo} from './service-group-search-ro.model';
+import {of} from "rxjs/internal/observable/of";
+import {SearchTableValidationResult} from "../common/search-table/search-table-validation-result.model";
+import {SearchTableEntity} from "../common/search-table/search-table-entity.model";
 
 export class ServiceGroupSearchController implements SearchTableController {
 
@@ -25,4 +28,15 @@ export class ServiceGroupSearchController implements SearchTableController {
   }
 
   public dataSaved() {}
+
+  validateDeleteOperation(rows: Array<SearchTableEntity>){
+    return of( this.newValidationResult(true) );
+  }
+
+  public newValidationResult(result: boolean, message?: string): SearchTableValidationResult {
+    return {
+      validOperation: null,
+      stringMessage: message,
+    }
+  }
 }

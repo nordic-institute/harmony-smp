@@ -36,7 +36,7 @@
       <mat-card>
         <mat-card-content>
           <mat-accordion>
-            <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel *ngIf="securityService.isCurrentUserSMPAdmin()" [expanded]="true" >
               <mat-expansion-panel-header>
                 <mat-panel-title>Owners*
                 </mat-panel-title>
@@ -56,13 +56,14 @@
                                   [compareWith]="compareTableItemById"
                                   [formControl]="dialogForm.controls['users']"
                                   style="height: 200px;  overflow-y: scroll; overflow-x: auto;">
-                <mat-list-option *ngFor="let user of lookups?.cachedUserList" [value]='user'>
-                  {{user.id}} - {{user.username?user.username:user.id}}
+                <!--                  // if username is null then there must be an cerificate id! -->
+                <mat-list-option *ngFor="let user of lookups.cachedServiceGroupOwnerList" [value]='user'>
+                  {{user.username?user.username:user.certificate.certificateId}}
                 </mat-list-option>
               </mat-selection-list>
             </mat-expansion-panel>
 
-            <mat-expansion-panel >
+            <mat-expansion-panel [expanded]="!securityService.isCurrentUserSMPAdmin()">
               <mat-expansion-panel-header>
                 <mat-panel-title>Domains*</mat-panel-title>
                 <mat-panel-description>

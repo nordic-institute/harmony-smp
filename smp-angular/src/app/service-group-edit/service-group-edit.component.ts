@@ -35,9 +35,14 @@ export class ServiceGroupEditComponent implements OnInit {
               public dialog: MatDialog,
               private changeDetector: ChangeDetectorRef) {
 
+    // if smp admin it needs to have update user list for detail dialog!
+    if (this.securityService.isCurrentUserSMPAdmin()) {
+      this.lookups.refreshUserLookup();
+    }
   }
 
   ngOnInit() {
+
 
 
     this.serviceGroupEditController = new ServiceGroupEditController(this.dialog);

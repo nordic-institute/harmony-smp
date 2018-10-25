@@ -9,21 +9,21 @@
       </div>
     </div>
 
-    <button mat-raised-button class="sideNavButton" [routerLink]="['/']" id="search_id">
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/']" id="sidebar_search_id">
       <mat-icon matTooltip="Search" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">search</mat-icon>
       <span>Search</span>
     </button>
-    <button mat-raised-button class="sideNavButton" *ngIf="isCurrentUserSMPAdmin() || isCurrentUserServiceGroupAdmin()"  [routerLink]="['/edit']" id="edit_id">
+    <button mat-raised-button class="sideNavButton" *ngIf="isCurrentUserSMPAdmin() || isCurrentUserServiceGroupAdmin()"  [routerLink]="['/edit']" id="sidebar_edit_id">
       <mat-icon matTooltip="Edit" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">edit</mat-icon>
       <span>Edit</span>
     </button>
-    <button mat-raised-button class="sideNavButton" [routerLink]="['/domain']"  *ngIf="isCurrentUserSystemAdmin()" id="domain_id">
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/domain']"  *ngIf="isCurrentUserSystemAdmin()" id="sidebar_domain_id">
       <mat-icon matTooltip="Domain" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">domain</mat-icon>
       <span>Domain</span>
     </button>
 
     <!-- button mat-raised-button class="sideNavButton" [routerLink]="['/user']" *ngIf="hasAdmin()" id="user_id" -->
-    <button mat-raised-button class="sideNavButton" [routerLink]="['/user']" *ngIf="isCurrentUserSystemAdmin()"  id="user_id">
+    <button mat-raised-button class="sideNavButton" [routerLink]="['/user']" *ngIf="isCurrentUserSystemAdmin()"  id="sidebar_user_id">
       <mat-icon matTooltip="Users" matTooltipDisabled="{{fullMenu}}" matTooltipDisabled="right">people</mat-icon>
       <span>Users</span>
     </button>
@@ -57,16 +57,16 @@
   </mat-sidenav>
 
   <!-- primary content -->
-  <div id=".my-content" style="position:absolute; bottom:5px; top:5px; right: 5px; left: 5px">
+  <div fxLayout="column" id=".my-content" style="position:absolute; bottom:5px; top:5px; right: 5px; left: 5px">
+    <alert style=" left:220px; top:0;right:0;z-index: 500"></alert>
 
-
-    <div id="sandwichMenuHolder" style="z-index: 500">
+    <div  id="sandwichMenuHolder" style="z-index: 500">
 
 
       <div id="sandwichMenu">
 
         <a *ngIf="!currentUser" [routerLink]="['/login']" > Login   </a>
-        <span *ngIf="currentUser" >User: {{currentUser}}  </span >
+        <span *ngIf="currentUser" >{{getCurrentUserRoleDescription}}: {{currentUser}}  </span >
 
         <button mat-icon-button [mat-menu-trigger-for]="settingsMenu" id="settingsmenu_id" matTooltip="Menu">
           <mat-icon>menu</mat-icon>
@@ -100,8 +100,8 @@
         </mat-menu>
       </div>
     </div>
-    <alert style="position:fixed; left:220px; top:0;right:0;z-index: 500"></alert>
-    <div id="routerHolder" style="min-height: 100%" >
+
+    <div fxFill="100" id="routerHolder" style="min-height: 100%" >
         <router-outlet></router-outlet>
     </div>
 

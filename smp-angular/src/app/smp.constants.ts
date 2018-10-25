@@ -11,9 +11,12 @@ export class SmpConstants {
 
 
   public static readonly REST_CERTIFICATE = `${SmpConstants.REST_USER}/certdata`;
+  public static readonly REST_USER_VALIDATE_DELETE = `${SmpConstants.REST_USER}/validateDelete`;
+  public static readonly REST_DOMAIN_VALIDATE_DELETE = `${SmpConstants.REST_DOMAIN}/validateDelete`;
   public static readonly REST_SERVICE_GROUP_EXTENSION = `${SmpConstants.REST_EDIT}/extension`;
   public static readonly REST_SERVICE_GROUP_EXTENSION_VALIDATE = `${SmpConstants.REST_SERVICE_GROUP_EXTENSION}/validate`;
   public static readonly REST_SERVICE_GROUP_EXTENSION_FORMAT = `${SmpConstants.REST_SERVICE_GROUP_EXTENSION}/format`;
   public static readonly REST_METADATA_VALIDATE = `${SmpConstants.REST_METADATA}/validate`;
+
 
 }
