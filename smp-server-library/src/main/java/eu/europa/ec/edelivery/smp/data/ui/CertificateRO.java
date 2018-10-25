@@ -17,6 +17,9 @@ public class CertificateRO extends BaseRO {
     private String issuer;
     private String serialNumber;
     private String encodedValue;
+    private String blueCoatHeader;
+
+
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd,HH:mm", timezone="CET")
     private Date validFrom;
     @JsonFormat(shape=JsonFormat.Shape.STRING, pattern="yyyy-MM-dd,HH:mm", timezone="CET")
@@ -83,5 +86,13 @@ public class CertificateRO extends BaseRO {
 
     public void setEncodedValue(String encodedValue) {
         this.encodedValue = encodedValue;
+    }
+
+    public String getBlueCoatHeader() {
+        return blueCoatHeader;
+    }
+
+    public void setBlueCoatHeader(String blueCoatHeader) {
+        this.blueCoatHeader = blueCoatHeader;
     }
 }

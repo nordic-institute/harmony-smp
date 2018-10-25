@@ -46,6 +46,8 @@
                    id="username_id" maxlength="255" required>
             <div *ngIf="userForm.controls['username'].hasError('required') && userForm.controls['username'].touched"
                  class="has-error">You should type an username</div>
+            <div *ngIf="userForm.controls['username'].hasError('pattern') && userForm.controls['username'].touched"
+                 class="has-error">Username can only contain alphanumeric characters (letters A-Z, numbers 0-9) and must have from 4 to 32 characters!</div>
           </mat-form-field>
 
           <mat-slide-toggle *ngIf="editMode" mat-no-ink class="mat-primary" [formControl]="userForm.controls['passwordToggle']"

@@ -27,6 +27,8 @@ export class UserDetailsDialogComponent {
   readonly emailPattern = '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}';
   readonly passwordPattern = '^(?=.*[A-Z])(?=.*[ !#$%&\'()*+,-./:;<=>?@\\[^_`{|}~\\\]"])(?=.*[0-9])(?=.*[a-z]).{8,32}$';
   readonly dateFormat: string = 'yyyy-MM-dd HH:mm:ssZ';
+  readonly usernamePattern='^[a-zA-Z0-9]{4,32}$';
+
 
   editMode: boolean;
   formTitle: string;
@@ -109,7 +111,8 @@ export class UserDetailsDialogComponent {
       // username/password authentication
       'userToggle': new FormControl(bUserPasswordAuthentication),
       'passwordToggle': new FormControl({value: bSetPassword, disabled:!bUserPasswordAuthentication}),
-      'username': new FormControl({ value: '', disabled: this.editMode || !bUserPasswordAuthentication }, this.editMode ? Validators.nullValidator : null),
+      'username': new FormControl({ value: '', disabled: this.editMode || !bUserPasswordAuthentication },
+        !this.editMode ? [Validators.nullValidator, Validators.pattern(this.usernamePattern)] : null),
       'password': new FormControl({ value: '', disabled: !bUserPasswordAuthentication || !bSetPassword},
         [Validators.required, Validators.pattern(this.passwordPattern)]),
       'confirmation': new FormControl({ value: '', disabled: !bUserPasswordAuthentication  || !bSetPassword},
@@ -146,7 +149,7 @@ export class UserDetailsDialogComponent {
       this.userForm.controls['userToggle'].disable();
     }
 
-/*  Do not need retrieve roles from server because client must alreay be aware of
+/*  Do not need retrieve roles from server because client must already be aware of
    the roles...
 
     this.userService.getUserRoles$().subscribe(userRoles => {
