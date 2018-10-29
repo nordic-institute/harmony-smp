@@ -103,11 +103,11 @@
         </mat-slide-toggle>
         <div
           *ngIf="userForm.errors?.userDetailsOrCertificateRequired && (userForm.get('userToggle').dirty || userForm.get('certificateToggle').dirty)"
-          class="has-error">You need to enter at least the details or the certificate for this user
-        </div>
-        <div *ngIf="userForm.errors?.certificateDetailsRequired && userForm.get('certificateToggle').touched"
-             class="has-error">All the certificate fields are required so please upload a new certificate
-        </div>
+          class="has-error">You need to enter at least the details or the certificate for this user!</div>
+        <div *ngIf="userForm.errors?.certificatedetailsrequired && userForm.get('certificateToggle').touched"
+             class="has-error">All the certificate fields are required so please upload a new certificate!</div>
+        <div *ngIf="userForm.errors?.certificateIdExists"
+             class="has-error">Certificate is already used by another user!</div>
       </mat-card-title>
       <mat-card-content>
         <div class="panel">
@@ -129,7 +129,8 @@
           </mat-form-field>
           <mat-form-field style="width: 100%;">
             <input matInput placeholder="SMP certificate ID" [formControl]="userForm.controls['certificateId']"
-                   id="certificateId_id">
+                   id="certificateId_id"
+                  resizeable="true">
           </mat-form-field>
 
           <label class="custom-file-upload">

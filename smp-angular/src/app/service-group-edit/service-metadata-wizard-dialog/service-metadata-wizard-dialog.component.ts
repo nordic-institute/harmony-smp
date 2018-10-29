@@ -35,7 +35,7 @@ export class ServiceMetadataWizardDialogComponent {
 
       'documentIdentifier': new FormControl({value: ''}, [Validators.required]),
       'documentIdentifierScheme': new FormControl({value: ''}, null),
-      'processSchema': new FormControl({value: ''}, [Validators.required]),
+      'processScheme': new FormControl({value: ''}, [Validators.required]),
       'processIdentifier': new FormControl({value: ''}, [Validators.required]),
       'endpointUrl': new FormControl({value: ''}, [Validators.required]),
       'endpointCertificate': new FormControl({value: ''}, null),

@@ -74,9 +74,19 @@ export class UserDetailsDialogComponent {
         && certificateToggle.value && !(subject.value && validFrom.value && validTo.value && issuer.value && serialNumber.value) ? { certificateDetailsRequired: true} : null;
   };
 
+  private certificateExistValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
+    const certificateToggle = control.get('certificateToggle');
+    const certificateId = control.get('certificateId');
+    // get all persisted
+    const listIds = this.lookups.cachedServiceGroupOwnerList.map(a => a.certificate?a.certificate.certificateId:"NoId");
+
+    return certificateToggle && certificateId && certificateId.value
+    &&  listIds.includes(certificateId.value) &&  this.current.certificate && certificateId.value !== this.current.certificate.certificateId ? { certificateIdExists: true} : null;
+  };
+
   notInList(list: string[]) {
     return (c: AbstractControl): { [key: string]: any } => {
-      if (c.value && list.includes(c.value))
+      if (c.value && list.includes(c.value.toString().toLowerCase()))
         return {'notInList': {valid: false}};
 
       return null;
@@ -132,8 +142,8 @@ export class UserDetailsDialogComponent {
       'passwordToggle': new FormControl({value: bSetPassword, disabled:!bUserPasswordAuthentication}),
       'username': new FormControl({ value: '', disabled: this.editMode || !bUserPasswordAuthentication },
         !this.editMode || !this.current.username ? [Validators.nullValidator, Validators.pattern(this.usernamePattern),
-          this.notInList(this.lookups.cachedServiceGroupOwnerList.map(a => a.username))] : null),
-      // improve notInList validator
+          this.notInList(this.lookups.cachedServiceGroupOwnerList.map(a => a.username?a.username.toLowerCase():null))] : null),
+      //       // improve notInList validator
       'password': new FormControl({ value: '', disabled: !bUserPasswordAuthentication || !bSetPassword},
         [Validators.required, Validators.pattern(this.passwordPattern)]),
       'confirmation': new FormControl({ value: '', disabled: !bUserPasswordAuthentication  || !bSetPassword},
@@ -145,9 +155,14 @@ export class UserDetailsDialogComponent {
       'validTo': new FormControl({ value: '', disabled: true }, Validators.required),
       'issuer': new FormControl({ value: '', disabled: true }, Validators.required),
       'serialNumber': new FormControl({ value: '', disabled: true }, Validators.required),
-      'certificateId': new FormControl({ value: '', disabled: true }, Validators.required),
+      'certificateId': new FormControl({ value: '', disabled: true,  }, [Validators.required]
+       ),
     }, {
-      validator: [this.passwordConfirmationValidator, this.atLeastOneToggleCheckedValidator, this.certificateValidator]
+      validator: [this.passwordConfirmationValidator,
+        this.atLeastOneToggleCheckedValidator,
+        this.certificateValidator,
+        this.certificateExistValidator,
+        ]
     });
     // bind values to form! not property
     this.userForm.controls['active'].setValue(this.current.active);
@@ -205,7 +220,7 @@ export class UserDetailsDialogComponent {
                 'certificateId': res.certificateId
               });
             } else {
-              this.alertService.exception("Error occurred while reading certificate.", "Check if uploaded file has valid certificate type?", false);
+              this.alertService.exception("Error occurred while reading certificate.", "Check if uploaded file has valid certificate type.", false);
             }
           },
           err => {

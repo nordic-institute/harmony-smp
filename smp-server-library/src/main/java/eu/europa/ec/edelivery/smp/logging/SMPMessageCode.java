@@ -27,8 +27,8 @@ public enum SMPMessageCode implements MessageCode {
     BUS_HTTP_GET_SERVICE_METADATA ("BUS-012", "Http GET ServiceGroup from host: {}, ServiceGroup id: {}, metadata id {}."),
     BUS_HTTP_GET_END_SERVICE_METADATA ("BUS-013", "End Http GET ServiceGroup from host: {}, ServiceGroup id: {}, metadata id {}."),
 
-    BUS_SAVE_SERVICE_GROUP ("BUS-014", "Start inserting/updating ServiceGroup for domain {}, part. Id: {} part. schema {}."),
-    BUS_SAVE_SERVICE_GROUP_FAILED ("BUS-015", "Inserting/updating ServiceGroup for domain {}, part. Id: {} part. schema {} failed! Error: [{}]"),
+    BUS_SAVE_SERVICE_GROUP ("BUS-014", "Start inserting/updating ServiceGroup for domain {}, part. Id: {} part. scheme {}."),
+    BUS_SAVE_SERVICE_GROUP_FAILED ("BUS-015", "Inserting/updating ServiceGroup for domain {}, part. Id: {} part. scheme {} failed! Error: [{}]"),
 
 
     BUS_INVALID_XML("BUS-030", "Invalid XML for {}. Error: [{}]"),

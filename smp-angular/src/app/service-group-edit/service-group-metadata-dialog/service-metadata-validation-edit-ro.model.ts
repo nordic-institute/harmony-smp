@@ -7,4 +7,5 @@ export interface ServiceMetadataValidationEditRo {
 
   errorMessage?: string;
   xmlContent?: string;
+  statusAction: number;
 }
