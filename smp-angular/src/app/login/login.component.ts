@@ -69,6 +69,8 @@ export class LoginComponent implements OnInit, OnDestroy {
                 break;
               default:
                 message = "The username/password combination you provided are not valid. Please try again or contact your administrator.";
+                // clear the password
+                this.model.password='';
                 break;
             }
             break;
@@ -85,6 +87,8 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   login() {
+    // clear alerts
+    this.alertService.clearAlert();
     this.securityService.login(this.model.username, this.model.password);
   }
 

@@ -26,32 +26,10 @@ export class AppComponent implements OnInit {
               private securityEventService: SecurityEventService,
               private http: HttpClient,
               private titleService: Title) {
-/*
-    let applicationNameResponse: Observable<string> = this.http.get<string>('rest/application/name');
 
-    applicationNameResponse.subscribe((name: string) => {
-      this.titleService.setTitle(name);
-    });
-    */
   }
 
   ngOnInit() {
-    /*
-    this.securityEventService.onLoginSuccessEvent().subscribe(
-      data => {
-        this.isAdmin = this.securityService.isCurrentUserAdmin();
-      });
-
-    this.securityEventService.onLoginErrorEvent().subscribe(
-      error => {
-        this.isAdmin = this.securityService.isCurrentUserAdmin();
-      });
-
-    this.securityEventService.onLogoutSuccessEvent().subscribe(
-      data => {
-        this.isAdmin = this.securityService.isCurrentUserAdmin();
-        this.router.navigate(['/login']);
-      });*/
   }
 
   isCurrentUserSystemAdmin(): boolean {

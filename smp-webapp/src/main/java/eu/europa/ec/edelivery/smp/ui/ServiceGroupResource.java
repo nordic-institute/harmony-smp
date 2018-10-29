@@ -5,20 +5,16 @@ import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.auth.SMPRole;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupExtensionRO;
+import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
-import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIServiceGroupService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -26,9 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
-import java.util.Optional;
-
-import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.DOMAIN_NOT_EXISTS;
 
 /**
  * @author Joze Rihtarsic
@@ -98,18 +91,18 @@ public class ServiceGroupResource {
     @PutMapping(produces = {"application/json"})
     @RequestMapping(method = RequestMethod.GET, path = "extension/{serviceGroupId}")
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
-    public ServiceGroupExtensionRO getExtensionServiceGroupById(@PathVariable Long serviceGroupId) {
+    public ServiceGroupValidationRO getExtensionServiceGroupById(@PathVariable Long serviceGroupId) {
         return uiServiceGroupService.getServiceGroupExtensionById(serviceGroupId);
     }
     @RequestMapping(path = "extension/validate", method = RequestMethod.POST)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
-    public ServiceGroupExtensionRO getExtensionServiceGroupById(@RequestBody(required = true) ServiceGroupExtensionRO sg) {
-        return uiServiceGroupService.validateExtension(sg);
+    public ServiceGroupValidationRO getExtensionServiceGroupById(@RequestBody(required = true) ServiceGroupValidationRO sg) {
+        return uiServiceGroupService.validateServiceGroup(sg);
     }
 
     @RequestMapping(path = "extension/format", method = RequestMethod.POST)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
-    public ServiceGroupExtensionRO formatExtension(@RequestBody(required = true) ServiceGroupExtensionRO sg) {
+    public ServiceGroupValidationRO formatExtension(@RequestBody(required = true) ServiceGroupValidationRO sg) {
         return uiServiceGroupService.formatExtension(sg);
     }
 

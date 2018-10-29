@@ -5,7 +5,7 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupExtensionRO;
+import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
@@ -125,7 +125,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
         assertNotNull(res);
         assertEquals(1, res.getCount().intValue());
         ServiceGroupRO sgAdded = res.getServiceEntities().get(0);
-        ServiceGroupExtensionRO sgExt = testInstance.getServiceGroupExtensionById(sgAdded.getId());
+        ServiceGroupValidationRO sgExt = testInstance.getServiceGroupExtensionById(sgAdded.getId());
 
 
         // all table properties should not be null
@@ -179,7 +179,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
         assertNotNull(res);
         assertEquals(1, res.getCount().intValue());
         ServiceGroupRO sgUpdated = res.getServiceEntities().get(0);
-        ServiceGroupExtensionRO sgExt = testInstance.getServiceGroupExtensionById(sgUpdated.getId());
+        ServiceGroupValidationRO sgExt = testInstance.getServiceGroupExtensionById(sgUpdated.getId());
         assertEquals(1, sgChange.getServiceMetadata().size());
         // retrive service metadata xml with special service - it is not retrieve by browsing list
         ServiceMetadataRO smdXMLNew = uiServiceMetadataService.getServiceMetadataXMLById(sgUpdated.getServiceMetadata().get(0).getId());
@@ -242,10 +242,10 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
     @Test
     public void validateExtensionVaild() throws IOException {
         // given
-        ServiceGroupExtensionRO sg = TestROUtils.getValidExtension();
+        ServiceGroupValidationRO sg = TestROUtils.getValidExtension();
 
         // when
-        testInstance.validateExtension(sg);
+        testInstance.validateServiceGroup(sg);
 
         // then
         assertNull(sg.getErrorMessage());
@@ -255,10 +255,10 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
     @Test
     public void validateExtensionMultipleVaild() throws IOException {
         // given
-        ServiceGroupExtensionRO sg = TestROUtils.getValidMultipleExtension();
+        ServiceGroupValidationRO sg = TestROUtils.getValidMultipleExtension();
 
         // when
-        testInstance.validateExtension(sg);
+        testInstance.validateServiceGroup(sg);
 
         // then
         assertNull(sg.getErrorMessage());
@@ -268,10 +268,10 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
     @Test
     public void validateExtensionCustomTextInvaldValid() throws IOException {
         // given
-        ServiceGroupExtensionRO sg = TestROUtils.getValidCustomText();
+        ServiceGroupValidationRO sg = TestROUtils.getValidCustomText();
 
         // when
-        testInstance.validateExtension(sg);
+        testInstance.validateServiceGroup(sg);
 
         // then
         assertNotNull(sg.getErrorMessage());
@@ -281,10 +281,10 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
 
     @Test
     public void validateExtensionInvalid() throws IOException {
-        ServiceGroupExtensionRO sg = TestROUtils.getInvalid();
+        ServiceGroupValidationRO sg = TestROUtils.getInvalid();
 
         // when
-        testInstance.validateExtension(sg);
+        testInstance.validateServiceGroup(sg);
 
         // then
         assertNotNull(sg.getErrorMessage());
@@ -294,10 +294,10 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
 
     @Test
     public void validateCustomExtension() throws IOException {
-        ServiceGroupExtensionRO sg = TestROUtils.getCustomExtension();
+        ServiceGroupValidationRO sg = TestROUtils.getCustomExtension();
 
         // when
-        testInstance.validateExtension(sg);
+        testInstance.validateServiceGroup(sg);
 
         // then
         assertNull(sg.getErrorMessage());
@@ -313,7 +313,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
         assertNull(sg.getExtension());
 
         // when
-        ServiceGroupExtensionRO res = testInstance.getServiceGroupExtensionById(sg.getId());
+        ServiceGroupValidationRO res = testInstance.getServiceGroupExtensionById(sg.getId());
 
         // then
         assertNotNull(res);
@@ -328,7 +328,7 @@ public class UIServiceGroupServiceIntegrationTest extends AbstractServiceIntegra
         assertNotNull(sg.getExtension());
 
         // when
-        ServiceGroupExtensionRO res = testInstance.getServiceGroupExtensionById(sg.getId());
+        ServiceGroupValidationRO res = testInstance.getServiceGroupExtensionById(sg.getId());
 
         // then
         assertNotNull(res);

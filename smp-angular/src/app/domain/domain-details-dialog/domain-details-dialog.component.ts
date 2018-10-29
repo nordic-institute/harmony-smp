@@ -145,7 +145,7 @@ export class DomainDetailsDialogComponent {
               'smlClientCertHeader': res.blueCoatHeader
             });
           } else {
-            this.alertService.exception("Error occurred while reading certificate.", "Check if uploaded file has valid certificate type?", false);
+            this.alertService.exception("Error occurred while reading certificate.", "Check if uploaded file has valid certificate type.", false);
           }
         },
         err => {

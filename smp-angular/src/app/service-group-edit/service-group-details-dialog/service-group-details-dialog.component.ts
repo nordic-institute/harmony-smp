@@ -9,12 +9,13 @@ import {SearchTableEntityStatus} from "../../common/search-table/search-table-en
 import {ServiceGroupEditRo} from "../service-group-edit-ro.model";
 import {GlobalLookups} from "../../common/global-lookups";
 import {ServiceGroupExtensionWizardDialogComponent} from "../service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component";
-import {ServiceGroupExtensionRo} from "./service-extension-edit-ro.model";
+import {ServiceGroupValidationRo} from "./service-group-validation-edit-ro.model";
 import {DomainRo} from "../../domain/domain-ro.model";
 import {ServiceGroupDomainEditRo} from "../service-group-domain-edit-ro.model";
 import {ConfirmationDialogComponent} from "../../common/confirmation-dialog/confirmation-dialog.component";
 import {SecurityService} from "../../security/security.service";
 import {UserRo} from "../../user/user-ro.model";
+import {ServiceGroupValidationErrorCodeModel} from "./service-group-validation-error-code.model";
 
 @Component({
   selector: 'service-group-details',
@@ -34,7 +35,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
   showSpinner: boolean = false;
 
   dialogForm: FormGroup;
-  extensionObserver: Observable<ServiceGroupExtensionRo>;
+  extensionObserver: Observable<ServiceGroupValidationRo>;
 
   extensionValidationMessage: String = null;
   isExtensionValid: boolean = true;
@@ -90,7 +91,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
         this.current.status !== SearchTableEntityStatus.NEW ? Validators.required : null),
       'serviceGroupDomains': new FormControl({value: []}, [this.minSelectedListCount(1)]),
       'users': new FormControl({value: []}, [this.minSelectedListCount(1)]),
-      'extension': new FormControl({value: []}, []),
+      'extension': new FormControl({value: ''}, []),
 
 
     });
@@ -107,8 +108,8 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     // retrieve xml extension for this service group
     if (this.current.status !== SearchTableEntityStatus.NEW && !this.current.extension) {
       // init domains
-      this.extensionObserver = this.http.get<ServiceGroupExtensionRo>(SmpConstants.REST_SERVICE_GROUP_EXTENSION + '/' + this.current.id);
-      this.extensionObserver.subscribe((res: ServiceGroupExtensionRo) => {
+      this.extensionObserver = this.http.get<ServiceGroupValidationRo>(SmpConstants.REST_SERVICE_GROUP_EXTENSION + '/' + this.current.id);
+      this.extensionObserver.subscribe((res: ServiceGroupValidationRo) => {
         this.dialogForm.get('extension').setValue(res.extension);
       });
     }
@@ -125,18 +126,26 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     this.checkValidity(this.dialogForm);
 
 
-    let request: ServiceGroupExtensionRo = {
+    let request: ServiceGroupValidationRo = {
       serviceGroupId: this.current.id,
+      participantScheme: this.dialogForm.controls['participantScheme'].value,
+      participantIdentifier: this.dialogForm.controls['participantIdentifier'].value,
       extension: this.dialogForm.controls['extension'].value,
+      statusAction: this.editMode?SearchTableEntityStatus.UPDATED:SearchTableEntityStatus.NEW,
     }
     //
-    let validationObservable = this.http.post<ServiceGroupExtensionRo>(SmpConstants.REST_SERVICE_GROUP_EXTENSION_VALIDATE, request);
+    let validationObservable = this.http.post<ServiceGroupValidationRo>(SmpConstants.REST_SERVICE_GROUP_EXTENSION_VALIDATE, request);
     this.showSpinner = true;
-    validationObservable.toPromise().then((res: ServiceGroupExtensionRo) => {
+    validationObservable.toPromise().then((res: ServiceGroupValidationRo) => {
       if (res.errorMessage) {
-        this.extensionValidationMessage = res.errorMessage;
+
         this.isExtensionValid = false;
         this.showSpinner = false;
+        if (res.errorCode == ServiceGroupValidationErrorCodeModel.ERROR_CODE_SERVICE_GROUP_EXISTS){
+          this.dialogForm.controls['participantIdentifier'].setErrors({'dbExist': true});
+        } else {
+          this.extensionValidationMessage = res.errorMessage;
+        }
       } else {
         this.extensionValidationMessage = "Extension is valid!";
         this.isExtensionValid = true;
@@ -237,14 +246,17 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
 
   public onExtensionValidate() {
 
-    let request: ServiceGroupExtensionRo = {
+    let request: ServiceGroupValidationRo = {
       serviceGroupId: this.current.id,
+      participantScheme: this.dialogForm.controls['participantScheme'].value,
+      participantIdentifier: this.dialogForm.controls['participantIdentifier'].value,
       extension: this.dialogForm.controls['extension'].value,
+      statusAction: SearchTableEntityStatus.UPDATED, // do not validate as new  - for new participant id and schema is also validated
     }
     //
-    let validationObservable = this.http.post<ServiceGroupExtensionRo>(SmpConstants.REST_SERVICE_GROUP_EXTENSION_VALIDATE, request);
+    let validationObservable = this.http.post<ServiceGroupValidationRo>(SmpConstants.REST_SERVICE_GROUP_EXTENSION_VALIDATE, request);
     this.showSpinner = true;
-    validationObservable.toPromise().then((res: ServiceGroupExtensionRo) => {
+    validationObservable.toPromise().then((res: ServiceGroupValidationRo) => {
       if (res.errorMessage) {
         this.extensionValidationMessage = res.errorMessage;
         this.isExtensionValid = false;
@@ -259,22 +271,7 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
   }
 
   onPrettyPrintExtension() {
-    let existingXML = this.dialogForm.controls['extension'].value;
-    let request: ServiceGroupExtensionRo = {
-      serviceGroupId: this.current.id,
-      extension: existingXML,
-    }
-    let validationObservable = this.http.post<ServiceGroupExtensionRo>(SmpConstants.REST_SERVICE_GROUP_EXTENSION_FORMAT, request);
-    validationObservable.subscribe((res: ServiceGroupExtensionRo) => {
-      if (res.errorMessage) {
-        this.extensionValidationMessage = res.errorMessage;
-        this.isExtensionValid = false;
-      } else {
-        this.dialogForm.get('extension').setValue(res.extension);
-        this.isExtensionValid = true;
-      }
 
-    });
   }
 
   onDomainSelectionChanged(event) {

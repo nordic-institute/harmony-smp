@@ -36,6 +36,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO.ERROR_CODE_INVALID_EXTENSION;
+import static eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO.ERROR_CODE_OK;
+import static eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO.ERROR_CODE_SERVICE_GROUP_EXISTS;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.*;
 
 @Service
@@ -109,8 +112,8 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
     }
 
     @Transactional
-    public ServiceGroupExtensionRO getServiceGroupExtensionById(Long serviceGroupId) {
-        ServiceGroupExtensionRO ex = new ServiceGroupExtensionRO();
+    public ServiceGroupValidationRO getServiceGroupExtensionById(Long serviceGroupId) {
+        ServiceGroupValidationRO ex = new ServiceGroupValidationRO();
         DBServiceGroup dbServiceGroup = getDatabaseDao().find(serviceGroupId);
         ex.setServiceGroupId(dbServiceGroup.getId());
         if (dbServiceGroup.getExtension() != null) {
@@ -493,8 +496,9 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
 
         byte[] buff = validateServiceMetadata(serviceMetadataRO);
         DBServiceMetadata dbServiceMetadata = new DBServiceMetadata();
-        dbServiceMetadata.setDocumentIdentifier(serviceMetadataRO.getDocumentIdentifier());
-        dbServiceMetadata.setDocumentIdentifierScheme(serviceMetadataRO.getDocumentIdentifierScheme());
+        DocumentIdentifier docIdent=  caseSensitivityNormalizer.normalizeDocumentIdentifier(serviceMetadataRO.getDocumentIdentifierScheme(),serviceMetadataRO.getDocumentIdentifier() );
+        dbServiceMetadata.setDocumentIdentifier(docIdent.getValue());
+        dbServiceMetadata.setDocumentIdentifierScheme(docIdent.getScheme());
         dbServiceMetadata.setXmlContent(buff);
 
         return dbServiceMetadata;
@@ -525,26 +529,47 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
     /**
      * Validate if extension is valid by schema.
      *
-     * @param sgExtension
+     * @param serviceGroup
      * @return
      */
-    public ServiceGroupExtensionRO validateExtension(ServiceGroupExtensionRO sgExtension) {
-        if (sgExtension == null) {
+    public ServiceGroupValidationRO validateServiceGroup(ServiceGroupValidationRO serviceGroup) {
+
+        if (serviceGroup == null) {
             throw new SMPRuntimeException(INVALID_REQEUST, "Validate extension", "Missing Extension parameter");
-        } else if (StringUtils.isBlank(sgExtension.getExtension())) {
-            sgExtension.setErrorMessage("Empty extension");
-        } else {
-            try {
-                byte[] buff = sgExtension.getExtension().getBytes("UTF-8");
-                ExtensionConverter.validateExtensionBySchema(buff); // validate by schema
-                sgExtension.setErrorMessage(null);
-            } catch (XmlInvalidAgainstSchemaException e) {
-                sgExtension.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
-            } catch (UnsupportedEncodingException e) {
-                sgExtension.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
+        } // if new check if service group already exist
+
+        if (serviceGroup.getStatusAction() == EntityROStatus.NEW.getStatusNumber()){
+            ParticipantIdentifierType headerPI = caseSensitivityNormalizer.normalizeParticipantIdentifier(
+                    serviceGroup.getParticipantScheme(),
+                    serviceGroup.getParticipantIdentifier());
+            Optional<DBServiceGroup> sg= serviceGroupDao.findServiceGroup(serviceGroup.getParticipantIdentifier(),
+                    serviceGroup.getParticipantScheme());
+            if (sg.isPresent()) {
+                serviceGroup.setErrorMessage("Service group: " +serviceGroup.getParticipantScheme()+ ":"+serviceGroup.getParticipantIdentifier()+
+                        " already exists!");
+                serviceGroup.setErrorCode(ERROR_CODE_SERVICE_GROUP_EXISTS);
+                return serviceGroup;
             }
         }
-        return sgExtension;
+
+        if (StringUtils.isBlank(serviceGroup.getExtension())) {
+            // emtpy extension is also a valid extension;
+            serviceGroup.setErrorMessage(null);
+        } else {
+            try {
+                byte[] buff = serviceGroup.getExtension().getBytes("UTF-8");
+                ExtensionConverter.validateExtensionBySchema(buff); // validate by schema
+                serviceGroup.setErrorMessage(null);
+                serviceGroup.setErrorCode(ERROR_CODE_OK);
+            } catch (XmlInvalidAgainstSchemaException e) {
+                serviceGroup.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
+                serviceGroup.setErrorCode(ERROR_CODE_INVALID_EXTENSION);
+            } catch (UnsupportedEncodingException e) {
+                serviceGroup.setErrorMessage(ExceptionUtils.getRootCauseMessage(e));
+                serviceGroup.setErrorCode(ERROR_CODE_INVALID_EXTENSION);
+            }
+        }
+        return serviceGroup;
     }
 
     /**
@@ -568,12 +593,12 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
     }
 
     /**
-     * TODO format extension - add root element and format...
+     * Method
      *
      * @param sgExtension
      * @return
      */
-    public ServiceGroupExtensionRO formatExtension(ServiceGroupExtensionRO sgExtension) {
+    public ServiceGroupValidationRO formatExtension(ServiceGroupValidationRO sgExtension) {
         if (sgExtension == null) {
             throw new SMPRuntimeException(INVALID_REQEUST, "Format extension", "Missing Extension parameter");
         } else if (StringUtils.isBlank(sgExtension.getExtension())) {

@@ -17,6 +17,11 @@
               style="color:red; font-size: 70%">
               Participant identifier must not be empty.
             </div>
+            <div
+              *ngIf="(!editMode &&  dialogForm.controls['participantIdentifier'].hasError('dbExist'))"
+              style="color:red; font-size: 70%">
+              Participant identifier for given scheme is already defined in database!
+            </div>
           </mat-form-field>
 
           <mat-form-field style="width:100%">
@@ -119,7 +124,7 @@
               <span>Extension wizard</span>
             </button>
             <button mat-raised-button color="primary"
-                    atTooltip="Validate extension by XSD schema."
+                    atTooltip="Validate extension by XSD scheme."
                     matTooltipPosition="below"
                     (click)="onExtensionValidate()">
               <mat-icon>warning</mat-icon>
@@ -150,11 +155,7 @@
             [style.color]="isExtensionValid?'green':'red'">
             {{extensionValidationMessage}}
           </div>
-
         </div>
-
-
-
         <!-- mat-form-field>
           <div>
           <textarea style="width:100% !important;height: 400px !important;  -webkit-box-sizing: border-box;
