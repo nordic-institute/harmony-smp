@@ -1,0 +1,5 @@
+export enum ServiceGroupValidationErrorCodeModel {
+  ERROR_CODE_OK,
+  ERROR_CODE_SERVICE_GROUP_EXISTS,
+  ERROR_CODE_INVALID_EXTENSION
+}

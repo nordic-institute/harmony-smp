@@ -39,7 +39,7 @@ public class UserDao extends BaseDao<DBUser> {
 
 
     /**
-     * Perstis user to database. Before that test if user has identifiers
+     * Persis user to database. Before that test if user has identifiers. Usernames are saved to database in lower caps
      * @param user
      */
     @Override
@@ -48,6 +48,10 @@ public class UserDao extends BaseDao<DBUser> {
         if (  StringUtils.isBlank(user.getUsername())
                 && (user.getCertificate() == null || StringUtils.isBlank(user.getCertificate().getCertificateId() )) ) {
             throw new SMPRuntimeException(ErrorCode.INVALID_USER_NO_IDENTIFIERS);
+        }
+        // update username to lower caps
+        if (!StringUtils.isBlank(user.getUsername())){
+            user.setUsername(user.getUsername().toLowerCase());
         }
         super.persistFlushDetach(user);
     }

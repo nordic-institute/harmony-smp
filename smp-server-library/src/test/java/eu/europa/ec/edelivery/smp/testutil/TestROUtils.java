@@ -2,7 +2,7 @@ package eu.europa.ec.edelivery.smp.testutil;
 
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupDomainRO;
-import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupExtensionRO;
+import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
@@ -74,35 +74,35 @@ public class TestROUtils {
         return String.format(SIMPLE_DOCUMENT_XML, partSch, partId,docSch, docId, UUID.randomUUID().toString()  );
     }
 
-    public static ServiceGroupExtensionRO getValidExtension() throws IOException {
+    public static ServiceGroupValidationRO getValidExtension() throws IOException {
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionValidOne.xml");
         return getExtensionRO(inputDoc);
     }
 
 
-    public static ServiceGroupExtensionRO getValidMultipleExtension() throws IOException {
+    public static ServiceGroupValidationRO getValidMultipleExtension() throws IOException {
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionValidMultiple.xml");
         return getExtensionRO(inputDoc);
     }
 
-    public static ServiceGroupExtensionRO getValidCustomText() throws IOException {
+    public static ServiceGroupValidationRO getValidCustomText() throws IOException {
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionCustomText.xml");
         return getExtensionRO(inputDoc);
     }
 
-    public static ServiceGroupExtensionRO getInvalid() throws IOException {
+    public static ServiceGroupValidationRO getInvalid() throws IOException {
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionInvalid.xml");
         return getExtensionRO(inputDoc);
     }
 
-    public static ServiceGroupExtensionRO getCustomExtension() throws IOException {
+    public static ServiceGroupValidationRO getCustomExtension() throws IOException {
         String inputDoc = XmlTestUtils.loadDocumentAsString(RES_PATH + "extensionCustom.xml");
         return getExtensionRO(inputDoc);
     }
 
 
-    public static ServiceGroupExtensionRO getExtensionRO(String extension) {
-        ServiceGroupExtensionRO sg = new ServiceGroupExtensionRO();
+    public static ServiceGroupValidationRO getExtensionRO(String extension) {
+        ServiceGroupValidationRO sg = new ServiceGroupValidationRO();
         sg.setServiceGroupId((long) 1);
         sg.setExtension(extension);
         return sg;

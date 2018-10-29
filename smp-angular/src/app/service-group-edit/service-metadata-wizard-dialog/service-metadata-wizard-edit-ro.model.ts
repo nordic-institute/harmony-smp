@@ -4,7 +4,7 @@ export interface ServiceMetadataWizardRo  {
   participantIdentifier: string;
   documentIdentifierScheme: string;
   documentIdentifier: string;
-  processSchema: string;
+  processScheme: string;
   processIdentifier: string;
   transportProfile: string;
   endpointUrl: string;

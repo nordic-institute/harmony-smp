@@ -17,6 +17,8 @@ public class ServiceMetadataValidationRO extends BaseRO {
     String errorMessage;
     String xmlContent;
 
+    int statusAction = 0;
+
     public String getParticipantScheme() {
         return participantScheme;
     }
@@ -63,5 +65,13 @@ public class ServiceMetadataValidationRO extends BaseRO {
 
     public void setXmlContent(String xmlContent) {
         this.xmlContent = xmlContent;
+    }
+
+    public int getStatusAction() {
+        return statusAction;
+    }
+
+    public void setStatusAction(int statusAction) {
+        this.statusAction = statusAction;
     }
 }

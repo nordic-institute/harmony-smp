@@ -73,7 +73,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
           disabled: this.editMode
         },
         [Validators.required]),
-      'xmlContent': new FormControl({value: []}, []),
+      'xmlContent': new FormControl({value: ''}, [Validators.required]),
     });
 
     // update values
@@ -123,6 +123,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
       documentIdentifierScheme: this.dialogForm.controls['documentIdentifierScheme'].value,
       documentIdentifier: this.dialogForm.controls['documentIdentifier'].value,
       xmlContent: this.dialogForm.controls['xmlContent'].value,
+      statusAction: this.editMode?SearchTableEntityStatus.UPDATED:SearchTableEntityStatus.NEW,
     }
     //
     let validationObservable = this.http.post<ServiceMetadataValidationEditRo>(SmpConstants.REST_METADATA_VALIDATE, request);
@@ -191,11 +192,13 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
   onServiceMetadataValidate() {
 
     let request: ServiceMetadataValidationEditRo = {
+
       participantScheme: this.dialogForm.controls['participantScheme'].value,
       participantIdentifier: this.dialogForm.controls['participantIdentifier'].value,
       documentIdentifierScheme: this.dialogForm.controls['documentIdentifierScheme'].value,
       documentIdentifier: this.dialogForm.controls['documentIdentifier'].value,
       xmlContent: this.dialogForm.controls['xmlContent'].value,
+      statusAction: this.editMode?SearchTableEntityStatus.UPDATED:SearchTableEntityStatus.NEW,
     }
     //
     let validationObservable = this.http.post<ServiceMetadataValidationEditRo>(SmpConstants.REST_METADATA_VALIDATE, request);
