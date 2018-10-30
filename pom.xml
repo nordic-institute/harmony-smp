@@ -51,6 +51,10 @@
         <deployWarFolder>/home/edelivery/oracle/middleware/domains/bdmsl/autodeploy/</deployWarFolder>
     </properties>
 
+    <scm>
+        <developerConnection>scm:git:https://ec.europa.eu/cefdigital/code/scm/edelivery/smp.git</developerConnection>
+    </scm>
+
 
     <pluginRepositories>
         <pluginRepository>
@@ -210,6 +214,13 @@
                 <artifactId>sonar-maven-plugin</artifactId>
                 <!-- latest version compatible with SonarQube 5.6 -->
                 <version>3.3.0.603</version>
+            </plugin>
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5.3</version>
+                <configuration>
+                    <autoVersionSubmodules>true</autoVersionSubmodules>
+                </configuration>
             </plugin>
         </plugins>
     </build>
