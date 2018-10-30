@@ -28,3 +28,4 @@ addons/cipa-sml-migration/target/test-classes/global-truststore.jks
 addons/cipa-sml-migration/target/classes/
 addons/cipa-sml-migration/target/
 addons/cipa-sml-migration/.idea/
+.idea/
