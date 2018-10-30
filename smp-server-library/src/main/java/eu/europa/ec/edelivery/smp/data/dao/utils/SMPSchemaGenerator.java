@@ -49,7 +49,12 @@ public class SMPSchemaGenerator {
      */
     public void createDDLScript(String exportFolder, String hibernateDialect, List<String> packageNames, String version) throws ClassNotFoundException {
         // create export file
-        String filename = createFileName(hibernateDialect,version );
+        String sqlVer = version;
+        int idx = version.indexOf("-SNAPSHOT");
+        if (idx >0) {
+            sqlVer = version.substring(0, idx);
+        }
+        String filename = createFileName(hibernateDialect,sqlVer );
 
         String dialect = getDialect(hibernateDialect);
 

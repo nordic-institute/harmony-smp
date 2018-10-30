@@ -66,22 +66,21 @@ public class SmlConnector implements ApplicationContextAware {
     public void unregisterFromDns(ParticipantIdentifierType normalizedParticipantId, DBDomain domain) {
       if (!smlIntegrationEnabled) {
             return;
-        }/*
+        }
         log.info("Removing Participant from BDMSL: " + asString(normalizedParticipantId));
         try {
-            ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, domain.getBdmslSmpId());
+            ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, domain.getSmlSmpId());
             getClient(domain).delete(smlRequest);
         } catch (Exception e) {
-            throw new SmlIntegrationException("Could not remove DNS entry through SML", e);
-        }*/
+            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION,e, ExceptionUtils.getRootCauseMessage(e));
+        }
     }
 
     private IManageParticipantIdentifierWS getClient(DBDomain domain) {
-        /*
-        String clientCertHttpHeader = domain.getBdmslClientCertHeader();
-        String clientCertAlias = domain.getBdmslClientCertAlias();
-        return ctx.getBean(IManageParticipantIdentifierWS.class, clientCertAlias, clientCertHttpHeader);*/
-        return null;
+
+        String clientCertHttpHeader = domain.getSmlClientCertHeader();
+        String clientCertAlias = domain.getSmlClientKeyAlias();
+        return ctx.getBean(IManageParticipantIdentifierWS.class, clientCertAlias, clientCertHttpHeader);
     }
 
     @Override
