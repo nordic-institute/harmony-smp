@@ -150,7 +150,7 @@ public class ServiceGroupService {
             boolean registered = smlConnector.registerInDns(normalizedParticipantId, dmn);
             if (registered) {
                 // update status in database
-                newSg.getServiceGroupDomains().get(0).setSmlRegistered(false);
+                newSg.getServiceGroupDomains().get(0).setSmlRegistered(registered);
                 serviceGroupDao.update(newSg);
             }
             return true;
@@ -219,13 +219,14 @@ public class ServiceGroupService {
                     normalizedServiceGroupId.getScheme());
         }
         DBServiceGroup dsg = dbServiceGroup.get();
+        // register to SML
+        // unergister all the domains
+        for (DBServiceGroupDomain sgdom: dsg.getServiceGroupDomains()) {
+            if (sgdom.isSmlRegistered()) {
+                smlConnector.unregisterFromDns(normalizedServiceGroupId, sgdom.getDomain());
+            }
+        }
+
         serviceGroupDao.removeServiceGroup(dsg);
-        // TODO
-        // fist unregister - test if dsg was registered
-        // if registered and integration is false - raise an error
-        // delete servicegroup
-        // unregister for all domains{
-        // serviceGroupDao.removeServiceGroup(dsg);
-         //smlConnector.unregisterFromDns(normalizedServiceGroupId, dsg.getDomain());
     }
 }
