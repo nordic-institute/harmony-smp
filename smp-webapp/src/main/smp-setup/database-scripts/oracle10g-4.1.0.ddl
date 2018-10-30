@@ -1,225 +1,321 @@
---
--- Copyright 2018 European Commission | CEF eDelivery
---
--- Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the Licence);
--- You may not use this work except in compliance with the Licence.
---
--- You may obtain a copy of the Licence attached in file: LICENCE-EUPL-v1.2.pdf
---
--- Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an AS IS basis,
--- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
--- See the Licence for the specific language governing permissions and limitations under the Licence.
+create sequence SMP_DOMAIN_SEQ start with 1 increment by  1;
+create sequence SMP_REVISION_SEQ start with 1 increment by  1;
+create sequence SMP_SERVICE_GROUP_DOMAIN_SEQ start with 1 increment by  50;
+create sequence SMP_SERVICE_GROUP_SEQ start with 1 increment by  50;
+create sequence SMP_SERVICE_METADATA_SEQ start with 1 increment by  50;
+create sequence SMP_USER_SEQ start with 1 increment by  50;
 
+    create table SMP_CERTIFICATE (
+       ID number(19,0) not null,
+        CERTIFICATE_ID varchar2(4000 char),
+        CREATED_ON timestamp not null,
+        issuer varchar2(512 char),
+        LAST_UPDATED_ON timestamp not null,
+        serialNumber varchar2(128 char),
+        subject varchar2(512 char),
+        VALID_FROM timestamp,
+        VALID_TO timestamp,
+        primary key (ID)
+    );
 
-/************************************************
-* CREATE TABLES
-************************************************/
-CREATE TABLE SMP_CONFIGURATION  (
-  PROPERTY VARCHAR2(255 BYTE) NOT NULL ENABLE,
-	VALUE VARCHAR2(4000 BYTE),
-	DESCRIPTION VARCHAR2(4000 BYTE),
-	CREATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	LAST_UPDATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	CONSTRAINT SMP_CONFIGURATION_PKEY PRIMARY KEY (PROPERTY)
-);
+    create table SMP_CERTIFICATE_AUD (
+       ID number(19,0) not null,
+        REV number(19,0) not null,
+        REVTYPE number(3,0),
+        CERTIFICATE_ID varchar2(4000 char),
+        CREATED_ON timestamp,
+        issuer varchar2(512 char),
+        LAST_UPDATED_ON timestamp,
+        serialNumber varchar2(128 char),
+        subject varchar2(512 char),
+        VALID_FROM timestamp,
+        VALID_TO timestamp,
+        primary key (ID, REV)
+    );
 
-CREATE TABLE SMP_DOMAIN  (
-  ID NUMBER(*,0) NOT NULL ENABLE,
-	DOMAIN_CODE VARCHAR2(50 BYTE) NOT NULL ENABLE,
-	SML_SUBDOMAIN VARCHAR2(255 BYTE) NOT NULL ENABLE,
-	SML_SMP_ID VARCHAR2(255 BYTE),
-	SML_PARTC_IDENT_REGEXP VARCHAR2(1024 BYTE),
-	SML_CLIENT_CERT_HEADER VARCHAR2(4000 BYTE),
-	SML_CLIENT_KEY_ALIAS VARCHAR2(50 BYTE),
-	SIGNATURE_KEY_ALIAS VARCHAR2(50 BYTE),
-	CREATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	LAST_UPDATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-  CONSTRAINT SMP_DOMAIN_PKEY PRIMARY KEY (ID)
-);
+    create table SMP_DOMAIN (
+       ID number(19,0) not null,
+        CREATED_ON timestamp not null,
+        DOMAIN_CODE varchar2(256 char) not null,
+        LAST_UPDATED_ON timestamp not null,
+        SIGNATURE_KEY_ALIAS varchar2(256 char),
+        SML_CLIENT_CERT_HEADER varchar2(4000 char),
+        SML_CLIENT_KEY_ALIAS varchar2(256 char),
+        SML_PARTC_IDENT_REGEXP varchar2(4000 char),
+        SML_SMP_ID varchar2(256 char),
+        SML_SUBDOMAIN varchar2(256 char),
+        primary key (ID)
+    );
 
-CREATE UNIQUE INDEX SMP_DOMAIN_CODE_IDX ON SMP_DOMAIN (DOMAIN_CODE);
-CREATE UNIQUE INDEX SMP_DOMAIN_CODE_IDX ON SMP_DOMAIN (SML_SUBDOMAIN);
+    create table SMP_DOMAIN_AUD (
+       ID number(19,0) not null,
+        REV number(19,0) not null,
+        REVTYPE number(3,0),
+        CREATED_ON timestamp,
+        DOMAIN_CODE varchar2(256 char),
+        LAST_UPDATED_ON timestamp,
+        SIGNATURE_KEY_ALIAS varchar2(256 char),
+        SML_CLIENT_CERT_HEADER varchar2(4000 char),
+        SML_CLIENT_KEY_ALIAS varchar2(256 char),
+        SML_PARTC_IDENT_REGEXP varchar2(4000 char),
+        SML_SMP_ID varchar2(256 char),
+        SML_SUBDOMAIN varchar2(256 char),
+        primary key (ID, REV)
+    );
 
-CREATE TABLE SMP_SERVICE_GROUP (
-  ID NUMBER(*,0) NOT NULL ENABLE,
-	FK_DOMAIN_ID NUMBER(*,0) NOT NULL ENABLE,
-	PARTICIPANT_IDENTIFIER VARCHAR2(255 BYTE) NOT NULL ENABLE,
-	PARTICIPANT_SCHEME VARCHAR2(255 BYTE),
-	EXTENSION CLOB,
-	CREATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	LAST_UPDATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	CONSTRAINT SMP_SERVICE_GROUP_PKEY PRIMARY KEY (ID),
-	CONSTRAINT SMP_SG_DOMAIN_ID_FKEY FOREIGN KEY (FK_DOMAIN_ID) REFERENCES SMP_DOMAIN ( ID)
-);
-/**speedup search */
-CREATE INDEX SMP_SG_PART_ID_IDX ON SMP_SERVICE_GROUP (PARTICIPANT_IDENTIFIER);
-CREATE INDEX SMP_SG_PART_SCH_IDX ON SMP_SERVICE_GROUP (PARTICIPANT_SCHEME);
-CREATE UNIQUE INDEX SMP_SG_UNIQ_PARTC_IDX ON SMP_SERVICE_GROUP (FK_DOMAIN_ID, PARTICIPANT_SCHEME, PARTICIPANT_IDENTIFIER);
+    create table SMP_OWNERSHIP (
+       FK_SG_ID number(19,0) not null,
+        FK_USER_ID number(19,0) not null,
+        primary key (FK_SG_ID, FK_USER_ID)
+    );
 
+    create table SMP_OWNERSHIP_AUD (
+       REV number(19,0) not null,
+        FK_SG_ID number(19,0) not null,
+        FK_USER_ID number(19,0) not null,
+        REVTYPE number(3,0),
+        primary key (REV, FK_SG_ID, FK_USER_ID)
+    );
 
-CREATE TABLE SMP_SERVICE_METADATA (
-  ID NUMBER(*,0) NOT NULL ENABLE,
-	FK_SG_ID NUMBER(*,0) NOT NULL ENABLE,
-	DOCUMENT_IDENTIFIER VARCHAR2(500 BYTE),
-	DOCUMENT_SCHEME VARCHAR2(100 BYTE),
-	XML_CONTENT CLOB,
-	CREATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	LAST_UPDATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	CONSTRAINT SMP_SERVICE_METADATA_PKEY PRIMARY KEY (ID),
-	CONSTRAINT MT_SG_ID_FKEY FOREIGN KEY (FK_SG_ID) REFERENCES SMP_SERVICE_GROUP (ID)
-);
+    create table SMP_REV_INFO (
+       id number(19,0) not null,
+        REVISION_DATE timestamp,
+        timestamp number(19,0) not null,
+        USERNAME varchar2(255 char),
+        primary key (id)
+    );
 
-/**speedup searh */
-CREATE INDEX SMP_MD_DOC_ID_IDX ON SMP_SERVICE_METADATA (DOCUMENT_IDENTIFIER);
-CREATE INDEX SMP_MD_DOC_SCH_IDX ON SMP_SERVICE_METADATA (DOCUMENT_SCHEME);
-CREATE UNIQUE INDEX SMP_MD_UNIQ_DOC_IDX ON SMP_SERVICE_METADATA (FK_SG_ID, DOCUMENT_SCHEME, DOCUMENT_IDENTIFIER);
+    create table SMP_SERVICE_GROUP (
+       ID number(19,0) not null,
+        CREATED_ON timestamp not null,
+        LAST_UPDATED_ON timestamp not null,
+        PARTICIPANT_IDENTIFIER varchar2(256 char) not null,
+        PARTICIPANT_SCHEME varchar2(256 char) not null,
+        primary key (ID)
+    );
 
-CREATE TABLE SMP_CERTIFICATE (
-  ID NUMBER(*,0) NOT NULL ENABLE,
-	CERTIFICATE_ID VARCHAR2(255 BYTE) NOT NULL ENABLE,
-	VALID_FROM DATE NOT NULL ENABLE,
-	VALID_UNTIL DATE NOT NULL ENABLE,
-	PEM_ENCODING CLOB,
-	NEW_CERT_CHANGE_DATE DATE,
-	NEW_CERT_ID NUMBER(*,0),
-	CREATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	LAST_UPDATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	CONSTRAINT SMP_CERTIFICATE_PKEY PRIMARY KEY (ID)
-);
-CREATE UNIQUE INDEX SMP_CERTIFICATE_ID_IDX ON SMP_CERTIFICATE (CERTIFICATE_ID);
+    create table SMP_SERVICE_GROUP_AUD (
+       ID number(19,0) not null,
+        REV number(19,0) not null,
+        REVTYPE number(3,0),
+        CREATED_ON timestamp,
+        LAST_UPDATED_ON timestamp,
+        PARTICIPANT_IDENTIFIER varchar2(256 char),
+        PARTICIPANT_SCHEME varchar2(256 char),
+        primary key (ID, REV)
+    );
 
-CREATE TABLE SMP_USER (
-  ID NUMBER(*,0) NOT NULL ENABLE,
-	USERNAME VARCHAR2(256 BYTE) NOT NULL ENABLE,
-	PASSWORD VARCHAR2(256 BYTE),
-	FK_CERTIFICATE_ID NUMBER,
-	ROLE VARCHAR2(20 BYTE) NOT NULL ENABLE,
-	ACTIVE NUMBER(1,0) DEFAULT 1 NOT NULL,
-	CREATED_ON DATE NOT NULL ENABLE,
-	LAST_UPDATED_ON DATE NOT NULL ENABLE,
-	CONSTRAINT SMP_USER_PKEY PRIMARY KEY (ID),
-	CONSTRAINT USER_CERTIFICATE_ID_FKEY FOREIGN KEY (ID) REFERENCES SMP_CERTIFICATE (ID),
-	CONSTRAINT CHECK_ACTIVE_VALUE CHECK (ACTIVE = 0 OR ACTIVE = 1)
-);
+    create table SMP_SERVICE_GROUP_DOMAIN (
+       ID number(19,0) not null,
+        CREATED_ON timestamp not null,
+        LAST_UPDATED_ON timestamp not null,
+        SML_REGISTRED number(1,0) not null,
+        FK_DOMAIN_ID number(19,0),
+        FK_SG_ID number(19,0),
+        primary key (ID)
+    );
 
-CREATE UNIQUE INDEX SMP_USER_USERNAME_IDX ON SMP_USER (USERNAME);
+    create table SMP_SERVICE_GROUP_DOMAIN_AUD (
+       ID number(19,0) not null,
+        REV number(19,0) not null,
+        REVTYPE number(3,0),
+        CREATED_ON timestamp,
+        LAST_UPDATED_ON timestamp,
+        SML_REGISTRED number(1,0),
+        FK_DOMAIN_ID number(19,0),
+        FK_SG_ID number(19,0),
+        primary key (ID, REV)
+    );
 
-CREATE TABLE SMP_OWNERSHIP (
-	FK_USER_ID NUMBER(*,0) NOT NULL ENABLE,
-	FK_SG_ID NUMBER(*,0) NOT NULL ENABLE,
-	CONSTRAINT OWN_USER_SG_PKEY PRIMARY KEY (FK_USER_ID,FK_SG_ID )
-);
+    create table SMP_SERVICE_METADATA (
+       ID number(19,0) not null,
+        CREATED_ON timestamp not null,
+        DOCUMENT_IDENTIFIER varchar2(500 char) not null,
+        DOCUMENT_SCHEME varchar2(500 char),
+        LAST_UPDATED_ON timestamp not null,
+        FK_SG_DOM_ID number(19,0) not null,
+        primary key (ID)
+    );
 
-/************************************************
-* CREATE AUDIT TABLES
-************************************************/
-CREATE TABLE SMP_REV_INFO (
-  ID NUMBER(38, 0) NOT NULL,
-  TIMESTAMP NUMBER(38, 0),
-  REVISION_DATE TIMESTAMP,
-  USERNAME VARCHAR2(255),
-  CONSTRAINT PK_SMP_REV_INFO PRIMARY KEY (ID)
-);
+    create table SMP_SERVICE_METADATA_AUD (
+       ID number(19,0) not null,
+        REV number(19,0) not null,
+        REVTYPE number(3,0),
+        CREATED_ON timestamp,
+        DOCUMENT_IDENTIFIER varchar2(500 char),
+        DOCUMENT_SCHEME varchar2(500 char),
+        LAST_UPDATED_ON timestamp,
+        FK_SG_DOM_ID number(19,0),
+        primary key (ID, REV)
+    );
 
-CREATE TABLE SMP_CONFIGURATION_AUD  (
-  PROPERTY VARCHAR2(255 BYTE) NOT NULL ENABLE,
-	VALUE VARCHAR2(4000 BYTE),
-	DESCRIPTION VARCHAR2(4000 BYTE),
-	CREATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	LAST_UPDATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	REV INTEGER NOT NULL,
-  REVTYPE NUMBER(3),
-	CONSTRAINT SMP_CONFIGURATION_AUD_PKEY PRIMARY KEY (PROPERTY,REV)
-);
+    create table SMP_SERVICE_METADATA_XML (
+       ID number(19,0) not null,
+        CREATED_ON timestamp not null,
+        LAST_UPDATED_ON timestamp not null,
+        XML_CONTENT blob,
+        primary key (ID)
+    );
 
-CREATE TABLE SMP_DOMAIN_AUD  (
-  ID NUMBER(*,0) NOT NULL ENABLE,
-	DOMAIN_CODE VARCHAR2(50 BYTE) NOT NULL ENABLE,
-	SML_SUBDOMAIN VARCHAR2(255 BYTE),
-	SML_SMP_ID VARCHAR2(255 BYTE),
-	SML_PARTC_IDENT_REGEXP VARCHAR2(1025 BYTE),
-	SML_CLIENT_CERT_HEADER VARCHAR2(4000 BYTE),
-	SML_CLIENT_KEY_ALIAS VARCHAR2(50 BYTE),
-	SIGNATURE_KEY_ALIAS VARCHAR2(50 BYTE),
-	CREATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	LAST_UPDATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	REV INTEGER NOT NULL,
-  REVTYPE NUMBER(3),
-  CONSTRAINT SMP_DOMAIN_AUD_PKEY PRIMARY KEY (ID,REV)
-);
+    create table SMP_SERVICE_METADATA_XML_AUD (
+       ID number(19,0) not null,
+        REV number(19,0) not null,
+        REVTYPE number(3,0),
+        CREATED_ON timestamp,
+        LAST_UPDATED_ON timestamp,
+        XML_CONTENT blob,
+        primary key (ID, REV)
+    );
 
+    create table SMP_SG_EXTENSION (
+       ID number(19,0) not null,
+        CREATED_ON timestamp not null,
+        EXTENSION blob,
+        LAST_UPDATED_ON timestamp not null,
+        primary key (ID)
+    );
 
-CREATE TABLE SMP_SERVICE_GROUP_AUD (
-  ID NUMBER(*,0) NOT NULL ENABLE,
-	FK_DOMAIN_ID NUMBER(*,0) NOT NULL ENABLE,
-	PARTICIPANT_IDENTIFIER VARCHAR2(255 BYTE) NOT NULL ENABLE,
-	PARTICIPANT_SCHEME VARCHAR2(255 BYTE),
-	EXTENSION CLOB,
-	CREATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	LAST_UPDATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	REV INTEGER NOT NULL,
-  REVTYPE NUMBER(3),
-	CONSTRAINT SMP_SERVICE_GROUP_AUD_PKEY PRIMARY KEY (ID,REV)
-);
+    create table SMP_SG_EXTENSION_AUD (
+       ID number(19,0) not null,
+        REV number(19,0) not null,
+        REVTYPE number(3,0),
+        CREATED_ON timestamp,
+        EXTENSION blob,
+        LAST_UPDATED_ON timestamp,
+        primary key (ID, REV)
+    );
 
+    create table SMP_USER (
+       ID number(19,0) not null,
+        ACTIVE number(1,0) not null,
+        CREATED_ON timestamp not null,
+        EMAIL varchar2(256 char),
+        LAST_UPDATED_ON timestamp not null,
+        PASSWORD varchar2(256 char),
+        PASSWORD_CHANGED timestamp,
+        ROLE varchar2(256 char),
+        USERNAME varchar2(256 char),
+        primary key (ID)
+    );
 
-CREATE TABLE SMP_SERVICE_METADATA_AUD(
-  ID NUMBER(*,0) NOT NULL ENABLE,
-	FK_SG_ID NUMBER(*,0) NOT NULL ENABLE,
-	DOCUMENT_IDENTIFIER VARCHAR2(500 BYTE),
-	DOCUMENT_SCHEME VARCHAR2(100 BYTE),
-	XML_CONTENT CLOB,
-	CREATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	LAST_UPDATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	REV INTEGER NOT NULL,
-  REVTYPE NUMBER(3),
-	CONSTRAINT SMP_SERVICE_METADATA_AUD_PKEY PRIMARY KEY (ID,REV)
-);
+    create table SMP_USER_AUD (
+       ID number(19,0) not null,
+        REV number(19,0) not null,
+        REVTYPE number(3,0),
+        ACTIVE number(1,0),
+        CREATED_ON timestamp,
+        EMAIL varchar2(256 char),
+        LAST_UPDATED_ON timestamp,
+        PASSWORD varchar2(256 char),
+        PASSWORD_CHANGED timestamp,
+        ROLE varchar2(256 char),
+        USERNAME varchar2(256 char),
+        primary key (ID, REV)
+    );
 
-CREATE TABLE SMP_CERTIFICATE_AUD (
-  ID NUMBER(*,0) NOT NULL ENABLE,
-	CERTIFICATE_ID VARCHAR2(255 BYTE) NOT NULL ENABLE,
-	VALID_FROM DATE NOT NULL ENABLE,
-	VALID_UNTIL DATE NOT NULL ENABLE,
-	PEM_ENCODING CLOB,
-	NEW_CERT_CHANGE_DATE DATE,
-	NEW_CERT_ID NUMBER(*,0),
-	CREATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	LAST_UPDATED_ON DATE DEFAULT sysdate NOT NULL ENABLE,
-	REV INTEGER NOT NULL,
-  REVTYPE NUMBER(3),
-	CONSTRAINT SMP_CERTIFICATE_AUD_PKEY PRIMARY KEY (ID,REV)
-);
+    alter table SMP_CERTIFICATE 
+       add constraint UK_3x3rvf6hkim9fg16caurkgg6f unique (CERTIFICATE_ID);
 
-CREATE TABLE SMP_USER_AUD (
-  ID NUMBER(*,0) NOT NULL ENABLE,
-	USERNAME VARCHAR2(256 BYTE) NOT NULL ENABLE,
-	PASSWORD VARCHAR2(256 BYTE),
-	FK_CERTIFICATE_ID NUMBER,
-	ROLE VARCHAR2(20 BYTE) NOT NULL ENABLE,
-	ACTIVE NUMBER(1,0) DEFAULT 1 NOT NULL,
-	CREATED_ON DATE NOT NULL ENABLE,
-	LAST_UPDATED_ON DATE NOT NULL ENABLE,
-	REV INTEGER NOT NULL,
-  REVTYPE NUMBER(3),
-	CONSTRAINT SMP_USER_AUD_PKEY PRIMARY KEY (ID,REV)
-);
+    alter table SMP_DOMAIN 
+       add constraint UK_djrwqd4luj5i7w4l7fueuaqbj unique (DOMAIN_CODE);
 
-CREATE TABLE SMP_OWNERSHIP_AUD (
-	FK_USER_ID NUMBER(*,0) NOT NULL ENABLE,
-	FK_SG_ID NUMBER(*,0) NOT NULL ENABLE,
-	REV INTEGER NOT NULL,
-  REVTYPE NUMBER(3),
-	CONSTRAINT OWN_USER_SG_AUD_PKEY PRIMARY KEY (FK_USER_ID,FK_SG_ID,REV )
-);
+    alter table SMP_DOMAIN 
+       add constraint UK_likb3jn0nlxlekaws0xx10uqc unique (SML_SUBDOMAIN);
+create index SMP_SG_PART_ID_IDX on SMP_SERVICE_GROUP (PARTICIPANT_IDENTIFIER);
+create index SMP_SG_PART_SCH_IDX on SMP_SERVICE_GROUP (PARTICIPANT_SCHEME);
 
-CREATE SEQUENCE SMP_CONFIGURATION_SEQ START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 9999999999999999999999999999 CACHE 20 NOORDER;
-CREATE SEQUENCE SMP_DOMAIN_SEQ START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 9999999999999999999999999999 CACHE 20 NOORDER;
-CREATE SEQUENCE SMP_SERVICE_GROUP_SEQ START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 9999999999999999999999999999 CACHE 20 NOORDER;
-CREATE SEQUENCE SMP_SERVICE_METADATA_SEQ START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 9999999999999999999999999999 CACHE 20 NOORDER;
-CREATE SEQUENCE SMP_CERTIFICATE_SEQ START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 9999999999999999999999999999 CACHE 20 NOORDER;
-CREATE SEQUENCE SMP_USER_SEQ START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 9999999999999999999999999999 CACHE 20 NOORDER;
-CREATE SEQUENCE SMP_REV_SEQ START WITH 1 INCREMENT BY 1 MINVALUE 1 MAXVALUE 9999999999999999999999999999 CACHE 20 NOORDER;
+    alter table SMP_SERVICE_GROUP 
+       add constraint SMP_SG_UNIQ_PARTC_IDX unique (PARTICIPANT_SCHEME, PARTICIPANT_IDENTIFIER);
+create index SMP_SMD_DOC_ID_IDX on SMP_SERVICE_METADATA (DOCUMENT_IDENTIFIER);
+create index SMP_SMD_DOC_SCH_IDX on SMP_SERVICE_METADATA (DOCUMENT_SCHEME);
 
+    alter table SMP_SERVICE_METADATA 
+       add constraint SMP_MT_UNIQ_SG_DOC_IDX unique (FK_SG_DOM_ID, DOCUMENT_IDENTIFIER, DOCUMENT_SCHEME);
 
-commit;
+    alter table SMP_USER 
+       add constraint UK_rt1f0anklfo05lt0my05fqq6 unique (USERNAME);
+
+    alter table SMP_CERTIFICATE 
+       add constraint FKayqgpj5ot3o8vrpduul7sstta 
+       foreign key (ID) 
+       references SMP_USER;
+
+    alter table SMP_CERTIFICATE_AUD 
+       add constraint FKnrwm8en8vv10li8ihwnurwd9e 
+       foreign key (REV) 
+       references SMP_REV_INFO;
+
+    alter table SMP_DOMAIN_AUD 
+       add constraint FK35qm8xmi74kfenugeonijodsg 
+       foreign key (REV) 
+       references SMP_REV_INFO;
+
+    alter table SMP_OWNERSHIP 
+       add constraint FKrnqwq06lbfwciup4rj8nvjpmy 
+       foreign key (FK_USER_ID) 
+       references SMP_USER;
+
+    alter table SMP_OWNERSHIP 
+       add constraint FKgexq5n6ftsid8ehqljvjh8p4i 
+       foreign key (FK_SG_ID) 
+       references SMP_SERVICE_GROUP;
+
+    alter table SMP_OWNERSHIP_AUD 
+       add constraint FK1lqynlbk8ow1ouxetf5wybk3k 
+       foreign key (REV) 
+       references SMP_REV_INFO;
+
+    alter table SMP_SERVICE_GROUP_AUD 
+       add constraint FKj3caimhegwyav1scpwrxoslef 
+       foreign key (REV) 
+       references SMP_REV_INFO;
+
+    alter table SMP_SERVICE_GROUP_DOMAIN 
+       add constraint FKo186xtefda6avl5p1tuqchp3n 
+       foreign key (FK_DOMAIN_ID) 
+       references SMP_DOMAIN;
+
+    alter table SMP_SERVICE_GROUP_DOMAIN 
+       add constraint FKgcvhnk2n34d3c6jhni5l3s3x3 
+       foreign key (FK_SG_ID) 
+       references SMP_SERVICE_GROUP;
+
+    alter table SMP_SERVICE_GROUP_DOMAIN_AUD 
+       add constraint FK6uc9r0eqw16baooxtmqjkih0j 
+       foreign key (REV) 
+       references SMP_REV_INFO;
+
+    alter table SMP_SERVICE_METADATA 
+       add constraint FKfvcml6b8x7kn80m30h8pxs7jl 
+       foreign key (FK_SG_DOM_ID) 
+       references SMP_SERVICE_GROUP_DOMAIN;
+
+    alter table SMP_SERVICE_METADATA_AUD 
+       add constraint FKbqr9pdnik1qxx2hi0xn4n7f61 
+       foreign key (REV) 
+       references SMP_REV_INFO;
+
+    alter table SMP_SERVICE_METADATA_XML 
+       add constraint FK4b1x06xlavcgbjnuilgksi7nm 
+       foreign key (ID) 
+       references SMP_SERVICE_METADATA;
+
+    alter table SMP_SERVICE_METADATA_XML_AUD 
+       add constraint FKevatmlvvwoxfnjxkvmokkencb 
+       foreign key (REV) 
+       references SMP_REV_INFO;
+
+    alter table SMP_SG_EXTENSION 
+       add constraint FKtf0mfonugp2jbkqo2o142chib 
+       foreign key (ID) 
+       references SMP_SERVICE_GROUP;
+
+    alter table SMP_SG_EXTENSION_AUD 
+       add constraint FKmdo9v2422adwyebvl34qa3ap6 
+       foreign key (REV) 
+       references SMP_REV_INFO;
+
+    alter table SMP_USER_AUD 
+       add constraint FK2786r5minnkai3d22b191iiiq 
+       foreign key (REV) 
+       references SMP_REV_INFO;

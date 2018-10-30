@@ -68,22 +68,6 @@ public class ServiceGroupDao extends BaseDao<DBServiceGroup> {
      */
     @Transactional
     public void removeServiceGroup(DBServiceGroup dbServiceGroup){
-     // Because of one to many relationships
-         // remove with JPA/JPQL (or native sql) querieas are much more efficient in this case.
-         // but it does not capture audit with envers: Hibernate Envers captures the Audit information only when the updates
-         // happen through Persistence Context.
- /*       em.createNamedQuery("DBServiceGroup.deleteAllOwnerships")
-                .setParameter("serviceGroupId", dbServiceGroup.getId()).executeUpdate();
-
-        em.createNamedQuery("DBServiceGroupExtension.deleteById")
-                .setParameter("id", dbServiceGroup.getId()).executeUpdate();
-
-        em.createNamedQuery("DBServiceMetadata.deleteOwnedByServiceGroup")
-                .setParameter("serviceGroup", dbServiceGroup).executeUpdate();
-
-        em.createNamedQuery("DBServiceGroup.deleteById")
-                .setParameter("id", dbServiceGroup.getId()).executeUpdate()>0;
- */
         memEManager.remove(memEManager.contains(dbServiceGroup) ? dbServiceGroup : memEManager.merge(dbServiceGroup));
     }
 

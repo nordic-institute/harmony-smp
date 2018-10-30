@@ -1,3 +1,16 @@
+
+-- --------------------------------------------------------------------------------------------------------- 
+-- create backup old tables
+-- --------------------------------------------------------------------------------------------------------- 
+alter table SMP_DOMAIN rename to SMP_DOMAIN_BCK;
+alter table SMP_OWNERSHIP rename to SMP_OWNERSHIP_BCK;
+alter table SMP_SERVICE_GROUP rename to SMP_SERVICE_GROUP_BCK;
+alter table SMP_SERVICE_METADATA rename to SMP_SERVICE_METADATA_BCK;
+alter table SMP_USER rename to SMP_USER_BCK;
+
+-- --------------------------------------------------------------------------------------------------------- 
+-- create new tables 
+-- --------------------------------------------------------------------------------------------------------- 
 create sequence SMP_DOMAIN_SEQ start with 1 increment by  1;
 create sequence SMP_REVISION_SEQ start with 1 increment by  1;
 create sequence SMP_SERVICE_GROUP_DOMAIN_SEQ start with 1 increment by  50;
@@ -319,3 +332,118 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SERVICE_METADATA (DOCUMENT_SCHEME);
        add constraint FK2786r5minnkai3d22b191iiiq 
        foreign key (REV) 
        references SMP_REV_INFO;
+
+
+-- --------------------------------------------------------------------------------------------------------- 
+-- migrate data 
+-- --------------------------------------------------------------------------------------------------------- 
+--- create function for converting clons to blobs
+CREATE OR REPLACE FUNCTION clob_to_blob(p_clob IN CLOB) RETURN BLOB IS
+  v_blob BLOB;
+  v_offset NUMBER DEFAULT 1;
+  v_amount NUMBER DEFAULT 4096;
+  v_offsetwrite NUMBER DEFAULT 1;
+  v_amountwrite NUMBER;
+  v_buffer VARCHAR2(4096 CHAR);
+BEGIN
+  dbms_lob.createtemporary(v_blob, TRUE);
+
+  Begin
+    LOOP
+      dbms_lob.READ (lob_loc => p_clob,
+                     amount  => v_amount,
+                     offset  => v_offset,
+                     buffer  => v_buffer);
+
+      v_amountwrite := utl_raw.length (r => utl_raw.cast_to_raw(c => v_buffer));
+
+      dbms_lob.WRITE (lob_loc => v_blob,
+                      amount  => v_amountwrite,
+                      offset  => v_offsetwrite,
+                      buffer  => utl_raw.cast_to_raw(v_buffer));
+
+      v_offsetwrite := v_offsetwrite + v_amountwrite;
+
+      v_offset := v_offset + v_amount;
+      v_amount := 4096;
+    END LOOP;
+  EXCEPTION
+    WHEN no_data_found THEN
+      NULL;
+  End;
+  RETURN v_blob;
+END clob_to_blob;
+
+-- migrate domains
+INSERT INTO SMP_DOMAIN (ID, DOMAIN_CODE, SIGNATURE_KEY_ALIAS,SML_CLIENT_CERT_HEADER, SML_PARTC_IDENT_REGEXP, SML_SMP_ID, SML_SUBDOMAIN, LAST_UPDATED_ON, CREATED_ON )
+   SELECT SMP_DOMAIN_SEQ.nextval, DOMAINID, SIGNATURECERTALIAS, BDMSLCLIENTCERTHEADER, '', BDMSLSMPID,'', sysdate, sysdate
+      FROM SMP_DOMAIN_BCK;
+
+-- migrate users
+INSERT INTO SMP_USER (ID,EMAIL,ACTIVE,CREATED_ON,LAST_UPDATED_ON,USERNAME, PASSWORD,PASSWORD_CHANGED,ROLE)
+    SELECT SMP_USER_SEQ.nextval,null, 1, sysdate, sysdate, USERNAME, PASSWORD, null, DECODE(isAdmin, 0,'SERVICE_GROUP_ADMIN',1,'SMP_ADMIN') 
+        FROM SMP_USER_BCK;
+-- create certificate records 
+INSERT INTO SMP_CERTIFICATE (ID,CERTIFICATE_ID,CREATED_ON,LAST_UPDATED_ON)
+    SELECT ID ,USERNAME, CREATED_ON, LAST_UPDATED_ON  FROM SMP_USER where PASSWORD  is null;
+
+-- migrate service groups
+INSERT INTO  SMP_SERVICE_GROUP ( ID, CREATED_ON, LAST_UPDATED_ON, PARTICIPANT_IDENTIFIER, PARTICIPANT_SCHEME)
+    select SMP_SERVICE_GROUP_SEQ.nextval, sysdate, sysdate, BUSINESSIDENTIFIER, BUSINESSIDENTIFIERSCHEME from SMP_SERVICE_GROUP_BCK;
+-- insert extensions
+INSERT INTO SMP_SG_EXTENSION (ID, CREATED_ON, LAST_UPDATED_ON, EXTENSION) 
+    select sg.id, sysdate,sysdate, clob_to_blob(SGB.XMLCONTENT)   from SMP_SERVICE_GROUP sg, SMP_SERVICE_GROUP_bck sgb 
+    where sg.PARTICIPANT_IDENTIFIER= sgb.BUSINESSIDENTIFIER 
+        and sg.PARTICIPANT_SCHEME= sgb.BUSINESSIDENTIFIERSCHEME and sgb.XMLCONTENT is not null;
+
+-- insert service group domains 
+INSERT INTO SMP_SERVICE_GROUP_DOMAIN (ID, CREATED_ON, LAST_UPDATED_ON, SML_REGISTRED, FK_DOMAIN_ID, FK_SG_ID )
+    select SMP_SERVICE_GROUP_DOMAIN_SEQ.nextval, sysdate, sysdate, 0, D.ID, SG.ID from SMP_SERVICE_GROUP_BCK SGB, SMP_SERVICE_GROUP SG, SMP_DOMAIN D WHERE
+        SGB.BUSINESSIDENTIFIER = SG.PARTICIPANT_IDENTIFIER
+        and SGB.BUSINESSIDENTIFIERSCHEME = SG.PARTICIPANT_SCHEME
+        and SGB.DOMAINID = D.DOMAIN_CODE;
+
+
+-- migrate service metadata (on migration there could be only one domain per service group therefore no need for domain)
+INSERT INTO  SMP_SERVICE_METADATA ( ID, CREATED_ON, LAST_UPDATED_ON, DOCUMENT_IDENTIFIER, DOCUMENT_SCHEME, FK_SG_DOM_ID)
+    select SMP_SERVICE_METADATA_SEQ.nextval, sysdate, sysdate, MD.DOCUMENTIDENTIFIER,  MD.DOCUMENTIDENTIFIERSCHEME, SGD.ID
+        from SMP_SERVICE_METADATA_BCK MD, SMP_SERVICE_GROUP SG, SMP_SERVICE_GROUP_DOMAIN SGD
+            where MD.BUSINESSIDENTIFIER = SG.PARTICIPANT_IDENTIFIER and MD.BUSINESSIDENTIFIERSCHEME = SG.PARTICIPANT_SCHEME
+                 and SGD.FK_SG_ID = SG.id;
+                
+-- update service metadata xml
+INSERT INTO  SMP_SERVICE_METADATA_XML ( ID, CREATED_ON, LAST_UPDATED_ON, XML_CONTENT)
+    select MD.ID, sysdate, sysdate,  clob_to_blob(MDB.XMLCONTENT)
+        from SMP_SERVICE_METADATA_BCK MDB, SMP_SERVICE_GROUP SG, SMP_SERVICE_GROUP_DOMAIN SGD, SMP_SERVICE_METADATA MD
+            where MDB.BUSINESSIDENTIFIER = SG.PARTICIPANT_IDENTIFIER and MDB.BUSINESSIDENTIFIERSCHEME = SG.PARTICIPANT_SCHEME
+                 and SGD.FK_SG_ID = SG.id -- only one service group domain at migration time
+                 and MD.FK_SG_DOM_ID = SGD.id
+                 and MDB.DOCUMENTIDENTIFIER = MD.DOCUMENT_IDENTIFIER
+                 and MDB.DOCUMENTIDENTIFIERSCHEME = MD.DOCUMENT_SCHEME;
+
+-- owners
+INSERT INTO SMP_OWNERSHIP (FK_SG_ID, FK_USER_ID)
+    select SG.ID, U.ID FROM SMP_OWNERSHIP_BCK OB, SMP_SERVICE_GROUP SG, SMP_USER U
+        WHERE OB.USERNAME =U.USERNAME
+            and OB.BUSINESSIDENTIFIER = SG.PARTICIPANT_IDENTIFIER
+            and OB.BUSINESSIDENTIFIERSCHEME = SG.PARTICIPANT_SCHEME;
+
+ -- we do not need certificate DN in USERNAME so remove it from username columns
+UPDATE SMP_USER set USERNAME=null where PASSWORD  is null;
+drop FUNCTION clob_to_blob
+
+-- remove backup if migration succeeded- do in manually
+-- drop table SMP_DOMAIN_BCK;
+-- drop table SMP_OWNERSHIP_BCK;
+-- drop table SMP_SERVICE_METADATA_BCK;
+-- drop table SMP_SERVICE_GROUP_BCK;
+-- drop table SMP_USER_BCK;
+
+
+
+
+
+
+
+
+
