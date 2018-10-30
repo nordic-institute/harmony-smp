@@ -55,6 +55,7 @@
         <developerConnection>scm:git:https://ec.europa.eu/cefdigital/code/scm/edelivery/smp.git</developerConnection>
     </scm>
 
+
     <pluginRepositories>
         <pluginRepository>
             <id>SmartBearPluginRepository</id>
