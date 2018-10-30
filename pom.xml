@@ -31,7 +31,7 @@
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
-
+        <project.scm.id>edelivery-scm</project.scm.id>
         <sonar.host.url>http://edelquality.westeurope.cloudapp.azure.com:9000/sonar/</sonar.host.url>
         <sonar.exclusions>**/smp/data/model/*,**/smp/data/ui/*, **/smp/exceptions/*, **/to_be_removed/*</sonar.exclusions>
         <sonar.language>java</sonar.language>
