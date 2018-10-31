@@ -9,7 +9,6 @@ import {
   ValidatorFn,
   Validators
 } from '@angular/forms';
-import {UserService} from '../user.service';
 import {Role} from '../../security/role.model';
 import {UserRo} from '../user-ro.model';
 import {SearchTableEntityStatus} from '../../common/search-table/search-table-entity-status.model';
@@ -27,17 +26,15 @@ import {GlobalLookups} from "../../common/global-lookups";
 })
 export class UserDetailsDialogComponent {
 
-
   @ViewChild('fileInput')  private fileInput;
 
   static readonly NEW_MODE = 'New User';
   static readonly EDIT_MODE = 'User Edit';
 
-  readonly emailPattern = '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}';
+  readonly emailPattern = '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}';
   readonly passwordPattern = '^(?=.*[A-Z])(?=.*[ !#$%&\'()*+,-./:;<=>?@\\[^_`{|}~\\\]"])(?=.*[0-9])(?=.*[a-z]).{8,32}$';
   readonly dateFormat: string = 'yyyy-MM-dd HH:mm:ssZ';
   readonly usernamePattern='^[a-zA-Z0-9]{4,32}$';
-
 
   editMode: boolean;
   formTitle: string;
@@ -45,10 +42,8 @@ export class UserDetailsDialogComponent {
   existingRoles = [];
   userForm: FormGroup;
   current: UserRo;
-  tempStoreForCertificate: CertificateRo = UserDetailsDialogComponent.newCertificteRo();
-  tempStoreForUser: UserRo = UserDetailsDialogComponent.newUserRo();
-
-
+  tempStoreForCertificate: CertificateRo = this.newCertificateRo();
+  tempStoreForUser: UserRo = this.newUserRo();
 
   private passwordConfirmationValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
     const userToggle = control.get('userToggle');
@@ -95,7 +90,6 @@ export class UserDetailsDialogComponent {
 
   constructor(private dialogRef: MatDialogRef<UserDetailsDialogComponent>,
               private lookups: GlobalLookups,
-              private userService: UserService,
               private certificateService: CertificateService,
               private alertService: AlertService,
               private datePipe: DatePipe,
@@ -109,7 +103,7 @@ export class UserDetailsDialogComponent {
         ...data.row,
         password: '', // ensures the user password is cleared before editing
         confirmation: '',
-        certificate:data.row.certificate? data.row.certificate: UserDetailsDialogComponent.newCertificteRo()
+        certificate: data.row.certificate || this.newCertificateRo()
       }: {
         active: true,
         username: '',
@@ -119,9 +113,8 @@ export class UserDetailsDialogComponent {
         role: '',
         status: SearchTableEntityStatus.NEW,
         statusPassword: SearchTableEntityStatus.NEW,
-        certificate:  UserDetailsDialogComponent.newCertificteRo(),
+        certificate:  this.newCertificateRo(),
       };
-
 
     // The password authentication is if username exists
     // if is off on clear than clear the username!
@@ -135,7 +128,7 @@ export class UserDetailsDialogComponent {
     this.userForm = fb.group({
       // common values
       'active': new FormControl({ value: ''},[]),
-      'emailAddress': new FormControl({ value:'' },[ Validators.pattern(this.emailPattern)]),
+      'emailAddress': new FormControl({ value:'' },[ Validators.pattern(this.emailPattern), Validators.maxLength(255)]),
       'role': new FormControl({ value: '' }, Validators.required),
       // username/password authentication
       'userToggle': new FormControl(bUserPasswordAuthentication),
@@ -184,19 +177,7 @@ export class UserDetailsDialogComponent {
     if (this.editMode  && !!this.current.username){
       this.userForm.controls['userToggle'].disable();
     }
-
-/*  Do not need retrieve roles from server because client must already be aware of
-   the roles...
-
-    this.userService.getUserRoles$().subscribe(userRoles => {
-      this.userRoles = userRoles.json();
-      this.existingRoles = this.editMode
-        ? this.getAllowedRoles(this.userRoles, this.current.role)
-        : this.userRoles;
-    });*/
   }
-
-
 
   submitForm() {
     this.dialogRef.close(true);
@@ -211,8 +192,6 @@ export class UserDetailsDialogComponent {
             if (res && res.certificateId){
               this.userForm.patchValue({
                 'subject': res.subject,
-                //'validFrom': this.datePipe.transform(res.validFrom.toString(), this.dateFormat),
-                //'validTo': this.datePipe.transform(res.validTo.toString(), this.dateFormat),
                 'validFrom': res.validFrom,
                 'validTo': res.validTo,
                 'issuer': res.issuer,
@@ -284,9 +263,7 @@ export class UserDetailsDialogComponent {
       this.userForm.controls['password'].setValue("");
     }
     this.userForm.controls['passwordToggle'].setValue(checked || !this.editMode);
-
   }
-
 
   onPasswordToggleChanged({checked}: MatSlideToggleChange) {
     const action = checked ? 'enable' : 'disable';
@@ -297,8 +274,6 @@ export class UserDetailsDialogComponent {
       this.userForm.get('confirmation').setValue('');
     }
   }
-
-
 
   public getCurrent(): UserRo {
     this.current.active =this.userForm.get('active').value;
@@ -330,8 +305,6 @@ export class UserDetailsDialogComponent {
       this.current.password ='';
     }
 
-
-
     // update data
     return this.current;
   }
@@ -348,7 +321,7 @@ export class UserDetailsDialogComponent {
     }
   }
 
-  public static newCertificteRo(): CertificateRo {
+  private newCertificateRo(): CertificateRo {
     return {
       subject: '',
       validFrom: null,
@@ -360,7 +333,7 @@ export class UserDetailsDialogComponent {
     }
   }
 
-  public static newUserRo():UserRo {
+  private newUserRo():UserRo {
     return {
       id: null,
       index: null,

@@ -14,8 +14,8 @@ import {GlobalLookups} from "../common/global-lookups";
 })
 export class UserComponent implements OnInit {
 
-  @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>
-  @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>
+  @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
+  @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>;
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
   @ViewChild('searchTable') searchTable: SearchTableComponent;
 
@@ -59,6 +59,7 @@ export class UserComponent implements OnInit {
   details(row: any) {
     this.userController.showDetails(row);
   }
+
   // for dirty guard...
   isDirty (): boolean {
     return this.searchTable.isDirty();

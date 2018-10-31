@@ -17,7 +17,6 @@ export class AuthorizedAdminGuard extends AuthorizedGuard {
 
 
   getAllowedRoles(route: ActivatedRouteSnapshot): Array<Authority> {
-    // TODO check if we need the SMP admin in here
-    return [Authority.SYSTEM_ADMIN , Authority.SMP_ADMIN];
+    return [Authority.SYSTEM_ADMIN];
   }
 }
