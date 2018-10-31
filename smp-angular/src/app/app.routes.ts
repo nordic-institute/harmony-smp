@@ -6,6 +6,7 @@ import {DomainComponent} from './domain/domain.component';
 import {AuthenticatedGuard} from './guards/authenticated.guard';
 import {UserComponent} from './user/user.component';
 import {DirtyGuard} from "./common/dirty.guard";
+import {AuthorizedAdminGuard} from "./guards/authorized-admin.guard";
 
 
 const appRoutes: Routes = [
@@ -13,7 +14,7 @@ const appRoutes: Routes = [
   {path: 'search', redirectTo: ''},
   {path: 'edit', component: ServiceGroupEditComponent,  canActivate: [AuthenticatedGuard],  canDeactivate: [DirtyGuard]},
   {path: 'domain', component: DomainComponent, canActivate: [AuthenticatedGuard], canDeactivate: [DirtyGuard]},
-  {path: 'user', component: UserComponent, canDeactivate: [DirtyGuard]},
+  {path: 'user', component: UserComponent, canActivate: [AuthenticatedGuard, AuthorizedAdminGuard], canDeactivate: [DirtyGuard]},
   {path: 'login', component: LoginComponent},
   {path: '**', redirectTo: ''}
 ];
