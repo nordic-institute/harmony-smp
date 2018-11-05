@@ -23,7 +23,6 @@ html, body {
 .mat-button, .mat-raised-button, .mat-icon-button {
   font-family: 'Open Sans', sans-serif !important;
   font-weight: bolder !important;
-  margin: 0 2px  !important;
 }
 .mat-card{
   padding: 10px !important;
@@ -274,7 +273,7 @@ mat-card {
 }
 
 .mat-select-menu-container,
-.md2-select-panel {
+.mat-select-panel {
   z-index: 99999 !important;
 }
 
@@ -305,7 +304,7 @@ mat-card {
 }
 
 /* --- TABS --- */
-.md2-tab-ink-bar {
+.mat-tab-ink-bar {
   background-color: #03A9F4 !important;
 }
 
