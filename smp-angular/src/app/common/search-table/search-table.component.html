@@ -85,8 +85,8 @@
     </ng-template>
 
     <ng-template #rowExpand let-row="row" let-expanded="expanded" let-disabled="disabled" ngx-datatable-cell-template >
-      <span *ngIf="disabled">( )</span>
-      <a *ngIf="!disabled" class="table-button-expand"
+      <span *ngIf="disabled || row.serviceMetadata?.length === 0">()</span>
+      <a *ngIf="!disabled && row.serviceMetadata?.length" class="table-button-expand"
         href="javascript:void(0)"
         title="Expand/Collapse Row"
         (click)="toggleExpandRow(row)">{{expanded?'(-)':'(+)'}}
