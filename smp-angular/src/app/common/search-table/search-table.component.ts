@@ -332,6 +332,10 @@ export class SearchTableComponent implements OnInit {
     return !(!this.submitButtonsEnabled || this.forceRefresh);
   }
 
+  isRowExpanderDisabled(row: any, rowDisabled: boolean): boolean {
+    return rowDisabled || this.searchTableController.isRowExpanderDisabled(row);
+  }
+
   private editSearchTableEntity(rowNumber: number) {
     const row = this.rows[rowNumber];
     const formRef: MatDialogRef<any> = this.searchTableController.newDialog({

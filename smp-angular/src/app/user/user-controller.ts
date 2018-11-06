@@ -4,11 +4,8 @@ import {UserDetailsDialogComponent} from './user-details-dialog/user-details-dia
 import {UserRo} from './user-ro.model';
 import {SearchTableEntityStatus} from '../common/search-table/search-table-entity-status.model';
 import {GlobalLookups} from "../common/global-lookups";
-import {CertificateRo} from "./certificate-ro.model";
 import {SearchTableEntity} from "../common/search-table/search-table-entity.model";
-import {of} from "rxjs/internal/observable/of";
 import {SearchTableValidationResult} from "../common/search-table/search-table-validation-result.model";
-import {ServiceMetadataValidationEditRo} from "../service-group-edit/service-group-metadata-dialog/service-metadata-validation-edit-ro.model";
 import {SmpConstants} from "../smp.constants";
 import {HttpClient} from "@angular/common/http";
 
@@ -64,7 +61,8 @@ export class UserController implements SearchTableController {
     }
   }
 
-
-
+  isRowExpanderDisabled(row: SearchTableEntity): boolean {
+    return false;
+  }
 
 }
