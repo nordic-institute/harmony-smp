@@ -61,4 +61,8 @@ export class DomainController implements SearchTableController {
       stringMessage: '',
     }
   }
+
+  isRowExpanderDisabled(row: SearchTableEntity): boolean {
+    return false;
+  }
 }
