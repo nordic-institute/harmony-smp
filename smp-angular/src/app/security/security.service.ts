@@ -9,11 +9,12 @@ import {Authority} from "./authority.model";
 @Injectable()
 export class SecurityService {
 
+  readonly LOCAL_STORAGE_KEY_CURRENT_USER = 'currentUser';
+
   constructor (private http: HttpClient, private securityEventService: SecurityEventService) {
   }
 
   login(username: string, password: string) {
-
     let headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
     return this.http.post<string>(SmpConstants.REST_SECURITY_AUTHENTICATION,
       JSON.stringify({
@@ -22,12 +23,10 @@ export class SecurityService {
       }),
       { headers })
       .subscribe((response: string) => {
-          console.log('Login success');
-          localStorage.setItem('currentUser', JSON.stringify(response));
+          this.populateLocalStorage(JSON.stringify(response));
           this.securityEventService.notifyLoginSuccessEvent(response);
         },
         (error: any) => {
-          console.log('Login error');
           this.securityEventService.notifyLoginErrorEvent(error);
         });
   }
@@ -36,7 +35,7 @@ export class SecurityService {
     console.log('Logging out');
    // this.domainService.resetDomain();
     this.http.delete(SmpConstants.REST_SECURITY_AUTHENTICATION).subscribe((res: Response) => {
-        localStorage.removeItem('currentUser');
+        this.clearLocalStorage();
         this.securityEventService.notifyLogoutSuccessEvent(res);
       },
       (error: any) => {
@@ -46,8 +45,7 @@ export class SecurityService {
   }
 
   getCurrentUser(): User {
-    let userObj = localStorage.getItem('currentUser');
-    return JSON.parse(localStorage.getItem('currentUser'));
+    return JSON.parse(this.readLocalStorage());
   }
 
   private getCurrentUsernameFromServer(): Observable<string> {
@@ -66,12 +64,12 @@ export class SecurityService {
     let subject = new ReplaySubject<boolean>();
     if (callServer) {
       //we get the username from the server to trigger the redirection to the login screen in case the user is not authenticated
-      this.getCurrentUsernameFromServer()
-        .subscribe((user: string) => {
-          console.log('isAuthenticated: getCurrentUsernameFromServer [' + user + ']');
+      this.getCurrentUsernameFromServer().subscribe((user: string) => {
+          if(!user) {
+            this.clearLocalStorage();
+          }
           subject.next(user !== null);
         }, (user: string) => {
-          console.log('isAuthenticated error' + user);
           subject.next(false);
         });
 
@@ -89,6 +87,7 @@ export class SecurityService {
   isCurrentUserSMPAdmin(): boolean {
     return this.isCurrentUserInRole([ Authority.SMP_ADMIN]);
   }
+
   isCurrentUserServiceGroupAdmin(): boolean {
     return this.isCurrentUserInRole([ Authority.SERVICE_GROUP_ADMIN]);
   }
@@ -105,7 +104,6 @@ export class SecurityService {
     }
     return hasRole;
   }
-
   isAuthorized(roles: Array<Authority>): Observable<boolean> {
     let subject = new ReplaySubject<boolean>();
 
@@ -116,5 +114,17 @@ export class SecurityService {
       }
     });
     return subject.asObservable();
+  }
+
+  private populateLocalStorage(userDetails: string) {
+    localStorage.setItem(this.LOCAL_STORAGE_KEY_CURRENT_USER, userDetails);
+  }
+
+  private readLocalStorage(): string {
+    return localStorage.getItem(this.LOCAL_STORAGE_KEY_CURRENT_USER);
+  }
+
+  private clearLocalStorage() {
+    localStorage.removeItem(this.LOCAL_STORAGE_KEY_CURRENT_USER);
   }
 }

@@ -7,7 +7,12 @@
   cursor: pointer;
 }
 
-.username, .role, .password, .password-confirmation, .certificate-subject, .certificate-issuer, .certificate-serial-number {
+.user-panel {
+  height: 100%;
+}
+
+.user-toggle, .email, .role-field, .role, .username, .password, .password-confirmation,
+.certificate-subject, .certificate-issuer, .certificate-serial-number, .certificate-id {
   width: 100%;
 }
 

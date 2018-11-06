@@ -49,7 +49,7 @@ export class AppComponent implements OnInit {
   }
 
 
-  get getCurrentUserRoleDescription(): string {
+  get currentUserRoleDescription(): string {
       if (this.securityService.isCurrentUserSystemAdmin()){
         return "System administrator";
       } else if (this.securityService.isCurrentUserSMPAdmin()){
