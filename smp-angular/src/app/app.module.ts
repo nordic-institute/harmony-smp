@@ -69,7 +69,6 @@ import {ServiceGroupMetadataDialogComponent} from './service-group-edit/service-
 import {DomainDetailsDialogComponent} from './domain/domain-details-dialog/domain-details-dialog.component';
 import {UserDetailsDialogComponent} from './user/user-details-dialog/user-details-dialog.component';
 import {DownloadService} from './download/download.service';
-import {UserService} from './user/user.service';
 import {CertificateService} from './user/certificate.service';
 import {GlobalLookups} from "./common/global-lookups";
 import {ServiceGroupExtensionWizardDialogComponent} from "./service-group-edit/service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component";
@@ -162,7 +161,6 @@ import {SpinnerComponent} from "./common/spinner/spinner.component";
     SmpInfoService,
     AlertService,
     DownloadService,
-    UserService,
     CertificateService,
     GlobalLookups,
     DatePipe,

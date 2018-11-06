@@ -66,7 +66,7 @@
       <div id="sandwichMenu">
 
         <a *ngIf="!currentUser" [routerLink]="['/login']" > Login   </a>
-        <span *ngIf="currentUser" >{{getCurrentUserRoleDescription}}: {{currentUser}}  </span >
+        <span *ngIf="currentUser" >{{currentUserRoleDescription}}: {{currentUser}}  </span >
 
         <button mat-icon-button [mat-menu-trigger-for]="settingsMenu" id="settingsmenu_id" matTooltip="Menu">
           <mat-icon>menu</mat-icon>
