@@ -77,9 +77,9 @@ public class UserResource {
         uiUserService.updateUserList(Arrays.asList(updateEntities));
     }
 
-    @RequestMapping(path = "certdata", method = RequestMethod.POST)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
-    public CertificateRO uploadFile(@RequestBody byte[] data) {
+    @PostMapping("/{id}/certdata")
+    @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#id)")
+    public CertificateRO uploadFile(@PathVariable("id") Long id, @RequestBody byte[] data) {
         LOG.info("Got certificate data: " + data.length);
         try {
             return uiUserService.getCertificateData(data);
