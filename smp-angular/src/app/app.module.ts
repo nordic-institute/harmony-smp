@@ -75,6 +75,7 @@ import {ServiceGroupExtensionWizardDialogComponent} from "./service-group-edit/s
 import {ServiceMetadataWizardDialogComponent} from "./service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-dialog.component";
 import {ConfirmationDialogComponent} from "./common/confirmation-dialog/confirmation-dialog.component";
 import {SpinnerComponent} from "./common/spinner/spinner.component";
+import {UserService} from "./user/user.service";
 
 @NgModule({
   declarations: [
@@ -164,6 +165,7 @@ import {SpinnerComponent} from "./common/spinner/spinner.component";
     CertificateService,
     GlobalLookups,
     DatePipe,
+    UserService,
     {
       provide: ExtendedHttpClient,
       useFactory: extendedHttpClientCreator,
