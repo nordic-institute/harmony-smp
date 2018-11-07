@@ -1,13 +1,14 @@
 package eu.europa.ec.edelivery.smp.ui;
 
 
+import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.ui.ErrorRO;
 import eu.europa.ec.edelivery.smp.data.ui.LoginRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
@@ -52,6 +53,7 @@ public class AuthenticationResource {
         final Authentication principal = authenticationService.authenticate(loginRO.getUsername(), loginRO.getPassword());
 
         UserRO userRO = new UserRO();
+        userRO.setId(((SMPAuthenticationToken)principal).getUser().getId());
         userRO.setUsername(loginRO.getUsername());
         userRO.setAuthorities(
                 principal.getAuthorities()
@@ -87,7 +89,6 @@ public class AuthenticationResource {
         UserRO ur =new UserRO();
         ur.setUsername(username);
         return ur;
-
     }
 
 }
