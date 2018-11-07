@@ -1,9 +1,7 @@
 package eu.europa.ec.edelivery.smp.ui;
 
-
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
-import eu.europa.ec.edelivery.smp.auth.SMPRole;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
@@ -15,11 +13,11 @@ import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.UserFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
@@ -29,7 +27,6 @@ import java.util.List;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-
 @RestController
 @RequestMapping(value = "/ui/rest/user")
 public class UserResource {
@@ -39,15 +36,8 @@ public class UserResource {
     @Autowired
     private UIUserService uiUserService;
 
-    @PostConstruct
-    protected void init() {
-
-    }
-
     @PutMapping(produces = {"application/json"})
-    @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
-    //update gui to call this when somebody is logged in.
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN})
     public ServiceResult<UserRO> getUsers(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -56,8 +46,8 @@ public class UserResource {
             @RequestParam(value = "orderType", defaultValue = "asc", required = false) String orderType,
             @RequestParam(value = "roles", required = false) String roleList
             ) {
-        UserFilter filter =null;
-        if (roleList!=null){
+        UserFilter filter = null;
+        if (roleList != null) {
             filter = new UserFilter();
             filter.setRoleList(Arrays.asList(roleList.split(",")));
         }
@@ -65,11 +55,25 @@ public class UserResource {
         return  uiUserService.getTableList(page,pageSize, orderBy, orderType, filter);
     }
 
+    /**
+     * Update the details of the currently logged in user (e.g. update the role, the credentials or add certificate details).
+     *
+     * @param id the identifier of the user being updated; it must match the currently logged in user's identifier
+     * @param user the updated details
+     *
+     * @throws org.springframework.security.access.AccessDeniedException when trying to update the details of another user, different than the one being currently logged in
+     */
+    @PutMapping(path = "/{id}")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#id)")
+    public void updateCurrentUser(@PathVariable("id") Long id, @RequestBody UserRO user) {
+        LOG.info("Update current user: {}", user);
+        uiUserService.updateUserList(Arrays.asList(user));
+    }
+
     @PutMapping(produces = {"application/json"})
-    @RequestMapping(method = RequestMethod.PUT)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
-    public void updateUserList(@RequestBody(required = true) UserRO[] updateEntities ){
-        LOG.info("Update user list, count: {}" + updateEntities.length);
+    public void updateUserList(@RequestBody UserRO[] updateEntities ){
+        LOG.info("Update user list, count: {}", updateEntities.length);
         uiUserService.updateUserList(Arrays.asList(updateEntities));
     }
 
