@@ -67,4 +67,8 @@ export class UserController implements SearchTableController {
     }
   }
 
+  isRowExpanderDisabled(row: SearchTableEntity): boolean {
+    return false;
+  }
+
 }

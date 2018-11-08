@@ -8,6 +8,7 @@ import {ServiceGroupMetadataDialogComponent} from "./service-group-metadata-dial
 import {of} from "rxjs/internal/observable/of";
 import {SearchTableValidationResult} from "../common/search-table/search-table-validation-result.model";
 import {SearchTableEntity} from "../common/search-table/search-table-entity.model";
+import {ServiceGroupSearchRo} from "../service-group-search/service-group-search-ro.model";
 
 export class ServiceGroupEditController implements SearchTableController {
 
@@ -84,4 +85,8 @@ export class ServiceGroupEditController implements SearchTableController {
     }
   }
 
+  isRowExpanderDisabled(row: ServiceGroupEditRo): boolean {
+    const serviceGroup = <ServiceGroupEditRo>row;
+    return !(serviceGroup.serviceMetadata && serviceGroup.serviceMetadata.length);
+  }
 }
