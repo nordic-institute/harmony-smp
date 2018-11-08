@@ -218,6 +218,7 @@
                 <filtering>true</filtering>
                 <excludes>
                     <exclude>**/*.jks</exclude>
+                    <exclude>**/*.crt</exclude>
                 </excludes>
             </testResource>
             <testResource>
@@ -226,6 +227,7 @@
                 <!-- With filtering=true Maven was introducing changes in keystore binary files [sic!] -->
                 <includes>
                     <include>**/*.jks</include>
+                    <include>**/*.crt</include>
                 </includes>
             </testResource>
         </testResources>
