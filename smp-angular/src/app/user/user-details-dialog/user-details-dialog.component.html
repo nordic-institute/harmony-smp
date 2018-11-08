@@ -3,9 +3,8 @@
 
   <mat-card>
     <mat-card-content >
-      <mat-slide-toggle class="user-toggle"
-                mat-no-ink class="mat-primary" [formControl]="userForm.controls['active']"
-                        (change)="onUserToggleChanged($event)" id="active_id">
+      <mat-slide-toggle *ngIf="isNotPreferencesMode()" class="user-toggle"
+                mat-no-ink class="mat-primary" [formControl]="userForm.controls['active']" id="active_id">
         Active
       </mat-slide-toggle>
 
