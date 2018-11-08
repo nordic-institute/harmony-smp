@@ -10,10 +10,9 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
-
 package eu.europa.ec.edelivery.smp.data.dao;
 
-import eu.europa.ec.edelivery.smp.config.H2JPATestConfiguration;
+import eu.europa.ec.edelivery.smp.config.H2JPATestConfig;
 import eu.europa.ec.edelivery.smp.data.model.*;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;
@@ -36,7 +35,6 @@ import java.util.UUID;
 import static eu.europa.ec.edelivery.smp.testutil.TestDBUtils.createDBDomain;
 import static org.junit.Assert.assertTrue;
 
-
 /**
  *  Purpose of class is to test all Audit classes and  methods with database.
  *
@@ -44,7 +42,7 @@ import static org.junit.Assert.assertTrue;
  * @since 4.1
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {H2JPATestConfiguration.class})
+@ContextConfiguration(classes = {H2JPATestConfig.class})
 @Sql(scripts = "classpath:cleanup-database.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig
         (transactionMode = SqlConfig.TransactionMode.ISOLATED,
                 transactionManager = "transactionManager",
@@ -56,8 +54,6 @@ public class AuditIntegrationTest {
     @PersistenceUnit
     EntityManagerFactory emf;
 
-
-
     @Test
     public void testClassesForAudit() {
         AuditReader ar = AuditReaderFactory.get(emf.createEntityManager());
@@ -68,7 +64,6 @@ public class AuditIntegrationTest {
         assertTrue(ar.isEntityClassAudited(DBCertificate.class));
         assertTrue(ar.isEntityClassAudited(DBServiceGroupExtension.class));
     }
-
 
     @Test
     public void testAuditDBDomain() {

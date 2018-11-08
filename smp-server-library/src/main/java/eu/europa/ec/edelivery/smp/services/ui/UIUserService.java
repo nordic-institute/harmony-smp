@@ -16,10 +16,9 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sun.java2d.pipe.SpanShapeRenderer;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -27,11 +26,9 @@ import java.net.URLEncoder;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
@@ -42,12 +39,16 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIUserService.class);
 
     private static final byte[] S_PEM_START_TAG = "-----BEGIN CERTIFICATE-----\n".getBytes();
+
     private static final byte[] S_PEM_END_TAG = "\n-----END CERTIFICATE-----".getBytes();
 
     private static final String S_BLUECOAT_DATEFORMAT ="MMM dd HH:mm:ss yyyy";
 
     @Autowired
-    UserDao userDao;
+    private UserDao userDao;
+
+    @Autowired
+    private ConversionService conversionService;
 
     @Override
     protected BaseDao<DBUser> getDatabaseDao() {
@@ -62,13 +63,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
      * @param sortField
      * @param sortOrder
      * @param filter
-     * @return ServiceResult wiht list
+     * @return ServiceResult with list
      */
     @Transactional
-    public ServiceResult<UserRO> getTableList(int page, int pageSize,
-                                              String sortField,
-                                              String sortOrder, Object filter) {
-
+    public ServiceResult<UserRO> getTableList(int page, int pageSize, String sortField, String sortOrder, Object filter) {
         ServiceResult<UserRO> resUsers = super.getTableList(page, pageSize, sortField, sortOrder, filter);
         resUsers.getServiceEntities().forEach(usr -> usr.setPassword(null));
         return resUsers;
@@ -78,7 +76,6 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     public void updateUserList(List<UserRO> lst) {
         boolean suc = false;
         for (UserRO userRO : lst) {
-
             if (userRO.getStatus() == EntityROStatus.NEW.getStatusNumber()) {
                 DBUser dbUser = convertFromRo(userRO);
                 if (!StringUtils.isBlank(userRO.getPassword())) {
@@ -126,7 +123,6 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     }
 
     public CertificateRO getCertificateData(byte[] buff) throws CertificateException, IOException {
-
         // get pem encoding -
         InputStream isCert = createPEMFormat(buff);
 
@@ -227,9 +223,6 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
             return null;
         }
         return Arrays.copyOfRange(buff, iStart, iEnd + S_PEM_END_TAG.length);
-
-
-
     }
 
     /**
@@ -258,32 +251,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
     @Override
     public UserRO convertToRo(DBUser d) {
-
-        UserRO dro = new UserRO();
-        dro.setEmailAddress(d.getEmailAddress());
-        dro.setUsername(d.getUsername());
-        dro.setRole(d.getRole());
-        dro.setPassword(d.getPassword());
-        dro.setPasswordChanged(d.getPasswordChanged());
-        dro.setActive(d.isActive());
-        dro.setId(d.getId());
-
-        if (d.getCertificate() != null) {
-            CertificateRO certData = new CertificateRO();
-            if (d.getCertificate().getValidTo() != null) {
-
-                certData.setValidTo(Date.from(d.getCertificate().getValidTo().toInstant(ZoneOffset.UTC)));
-            }
-            if (d.getCertificate().getValidFrom() != null) {
-                certData.setValidFrom(Date.from(d.getCertificate().getValidFrom().toInstant(ZoneOffset.UTC)));
-            }
-            certData.setCertificateId(d.getCertificate().getCertificateId());
-            certData.setSerialNumber(d.getCertificate().getSerialNumber());
-            certData.setIssuer(d.getCertificate().getIssuer());
-            certData.setSubject(d.getCertificate().getSubject());
-            dro.setCertificate(certData);
-        }
-        return dro;
+        return conversionService.convert(d, UserRO.class);
     }
 
     public DeleteEntityValidation validateDeleteRequest(DeleteEntityValidation dev){
@@ -306,31 +274,6 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
     @Override
     public DBUser convertFromRo(UserRO d) {
-        DBUser dro = new DBUser();
-        dro.setEmailAddress(d.getEmailAddress());
-        dro.setUsername(d.getUsername());
-        dro.setRole(d.getRole());
-        dro.setPassword(d.getPassword());
-        dro.setActive(d.isActive());
-        dro.setId(d.getId());
-        dro.setPasswordChanged(d.getPasswordChanged());
-        if (d.getCertificate() != null) {
-            DBCertificate certData = new DBCertificate();
-            if (d.getCertificate().getValidTo() != null) {
-                certData.setValidTo(LocalDateTime.ofInstant(d.getCertificate().getValidTo().toInstant(), ZoneId.systemDefault()));
-            }
-            if (d.getCertificate().getValidFrom() != null) {
-                certData.setValidFrom(LocalDateTime.ofInstant(d.getCertificate().getValidFrom().toInstant(), ZoneId.systemDefault()));
-            }
-            certData.setCertificateId(d.getCertificate().getCertificateId());
-            certData.setSerialNumber(d.getCertificate().getSerialNumber());
-            certData.setIssuer(d.getCertificate().getIssuer());
-            certData.setSubject(d.getCertificate().getSubject());
-
-            dro.setCertificate(certData);
-        }
-        return dro;
-
+        return conversionService.convert(d, DBUser.class);
     }
-
 }

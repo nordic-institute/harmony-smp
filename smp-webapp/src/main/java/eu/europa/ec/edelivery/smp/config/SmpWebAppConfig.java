@@ -42,6 +42,7 @@ import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 @ComponentScan(basePackages = {
         "eu.europa.ec.edelivery.smp.controllers",
         "eu.europa.ec.edelivery.smp.validation",
+        "eu.europa.ec.edelivery.smp.conversion",
         "eu.europa.ec.edelivery.smp.monitor",
         "eu.europa.ec.edelivery.smp.ui"})
 @Import({GlobalMethodSecurityConfig.class, ErrorMappingControllerAdvice.class})
