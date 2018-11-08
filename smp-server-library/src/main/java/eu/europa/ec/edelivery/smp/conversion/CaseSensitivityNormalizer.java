@@ -66,8 +66,10 @@ public class CaseSensitivityNormalizer {
     }
 
     public DocumentIdentifier normalizeDocumentIdentifier( String scheme, String value) {
-        if (!caseSensitiveDocumentSchemes.contains(scheme.toLowerCase())) {
-            scheme = scheme.toLowerCase();
+        if (scheme== null || !caseSensitiveDocumentSchemes.contains(scheme.toLowerCase())) {
+            if (scheme!= null) {
+                scheme = scheme.toLowerCase();
+            }
             value = value.toLowerCase();
         }
         return new DocumentIdentifier(value, scheme);
