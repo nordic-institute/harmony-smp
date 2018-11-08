@@ -28,16 +28,13 @@ export class UserDetailsDialogComponent {
 
   @ViewChild('fileInput')  private fileInput;
 
-  static readonly NEW_MODE = 'New User';
-  static readonly EDIT_MODE = 'User Edit';
-
   readonly emailPattern = '[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}';
   readonly passwordPattern = '^(?=.*[A-Z])(?=.*[ !#$%&\'()*+,-./:;<=>?@\\[^_`{|}~\\\]"])(?=.*[0-9])(?=.*[a-z]).{8,32}$';
   readonly dateFormat: string = 'yyyy-MM-dd HH:mm:ssZ';
   readonly usernamePattern='^[a-zA-Z0-9]{4,32}$';
 
+  mode: UserDetailsDialogMode;
   editMode: boolean;
-  formTitle: string;
   userRoles = [];
   existingRoles = [];
   userForm: FormGroup;
@@ -95,8 +92,8 @@ export class UserDetailsDialogComponent {
               private datePipe: DatePipe,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder) {
-    this.editMode = data.edit;
-    this.formTitle = this.editMode ?  UserDetailsDialogComponent.EDIT_MODE: UserDetailsDialogComponent.NEW_MODE;
+    this.mode = data.mode;
+    this.editMode = this.mode !== UserDetailsDialogMode.NEW_MODE;
 
     this.current = this.editMode
       ? {
@@ -129,13 +126,13 @@ export class UserDetailsDialogComponent {
       // common values
       'active': new FormControl({ value: ''},[]),
       'emailAddress': new FormControl({ value:'' },[ Validators.pattern(this.emailPattern), Validators.maxLength(255)]),
-      'role': new FormControl({ value: '' }, Validators.required),
+      'role': new FormControl({ value: '', disabled: this.mode === UserDetailsDialogMode.PREFERENCES_MODE }, Validators.required),
       // username/password authentication
       'userToggle': new FormControl(bUserPasswordAuthentication),
-      'passwordToggle': new FormControl({value: bSetPassword, disabled:!bUserPasswordAuthentication}),
+      'passwordToggle': new FormControl({value: bSetPassword, disabled: !bUserPasswordAuthentication}),
       'username': new FormControl({ value: '', disabled: this.editMode || !bUserPasswordAuthentication },
         !this.editMode || !this.current.username ? [Validators.nullValidator, Validators.pattern(this.usernamePattern),
-          this.notInList(this.lookups.cachedServiceGroupOwnerList.map(a => a.username?a.username.toLowerCase():null))] : null),
+          this.notInList(this.lookups.cachedServiceGroupOwnerList.map(a => a.username ? a.username.toLowerCase() : null))] : null),
       //       // improve notInList validator
       'password': new FormControl({ value: '', disabled: !bUserPasswordAuthentication || !bSetPassword},
         [Validators.required, Validators.pattern(this.passwordPattern)]),
@@ -172,9 +169,9 @@ export class UserDetailsDialogComponent {
     this.userForm.controls['serialNumber'].setValue(this.current.certificate.serialNumber);
     this.userForm.controls['certificateId'].setValue(this.current.certificate.certificateId);
 
-    // if edit mode and user is given - toggle is dissabled
-    // username should  not be changed.!
-    if (this.editMode  && !!this.current.username){
+    // if edit mode and user is given - toggle is disabled
+    // username should not be changed.!
+    if (this.editMode && !!this.current.username){
       this.userForm.controls['userToggle'].disable();
     }
   }
@@ -215,7 +212,6 @@ export class UserDetailsDialogComponent {
   }
 
   onCertificateToggleChanged({checked}: MatSlideToggleChange) {
-
     if (checked) {
       // fill from temp
       this.userForm.controls['certificateId'].setValue( this.tempStoreForCertificate.certificateId);
@@ -241,7 +237,6 @@ export class UserDetailsDialogComponent {
       this.userForm.controls['validFrom'].setValue("");
       this.userForm.controls['validTo'].setValue("");
     }
-
   }
 
   onUserToggleChanged({checked}: MatSlideToggleChange) {
@@ -257,7 +252,6 @@ export class UserDetailsDialogComponent {
       // store data to temp, set values to null
       this.tempStoreForUser.username =  this.userForm.controls['username'].value;
       this.tempStoreForUser.password =  this.userForm.controls['password'].value;
-
 
       this.userForm.controls['username'].setValue("");
       this.userForm.controls['password'].setValue("");
@@ -345,4 +339,10 @@ export class UserDetailsDialogComponent {
       statusPassword: SearchTableEntityStatus.NEW
     }
   }
+}
+
+export enum UserDetailsDialogMode {
+  NEW_MODE = 'New User',
+  EDIT_MODE = 'User Edit',
+  PREFERENCES_MODE = 'Edit',
 }

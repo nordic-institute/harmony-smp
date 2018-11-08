@@ -10,6 +10,7 @@ import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -39,6 +40,9 @@ public class AuthenticationResource {
     @Autowired
     protected SMPAuthenticationService authenticationService;
 
+    @Autowired
+    private ConversionService conversionService;
+
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
     @ExceptionHandler({AuthenticationException.class})
     public ErrorRO handleException(Exception ex) {
@@ -50,13 +54,11 @@ public class AuthenticationResource {
     @Transactional(noRollbackFor = BadCredentialsException.class)
     public UserRO authenticate(@RequestBody LoginRO loginRO, HttpServletResponse response) {
         LOG.debug("Authenticating user [{}]", loginRO.getUsername());
-        final Authentication principal = authenticationService.authenticate(loginRO.getUsername(), loginRO.getPassword());
-
-        UserRO userRO = new UserRO();
-        userRO.setId(((SMPAuthenticationToken)principal).getUser().getId());
-        userRO.setUsername(loginRO.getUsername());
-        userRO.setAuthorities(
-                principal.getAuthorities()
+        SMPAuthenticationToken authentication = (SMPAuthenticationToken) authenticationService.authenticate(loginRO.getUsername(), loginRO.getPassword());
+        UserRO userRO = conversionService.convert(authentication.getUser(), UserRO.class);
+        userRO.setPassword("");
+        userRO.setAuthorities( // TODO maybe remove authorities and just use the user's role
+                authentication.getAuthorities()
                         .stream()
                         .map(authority -> authority.getAuthority())
                         .collect(toList()));
@@ -86,9 +88,9 @@ public class AuthenticationResource {
         //return securityUser.getUsername();
         String username = (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         System.out.println("get user: " + username);
-        UserRO ur =new UserRO();
-        ur.setUsername(username);
-        return ur;
+        UserRO user = new UserRO();
+        user.setUsername(username);
+        return user;
     }
 
 }

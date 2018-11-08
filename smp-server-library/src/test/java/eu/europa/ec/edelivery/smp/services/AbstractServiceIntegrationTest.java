@@ -1,7 +1,7 @@
 package eu.europa.ec.edelivery.smp.services;
 
 
-import eu.europa.ec.edelivery.smp.config.H2JPATestConfiguration;
+import eu.europa.ec.edelivery.smp.config.H2JPATestConfig;
 import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
 import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
@@ -33,7 +33,7 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {H2JPATestConfiguration.class,PropertiesSingleDomainTestConfig.class,
+@ContextConfiguration(classes = {H2JPATestConfig.class,PropertiesSingleDomainTestConfig.class,
         CaseSensitivityNormalizer.class,SmlConnector.class,ServiceMetadataSigner.class,
         ServiceGroupService.class, DomainService.class, ServiceMetadataService.class,
         ServiceGroupDao.class,ServiceMetadataDao.class, DomainDao.class, UserDao.class,DBAssertion.class})
@@ -175,5 +175,4 @@ public abstract class AbstractServiceIntegrationTest {
         sg3.getServiceGroupDomains().get(1).addServiceMetadata(sg3md2);
         serviceGroupDao.update(sg3);
     }
-
 }

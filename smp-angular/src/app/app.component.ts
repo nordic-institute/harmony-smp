@@ -10,6 +10,7 @@ import {HttpClient} from "@angular/common/http";
 import {SearchTableEntityStatus} from "./common/search-table/search-table-entity-status.model";
 import {SmpConstants} from "./smp.constants";
 import {UserService} from "./user/user.service";
+import {UserDetailsDialogMode} from "./user/user-details-dialog/user-details-dialog.component";
 
 @Component({
   selector: 'app-root',
@@ -47,7 +48,7 @@ export class AppComponent {
 
   editCurrentUser() {
     const formRef: MatDialogRef<any> = this.userController.newDialog({
-      data: {edit: true, row: this.securityService.getCurrentUser()}
+      data: {mode: UserDetailsDialogMode.PREFERENCES_MODE, row: this.securityService.getCurrentUser()}
     });
     formRef.afterClosed().subscribe(result => {
       if (result) {
