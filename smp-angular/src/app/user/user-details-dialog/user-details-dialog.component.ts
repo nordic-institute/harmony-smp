@@ -114,7 +114,7 @@ export class UserDetailsDialogComponent {
       };
 
     // The password authentication is if username exists
-    // if is off on clear than clear the username!
+    // if it's off on clear then clear the username!
     const bUserPasswordAuthentication: boolean = !!this.current.username;
     const bSetPassword: boolean = false;
 
@@ -131,9 +131,10 @@ export class UserDetailsDialogComponent {
       'userToggle': new FormControl(bUserPasswordAuthentication),
       'passwordToggle': new FormControl({value: bSetPassword, disabled: !bUserPasswordAuthentication}),
       'username': new FormControl({ value: '', disabled: this.editMode || !bUserPasswordAuthentication },
-        !this.editMode || !this.current.username ? [Validators.nullValidator, Validators.pattern(this.usernamePattern),
-          this.notInList(this.lookups.cachedServiceGroupOwnerList.map(a => a.username ? a.username.toLowerCase() : null))] : null),
-      //       // improve notInList validator
+        !this.editMode || !this.current.username
+          ? [Validators.nullValidator, Validators.pattern(this.usernamePattern), this.notInList(this.lookups.cachedServiceGroupOwnerList.map(a => a.username ? a.username.toLowerCase() : null))]
+          : null),
+      // improve notInList validator
       'password': new FormControl({ value: '', disabled: !bUserPasswordAuthentication || !bSetPassword},
         [Validators.required, Validators.pattern(this.passwordPattern)]),
       'confirmation': new FormControl({ value: '', disabled: !bUserPasswordAuthentication  || !bSetPassword},
@@ -171,7 +172,7 @@ export class UserDetailsDialogComponent {
 
     // if edit mode and user is given - toggle is disabled
     // username should not be changed.!
-    if (this.editMode && !!this.current.username){
+    if (this.editMode && bUserPasswordAuthentication){
       this.userForm.controls['userToggle'].disable();
     }
   }
@@ -267,6 +268,10 @@ export class UserDetailsDialogComponent {
       this.userForm.get('password').setValue('');
       this.userForm.get('confirmation').setValue('');
     }
+  }
+
+  isNotPreferencesMode() {
+    return this.mode !== UserDetailsDialogMode.PREFERENCES_MODE;
   }
 
   public getCurrent(): UserRo {
