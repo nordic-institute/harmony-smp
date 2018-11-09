@@ -13,6 +13,7 @@
 
 package eu.europa.ec.edelivery.smp.conversion;
 
+import org.apache.commons.lang3.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,9 +47,9 @@ public class CaseSensitivityNormalizer {
     }
 
     public ParticipantIdentifierType normalizeParticipantIdentifier(String scheme, String value) {
-        if (!caseSensitiveParticipantSchemes.contains(scheme.toLowerCase())) {
-            scheme = scheme.toLowerCase();
-            value = value.toLowerCase();
+        if (!caseSensitiveParticipantSchemes.contains(StringUtils.lowerCase(scheme))) {
+            scheme = StringUtils.lowerCase(scheme);
+            value = StringUtils.lowerCase(value);
         }
         return new ParticipantIdentifierType(value, scheme);
     }
@@ -66,11 +67,9 @@ public class CaseSensitivityNormalizer {
     }
 
     public DocumentIdentifier normalizeDocumentIdentifier( String scheme, String value) {
-        if (scheme== null || !caseSensitiveDocumentSchemes.contains(scheme.toLowerCase())) {
-            if (scheme!= null) {
-                scheme = scheme.toLowerCase();
-            }
-            value = value.toLowerCase();
+        if (!caseSensitiveDocumentSchemes.contains(StringUtils.lowerCase(scheme) )) {
+            scheme = StringUtils.lowerCase(scheme);
+            value = StringUtils.lowerCase(value);
         }
         return new DocumentIdentifier(value, scheme);
     }
