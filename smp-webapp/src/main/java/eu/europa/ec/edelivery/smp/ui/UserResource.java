@@ -1,8 +1,8 @@
 package eu.europa.ec.edelivery.smp.ui;
 
-import eu.europa.ec.edelivery.smp.BCryptPasswordHash;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
@@ -38,6 +38,9 @@ public class UserResource {
     @Autowired
     private UIUserService uiUserService;
 
+    @Autowired
+    protected SMPAuthorizationService authorizationService;
+
     @PutMapping(produces = {"application/json"})
     @RequestMapping(method = RequestMethod.GET)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN})
@@ -67,9 +70,15 @@ public class UserResource {
      */
     @PutMapping(path = "/{id}")
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#id)")
-    public void updateCurrentUser(@PathVariable("id") Long id, @RequestBody UserRO user) {
+    public UserRO updateCurrentUser(@PathVariable("id") Long id, @RequestBody UserRO user) {
         LOG.info("Update current user: {}", user);
+
         uiUserService.updateUserList(Arrays.asList(user));
+
+        DBUser updatedUser = uiUserService.findUser(id);
+        UserRO userRO = uiUserService.convertToRo(updatedUser);
+
+        return authorizationService.sanitize(userRO);
     }
 
     @PutMapping(produces = {"application/json"})
@@ -95,8 +104,8 @@ public class UserResource {
     @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#id)")
     public boolean samePreviousPasswordUsed(@PathVariable("id") Long id, @RequestBody String password) {
         LOG.info("Validating the password of the currently logged in user: {} ", id);
-        DBUser currentUser = getCurrentUser();
-        return BCrypt.checkpw(password, currentUser.getPassword());
+        DBUser user = uiUserService.findUser(getCurrentUser().getId());
+        return BCrypt.checkpw(password, user.getPassword());
     }
 
     @PutMapping(produces = {"application/json"})
