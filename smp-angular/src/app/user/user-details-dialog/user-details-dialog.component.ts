@@ -1,7 +1,7 @@
 import {Component, Inject, TemplateRef, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef, MatSlideToggleChange} from '@angular/material';
 import {
-  AbstractControl,
+  AbstractControl, AsyncValidatorFn,
   FormBuilder,
   FormControl,
   FormGroup,
@@ -18,6 +18,9 @@ import {CertificateRo} from "../certificate-ro.model";
 import {DatePipe} from "../../custom-date/date.pipe";
 import {UserController} from "../user-controller";
 import {GlobalLookups} from "../../common/global-lookups";
+import {Observable, of} from "rxjs";
+import {catchError, map} from "rxjs/operators";
+import {UserDetailsService} from "./user-details.service";
 
 @Component({
   selector: 'user-details-dialog',
@@ -35,6 +38,7 @@ export class UserDetailsDialogComponent {
 
   mode: UserDetailsDialogMode;
   editMode: boolean;
+  userId: number;
   userRoles = [];
   existingRoles = [];
   userForm: FormGroup;
@@ -76,11 +80,31 @@ export class UserDetailsDialogComponent {
     &&  listIds.includes(certificateId.value) &&  this.current.certificate && certificateId.value !== this.current.certificate.certificateId ? { certificateIdExists: true} : null;
   };
 
+  private asyncPasswordValidator: AsyncValidatorFn = (control: AbstractControl): Promise<ValidationErrors | null> | Observable<ValidationErrors | null> => {
+    if(this.isPreferencesMode()) {
+      const userToggle = control.get('userToggle');
+      const passwordToggle = control.get('passwordToggle');
+      const password = control.get('password');
+      const confirmation = control.get('confirmation');
+
+      if(userToggle && passwordToggle && password
+        && this.userId && userToggle.value && passwordToggle.value && password.value) {
+        return this.userDetailsService.isSamePreviousPasswordUsed$(this.userId, password.value).pipe(
+          map(previousPasswordUsed => previousPasswordUsed ? { previousPasswordUsed: true } : null),
+          catchError(() => {
+            this.alertService.error("Error occurred while validating the password against the previously chosen one!");
+            return of(null);
+          }));
+      }
+    }
+    return of(null);
+  };
+
   notInList(list: string[]) {
     return (c: AbstractControl): { [key: string]: any } => {
-      if (c.value && list.includes(c.value.toString().toLowerCase()))
+      if (c.value && list.includes(c.value.toString().toLowerCase())) {
         return {'notInList': {valid: false}};
-
+      }
       return null;
     }
   }
@@ -88,11 +112,13 @@ export class UserDetailsDialogComponent {
   constructor(private dialogRef: MatDialogRef<UserDetailsDialogComponent>,
               private lookups: GlobalLookups,
               private certificateService: CertificateService,
+              private userDetailsService: UserDetailsService,
               private alertService: AlertService,
               private datePipe: DatePipe,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder) {
     this.mode = data.mode;
+    this.userId = data.row && data.row.id;
     this.editMode = this.mode !== UserDetailsDialogMode.NEW_MODE;
 
     this.current = this.editMode
@@ -153,7 +179,8 @@ export class UserDetailsDialogComponent {
         this.atLeastOneToggleCheckedValidator,
         this.certificateValidator,
         this.certificateExistValidator,
-        ]
+        ],
+      asyncValidator: this.asyncPasswordValidator,
     });
     // bind values to form! not property
     this.userForm.controls['active'].setValue(this.current.active);
@@ -270,8 +297,8 @@ export class UserDetailsDialogComponent {
     }
   }
 
-  isNotPreferencesMode() {
-    return this.mode !== UserDetailsDialogMode.PREFERENCES_MODE;
+  isPreferencesMode() {
+    return this.mode === UserDetailsDialogMode.PREFERENCES_MODE;
   }
 
   public getCurrent(): UserRo {
