@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
 
+import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
@@ -17,14 +18,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -33,7 +41,7 @@ import static org.junit.Assert.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@ContextConfiguration(classes= UIUserService.class)
+@ContextConfiguration(classes = {UIUserService.class, ConversionTestConfig.class})
 public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest {
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();
@@ -51,11 +59,11 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testGetTableListEmpty() {
-
         // given
 
         //when
         ServiceResult<UserRO> res = testInstance.getTableList(-1, -1, null, null, null);
+
         // then
         assertNotNull(res);
         assertEquals(0, res.getCount().intValue());
@@ -67,9 +75,9 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testGetTableList15() {
-
         // given
         insertDataObjects(15);
+
         //when
         ServiceResult<UserRO> res = testInstance.getTableList(-1, -1, null, null, null);
 
@@ -127,6 +135,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
         //when
         testInstance.updateUserList(Collections.singletonList(user));
+
         // then
         long  iCntNew  = userDao.getDataListCount(null);
         assertEquals(iCnt+1, iCntNew);
@@ -166,9 +175,9 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
         user.setStatus(EntityROStatus.NEW.getStatusNumber());
 
-
         //when
         testInstance.updateUserList(Collections.singletonList(user));
+
         // then
         long  iCntNew  = userDao.getDataListCount(null);
         assertEquals(iCnt+1, iCntNew);
@@ -212,9 +221,9 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
         user.setStatus(EntityROStatus.NEW.getStatusNumber());
 
-
         //when
         testInstance.updateUserList(Collections.singletonList(user));
+
         // then
         long  iCntNew  = userDao.getDataListCount(null);
         assertEquals(iCnt+1, iCntNew);
@@ -262,6 +271,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         userRO.setStatus(EntityROStatus.UPDATED.getStatusNumber());
 
         testInstance.updateUserList(Collections.singletonList(userRO));
+
         // then
         ServiceResult<UserRO> res  =  testInstance.getTableList(-1,-1,null, null, null);
         assertEquals(1, urTest.getServiceEntities().size());
@@ -296,8 +306,10 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     public void testGetCertificateDataPEM() throws IOException, CertificateException {
         // given
         byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/truststore/SMPtest.crt"));
+
         // when
         CertificateRO cer = testInstance.getCertificateData(buff);
+
         //then
         assertEquals("CN=SMP test,O=DIGIT,C=BE:0000000000000003", cer.getCertificateId());
         assertEquals("CN=Intermediate CA, O=DIGIT, C=BE", cer.getIssuer());
@@ -312,8 +324,10 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     public void testGetCertificateDataPEMWithHeader() throws IOException, CertificateException {
         // given
         byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/truststore/pem-with-header.crt"));
+
         // when
         CertificateRO cer = testInstance.getCertificateData(buff);
+
         //then
         assertEquals("CN=alice,O=www.freelan.org,C=FR:0000000000000001", cer.getCertificateId());
         assertEquals("EMAILADDRESS=contact@freelan.org, CN=Freelan Sample Certificate Authority, OU=freelan, O=www.freelan.org, L=Strasbourg, ST=Alsace, C=FR", cer.getIssuer());
@@ -324,15 +338,14 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertTrue(cer.getValidFrom().before(cer.getValidTo()));
     }
 
-
-
     @Test
     public void testGetCertificateDataDER() throws IOException, CertificateException {
         // given
-        byte[] buff = IOUtils.toByteArray(new FileInputStream("src/test/resources/truststore/NewPeppolAP.crt"));
+        byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/truststore/NewPeppolAP.crt"));
 
         // when
         CertificateRO cer = testInstance.getCertificateData(buff);
+
         //then
         assertEquals("CN=POP000004,O=European Commission,C=BE:474980c51478cf62761667461aef5e8e", cer.getCertificateId());
         assertEquals("CN=PEPPOL ACCESS POINT TEST CA - G2, OU=FOR TEST ONLY, O=OpenPEPPOL AISBL, C=BE", cer.getIssuer());
@@ -342,5 +355,4 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertNotNull(cer.getValidTo());
         assertTrue(cer.getValidFrom().before(cer.getValidTo()));
     }
-
 }
