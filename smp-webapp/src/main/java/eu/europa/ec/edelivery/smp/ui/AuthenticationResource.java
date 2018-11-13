@@ -1,14 +1,17 @@
 package eu.europa.ec.edelivery.smp.ui;
 
 
+import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
 import eu.europa.ec.edelivery.smp.data.ui.ErrorRO;
 import eu.europa.ec.edelivery.smp.data.ui.LoginRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -23,8 +26,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static java.util.stream.Collectors.toList;
-
 /**
  * @author Sebastian-Ion TINCU
  * @since 4.0
@@ -38,6 +39,12 @@ public class AuthenticationResource {
     @Autowired
     protected SMPAuthenticationService authenticationService;
 
+    @Autowired
+    protected SMPAuthorizationService authorizationService;
+
+    @Autowired
+    private ConversionService conversionService;
+
     @ResponseStatus(value = HttpStatus.FORBIDDEN)
     @ExceptionHandler({AuthenticationException.class})
     public ErrorRO handleException(Exception ex) {
@@ -49,16 +56,9 @@ public class AuthenticationResource {
     @Transactional(noRollbackFor = BadCredentialsException.class)
     public UserRO authenticate(@RequestBody LoginRO loginRO, HttpServletResponse response) {
         LOG.debug("Authenticating user [{}]", loginRO.getUsername());
-        final Authentication principal = authenticationService.authenticate(loginRO.getUsername(), loginRO.getPassword());
-
-        UserRO userRO = new UserRO();
-        userRO.setUsername(loginRO.getUsername());
-        userRO.setAuthorities(
-                principal.getAuthorities()
-                        .stream()
-                        .map(authority -> authority.getAuthority())
-                        .collect(toList()));
-        return userRO;
+        SMPAuthenticationToken authentication = (SMPAuthenticationToken) authenticationService.authenticate(loginRO.getUsername(), loginRO.getPassword());
+        UserRO userRO = conversionService.convert(authentication.getUser(), UserRO.class);
+        return authorizationService.sanitize(userRO);
     }
 
     @RequestMapping(value = "authentication", method = RequestMethod.DELETE)
@@ -76,18 +76,16 @@ public class AuthenticationResource {
         LOG.info("Logged out");
     }
 
-   // @PutMapping(produces = {"text/plain"})
     @RequestMapping(value = "user", method = RequestMethod.GET)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
     public UserRO getUser() {
-      //  User securityUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //return securityUser.getUsername();
-        String username = (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        System.out.println("get user: " + username);
-        UserRO ur =new UserRO();
-        ur.setUsername(username);
-        return ur;
+        UserRO user = new UserRO();
 
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        LOG.debug("get user: {}", username);
+
+        user.setUsername(username);
+        return user;
     }
 
 }

@@ -1,6 +1,5 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
-import eu.europa.ec.edelivery.smp.config.H2JPATestConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
@@ -8,12 +7,7 @@ import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.util.Collections;
 import java.util.List;
@@ -37,7 +31,6 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
 
     @Rule
     public ExpectedException expectedEx = ExpectedException.none();
-
 
     @Test
     public void persistDomain() {
@@ -92,7 +85,6 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
         Optional<DBDomain> res = testInstance.getTheOnlyDomain();
         assertTrue(!res.isPresent());
     }
-
 
     @Test
     public void getDomainByCodeExists() {
@@ -162,7 +154,6 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
         assertFalse(optDmn.isPresent());
     }
 
-
     @Test
     public void testValidateUsersForDeleteOKScenario() {
         // set
@@ -184,7 +175,6 @@ public class DomainDaoIntegrationTest extends AbstractBaseDao {
         sg.addDomain(d);
 
         serviceGroupDao.persistFlushDetach(sg);
-
 
         // execute
         List<DBDomainDeleteValidation> lst = testInstance.validateDomainsForDelete(Collections.singletonList(d.getId()));

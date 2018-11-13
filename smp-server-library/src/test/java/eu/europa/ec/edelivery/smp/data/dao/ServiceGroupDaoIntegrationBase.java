@@ -1,6 +1,5 @@
 package eu.europa.ec.edelivery.smp.data.dao;
 
-import eu.europa.ec.edelivery.smp.config.H2JPATestConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
@@ -11,14 +10,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.jdbc.SqlConfig;
 
 import javax.transaction.Transactional;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
-
 
 /**
  * Purpose of class is to test all resource methods with database.
@@ -55,7 +50,6 @@ public abstract class ServiceGroupDaoIntegrationBase extends AbstractBaseDao{
         userDao.persistFlushDetach(u3);
     }
 
-
    public DBServiceGroup createAndSaveNewServiceGroup(){
        return createAndSaveNewServiceGroup(TEST_DOMAIN_CODE_1, TestConstants.TEST_SG_ID_1, TestConstants.TEST_SG_SCHEMA_1);
    }
@@ -74,7 +68,6 @@ public abstract class ServiceGroupDaoIntegrationBase extends AbstractBaseDao{
        testInstance.persistFlushDetach(sg);
        return sg;
    }
-
 
     public void createAndSaveNewServiceGroups(int iCount, String domain, String participant){
         createAndSaveNewServiceGroups(iCount, domain, participant, null);
@@ -118,6 +111,5 @@ public abstract class ServiceGroupDaoIntegrationBase extends AbstractBaseDao{
     public void update(DBServiceGroup sg){
         testInstance.update(sg);
     }
-
 
 }

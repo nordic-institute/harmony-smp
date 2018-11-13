@@ -1,9 +1,8 @@
 package eu.europa.ec.edelivery.smp.ui;
 
-
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
-import eu.europa.ec.edelivery.smp.auth.SMPRole;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
@@ -15,11 +14,12 @@ import eu.europa.ec.edelivery.smp.services.ui.UIUserService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.UserFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.util.Arrays;
@@ -29,7 +29,6 @@ import java.util.List;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-
 @RestController
 @RequestMapping(value = "/ui/rest/user")
 public class UserResource {
@@ -39,15 +38,11 @@ public class UserResource {
     @Autowired
     private UIUserService uiUserService;
 
-    @PostConstruct
-    protected void init() {
-
-    }
+    @Autowired
+    protected SMPAuthorizationService authorizationService;
 
     @PutMapping(produces = {"application/json"})
-    @ResponseBody
     @RequestMapping(method = RequestMethod.GET)
-    //update gui to call this when somebody is logged in.
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN})
     public ServiceResult<UserRO> getUsers(
             @RequestParam(value = "page", defaultValue = "0") int page,
@@ -56,8 +51,8 @@ public class UserResource {
             @RequestParam(value = "orderType", defaultValue = "asc", required = false) String orderType,
             @RequestParam(value = "roles", required = false) String roleList
             ) {
-        UserFilter filter =null;
-        if (roleList!=null){
+        UserFilter filter = null;
+        if (roleList != null) {
             filter = new UserFilter();
             filter.setRoleList(Arrays.asList(roleList.split(",")));
         }
@@ -65,17 +60,37 @@ public class UserResource {
         return  uiUserService.getTableList(page,pageSize, orderBy, orderType, filter);
     }
 
+    /**
+     * Update the details of the currently logged in user (e.g. update the role, the credentials or add certificate details).
+     *
+     * @param id the identifier of the user being updated; it must match the currently logged in user's identifier
+     * @param user the updated details
+     *
+     * @throws org.springframework.security.access.AccessDeniedException when trying to update the details of another user, different than the one being currently logged in
+     */
+    @PutMapping(path = "/{id}")
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#id)")
+    public UserRO updateCurrentUser(@PathVariable("id") Long id, @RequestBody UserRO user) {
+        LOG.info("Update current user: {}", user);
+
+        uiUserService.updateUserList(Arrays.asList(user));
+
+        DBUser updatedUser = uiUserService.findUser(id);
+        UserRO userRO = uiUserService.convertToRo(updatedUser);
+
+        return authorizationService.sanitize(userRO);
+    }
+
     @PutMapping(produces = {"application/json"})
-    @RequestMapping(method = RequestMethod.PUT)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
-    public void updateUserList(@RequestBody(required = true) UserRO[] updateEntities ){
-        LOG.info("Update user list, count: {}" + updateEntities.length);
+    public void updateUserList(@RequestBody UserRO[] updateEntities ){
+        LOG.info("Update user list, count: {}", updateEntities.length);
         uiUserService.updateUserList(Arrays.asList(updateEntities));
     }
 
-    @RequestMapping(path = "certdata", method = RequestMethod.POST)
-    @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
-    public CertificateRO uploadFile(@RequestBody byte[] data) {
+    @PostMapping("/{id}/certdata")
+    @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#id)")
+    public CertificateRO uploadFile(@PathVariable("id") Long id, @RequestBody byte[] data) {
         LOG.info("Got certificate data: " + data.length);
         try {
             return uiUserService.getCertificateData(data);
@@ -83,17 +98,21 @@ public class UserResource {
             LOG.error("Error occurred while parsing certificate.", e);
         }
         return null;
+    }
 
+    @PostMapping(path = "/{id}/samePreviousPasswordUsed", produces = {"application/json"})
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#id)")
+    public boolean samePreviousPasswordUsed(@PathVariable("id") Long id, @RequestBody String password) {
+        LOG.info("Validating the password of the currently logged in user: {} ", id);
+        DBUser user = uiUserService.findUser(getCurrentUser().getId());
+        return BCrypt.checkpw(password, user.getPassword());
     }
 
     @PutMapping(produces = {"application/json"})
     @RequestMapping(path = "validateDelete", method = RequestMethod.POST)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
     public DeleteEntityValidation validateDeleteUsers(@RequestBody List<Long> query) {
-        // test if looged user
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        SMPAuthenticationToken authToken = (SMPAuthenticationToken) authentication;
-        DBUser user = authToken.getUser();
+        DBUser user = getCurrentUser();
         DeleteEntityValidation dres = new DeleteEntityValidation();
         if (query.contains(user.getId())){
             dres.setValidOperation(false);
@@ -102,5 +121,11 @@ public class UserResource {
         }
         dres.getListIds().addAll(query);
         return uiUserService.validateDeleteRequest(dres);
+    }
+
+    private DBUser getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        SMPAuthenticationToken authToken = (SMPAuthenticationToken) authentication;
+        return authToken.getUser();
     }
 }

@@ -1,6 +1,5 @@
 package eu.europa.ec.edelivery.smp.config;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +21,8 @@ import java.sql.SQLException;
 @Configuration
 @PropertySource("./persistence-test-h2.properties")
 @EnableTransactionManagement
-public class H2JPATestConfiguration {
+public class H2JPATestConfig {
+
     @Autowired
     private Environment env;
 

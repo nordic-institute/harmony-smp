@@ -4,7 +4,7 @@ import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {HttpClient} from "@angular/common/http";
 import {SmpConstants} from "../../smp.constants";
 import {ServiceMetadataEditRo} from "../service-metadata-edit-ro.model";
-
+import {CertificateService} from "../../user/certificate.service";
 
 @Component({
   selector: 'service-metadata-wizard-dialog',
@@ -17,22 +17,22 @@ export class ServiceMetadataWizardDialogComponent {
   static readonly EDIT_MODE = 'Edit ServiceMetadata XML';
 
   editMode: boolean;
-  formTitle: string;
   current: ServiceMetadataEditRo & { confirmation?: string };
   dialogForm: FormGroup;
   certificateValidationMessage: string;
   isCertificateValid: string;
   selectedFile: File;
 
-  dummyXML: string = "<!-- Custom element is mandatory by OASIS SMP schema.\n    Replace following element with your XML structure. -->\n<ext:example xmlns:ext=\"http://my.namespace.eu\">my mandatory content</ext:example>"
+  // dummyXML: string = "<!-- Custom element is mandatory by OASIS SMP schema.\n    Replace following element with your XML structure. -->\n<ext:example xmlns:ext=\"http://my.namespace.eu\">my mandatory content</ext:example>"
 
-
-  constructor( protected http: HttpClient,
-               public dialogRef: MatDialogRef<ServiceMetadataWizardDialogComponent>,
-              private dialogFormBuilder: FormBuilder) {
+  constructor(
+    private http: HttpClient,
+    private dialogRef: MatDialogRef<ServiceMetadataWizardDialogComponent>,
+    private dialogFormBuilder: FormBuilder,
+    private certificateService: CertificateService,
+  ) {
 
     this.dialogForm = dialogFormBuilder.group({
-
       'documentIdentifier': new FormControl({value: ''}, [Validators.required]),
       'documentIdentifierScheme': new FormControl({value: ''}, null),
       'processScheme': new FormControl({value: ''}, [Validators.required]),
@@ -49,13 +49,11 @@ export class ServiceMetadataWizardDialogComponent {
 
   onUpload() {
     // this.http is the injected HttpClient
-    this.http.post(SmpConstants.REST_CERTIFICATE, this.selectedFile)
+    this.certificateService.uploadCertificate$(this.selectedFile)
       .subscribe(event => {
-
         console.log(event); // handle event here
       });
   }
-
 
   getExtensionXML() {
     /*
@@ -79,6 +77,4 @@ export class ServiceMetadataWizardDialogComponent {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
   }
-
-
 }
