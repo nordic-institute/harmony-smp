@@ -4,6 +4,7 @@ package eu.europa.ec.edelivery.smp.ui;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationService;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.auth.SMPAuthorizationService;
 import eu.europa.ec.edelivery.smp.data.ui.ErrorRO;
 import eu.europa.ec.edelivery.smp.data.ui.LoginRO;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
@@ -25,8 +26,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static java.util.stream.Collectors.toList;
-
 /**
  * @author Sebastian-Ion TINCU
  * @since 4.0
@@ -39,6 +38,9 @@ public class AuthenticationResource {
 
     @Autowired
     protected SMPAuthenticationService authenticationService;
+
+    @Autowired
+    protected SMPAuthorizationService authorizationService;
 
     @Autowired
     private ConversionService conversionService;
@@ -56,13 +58,7 @@ public class AuthenticationResource {
         LOG.debug("Authenticating user [{}]", loginRO.getUsername());
         SMPAuthenticationToken authentication = (SMPAuthenticationToken) authenticationService.authenticate(loginRO.getUsername(), loginRO.getPassword());
         UserRO userRO = conversionService.convert(authentication.getUser(), UserRO.class);
-        userRO.setPassword("");
-        userRO.setAuthorities( // TODO maybe remove authorities and just use the user's role
-                authentication.getAuthorities()
-                        .stream()
-                        .map(authority -> authority.getAuthority())
-                        .collect(toList()));
-        return userRO;
+        return authorizationService.sanitize(userRO);
     }
 
     @RequestMapping(value = "authentication", method = RequestMethod.DELETE)
@@ -80,15 +76,14 @@ public class AuthenticationResource {
         LOG.info("Logged out");
     }
 
-   // @PutMapping(produces = {"text/plain"})
     @RequestMapping(value = "user", method = RequestMethod.GET)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SMP_ADMIN, SMPAuthority.S_AUTHORITY_TOKEN_SERVICE_GROUP_ADMIN})
     public UserRO getUser() {
-      //  User securityUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //return securityUser.getUsername();
-        String username = (String)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        System.out.println("get user: " + username);
         UserRO user = new UserRO();
+
+        String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        LOG.debug("get user: {}", username);
+
         user.setUsername(username);
         return user;
     }

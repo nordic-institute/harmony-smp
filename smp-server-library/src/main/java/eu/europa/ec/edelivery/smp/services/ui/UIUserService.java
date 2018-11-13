@@ -12,6 +12,8 @@ import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
+import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.apache.commons.lang3.StringUtils;
@@ -120,6 +122,18 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                 userDao.removeById(userRO.getId());
             }
         }
+    }
+
+    /**
+     * Returns the user entity by its primary key or throws a {@code SMPRuntimeException} if such entity does not exist.
+     *
+     * @param userId The primary key of the user entity
+     * @return the user entity
+     * @throws SMPRuntimeException if a user entity having the provided primary key does not exist.
+     */
+    @Transactional(readOnly = true)
+    public DBUser findUser(Long userId) {
+        return userDao.findUser(userId).orElseThrow(() -> new SMPRuntimeException(ErrorCode.USER_NOT_EXISTS));
     }
 
     public CertificateRO getCertificateData(byte[] buff) throws CertificateException, IOException {
