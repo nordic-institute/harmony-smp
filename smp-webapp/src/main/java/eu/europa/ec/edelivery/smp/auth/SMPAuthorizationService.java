@@ -29,9 +29,4 @@ public class SMPAuthorizationService {
         return false;
     }
 
-    private DBUser getCurrentUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        SMPAuthenticationToken authToken = (SMPAuthenticationToken) authentication;
-        return authToken.getUser();
-    }
 }

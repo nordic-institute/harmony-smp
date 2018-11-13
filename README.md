@@ -1,6 +1,6 @@
 # Service Metadata Publishing
 
-## Continous Integration
+## Continuous Integration
 
 [https://webgate.ec.europa.eu/CITnet/bamboo/browse/EDELIVERY-SMPDEV]
 
