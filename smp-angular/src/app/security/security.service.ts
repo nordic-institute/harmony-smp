@@ -23,8 +23,7 @@ export class SecurityService {
       }),
       { headers })
       .subscribe((response: string) => {
-          this.populateLocalStorage(JSON.stringify(response));
-          this.securityEventService.notifyLoginSuccessEvent(response);
+          this.updateUserDetails(response);
         },
         (error: any) => {
           this.securityEventService.notifyLoginErrorEvent(error);
@@ -32,8 +31,6 @@ export class SecurityService {
   }
 
   logout() {
-    console.log('Logging out');
-   // this.domainService.resetDomain();
     this.http.delete(SmpConstants.REST_SECURITY_AUTHENTICATION).subscribe((res: Response) => {
         this.clearLocalStorage();
         this.securityEventService.notifyLogoutSuccessEvent(res);
@@ -114,6 +111,11 @@ export class SecurityService {
       }
     });
     return subject.asObservable();
+  }
+
+  updateUserDetails(userDetails) {
+    this.populateLocalStorage(JSON.stringify(userDetails));
+    this.securityEventService.notifyLoginSuccessEvent(userDetails);
   }
 
   private populateLocalStorage(userDetails: string) {

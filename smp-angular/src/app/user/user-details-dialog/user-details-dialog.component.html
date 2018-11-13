@@ -1,11 +1,10 @@
 <mat-dialog-content fxFlex="column">
-  <h2 mat-dialog-title>{{formTitle}}</h2>
+  <h2 mat-dialog-title>{{mode}}</h2>
 
   <mat-card>
     <mat-card-content >
-      <mat-slide-toggle class="user-toggle"
-                mat-no-ink class="mat-primary" [formControl]="userForm.controls['active']"
-                        (change)="onUserToggleChanged($event)" id="active_id">
+      <mat-slide-toggle *ngIf="!isPreferencesMode()" class="user-toggle"
+                mat-no-ink class="mat-primary" [formControl]="userForm.controls['active']" id="active_id">
         Active
       </mat-slide-toggle>
 
@@ -75,6 +74,9 @@
               - At least one letter in uppercase<br>
               - At least one digit<br>
               - At least one special character
+            </div>
+            <div *ngIf="userForm.errors?.previousPasswordUsed" class="has-error">
+              Password should be different than the previous chosen one
             </div>
           </mat-form-field>
 
