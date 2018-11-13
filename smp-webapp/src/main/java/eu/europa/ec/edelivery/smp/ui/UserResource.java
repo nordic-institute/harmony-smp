@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.ui;
 
+import eu.europa.ec.edelivery.smp.BCryptPasswordHash;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
@@ -16,6 +17,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -87,17 +89,21 @@ public class UserResource {
             LOG.error("Error occurred while parsing certificate.", e);
         }
         return null;
+    }
 
+    @PostMapping(path = "/{id}/samePreviousPasswordUsed", produces = {"application/json"})
+    @PreAuthorize("@smpAuthorizationService.isCurrentlyLoggedIn(#id)")
+    public boolean samePreviousPasswordUsed(@PathVariable("id") Long id, @RequestBody String password) {
+        LOG.info("Validating the password of the currently logged in user: {} ", id);
+        DBUser currentUser = getCurrentUser();
+        return BCrypt.checkpw(password, currentUser.getPassword());
     }
 
     @PutMapping(produces = {"application/json"})
     @RequestMapping(path = "validateDelete", method = RequestMethod.POST)
     @Secured({SMPAuthority.S_AUTHORITY_TOKEN_SYSTEM_ADMIN})
     public DeleteEntityValidation validateDeleteUsers(@RequestBody List<Long> query) {
-        // test if looged user
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        SMPAuthenticationToken authToken = (SMPAuthenticationToken) authentication;
-        DBUser user = authToken.getUser();
+        DBUser user = getCurrentUser();
         DeleteEntityValidation dres = new DeleteEntityValidation();
         if (query.contains(user.getId())){
             dres.setValidOperation(false);
@@ -106,5 +112,11 @@ public class UserResource {
         }
         dres.getListIds().addAll(query);
         return uiUserService.validateDeleteRequest(dres);
+    }
+
+    private DBUser getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        SMPAuthenticationToken authToken = (SMPAuthenticationToken) authentication;
+        return authToken.getUser();
     }
 }
