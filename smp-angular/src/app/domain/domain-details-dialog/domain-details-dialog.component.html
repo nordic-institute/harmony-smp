@@ -6,9 +6,10 @@
       <mat-card-content>
         <fieldset style="border: none;">
           <mat-form-field style="width:100%">
-            <input matInput placeholder="Domain Code (For WS API integration: the Domain property.)" name="domainCode"
+            <input matInput placeholder="Domain Code" name="domainCode"
                    id="domainCode_id"
                    [formControl]="domainForm.controls['domainCode']" maxlength="255" required>
+            <mat-hint align="end">For WS API integration: the Domain property</mat-hint>
             <div
               *ngIf="(!editMode && domainForm.controls['domainCode'].touched || editMode) &&  domainForm.controls['domainCode'].hasError('pattern')"
               style="color:red; font-size: 70%">
@@ -21,13 +22,14 @@
             </div>
           </mat-form-field>
           <mat-form-field style="width:100%">
-            <input matInput placeholder="SML domain (Part of DNS Zone: ex.eHealth: 'ehealth', peppol: '', ..)"
+            <input matInput placeholder="SML domain"
                    name="smlSubdomain" id="smldomain_id"
-                   [formControl]="domainForm.controls['smlSubdomain']" maxlength="255">
+                   [formControl]="domainForm.controls['smlSubdomain']" maxlength="63" required>
+            <mat-hint align="end">Part of DNS Zone (e.g. for eHealth: 'ehealth', for peppol: '', ..</mat-hint>
             <div
               *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('pattern')"
               style="color:red; font-size: 70%">
-              SML domain must be valid DNS part (AlphaNumeric with optional char - or must be empty for peppol).
+              SML domain should only contain alphanumeric and hyphen characters, should not start with a digit and should not end with a hyphen.
             </div>
             <div
               *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('notInList')"
@@ -48,12 +50,13 @@
       <mat-card-content>
         <fieldset style="border: none;">
           <mat-form-field style="width:100%">
-            <input matInput placeholder="SML SMP identifier (SMP ID used for SML )" name="smlSmpId" id="smlSMPId_id"
-                   [formControl]="domainForm.controls['smlSmpId']" maxlength="255" required>
+            <input matInput placeholder="SML SMP identifier" name="smlSmpId" id="smlSMPId_id"
+                   [formControl]="domainForm.controls['smlSmpId']" maxlength="63">
+            <mat-hint align="end">SMP ID used for SML</mat-hint>
             <div
               *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('pattern')"
               style="color:red; font-size: 70%">
-              SML SMP ID must be valid DNS part (AlphaNumeric with optional char -)!
+              SML SMP ID should only contain alphanumeric and hyphen characters, should not start with a digit and should not end with a hyphen.
             </div>
             <div
               *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('notInList')"
