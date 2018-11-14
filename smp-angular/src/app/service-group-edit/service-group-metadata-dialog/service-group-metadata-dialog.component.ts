@@ -72,7 +72,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
           value: this.current.documentIdentifierScheme,
           disabled: this.editMode
         },
-        [Validators.required]),
+        []),
       'xmlContent': new FormControl({value: ''}, [Validators.required]),
     });
 

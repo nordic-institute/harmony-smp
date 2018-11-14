@@ -69,13 +69,14 @@ import {ServiceGroupMetadataDialogComponent} from './service-group-edit/service-
 import {DomainDetailsDialogComponent} from './domain/domain-details-dialog/domain-details-dialog.component';
 import {UserDetailsDialogComponent} from './user/user-details-dialog/user-details-dialog.component';
 import {DownloadService} from './download/download.service';
-import {UserService} from './user/user.service';
 import {CertificateService} from './user/certificate.service';
 import {GlobalLookups} from "./common/global-lookups";
 import {ServiceGroupExtensionWizardDialogComponent} from "./service-group-edit/service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component";
 import {ServiceMetadataWizardDialogComponent} from "./service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-dialog.component";
 import {ConfirmationDialogComponent} from "./common/confirmation-dialog/confirmation-dialog.component";
 import {SpinnerComponent} from "./common/spinner/spinner.component";
+import {UserService} from "./user/user.service";
+import {UserDetailsService} from "./user/user-details-dialog/user-details.service";
 
 @NgModule({
   declarations: [
@@ -162,10 +163,11 @@ import {SpinnerComponent} from "./common/spinner/spinner.component";
     SmpInfoService,
     AlertService,
     DownloadService,
-    UserService,
     CertificateService,
     GlobalLookups,
     DatePipe,
+    UserService,
+    UserDetailsService,
     {
       provide: ExtendedHttpClient,
       useFactory: extendedHttpClientCreator,

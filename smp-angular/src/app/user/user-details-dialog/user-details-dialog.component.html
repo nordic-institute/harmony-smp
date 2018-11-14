@@ -1,16 +1,14 @@
 <mat-dialog-content fxFlex="column">
-<h2 mat-dialog-title>{{formTitle}}</h2>
-
+  <h2 mat-dialog-title>{{mode}}</h2>
 
   <mat-card>
     <mat-card-content >
-      <mat-slide-toggle style="width:100%"
-                mat-no-ink class="mat-primary" [formControl]="userForm.controls['active']"
-                        (change)="onUserToggleChanged($event)" id="active_id">
+      <mat-slide-toggle *ngIf="!isPreferencesMode()" class="user-toggle"
+                mat-no-ink class="mat-primary" [formControl]="userForm.controls['active']" id="active_id">
         Active
       </mat-slide-toggle>
 
-      <mat-form-field style="width:100%">
+      <mat-form-field class="role-field">
         <mat-select matInput placeholder="Role" class="role" [formControl]="userForm.controls['role']"
                     id="role_id" required>
           <mat-option *ngFor="let item of existingRoles" [value]="item">{{item}}</mat-option>
@@ -19,8 +17,8 @@
              class="has-error">You need to choose at least one role for this user
         </div>
       </mat-form-field>
-      <mat-form-field class="emailAddress" style="width:100%">
-        <input matInput placeholder="Email address"  name="emailAddress" [formControl]="userForm.controls['emailAddress']"
+      <mat-form-field class="emailAddress" class="email">
+        <input matInput placeholder="Email address" name="emailAddress" [formControl]="userForm.controls['emailAddress']"
                id="emailAddress_id" maxlength="255">
       </mat-form-field>
 
@@ -29,18 +27,17 @@
   <div fxLayout="row">
     <mat-card fxFlex="40">
       <mat-card-title>
-        <mat-slide-toggle  mat-no-ink class="mat-primary" [formControl]="userForm.controls['userToggle']"
+        <mat-slide-toggle mat-no-ink class="mat-primary" [formControl]="userForm.controls['userToggle']"
                           (change)="onUserToggleChanged($event)" id="userDetailsToggle_id">
           User/password authentication
         </mat-slide-toggle>
-        <div
-          *ngIf="userForm.errors?.userDetailsOrCertificateRequired && (userForm.get('userToggle').dirty || userForm.get('certificateToggle').dirty)"
+        <div *ngIf="userForm.errors?.userDetailsOrCertificateRequired && (userForm.get('userToggle').dirty || userForm.get('certificateToggle').dirty)"
           class="has-error">You need to enter at least the details or the certificate for this user
         </div>
       </mat-card-title>
 
       <mat-card-content>
-        <div class="panel" style="height: 100%">
+        <div class="panel" class="user-panel">
           <mat-form-field class="username">
             <input matInput placeholder="Username" [formControl]="userForm.controls['username']"
                    id="username_id" maxlength="255" required>
@@ -49,8 +46,8 @@
             <div *ngIf="userForm.controls['username'].hasError('pattern') && userForm.controls['username'].touched"
                  class="has-error">Username can only contain alphanumeric characters (letters A-Z, numbers 0-9) and must have from 4 to 32 characters!</div>
             <div
-              *ngIf="(!editMode && userForm.controls['username'].touched || editMode) &&  userForm.controls['username'].hasError('notInList')"
-              style="color:red; font-size: 70%">
+              *ngIf="(!editMode && userForm.controls['username'].touched || editMode) && userForm.controls['username'].hasError('notInList')"
+              class="has-error">
               Username already exists!
             </div>
           </mat-form-field>
@@ -77,6 +74,9 @@
               - At least one letter in uppercase<br>
               - At least one digit<br>
               - At least one special character
+            </div>
+            <div *ngIf="userForm.errors?.previousPasswordUsed" class="has-error">
+              Password should be different than the previous chosen one
             </div>
           </mat-form-field>
 
@@ -127,7 +127,7 @@
             <input matInput placeholder="Serial Number" [formControl]="userForm.controls['serialNumber']"
                    id="servialNumber_id">
           </mat-form-field>
-          <mat-form-field style="width: 100%;">
+          <mat-form-field class="certificate-id">
             <input matInput placeholder="SMP certificate ID" [formControl]="userForm.controls['certificateId']"
                    id="certificateId_id"
                   resizeable="true">
@@ -145,21 +145,20 @@
     </mat-card>
   </div>
 
-
-<table class="buttonsRow">
-  <tr>
-    <td>
-      <button mat-raised-button color="primary" [mat-dialog-close]="true" (click)="submitForm()"
-              [disabled]="!userForm.valid">
-        <mat-icon>check_circle</mat-icon>
-        <span>OK</span>
-      </button>
-      <button mat-raised-button color="primary" mat-dialog-close>
-        <mat-icon>cancel</mat-icon>
-        <span>Cancel</span>
-      </button>
-    </td>
-  </tr>
-</table>
-<div class="required-fields">* required fields</div>
+  <table class="buttonsRow">
+    <tr>
+      <td>
+        <button mat-raised-button color="primary" [mat-dialog-close]="true" (click)="submitForm()"
+                [disabled]="!userForm.valid">
+          <mat-icon>check_circle</mat-icon>
+          <span>OK</span>
+        </button>
+        <button mat-raised-button color="primary" mat-dialog-close>
+          <mat-icon>cancel</mat-icon>
+          <span>Cancel</span>
+        </button>
+      </td>
+    </tr>
+  </table>
+  <div class="required-fields">* required fields</div>
 </mat-dialog-content>
