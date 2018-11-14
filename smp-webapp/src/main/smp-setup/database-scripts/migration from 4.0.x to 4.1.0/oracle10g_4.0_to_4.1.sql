@@ -337,42 +337,7 @@ create index SMP_SMD_DOC_SCH_IDX on SMP_SERVICE_METADATA (DOCUMENT_SCHEME);
 -- --------------------------------------------------------------------------------------------------------- 
 -- migrate data 
 -- --------------------------------------------------------------------------------------------------------- 
---- create function for converting clons to blobs
-CREATE OR REPLACE FUNCTION clob_to_blob(p_clob IN CLOB) RETURN BLOB IS
-  v_blob BLOB;
-  v_offset NUMBER DEFAULT 1;
-  v_amount NUMBER DEFAULT 4096;
-  v_offsetwrite NUMBER DEFAULT 1;
-  v_amountwrite NUMBER;
-  v_buffer VARCHAR2(4096 CHAR);
-BEGIN
-  dbms_lob.createtemporary(v_blob, TRUE);
 
-  Begin
-    LOOP
-      dbms_lob.READ (lob_loc => p_clob,
-                     amount  => v_amount,
-                     offset  => v_offset,
-                     buffer  => v_buffer);
-
-      v_amountwrite := utl_raw.length (r => utl_raw.cast_to_raw(c => v_buffer));
-
-      dbms_lob.WRITE (lob_loc => v_blob,
-                      amount  => v_amountwrite,
-                      offset  => v_offsetwrite,
-                      buffer  => utl_raw.cast_to_raw(v_buffer));
-
-      v_offsetwrite := v_offsetwrite + v_amountwrite;
-
-      v_offset := v_offset + v_amount;
-      v_amount := 4096;
-    END LOOP;
-  EXCEPTION
-    WHEN no_data_found THEN
-      NULL;
-  End;
-  RETURN v_blob;
-END clob_to_blob;
 
 -- migrate domains
 INSERT INTO SMP_DOMAIN (ID, DOMAIN_CODE, SIGNATURE_KEY_ALIAS,SML_CLIENT_CERT_HEADER, SML_PARTC_IDENT_REGEXP, SML_SMP_ID, SML_SUBDOMAIN, LAST_UPDATED_ON, CREATED_ON )
@@ -392,9 +357,9 @@ INSERT INTO  SMP_SERVICE_GROUP ( ID, CREATED_ON, LAST_UPDATED_ON, PARTICIPANT_ID
     select SMP_SERVICE_GROUP_SEQ.nextval, sysdate, sysdate, BUSINESSIDENTIFIER, BUSINESSIDENTIFIERSCHEME from SMP_SERVICE_GROUP_BCK;
 -- insert extensions
 INSERT INTO SMP_SG_EXTENSION (ID, CREATED_ON, LAST_UPDATED_ON, EXTENSION) 
-    select sg.id, sysdate,sysdate, clob_to_blob(SGB.XMLCONTENT)   from SMP_SERVICE_GROUP sg, SMP_SERVICE_GROUP_bck sgb 
+    select sg.id, sysdate,sysdate, clob_to_blob(sgb.extension)   from SMP_SERVICE_GROUP sg, SMP_SERVICE_GROUP_bck sgb
     where sg.PARTICIPANT_IDENTIFIER= sgb.BUSINESSIDENTIFIER 
-        and sg.PARTICIPANT_SCHEME= sgb.BUSINESSIDENTIFIERSCHEME and sgb.XMLCONTENT is not null;
+        and sg.PARTICIPANT_SCHEME= sgb.BUSINESSIDENTIFIERSCHEME and sgb.extension is not null;
 
 -- insert service group domains 
 INSERT INTO SMP_SERVICE_GROUP_DOMAIN (ID, CREATED_ON, LAST_UPDATED_ON, SML_REGISTRED, FK_DOMAIN_ID, FK_SG_ID )
