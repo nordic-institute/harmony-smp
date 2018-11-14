@@ -29,7 +29,7 @@
             <div
               *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('pattern')"
               style="color:red; font-size: 70%">
-              SML domain should only contain alphanumeric and hyphen characters, should not start with a digit and should not end with a hyphen.
+              SML domain should be up to 63 characters long, should only contain alphanumeric and hyphen characters, should not start with a digit and should not end with a hyphen.
             </div>
             <div
               *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('notInList')"
@@ -56,7 +56,7 @@
             <div
               *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('pattern')"
               style="color:red; font-size: 70%">
-              SML SMP ID should only contain alphanumeric and hyphen characters, should not start with a digit and should not end with a hyphen.
+              SML SMP ID should be up to 63 characters long, should only contain alphanumeric and hyphen characters, should not start with a digit and should not end with a hyphen.
             </div>
             <div
               *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('notInList')"
