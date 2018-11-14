@@ -36,10 +36,8 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.ILLEGAL_STATE_USER
 @Repository
 public class UserDao extends BaseDao<DBUser> {
 
-
-
     /**
-     * Persis user to database. Before that test if user has identifiers. Usernames are saved to database in lower caps
+     * Persists the user to the database. Before that test if user has identifiers. Usernames are saved to database in lower caps
      * @param user
      */
     @Override
@@ -57,7 +55,18 @@ public class UserDao extends BaseDao<DBUser> {
     }
 
     /**
-     * Method finds user by identifier. User identifier is username or certificateId. First it tries to find user by username
+     * Searches for a user entity by its primary key and returns it if found. Returns an empty {@code Optional} if missing.
+     *
+     * @param userId The primary key of the user entity to find
+     * @return an optional user entity
+     */
+    public Optional<DBUser> findUser(Long userId) {
+        DBUser dbUser = memEManager.find(DBUser.class, userId);
+        return Optional.ofNullable(dbUser);
+    }
+
+    /**
+     * Finds a user by identifier. User identifier is username or certificateId. First it tries to find user by username
      * and than by certificate id. If user does not exists Optional with isPresent - false is returned.
      * @param identifier
      * @return resturns Optional DBUser for identifier

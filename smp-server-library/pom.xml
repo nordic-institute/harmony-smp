@@ -11,13 +11,12 @@
   ~ See the Licence for the specific language governing permissions and limitations under the Licence.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>eu.europa.ec.edelivery</groupId>
         <artifactId>smp-parent-pom</artifactId>
-        <version>4.1.0-SNAPSHOT</version>
+        <version>4.1.0-RC2-SNAPSHOT</version>
         <relativePath>../smp-parent-pom/pom.xml</relativePath>
     </parent>
     <artifactId>smp-server-library</artifactId>
@@ -49,7 +48,7 @@
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.bdmsl</groupId>
-            <artifactId>bdmsl-client</artifactId>
+            <artifactId>bdmsl-api</artifactId>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.edelivery</groupId>
@@ -66,10 +65,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -124,10 +119,6 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-envers</artifactId>
         </dependency>
-        <!--dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -219,6 +210,7 @@
                 <filtering>true</filtering>
                 <excludes>
                     <exclude>**/*.jks</exclude>
+                    <exclude>**/*.crt</exclude>
                 </excludes>
             </testResource>
             <testResource>
@@ -227,6 +219,7 @@
                 <!-- With filtering=true Maven was introducing changes in keystore binary files [sic!] -->
                 <includes>
                     <include>**/*.jks</include>
+                    <include>**/*.crt</include>
                 </includes>
             </testResource>
         </testResources>
@@ -247,8 +240,7 @@
                                 1. Parameter: comma separated hibernate database dialects
                                 2. script version
                                 3. export scripts.-->
-                            <java classname="eu.europa.ec.edelivery.smp.data.dao.utils.SMPSchemaGenerator"
-                                  fork="true" failonerror="true">
+                            <java classname="eu.europa.ec.edelivery.smp.data.dao.utils.SMPSchemaGenerator" fork="true" failonerror="true">
                                 <arg value="org.hibernate.dialect.Oracle10gDialect,org.hibernate.dialect.MySQL5InnoDBDialect" />
                                 <arg value="${project.version}" />
                                 <arg value="${project.basedir}/../smp-webapp/src/main/smp-setup/database-scripts" />

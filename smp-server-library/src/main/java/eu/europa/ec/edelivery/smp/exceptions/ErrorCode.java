@@ -10,6 +10,7 @@ package eu.europa.ec.edelivery.smp.exceptions;
 public enum ErrorCode {
 
     INVALID_ENCODING (500, "SMP:100",ErrorBusinessCode.TECHNICAL, "Unsupported or invalid encoding for %s!"),
+    SML_INVALID_IDENTIFIER (400,"SMP:101",ErrorBusinessCode.FORMAT_ERROR,"Malformed identifier, scheme and id should be delimited by double colon: %s "),
 
     // domain error
     NO_DOMAIN (500,"SMP:110",ErrorBusinessCode.TECHNICAL, "No domain configured on SMP, at least one domain is mandatory!"),
@@ -35,7 +36,6 @@ public enum ErrorCode {
     INVALID_EXTENSION_FOR_SG (400,"SMP:132",ErrorBusinessCode.XSD_INVALID,"Invalid extension for service group (part. id: '%s', part. sch.: '%s'). Error: %s!"),
     DUPLICATE_DOMAIN_FOR_SG (400,"SMP:133",ErrorBusinessCode.INVALID_INPUT_DATA,"Repeated domain for Service group (part. id: '%s', part. sch.: '%s', domainCode %s, smlDomain %s).!"),
     MISSING_SG_ID (400,"SMP:134",ErrorBusinessCode.INVALID_INPUT_DATA,"Missing service group(part. id: '%s', part. sch.: '%s'!"),
-
     INVALID_SG_ID (400,"SMP:135",ErrorBusinessCode.INVALID_INPUT_DATA,"Invalid Id for Service group(part. id: '%s', part. sch.: '%s', id %d).!"),
 
 
@@ -49,6 +49,7 @@ public enum ErrorCode {
 
     // SML integration
     SML_INTEGRATION_EXCEPTION (500,"SMP:150",ErrorBusinessCode.TECHNICAL,"Could not create new DNS entry through SML! Error: %s "),
+
 
     //
     XML_SIGNING_EXCEPTION (500,"SMP:500",ErrorBusinessCode.TECHNICAL,"Error occurred while signing response!"),
