@@ -23,7 +23,7 @@ CREATE TABLE smp_domain (
 );
 
 CREATE TABLE smp_service_group (
-  xmlContent                CLOB,
+  extension                CLOB,
   businessIdentifier       VARCHAR(50)  NOT NULL,
   businessIdentifierScheme VARCHAR(100) NOT NULL,
   domainId                 VARCHAR(50)  DEFAULT 'domain1' NOT NULL,
