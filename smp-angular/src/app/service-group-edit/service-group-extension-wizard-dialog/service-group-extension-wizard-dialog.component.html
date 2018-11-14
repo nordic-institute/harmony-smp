@@ -1,22 +1,18 @@
-<h2 mat-dialog-title>MetadataService Wizard</h2>
+<h2 mat-dialog-title>ServiceGroup Extension Wizard</h2>
 
 <mat-dialog-content>
   <form [formGroup]="dialogForm">
     <mat-card>
       <mat-card-content>
         <fieldset style="border: none;">
-
-
           <mat-form-field  *ngFor="let elmnt of elements;"  style="width:100%">
             <input matInput
+                   type="{{elmnt.type}}"
                    placeholder="{{elmnt.name}} - {{elmnt.description}}"
                    [name]="elmnt.name"
                    id="{{elmnt.name}}_id"
                    [formControl]="dialogForm.controls[elmnt.name]" maxlength="255">
-
           </mat-form-field >
-
-
         </fieldset>
       </mat-card-content>
     </mat-card>
