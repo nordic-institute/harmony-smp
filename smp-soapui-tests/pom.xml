@@ -62,18 +62,7 @@
                         <value>SMPAdminPassword=${SMPAdminPassword}</value>
                     </projectProperties>
                 </configuration>
-                <dependencies>
-                    <dependency>
-                        <groupId>mysql</groupId>
-                        <artifactId>mysql-connector-java</artifactId>
-                        <version>${mysql.version}</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.oracle</groupId>
-                        <artifactId>ojdbc7</artifactId>
-                        <version>${oracle.version}</version>
-                    </dependency>
-                </dependencies>
+
             </plugin>
         </plugins>
     </build>
