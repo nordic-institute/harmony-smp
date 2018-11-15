@@ -16,7 +16,8 @@ export class DomainDetailsDialogComponent {
 
   static readonly NEW_MODE = 'New Domain';
   static readonly EDIT_MODE = 'Domain Edit';
-  readonly dnsDomainPattern = '^(?![0-9]+$)(?!.*-$)(?!-)[a-zA-Z0-9-]{0,63}$';
+  readonly subDomainPattern = '^(?![0-9]+$)(?!.*-$)(?!-)[a-zA-Z0-9-]{1,63}$';
+  readonly smpIdDomainPattern = '^(?![0-9]+$)(?!.*-$)(?!-)[a-zA-Z0-9-]{0,63}$';
   readonly domainCodePattern = '^[a-zA-Z0-9]{1,255}$';
 
   editMode: boolean;
@@ -62,9 +63,9 @@ export class DomainDetailsDialogComponent {
       'smlSubdomain': new FormControl({
         value: '',
         disabled: this.editMode
-      }, [Validators.pattern(this.dnsDomainPattern),
+      }, [Validators.pattern(this.subDomainPattern),
         this.notInList(this.lookups.cachedDomainList.map(a => a.smlSubdomain), this.current.smlSubdomain)]),
-      'smlSmpId': new FormControl({value: ''}, [Validators.pattern(this.dnsDomainPattern),
+      'smlSmpId': new FormControl({value: ''}, [Validators.pattern(this.smpIdDomainPattern),
         this.notInList(this.lookups.cachedDomainList.map(a => a.smlSmpId), this.current.smlSmpId)]),
       'smlClientCertHeader': new FormControl({value: ''}, null),
       'smlClientKeyAlias': new FormControl({value: ''}, null),
