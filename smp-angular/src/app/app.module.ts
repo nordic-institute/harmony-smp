@@ -171,7 +171,7 @@ import {UserDetailsService} from "./user/user-details-dialog/user-details.servic
     {
       provide: ExtendedHttpClient,
       useFactory: extendedHttpClientCreator,
-      deps: [HttpClient]
+      deps: [HttpClient, HttpEventService, SecurityService]
     },
   ],
   bootstrap: [AppComponent]
