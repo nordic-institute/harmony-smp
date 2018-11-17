@@ -68,6 +68,15 @@ export class ServiceGroupSearchComponent implements OnInit {
     });
   }
 
+  createServiceGroupURL(row: any){
+
+    return encodeURIComponent(row.participantScheme+'::'+row.participantIdentifier);
+  }
+
+  createServiceMetadataURL(row: any, rowSMD: any){
+    return encodeURIComponent(row.participantScheme+'::'+row.participantIdentifier)+'/services/'+ encodeURIComponent(rowSMD.documentIdentifierScheme+'::'+rowSMD.documentIdentifier);
+  }
+
   details(row: any) {
     this.serviceGroupSearchController.showDetails(row);
 
