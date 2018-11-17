@@ -179,4 +179,13 @@ export class ServiceGroupEditComponent implements OnInit {
   isDirty (): boolean {
     return this.searchTable.isDirty();
   }
+
+  createServiceGroupURL(row: any){
+
+    return encodeURIComponent(row.participantScheme+'::'+row.participantIdentifier);
+  }
+
+  createServiceMetadataURL(row: any, rowSMD: any){
+    return encodeURIComponent(row.participantScheme+'::'+row.participantIdentifier)+'/services/'+ encodeURIComponent(rowSMD.documentIdentifierScheme+'::'+rowSMD.documentIdentifier);
+  }
 }
