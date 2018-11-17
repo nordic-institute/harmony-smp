@@ -140,7 +140,7 @@ export class DomainDetailsDialogComponent {
 
     const reader = new FileReader();
     reader.onload = (e) => {
-      this.certificateService.uploadCertificate$(reader.result).subscribe((res: CertificateRo) => {
+      this.certificateService.uploadCertificate$(file).subscribe((res: CertificateRo) => {
           if (res && res.certificateId){
             this.domainForm.patchValue({
               'smlClientCertHeader': res.blueCoatHeader
