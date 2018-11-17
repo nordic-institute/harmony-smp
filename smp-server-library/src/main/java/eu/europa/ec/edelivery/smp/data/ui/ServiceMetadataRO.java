@@ -2,6 +2,7 @@ package eu.europa.ec.edelivery.smp.data.ui;
 
 
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * @author Joze Rihtarsic
@@ -54,7 +55,8 @@ public class ServiceMetadataRO extends BaseRO {
     }
 
     public String getDocumentIdentifierScheme() {
-        return documentIdentifierScheme;
+
+        return StringUtils.isEmpty(documentIdentifierScheme)?null: documentIdentifierScheme;
     }
 
     public void setDocumentIdentifierScheme(String documentIdentifierScheme) {

@@ -223,7 +223,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     }
 
     /**
-     * pem encoded cartificate can have header_?? this code finds the certificate part and return the part
+     * pem encoded certificate can have header_?? this code finds the certificate part and return the part
      * @param buff
      * @return
      */
