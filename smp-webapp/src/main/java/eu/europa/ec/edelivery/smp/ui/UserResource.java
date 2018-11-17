@@ -88,7 +88,7 @@ public class UserResource {
         uiUserService.updateUserList(Arrays.asList(updateEntities));
     }
 
-    @PostMapping("/{id}/certdata")
+    @PostMapping(value = "/{id}/certdata" ,produces = {"application/json"},consumes = {"application/octet-stream"})
     @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#id)")
     public CertificateRO uploadFile(@PathVariable("id") Long id, @RequestBody byte[] data) {
         LOG.info("Got certificate data: " + data.length);

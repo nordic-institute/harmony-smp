@@ -181,11 +181,10 @@ export class ServiceGroupEditComponent implements OnInit {
   }
 
   createServiceGroupURL(row: any){
-
-    return encodeURIComponent(row.participantScheme+'::'+row.participantIdentifier);
+    return encodeURIComponent((!row.participantScheme? '' : row.participantScheme)+'::'+row.participantIdentifier);
   }
 
   createServiceMetadataURL(row: any, rowSMD: any){
-    return encodeURIComponent(row.participantScheme+'::'+row.participantIdentifier)+'/services/'+ encodeURIComponent(rowSMD.documentIdentifierScheme+'::'+rowSMD.documentIdentifier);
+    return encodeURIComponent((!row.participantScheme? '': row.participantScheme)+'::'+row.participantIdentifier)+'/services/'+ encodeURIComponent((!rowSMD.documentIdentifierScheme?'':rowSMD.documentIdentifierScheme)+'::'+rowSMD.documentIdentifier);
   }
 }
