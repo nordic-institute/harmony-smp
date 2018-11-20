@@ -36,7 +36,7 @@ export class ServiceGroupEditComponent implements OnInit {
               private changeDetector: ChangeDetectorRef) {
 
     // if smp admin it needs to have update user list for detail dialog!
-    if (this.securityService.isCurrentUserSMPAdmin()) {
+    if (this.securityService.isCurrentUserSMPAdmin() || this.securityService.isCurrentUserServiceGroupAdmin()) {
       this.lookups.refreshUserLookup();
     }
   }

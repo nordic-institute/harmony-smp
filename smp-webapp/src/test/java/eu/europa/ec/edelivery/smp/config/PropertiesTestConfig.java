@@ -16,6 +16,8 @@ package eu.europa.ec.edelivery.smp.config;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 /**
@@ -31,6 +33,9 @@ public class PropertiesTestConfig {
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores");
+        String path = resourceDirectory.toString();
+
         PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
 
         Properties localProps = new Properties();
@@ -42,8 +47,10 @@ public class PropertiesTestConfig {
         localProps.setProperty( "spring.jpa.generate-ddl", "true");
         localProps.setProperty( "spring.jpa.properties.hibernate.hbm2ddl.auto", "create");
 
-        localProps.setProperty("xmldsig.keystore.classpath", SIGNING_KEYSTORE_PATH);
-        localProps.setProperty("xmldsig.keystore.password", "test123");
+        localProps.setProperty( "configuration.dir", path);
+        localProps.setProperty( "encryption.key.filename","encryptionKey.key");
+        localProps.setProperty( "smp.keystore.password", "FarFJE2WUfY39SVRTFOqSg==");
+        localProps.setProperty( "smp.keystore.filename", "smp-keystore_multiple_domains.jks");
         propertiesConfig.setProperties(localProps);
         propertiesConfig.setLocalOverride(true);
 

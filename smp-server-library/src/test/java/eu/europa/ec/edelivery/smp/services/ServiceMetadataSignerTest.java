@@ -13,18 +13,29 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
+import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
+import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
+import eu.europa.ec.edelivery.smp.testutil.SignatureUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocument;
+
 
 /**
  * Created by rodrfla on 20/02/2017.
  */
 
-@RunWith(SpringRunner.class)
-//@ContextConfiguration(classes = {SmpServicesTestConfig.class, PropertiesSingleDomainTestConfig.class})
-public class ServiceMetadataSignerTest {
-/*
+@ContextConfiguration(classes = { ServiceMetadataSigner.class,
+        PropertiesSingleDomainTestConfig.class, UIKeystoreService.class, ConversionTestConfig.class})
+public class ServiceMetadataSignerTest extends  AbstractServiceIntegrationTest{
+
+
     @Autowired
     private ServiceMetadataSigner signer;
 
@@ -77,7 +88,6 @@ public class ServiceMetadataSignerTest {
 
         SignatureUtil.validateSignature(adminSignature);
     }
-*/
- @Test
-    public void dummyTestMethod(){}
+
+
 }

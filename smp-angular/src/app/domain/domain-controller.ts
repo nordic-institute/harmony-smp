@@ -43,7 +43,9 @@ export class DomainController implements SearchTableController {
       smlClientCertHeader: '',
       smlClientKeyAlias: '',
       signatureKeyAlias: '',
-      status: SearchTableEntityStatus.NEW
+      status: SearchTableEntityStatus.NEW,
+      smlRegistered: false,
+      smlBlueCoatAuth: false,
     }
   }
   public dataSaved() {

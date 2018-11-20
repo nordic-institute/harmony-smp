@@ -25,6 +25,8 @@ export class DomainDetailsDialogComponent {
   current: DomainRo & { confirmation?: string };
   domainForm: FormGroup;
   domain;
+  selectedSMLCert:CertificateRo;
+
 
   notInList(list: string[], exception: string) {
     return (c: AbstractControl): { [key: string]: any } => {
@@ -36,7 +38,7 @@ export class DomainDetailsDialogComponent {
   }
 
   constructor( private certificateService: CertificateService,
-              private lookups: GlobalLookups,
+              public lookups: GlobalLookups,
               private dialogRef: MatDialogRef<DomainDetailsDialogComponent>,
               private alertService: AlertService,
               @Inject(MAT_DIALOG_DATA) public data: any,
@@ -71,13 +73,25 @@ export class DomainDetailsDialogComponent {
       'smlClientKeyAlias': new FormControl({value: ''}, null),
       'signatureKeyAlias': new FormControl({value: ''}, null),
 
+      'smlRegistered': new FormControl({value: ''}, null),
+      'smlBlueCoatAuth': new FormControl({value: ''}, null),
+
     });
     this.domainForm.controls['domainCode'].setValue(this.current.domainCode);
     this.domainForm.controls['smlSubdomain'].setValue(this.current.smlSubdomain);
     this.domainForm.controls['smlSmpId'].setValue(this.current.smlSmpId);
-    this.domainForm.controls['smlClientCertHeader'].setValue(this.current.smlClientCertHeader);
+
     this.domainForm.controls['smlClientKeyAlias'].setValue(this.current.smlClientKeyAlias);
+    this.domainForm.controls['smlClientCertHeader'].setValue(this.current.smlClientCertHeader);
     this.domainForm.controls['signatureKeyAlias'].setValue(this.current.signatureKeyAlias);
+
+    this.domainForm.controls['smlRegistered'].setValue(this.current.smlRegistered);
+    this.domainForm.controls['smlBlueCoatAuth'].setValue(this.current.smlBlueCoatAuth);
+
+    if (this.current.smlClientKeyAlias) {
+      this.selectedSMLCert = this.lookups.cachedCertificateList.find(crt => crt.alias === this.current.smlClientKeyAlias);
+    }
+   // this.selectedSMLCert = this.current.smlClientCertHeader;
 
 
   }
@@ -108,8 +122,15 @@ export class DomainDetailsDialogComponent {
     }
     this.current.smlSmpId = this.domainForm.value['smlSmpId'];
     this.current.smlClientCertHeader = this.domainForm.value['smlClientCertHeader'];
-    this.current.smlClientKeyAlias = this.domainForm.value['smlClientKeyAlias'];
+    if (this.domainForm.value['smlClientKeyAlias']){
+      this.current.smlClientKeyAlias = this.domainForm.value['smlClientKeyAlias'].alias;
+      this.current.smlClientCertHeader = this.domainForm.value['smlClientKeyAlias'].blueCoatHeader;
+    } else {
+      this.current.smlClientKeyAlias='';
+      this.current.smlClientCertHeader='';
+    }
     this.current.signatureKeyAlias = this.domainForm.value['signatureKeyAlias'];
+    this.current.smlBlueCoatAuth = this.domainForm.value['smlBlueCoatAuth'];
 
     return this.current;
 
@@ -160,6 +181,11 @@ export class DomainDetailsDialogComponent {
 
     reader.readAsBinaryString(file);
   }
+
+  compareCertByAlias(cert, alias): boolean {
+    return cert.alias === alias;
+  }
+
 
 
 }

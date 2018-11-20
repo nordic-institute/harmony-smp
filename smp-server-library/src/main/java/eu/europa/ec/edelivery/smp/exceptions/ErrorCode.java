@@ -58,6 +58,7 @@ public enum ErrorCode {
     XML_PARSE_EXCEPTION (500,"SMP:512",ErrorBusinessCode.TECHNICAL, "Error occurred while parsing input stream for %s.  Error: %s!"),
     INVALID_REQEUST (500,"SMP:513",ErrorBusinessCode.TECHNICAL, "Invalid request %s.  Error: %s!"),
     INTERNAL_ERROR (500,"SMP:514",ErrorBusinessCode.TECHNICAL, "Internal error %s.  Error: %s!"),
+    CERTIFICATE_ERROR (500,"SMP:515",ErrorBusinessCode.TECHNICAL, "Certificate error %s.  Error: %s!"),
 
     //
     ;

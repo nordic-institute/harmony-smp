@@ -17,6 +17,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Properties;
 
 @Configuration
 @PropertySource("./persistence-test-h2.properties")
@@ -35,7 +36,6 @@ public class H2JPATestConfig {
         dataSource.setUsername(env.getProperty("jdbc.user"));
         dataSource.setPassword(env.getProperty("jdbc.pass"));
 
-     //   ScriptUtils.executeSqlScript(dataSource.getConnection(), new FileSystemResource(env.getProperty("schema.sql")));
         return dataSource;
 
     }
@@ -46,6 +46,7 @@ public class H2JPATestConfig {
         lef.setDataSource(h2DataSource);
         lef.setJpaVendorAdapter(jpaVendorAdapter);
         lef.getJpaPropertyMap().put("org.hibernate.envers.store_data_at_delete", true);
+        lef.getJpaPropertyMap().put("hibernate.dialect",  env.getProperty("hibernate.dialect"));
         lef.setPackagesToScan("eu.europa.ec.edelivery.smp.data.model");
         return lef;
     }
