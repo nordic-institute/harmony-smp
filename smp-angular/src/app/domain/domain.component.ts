@@ -9,6 +9,9 @@ import {SmpConstants} from "../smp.constants";
 import {GlobalLookups} from "../common/global-lookups";
 import {SearchTableComponent} from "../common/search-table/search-table.component";
 import {SecurityService} from "../security/security.service";
+import {DomainRo} from "./domain-ro.model";
+import {ConfirmationDialogComponent} from "../common/confirmation-dialog/confirmation-dialog.component";
+import {SearchTableEntityStatus} from "../common/search-table/search-table-entity-status.model";
 
 @Component({
   moduleId: module.id,
@@ -33,6 +36,11 @@ export class DomainComponent implements OnInit {
               protected http: HttpClient,
               protected alertService: AlertService,
               public dialog: MatDialog) {
+
+    // if system admin refresh certificate list!
+    if (this.securityService.isCurrentUserSystemAdmin()) {
+      this.lookups.refreshCertificateLookup();
+    }
   }
 
   ngOnInit() {
@@ -83,5 +91,65 @@ export class DomainComponent implements OnInit {
   // for dirty guard...
   isDirty (): boolean {
     return this.searchTable.isDirty();
+  }
+
+
+
+  enableSMLRegister(): boolean {
+    if (this.searchTable.selected.length !== 1) {
+      return false;
+    }
+    let domainRo =  (this.searchTable.selected[0] as DomainRo);
+    // entity must be first persisted in order to be enabled to registring to SML
+    return !domainRo.smlRegistered && domainRo.status !==SearchTableEntityStatus.NEW;
+  }
+
+  enableSMLUnregister(): boolean {
+    if (this.searchTable.selected.length !== 1) {
+      return false;
+    }
+    let domainRo =  (this.searchTable.selected[0] as DomainRo);
+    // entity must be first persisted in order to be enabled to registring to SML
+    return domainRo.smlRegistered && domainRo.status !==SearchTableEntityStatus.NEW;
+  }
+
+  smlUnregisterSelectedDomain() {
+    if (this.searchTable.selected.length !== 1) {
+      return false;
+    }
+
+    let domainRo =  (this.searchTable.selected[0] as DomainRo);
+
+    this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: "Unregister domain from SML!",
+        description: "Action will unregister domain: "+domainRo.domainCode +" and all its service groups from SML. Do you wish to continue?"
+      }
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        domainRo.smlRegistered=false;
+      }
+    })
+  }
+
+
+
+  smlRegisterSelectedDomain() {
+    if (this.searchTable.selected.length !== 1) {
+      return false;
+    }
+
+    let domainRo =  (this.searchTable.selected[0] as DomainRo);
+
+    this.dialog.open(ConfirmationDialogComponent, {
+      data: {
+        title: "Unregister domain from SML!",
+        description: "Action will register domain: "+domainRo.domainCode +" and all its service groups from SML. Do you wish to continue?"
+      }
+    }).afterClosed().subscribe(result => {
+      if (result) {
+        domainRo.smlRegistered=true;
+      }
+    })
   }
 }

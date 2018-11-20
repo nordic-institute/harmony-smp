@@ -14,8 +14,10 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -51,18 +53,12 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 @Component
 public final class ServiceMetadataSigner {
 
-    private static final Logger log = LoggerFactory.getLogger(ServiceMetadataSigner.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ServiceMetadataSigner.class);
 
     private static final String RSA_SHA256 = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
 
-    @Value("${xmldsig.keystore.classpath}")
-    private String keystoreFilePath;
-
-    @Value("${xmldsig.keystore.password}")
-    private String keystorePassword;
-
-    private Map<String, Key> signingKeys;
-    private Map<String, X509Certificate> signingCertificates;
+    @Autowired
+    UIKeystoreService uiKeystoreService;
 
 
     private static XMLSignatureFactory getDomSigFactory() {
@@ -71,36 +67,9 @@ public final class ServiceMetadataSigner {
         return XMLSignatureFactory.getInstance("DOM");
     }
 
-    @PostConstruct
-    public void init() {
-        // Load the KeyStore and get the signing key and certificate.
-        try (InputStream keystoreInputStream = new FileInputStream(keystoreFilePath)) {
-
-            KeyStore keyStore = KeyStore.getInstance("JKS");
-            keyStore.load(keystoreInputStream, keystorePassword.toCharArray());
-
-            signingKeys = new HashMap();
-            signingCertificates = new HashMap();
-            for (String alias : list(keyStore.aliases())) {
-                loadKeyAndCert(keyStore, alias);
-            }
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not load signing certificate with private key from keystore file: " + keystoreFilePath, e);
-        }
-    }
-
-    private void loadKeyAndCert(KeyStore keyStore, String alias) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
-        Key key = keyStore.getKey(alias, keystorePassword.toCharArray());
-        Certificate certificate = keyStore.getCertificate(alias);
-        if (key == null || certificate == null || !(certificate instanceof X509Certificate)) {
-            throw new IllegalStateException("Wrong entry type found in keystore, only certificates with keypair are accepted, entry alias: " + alias);
-        }
-        signingKeys.put(alias, key);
-        signingCertificates.put(alias, (X509Certificate) certificate);
-        log.info("Successfully loaded [" + alias + "] signing key and certificate: " + ((X509Certificate) certificate).getSubjectDN().getName());
-    }
 
     public void sign(Document serviceMetadataDoc, String keyAlias) {
+        LOG.info("Sing document with alias" + keyAlias);
         try {
             XMLSignatureFactory domSigFactory = getDomSigFactory();
 
@@ -118,7 +87,7 @@ public final class ServiceMetadataSigner {
                     domSigFactory.newSignatureMethod(RSA_SHA256, null),
                     singletonList(reference));
 
-            DOMSignContext domSignContext = new DOMSignContext(getKey(keyAlias), serviceMetadataDoc.getDocumentElement());
+            DOMSignContext domSignContext = new DOMSignContext(uiKeystoreService.getKey(keyAlias), serviceMetadataDoc.getDocumentElement());
 
             // Create the XMLSignature, but don't sign it yet
             KeyInfo keyInfo = createKeyInfo(keyAlias);
@@ -131,32 +100,12 @@ public final class ServiceMetadataSigner {
         }
     }
 
-    private Key getKey(String keyAlias) {
-        if (signingKeys.size() == 1) {
-            // don't care about configured alias in single-domain setup
-            return signingKeys.values().iterator().next();
-        }
-        if (isBlank(keyAlias) || !signingKeys.containsKey(keyAlias)) {
-            throw new IllegalStateException("Wrong configuration, missing key pair from keystore or wrong alias: " + keyAlias);
-        }
-        return signingKeys.get(keyAlias);
-    }
 
-    private X509Certificate getCert(String certAlias) {
-        if (signingCertificates.size() == 1) {
-            // don't care about configured alias in single-domain setup
-            return signingCertificates.values().iterator().next();
-        }
-        if (isBlank(certAlias) || !signingCertificates.containsKey(certAlias)) {
-            throw new IllegalStateException("Wrong configuration, missing key pair from keystore or wrong alias: " + certAlias);
-        }
-        return signingCertificates.get(certAlias);
-    }
 
     private KeyInfo createKeyInfo(String alias) {
         KeyInfoFactory keyInfoFactory = getDomSigFactory().getKeyInfoFactory();
         List content = new ArrayList();
-        X509Certificate cert = getCert(alias);
+        X509Certificate cert = uiKeystoreService.getCert(alias);
         content.add(cert.getSubjectX500Principal().getName());
         content.add(cert);
         X509Data x509Data = keyInfoFactory.newX509Data(content);

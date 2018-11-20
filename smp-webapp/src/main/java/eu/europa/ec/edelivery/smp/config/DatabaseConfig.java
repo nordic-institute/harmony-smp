@@ -13,11 +13,13 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -25,9 +27,12 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
+
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
 /**
  * Created by Flavio Santos
@@ -50,15 +55,36 @@ public class DatabaseConfig {
     @Value("${jdbc.url}")
     private String url;
 
+    @Value("${datasource.jndi:jdbc/smpDatasource}")
+    private String jndiDatasourceName;
+
+    /**
+     * Create datasource from file property configuration. If URL is null than try to get datasource from JNDI.
+     *
+     * @return
+     */
     @Bean
     public DataSource dataSource() {
-        DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
-        driverManagerDataSource.setDriverClassName(driver);
-        driverManagerDataSource.setUrl(url);
-        driverManagerDataSource.setUsername(username);
-        driverManagerDataSource.setPassword(password);
-
-        return driverManagerDataSource;
+        DataSource datasource = null;
+        if (url!=null) {
+            DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
+            driverManagerDataSource.setDriverClassName(driver);
+            driverManagerDataSource.setUrl(url);
+            driverManagerDataSource.setUsername(username);
+            driverManagerDataSource.setPassword(password);
+            datasource = driverManagerDataSource;
+        } else {
+            JndiObjectFactoryBean  dataSource = new JndiObjectFactoryBean();
+            dataSource.setJndiName(jndiDatasourceName);
+            try {
+                dataSource.afterPropertiesSet();
+            } catch (IllegalArgumentException | NamingException e) {
+                // rethrow
+                throw new SMPRuntimeException(INTERNAL_ERROR, e, "while retrieving datasource: " + jndiDatasourceName, e.getMessage());
+            }
+            datasource = (DataSource)dataSource.getObject();
+        }
+        return datasource;
     }
 
     @Bean
@@ -70,7 +96,6 @@ public class DatabaseConfig {
         lef.setJpaVendorAdapter(jpaVendorAdapter);
         lef.setPackagesToScan("eu.europa.ec.edelivery.smp.data.model");
         lef.setJpaProperties(prop);
-        //lef.setPersistenceXmlLocation("classpath:META-INF/smp-persistence.xml");
         return lef;
     }
 
@@ -78,7 +103,6 @@ public class DatabaseConfig {
     public PlatformTransactionManager smpTransactionManager(EntityManagerFactory emf) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(emf);
-
         return transactionManager;
     }
 
