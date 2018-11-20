@@ -18,6 +18,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import static eu.europa.ec.edelivery.smp.testutil.LocalPropertiesTestUtil.buildLocalProperties;
 
 /**
@@ -29,10 +33,15 @@ public class PropertiesSingleDomainTestConfig {
 
     @Bean
     public PropertySourcesPlaceholderConfigurer setLocalProperties() {
-        String signingKeystorePath = Thread.currentThread().getContextClassLoader().getResource("service_integration_signatures_single_domain.jks").getFile();
+
+        Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores");
+        String path = resourceDirectory.toString();
+
         return buildLocalProperties(new String[][]{
-                {"xmldsig.keystore.classpath", signingKeystorePath},
-                {"xmldsig.keystore.password", "test123"}
+                {"configuration.dir", path},
+                {"encryption.key.filename","encryptionKey.key"},
+                {"smp.keystore.password", "FarFJE2WUfY39SVRTFOqSg=="},
+                {"smp.keystore.filename", "smp-keystore.jks"},
         });
     }
 }

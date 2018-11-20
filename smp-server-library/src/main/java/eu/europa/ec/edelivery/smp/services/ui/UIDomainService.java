@@ -9,6 +9,7 @@ import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
+import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +24,9 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
 
     @Autowired
     DomainDao domainDao;
+
+    @Autowired
+    SmlConnector smlConnector;
 
     @Override
     protected BaseDao<DBDomain> getDatabaseDao() {
@@ -65,6 +69,7 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
                 upd.setSmlSubdomain(dRo.getSmlSubdomain());
                 upd.setDomainCode(dRo.getDomainCode());
                 upd.setSignatureKeyAlias(dRo.getSignatureKeyAlias());
+                upd.setSmlBlueCoatAuth(dRo.isSmlBlueCoatAuth());
                 upd.setLastUpdatedOn(LocalDateTime.now());
                 domainDao.update(upd);
             } else if (dRo.getStatus() == EntityROStatus.REMOVE.getStatusNumber()) {
@@ -92,6 +97,15 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
         });
         dev.setStringMessage(sw.toString());
         return dev;
+    }
+
+    public void registerDomainToSml(){
+
+     //   smlConnector.registerInDns()
+
+        // get participants for domain
+
+
     }
 
 }

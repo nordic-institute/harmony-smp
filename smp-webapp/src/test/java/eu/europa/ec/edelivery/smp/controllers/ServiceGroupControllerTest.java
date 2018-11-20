@@ -14,13 +14,13 @@
 package eu.europa.ec.edelivery.smp.controllers;
 
 import eu.europa.ec.edelivery.smp.config.*;
+import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
@@ -30,16 +30,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.generateServiceMetadata;
-import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.getSampleServiceGroupBody;
-import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.getSampleServiceGroupBodyWithScheme;
+import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.*;
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -56,7 +53,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         PropertiesTestConfig.class,
         SmpAppConfig.class,
         SmpWebAppConfig.class,
-        SpringSecurityConfig.class})
+        SpringSecurityConfig.class,
+        UIKeystoreService.class
+})
 @WebAppConfiguration
 @Sql("classpath:/cleanup-database.sql")
 @Sql("classpath:/webapp_integration_test_data.sql")
@@ -70,7 +69,7 @@ public class ServiceGroupControllerTest {
     private static final String DOCUMENT_ID = "invoice";
 
     private static final String URL_PATH = format("/%s::%s", PARTICIPANT_SCHEME, PARTICIPANT_ID);
-    private static final String URL_DOC_PATH = format("%s/services/%s::%s",URL_PATH, DOCUMENT_SCHEME, DOCUMENT_ID);
+    private static final String URL_DOC_PATH = format("%s/services/%s::%s", URL_PATH, DOCUMENT_SCHEME, DOCUMENT_ID);
 
     private static final String SERVICE_GROUP_INPUT_BODY = getSampleServiceGroupBodyWithScheme(PARTICIPANT_SCHEME);
     private static final String HTTP_HEADER_KEY_DOMAIN = "Domain";
@@ -166,9 +165,9 @@ public class ServiceGroupControllerTest {
                 .content(xmlMD))
                 .andExpect(status().isCreated());
 
-        MvcResult mr = mvc.perform(get(URL_PATH).header("X-Forwarded-Host","ec.test.eu")
-                .header("X-Forwarded-Port","443")
-                .header("X-Forwarded-Proto","https")).andReturn();
+        MvcResult mr = mvc.perform(get(URL_PATH).header("X-Forwarded-Host", "ec.test.eu")
+                .header("X-Forwarded-Port", "443")
+                .header("X-Forwarded-Proto", "https")).andReturn();
         System.out.println(mr.getResponse().getContentAsString());
         mvc.perform(get(URL_PATH))
                 .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\"><ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier><ServiceMetadataReferenceCollection><ServiceMetadataReference href=\"http://localhost/ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/></ServiceMetadataReferenceCollection></ServiceGroup>"));

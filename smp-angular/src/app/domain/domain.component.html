@@ -14,5 +14,16 @@
 
 >
   <ng-template #additionalToolButtons >
+
+    <button  id="registerButton" mat-raised-button (click)="smlRegisterSelectedDomain()"
+            [disabled]="!enableSMLRegister()" color="primary">
+      <mat-icon>link</mat-icon>
+      <span>Register</span>
+    </button>
+    <button  id="unregisterButton" mat-raised-button (click)="smlUnregisterSelectedDomain()"
+            [disabled]="!enableSMLUnregister()" color="primary">
+      <mat-icon>link_off</mat-icon>
+      <span>Unregister</span>
+    </button>
   </ng-template>
 </smp-search-table>
