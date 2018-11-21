@@ -71,25 +71,12 @@ public class SecurityConfigurationTest {
 
     @Before
     public void setup() {
-        /*
-        em.persist(userHashedPass);
-        em.persist(userClearPass);
-        em.persist(userBlueCoat);
-        em.flush();
-*/
+
         mvc = MockMvcBuilders.webAppContextSetup(context)
                 .apply(SecurityMockMvcConfigurers.springSecurity())
                 .build();
     }
 
-    /*
-    @After
-    public void tearDown() {
-        em.remove(userHashedPass);
-        em.remove(userClearPass);
-        em.remove(userBlueCoat);
-    }
-    */
 
     @Test
     public void getMethodAccessiblePubliclyTest() throws Exception {
@@ -97,21 +84,20 @@ public class SecurityConfigurationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("anonymousUser"));
     }
-    /*
-        @Test
-        public void notAuthenticatedUserCannotCallPutTest() throws Exception {
-            mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH))
-                    .andExpect(status().isUnauthozed());
-        }
-    /*
-        @Test
-        public void notAuthenticatedUserCannotCallDeleteTest() throws Exception {
-            mvc.perform(MockMvcRequestBuilders.delete(RETURN_LOGGED_USER_PATH))
-                    .andExpect(status().isUnauthorized());
-        }
-    */
     @Test
-        public void userStoredWithHashedPassIsAuthorizedForPutTest() throws Exception {
+    public void notAuthenticatedUserCannotCallPutTest() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void notAuthenticatedUserCannotCallDeleteTest() throws Exception {
+        mvc.perform(MockMvcRequestBuilders.delete(RETURN_LOGGED_USER_PATH))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    public void userStoredWithHashedPassIsAuthorizedForPutTest() throws Exception {
         mvc.perform(MockMvcRequestBuilders.put(RETURN_LOGGED_USER_PATH)
                 .with(httpBasic(TEST_USERNAME_HASHED_PASS, PASSWORD)))
                 .andExpect(status().isOk())
@@ -125,7 +111,7 @@ public class SecurityConfigurationTest {
                 .andExpect(status().isUnauthorized());
     }
 
-    /*
+
     @Test
     public void malformedBlueCoatHeaderNotAuthorizedTest() throws Exception {
         HttpHeaders headers = new HttpHeaders();
@@ -134,7 +120,7 @@ public class SecurityConfigurationTest {
                 .headers(headers))
                 .andExpect(status().isUnauthorized());
     }
-*/
+
     @Test
     public void validBlueCoatHeaderAuthorizedForPutTest() throws Exception {
         HttpHeaders headers = new HttpHeaders();
@@ -157,13 +143,5 @@ public class SecurityConfigurationTest {
                 .andExpect(content().string(TEST_USERNAME_BLUE_COAT));
     }
 
-    /*
-    private DBUser createUser(String username, String pass) {
-        DBUser user = new DBUser();
-        user.setUsername(username);
-        user.setPassword(pass);
-        return user;
-    }
-    */
 
 }
