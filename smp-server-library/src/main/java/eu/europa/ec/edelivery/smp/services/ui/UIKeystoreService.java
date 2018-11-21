@@ -137,7 +137,4 @@ public class UIKeystoreService {
         return keystoreCertificates.get(certAlias);
     }
 
-    public boolean aliasExists(){
-
-    }
 }
