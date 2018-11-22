@@ -1,5 +1,8 @@
 package eu.europa.ec.edelivery.smp.data.dao.utils;
 
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.boot.spi.MetadataImplementor;
@@ -8,8 +11,10 @@ import org.hibernate.tool.schema.TargetType;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.List;
 
 /**
  * Class generates DDL script for SMP. Purpose of script is to manually run SQL script to create database. And to
@@ -21,18 +26,19 @@ import java.util.*;
 public class SMPSchemaGenerator {
     private static String filenameTemplate = "%s-%s.ddl";
     private static String smpEntityPackageName = "eu.europa.ec.edelivery.smp.data.model";
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(SMPSchemaGenerator.class);
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
 
-        String strDialects  = args[0] ; // comma separated dialects
-        String strVersion   = args.length>1?args[1]:"";  // version
-        String exportFolder = args.length>2?args[2]:""; // export folder
+        String strDialects = args[0]; // comma separated dialects
+        String strVersion = args.length > 1 ? args[1] : "";  // version
+        String exportFolder = args.length > 2 ? args[2] : ""; // export folder
         SMPSchemaGenerator sg = new SMPSchemaGenerator();
 
         String[] dialects = strDialects.split(",");
         // execute
-        for (String dialect: dialects) {
+        for (String dialect : dialects) {
             sg.createDDLScript(exportFolder, dialect.trim(), Arrays.asList(smpEntityPackageName.split(",")), strVersion);
         }
 
@@ -51,10 +57,10 @@ public class SMPSchemaGenerator {
         // create export file
         String sqlVer = version;
         int idx = version.indexOf("-SNAPSHOT");
-        if (idx >0) {
+        if (idx > 0) {
             sqlVer = version.substring(0, idx);
         }
-        String filename = createFileName(hibernateDialect,sqlVer );
+        String filename = createFileName(hibernateDialect, sqlVer);
 
         String dialect = getDialect(hibernateDialect);
 
@@ -79,7 +85,9 @@ public class SMPSchemaGenerator {
         // create schema exporter
         SchemaExport export = new SchemaExport();
         File file = new File(exportFolder, filename);
-        file.delete(); // delete if exists
+        if (file.delete()) { // delete if exists
+            LOG.info("File {} deleted!", file.getAbsolutePath());
+        } ;
         export.setOutputFile(file.getAbsolutePath());
         export.setFormat(true);
         export.setDelimiter(";");
@@ -93,27 +101,28 @@ public class SMPSchemaGenerator {
 
     /**
      * Method creates filename based on dialect and version
+     *
      * @param dialect
      * @param version
      * @return file name.
      */
-    public String createFileName(String dialect, String version){
-        String dbName = dialect.substring(dialect.lastIndexOf('.') + 1,dialect.lastIndexOf("Dialect") ).toLowerCase();
+    public String createFileName(String dialect, String version) {
+        String dbName = dialect.substring(dialect.lastIndexOf('.') + 1, dialect.lastIndexOf("Dialect")).toLowerCase();
         return String.format(filenameTemplate, dbName, version);
     }
 
     /**
      * Some dialect are customized in order to generate better SQL DDL script. Method check the dialect and returns
      * the upgrated dialect
+     *
      * @param dialect - original hibernate dialect
      * @return return the customized dialect or the dialects itself if not costumization
      */
-    public String getDialect(String dialect){
-        switch (dialect) {
-            case "org.hibernate.dialect.MySQL5InnoDBDialect":
-                return "eu.europa.ec.edelivery.smp.data.dao.utils.SMPMySQL5InnoDBDialect";
-            default:
-                return dialect;
+    public String getDialect(String dialect) {
+        if (!StringUtils.isBlank(dialect) && dialect.equalsIgnoreCase("org.hibernate.dialect.MySQL5InnoDBDialect")) {
+            return "eu.europa.ec.edelivery.smp.data.dao.utils.SMPMySQL5InnoDBDialect";
+        } else {
+            return dialect;
         }
     }
 
@@ -124,28 +133,27 @@ public class SMPSchemaGenerator {
      */
     public List<Class> getAllEntityClasses(String pckgname) throws ClassNotFoundException {
         ArrayList classes = new ArrayList();
- {
 
-            // Get a File object for the package
-            File directory = null;
-            try {
-                directory = new File(Thread.currentThread().getContextClassLoader().getResource(pckgname.replace('.', '/')).getFile());
-            } catch (NullPointerException x) {
-                throw new ClassNotFoundException(pckgname + " does not appear to be a valid package");
-            }
-            if (directory.exists()) {
-                // Get the list of the files contained in the package
-                String[] files = directory.list();
-                for (int i = 0; i < files.length; i++) {
-                    if (files[i].endsWith(".class")) {
-                        // removes the .class extension
-                        classes.add(Class.forName(pckgname + '.' + files[i].substring(0, files[i].length() - 6)));
-                    }
-                }
-            } else { ;
-                throw new ClassNotFoundException("Package: "+pckgname + " does not eixsts!");
-            }
+        // Get a File object for the package
+        File directory = null;
+        try {
+            directory = new File(Thread.currentThread().getContextClassLoader().getResource(pckgname.replace('.', '/')).getFile());
+        } catch (NullPointerException x) {
+            throw new ClassNotFoundException(pckgname + " does not appear to be a valid package");
         }
+        if (directory.exists()) {
+            // Get the list of the files contained in the package
+            String[] files = directory.list();
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].endsWith(".class")) {
+                    // removes the .class extension
+                    classes.add(Class.forName(pckgname + '.' + files[i].substring(0, files[i].length() - 6)));
+                }
+            }
+        } else {
+            throw new ClassNotFoundException("Package: " + pckgname + " does not eixsts!");
+        }
+
         return classes;
     }
 
