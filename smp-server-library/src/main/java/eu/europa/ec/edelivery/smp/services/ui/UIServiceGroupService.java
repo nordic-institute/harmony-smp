@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.xml.XMLConstants;
 import javax.xml.transform.*;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
@@ -608,8 +609,11 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
                 Source xmlInput = new StreamSource(new StringReader(sgExtension.getExtension()));
                 StringWriter stringWriter = new StringWriter();
                 StreamResult xmlOutput = new StreamResult(stringWriter);
+
                 TransformerFactory transformerFactory = TransformerFactory.newInstance();
+                transformerFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
                 transformerFactory.setAttribute("indent-number", 4);
+
                 Transformer transformer = transformerFactory.newTransformer();
                 transformer.setOutputProperty(OutputKeys.INDENT, "yes");
                 transformer.transform(xmlInput, xmlOutput);

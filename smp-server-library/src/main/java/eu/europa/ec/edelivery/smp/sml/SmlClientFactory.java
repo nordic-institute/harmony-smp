@@ -159,7 +159,7 @@ public class SmlClientFactory {
             return;
         }
 
-        log.info("Configuring proxy for BDMSL integration client: {}:{}@{}:{}", proxyUser, "########", proxyServer, proxyPort.get());
+        log.info("Configuring proxy for BDMSL integration client: {}:{}@{}:{}", proxyUser, "########", proxyServer,proxyPort.isPresent()? proxyPort.get():"");
         httpConduit.getClient().setProxyServerType(ProxyServerType.HTTP);
         httpConduit.getClient().setProxyServer(proxyServer);
         if (proxyPort.isPresent()) {
