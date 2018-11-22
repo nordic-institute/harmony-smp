@@ -151,7 +151,7 @@ public class SMPSchemaGenerator {
                 }
             }
         } else {
-            throw new ClassNotFoundException("Package: " + pckgname + " does not eixsts!");
+            throw new ClassNotFoundException("Package: " + pckgname + " does not exists!");
         }
 
         return classes;
