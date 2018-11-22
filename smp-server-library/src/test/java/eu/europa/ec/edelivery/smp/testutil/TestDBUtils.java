@@ -41,7 +41,7 @@ public class TestDBUtils {
         DBServiceMetadata grp = new DBServiceMetadata();
         grp.setDocumentIdentifier(docId);
         grp.setDocumentIdentifierScheme(docSch);
-        grp.setXmlContent(generateDocumentSample(partcSch, partcId,docSch, docId, desc));
+        grp.setXmlContent(generateDocumentSample(partcId, partcSch,docId, docSch, desc));
         return grp;
     }
 
