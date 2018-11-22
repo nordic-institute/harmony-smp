@@ -113,8 +113,7 @@ public class SmlClientFactory {
     }
 
     private void loadKeyStore() {
-        try {
-            FileInputStream fileStream = new FileInputStream(smlClientKeyStorePath);
+        try (FileInputStream fileStream = new FileInputStream(smlClientKeyStorePath)){
             KeyStore keyStore = KeyStore.getInstance("JKS");
             keyStore.load(fileStream, smlClientKeyStorePassword.toCharArray());
             KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
@@ -160,7 +159,7 @@ public class SmlClientFactory {
             return;
         }
 
-        log.info(format("Configuring proxy for BDMSL integration client: %s:%s@%s:%d", proxyUser, "########", proxyServer, proxyPort.get()));
+        log.info("Configuring proxy for BDMSL integration client: {}:{}@{}:{}", proxyUser, "########", proxyServer, proxyPort.get());
         httpConduit.getClient().setProxyServerType(ProxyServerType.HTTP);
         httpConduit.getClient().setProxyServer(proxyServer);
         httpConduit.getClient().setProxyServerPort(proxyPort.get());
