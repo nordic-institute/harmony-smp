@@ -1,5 +1,7 @@
 package eu.europa.ec.edelivery.smp.conversion;
 
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,7 @@ import java.util.List;
 @Component
 public class ConvertersRegistrar {
 
-    private final Logger logger = LoggerFactory.getLogger(ConvertersRegistrar.class);
+    private final SMPLogger logger = SMPLoggerFactory.getLogger(ConvertersRegistrar.class);
 
     @Autowired
     private ConfigurableConversionService conversionRegistry;
