@@ -20,23 +20,22 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.getSampleServiceGroupBodyWithScheme;
+import static eu.europa.ec.edelivery.smp.ServiceGroupBodyUtil.*;
 import static java.lang.String.format;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.springframework.http.MediaType.APPLICATION_XML_VALUE;
@@ -53,7 +52,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         PropertiesTestConfig.class,
         SmpAppConfig.class,
         SmpWebAppConfig.class,
-        SpringSecurityConfig.class})
+        SpringSecurityConfig.class,
+})
 @WebAppConfiguration
 @Sql("classpath:/cleanup-database.sql")
 @Sql("classpath:/webapp_integration_test_data.sql")
@@ -62,7 +62,13 @@ public class ServiceGroupControllerTest {
 
     private static final String PARTICIPANT_SCHEME = "ehealth-participantid-qns";
     private static final String PARTICIPANT_ID = "urn:poland:ncpb";
+
+    private static final String DOCUMENT_SCHEME = "doctype";
+    private static final String DOCUMENT_ID = "invoice";
+
     private static final String URL_PATH = format("/%s::%s", PARTICIPANT_SCHEME, PARTICIPANT_ID);
+    private static final String URL_DOC_PATH = format("%s/services/%s::%s", URL_PATH, DOCUMENT_SCHEME, DOCUMENT_ID);
+
     private static final String SERVICE_GROUP_INPUT_BODY = getSampleServiceGroupBodyWithScheme(PARTICIPANT_SCHEME);
     private static final String HTTP_HEADER_KEY_DOMAIN = "Domain";
     private static final String HTTP_HEADER_KEY_SERVICE_GROUP_OWNER = "ServiceGroup-Owner";
@@ -137,6 +143,82 @@ public class ServiceGroupControllerTest {
                 .andExpect(content().xml(SERVICE_GROUP_INPUT_BODY));
 
     }
+
+    @Test
+    public void getExistingServiceMetadatWithReverseProxyHost() throws Exception {
+        //given
+        prepareForGet();
+
+        // when then..
+        String expectedUrl = "http://ec.test.eu/";
+        mvc.perform(get(URL_PATH)
+                .header("X-Forwarded-Host", "ec.test.eu")
+                .header("X-Forwarded-Port", "")
+                .header("X-Forwarded-Proto", "http"))
+                .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                        "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
+                        "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
+                        "<ServiceMetadataReferenceCollection>" +
+                        "<ServiceMetadataReference href=\""+expectedUrl+"ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
+                        "</ServiceMetadataReferenceCollection></ServiceGroup>"));
+    }
+
+    @Test
+    public void getExistingServiceMetadatWithReverseNoProxyHost() throws Exception {
+        //given
+        prepareForGet();
+
+        // when then..
+        String expectedUrl = "http://localhost/";
+        mvc.perform(get(URL_PATH)
+                .header("X-Forwarded-Port", "")
+                .header("X-Forwarded-Proto", "http"))
+                .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                        "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
+                        "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
+                        "<ServiceMetadataReferenceCollection>" +
+                        "<ServiceMetadataReference href=\""+expectedUrl+"ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
+                        "</ServiceMetadataReferenceCollection></ServiceGroup>"));
+    }
+
+    @Test
+    public void getExistingServiceMetadatWithReverseProxyPort() throws Exception {
+        //given
+        prepareForGet();
+
+        // when then..
+        String expectedUrl = "http://ec.test.eu:8443/";
+        mvc.perform(get(URL_PATH)
+                .header("X-Forwarded-Port", "8443")
+                .header("X-Forwarded-Host", "ec.test.eu")
+                .header("X-Forwarded-Proto", "http"))
+                .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                        "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
+                        "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
+                        "<ServiceMetadataReferenceCollection>" +
+                        "<ServiceMetadataReference href=\""+expectedUrl+"ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
+                        "</ServiceMetadataReferenceCollection></ServiceGroup>"));
+    }
+
+    @Test
+    public void getExistingServiceMetadatWithReverseProxySchema() throws Exception {
+        //given
+        prepareForGet();
+
+        // when then..
+        String expectedUrl = "https://ec.test.eu:8443/";
+        mvc.perform(get(URL_PATH)
+                .header("X-Forwarded-Port", "8443")
+                .header("X-Forwarded-Host", "ec.test.eu")
+                .header("X-Forwarded-Proto", "https"))
+                .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>" +
+                        "<ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\">" +
+                        "<ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier>" +
+                        "<ServiceMetadataReferenceCollection>" +
+                        "<ServiceMetadataReference href=\""+expectedUrl+"ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/>" +
+                        "</ServiceMetadataReferenceCollection></ServiceGroup>"));
+    }
+
 
     @Test
     public void anonymousUserCannotCreateServiceGroup() throws Exception {
@@ -226,6 +308,25 @@ public class ServiceGroupControllerTest {
                 .header(HTTP_HEADER_KEY_SERVICE_GROUP_OWNER, "not-existing-user")
                 .content(SERVICE_GROUP_INPUT_BODY))
                 .andExpect(status().isBadRequest());
+    }
+
+    public void prepareForGet() throws Exception {
+        String xmlSG = getSampleServiceGroupBody(PARTICIPANT_SCHEME, PARTICIPANT_ID);
+        String xmlMD = generateServiceMetadata(PARTICIPANT_ID, PARTICIPANT_SCHEME, DOCUMENT_ID, DOCUMENT_SCHEME, "test");
+        // crate service group
+        mvc.perform(put(URL_PATH)
+                .with(ADMIN_CREDENTIALS)
+                .contentType(APPLICATION_XML_VALUE)
+                .content(xmlSG))
+                .andExpect(status().isCreated());
+        // add service metadata
+        mvc.perform(put(URL_DOC_PATH)
+                .with(ADMIN_CREDENTIALS)
+                .contentType(APPLICATION_XML_VALUE)
+
+                .content(xmlMD))
+                .andExpect(status().isCreated());
+
     }
 
 }
