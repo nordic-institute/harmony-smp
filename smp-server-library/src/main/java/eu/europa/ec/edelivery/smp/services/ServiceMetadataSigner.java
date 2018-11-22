@@ -18,11 +18,9 @@ import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 
-import javax.annotation.PostConstruct;
 import javax.xml.crypto.dsig.Reference;
 import javax.xml.crypto.dsig.SignedInfo;
 import javax.xml.crypto.dsig.XMLSignature;
@@ -33,22 +31,14 @@ import javax.xml.crypto.dsig.keyinfo.KeyInfoFactory;
 import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
-import java.io.FileInputStream;
-import java.io.InputStream;
-import java.security.*;
-import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static java.util.Collections.list;
 import static java.util.Collections.singletonList;
 import static javax.xml.crypto.dsig.CanonicalizationMethod.INCLUSIVE;
 import static javax.xml.crypto.dsig.DigestMethod.SHA256;
 import static javax.xml.crypto.dsig.Transform.ENVELOPED;
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 @Component
 public final class ServiceMetadataSigner {
@@ -69,7 +59,7 @@ public final class ServiceMetadataSigner {
 
 
     public void sign(Document serviceMetadataDoc, String keyAlias) {
-        LOG.info("Sing document with alias" + keyAlias);
+        LOG.info("Sing document with alias {}", keyAlias);
         try {
             XMLSignatureFactory domSigFactory = getDomSigFactory();
 
