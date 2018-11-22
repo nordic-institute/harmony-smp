@@ -162,7 +162,9 @@ public class SmlClientFactory {
         log.info("Configuring proxy for BDMSL integration client: {}:{}@{}:{}", proxyUser, "########", proxyServer, proxyPort.get());
         httpConduit.getClient().setProxyServerType(ProxyServerType.HTTP);
         httpConduit.getClient().setProxyServer(proxyServer);
-        httpConduit.getClient().setProxyServerPort(proxyPort.get());
+        if (proxyPort.isPresent()) {
+            httpConduit.getClient().setProxyServerPort(proxyPort.get());
+        }
         ProxyAuthorizationPolicy proxyAuth = new ProxyAuthorizationPolicy();
         proxyAuth.setUserName(proxyUser);
         proxyAuth.setPassword(proxyPassword);
