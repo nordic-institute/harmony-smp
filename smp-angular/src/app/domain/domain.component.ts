@@ -143,8 +143,8 @@ export class DomainComponent implements OnInit {
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Unregister domain from SML!",
-        description: "Action will register domain: "+domainRo.domainCode +" and all its service groups from SML. Do you wish to continue?"
+        title: "Register domain to SML!",
+        description: "Action will register domain: "+domainRo.domainCode +" and all its service groups to SML. Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {
