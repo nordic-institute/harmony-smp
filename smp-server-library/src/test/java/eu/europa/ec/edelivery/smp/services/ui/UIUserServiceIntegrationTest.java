@@ -95,7 +95,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertNotNull(res.getServiceEntities().get(0).getUsername());
         assertNotNull(res.getServiceEntities().get(0).getEmailAddress());
         assertNull(res.getServiceEntities().get(0).getPassword()); // Service list must not return passwords
-        assertNotNull(res.getServiceEntities().get(0).getPasswordChanged());
         assertNotNull(res.getServiceEntities().get(0).getRole());
     }
 
@@ -112,7 +111,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         //when
         usr.setPassword(newPassword);
         usr.setStatus(EntityROStatus.UPDATED.getStatusNumber());
-        testInstance.updateUserList(Collections.singletonList(usr));
+        testInstance.updateUserList(Collections.singletonList(usr), null);
 
         // then
         DBUser dbuser = userDao.find(usr.getId());
@@ -134,7 +133,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         user.setStatus(EntityROStatus.NEW.getStatusNumber());
 
         //when
-        testInstance.updateUserList(Collections.singletonList(user));
+        testInstance.updateUserList(Collections.singletonList(user), null);
 
         // then
         long  iCntNew  = userDao.getDataListCount(null);
@@ -176,7 +175,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         user.setStatus(EntityROStatus.NEW.getStatusNumber());
 
         //when
-        testInstance.updateUserList(Collections.singletonList(user));
+        testInstance.updateUserList(Collections.singletonList(user), null);
 
         // then
         long  iCntNew  = userDao.getDataListCount(null);
@@ -222,7 +221,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         user.setStatus(EntityROStatus.NEW.getStatusNumber());
 
         //when
-        testInstance.updateUserList(Collections.singletonList(user));
+        testInstance.updateUserList(Collections.singletonList(user), null);
 
         // then
         long  iCntNew  = userDao.getDataListCount(null);
@@ -270,7 +269,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         userRO.setCertificate(null);
         userRO.setStatus(EntityROStatus.UPDATED.getStatusNumber());
 
-        testInstance.updateUserList(Collections.singletonList(userRO));
+        testInstance.updateUserList(Collections.singletonList(userRO), null);
 
         // then
         ServiceResult<UserRO> res  =  testInstance.getTableList(-1,-1,null, null, null);
@@ -291,7 +290,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         user.setStatus(EntityROStatus.REMOVE.getStatusNumber());
 
         //when
-        testInstance.updateUserList(Collections.singletonList(user));
+        testInstance.updateUserList(Collections.singletonList(user), null);
 
         // then
         long  iCntNew  = userDao.getDataListCount(null);
