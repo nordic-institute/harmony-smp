@@ -5,13 +5,21 @@ import {SecurityEventService} from './security-event.service';
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
 import {Authority} from "./authority.model";
+import {HttpEventService} from "../http/http-event.service";
+import {AlertService} from "../alert/alert.service";
 
 @Injectable()
 export class SecurityService {
 
   readonly LOCAL_STORAGE_KEY_CURRENT_USER = 'currentUser';
 
-  constructor (private http: HttpClient, private securityEventService: SecurityEventService) {
+  constructor (
+    private http: HttpClient,
+    private alertService: AlertService,
+    private securityEventService: SecurityEventService,
+  ) {
+    this.securityEventService.onLogoutSuccessEvent().subscribe(() => window.location.reload());
+    this.securityEventService.onLogoutErrorEvent().subscribe((error) => this.alertService.error(error));
   }
 
   login(username: string, password: string) {
@@ -35,8 +43,7 @@ export class SecurityService {
         this.clearLocalStorage();
         this.securityEventService.notifyLogoutSuccessEvent(res);
       },
-      (error: any) => {
-        console.debug('error logging out [' + error + ']');
+      (error) => {
         this.securityEventService.notifyLogoutErrorEvent(error);
       });
   }
