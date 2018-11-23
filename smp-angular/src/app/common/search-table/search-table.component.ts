@@ -12,18 +12,16 @@ import {SearchTableEntityStatus} from './search-table-entity-status.model';
 import {CancelDialogComponent} from '../cancel-dialog/cancel-dialog.component';
 import {SaveDialogComponent} from '../save-dialog/save-dialog.component';
 import {DownloadService} from '../../download/download.service';
-import {HttpClient, HttpParams} from '@angular/common/http';
+import {HttpParams} from '@angular/common/http';
 import {ConfirmationDialogComponent} from "../confirmation-dialog/confirmation-dialog.component";
 import {SearchTableValidationResult} from "./search-table-validation-result.model";
-
+import {ExtendedHttpClient} from "../../http/extended-http-client";
 
 @Component({
   selector: 'smp-search-table',
   templateUrl: './search-table.component.html',
   styleUrls: ['./search-table.component.css']
 })
-
-
 export class SearchTableComponent implements OnInit {
   @ViewChild('searchTable') searchTable: any;
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
@@ -47,7 +45,6 @@ export class SearchTableComponent implements OnInit {
   @Input() allowNewItems: boolean = false;
   @Input() allowDeleteItems: boolean = false;
 
-
   loading = false;
 
   columnActions: any;
@@ -67,11 +64,10 @@ export class SearchTableComponent implements OnInit {
   asc = false;
   forceRefresh: boolean = false;
 
-  constructor(protected http: HttpClient,
+  constructor(protected http: ExtendedHttpClient,
               protected alertService: AlertService,
               private downloadService: DownloadService,
               public dialog: MatDialog) {
-
   }
 
   ngOnInit() {
@@ -125,9 +121,7 @@ export class SearchTableComponent implements OnInit {
     };
   }
 
-
   getTableDataEntries$(offset: number, pageSize: number, orderBy: string, asc: boolean): Observable<SearchTableResult> {
-
     let params: HttpParams = new HttpParams()
       .set('page', offset.toString())
       .set('pageSize', pageSize.toString());
@@ -166,8 +160,6 @@ export class SearchTableComponent implements OnInit {
   }
 
   private pageInternal(offset: number, pageSize: number, orderBy: string, asc: boolean) {
-
-
     this.getTableDataEntries$(offset, pageSize, orderBy, asc).subscribe((result: SearchTableResult) => {
 
       // empty page - probably refresh from delete...check if we can go one page back
@@ -194,12 +186,9 @@ export class SearchTableComponent implements OnInit {
     }, (error: any) => {
       this.alertService.error("Error occurred:" + error);
     });
-
   }
 
   onPage(event) {
-
-
     this.page(event.offset, event.pageSize, this.orderBy, this.asc);
   }
 
@@ -360,7 +349,6 @@ export class SearchTableComponent implements OnInit {
   public getRowNumber(row: any) {
     return this.rows.indexOf(row);
   }
-
 
   private editSearchTableEntityRow(row: SearchTableEntity) {
     let rowNumber = this.rows.indexOf(row);
