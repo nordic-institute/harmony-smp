@@ -19,18 +19,17 @@ public class UserROToDBUserConverter implements Converter<UserRO, DBUser> {
 
     @Override
     public DBUser convert(UserRO source) {
-        DBUser dro = new DBUser();
-        dro.setEmailAddress(source.getEmailAddress());
-        dro.setUsername(source.getUsername());
-        dro.setRole(source.getRole());
-        dro.setPassword(source.getPassword());
-        dro.setActive(source.isActive());
-        dro.setId(source.getId());
-        dro.setPasswordChanged(source.getPasswordChanged());
+        DBUser target = new DBUser();
+        target.setEmailAddress(source.getEmailAddress());
+        target.setUsername(source.getUsername());
+        target.setRole(source.getRole());
+        target.setPassword(source.getPassword());
+        target.setActive(source.isActive());
+        target.setId(source.getId());
         if (source.getCertificate() != null) {
             DBCertificate certData = conversionService.convert(source.getCertificate(), DBCertificate.class);
-            dro.setCertificate(certData);
+            target.setCertificate(certData);
         }
-        return dro;
+        return target;
     }
 }

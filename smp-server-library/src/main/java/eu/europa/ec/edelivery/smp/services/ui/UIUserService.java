@@ -75,13 +75,12 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     }
 
     @Transactional
-    public void updateUserList(List<UserRO> lst) {
-        boolean suc = false;
+    public void updateUserList(List<UserRO> lst, LocalDateTime passwordChange) {
         for (UserRO userRO : lst) {
             if (userRO.getStatus() == EntityROStatus.NEW.getStatusNumber()) {
                 DBUser dbUser = convertFromRo(userRO);
                 if (!StringUtils.isBlank(userRO.getPassword())) {
-                        dbUser.setPassword(BCryptPasswordHash.hashPassword(userRO.getPassword()));
+                    dbUser.setPassword(BCryptPasswordHash.hashPassword(userRO.getPassword()));
                 }
                 userDao.persistFlushDetach(dbUser);
             } else if (userRO.getStatus() == EntityROStatus.UPDATED.getStatusNumber()) {
@@ -93,10 +92,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                 if (StringUtils.isBlank(userRO.getUsername()) ){
                     // if username is empty than clear the password
                     dbUser.setPassword("");
-                }
-                // check for new password
-                else if (!StringUtils.isBlank(userRO.getPassword())) {
+                }else if (!StringUtils.isBlank(userRO.getPassword())) {
+                    // check for new password
                     dbUser.setPassword(BCryptPasswordHash.hashPassword(userRO.getPassword()));
+                    dbUser.setPasswordChanged(passwordChange);
                 }
                 // update certificate data
                 if (userRO.getCertificate() == null || StringUtils.isBlank(userRO.getCertificate().getCertificateId())) {
