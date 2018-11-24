@@ -311,8 +311,8 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
         //then
         assertEquals("CN=SMP test,O=DIGIT,C=BE:0000000000000003", cer.getCertificateId());
-        assertEquals("CN=Intermediate CA, O=DIGIT, C=BE", cer.getIssuer());
-        assertEquals("EMAILADDRESS=smp@test.com, CN=SMP test, O=DIGIT, C=BE", cer.getSubject());
+        assertEquals("C=BE,O=DIGIT,CN=Intermediate CA", cer.getIssuer());
+        assertEquals("C=BE,O=DIGIT,CN=SMP test,E=smp@test.com", cer.getSubject());
         assertEquals("3", cer.getSerialNumber());
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
@@ -329,8 +329,8 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
         //then
         assertEquals("CN=alice,O=www.freelan.org,C=FR:0000000000000001", cer.getCertificateId());
-        assertEquals("EMAILADDRESS=contact@freelan.org, CN=Freelan Sample Certificate Authority, OU=freelan, O=www.freelan.org, L=Strasbourg, ST=Alsace, C=FR", cer.getIssuer());
-        assertEquals("EMAILADDRESS=contact@freelan.org, CN=alice, OU=freelan, O=www.freelan.org, ST=Alsace, C=FR", cer.getSubject());
+        assertEquals("C=FR,ST=Alsace,L=Strasbourg,O=www.freelan.org,OU=freelan,CN=Freelan Sample Certificate Authority,E=contact@freelan.org", cer.getIssuer());
+        assertEquals("C=FR,ST=Alsace,O=www.freelan.org,OU=freelan,CN=alice,E=contact@freelan.org", cer.getSubject());
         assertEquals("1", cer.getSerialNumber());
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
@@ -347,8 +347,8 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
         //then
         assertEquals("CN=POP000004,O=European Commission,C=BE:474980c51478cf62761667461aef5e8e", cer.getCertificateId());
-        assertEquals("CN=PEPPOL ACCESS POINT TEST CA - G2, OU=FOR TEST ONLY, O=OpenPEPPOL AISBL, C=BE", cer.getIssuer());
-        assertEquals("C=BE, O=European Commission, OU=PEPPOL TEST AP, CN=POP000004", cer.getSubject());
+        assertEquals("C=BE,O=OpenPEPPOL AISBL,OU=FOR TEST ONLY,CN=PEPPOL ACCESS POINT TEST CA - G2", cer.getIssuer());
+        assertEquals("CN=POP000004,OU=PEPPOL TEST AP,O=European Commission,C=BE", cer.getSubject());
         assertEquals("474980c51478cf62761667461aef5e8e", cer.getSerialNumber());
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
