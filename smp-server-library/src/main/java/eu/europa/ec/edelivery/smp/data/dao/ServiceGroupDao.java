@@ -155,6 +155,10 @@ public class ServiceGroupDao extends BaseDao<DBServiceGroup> {
         return cq;
     }
 
+    public void updateServiceGroupDomain(DBServiceGroupDomain serviceGroupDomain) {
+        memEManager.merge(serviceGroupDomain);
+    }
+
 
 
 }

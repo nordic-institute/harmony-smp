@@ -72,7 +72,7 @@ public class SmlConnector implements ApplicationContextAware {
         if (!smlIntegrationEnabled) {
             return false;
         }
-        log.info("Registering new Domain  o BDMSL: (smpCode {} smp-smp-id {}) ", domain.getDomainCode(), domain.getSmlSmpId());
+        log.info("Registering new Domain  toSML: (smpCode {} smp-smp-id {}) ", domain.getDomainCode(), domain.getSmlSmpId());
         try {
             ServiceMetadataPublisherServiceType smlSmpRequest = new ServiceMetadataPublisherServiceType();
             smlSmpRequest.setPublisherEndpoint(new PublisherEndpointType());
@@ -87,13 +87,25 @@ public class SmlConnector implements ApplicationContextAware {
 
 
     public void unregisterFromDns(ParticipantIdentifierType normalizedParticipantId, DBDomain domain) {
-      if (!smlIntegrationEnabled) {
+        if (!smlIntegrationEnabled) {
             return;
         }
-        log.info("Removing Participant from BDMSL: " + asString(normalizedParticipantId));
+        log.info("Removing Participant from BDMSL: {} ", asString(normalizedParticipantId));
         try {
             ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, domain.getSmlSmpId());
             getClient(domain).delete(smlRequest);
+        } catch (Exception e) {
+            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION,e, ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+
+    public void unregisterDomain(DBDomain domain) {
+        if (!smlIntegrationEnabled) {
+            return;
+        }
+        log.info("Removing SMP id (Domain) from BDMSL: {} ", domain.getDomainCode());
+        try {
+            getSMPManagerClient(domain).delete(domain.getSmlSmpId());
         } catch (Exception e) {
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION,e, ExceptionUtils.getRootCauseMessage(e));
         }
@@ -116,5 +128,9 @@ public class SmlConnector implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         ctx = applicationContext;
+    }
+
+    public boolean isSmlIntegrationEnabled() {
+        return smlIntegrationEnabled;
     }
 }
