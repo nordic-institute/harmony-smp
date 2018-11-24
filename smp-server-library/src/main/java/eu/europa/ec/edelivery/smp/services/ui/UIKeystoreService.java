@@ -77,7 +77,7 @@ public class UIKeystoreService {
             LOG.error("Keystore file '{}' does not exists!", keystoreFilePath.getAbsolutePath());
             return;
         }
-        
+
         try {
             smpKeyStorePasswordDecrypted = SecurityUtils.decrypt(file, smpKeyStorePasswordEncrypted);
         } catch (SMPRuntimeException exception) {

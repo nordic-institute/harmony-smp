@@ -33,7 +33,7 @@ public class PropertiesMultipleDomainTestConfig {
     @Bean
     public PropertySourcesPlaceholderConfigurer setLocalProperties() {
         Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores");
-        String path = resourceDirectory.toString();
+        String path = resourceDirectory.toFile().getAbsolutePath();;
 
         return buildLocalProperties(new String[][]{
             {"configuration.dir", path},
