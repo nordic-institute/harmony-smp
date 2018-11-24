@@ -33,10 +33,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
 
-    this.httpEventService.subscribe((error) => {
-      this.securityService.logout();
-    });
-
     this.sub = this.securityEventService.onLoginSuccessEvent().subscribe(
       data => {
         if (data && data.passwordExpired) {
