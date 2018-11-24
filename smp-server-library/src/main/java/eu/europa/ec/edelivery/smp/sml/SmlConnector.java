@@ -14,12 +14,15 @@
 package eu.europa.ec.edelivery.smp.sml;
 
 import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
+import eu.europa.ec.bdmsl.ws.soap.IManageServiceMetadataWS;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.exceptions.SmlIntegrationException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.busdox.servicemetadata.locator._1.PublisherEndpointType;
 import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceForParticipantType;
+import org.busdox.servicemetadata.locator._1.ServiceMetadataPublisherServiceType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,11 +66,31 @@ public class SmlConnector implements ApplicationContextAware {
         }
     }
 
+
+    public boolean registerDomain(DBDomain domain) {
+
+        if (!smlIntegrationEnabled) {
+            return false;
+        }
+        log.info("Registering new Domain  toSML: (smpCode {} smp-smp-id {}) ", domain.getDomainCode(), domain.getSmlSmpId());
+        try {
+            ServiceMetadataPublisherServiceType smlSmpRequest = new ServiceMetadataPublisherServiceType();
+            smlSmpRequest.setPublisherEndpoint(new PublisherEndpointType());
+
+            smlSmpRequest.setServiceMetadataPublisherID(domain.getSmlSmpId());
+            getSMPManagerClient(domain).create(smlSmpRequest);
+            return true;
+        } catch (Exception e) {
+            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION,e, ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+
+
     public void unregisterFromDns(ParticipantIdentifierType normalizedParticipantId, DBDomain domain) {
-      if (!smlIntegrationEnabled) {
+        if (!smlIntegrationEnabled) {
             return;
         }
-        log.info("Removing Participant from BDMSL: " + asString(normalizedParticipantId));
+        log.info("Removing Participant from BDMSL: {} ", asString(normalizedParticipantId));
         try {
             ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, domain.getSmlSmpId());
             getClient(domain).delete(smlRequest);
@@ -76,15 +99,38 @@ public class SmlConnector implements ApplicationContextAware {
         }
     }
 
+    public void unregisterDomain(DBDomain domain) {
+        if (!smlIntegrationEnabled) {
+            return;
+        }
+        log.info("Removing SMP id (Domain) from BDMSL: {} ", domain.getDomainCode());
+        try {
+            getSMPManagerClient(domain).delete(domain.getSmlSmpId());
+        } catch (Exception e) {
+            throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION,e, ExceptionUtils.getRootCauseMessage(e));
+        }
+    }
+
     private IManageParticipantIdentifierWS getClient(DBDomain domain) {
 
-        String clientCertHttpHeader = domain.getSmlClientCertHeader();
-        String clientCertAlias = domain.getSmlClientKeyAlias();
+        String clientCertHttpHeader =domain.isSmlBlueCoatAuth()? domain.getSmlClientCertHeader():null;
+        String clientCertAlias = domain.isSmlBlueCoatAuth()?null:domain.getSmlClientKeyAlias();
         return ctx.getBean(IManageParticipantIdentifierWS.class, clientCertAlias, clientCertHttpHeader);
+    }
+
+    private IManageServiceMetadataWS getSMPManagerClient(DBDomain domain) {
+
+        String clientCertHttpHeader =domain.isSmlBlueCoatAuth()? domain.getSmlClientCertHeader():null;
+        String clientCertAlias = domain.isSmlBlueCoatAuth()?null:domain.getSmlClientKeyAlias();
+        return ctx.getBean(IManageServiceMetadataWS.class, clientCertAlias, clientCertHttpHeader);
     }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         ctx = applicationContext;
+    }
+
+    public boolean isSmlIntegrationEnabled() {
+        return smlIntegrationEnabled;
     }
 }

@@ -87,8 +87,8 @@ public class IdentifiersTest {
         Object[] res = new Object[commonTests.length+2];
         System.arraycopy(commonTests, 0,res, 0, commonTests.length );
         //add new test with empty schema
-        res[commonTests.length] = new Object[]{"::a","","a"};
-        res[commonTests.length+1] = new Object[]{"::urn:ehealth:ncp::pt:ism","","urn:ehealth:ncp::pt:ism"};
+        res[commonTests.length] = new Object[]{"::a",null,"a"};
+        res[commonTests.length+1] = new Object[]{"::urn:ehealth:ncp::pt:ism",null,"urn:ehealth:ncp::pt:ism"};
         return res;
     }
 

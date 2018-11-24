@@ -23,7 +23,7 @@
 
   <ng-template #rowSMPUrlLinkAction let-row="row" let-value="value" ngx-datatable-cell-template>
     <a target="_blank"
-       href="{{contextPath}}{{row.participantScheme}}::{{row.participantIdentifier}}" >Open URL</a>
+       href="{{contextPath}}{{createServiceGroupURL(row)}}">Open URL</a>
   </ng-template>
 
 
@@ -83,7 +83,7 @@
 
         <ng-template #rowMetadataSMPUrlLinkAction let-rowSmd="row" ngx-datatable-cell-template>
           <a target="_blank"
-             href="{{contextPath}}{{row.participantScheme}}::{{row.participantIdentifier}}/services/{{rowSmd.documentIdentifierScheme}}::{{rowSmd.documentIdentifier}}" >Open URL</a>
+             href="{{contextPath}}{{createServiceMetadataURL(row, rowSmd)}}" >Open URL</a>
         </ng-template>
       </ngx-datatable>
 

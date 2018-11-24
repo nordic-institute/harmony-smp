@@ -1,6 +1,7 @@
 
 export interface ServiceMetadataWizardRo  {
-  participantIdentifierScheme: string;
+  isNewServiceMetadata: boolean;
+  participantScheme: string;
   participantIdentifier: string;
   documentIdentifierScheme: string;
   documentIdentifier: string;
@@ -8,9 +9,9 @@ export interface ServiceMetadataWizardRo  {
   processIdentifier: string;
   transportProfile: string;
   endpointUrl: string;
-  certificate: string;
+  endpointCertificate: string;
   serviceDescription: string;
   technicalContactUrl: string;
-  contentXML: string
-  errorMessage: string
+  contentXML?: string
+  errorMessage?: string
 }
