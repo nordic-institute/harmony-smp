@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.smlintegration;
 
 import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
+import eu.europa.ec.bdmsl.ws.soap.IManageServiceMetadataWS;
 import eu.europa.ec.edelivery.smp.sml.SmlClientFactory;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.endpoint.Client;
@@ -79,9 +80,36 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest {
     }
 
     @Test
+    public void factoryProducesPreconfiguredCxfSMPClientThatAuthenticatesItselfWithGivenCertAlias() {
+        //when
+        IManageServiceMetadataWS client = smlClientFactory.createSmp("second_domain_alias", null);
+
+        //then
+        assertNotNull(client);
+        Client cxfClient = ClientProxy.getClient(client);
+        Map<String, Object> requestContext = cxfClient.getRequestContext();
+        X509Certificate clientCert = getClientCertFromKeystore(cxfClient);
+
+        assertEquals("CN=second domain common name, OU=eDelivery, O=European Commission, C=PL", clientCert.getSubjectDN().getName());
+        assertEquals("https://sml.url.pl", requestContext.get(Message.ENDPOINT_ADDRESS));
+    }
+
+    @Test
     public void factoryProducesClientWithAnotherCertFromKeystore() {
         //when
         IManageParticipantIdentifierWS client = smlClientFactory.create("single_domain_key", null);
+
+        //then
+        Client cxfClient = ClientProxy.getClient(client);
+        X509Certificate clientCert = getClientCertFromKeystore(cxfClient);
+
+        assertEquals("CN=SMP Mock Services, OU=DIGIT, O=European Commision, C=BE", clientCert.getSubjectDN().getName());
+    }
+
+    @Test
+    public void factoryProducesSMPClientWithAnotherCertFromKeystore() {
+        //when
+        IManageServiceMetadataWS client = smlClientFactory.createSmp("single_domain_key", null);
 
         //then
         Client cxfClient = ClientProxy.getClient(client);
@@ -113,8 +141,25 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest {
         assertTrue(httpHeaders == null || httpHeaders.isEmpty());
     }
 
+    @Test
+    public void factoryProducesPreconfiguredCxfSMPClientWithoutAnyHttpHeaderValue() {
+        //when
+        IManageServiceMetadataWS client = smlClientFactory.createSmp("second_domain_alias", null);
+
+        //then
+        Client cxfClient = ClientProxy.getClient(client);
+        Map<String, Object> requestContext = cxfClient.getRequestContext();
+        Map httpHeaders = (Map) requestContext.get(Message.PROTOCOL_HEADERS);
+        assertTrue(httpHeaders == null || httpHeaders.isEmpty());
+    }
+
     @Test(expected = IllegalStateException.class)
     public void factoryDoesNotAcceptBothAuthentication() {
         smlClientFactory.create("any_domain_alias", "any_header_value");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void factoryDoesNotAcceptBothAuthenticationSmpClient() {
+        smlClientFactory.createSmp("any_domain_alias", "any_header_value");
     }
 }

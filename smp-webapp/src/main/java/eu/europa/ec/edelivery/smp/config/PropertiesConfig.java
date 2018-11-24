@@ -13,9 +13,34 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
+import eu.europa.ec.edelivery.smp.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jndi.JndiObjectFactoryBean;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+
+import javax.naming.NamingException;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.TypedQuery;
+import javax.sql.DataSource;
+import java.io.*;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Properties;
+
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
+import static eu.europa.ec.edelivery.smp.utils.SecurityUtils.*;
 
 /**
  * Created by Flavio Santos
@@ -30,7 +55,265 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class PropertiesConfig {
 
     @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        return new PropertySourcesPlaceholderConfigurer();
+    public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+        PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
+
+        Properties prop = getDatabaseProperties();
+        propertiesConfig.setProperties(prop);
+        propertiesConfig.setLocalOverride(true);
+        return propertiesConfig;
     }
+
+    private Properties getDatabaseProperties() {
+
+        Properties fileProperties = getFileProperties();
+        // get datasource
+        DataSource dataSource = getDatasource(fileProperties);
+        EntityManager em = null;
+        DatabaseProperties prop = null;
+        try {
+            em = createEntityManager(dataSource);
+            prop = new DatabaseProperties(em);
+            if (prop.size() == 0) {
+                initializeProperties(em, fileProperties, prop);
+            }
+        } finally {
+            if (em != null && em.isOpen()) {
+                em.close();
+            }
+        }
+        ;
+
+
+        return prop;
+    }
+
+    /**
+     * Method do the folling tasks
+     * // copy SMPProperties
+     * // copy and merge keystore
+     * // secure password for keystore
+     * // -- generate symmetric key
+     * // -- encrypt key
+     * // -- set password
+     *
+     * @param em
+     * @param fileProperties
+     */
+    protected void initializeProperties(EntityManager em, Properties fileProperties, Properties initProperties) {
+        em.getTransaction().begin();
+
+        initNewValues(em, fileProperties, initProperties);
+        for (SMPPropertyEnum val : SMPPropertyEnum.values()) {
+            DBConfiguration dbConf = null;
+            switch (val) {
+                case CONFIGURATION_DIR:
+                case KEYSTORE_FILENAME:
+                case KEYSTORE_PASSWORD:
+                case ENCRYPTION_FILENAME:
+                    // skip value
+                    break;
+                default:
+                    dbConf = createDBEntry(val.getProperty(), fileProperties.getProperty(val.getProperty(), val.getDefValue()),
+                            val.getDesc());
+            }
+            if (dbConf != null) {
+                initProperties.setProperty(dbConf.getProperty(), dbConf.getValue());
+                em.persist(dbConf);
+            }
+        }
+        em.getTransaction().commit();
+    }
+
+    /**
+     * Settings folder is where keystore is located.
+     * @param fileProperties
+     * @return
+     */
+    protected File calculateSettingsPath( Properties fileProperties){
+        String sigPath = fileProperties.getProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PATH.getProperty());
+        if (sigPath == null) {
+            sigPath = fileProperties.getProperty(SMPPropertyEnum.SML_KEYSTORE_PATH.getProperty());
+        }
+        File settingsFolder = null;
+        if (sigPath != null) {
+            settingsFolder = new File(sigPath).getParentFile();
+        } else {
+            settingsFolder = new File("");
+        }
+        return settingsFolder;
+    }
+
+
+    /**
+     * Method initialize new values for configuration dir, ecryption filename, keystore password, and keystore filename.
+     * @param em
+     * @param fileProperties
+     */
+    protected void initNewValues(EntityManager em, Properties fileProperties, Properties initProperties) {
+
+        File settingsFolder = calculateSettingsPath(fileProperties);
+
+        // add configuration path
+        storeDBEntry(em, SMPPropertyEnum.CONFIGURATION_DIR, settingsFolder.getPath());
+        initProperties.setProperty(SMPPropertyEnum.CONFIGURATION_DIR.getProperty(), settingsFolder.getPath());
+        String newKeyPassword = RandomStringUtils.random(8, true, true);
+
+        // store encryption filename
+        File fEncryption = new File(settingsFolder, SMPPropertyEnum.ENCRYPTION_FILENAME.getDefValue());
+        generatePrivateSymmetricKey(fEncryption);
+        storeDBEntry(em, SMPPropertyEnum.ENCRYPTION_FILENAME, fEncryption.getName());
+        initProperties.setProperty(SMPPropertyEnum.ENCRYPTION_FILENAME.getProperty(), fEncryption.getName());
+
+        // store keystore password  filename
+        String encPasswd = encrypt(fEncryption, newKeyPassword);
+        storeDBEntry(em, SMPPropertyEnum.KEYSTORE_PASSWORD, encPasswd);
+        initProperties.setProperty(SMPPropertyEnum.KEYSTORE_PASSWORD.getProperty(), encPasswd);
+
+        //store new keystore
+        File keystore = new File(settingsFolder, SMPPropertyEnum.KEYSTORE_FILENAME.getDefValue());
+        storeDBEntry(em, SMPPropertyEnum.KEYSTORE_FILENAME, keystore.getName());
+        initProperties.setProperty(SMPPropertyEnum.KEYSTORE_FILENAME.getProperty(), keystore.getName());
+
+
+        String sigKeystorePath = fileProperties.getProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PATH.getProperty(), null);
+        String smlKeystorePath = fileProperties.getProperty(SMPPropertyEnum.SML_KEYSTORE_PATH.getProperty(), null);
+
+        try (FileOutputStream out = new FileOutputStream(keystore)) {
+            KeyStore newKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
+            // initialize keystore
+            newKeystore.load(null, newKeyPassword.toCharArray());
+            // merge keys from signature keystore
+          if (!StringUtils.isBlank(sigKeystorePath)) {
+                String keypasswd = fileProperties.getProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PASSWORD.getProperty());
+                try (FileInputStream fis = new FileInputStream(sigKeystorePath)) {
+                    KeyStore sourceKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
+                    sourceKeystore.load(fis, keypasswd.toCharArray());
+                    mergeKeystores(newKeystore, newKeyPassword, sourceKeystore, keypasswd);
+                }
+            }
+
+            // merge keys from integration keystore
+            if (!StringUtils.isBlank(smlKeystorePath) && !StringUtils.equalsIgnoreCase(smlKeystorePath, sigKeystorePath)) {
+                String keypasswd = fileProperties.getProperty(SMPPropertyEnum.SML_KEYSTORE_PASSWORD.getProperty());
+                try (FileInputStream fis = new FileInputStream(smlKeystorePath)) {
+                    KeyStore sourceKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
+                    sourceKeystore.load(fis, keypasswd.toCharArray());
+                    mergeKeystores(newKeystore, newKeyPassword, sourceKeystore, keypasswd);
+                }
+            }
+            newKeystore.store(out, newKeyPassword.toCharArray());
+        } catch (IOException e) {
+            throw new SMPRuntimeException(INTERNAL_ERROR, e, "IOException occurred while creating keystore", e.getMessage());
+        } catch (CertificateException e) {
+            throw new SMPRuntimeException(INTERNAL_ERROR, e, "CertificateException occurred while creating keystore", e.getMessage());
+        } catch (NoSuchAlgorithmException e) {
+            throw new SMPRuntimeException(INTERNAL_ERROR, e, "NoSuchAlgorithmException occurred while creating keystore", e.getMessage());
+        } catch (KeyStoreException e) {
+            throw new SMPRuntimeException(INTERNAL_ERROR, e, "KeyStoreException occurred while creating keystore", e.getMessage());
+        } catch (Exception e) {
+            throw new SMPRuntimeException(INTERNAL_ERROR, e, "Exception occurred while creating keystore", e.getMessage());
+        }
+    }
+
+
+    protected DBConfiguration createDBEntry(String key, String value, String desc) {
+        DBConfiguration dcnew = new DBConfiguration();
+        dcnew.setProperty(key);
+        dcnew.setDescription(desc);
+        dcnew.setValue(value);
+        dcnew.setLastUpdatedOn(LocalDateTime.now());
+        dcnew.setCreatedOn(LocalDateTime.now());
+        return dcnew;
+    }
+
+    protected DBConfiguration createDBEntry(SMPPropertyEnum prop, String value) {
+        return createDBEntry(prop.getProperty(), value, prop.getDesc());
+    }
+
+    protected void storeDBEntry(EntityManager em, SMPPropertyEnum prop, String value) {
+        DBConfiguration cnt = createDBEntry(prop.getProperty(), value, prop.getDesc());
+        em.persist(cnt);
+    }
+
+    /**
+     * create datasource to read properties from database
+     *
+     * @return
+     */
+    private DataSource getDatasource(Properties connectionProp) {
+
+        DataSource datasource = null;
+        String url = connectionProp.getProperty("jdbc.url");
+        String jndiDatasourceName = connectionProp.getProperty("datasource.jndi");
+        jndiDatasourceName = StringUtils.isBlank(jndiDatasourceName) ? "jdbc/smpDatasource" : jndiDatasourceName;
+
+        if (url != null) {
+            DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
+            driverManagerDataSource.setDriverClassName(connectionProp.getProperty("jdbc.driver"));
+            driverManagerDataSource.setUrl(url);
+            driverManagerDataSource.setUsername(connectionProp.getProperty("jdbc.user"));
+            driverManagerDataSource.setPassword(connectionProp.getProperty("jdbc.password"));
+            datasource = driverManagerDataSource;
+        } else {
+            JndiObjectFactoryBean dataSource = new JndiObjectFactoryBean();
+            dataSource.setJndiName(jndiDatasourceName);
+            try {
+                dataSource.afterPropertiesSet();
+            } catch (IllegalArgumentException | NamingException e) {
+                // rethrow
+                throw new SMPRuntimeException(INTERNAL_ERROR, e, "Error occurred while retrieving datasource: " + jndiDatasourceName, e.getMessage());
+            }
+            datasource = (DataSource) dataSource.getObject();
+        }
+        return datasource;
+    }
+
+    protected Properties getFileProperties() {
+        InputStream is = PropertiesConfig.class.getResourceAsStream("/smp.config.properties");
+        if (is == null) {
+            is = PropertiesConfig.class.getResourceAsStream("/config.properties");
+        }
+        Properties connectionProp = new Properties();
+        try {
+            connectionProp.load(is);
+        } catch (IOException e) {
+            throw new SMPRuntimeException(INTERNAL_ERROR, e, "Error occurred  while reading properties.", e.getMessage());
+        }
+        return connectionProp;
+    }
+
+    /**
+     * Create entity manager
+     *
+     * @param dataSource
+     * @return
+     */
+    private EntityManager createEntityManager(DataSource dataSource) {
+        Properties prop = new Properties();
+        prop.setProperty("hibernate.connection.autocommit", "true");
+        LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
+        lef.setDataSource(dataSource);
+        lef.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        lef.setPackagesToScan("eu.europa.ec.edelivery.smp.data.model");
+        lef.setJpaProperties(prop);
+        lef.afterPropertiesSet();
+        EntityManagerFactory enf = lef.getObject();
+        return enf.createEntityManager();
+    }
+
+    private static class DatabaseProperties extends Properties {
+
+        private static final long serialVersionUID = 1L;
+
+        public DatabaseProperties(EntityManager em) {
+            super();
+            TypedQuery<DBConfiguration> tq = em.createNamedQuery("DBConfiguration.getAll", DBConfiguration.class);
+            List<DBConfiguration> lst = tq.getResultList();
+            for (DBConfiguration dc : lst) {
+                setProperty(dc.getProperty(), dc.getValue());
+            }
+        }
+    }
+
 }

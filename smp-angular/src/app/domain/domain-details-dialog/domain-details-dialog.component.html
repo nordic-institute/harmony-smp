@@ -1,5 +1,5 @@
 <h2 mat-dialog-title>{{formTitle}}</h2>
-<mat-dialog-content>
+<mat-dialog-content style="height:600px;width:1000px">
   <form [formGroup]="domainForm">
     <mat-card>
       <mat-card-title>Domain properties</mat-card-title>
@@ -29,7 +29,8 @@
             <div
               *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('pattern')"
               style="color:red; font-size: 70%">
-              SML domain should be up to 63 characters long, should only contain alphanumeric and hyphen characters, should not start with a digit and should not end with a hyphen.
+              SML domain should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
+              should not start with a digit and should not end with a hyphen.
             </div>
             <div
               *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('notInList')"
@@ -38,9 +39,14 @@
             </div>
           </mat-form-field>
           <mat-form-field style="width:100%">
-            <input matInput placeholder="Response signature Certificate" name="signatureKeyAlias"
-                   id="signatureKeyAlias_id"
-                   [formControl]="domainForm.controls['signatureKeyAlias']" maxlength="255">
+            <mat-select placeholder="Response signature Certificate"
+                        [formControl]="domainForm.controls['signatureKeyAlias']" name="cert"
+                        id="signatureKeyAlias_id">
+              <mat-option [value]="''">Choose certificate for signing soap response</mat-option>
+              <mat-option *ngFor="let cert of lookups.cachedCertificateList" [value]="cert.alias">
+                {{cert.alias}} ({{cert.certificateId}})
+              </mat-option>
+            </mat-select>
           </mat-form-field>
         </fieldset>
       </mat-card-content>
@@ -56,7 +62,8 @@
             <div
               *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('pattern')"
               style="color:red; font-size: 70%">
-              SML SMP ID should be up to 63 characters long, should only contain alphanumeric and hyphen characters, should not start with a digit and should not end with a hyphen.
+              SML SMP ID should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
+              should not start with a digit and should not end with a hyphen.
             </div>
             <div
               *ngIf="(!editMode && domainForm.controls['smlSmpId'].touched || editMode) &&  domainForm.controls['smlSmpId'].hasError('notInList')"
@@ -64,11 +71,8 @@
               SML SMP ID already exists!
             </div>
           </mat-form-field>
-          <mat-form-field style="width:100%">
-            <input matInput placeholder="ClientCert Header" name="Client certificate" id="smlClientHeader_id"
-                   [formControl]="domainForm.controls['smlClientCertHeader']" maxlength="2000">
-          </mat-form-field>
-          <label class="custom-file-upload">
+
+          <!--label class="custom-file-upload">
             <input #fileInput type="file" style="display: inline-block;cursor: pointer; display: none;"
                    id="certificate-file-upload" accept=".cer,.crt,.pem,.der"
                    (change)="uploadCertificate($event)">
@@ -76,11 +80,32 @@
                     (click)="fileInput.click()"
             >Generate 'ClientCert Header' from certificate
             </button>
-          </label>
+          </label -->
           <mat-form-field style="width:100%">
-            <input matInput placeholder="ClientCert Alias" name="Client certificate" id="smlClientKeyAlias_id"
-                   [formControl]="domainForm.controls['smlClientKeyAlias']" maxlength="255">
+            <mat-select [(value)]="selectedSMLCert"
+                        [compareWith]="compareCertByAlias"
+                        placeholder="ClientCert Alias"
+                        [formControl]="domainForm.controls['smlClientKeyAlias']"
+                        name="cert"
+                        id="smlClientKeyAlias_id">
+              <mat-option [value]="''">Choose certificate for SML integration</mat-option>
+              <mat-option *ngFor="let cert of lookups.cachedCertificateList" [value]="cert">
+                {{cert.alias}} ({{cert.certificateId}})
+              </mat-option>
+            </mat-select>
           </mat-form-field>
+
+          <mat-form-field style="width:100%">
+            <input matInput placeholder="ClientCert Header" name="Client certificate" id="smlClientHeader_id"
+                   [value]="selectedSMLCert?.blueCoatHeader" maxlength="2000" readonly="true">
+          </mat-form-field>
+
+          <mat-slide-toggle style="width:100%"
+                            mat-no-ink class="mat-primary" [formControl]="domainForm.controls['smlBlueCoatAuth']"
+                            id="smlBlueCoatAuth_id">
+            Use blueCoat http header authentication.
+          </mat-slide-toggle>
+
         </fieldset>
         <!-- label class="custom-file-upload">
           <input #fileInput type="file" id="custom-file-upload" accept=".cer" (change)="uploadCertificate()" >
