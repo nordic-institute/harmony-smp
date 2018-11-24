@@ -21,6 +21,8 @@ public enum SMPPropertyEnum {
     ENCRYPTION_FILENAME("encryption.key.filename","encryptionPrivateKey.private","Path to the folder containing all the configuration files (keystore and sig0 key)"),
 
 
+    KEYSTORE_PASSWORD_DECRYPTED("smp.keystore.password.decrypted","","Only for backup purposes. This password was automatically created. Store password somewhere save and delete this entry!"),
+
     SML_KEYSTORE_PASSWORD("bdmsl.integration.keystore.password","","Deprecated "),
     SML_KEYSTORE_PATH("bdmsl.integration.keystore.path","","Deprecated "),
     SIGNATURE_KEYSTORE_PASSWORD("xmldsig.keystore.password","","Deprecated "),

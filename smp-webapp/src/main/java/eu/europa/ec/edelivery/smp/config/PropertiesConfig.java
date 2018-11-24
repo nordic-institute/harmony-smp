@@ -44,6 +44,11 @@ import static eu.europa.ec.edelivery.smp.utils.SecurityUtils.*;
 
 /**
  * Created by Flavio Santos
+ * Class read properties from configuration file if exists. Than it use datasource (default by JNDI
+ * if not defined in property file jdbc/smpDatasource) to read application properties. Because this class is
+ * invoked before datasource is initialiyzed by default - it creates it's own database connection.
+ * Also it uses hibernate to handle dates  for Configuration table.
+ *
  */
 @Configuration
 @ComponentScan(basePackages = {
@@ -158,6 +163,8 @@ public class PropertiesConfig {
         storeDBEntry(em, SMPPropertyEnum.CONFIGURATION_DIR, settingsFolder.getPath());
         initProperties.setProperty(SMPPropertyEnum.CONFIGURATION_DIR.getProperty(), settingsFolder.getPath());
         String newKeyPassword = RandomStringUtils.random(8, true, true);
+        storeDBEntry(em, SMPPropertyEnum.KEYSTORE_PASSWORD_DECRYPTED, newKeyPassword);
+
 
         // store encryption filename
         File fEncryption = new File(settingsFolder, SMPPropertyEnum.ENCRYPTION_FILENAME.getDefValue());
