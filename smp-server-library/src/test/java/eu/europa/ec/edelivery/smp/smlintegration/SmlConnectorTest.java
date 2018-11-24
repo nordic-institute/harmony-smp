@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.smlintegration;
 
 import eu.europa.ec.bdmsl.ws.soap.*;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,6 +32,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 /**
@@ -45,8 +49,13 @@ public class SmlConnectorTest {
 
     private static List<IManageParticipantIdentifierWS> smlClientMocks = new ArrayList<>();
     private static final ParticipantIdentifierType PARTICIPANT_ID = new ParticipantIdentifierType("sample:value", "sample:scheme");
-//    private static final DBDomain DEFAULT_DOMAIN = new DBDomain("default_domain_id", null, null, "SAMPLE-SMP-ID", null);
+    private static final DBDomain DEFAULT_DOMAIN;
 
+    static {
+        DEFAULT_DOMAIN = new DBDomain();
+        DEFAULT_DOMAIN.setDomainCode("default_domain_id");
+        DEFAULT_DOMAIN.setSmlSmpId("SAMPLE-SMP-ID");
+    }
     @Autowired
     private SmlConnector smlConnector;
 
@@ -70,16 +79,15 @@ public class SmlConnectorTest {
 
     @Test
     public void testRegisterInDns() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
-  /*      //when
+    //when
         smlConnector.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         //then
         assertEquals(1, smlClientMocks.size());
         verify(smlClientMocks.get(0)).create(any());
         Mockito.verifyNoMoreInteractions(smlClientMocks.toArray());
-        */
     }
-/*
+
     @Test
     public void testRegisterInDnsNewClientIsAlwaysCreated() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
@@ -115,5 +123,5 @@ public class SmlConnectorTest {
         verify(smlClientMocks.get(0)).delete(any());
         verify(smlClientMocks.get(1)).delete(any());
         Mockito.verifyNoMoreInteractions(smlClientMocks.toArray());
-    } */
+    }
 }

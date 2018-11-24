@@ -176,7 +176,7 @@ import { DialogComponent } from './common/dialog/dialog.component';
     {
       provide: ExtendedHttpClient,
       useFactory: extendedHttpClientCreator,
-      deps: [HttpClient]
+      deps: [HttpClient, HttpEventService, SecurityService]
     },
   ],
   bootstrap: [AppComponent]
