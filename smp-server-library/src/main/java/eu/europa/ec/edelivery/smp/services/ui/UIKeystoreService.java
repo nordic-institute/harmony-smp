@@ -6,6 +6,7 @@ import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
@@ -52,7 +53,16 @@ public class UIKeystoreService {
     public void init() {
         keystoreKeys = new HashMap();
         keystoreCertificates = new HashMap();
+        setupJCEProvider();
         refreshData();
+    }
+
+    private void setupJCEProvider(){
+        Provider[] providerList = Security.getProviders();
+
+        if (providerList==null || providerList.length <=0 || !(providerList[0] instanceof BouncyCastleProvider)) {
+            Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
+        }
     }
 
     public void refreshData(){
