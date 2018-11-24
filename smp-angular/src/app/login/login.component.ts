@@ -7,7 +7,8 @@ import {SecurityEventService} from '../security/security-event.service';
 import {User} from '../security/user.model';
 import {MatDialogRef, MatDialog} from '@angular/material';
 import {DefaultPasswordDialogComponent} from 'app/security/default-password-dialog/default-password-dialog.component';
-import {Subscription} from "rxjs";
+import {Subscription} from 'rxjs';
+import {ExpiredPasswordDialogComponent} from '../common/expired-password-dialog/expired-password-dialog.component';
 
 @Component({
   moduleId: module.id,
@@ -30,14 +31,19 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    // get return url from route parameters or default to '/'
     this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
 
-    this.sub = this.securityEventService.onLoginSuccessEvent().subscribe(() => this.router.navigate([this.returnUrl]));
+    this.sub = this.securityEventService.onLoginSuccessEvent().subscribe(
+      data => {
+        if (data && data.passwordExpired) {
+          this.dialog.open(ExpiredPasswordDialogComponent).afterClosed().subscribe(() => this.router.navigate([this.returnUrl]));
+        } else {
+          this.router.navigate([this.returnUrl]);
+        }
+      });
 
     this.securityEventService.onLoginErrorEvent().subscribe(
       error => {
-        console.error("Error authenticating:" + error);
         let message;
         const HTTP_UNAUTHORIZED = 401;
         const HTTP_FORBIDDEN = 403;
@@ -48,28 +54,27 @@ export class LoginComponent implements OnInit, OnDestroy {
         switch (error.status) {
           case HTTP_UNAUTHORIZED:
           case HTTP_FORBIDDEN:
-            let forbiddenCode = error.message;
-            console.log("User forbiden code " + forbiddenCode);
+            const forbiddenCode = error.message;
             switch (forbiddenCode) {
               case USER_INACTIVE:
-                message = "The user is inactive. Please contact your administrator.";
+                message = 'The user is inactive. Please contact your administrator.';
                 break;
               case USER_SUSPENDED:
-                message = "The user is suspended. Please try again later or contact your administrator.";
+                message = 'The user is suspended. Please try again later or contact your administrator.';
                 break;
               default:
-                message = "The username/password combination you provided are not valid. Please try again or contact your administrator.";
+                message = 'The username/password combination you provided are not valid. Please try again or contact your administrator.';
                 // clear the password
-                this.model.password='';
+                this.model.password = '';
                 break;
             }
             break;
           case HTTP_GATEWAY_TIMEOUT:
           case HTTP_NOTFOUND:
-            message = "Unable to login. SMP is not running.";
+            message = 'Unable to login. SMP is not running.';
             break;
           default:
-            message = "Default error (" + error.status + ") occurred during login.";
+            message = 'Default error (' + error.status + ') occurred during login.';
             break;
         }
         this.alertService.error(message);
@@ -83,14 +88,13 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   verifyDefaultLoginUsed() {
-    let currentUser: User = this.securityService.getCurrentUser();
+    const currentUser: User = this.securityService.getCurrentUser();
     if (currentUser.defaultPasswordUsed) {
       this.dialog.open(DefaultPasswordDialogComponent);
     }
   }
 
   ngOnDestroy(): void {
-    console.log("Destroying login component");
     this.sub.unsubscribe();
   }
 }
