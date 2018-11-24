@@ -21,6 +21,7 @@ import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
 import org.apache.cxf.message.Message;
 import org.apache.cxf.transport.http.HTTPConduit;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.X509KeyManager;
 import java.security.PrivateKey;
+import java.security.Security;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 
@@ -59,6 +61,12 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest {
                     {"bdmsl.integration.keystore.password", "test123"}
             });
         }
+    }
+
+
+    @Before
+    public void setup(){
+        Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
     }
 
     @Autowired

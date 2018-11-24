@@ -114,11 +114,11 @@ public class UserResourceTest {
 
 
         assertNotNull(res);
-        assertEquals("CN=Intermediate CA, O=DIGIT, C=BE", res.getIssuer());
-        assertEquals("EMAILADDRESS=smp@test.com, CN=SMP test, O=DIGIT, C=BE", res.getSubject());
+        assertEquals("C=BE,O=DIGIT,CN=Intermediate CA", res.getIssuer());
+        assertEquals("C=BE,O=DIGIT,CN=SMP test,E=smp@test.com", res.getSubject());
         assertEquals("3", res.getSerialNumber());
         assertEquals("CN=SMP test,O=DIGIT,C=BE:0000000000000003", res.getCertificateId());
-        assertEquals("sno=3&subject=EMAILADDRESS%3Dsmp%40test.com%2C+CN%3DSMP+test%2C+O%3DDIGIT%2C+C%3DBE&validfrom=May+22+20%3A59%3A00+2018+GTM&validto=May+22+20%3A56%3A00+2019+GTM&issuer=CN%3DIntermediate+CA%2C+O%3DDIGIT%2C+C%3DBE", res.getBlueCoatHeader());
+        assertEquals("sno=3&subject=C%3DBE%2CO%3DDIGIT%2CCN%3DSMP+test%2CE%3Dsmp%40test.com&validfrom=May+22+20%3A59%3A00+2018+GTM&validto=May+22+20%3A56%3A00+2019+GTM&issuer=C%3DBE%2CO%3DDIGIT%2CCN%3DIntermediate+CA", res.getBlueCoatHeader());
 
     }
 
