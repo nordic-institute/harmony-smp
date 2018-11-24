@@ -40,12 +40,13 @@
         <!-- jacoco remote agent settings start -->
         <sonar.jacoco.remotePort>${jacocoRemotePort}</sonar.jacoco.remotePort>
         <sonar.jacoco.remoteAddress>${jacocoRemoteAddress}</sonar.jacoco.remoteAddress>
+        <sonar.jacoco.remoteAddress>${jacocoRemotePort}</sonar.jacoco.remoteAddress>
         <!-- jacoco remote agent settings end -->
 
         <!-- jacoco, sonar code coverage settings start -->
         <sonar.jacoco.codeCoveragePath>${maven.multiModuleProjectDirectory}/code-coverage
         </sonar.jacoco.codeCoveragePath>
-        <sonar.jacoco.reportPath>${sonar.jacoco.codeCoveragePath}/jacoco-ut.exec</sonar.jacoco.reportPath>
+        <sonar.jacoco.remotePort>${sonar.jacoco.codeCoveragePath}/jacoco-ut.exec</sonar.jacoco.remotePort>
         <!-- jacoco, sonar code coverage settings end -->
 
         <!-- default value for deploy under Weblogic, etc -->
