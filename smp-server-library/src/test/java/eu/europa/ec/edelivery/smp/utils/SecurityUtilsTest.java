@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.utils;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 
@@ -11,10 +12,16 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Security;
 
 import static org.junit.Assert.*;
 
 public class SecurityUtilsTest {
+
+    @Before
+    public void setup(){
+        Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
+    }
 
 
     @Test
