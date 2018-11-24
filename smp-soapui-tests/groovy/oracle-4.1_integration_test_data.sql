@@ -66,4 +66,4 @@ insert into SMP_USER (ID, USERNAME, PASSWORD, ROLE, ACTIVE, CREATED_ON, LAST_UPD
 insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_ON, LAST_UPDATED_ON) values (SMP_USER_SEQ.CURRVAL, 'CN=SMP_1000000181,O=DIGIT,C=DK:123456789', null,null, sysdate, sysdate);
 
 -- insert domain
-insert into SMP_DOMAIN (ID, DOMAIN_CODE, SML_SUBDOMAIN, SIGNATURE_KEY_ALIAS, CREATED_ON, LAST_UPDATED_ON) values (SMP_DOMAIN_SEQ.nextval, 'domain','subdomain','sig-key', sysdate, sysdate);
+insert into SMP_DOMAIN (ID, DOMAIN_CODE, SML_SUBDOMAIN, SIGNATURE_KEY_ALIAS,SML_BLUE_COAT_AUTH, CREATED_ON, LAST_UPDATED_ON) values (SMP_DOMAIN_SEQ.nextval, 'domain','subdomain','sig-key',1, sysdate, sysdate);

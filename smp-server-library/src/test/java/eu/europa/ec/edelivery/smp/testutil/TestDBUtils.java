@@ -17,6 +17,7 @@ public class TestDBUtils {
         domain.setSmlClientCertHeader(UUID.randomUUID().toString());
         domain.setSmlClientKeyAlias(UUID.randomUUID().toString());
         domain.setSmlSubdomain(UUID.randomUUID().toString());
+        domain.setSmlSmpId(UUID.randomUUID().toString());
         domain.setSmlParticipantIdentifierRegExp(UUID.randomUUID().toString());
         return domain;
     }

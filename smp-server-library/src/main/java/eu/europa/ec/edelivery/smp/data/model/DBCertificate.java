@@ -33,18 +33,18 @@ public class DBCertificate extends BaseEntity {
     @Id
     @Column(name = "ID")
     Long id;
-    @Column(name = "CERTIFICATE_ID", length = CommonColumnsLengths.MAX_FREE_TEXT_LENGTH, unique = true)
+    @Column(name = "CERTIFICATE_ID", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH, unique = true)
     private String certificateId;
     @Column(name = "VALID_FROM")
     private LocalDateTime validFrom;
     @Column(name = "VALID_TO")
     private LocalDateTime validTo;
 
-    @Column(name = "subject", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512)
+    @Column(name = "SUBJECT", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
     private String  subject;
-    @Column(name = "issuer", length = CommonColumnsLengths.MAX_TEXT_LENGTH_512)
+    @Column(name = "ISSUER", length = CommonColumnsLengths.MAX_MEDIUM_TEXT_LENGTH)
     private String  issuer;
-    @Column(name = "serialNumber", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128)
+    @Column(name = "SERIALNUMBER", length = CommonColumnsLengths.MAX_TEXT_LENGTH_128)
     private String  serialNumber;
 
 

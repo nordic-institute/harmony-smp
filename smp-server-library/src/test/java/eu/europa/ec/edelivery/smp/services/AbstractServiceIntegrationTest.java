@@ -71,7 +71,7 @@ public abstract class AbstractServiceIntegrationTest {
      *          - TEST_DOC_ID_1, TEST_DOC_SCHEMA_1
      *
      *
-     * ServiceGroup2: TEST_SG_ID_1, TEST_SG_SCHEMA_2
+     * ServiceGroup2: TEST_SG_ID_2, TEST_SG_SCHEMA_2
      *    - Domain: TEST_DOMAIN_CODE_1
      *    - Owners: USERNAME_1
      *    - Metadata: /
