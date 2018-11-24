@@ -40,7 +40,7 @@ public class UIKeystoreService {
     @Value("${encryption.key.filename}")
     private String encryptionFilename;
 
-    private String smpKeyStorePasswordDecripted;
+    private String smpKeyStorePasswordDecrypted;
 
     private Map<String, Key> keystoreKeys;
     private Map<String, X509Certificate> keystoreCertificates;
@@ -60,7 +60,7 @@ public class UIKeystoreService {
         LOG.info("initialize from configuration folder:"+configurationDir
                         +", enc file: "+encryptionFilename+", keystore " +  smpKeyStoreFilename);
         if (configurationDir==null || encryptionFilename==null){
-            LOG.info("Configuration folder and/or encryption filename are not set in database!");
+            LOG.warn("Configuration folder and/or encryption filename are not set in database!");
             return;
         }
 
@@ -68,15 +68,21 @@ public class UIKeystoreService {
          File file = new File(configurationDir + File.separator +  encryptionFilename);
          File keystoreFilePath = new File(configurationDir + File.separator + smpKeyStoreFilename );
          if (!file.exists()){
+             LOG.error("Encryption key file '{}' does not exists!", file.getAbsolutePath());
             return;
         }
-        smpKeyStorePasswordDecripted = SecurityUtils.decrypt(file,smpKeyStorePasswordEncrypted);
+        if (!keystoreFilePath.exists()){
+            LOG.error("Keystore file '{}' does not exists!", keystoreFilePath.getAbsolutePath());
+            return;
+        }
+
+        smpKeyStorePasswordDecrypted = SecurityUtils.decrypt(file,smpKeyStorePasswordEncrypted);
 
         // Load the KeyStore and get the signing key and certificate.
         try (InputStream keystoreInputStream = new FileInputStream(keystoreFilePath)) {
 
             KeyStore keyStore = KeyStore.getInstance("JKS");
-            keyStore.load(keystoreInputStream, smpKeyStorePasswordDecripted.toCharArray());
+            keyStore.load(keystoreInputStream, smpKeyStorePasswordDecrypted.toCharArray());
 
 
             for (String alias : list(keyStore.aliases())) {
@@ -88,7 +94,7 @@ public class UIKeystoreService {
     }
 
     private void loadKeyAndCert(KeyStore keyStore, String alias) throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
-        Key key = keyStore.getKey(alias, smpKeyStorePasswordDecripted.toCharArray());
+        Key key = keyStore.getKey(alias, smpKeyStorePasswordDecrypted.toCharArray());
         Certificate certificate = keyStore.getCertificate(alias);
         if (key == null || certificate == null || !(certificate instanceof X509Certificate)) {
             throw new IllegalStateException("Wrong entry type found in keystore, only certificates with keypair are accepted, entry alias: " + alias);
