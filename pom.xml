@@ -47,7 +47,7 @@
         <sonar.jacoco.codeCoveragePath>${maven.multiModuleProjectDirectory}/code-coverage
         </sonar.jacoco.codeCoveragePath>
         <sonar.jacoco.remotePort>${sonar.jacoco.codeCoveragePath}/jacoco-ut.exec</sonar.jacoco.remotePort>
-        <!-- jacoco, sonar code coverage settings end -->
+        <sonar.maven.plugin.version>3.5.0.1254</sonar.maven.plugin.version>
 
         <!-- default value for deploy under Weblogic, etc -->
         <deployWarFolder>/home/edelivery/oracle/middleware/domains/bdmsl/autodeploy/</deployWarFolder>
@@ -217,6 +217,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>sonar-maven-plugin</artifactId>
+                <version>${sonar.maven.plugin.version}</version>
             </plugin>
             <plugin>
                 <artifactId>maven-release-plugin</artifactId>
