@@ -2,7 +2,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
-import {FlexLayoutModule} from "@angular/flex-layout";
+import {FlexLayoutModule} from '@angular/flex-layout';
 import {
   MatButtonModule,
   MatCardModule,
@@ -20,7 +20,7 @@ import {
   MatToolbarModule,
   MatTooltipModule,
 } from '@angular/material';
-import "hammerjs";
+import 'hammerjs';
 
 import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 
@@ -70,13 +70,15 @@ import {DomainDetailsDialogComponent} from './domain/domain-details-dialog/domai
 import {UserDetailsDialogComponent} from './user/user-details-dialog/user-details-dialog.component';
 import {DownloadService} from './download/download.service';
 import {CertificateService} from './user/certificate.service';
-import {GlobalLookups} from "./common/global-lookups";
-import {ServiceGroupExtensionWizardDialogComponent} from "./service-group-edit/service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component";
-import {ServiceMetadataWizardDialogComponent} from "./service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-dialog.component";
-import {ConfirmationDialogComponent} from "./common/confirmation-dialog/confirmation-dialog.component";
-import {SpinnerComponent} from "./common/spinner/spinner.component";
-import {UserService} from "./user/user.service";
-import {UserDetailsService} from "./user/user-details-dialog/user-details.service";
+import {GlobalLookups} from './common/global-lookups';
+import {ServiceGroupExtensionWizardDialogComponent} from './service-group-edit/service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component';
+import {ServiceMetadataWizardDialogComponent} from './service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-dialog.component';
+import {ConfirmationDialogComponent} from './common/confirmation-dialog/confirmation-dialog.component';
+import {SpinnerComponent} from './common/spinner/spinner.component';
+import {UserService} from './user/user.service';
+import {UserDetailsService} from './user/user-details-dialog/user-details.service';
+import { ExpiredPasswordDialogComponent } from './common/expired-password-dialog/expired-password-dialog.component';
+import { DialogComponent } from './common/dialog/dialog.component';
 
 @NgModule({
   declarations: [
@@ -110,7 +112,9 @@ import {UserDetailsService} from "./user/user-details-dialog/user-details.servic
     DomainSelectorComponent,
     AlertsComponent,
     SearchTableComponent,
-    UserDetailsDialogComponent
+    UserDetailsDialogComponent,
+    ExpiredPasswordDialogComponent,
+    DialogComponent,
   ],
   entryComponents: [
     AppComponent,
@@ -124,6 +128,7 @@ import {UserDetailsService} from "./user/user-details-dialog/user-details.servic
     ConfirmationDialogComponent,
     SaveDialogComponent,
     DefaultPasswordDialogComponent,
+    ExpiredPasswordDialogComponent,
   ],
   imports: [
     BrowserModule,
