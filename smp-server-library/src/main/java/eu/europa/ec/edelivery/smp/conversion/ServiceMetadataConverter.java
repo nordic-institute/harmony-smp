@@ -22,6 +22,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
@@ -29,6 +30,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -106,14 +108,14 @@ public class ServiceMetadataConverter {
     }
 
     public static String toString(Document doc) throws TransformerException, UnsupportedEncodingException {
-        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        Transformer transformer = createNewSecureTransformer();
         StringWriter writer = new StringWriter();
         transformer.transform(new DOMSource(doc), new StreamResult(writer));
         return writer.toString();
     }
 
     public static byte[] toByteArray(Document doc) throws TransformerException, UnsupportedEncodingException {
-        Transformer transformer = TransformerFactory.newInstance().newTransformer();
+        Transformer transformer = createNewSecureTransformer();
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         transformer.transform(new DOMSource(doc), new StreamResult(stream));
         return stream.toByteArray();
@@ -124,6 +126,13 @@ public class ServiceMetadataConverter {
         dbf.setNamespaceAware(true);
         dbf.setFeature(PARSER_DISALLOW_DTD_PARSING_FEATURE, true);
         return dbf.newDocumentBuilder();
+    }
+
+    private static Transformer createNewSecureTransformer() throws TransformerConfigurationException {
+        TransformerFactory factory = TransformerFactory.newInstance();
+        factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+        return factory.newTransformer();
     }
 
 
