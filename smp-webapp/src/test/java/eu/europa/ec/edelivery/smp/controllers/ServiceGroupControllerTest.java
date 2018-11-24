@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.controllers;
 
 import eu.europa.ec.edelivery.smp.config.*;
+import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -53,6 +54,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         SmpAppConfig.class,
         SmpWebAppConfig.class,
         SpringSecurityConfig.class,
+        UIKeystoreService.class
 })
 @WebAppConfiguration
 @Sql("classpath:/cleanup-database.sql")
@@ -141,6 +143,34 @@ public class ServiceGroupControllerTest {
 
         mvc.perform(get(URL_PATH))
                 .andExpect(content().xml(SERVICE_GROUP_INPUT_BODY));
+
+    }
+
+    @Test
+    public void existingServiceMetadataCanBeRetrievedByEverybody() throws Exception {
+
+        String xmlSG = getSampleServiceGroupBody(PARTICIPANT_SCHEME, PARTICIPANT_ID);
+        String xmlMD = generateServiceMetadata(PARTICIPANT_ID, PARTICIPANT_SCHEME, DOCUMENT_ID, DOCUMENT_SCHEME, "test");
+        // crate service group
+        mvc.perform(put(URL_PATH)
+                .with(ADMIN_CREDENTIALS)
+                .contentType(APPLICATION_XML_VALUE)
+                .content(xmlSG))
+                .andExpect(status().isCreated());
+        // add service metadata
+        mvc.perform(put(URL_DOC_PATH)
+                .with(ADMIN_CREDENTIALS)
+                .contentType(APPLICATION_XML_VALUE)
+
+                .content(xmlMD))
+                .andExpect(status().isCreated());
+
+        MvcResult mr = mvc.perform(get(URL_PATH).header("X-Forwarded-Host", "ec.test.eu")
+                .header("X-Forwarded-Port", "443")
+                .header("X-Forwarded-Proto", "https")).andReturn();
+        System.out.println(mr.getResponse().getContentAsString());
+        mvc.perform(get(URL_PATH))
+                .andExpect(content().xml("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><ServiceGroup xmlns=\"http://docs.oasis-open.org/bdxr/ns/SMP/2016/05\" xmlns:ns2=\"http://www.w3.org/2000/09/xmldsig#\"><ParticipantIdentifier scheme=\"ehealth-participantid-qns\">urn:poland:ncpb</ParticipantIdentifier><ServiceMetadataReferenceCollection><ServiceMetadataReference href=\"http://localhost/ehealth-participantid-qns%3A%3Aurn%3Apoland%3Ancpb/services/doctype%3A%3Ainvoice\"/></ServiceMetadataReferenceCollection></ServiceGroup>"));
 
     }
 

@@ -13,7 +13,9 @@
 
 package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
 import eu.europa.ec.edelivery.smp.config.PropertiesMultipleDomainTestConfig;
+import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import eu.europa.ec.edelivery.smp.testutil.SignatureUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,7 +33,7 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {PropertiesMultipleDomainTestConfig.class,
-        ServiceMetadataSigner.class})
+        ServiceMetadataSigner.class,  UIKeystoreService.class, ConversionTestConfig.class})
 public class ServiceMetadataSignerMultipleDomainsIntegrationTest {
 
     @Autowired

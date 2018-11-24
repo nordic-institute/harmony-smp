@@ -30,6 +30,16 @@ public enum SMPMessageCode implements MessageCode {
     BUS_SAVE_SERVICE_GROUP ("BUS-014", "Start inserting/updating ServiceGroup for domain {}, part. Id: {} part. scheme {}."),
     BUS_SAVE_SERVICE_GROUP_FAILED ("BUS-015", "Inserting/updating ServiceGroup for domain {}, part. Id: {} part. scheme {} failed! Error: [{}]"),
 
+    BUS_SML_REGISTER_SERVICE_GROUP("BUS-016", "Start registering participant:  part. Id: {} part. scheme {} to domain {}"),
+    BUS_SML_REGISTER_END_SERVICE_GROUP("BUS-017", "End registering participant:  part. Id: {} part. scheme {} to domain {}"),
+    BUS_SML_REGISTER_SERVICE_GROUP_ALREADY_REGISTERED("BUS-018", "Participant:  part. Id: {} part. scheme {} to domain {} marked as already registered to SML"),
+    BUS_SML_REGISTER_SERVICE_GROUP_FAILED("BUS-019", "Participant registration:  part. Id: {} part. scheme {} to domain {} failed due to error: {}"),
+
+    BUS_SML_UNREGISTER_SERVICE_GROUP("BUS-020", "Start unregistering participant:  part. Id: {} part. scheme {} to domain {}"),
+    BUS_SML_UNREGISTER_END_SERVICE_GROUP("BUS-021", "End unregistering participant:  part. Id: {} part. scheme {} to domain {}"),
+    BUS_SML_UNREGISTER_SERVICE_GROUP_ALREADY_REGISTERED("BUS-022", "Participant:  part. Id: {} part. scheme {} to domain {} marked as already unregistered to SML"),
+    BUS_SML_UNREGISTER_SERVICE_GROUP_FAILED("BUS-023", "Participant unregistration:  part. Id: {} part. scheme {} to domain {} failed due to error: {}"),
+
 
     BUS_INVALID_XML("BUS-030", "Invalid XML for {}. Error: [{}]"),
 

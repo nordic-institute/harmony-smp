@@ -19,6 +19,7 @@ package eu.europa.ec.edelivery.smp.data.model;
 public class CommonColumnsLengths {
     public static final int MAX_DOMAIN_CODE_LENGTH = 256;
     public static final int MAX_FREE_TEXT_LENGTH = 4000;
+    public static final int MAX_MEDIUM_TEXT_LENGTH = 1024;
     public static final int MAX_PARTICIPANT_IDENTIFIER_SCHEME_LENGTH = 256;
     public static final int MAX_PARTICIPANT_IDENTIFIER_VALUE_LENGTH = 256;
     public static final int MAX_DOCUMENT_TYPE_IDENTIFIER_VALUE_LENGTH = 500;

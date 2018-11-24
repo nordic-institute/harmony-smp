@@ -18,16 +18,7 @@ import java.util.Objects;
 @Table(name = "SMP_SERVICE_GROUP_DOMAIN")
 public class DBServiceGroupDomain extends BaseEntity {
 
-    /*
-    initially try with embeded id
-    @EmbeddedId
-    private DBServiceGroupDomainId i
-    initially try with embeded id
-    But then envers generated FK constraints:
-    alter table SMP_SERVICE_METADATA_AUD add constraint FKbay.. foreign key (FK_DOMAIN_ID) references SMP_DOMAIN (ID);
-    alter table SMP_SERVICE_METADATA_AUD add constraint FKn250.. foreign key (FK_SG_ID) references SMP_SERVICE_GROUP (ID);
-    Tried to use  @ForeignKey(name="beda", value = ConstraintMode.NO_CONSTRAINT)) but did not helped....
-    */
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sgd_generator")
@@ -56,7 +47,7 @@ public class DBServiceGroupDomain extends BaseEntity {
     private List<DBServiceMetadata> serviceMetadata = new ArrayList<>();
 
 
-    @Column(name = "SML_REGISTRED", nullable = false)
+    @Column(name = "SML_REGISTERED", nullable = false)
     private boolean smlRegistered = false;
 
     @Column(name = "CREATED_ON" , nullable = false)

@@ -72,6 +72,12 @@ public class DBDomain extends BaseEntity {
     @Column(name = "LAST_UPDATED_ON", nullable = false)
     LocalDateTime lastUpdatedOn;
 
+    @Column(name = "SML_REGISTERED", nullable = false)
+    private boolean smlRegistered = false;
+
+    @Column(name = "SML_BLUE_COAT_AUTH", nullable = false)
+    private boolean smlBlueCoatAuth = false;
+
     public DBDomain() {
 
     }
@@ -141,6 +147,21 @@ public class DBDomain extends BaseEntity {
         this.signatureKeyAlias = keyAlias;
     }
 
+    public boolean isSmlRegistered() {
+        return smlRegistered;
+    }
+
+    public void setSmlRegistered(boolean smlRegistered) {
+        this.smlRegistered = smlRegistered;
+    }
+
+    public boolean isSmlBlueCoatAuth() {
+        return smlBlueCoatAuth;
+    }
+
+    public void setSmlBlueCoatAuth(boolean smlBlueCoatAuth) {
+        this.smlBlueCoatAuth = smlBlueCoatAuth;
+    }
 
     @PrePersist
     public void prePersist() {

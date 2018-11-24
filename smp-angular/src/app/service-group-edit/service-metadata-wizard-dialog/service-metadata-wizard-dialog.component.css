@@ -6,3 +6,12 @@
   -moz-box-sizing: border-box; /* FF1+ */
   box-sizing: border-box; /* Chrome, IE8, Opera, Safari 5.1*/
 }
+
+#certificate-file-upload {
+  display: none;
+}
+
+.custom-file-upload {
+  display: inline-block;
+  cursor: pointer;
+}

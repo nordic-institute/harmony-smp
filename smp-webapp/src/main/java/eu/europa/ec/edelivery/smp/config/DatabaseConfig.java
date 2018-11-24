@@ -13,11 +13,14 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -25,9 +28,12 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
+
+import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
 /**
  * Created by Flavio Santos
@@ -50,19 +56,46 @@ public class DatabaseConfig {
     @Value("${jdbc.url}")
     private String url;
 
-    @Bean
-    public DataSource dataSource() {
+    @Value("${datasource.jndi:jdbc/smpDatasource}")
+    private String jndiDatasourceName;
+
+    /**
+     * Create datasource from file property configuration. If URL is null than try to get datasource from JNDI.
+     *
+     * @return
+     */
+    @Bean(name = "dataSource")
+    @Conditional(value = JNDIDatasourceCondition.class)
+    public DataSource jndiDataSource() {
+        JndiObjectFactoryBean dataSource = new JndiObjectFactoryBean();
+        dataSource.setJndiName(jndiDatasourceName);
+        try {
+            dataSource.afterPropertiesSet();
+        } catch (IllegalArgumentException | NamingException e) {
+            // rethrow
+            throw new SMPRuntimeException(INTERNAL_ERROR, e, "while retrieving datasource: " + jndiDatasourceName, e.getMessage());
+        }
+        return (DataSource) dataSource.getObject();
+    }
+
+    /**
+     * Create datasource from file property configuration. If URL is null than try to get datasource from JNDI.
+     *
+     * @return
+     */
+    @Bean(name = "dataSource")
+    @Conditional(value = PropertyDatasourceCondition.class)
+    public DataSource propertyDataSource() {
         DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
         driverManagerDataSource.setDriverClassName(driver);
         driverManagerDataSource.setUrl(url);
         driverManagerDataSource.setUsername(username);
         driverManagerDataSource.setPassword(password);
-
         return driverManagerDataSource;
     }
 
     @Bean
-    public LocalContainerEntityManagerFactoryBean smpEntityManagerFactory( DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
+    public LocalContainerEntityManagerFactoryBean smpEntityManagerFactory(DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
         Properties prop = new Properties();
         prop.setProperty("org.hibernate.envers.store_data_at_delete", "true");
         LocalContainerEntityManagerFactoryBean lef = new LocalContainerEntityManagerFactoryBean();
@@ -70,7 +103,6 @@ public class DatabaseConfig {
         lef.setJpaVendorAdapter(jpaVendorAdapter);
         lef.setPackagesToScan("eu.europa.ec.edelivery.smp.data.model");
         lef.setJpaProperties(prop);
-        //lef.setPersistenceXmlLocation("classpath:META-INF/smp-persistence.xml");
         return lef;
     }
 
@@ -78,7 +110,6 @@ public class DatabaseConfig {
     public PlatformTransactionManager smpTransactionManager(EntityManagerFactory emf) {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
         transactionManager.setEntityManagerFactory(emf);
-
         return transactionManager;
     }
 

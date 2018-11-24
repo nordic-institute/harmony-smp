@@ -141,50 +141,11 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
         CertificateFactory fact = CertificateFactory.getInstance("X.509");
         X509Certificate cert = (X509Certificate) fact.generateCertificate(isCert);
-        String subject = cert.getSubjectDN().getName();
-        String issuer = cert.getIssuerDN().getName();
-        String hash = cert.getIssuerDN().getName();
-        BigInteger serial = cert.getSerialNumber();
-        String certId = getCertificateIdFromCertificate(subject, issuer, serial);
-        CertificateRO cro = new CertificateRO();
-        cro.setCertificateId(certId);
-        cro.setSubject(subject);
-        cro.setIssuer(issuer);
-        // set serial as HEX
-        cro.setSerialNumber(serial.toString(16));
-        cro.setValidFrom(cert.getNotBefore());
-        cro.setValidTo(cert.getNotAfter());
-        cro.setEncodedValue(Base64.getMimeEncoder().encodeToString(cert.getEncoded()));
-        // generate bluecoat header
-        SimpleDateFormat sdf = new SimpleDateFormat(S_BLUECOAT_DATEFORMAT);
-        StringWriter sw = new StringWriter();
-        sw.write("sno=");
-        sw.write(serial.toString(16));
-        sw.write("&subject=");
-        sw.write(urlEnodeString(subject));
-        sw.write("&validfrom=");
-        sw.write(urlEnodeString(sdf.format(cert.getNotBefore())+" GTM"));
-        sw.write("&validto=");
-        sw.write(urlEnodeString(sdf.format(cert.getNotAfter())+" GTM"));
-        sw.write("&issuer=");
-        sw.write(urlEnodeString(issuer));
-        cro.setBlueCoatHeader(sw.toString());
 
+        CertificateRO cro = convertToRo(cert);
         return cro;
     }
 
-    private String urlEnodeString(String val){
-        if (StringUtils.isBlank(val)){
-            return "";
-        } else {
-            try {
-                return URLEncoder.encode(val, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                LOG.error("Error occurred while url encoding the certificate string:" + val, e );
-            }
-        }
-        return "";
-    }
 
 
     /**
@@ -211,7 +172,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     }
 
     /**
-     * pem encoded cartificate can have header_?? this code finds the certificate part and return the part
+     * pem encoded certificate can have header_?? this code finds the certificate part and return the part
      * @param buff
      * @return
      */
@@ -247,14 +208,15 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         return -1;
     }
 
-    public String getCertificateIdFromCertificate(String subject, String issuer, BigInteger serial) {
-        return new PreAuthenticatedCertificatePrincipal(subject, issuer, serial).getName();
-    }
-
     @Override
     public UserRO convertToRo(DBUser d) {
         return conversionService.convert(d, UserRO.class);
     }
+
+    public CertificateRO convertToRo(X509Certificate d) {
+        return conversionService.convert(d, CertificateRO.class);
+    }
+
 
     public DeleteEntityValidation validateDeleteRequest(DeleteEntityValidation dev){
         List<DBUserDeleteValidation>  lstMessages = userDao.validateUsersForDelete(dev.getListIds());

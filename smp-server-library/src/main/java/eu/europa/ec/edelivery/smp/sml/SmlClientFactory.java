@@ -16,7 +16,9 @@
 package eu.europa.ec.edelivery.smp.sml;
 
 import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
+import eu.europa.ec.bdmsl.ws.soap.IManageServiceMetadataWS;
 import eu.europa.ec.bdmsl.ws.soap.ManageBusinessIdentifierService;
+import eu.europa.ec.bdmsl.ws.soap.ManageServiceMetadataService;
 import org.apache.cxf.configuration.jsse.TLSClientParameters;
 import org.apache.cxf.configuration.security.ProxyAuthorizationPolicy;
 import org.apache.cxf.endpoint.Client;
@@ -86,6 +88,7 @@ public class SmlClientFactory {
     private String proxyPassword;
 
 
+
     @Bean
     @Scope("prototype")
     public IManageParticipantIdentifierWS create(String clientKeyAlias, String clientCertHttpHeader) {
@@ -102,6 +105,24 @@ public class SmlClientFactory {
         configurePayloadLogging(client);
         configureClientAuthentication(httpConduit, requestContext, clientKeyAlias, clientCertHttpHeader);
 
+        return smlPort;
+    }
+
+    @Bean
+    @Scope("prototype")
+    public IManageServiceMetadataWS createSmp(String clientKeyAlias, String clientCertHttpHeader) {
+        ManageServiceMetadataService smlService = new ManageServiceMetadataService((URL) null);
+        IManageServiceMetadataWS smlPort = smlService.getManageServiceMetadataServicePort();
+        Client client = ClientProxy.getClient(smlPort);
+
+        HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
+        Map<String, Object> requestContext = ((BindingProvider) smlPort).getRequestContext();
+        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, smlUrl.toString());
+
+        configureFaultHandling(requestContext);
+        configureProxy(httpConduit);
+        configurePayloadLogging(client);
+        configureClientAuthentication(httpConduit, requestContext, clientKeyAlias, clientCertHttpHeader);
         return smlPort;
     }
 
