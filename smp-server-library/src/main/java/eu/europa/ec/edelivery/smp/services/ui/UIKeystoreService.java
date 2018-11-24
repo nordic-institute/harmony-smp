@@ -1,9 +1,11 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.convert.ConversionService;
@@ -75,8 +77,13 @@ public class UIKeystoreService {
             LOG.error("Keystore file '{}' does not exists!", keystoreFilePath.getAbsolutePath());
             return;
         }
-
-        smpKeyStorePasswordDecrypted = SecurityUtils.decrypt(file,smpKeyStorePasswordEncrypted);
+        
+        try {
+            smpKeyStorePasswordDecrypted = SecurityUtils.decrypt(file, smpKeyStorePasswordEncrypted);
+        } catch (SMPRuntimeException exception) {
+            LOG.error("Error occurred while using encryption key: " + file.getAbsolutePath() + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
+            return;
+        }
 
         // Load the KeyStore and get the signing key and certificate.
         try (InputStream keystoreInputStream = new FileInputStream(keystoreFilePath)) {
@@ -88,8 +95,9 @@ public class UIKeystoreService {
             for (String alias : list(keyStore.aliases())) {
                 loadKeyAndCert(keyStore, alias);
             }
-        } catch (Exception e) {
-            throw new IllegalStateException("Could not load signing certificate with private key from keystore file: " + keystoreFilePath, e);
+        } catch (Exception exception) {
+            LOG.error("Could not load signing certificate with private key from keystore file:"
+                    + keystoreFilePath + " Error: "+ ExceptionUtils.getRootCauseMessage(exception), exception);
         }
     }
 
