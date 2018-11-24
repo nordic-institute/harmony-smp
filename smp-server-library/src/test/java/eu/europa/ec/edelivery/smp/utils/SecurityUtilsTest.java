@@ -2,7 +2,7 @@ package eu.europa.ec.edelivery.smp.utils;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.util.StringUtils;
+
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -16,10 +16,6 @@ import static org.junit.Assert.*;
 
 public class SecurityUtilsTest {
 
-    
-    @Test
-    public void mergeKeystores() {
-    }
 
     @Test
     public void generatePrivateSymmetricKey() throws IOException {
@@ -41,7 +37,7 @@ public class SecurityUtilsTest {
     }
 
     @Test
-    public void encrypt() {
+    public void encrypt() throws IOException {
         // given
         File f = generateRandomPrivateKey();
         String password = "TEST11002password1@!."+System.currentTimeMillis();
@@ -53,9 +49,9 @@ public class SecurityUtilsTest {
         assertNotEquals(password, encPassword);
     }
     @Test
-    public void encryptt() {
+    public void encryptWithSetupKey() {
         // given
-        File f = new File("/cef/code/smp/smp-server-library/src/test/resources/keystores/encryptionKey.key");
+        File f = new File("src/test/resources/keystores/encryptionKey.key");
         String password = "test123";
 
         // when
@@ -67,7 +63,7 @@ public class SecurityUtilsTest {
 
 
     @Test
-    public void decrypt() {
+    public void decrypt() throws IOException {
         // given
         File f = generateRandomPrivateKey();
         String password = "TEST11002password1@!." + System.currentTimeMillis();
@@ -81,11 +77,11 @@ public class SecurityUtilsTest {
     }
 
 
-    private File generateRandomPrivateKey(){
-        String tempPrivateKey = "enckey_"+ System.currentTimeMillis() + ".private";
-        Path resourceDirectory = Paths.get("target", tempPrivateKey);
-        File resource = resourceDirectory.toFile();
-        SecurityUtils.generatePrivateSymmetricKey(resourceDirectory.toFile());
+    private File generateRandomPrivateKey() throws IOException{
+        File resource = File.createTempFile( "test-key", ".key");
+        resource.deleteOnExit();
+
+        SecurityUtils.generatePrivateSymmetricKey(resource);
         return resource;
 
     }

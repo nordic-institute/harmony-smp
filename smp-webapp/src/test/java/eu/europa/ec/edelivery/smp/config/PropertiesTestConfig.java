@@ -34,7 +34,7 @@ public class PropertiesTestConfig {
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
         Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores");
-        String path = resourceDirectory.toString();
+        String path = resourceDirectory.toFile().getAbsolutePath();
 
         PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
 
