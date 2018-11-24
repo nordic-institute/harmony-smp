@@ -1,16 +1,17 @@
 import {Injectable} from '@angular/core';
-import {Subject} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {HttpResponse} from '@angular/common/http';
 
 @Injectable()
-export class HttpEventService extends Subject<any> {
-    constructor() {
-        super();
-    }
+export class HttpEventService {
 
-    requestForbiddenEvent(error: HttpResponse<any>) {
-        if(error) {
-            super.next(error);
-        }
-    }
+  private forbiddenResponseSubject = new Subject<any>();
+
+  onForbiddenResponse$(): Observable<any> {
+    return this.forbiddenResponseSubject.asObservable();
+  }
+
+  notifyForbiddenResponse(response) {
+    this.forbiddenResponseSubject.next(response);
+  }
 }

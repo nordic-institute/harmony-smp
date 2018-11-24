@@ -54,6 +54,7 @@ public class UIServiceMetadataService extends UIServiceBase<DBServiceMetadata, S
 
     @Transactional
     public ServiceMetadataRO getServiceMetadataXMLById(Long serviceMetadataId) {
+        LOG.debug("Get service metadata: {}", serviceMetadataId);
         DBServiceMetadata dbServiceMetadata = serviceMetadataDao.find(serviceMetadataId);
         ServiceMetadataRO serviceMetadataRO = new ServiceMetadataRO();
 

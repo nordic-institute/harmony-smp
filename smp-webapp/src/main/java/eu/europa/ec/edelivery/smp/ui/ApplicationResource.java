@@ -40,7 +40,7 @@ public class ApplicationResource {
 
     @RequestMapping(method = RequestMethod.GET, path = "name")
     public  String getName() {
-        return "SMP TEST";
+        return artifactName;
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "rootContext")

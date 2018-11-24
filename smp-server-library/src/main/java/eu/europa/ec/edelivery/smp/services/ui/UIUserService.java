@@ -186,17 +186,6 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         return "";
     }
 
-    public boolean isCertificatePemEncoded(byte[] certData) {
-        if (certData != null && certData.length > S_PEM_START_TAG.length) {
-            for (int i = 0; i < certData.length; i++) {
-                if (certData[i] != S_PEM_START_TAG[i]) {
-                    return false;
-                }
-                return true;
-            }
-        }
-        return false;
-    }
 
     /**
      * Method tests if certificate is in PEM  format. If not it creates pem format else returns original data.
