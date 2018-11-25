@@ -1,2 +1,0 @@
-INSERT INTO smp_domain(domainId, bdmslClientCertHeader, bdmslClientCertAlias, bdmslSmpId, signatureCertAlias) VALUES('domain2', 'client-cert-header-value', '', 'SECOND-SMP-ID', 'signature-alias');
-INSERT INTO smp_domain(domainId, bdmslClientCertHeader, bdmslClientCertAlias, bdmslSmpId, signatureCertAlias) VALUES('domain3', '', 'client-keystore-alias-key', 'THIRD-SMP-ID', 'signature-alias');

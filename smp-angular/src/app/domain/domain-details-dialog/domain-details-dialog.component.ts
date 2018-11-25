@@ -1,5 +1,5 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {DomainRo} from "../domain-ro.model";
 import {AlertService} from "../../alert/alert.service";
@@ -7,6 +7,8 @@ import {SearchTableEntityStatus} from "../../common/search-table/search-table-en
 import {GlobalLookups} from "../../common/global-lookups";
 import {CertificateRo} from "../../user/certificate-ro.model";
 import {CertificateService} from "../../user/certificate.service";
+import {KeystoreImportDialogComponent} from "../keystore-import-dialog/keystore-import-dialog.component";
+import {KeystoreEditDialogComponent} from "../keystore-edit-dialog/keystore-edit-dialog.component";
 
 @Component({
   selector: 'domain-details-dialog',
@@ -25,7 +27,7 @@ export class DomainDetailsDialogComponent {
   current: DomainRo & { confirmation?: string };
   domainForm: FormGroup;
   domain;
-  selectedSMLCert:CertificateRo;
+  selectedSMLCert: CertificateRo;
 
 
   notInList(list: string[], exception: string) {
@@ -37,7 +39,8 @@ export class DomainDetailsDialogComponent {
     }
   }
 
-  constructor( private certificateService: CertificateService,
+  constructor(private certificateService: CertificateService,
+              public dialog: MatDialog,
               public lookups: GlobalLookups,
               private dialogRef: MatDialogRef<DomainDetailsDialogComponent>,
               private alertService: AlertService,
@@ -91,7 +94,7 @@ export class DomainDetailsDialogComponent {
     if (this.current.smlClientKeyAlias) {
       this.selectedSMLCert = this.lookups.cachedCertificateList.find(crt => crt.alias === this.current.smlClientKeyAlias);
     }
-   // this.selectedSMLCert = this.current.smlClientCertHeader;
+    // this.selectedSMLCert = this.current.smlClientCertHeader;
 
 
   }
@@ -122,12 +125,12 @@ export class DomainDetailsDialogComponent {
     }
     this.current.smlSmpId = this.domainForm.value['smlSmpId'];
     this.current.smlClientCertHeader = this.domainForm.value['smlClientCertHeader'];
-    if (this.domainForm.value['smlClientKeyAlias']){
+    if (this.domainForm.value['smlClientKeyAlias']) {
       this.current.smlClientKeyAlias = this.domainForm.value['smlClientKeyAlias'].alias;
       this.current.smlClientCertHeader = this.domainForm.value['smlClientKeyAlias'].blueCoatHeader;
     } else {
-      this.current.smlClientKeyAlias='';
-      this.current.smlClientCertHeader='';
+      this.current.smlClientKeyAlias = '';
+      this.current.smlClientCertHeader = '';
     }
     this.current.signatureKeyAlias = this.domainForm.value['signatureKeyAlias'];
     this.current.smlBlueCoatAuth = this.domainForm.value['smlBlueCoatAuth'];
@@ -162,7 +165,7 @@ export class DomainDetailsDialogComponent {
     const reader = new FileReader();
     reader.onload = (e) => {
       this.certificateService.uploadCertificate$(file).subscribe((res: CertificateRo) => {
-          if (res && res.certificateId){
+          if (res && res.certificateId) {
             this.domainForm.patchValue({
               'smlClientCertHeader': res.blueCoatHeader
             });
@@ -186,6 +189,15 @@ export class DomainDetailsDialogComponent {
     return cert.alias === alias;
   }
 
+
+  openEditKeystoreDialog() {
+    const formRef: MatDialogRef<any> = this.dialog.open(KeystoreEditDialogComponent);
+    formRef.afterClosed().subscribe(result => {
+      if (result) {
+        // import
+      }
+    });
+  }
 
 
 }
