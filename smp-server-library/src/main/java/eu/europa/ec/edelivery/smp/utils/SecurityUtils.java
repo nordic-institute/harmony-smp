@@ -8,8 +8,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.Key;
-import java.security.KeyStore;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.util.Base64;
 import java.util.Enumeration;
@@ -21,7 +20,7 @@ public class SecurityUtils {
     private static final String ALGORITHM = "AES";
 
 
-    public static void mergeKeystores(KeyStore targetKeystore, String targetPassword, KeyStore sourceKeystore, String sourcePassword) throws Exception {
+    public static void mergeKeystores(KeyStore targetKeystore, String targetPassword, KeyStore sourceKeystore, String sourcePassword) throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException {
         // Get all aliases in the old keystore
         Enumeration<String> enumeration = sourceKeystore.aliases();
         while (enumeration.hasMoreElements()) {

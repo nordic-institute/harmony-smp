@@ -228,6 +228,14 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     return this.current;
   }
 
+  dataChanged(){
+    if (this.current.status === SearchTableEntityStatus.NEW){
+      return true;
+    }
+    return this.current.users !== this.dialogForm.value['users'];
+           this.current.extension !== this.dialogForm.value['extension'];
+  }
+
   onExtensionDelete() {
     this.dialogForm.controls['extension'].setValue("");
   }
