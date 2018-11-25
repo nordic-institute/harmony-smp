@@ -62,7 +62,7 @@
     <div  id="sandwichMenuHolder" style="z-index: 500">
       <div id="sandwichMenu">
 
-        <a *ngIf="!currentUser" [routerLink]="['/login']" > Login   </a>
+        <a *ngIf="!currentUser" [routerLink]="['/login']" (click)="clearWarning()" > Login   </a>
         <span *ngIf="currentUser" >{{currentUserRoleDescription}}: {{currentUser}}  </span >
 
         <button mat-icon-button [mat-menu-trigger-for]="settingsMenu" id="settingsmenu_id" matTooltip="Menu">

@@ -3,7 +3,7 @@
   <form [formGroup]="domainForm">
     <mat-card>
       <mat-card-title>Domain properties</mat-card-title>
-      <mat-card-content>
+      <mat-card-content >
         <fieldset style="border: none;">
           <mat-form-field style="width:100%">
             <input matInput placeholder="Domain Code" name="domainCode"
@@ -47,6 +47,7 @@
                 {{cert.alias}} ({{cert.certificateId}})
               </mat-option>
             </mat-select>
+            <mat-hint align="end">Empty value will cause that ServiceMetadata response will not be signed by SMP!</mat-hint>
           </mat-form-field>
         </fieldset>
       </mat-card-content>
@@ -114,6 +115,11 @@
       </mat-card-content>
     </mat-card>
   </form>
+
+  <button mat-raised-button color="primary" (click)="openEditKeystoreDialog()">
+    <mat-icon>vpn_key</mat-icon>
+    <span>Edit keystore</span>
+  </button>
 </mat-dialog-content>
 
 <table class="buttonsRow">
