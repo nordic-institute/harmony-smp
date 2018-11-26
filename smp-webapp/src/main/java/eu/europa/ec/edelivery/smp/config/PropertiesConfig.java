@@ -91,9 +91,6 @@ public class PropertiesConfig {
                 em.close();
             }
         }
-        ;
-
-
         return prop;
     }
 
@@ -120,6 +117,7 @@ public class PropertiesConfig {
                 case KEYSTORE_FILENAME:
                 case KEYSTORE_PASSWORD:
                 case ENCRYPTION_FILENAME:
+                case KEYSTORE_PASSWORD_DECRYPTED:
                     // skip value
                     break;
                 default:
