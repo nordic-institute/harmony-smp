@@ -7,12 +7,10 @@ import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -69,9 +67,11 @@ public class KeystoreResource {
             keyStore.load(new ByteArrayInputStream(fileBytes), password.toCharArray());
 
             LOG.info(keyStore.aliases().nextElement());
-            uiKeystoreService.importKeys(keyStore,password );
+            uiKeystoreService.importKeys(keyStore, password);
         } catch (KeyStoreException e) {
-            e.printStackTrace();
+            String msg = "KeyStoreException occurred while reading the keystore: " + e.getMessage();
+            LOG.error(msg, e);
+            keystoreImportResult.setErrorMessage(msg);
         } catch (CertificateException e) {
             String msg = "CertificateException occurred while reading the keystore: " + e.getMessage();
             LOG.error(msg, e);
@@ -104,7 +104,9 @@ public class KeystoreResource {
         try {
             uiKeystoreService.deleteKey(alias);
         } catch (KeyStoreException e) {
-            e.printStackTrace();
+            String msg = "KeyStoreException occurred while reading the keystore: " + e.getMessage();
+            LOG.error(msg, e);
+            keystoreImportResult.setErrorMessage(msg);
         } catch (CertificateException e) {
             String msg = "CertificateException occurred while reading the keystore: " + e.getMessage();
             LOG.error(msg, e);
