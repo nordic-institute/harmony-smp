@@ -33,7 +33,7 @@ import static org.junit.Assert.assertEquals;
  */
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = {PropertiesMultipleDomainTestConfig.class,
-        ServiceMetadataSigner.class,  UIKeystoreService.class, ConversionTestConfig.class})
+        ServiceMetadataSigner.class,  UIKeystoreService.class, ConversionTestConfig.class, SecurityUtilsServices.class})
 public class ServiceMetadataSignerMultipleDomainsIntegrationTest {
 
     @Autowired
@@ -51,6 +51,6 @@ public class ServiceMetadataSignerMultipleDomainsIntegrationTest {
 
         // then
         SignatureUtil.validateSignature(smpSigPointer);
-        assertEquals("CN=second domain common name,OU=eDelivery,O=European Commission,C=PL", signingCertSubject);
+        assertEquals("CN=Secodn domain,OU=SMP,O=CEF Digital,C=BE", signingCertSubject);
     }
 }

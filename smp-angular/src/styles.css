@@ -74,6 +74,13 @@ ngx-datatable span:before {
 .ngx-datatable span {
   word-wrap: break-word;
 }
+.buttonsRow {
+  width: 100%;
+  margin: 2px;
+  padding: 5px;
+  background: #FFF;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.12), 0 1px 2px 0 rgba(0, 0, 0, 0.24);
+}
 
 /*--------------------------------------------------
     [STRUCTURE]
