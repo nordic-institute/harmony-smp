@@ -76,14 +76,12 @@ public class UIKeystoreService {
     public void refreshData() {
 
 
-        LOG.info("initialize from configuration folder:" + configurationDir
-                + ", enc file: " + encryptionFilename + ", keystore " + smpKeyStoreFilename);
+        LOG.info("initialize from configuration folder:{}, enc file: {}, keystore {}" , configurationDir, encryptionFilename, smpKeyStoreFilename);
         if (configurationDir == null || encryptionFilename == null) {
             LOG.warn("Configuration folder and/or encryption filename are not set in database!");
             return;
         }
 
-        String encFilePath = configurationDir + File.separator + encryptionFilename;
         File file = new File(configurationDir + File.separator + encryptionFilename);
         File keystoreFilePath = new File(configurationDir + File.separator + smpKeyStoreFilename);
         if (!file.exists()) {
@@ -215,7 +213,6 @@ public class UIKeystoreService {
     public void deleteKey(String alias) throws NoSuchAlgorithmException, KeyStoreException, IOException, CertificateException {
 
         KeyStore keyStore = loadKeystore();
-        keyStore.deleteEntry(alias);
         if (keyStore != null) {
             keyStore.deleteEntry(alias);
             // store keystore
