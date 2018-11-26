@@ -48,6 +48,7 @@
         </sonar.jacoco.codeCoveragePath>
         <sonar.jacoco.remotePort>${sonar.jacoco.codeCoveragePath}/jacoco-ut.exec</sonar.jacoco.remotePort>
         <sonar.maven.plugin.version>3.5.0.1254</sonar.maven.plugin.version>
+        <jacoco.maven.plugin.version>0.8.2</jacoco.maven.plugin.version>
 
         <!-- default value for deploy under Weblogic, etc -->
         <deployWarFolder>/home/edelivery/oracle/middleware/domains/bdmsl/autodeploy/</deployWarFolder>
@@ -129,6 +130,7 @@
                     <plugin>
                         <groupId>org.jacoco</groupId>
                         <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>${jacoco.maven.plugin.version}</version>
                         <executions>
                             <execution>
                                 <phase>post-integration-test</phase>
