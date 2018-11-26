@@ -1,6 +1,7 @@
-package eu.europa.ec.edelivery.smp.utils;
+package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.*;
 import javax.crypto.spec.SecretKeySpec;
@@ -8,39 +9,62 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.security.Key;
-import java.security.KeyStore;
+import java.security.*;
 import java.security.cert.Certificate;
 import java.util.Base64;
 import java.util.Enumeration;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
-public class SecurityUtils {
+@Component
+public class SecurityUtilsServices {
 
     private static final String ALGORITHM = "AES";
+    private static final int DEFAULT_KEY_SIZE= 256;
 
 
-    public static void mergeKeystores(KeyStore targetKeystore, String targetPassword, KeyStore sourceKeystore, String sourcePassword) throws Exception {
+    /**
+     * Inser keys/certificates from sourceKeystore to targetKeystore. If certificicate with alias alredy exists alias is appended with _%03d as example
+     * _001
+     * @param targetKeystore
+     * @param targetPassword
+     * @param sourceKeystore
+     * @param sourcePassword
+     * @throws KeyStoreException
+     * @throws UnrecoverableKeyException
+     * @throws NoSuchAlgorithmException
+     */
+    public void mergeKeystore(KeyStore targetKeystore, String targetPassword, KeyStore sourceKeystore, String sourcePassword) throws KeyStoreException, UnrecoverableKeyException, NoSuchAlgorithmException {
         // Get all aliases in the old keystore
         Enumeration<String> enumeration = sourceKeystore.aliases();
         while (enumeration.hasMoreElements()) {
             // Determine the current alias
             String alias = enumeration.nextElement();
+
+            String importAlias =  getNewImportAlias(targetKeystore, alias);
             // Get Key & Certificates
             Key key = sourceKeystore.getKey(alias, sourcePassword.toCharArray());
             Certificate[] certs = sourceKeystore.getCertificateChain(alias);
             // Put them altogether in the new keystore also set key password for new store
-            targetKeystore.setKeyEntry(alias, key, targetPassword.toCharArray(), certs);
+            targetKeystore.setKeyEntry(importAlias, key, targetPassword.toCharArray(), certs);
         }
     }
 
-    public static void generatePrivateSymmetricKey(File path) {
+    private String getNewImportAlias(KeyStore target, String alias) throws KeyStoreException {
+        String newAlias = alias;
+        int i=1;
+        while(target.containsAlias(newAlias)){
+            newAlias = alias+String.format("_%03d", i++);
+        }
+        return newAlias;
+    }
+
+    public void generatePrivateSymmetricKey(File path) {
 
         try {
             // Generates a random key
             KeyGenerator keyGenerator = KeyGenerator.getInstance(ALGORITHM);
-            keyGenerator.init(256);
+            keyGenerator.init(DEFAULT_KEY_SIZE);
             SecretKey privateKey = keyGenerator.generateKey();
 
             try (FileOutputStream out = new FileOutputStream(path)) {
@@ -52,7 +76,7 @@ public class SecurityUtils {
         }
     }
 
-    public static String encrypt(File keyPath, String plainTextPassword) {
+    public String encrypt(File keyPath, String plainTextPassword) {
         try {
             byte[] key = Files.readAllBytes(keyPath.toPath());
             SecretKey privateKey = new SecretKeySpec(key, ALGORITHM);
@@ -68,7 +92,7 @@ public class SecurityUtils {
         }
     }
 
-    public static String decrypt(File keyPath, String encryptedPassword) {
+    public String decrypt(File keyPath, String encryptedPassword) {
         try {
             byte[] key = Files.readAllBytes(keyPath.toPath());
             SecretKey privateKey = new SecretKeySpec(key, ALGORITHM);

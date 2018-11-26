@@ -1,12 +1,12 @@
 import {Component, Inject} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';
 import {AbstractControl, FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {DomainRo} from "../domain-ro.model";
 import {AlertService} from "../../alert/alert.service";
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
 import {GlobalLookups} from "../../common/global-lookups";
 import {CertificateRo} from "../../user/certificate-ro.model";
-import {CertificateService} from "../../user/certificate.service";
+import {KeystoreEditDialogComponent} from "../keystore-edit-dialog/keystore-edit-dialog.component";
 
 @Component({
   selector: 'domain-details-dialog',
@@ -25,24 +25,24 @@ export class DomainDetailsDialogComponent {
   current: DomainRo & { confirmation?: string };
   domainForm: FormGroup;
   domain;
-  selectedSMLCert:CertificateRo;
+  selectedSMLCert: CertificateRo;
 
 
   notInList(list: string[], exception: string) {
     return (c: AbstractControl): { [key: string]: any } => {
       if (c.value && c.value !== exception && list.includes(c.value))
         return {'notInList': {valid: false}};
-
       return null;
     }
   }
 
-  constructor( private certificateService: CertificateService,
-              public lookups: GlobalLookups,
-              private dialogRef: MatDialogRef<DomainDetailsDialogComponent>,
-              private alertService: AlertService,
-              @Inject(MAT_DIALOG_DATA) public data: any,
-              private fb: FormBuilder) {
+  constructor(
+    public dialog: MatDialog,
+    public lookups: GlobalLookups,
+    private dialogRef: MatDialogRef<DomainDetailsDialogComponent>,
+    private alertService: AlertService,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private fb: FormBuilder) {
 
     this.editMode = data.edit;
     this.formTitle = this.editMode ? DomainDetailsDialogComponent.EDIT_MODE : DomainDetailsDialogComponent.NEW_MODE;
@@ -91,9 +91,6 @@ export class DomainDetailsDialogComponent {
     if (this.current.smlClientKeyAlias) {
       this.selectedSMLCert = this.lookups.cachedCertificateList.find(crt => crt.alias === this.current.smlClientKeyAlias);
     }
-   // this.selectedSMLCert = this.current.smlClientCertHeader;
-
-
   }
 
   submitForm() {
@@ -122,12 +119,12 @@ export class DomainDetailsDialogComponent {
     }
     this.current.smlSmpId = this.domainForm.value['smlSmpId'];
     this.current.smlClientCertHeader = this.domainForm.value['smlClientCertHeader'];
-    if (this.domainForm.value['smlClientKeyAlias']){
+    if (this.domainForm.value['smlClientKeyAlias']) {
       this.current.smlClientKeyAlias = this.domainForm.value['smlClientKeyAlias'].alias;
       this.current.smlClientCertHeader = this.domainForm.value['smlClientKeyAlias'].blueCoatHeader;
     } else {
-      this.current.smlClientKeyAlias='';
-      this.current.smlClientCertHeader='';
+      this.current.smlClientKeyAlias = '';
+      this.current.smlClientCertHeader = '';
     }
     this.current.signatureKeyAlias = this.domainForm.value['signatureKeyAlias'];
     this.current.smlBlueCoatAuth = this.domainForm.value['smlBlueCoatAuth'];
@@ -156,36 +153,9 @@ export class DomainDetailsDialogComponent {
     this.current.signatureKeyAlias = event.target.value;
   }
 
-  uploadCertificate(event) {
-    const file = event.target.files[0];
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      this.certificateService.uploadCertificate$(file).subscribe((res: CertificateRo) => {
-          if (res && res.certificateId){
-            this.domainForm.patchValue({
-              'smlClientCertHeader': res.blueCoatHeader
-            });
-          } else {
-            this.alertService.exception("Error occurred while reading certificate.", "Check if uploaded file has valid certificate type.", false);
-          }
-        },
-        err => {
-          this.alertService.exception('Error uploading certificate file ' + file.name, err);
-        }
-      );
-    };
-    reader.onerror = (err) => {
-      this.alertService.exception('Error reading certificate file ' + file.name, err);
-    };
-
-    reader.readAsBinaryString(file);
-  }
 
   compareCertByAlias(cert, alias): boolean {
     return cert.alias === alias;
   }
-
-
 
 }

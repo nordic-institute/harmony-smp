@@ -129,7 +129,8 @@ export class SearchTableComponent implements OnInit {
 
     for (let filterProperty in this.filter) {
       if (this.filter.hasOwnProperty(filterProperty)) {
-        params = params.set(filterProperty, this.filter[filterProperty]);
+        // must encode else problem with + sign
+        params = params.set(filterProperty, encodeURIComponent(this.filter[filterProperty]));
       }
     }
 

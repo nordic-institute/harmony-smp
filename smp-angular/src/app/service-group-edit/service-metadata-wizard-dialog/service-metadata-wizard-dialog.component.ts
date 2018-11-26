@@ -128,8 +128,8 @@ export class ServiceMetadataWizardDialogComponent {
 
     let exampleXML = '<ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">' +
       '\n    <ServiceInformation>' +
-      '\n        <ParticipantIdentifier scheme="' + this.dialogForm.controls['participantScheme'].value + '">'
-      + this.dialogForm.controls['participantIdentifier'].value + '</ParticipantIdentifier>' +
+      '\n        <ParticipantIdentifier scheme="' + this.xmlSpecialChars(this.dialogForm.controls['participantScheme'].value) + '">'
+      + this.xmlSpecialChars(this.dialogForm.controls['participantIdentifier'].value)+ '</ParticipantIdentifier>' +
       '\n        <DocumentIdentifier ' +
       (!this.dialogForm.controls['documentIdentifierScheme'].value?'': 'scheme="'
         + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifierScheme'].value) + '"') +

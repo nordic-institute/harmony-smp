@@ -11,7 +11,7 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.smp;
+package eu.europa.ec.edelivery.smp.utils;
 
 import org.springframework.security.crypto.bcrypt.BCrypt;
 

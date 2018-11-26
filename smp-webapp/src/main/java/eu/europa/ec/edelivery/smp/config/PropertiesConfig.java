@@ -13,11 +13,13 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.edelivery.smp.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.utils.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -40,7 +42,6 @@ import java.util.List;
 import java.util.Properties;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
-import static eu.europa.ec.edelivery.smp.utils.SecurityUtils.*;
 
 /**
  * Created by Flavio Santos
@@ -58,6 +59,9 @@ import static eu.europa.ec.edelivery.smp.utils.SecurityUtils.*;
         @PropertySource(value = "classpath:smp.config.properties", ignoreResourceNotFound = true)
 })
 public class PropertiesConfig {
+
+    // create own instance because at this time SecurityUtilsServices is not ready to instantiate
+    SecurityUtilsServices securityUtilsServices = new SecurityUtilsServices();
 
     @Bean
     public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
@@ -87,9 +91,6 @@ public class PropertiesConfig {
                 em.close();
             }
         }
-        ;
-
-
         return prop;
     }
 
@@ -116,6 +117,7 @@ public class PropertiesConfig {
                 case KEYSTORE_FILENAME:
                 case KEYSTORE_PASSWORD:
                 case ENCRYPTION_FILENAME:
+                case KEYSTORE_PASSWORD_DECRYPTED:
                     // skip value
                     break;
                 default:
@@ -168,12 +170,12 @@ public class PropertiesConfig {
 
         // store encryption filename
         File fEncryption = new File(settingsFolder, SMPPropertyEnum.ENCRYPTION_FILENAME.getDefValue());
-        generatePrivateSymmetricKey(fEncryption);
+        securityUtilsServices.generatePrivateSymmetricKey(fEncryption);
         storeDBEntry(em, SMPPropertyEnum.ENCRYPTION_FILENAME, fEncryption.getName());
         initProperties.setProperty(SMPPropertyEnum.ENCRYPTION_FILENAME.getProperty(), fEncryption.getName());
 
         // store keystore password  filename
-        String encPasswd = encrypt(fEncryption, newKeyPassword);
+        String encPasswd = securityUtilsServices.encrypt(fEncryption, newKeyPassword);
         storeDBEntry(em, SMPPropertyEnum.KEYSTORE_PASSWORD, encPasswd);
         initProperties.setProperty(SMPPropertyEnum.KEYSTORE_PASSWORD.getProperty(), encPasswd);
 
@@ -196,7 +198,7 @@ public class PropertiesConfig {
                 try (FileInputStream fis = new FileInputStream(sigKeystorePath)) {
                     KeyStore sourceKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
                     sourceKeystore.load(fis, keypasswd.toCharArray());
-                    mergeKeystores(newKeystore, newKeyPassword, sourceKeystore, keypasswd);
+                    securityUtilsServices.mergeKeystore(newKeystore, newKeyPassword, sourceKeystore, keypasswd);
                 }
             }
 
@@ -206,7 +208,7 @@ public class PropertiesConfig {
                 try (FileInputStream fis = new FileInputStream(smlKeystorePath)) {
                     KeyStore sourceKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
                     sourceKeystore.load(fis, keypasswd.toCharArray());
-                    mergeKeystores(newKeystore, newKeyPassword, sourceKeystore, keypasswd);
+                    securityUtilsServices.mergeKeystore(newKeystore, newKeyPassword, sourceKeystore, keypasswd);
                 }
             }
             newKeystore.store(out, newKeyPassword.toCharArray());
@@ -291,7 +293,7 @@ public class PropertiesConfig {
     }
 
     /**
-     * Create entity manager
+     * Create entity manager just for property updates to handle date columns for different databases.
      *
      * @param dataSource
      * @return

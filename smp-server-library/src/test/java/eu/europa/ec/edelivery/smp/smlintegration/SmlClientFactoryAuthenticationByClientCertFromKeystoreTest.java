@@ -34,6 +34,8 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.X509KeyManager;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.PrivateKey;
 import java.security.Security;
 import java.security.cert.X509Certificate;
@@ -52,13 +54,13 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest {
     @Configuration
     @ComponentScan("eu.europa.ec.edelivery.smp.sml")
     static class Config {
+        Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores", "service_integration_signatures_multiple_domains.jks");
         @Bean
         public PropertySourcesPlaceholderConfigurer setLocalProperties() {
             Security.insertProviderAt(new org.bouncycastle.jce.provider.BouncyCastleProvider(), 1);
-            String clientCertificatesKeystorePath = Thread.currentThread().getContextClassLoader().getResource("sml_integration_client_certificates.jks").getFile();
             return buildLocalProperties(new String[][]{
                     {"bdmsl.integration.url", "https://sml.url.pl"},
-                    {"bdmsl.integration.keystore.path", clientCertificatesKeystorePath},
+                    {"bdmsl.integration.keystore.path", resourceDirectory.toFile().getAbsolutePath()},
                     {"bdmsl.integration.keystore.password", "test123"}
             });
         }
@@ -81,7 +83,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest {
         Map<String, Object> requestContext = cxfClient.getRequestContext();
         X509Certificate clientCert = getClientCertFromKeystore(cxfClient);
 
-        assertEquals("C=PL,O=European Commission,OU=eDelivery,CN=second domain common name", clientCert.getSubjectDN().getName());
+        assertEquals("C=EU,O=CEF Digit,OU=SMP,CN=Second domain", clientCert.getSubjectDN().getName());
         assertEquals("https://sml.url.pl", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
 
@@ -96,7 +98,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest {
         Map<String, Object> requestContext = cxfClient.getRequestContext();
         X509Certificate clientCert = getClientCertFromKeystore(cxfClient);
 
-        assertEquals("C=PL,O=European Commission,OU=eDelivery,CN=second domain common name", clientCert.getSubjectDN().getName());
+        assertEquals("C=EU,O=CEF Digit,OU=SMP,CN=Second domain", clientCert.getSubjectDN().getName());
         assertEquals("https://sml.url.pl", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
 

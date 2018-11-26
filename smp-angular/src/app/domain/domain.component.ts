@@ -1,6 +1,6 @@
 import {Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {ColumnPicker} from '../common/column-picker/column-picker.model';
-import {MatDialog} from '@angular/material';
+import {MatDialog, MatDialogRef} from '@angular/material';
 
 import {AlertService} from '../alert/alert.service';
 import {DomainController} from './domain-controller';
@@ -12,6 +12,7 @@ import {SecurityService} from "../security/security.service";
 import {DomainRo} from "./domain-ro.model";
 import {ConfirmationDialogComponent} from "../common/confirmation-dialog/confirmation-dialog.component";
 import {SearchTableEntityStatus} from "../common/search-table/search-table-entity-status.model";
+import {KeystoreEditDialogComponent} from "./keystore-edit-dialog/keystore-edit-dialog.component";
 
 @Component({
   moduleId: module.id,
@@ -64,10 +65,6 @@ export class DomainComponent implements OnInit {
         width: 120
       },
       {
-        name: 'ClientCert Header',
-        prop: 'smlClientCertHeader',
-      },
-      {
         name: 'ClientCert Alias',
         prop: 'smlClientKeyAlias',
       },
@@ -77,10 +74,20 @@ export class DomainComponent implements OnInit {
         prop: 'signatureKeyAlias',
         width: 120
       },
+      {
+        name: 'Is SML Registered',
+        prop: 'smlRegistered',
+        width: 120
+      },
+      {
+        name: 'SML BueCoat Auth.',
+        prop: 'smlBlueCoatAuth',
+        width: 120
+      },
     ];
 
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
-      return ["Domain code", "SML Domain", "SML SMP Id", "ClientCert Header", "ClientCert Alias", "Signature CertAlias"].indexOf(col.name) != -1
+      return ['Domain code', 'SML Domain', 'SML SMP Id', 'ClientCert Alias', 'Signature CertAlias','Is SML Registered','SML BueCoat Auth.'].indexOf(col.name) != -1
     });
   }
 
@@ -100,7 +107,7 @@ export class DomainComponent implements OnInit {
       return false;
     }
     let domainRo =  (this.searchTable.selected[0] as DomainRo);
-    // entity must be first persisted in order to be enabled to registring to SML
+    // entity must be first persisted in order to be enabled to registering to SML
     return !domainRo.smlRegistered && domainRo.status !==SearchTableEntityStatus.NEW;
   }
 
@@ -109,7 +116,7 @@ export class DomainComponent implements OnInit {
       return false;
     }
     let domainRo =  (this.searchTable.selected[0] as DomainRo);
-    // entity must be first persisted in order to be enabled to registring to SML
+    // entity must be first persisted in order to be enabled to registering to SML
     return domainRo.smlRegistered && domainRo.status !==SearchTableEntityStatus.NEW;
   }
 
@@ -132,8 +139,6 @@ export class DomainComponent implements OnInit {
     })
   }
 
-
-
   smlRegisterSelectedDomain() {
     if (this.searchTable.selected.length !== 1) {
       return false;
@@ -151,5 +156,14 @@ export class DomainComponent implements OnInit {
         domainRo.smlRegistered=true;
       }
     })
+  }
+
+  openEditKeystoreDialog() {
+    const formRef: MatDialogRef<any> = this.dialog.open(KeystoreEditDialogComponent);
+    formRef.afterClosed().subscribe(result => {
+      if (result) {
+        // close
+      }
+    });
   }
 }
