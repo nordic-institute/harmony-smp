@@ -320,7 +320,9 @@ public class PropertiesConfig {
             TypedQuery<DBConfiguration> tq = em.createNamedQuery("DBConfiguration.getAll", DBConfiguration.class);
             List<DBConfiguration> lst = tq.getResultList();
             for (DBConfiguration dc : lst) {
-                setProperty(dc.getProperty(), dc.getValue());
+                if(dc.getValue()!=null) {
+                    setProperty(dc.getProperty(), dc.getValue());
+                }
             }
         }
     }
