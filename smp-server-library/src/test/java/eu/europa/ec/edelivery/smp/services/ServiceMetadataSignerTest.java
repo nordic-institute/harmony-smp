@@ -18,7 +18,6 @@ import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import eu.europa.ec.edelivery.smp.testutil.SignatureUtil;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.w3c.dom.Document;
@@ -32,7 +31,7 @@ import static eu.europa.ec.edelivery.smp.testutil.XmlTestUtils.loadDocument;
  */
 
 @ContextConfiguration(classes = { ServiceMetadataSigner.class,
-        PropertiesSingleDomainTestConfig.class, UIKeystoreService.class, ConversionTestConfig.class})
+        PropertiesSingleDomainTestConfig.class, UIKeystoreService.class, ConversionTestConfig.class, SecurityUtilsServices.class})
 public class ServiceMetadataSignerTest extends  AbstractServiceIntegrationTest{
 
 

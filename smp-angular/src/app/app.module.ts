@@ -79,6 +79,11 @@ import {UserService} from './user/user.service';
 import {UserDetailsService} from './user/user-details-dialog/user-details.service';
 import { ExpiredPasswordDialogComponent } from './common/expired-password-dialog/expired-password-dialog.component';
 import { DialogComponent } from './common/dialog/dialog.component';
+import {KeystoreImportDialogComponent} from "./domain/keystore-import-dialog/keystore-import-dialog.component";
+import {KeystoreEditDialogComponent} from "./domain/keystore-edit-dialog/keystore-edit-dialog.component";
+import {KeystoreCertificateDialogComponent} from "./domain/keystore-certificate-dialog/keystore-certificate-dialog.component";
+import {InformationDialogComponent} from "./common/information-dialog/information-dialog.component";
+import {KeystoreService} from "./domain/keystore.service";
 
 @NgModule({
   declarations: [
@@ -98,6 +103,7 @@ import { DialogComponent } from './common/dialog/dialog.component';
     ServiceGroupMetadataDialogComponent,
     CancelDialogComponent,
     ConfirmationDialogComponent,
+    InformationDialogComponent,
     RowLimiterComponent,
     DatePipe,
     CapitalizeFirstPipe,
@@ -115,6 +121,9 @@ import { DialogComponent } from './common/dialog/dialog.component';
     UserDetailsDialogComponent,
     ExpiredPasswordDialogComponent,
     DialogComponent,
+    KeystoreImportDialogComponent,
+    KeystoreEditDialogComponent,
+    KeystoreCertificateDialogComponent,
   ],
   entryComponents: [
     AppComponent,
@@ -126,9 +135,13 @@ import { DialogComponent } from './common/dialog/dialog.component';
     UserDetailsDialogComponent,
     CancelDialogComponent,
     ConfirmationDialogComponent,
+    InformationDialogComponent,
     SaveDialogComponent,
     DefaultPasswordDialogComponent,
     ExpiredPasswordDialogComponent,
+    KeystoreImportDialogComponent,
+    KeystoreEditDialogComponent,
+    KeystoreCertificateDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -169,6 +182,7 @@ import { DialogComponent } from './common/dialog/dialog.component';
     AlertService,
     DownloadService,
     CertificateService,
+    KeystoreService,
     GlobalLookups,
     DatePipe,
     UserService,

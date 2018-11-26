@@ -185,7 +185,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
   onGenerateSimpleXML() {
     let exampleXML = '<ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">' +
       '\n    <ServiceInformation>' +
-      '\n        <ParticipantIdentifier scheme="' + this.dialogForm.controls['participantScheme'].value + '">' + this.dialogForm.controls['participantIdentifier'].value + '</ParticipantIdentifier>' +
+      '\n        <ParticipantIdentifier scheme="' + this.xmlSpecialChars(this.dialogForm.controls['participantScheme'].value) + '">' + this.xmlSpecialChars(this.dialogForm.controls['participantIdentifier'].value) + '</ParticipantIdentifier>' +
       '\n        <DocumentIdentifier scheme="' + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifierScheme'].value) + '">' + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifier'].value) + '</DocumentIdentifier>' +
       '\n        <ProcessList>' +
       '\n            <Process>' +
