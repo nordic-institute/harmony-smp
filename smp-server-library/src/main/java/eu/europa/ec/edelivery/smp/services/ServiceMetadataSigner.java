@@ -14,7 +14,10 @@ package eu.europa.ec.edelivery.smp.services;
 
 import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +46,7 @@ import static javax.xml.crypto.dsig.Transform.ENVELOPED;
 @Component
 public final class ServiceMetadataSigner {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ServiceMetadataSigner.class);
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(ServiceMetadataSigner.class);
 
     private static final String RSA_SHA256 = "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256";
 
@@ -61,6 +64,10 @@ public final class ServiceMetadataSigner {
     public void sign(Document serviceMetadataDoc, String keyAlias) {
         LOG.info("Sing document with alias {}", keyAlias);
         try {
+            if (StringUtils.isBlank(keyAlias) && uiKeystoreService.getKeystoreEntriesList().size() >1) {
+                LOG.warn("Undefined certificate for signing service metadata reposes! ");
+                return;
+            }
             XMLSignatureFactory domSigFactory = getDomSigFactory();
 
             // Create a Reference to the ENVELOPED document
