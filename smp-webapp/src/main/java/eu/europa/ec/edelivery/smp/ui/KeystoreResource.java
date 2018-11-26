@@ -92,4 +92,33 @@ public class KeystoreResource {
 
         return keystoreImportResult;
     }
+
+
+    @DeleteMapping(value = "/{id}/delete/{alias}", produces = {"application/json"})
+    @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#id)")
+    public KeystoreImportResult uploadKeystore(@PathVariable("id") Long id,
+                                               @PathVariable("alias") String alias) {
+        LOG.info("Remove alias by user id {}, alias {}.", id, alias);
+        KeystoreImportResult keystoreImportResult = new KeystoreImportResult();
+
+        try {
+            uiKeystoreService.deleteKey(alias);
+        } catch (KeyStoreException e) {
+            e.printStackTrace();
+        } catch (CertificateException e) {
+            String msg = "CertificateException occurred while reading the keystore: " + e.getMessage();
+            LOG.error(msg, e);
+            keystoreImportResult.setErrorMessage(msg);
+        } catch (NoSuchAlgorithmException e) {
+            String msg = "NoSuchAlgorithmException occurred while reading the keystore: " + e.getMessage();
+            LOG.error(msg, e);
+            keystoreImportResult.setErrorMessage(msg);
+        } catch (IOException e) {
+            String msg = "IOException occurred while reading the keystore: " + e.getMessage();
+            LOG.error(msg, e);
+            keystoreImportResult.setErrorMessage(msg);
+        }
+
+        return keystoreImportResult;
+    }
 }

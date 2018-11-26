@@ -73,15 +73,6 @@
             </div>
           </mat-form-field>
 
-          <!--label class="custom-file-upload">
-            <input #fileInput type="file" style="display: inline-block;cursor: pointer; display: none;"
-                   id="certificate-file-upload" accept=".cer,.crt,.pem,.der"
-                   (change)="uploadCertificate($event)">
-            <button mat-flat-button color="primary"
-                    (click)="fileInput.click()"
-            >Generate 'ClientCert Header' from certificate
-            </button>
-          </label -->
           <mat-form-field style="width:100%">
             <mat-select [(value)]="selectedSMLCert"
                         [compareWith]="compareCertByAlias"
@@ -108,18 +99,11 @@
           </mat-slide-toggle>
 
         </fieldset>
-        <!-- label class="custom-file-upload">
-          <input #fileInput type="file" id="custom-file-upload" accept=".cer" (change)="uploadCertificate()" >
-          <span class="custom-file-upload-inner">Import</span>
-        </label-->
+
       </mat-card-content>
     </mat-card>
   </form>
 
-  <button mat-raised-button color="primary" (click)="openEditKeystoreDialog()">
-    <mat-icon>vpn_key</mat-icon>
-    <span>Edit keystore</span>
-  </button>
 </mat-dialog-content>
 
 <table class="buttonsRow">

@@ -82,6 +82,8 @@ import { DialogComponent } from './common/dialog/dialog.component';
 import {KeystoreImportDialogComponent} from "./domain/keystore-import-dialog/keystore-import-dialog.component";
 import {KeystoreEditDialogComponent} from "./domain/keystore-edit-dialog/keystore-edit-dialog.component";
 import {KeystoreCertificateDialogComponent} from "./domain/keystore-certificate-dialog/keystore-certificate-dialog.component";
+import {InformationDialogComponent} from "./common/information-dialog/information-dialog.component";
+import {KeystoreService} from "./domain/keystore.service";
 
 @NgModule({
   declarations: [
@@ -101,6 +103,7 @@ import {KeystoreCertificateDialogComponent} from "./domain/keystore-certificate-
     ServiceGroupMetadataDialogComponent,
     CancelDialogComponent,
     ConfirmationDialogComponent,
+    InformationDialogComponent,
     RowLimiterComponent,
     DatePipe,
     CapitalizeFirstPipe,
@@ -132,6 +135,7 @@ import {KeystoreCertificateDialogComponent} from "./domain/keystore-certificate-
     UserDetailsDialogComponent,
     CancelDialogComponent,
     ConfirmationDialogComponent,
+    InformationDialogComponent,
     SaveDialogComponent,
     DefaultPasswordDialogComponent,
     ExpiredPasswordDialogComponent,
@@ -178,6 +182,7 @@ import {KeystoreCertificateDialogComponent} from "./domain/keystore-certificate-
     AlertService,
     DownloadService,
     CertificateService,
+    KeystoreService,
     GlobalLookups,
     DatePipe,
     UserService,

@@ -4,7 +4,7 @@ import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
 import eu.europa.ec.edelivery.smp.config.PropertiesKeystoreTestConfig;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import org.apache.commons.lang3.exception.ExceptionUtils;
+import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,7 +30,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {UIKeystoreService.class, ConversionTestConfig.class, PropertiesKeystoreTestConfig.class})
+@ContextConfiguration(classes = {UIKeystoreService.class, SecurityUtilsServices.class, ConversionTestConfig.class, PropertiesKeystoreTestConfig.class})
 public class UIKeystoreServiceTest {
 
     public static final String S_ALIAS = "single_domain_key";
@@ -128,6 +128,17 @@ public class UIKeystoreServiceTest {
         testInstance.importKeys(keystore, "NewPassword1234");
         // then
         assertEquals(3,testInstance.getKeystoreEntriesList().size());
+    }
+
+    @Test
+    public void testImportKeystoreTwice() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableKeyException {
+        // given
+        testInstance.importKeys(loadKeystore("test-import.jks","NewPassword1234", "JKS" ), "NewPassword1234");
+        assertEquals(3,testInstance.getKeystoreEntriesList().size());
+        // when
+        testInstance.importKeys(loadKeystore("test-import.jks","NewPassword1234", "JKS" ), "NewPassword1234");
+        // then
+        assertEquals(5,testInstance.getKeystoreEntriesList().size());
     }
 
     @Test
