@@ -1,4 +1,4 @@
-package eu.europa.ec.edelivery.smp;
+package eu.europa.ec.edelivery.smp.utils;
 
 public enum SMPPropertyEnum {
     BLUE_COAT_ENABLED ("authentication.blueCoat.enabled","false","Authentication with Blue Coat means that all HTTP requests " +

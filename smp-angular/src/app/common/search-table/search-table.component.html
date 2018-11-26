@@ -106,6 +106,7 @@
           <mat-icon>save</mat-icon>
           <span>Save</span>
         </button>
+      <span style="width: 2px;background-color: deepskyblue;">&nbsp;</span>
        <!-- new button enabled -->
         <button *ngIf="allowNewItems" id="newButton" mat-raised-button (click)="onNewButtonClicked()"
                 [disabled]="loading || !allowNewItems" color="primary">

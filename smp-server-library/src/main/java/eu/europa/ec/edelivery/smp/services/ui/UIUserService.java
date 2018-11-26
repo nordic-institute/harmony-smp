@@ -1,7 +1,6 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
-import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
-import eu.europa.ec.edelivery.smp.BCryptPasswordHash;
+import eu.europa.ec.edelivery.smp.utils.BCryptPasswordHash;
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
@@ -23,12 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
-import java.math.BigInteger;
-import java.net.URLEncoder;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;

@@ -5,6 +5,7 @@ import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceMetadataValidationRO;
 import eu.europa.ec.edelivery.smp.services.AbstractServiceIntegrationTest;
 import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
+import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static org.junit.Assert.*;
 
 
-@ContextConfiguration(classes = {UIServiceGroupSearchService.class, UIServiceMetadataService.class})
+@ContextConfiguration(classes = {UIServiceGroupSearchService.class, UIServiceMetadataService.class, SecurityUtilsServices.class})
 public class UIServiceMetadataServiceTest extends AbstractServiceIntegrationTest {
 
     @Autowired

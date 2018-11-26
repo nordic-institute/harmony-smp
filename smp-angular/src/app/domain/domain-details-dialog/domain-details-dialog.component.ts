@@ -6,8 +6,6 @@ import {AlertService} from "../../alert/alert.service";
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
 import {GlobalLookups} from "../../common/global-lookups";
 import {CertificateRo} from "../../user/certificate-ro.model";
-import {CertificateService} from "../../user/certificate.service";
-import {KeystoreImportDialogComponent} from "../keystore-import-dialog/keystore-import-dialog.component";
 import {KeystoreEditDialogComponent} from "../keystore-edit-dialog/keystore-edit-dialog.component";
 
 @Component({
@@ -34,18 +32,17 @@ export class DomainDetailsDialogComponent {
     return (c: AbstractControl): { [key: string]: any } => {
       if (c.value && c.value !== exception && list.includes(c.value))
         return {'notInList': {valid: false}};
-
       return null;
     }
   }
 
-  constructor(private certificateService: CertificateService,
-              public dialog: MatDialog,
-              public lookups: GlobalLookups,
-              private dialogRef: MatDialogRef<DomainDetailsDialogComponent>,
-              private alertService: AlertService,
-              @Inject(MAT_DIALOG_DATA) public data: any,
-              private fb: FormBuilder) {
+  constructor(
+    public dialog: MatDialog,
+    public lookups: GlobalLookups,
+    private dialogRef: MatDialogRef<DomainDetailsDialogComponent>,
+    private alertService: AlertService,
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private fb: FormBuilder) {
 
     this.editMode = data.edit;
     this.formTitle = this.editMode ? DomainDetailsDialogComponent.EDIT_MODE : DomainDetailsDialogComponent.NEW_MODE;
@@ -94,9 +91,6 @@ export class DomainDetailsDialogComponent {
     if (this.current.smlClientKeyAlias) {
       this.selectedSMLCert = this.lookups.cachedCertificateList.find(crt => crt.alias === this.current.smlClientKeyAlias);
     }
-    // this.selectedSMLCert = this.current.smlClientCertHeader;
-
-
   }
 
   submitForm() {
@@ -159,45 +153,9 @@ export class DomainDetailsDialogComponent {
     this.current.signatureKeyAlias = event.target.value;
   }
 
-  uploadCertificate(event) {
-    const file = event.target.files[0];
-
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      this.certificateService.uploadCertificate$(file).subscribe((res: CertificateRo) => {
-          if (res && res.certificateId) {
-            this.domainForm.patchValue({
-              'smlClientCertHeader': res.blueCoatHeader
-            });
-          } else {
-            this.alertService.exception("Error occurred while reading certificate.", "Check if uploaded file has valid certificate type.", false);
-          }
-        },
-        err => {
-          this.alertService.exception('Error uploading certificate file ' + file.name, err);
-        }
-      );
-    };
-    reader.onerror = (err) => {
-      this.alertService.exception('Error reading certificate file ' + file.name, err);
-    };
-
-    reader.readAsBinaryString(file);
-  }
 
   compareCertByAlias(cert, alias): boolean {
     return cert.alias === alias;
   }
-
-
-  openEditKeystoreDialog() {
-    const formRef: MatDialogRef<any> = this.dialog.open(KeystoreEditDialogComponent);
-    formRef.afterClosed().subscribe(result => {
-      if (result) {
-        // import
-      }
-    });
-  }
-
 
 }

@@ -5,7 +5,7 @@ import eu.europa.ec.edelivery.smp.exceptions.ErrorCode;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
-import eu.europa.ec.edelivery.smp.utils.SecurityUtils;
+import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +31,9 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 public class UIKeystoreService {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIKeystoreService.class);
+
+    @Autowired
+    SecurityUtilsServices securityUtilsServices;
 
     @Autowired
     private ConversionService conversionService;
@@ -93,7 +96,7 @@ public class UIKeystoreService {
         }
 
         try {
-            smpKeyStorePasswordDecrypted = SecurityUtils.decrypt(file, smpKeyStorePasswordEncrypted);
+            smpKeyStorePasswordDecrypted = securityUtilsServices.decrypt(file, smpKeyStorePasswordEncrypted);
         } catch (SMPRuntimeException exception) {
             LOG.error("Error occurred while using encryption key: " + file.getAbsolutePath() + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
             return;
@@ -197,7 +200,7 @@ public class UIKeystoreService {
 
         KeyStore keyStore = loadKeystore();
         if (keyStore != null) {
-            SecurityUtils.mergeKeystores(keyStore, smpKeyStorePasswordDecrypted, newKeystore, password);
+            securityUtilsServices.mergeKeystore(keyStore, smpKeyStorePasswordDecrypted, newKeystore, password);
             // store keystore
             storeKeystore(keyStore);
             updateData(keyStore);

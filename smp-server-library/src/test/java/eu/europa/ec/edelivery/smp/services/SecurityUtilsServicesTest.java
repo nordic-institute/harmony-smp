@@ -1,8 +1,13 @@
-package eu.europa.ec.edelivery.smp.utils;
+package eu.europa.ec.edelivery.smp.services;
 
+import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
 import javax.crypto.SecretKey;
@@ -16,7 +21,13 @@ import java.security.Security;
 
 import static org.junit.Assert.*;
 
-public class SecurityUtilsTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(classes = {SecurityUtilsServices.class})
+public class SecurityUtilsServicesTest {
+
+
+    @Autowired
+    protected SecurityUtilsServices testInstance;
 
     @Before
     public void setup(){
@@ -29,7 +40,7 @@ public class SecurityUtilsTest {
         String tempPrivateKey = "enckey_"+ System.currentTimeMillis() + ".private";
         Path resourceDirectory = Paths.get("target", tempPrivateKey);
 
-        SecurityUtils.generatePrivateSymmetricKey(resourceDirectory.toFile());
+        testInstance.generatePrivateSymmetricKey(resourceDirectory.toFile());
 
         SecretKey privateKey = new SecretKeySpec(Files.readAllBytes(Paths.get(resourceDirectory.toAbsolutePath().toString())), "AES");
         Assert.assertNotNull(privateKey);
@@ -50,7 +61,7 @@ public class SecurityUtilsTest {
         String password = "TEST11002password1@!."+System.currentTimeMillis();
 
         // when
-        String encPassword = SecurityUtils.encrypt(f, password);
+        String encPassword = testInstance.encrypt(f, password);
         //then
         assertNotNull(encPassword);
         assertNotEquals(password, encPassword);
@@ -62,7 +73,7 @@ public class SecurityUtilsTest {
         String password = "test123";
 
         // when
-        String encPassword = SecurityUtils.encrypt(f, password);
+        String encPassword = testInstance.encrypt(f, password);
         //then
         assertNotNull(encPassword);
         assertNotEquals(password, encPassword);
@@ -74,10 +85,10 @@ public class SecurityUtilsTest {
         // given
         File f = generateRandomPrivateKey();
         String password = "TEST11002password1@!." + System.currentTimeMillis();
-        String encPassword = SecurityUtils.encrypt(f, password);
+        String encPassword = testInstance.encrypt(f, password);
 
         // when
-        String decPassword = SecurityUtils.decrypt(f, encPassword);
+        String decPassword = testInstance.decrypt(f, encPassword);
         //then
         assertNotNull(decPassword);
         assertEquals(password, decPassword);
@@ -88,7 +99,7 @@ public class SecurityUtilsTest {
         File resource = File.createTempFile( "test-key", ".key");
         resource.deleteOnExit();
 
-        SecurityUtils.generatePrivateSymmetricKey(resource);
+        testInstance.generatePrivateSymmetricKey(resource);
         return resource;
 
     }

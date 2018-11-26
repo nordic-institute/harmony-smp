@@ -11,8 +11,9 @@
  * See the Licence for the specific language governing permissions and limitations under the Licence.
  */
 
-package eu.europa.ec.edelivery.smp;
+package eu.europa.ec.edelivery.smp.utils;
 
+import eu.europa.ec.edelivery.smp.utils.BCryptPasswordHash;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
