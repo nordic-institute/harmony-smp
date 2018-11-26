@@ -60,8 +60,8 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 })
 public class PropertiesConfig {
 
-    @Autowired
-    SecurityUtilsServices securityUtilsServices;
+    // create own instance because at this time SecurityUtilsServices is not ready to instantiate
+    SecurityUtilsServices securityUtilsServices = new SecurityUtilsServices();
 
     @Bean
     public PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
