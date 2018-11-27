@@ -13,13 +13,14 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.edelivery.smp.utils.SMPPropertyEnum;
 import eu.europa.ec.edelivery.smp.data.model.DBConfiguration;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
+import eu.europa.ec.edelivery.smp.utils.SMPPropertyEnum;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -56,9 +57,16 @@ import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
         "eu.europa.ec"})
 @PropertySources({
         @PropertySource(value = "classpath:config.properties", ignoreResourceNotFound = true),
-        @PropertySource(value = "classpath:smp.config.properties", ignoreResourceNotFound = true)
+        @PropertySource(value = "classpath:smp.config.properties", ignoreResourceNotFound = true),
+        @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true)
 })
 public class PropertiesConfig {
+
+    private static final String PROP_BUILD_NAME="smp.artifact.name";
+    private static final String PROP_BUILD_VERSION="smp.artifact.version";
+    private static final String PROP_BUILD_TIME="smp.artifact.build.time";
+
+    SMPLogger LOG = SMPLoggerFactory.getLogger(PropertiesConfig.class);
 
     // create own instance because at this time SecurityUtilsServices is not ready to instantiate
     SecurityUtilsServices securityUtilsServices = new SecurityUtilsServices();
@@ -68,9 +76,30 @@ public class PropertiesConfig {
         PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
 
         Properties prop = getDatabaseProperties();
+        logBuildProperties();
+
         propertiesConfig.setProperties(prop);
         propertiesConfig.setLocalOverride(true);
         return propertiesConfig;
+    }
+
+    private void logBuildProperties(){
+        InputStream is = PropertiesConfig.class.getResourceAsStream("/application.properties");
+        if(is!=null){
+            Properties applProp = new Properties();
+            try {
+                applProp.load(is);
+
+                LOG.info("Start application: name: {}, version: {}, build time: {}.",applProp.getProperty(PROP_BUILD_NAME)
+                        ,applProp.getProperty(PROP_BUILD_VERSION)
+                        ,applProp.getProperty(PROP_BUILD_TIME));
+            } catch (IOException e) {
+                LOG.error( "Error occurred  while reading application properties. Is file /application.properties included in war!", e);
+            }
+        } else {
+            LOG.error( "Not found application build properties: /application.properties!");
+        }
+
     }
 
     private Properties getDatabaseProperties() {
@@ -108,7 +137,7 @@ public class PropertiesConfig {
      */
     protected void initializeProperties(EntityManager em, Properties fileProperties, Properties initProperties) {
         em.getTransaction().begin();
-
+        LOG.info( "Database configuration table is empty! initialize new values from property file!");
         initNewValues(em, fileProperties, initProperties);
         for (SMPPropertyEnum val : SMPPropertyEnum.values()) {
             DBConfiguration dbConf = null;
@@ -160,6 +189,7 @@ public class PropertiesConfig {
     protected void initNewValues(EntityManager em, Properties fileProperties, Properties initProperties) {
 
         File settingsFolder = calculateSettingsPath(fileProperties);
+        LOG.info( "Generate new keystore to folder: " + settingsFolder.getAbsolutePath());
 
         // add configuration path
         storeDBEntry(em, SMPPropertyEnum.CONFIGURATION_DIR, settingsFolder.getPath());
@@ -169,7 +199,9 @@ public class PropertiesConfig {
 
 
         // store encryption filename
+
         File fEncryption = new File(settingsFolder, SMPPropertyEnum.ENCRYPTION_FILENAME.getDefValue());
+        LOG.info( "Generate new encryption key: " + fEncryption.getName());
         securityUtilsServices.generatePrivateSymmetricKey(fEncryption);
         storeDBEntry(em, SMPPropertyEnum.ENCRYPTION_FILENAME, fEncryption.getName());
         initProperties.setProperty(SMPPropertyEnum.ENCRYPTION_FILENAME.getProperty(), fEncryption.getName());
@@ -194,6 +226,7 @@ public class PropertiesConfig {
             newKeystore.load(null, newKeyPassword.toCharArray());
             // merge keys from signature keystore
           if (!StringUtils.isBlank(sigKeystorePath)) {
+              LOG.info( "Import keys from keystore for signature: " + sigKeystorePath);
                 String keypasswd = fileProperties.getProperty(SMPPropertyEnum.SIGNATURE_KEYSTORE_PASSWORD.getProperty());
                 try (FileInputStream fis = new FileInputStream(sigKeystorePath)) {
                     KeyStore sourceKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -204,6 +237,7 @@ public class PropertiesConfig {
 
             // merge keys from integration keystore
             if (!StringUtils.isBlank(smlKeystorePath) && !StringUtils.equalsIgnoreCase(smlKeystorePath, sigKeystorePath)) {
+                LOG.info( "Import keys from keystore for sml integration: " + smlKeystorePath);
                 String keypasswd = fileProperties.getProperty(SMPPropertyEnum.SML_KEYSTORE_PASSWORD.getProperty());
                 try (FileInputStream fis = new FileInputStream(smlKeystorePath)) {
                     KeyStore sourceKeystore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -251,13 +285,14 @@ public class PropertiesConfig {
      * @return
      */
     private DataSource getDatasource(Properties connectionProp) {
-
+        LOG.info( "Start database properties");
         DataSource datasource = null;
         String url = connectionProp.getProperty("jdbc.url");
         String jndiDatasourceName = connectionProp.getProperty("datasource.jndi");
         jndiDatasourceName = StringUtils.isBlank(jndiDatasourceName) ? "jdbc/smpDatasource" : jndiDatasourceName;
 
-        if (url != null) {
+        if (!StringUtils.isBlank(url)) {
+            LOG.info( "Connect to {}.", url);
             DriverManagerDataSource driverManagerDataSource = new DriverManagerDataSource();
             driverManagerDataSource.setDriverClassName(connectionProp.getProperty("jdbc.driver"));
             driverManagerDataSource.setUrl(url);
@@ -265,12 +300,14 @@ public class PropertiesConfig {
             driverManagerDataSource.setPassword(connectionProp.getProperty("jdbc.password"));
             datasource = driverManagerDataSource;
         } else {
+            LOG.info( "Use JNDI {} to connect to database.", jndiDatasourceName);
             JndiObjectFactoryBean dataSource = new JndiObjectFactoryBean();
             dataSource.setJndiName(jndiDatasourceName);
             try {
                 dataSource.afterPropertiesSet();
             } catch (IllegalArgumentException | NamingException e) {
                 // rethrow
+                LOG.error( "Error occurred while retriving datasource whith JNDI {}. Is datasource configured in server!", jndiDatasourceName);
                 throw new SMPRuntimeException(INTERNAL_ERROR, e, "Error occurred while retrieving datasource: " + jndiDatasourceName, e.getMessage());
             }
             datasource = (DataSource) dataSource.getObject();
@@ -279,14 +316,17 @@ public class PropertiesConfig {
     }
 
     protected Properties getFileProperties() {
+        LOG.info( "Start read file properties from '/smp.config.properties'");
         InputStream is = PropertiesConfig.class.getResourceAsStream("/smp.config.properties");
         if (is == null) {
+            LOG.info( "File '/smp.config.properties' not found in classpath, read '/config.properties'");
             is = PropertiesConfig.class.getResourceAsStream("/config.properties");
         }
         Properties connectionProp = new Properties();
         try {
             connectionProp.load(is);
         } catch (IOException e) {
+            LOG.error( "IOException occurred while reading properties", e);
             throw new SMPRuntimeException(INTERNAL_ERROR, e, "Error occurred  while reading properties.", e.getMessage());
         }
         return connectionProp;
@@ -312,7 +352,7 @@ public class PropertiesConfig {
     }
 
     private static class DatabaseProperties extends Properties {
-
+        SMPLogger LOG = SMPLoggerFactory.getLogger(PropertiesConfig.class);
         private static final long serialVersionUID = 1L;
 
         public DatabaseProperties(EntityManager em) {
@@ -321,6 +361,9 @@ public class PropertiesConfig {
             List<DBConfiguration> lst = tq.getResultList();
             for (DBConfiguration dc : lst) {
                 if(dc.getValue()!=null) {
+
+                    LOG.info("Set property: '{}' value: '{}'",dc.getProperty(),
+                            dc.getProperty().toLowerCase().contains("password")?"******": dc.getValue());
                     setProperty(dc.getProperty(), dc.getValue());
                 }
             }

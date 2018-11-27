@@ -14,6 +14,7 @@
 package eu.europa.ec.edelivery.smp.smlintegration;
 
 import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
+import eu.europa.ec.bdmsl.ws.soap.IManageServiceMetadataWS;
 import eu.europa.ec.edelivery.smp.sml.SmlClientFactory;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
@@ -71,7 +72,23 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeaderTest {
         List clientCerts = (List) httpHeaders.get("Client-Cert");
         assertEquals(1, clientCerts.size());
         assertEquals(CLIENT_CERT_HTTP_HEADER, clientCerts.get(0));
-        assertEquals("https://sml.url.pl", requestContext.get(Message.ENDPOINT_ADDRESS));
+        assertEquals("https://sml.url.pl/manageparticipantidentifier", requestContext.get(Message.ENDPOINT_ADDRESS));
+    }
+
+    @Test
+    public void factoryProducesPreconfiguredCxfCSMPlientThatAuthenticatesItselfWithGivenHttpHeader() {
+        //when
+        IManageServiceMetadataWS client = smlClientFactory.createSmp(null, CLIENT_CERT_HTTP_HEADER);
+
+        //then
+        assertNotNull(client);
+        Client cxfClient = ClientProxy.getClient(client);
+        Map<String, Object> requestContext = cxfClient.getRequestContext();
+        Map httpHeaders = (Map) requestContext.get(Message.PROTOCOL_HEADERS);
+        List clientCerts = (List) httpHeaders.get("Client-Cert");
+        assertEquals(1, clientCerts.size());
+        assertEquals(CLIENT_CERT_HTTP_HEADER, clientCerts.get(0));
+        assertEquals("https://sml.url.pl/manageservicemetadata", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
 
 }

@@ -84,8 +84,10 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest {
         X509Certificate clientCert = getClientCertFromKeystore(cxfClient);
 
         assertEquals("C=EU,O=CEF Digit,OU=SMP,CN=Second domain", clientCert.getSubjectDN().getName());
-        assertEquals("https://sml.url.pl", requestContext.get(Message.ENDPOINT_ADDRESS));
+        assertEquals("https://sml.url.pl/manageparticipantidentifier", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
+
+
 
     @Test
     public void factoryProducesPreconfiguredCxfSMPClientThatAuthenticatesItselfWithGivenCertAlias() {
@@ -99,7 +101,7 @@ public class SmlClientFactoryAuthenticationByClientCertFromKeystoreTest {
         X509Certificate clientCert = getClientCertFromKeystore(cxfClient);
 
         assertEquals("C=EU,O=CEF Digit,OU=SMP,CN=Second domain", clientCert.getSubjectDN().getName());
-        assertEquals("https://sml.url.pl", requestContext.get(Message.ENDPOINT_ADDRESS));
+        assertEquals("https://sml.url.pl/manageservicemetadata", requestContext.get(Message.ENDPOINT_ADDRESS));
     }
 
     @Test

@@ -11,6 +11,10 @@ public enum SMPPropertyEnum {
     CS_DOCUMENTS("identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes","casesensitive-doc-scheme1|casesensitive-doc-scheme2","Specifies schemes of document identifiers that must be considered CASE-SENSITIVE."),
     SML_ENABLED("bdmsl.integration.enabled","false","BDMSL (SML) integration ON/OFF switch"),
     SML_URL("bdmsl.integration.url","http://localhost:8080/edelivery-sml/","BDMSL (SML) endpoint"),
+
+    SML_LOGICAL_ADDRESS("bdmsl.integration.logical.address","http://localhost:8080/smp/","BDMSL (SML) endpoint"),
+    SML_PHYSICAL_ADDRESS("bdmsl.integration.physical.address","0.0.0.0","BDMSL (SML) endpoint"),
+
     SML_PROXY_HOST("bdmsl.integration.proxy.server","","Proxy "),
     SML_PROXY_PORT("bdmsl.integration.proxy.port","","Proxy "),
     SML_PROXY_USER("bdmsl.integration.proxy.user","","Proxy "),

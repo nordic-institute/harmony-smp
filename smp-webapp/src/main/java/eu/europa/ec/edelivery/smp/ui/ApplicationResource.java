@@ -30,12 +30,15 @@ public class ApplicationResource {
     @Autowired
     private Environment env;
 
-    @Value("${Artifact-Name}")
-    private String artifactName;
-    @Value("${Artifact-Version}")
-    private String artifactVersion;
-    @Value("${Build-Time}")
-    private String buildTime;
+    @Value("${smp.artifact.name:eDelivery SMP}")
+    String artifactName;
+    @Value("${smp.artifact.version:}")
+    String artifactVersion;
+    @Value("${smp.artifact.build.time:}")
+    String buildTime;
+
+    @Value("${bdmsl.integration.enabled}")
+    boolean smlIntegrationEnabled;
 
 
     @RequestMapping(method = RequestMethod.GET, path = "name")
@@ -49,7 +52,16 @@ public class ApplicationResource {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "info")
-    public SmpInfoRO getDisplayVersion() {
+    public SmpInfoRO getApplicationInfo() {
+        SmpInfoRO info = new SmpInfoRO();
+        info.setVersion(getDisplayVersion());
+        info.setSmlIntegrationOn(smlIntegrationEnabled);
+        info.setContextPath(getRootContext());
+        return info;
+    }
+
+
+    public String getDisplayVersion() {
         StringBuilder display = new StringBuilder();
         display.append(artifactName);
         display.append(" Version [");
@@ -57,12 +69,6 @@ public class ApplicationResource {
         display.append("] Build-Time [");
         display.append(buildTime + "|" + TimeZone.getDefault().getDisplayName());
         display.append("]");
-
-        SmpInfoRO info = new SmpInfoRO();
-        info.setVersion(display.toString());
-        return info;
+        return display.toString();
     }
-
-
-
 }

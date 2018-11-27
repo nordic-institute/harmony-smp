@@ -96,7 +96,7 @@ public class KeystoreResource {
 
     @DeleteMapping(value = "/{id}/delete/{alias}", produces = {"application/json"})
     @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#id)")
-    public KeystoreImportResult uploadKeystore(@PathVariable("id") Long id,
+    public KeystoreImportResult deleteCertificate(@PathVariable("id") Long id,
                                                @PathVariable("alias") String alias) {
         LOG.info("Remove alias by user id {}, alias {}.", id, alias);
         KeystoreImportResult keystoreImportResult = new KeystoreImportResult();

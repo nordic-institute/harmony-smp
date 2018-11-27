@@ -15,6 +15,8 @@ import {SearchTableEntityStatus} from "../common/search-table/search-table-entit
 import {KeystoreEditDialogComponent} from "./keystore-edit-dialog/keystore-edit-dialog.component";
 import {SmpInfoService} from "../app-info/smp-info.service";
 import {SmpInfo} from "../app-info/smp-info.model";
+import {SmlIntegrationService} from "./sml-integration.service";
+import {KeystoreResult} from "./keystore-result.model";
 
 @Component({
   moduleId: module.id,
@@ -40,6 +42,7 @@ export class DomainComponent implements OnInit {
 
   constructor(public securityService: SecurityService,
               protected smpInfoService: SmpInfoService,
+              protected smlIntegrationService:SmlIntegrationService,
               protected lookups: GlobalLookups,
               protected http: HttpClient,
               protected alertService: AlertService,
@@ -173,6 +176,27 @@ export class DomainComponent implements OnInit {
     })
   }
 
+  smlUnregisterDomain(domainCode:string){
+    this.smlIntegrationService.unregisterDomainToSML$(domainCode).subscribe((res) => {
+        if (res) {
+          if (res.errorMessage){
+            this.alertService.exception("Error occurred while unregistering domain:" + domainCode , res.errorMessage, false);
+          } else {
+            this.alertService.success("Domain " + domainCode + " unregistering to sml!");
+            this.lookups.refreshDomainLookup();
+
+          }
+        } else {
+          this.alertService.exception("Error occurred while unregistering domain:" + domainCode , "Unknown Error", false);
+        }
+      },
+      err => {
+        this.alertService.exception('Error occurred while unregistering domain:' + domainCode , err);
+      }
+    )
+
+  }
+
   smlRegisterSelectedDomain() {
     if (this.searchTable.selected.length !== 1) {
       return false;
@@ -187,9 +211,30 @@ export class DomainComponent implements OnInit {
       }
     }).afterClosed().subscribe(result => {
       if (result) {
-        domainRo.smlRegistered=true;
+        this.smlRegisterDomain(domainRo.domainCode);
       }
     })
+  }
+
+  smlRegisterDomain(domainCode:string){
+    this.smlIntegrationService.registerDomainToSML$(domainCode).subscribe((res) => {
+        if (res) {
+          if (res.errorMessage){
+            this.alertService.exception("Error occurred while registering domain:" + domainCode , res.errorMessage, false);
+          } else {
+            this.alertService.success("Domain " + domainCode + " registered to sml!");
+            this.lookups.refreshDomainLookup();
+
+          }
+        } else {
+          this.alertService.exception("Error occurred while registering domain:" + domainCode , "Unknown Error", false);
+        }
+      },
+      err => {
+        this.alertService.exception('Error occurred while registering domain:' + domainCode , err);
+      }
+    )
+
   }
 
   openEditKeystoreDialog() {

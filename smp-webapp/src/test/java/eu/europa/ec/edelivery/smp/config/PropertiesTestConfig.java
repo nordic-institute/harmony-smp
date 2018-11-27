@@ -13,7 +13,10 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
-import org.springframework.context.annotation.*;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import java.nio.file.Path;
@@ -25,7 +28,8 @@ import java.util.Properties;
  */
 @Configuration
 @PropertySources({
-        @PropertySource(value = "classpath:config.properties", ignoreResourceNotFound = true)
+        @PropertySource(value = "classpath:config.properties", ignoreResourceNotFound = true),
+        @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true)
 })
 public class PropertiesTestConfig {
 
@@ -33,7 +37,7 @@ public class PropertiesTestConfig {
 
     @Bean
     public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
-        Path resourceDirectory = Paths.get("src", "test", "resources",  "keystores");
+        Path resourceDirectory = Paths.get("src", "test", "resources", "keystores");
         String path = resourceDirectory.toFile().getAbsolutePath();
 
         PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
@@ -41,16 +45,16 @@ public class PropertiesTestConfig {
         Properties localProps = new Properties();
         localProps.setProperty("jdbc.driverClassName", "org.h2.Driver");
         localProps.setProperty("jdbc.url", "jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE");
-        localProps.setProperty( "jdbc.user", "smp");
-        localProps.setProperty( "jdbc.pass", "smp");
-        localProps.setProperty( "spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-        localProps.setProperty( "spring.jpa.generate-ddl", "true");
-        localProps.setProperty( "spring.jpa.properties.hibernate.hbm2ddl.auto", "create");
+        localProps.setProperty("jdbc.user", "smp");
+        localProps.setProperty("jdbc.pass", "smp");
+        localProps.setProperty("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+        localProps.setProperty("spring.jpa.generate-ddl", "true");
+        localProps.setProperty("spring.jpa.properties.hibernate.hbm2ddl.auto", "create");
 
         localProps.setProperty("configuration.dir", path);
-        localProps.setProperty( "encryption.key.filename","encryptionKey.key");
-        localProps.setProperty( "smp.keystore.password", "FarFJE2WUfY39SVRTFOqSg==");
-        localProps.setProperty( "smp.keystore.filename", "smp-keystore_multiple_domains.jks");
+        localProps.setProperty("encryption.key.filename", "encryptionKey.key");
+        localProps.setProperty("smp.keystore.password", "FarFJE2WUfY39SVRTFOqSg==");
+        localProps.setProperty("smp.keystore.filename", "smp-keystore_multiple_domains.jks");
         propertiesConfig.setProperties(localProps);
         propertiesConfig.setLocalOverride(true);
 

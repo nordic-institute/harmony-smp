@@ -61,6 +61,34 @@ public class ServiceGroupDao extends BaseDao<DBServiceGroup> {
     }
 
     /**
+     * Method returns ServiceGroupDomain for participant identifie and domain code. If there is no service group
+     * or service group registred to domain it returns empty Option.
+     * If more than one result returns IllegalStateException caused by database data inconsistency. Only one combination of
+     * participant identifier must be in the database.
+     *
+     * @param participantId participant identifier
+     * @param schema        participant identifier schema
+     * @param domainCode     domainCode
+     * @return DBServiceGroup
+     */
+    public Optional<DBServiceGroupDomain> findServiceGroupDomain(String participantId, String schema, String domainCode) {
+
+
+        try {
+            TypedQuery<DBServiceGroupDomain> query = memEManager.createNamedQuery("DBServiceGroupDomain.getServiceGroupDomain", DBServiceGroupDomain.class);
+            query.setParameter("participantIdentifier", participantId);
+            query.setParameter("participantScheme", schema);
+            query.setParameter("domainCode", domainCode);
+            DBServiceGroupDomain res = query.getSingleResult();
+            return Optional.of(res);
+        } catch (NoResultException e) {
+            return Optional.empty();
+        } catch (NonUniqueResultException e) {
+            throw new IllegalStateException(ErrorCode.ILLEGAL_STATE_SG_MULTIPLE_ENTRY.getMessage(participantId, schema));
+        }
+    }
+
+    /**
      * Method removes service group from DB. Related entities:Extension, ownerships,
      * metadata clobs, metadata are also deleted.
      *
