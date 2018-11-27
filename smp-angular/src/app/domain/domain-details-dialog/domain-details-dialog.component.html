@@ -75,9 +75,8 @@
 
           <mat-form-field style="width:100%">
             <mat-select [(value)]="selectedSMLCert"
-                        [compareWith]="compareCertByAlias"
                         placeholder="ClientCert Alias"
-                        [formControl]="domainForm.controls['smlClientKeyAlias']"
+                        [formControl]="domainForm.controls['smlClientKeyCertificate']"
                         name="cert"
                         id="smlClientKeyAlias_id">
               <mat-option [value]="''">Choose certificate for SML integration</mat-option>
