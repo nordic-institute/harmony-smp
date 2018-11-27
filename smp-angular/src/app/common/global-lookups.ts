@@ -21,6 +21,9 @@ export class GlobalLookups implements OnInit {
   cachedDomainList: Array<any> = [];
   cachedServiceGroupOwnerList: Array<any> = [];
   cachedCertificateList: Array<any> = [];
+  cachedCertificateAliasList: Array<String> = [];
+
+
 
 
   constructor(protected alertService: AlertService,  protected securityService: SecurityService, protected http: HttpClient) {
@@ -90,6 +93,8 @@ export class GlobalLookups implements OnInit {
           return {...serviceEntity}
 
         });
+        //update alias list
+        this.cachedCertificateAliasList =this.cachedCertificateList.map(cert => cert.alias);
       },(error:any) => {
         // check if unauthorized
         // just console try latter
@@ -97,6 +102,8 @@ export class GlobalLookups implements OnInit {
       });
     }
   }
+
+
 
 
 }

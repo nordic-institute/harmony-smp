@@ -13,6 +13,8 @@ import {DomainRo} from "./domain-ro.model";
 import {ConfirmationDialogComponent} from "../common/confirmation-dialog/confirmation-dialog.component";
 import {SearchTableEntityStatus} from "../common/search-table/search-table-entity-status.model";
 import {KeystoreEditDialogComponent} from "./keystore-edit-dialog/keystore-edit-dialog.component";
+import {SmpInfoService} from "../app-info/smp-info.service";
+import {SmpInfo} from "../app-info/smp-info.model";
 
 @Component({
   moduleId: module.id,
@@ -22,21 +24,32 @@ import {KeystoreEditDialogComponent} from "./keystore-edit-dialog/keystore-edit-
 export class DomainComponent implements OnInit {
 
   @ViewChild('rowMetadataAction') rowMetadataAction: TemplateRef<any>;
-  @ViewChild('rowExtensionAction') rowExtensionAction: TemplateRef<any>;
+  @ViewChild('signKeyColumnTemplate') signKeyColumnTemplate: TemplateRef<any>;
+  @ViewChild('smlKeyColumnTemplate') smlKeyColumnTemplate: TemplateRef<any>;
   @ViewChild('rowActions') rowActions: TemplateRef<any>;
   @ViewChild('searchTable') searchTable: SearchTableComponent;
+
+
 
   baseUrl = SmpConstants.REST_DOMAIN;
   columnPicker: ColumnPicker = new ColumnPicker();
   domainController: DomainController;
   filter: any = {};
+  isSMPIntegrationOn:boolean=false;
 
 
   constructor(public securityService: SecurityService,
+              protected smpInfoService: SmpInfoService,
               protected lookups: GlobalLookups,
               protected http: HttpClient,
               protected alertService: AlertService,
               public dialog: MatDialog) {
+
+    // check application settings
+    this.smpInfoService.getSmpInfo().subscribe((smpInfo: SmpInfo) => {
+        this.isSMPIntegrationOn = smpInfo.smlIntegrationOn;
+      }
+    );
 
     // if system admin refresh certificate list!
     if (this.securityService.isCurrentUserSystemAdmin()) {
@@ -66,12 +79,12 @@ export class DomainComponent implements OnInit {
       },
       {
         name: 'ClientCert Alias',
-        prop: 'smlClientKeyAlias',
+        cellTemplate: this.smlKeyColumnTemplate,
       },
 
       {
         name: 'Signature CertAlias',
-        prop: 'signatureKeyAlias',
+        cellTemplate: this.signKeyColumnTemplate,
         width: 120
       },
       {
@@ -91,6 +104,27 @@ export class DomainComponent implements OnInit {
     });
   }
 
+  certificateAliasExists(alias:string): boolean {
+    if(alias){
+      return this.lookups.cachedCertificateAliasList.includes(alias);
+    } else {
+
+      return false;
+    }
+  }
+
+  aliasCssClass(alias: string, row) {
+    if (!this.certificateAliasExists(alias)){
+      return 'missingKey';
+    } else if (row.status === SearchTableEntityStatus.NEW){
+      return 'table-row-new';
+    }else if (row.status === SearchTableEntityStatus.UPDATED){
+      return 'table-row-updated';
+    }else if (row.status === SearchTableEntityStatus.REMOVED){
+      return 'deleted';
+    }
+  }
+
   details(row: any) {
     this.domainController.showDetails(row);
   }
@@ -103,7 +137,7 @@ export class DomainComponent implements OnInit {
 
 
   enableSMLRegister(): boolean {
-    if (this.searchTable.selected.length !== 1) {
+    if (this.searchTable.selected.length !== 1 || !this.isSMPIntegrationOn) {
       return false;
     }
     let domainRo =  (this.searchTable.selected[0] as DomainRo);
@@ -112,7 +146,7 @@ export class DomainComponent implements OnInit {
   }
 
   enableSMLUnregister(): boolean {
-    if (this.searchTable.selected.length !== 1) {
+    if (this.searchTable.selected.length !== 1 || !this.isSMPIntegrationOn) {
       return false;
     }
     let domainRo =  (this.searchTable.selected[0] as DomainRo);
