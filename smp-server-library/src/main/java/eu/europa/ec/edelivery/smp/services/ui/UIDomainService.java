@@ -9,6 +9,8 @@ import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
+import eu.europa.ec.edelivery.smp.logging.SMPLogger;
+import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
 
+    private static final SMPLogger LOG = SMPLoggerFactory.getLogger(UIDomainService.class);
     @Autowired
     DomainDao domainDao;
 
@@ -55,8 +59,6 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
     public void updateDomainList(List<DomainRO> lst) {
         boolean suc = false;
         for (DomainRO dRo: lst){
-
-
             if (dRo.getStatus() == EntityROStatus.NEW.getStatusNumber()) {
                 DBDomain dDb = convertFromRo(dRo);
                 domainDao.persistFlushDetach(dDb);
@@ -97,15 +99,6 @@ public class UIDomainService extends UIServiceBase<DBDomain, DomainRO> {
         });
         dev.setStringMessage(sw.toString());
         return dev;
-    }
-
-    public void registerDomainToSml(){
-
-     //   smlConnector.registerInDns()
-
-        // get participants for domain
-
-
     }
 
 }

@@ -39,7 +39,7 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
         CaseSensitivityNormalizer.class,SmlConnector.class,ServiceMetadataSigner.class,
         ServiceGroupService.class, DomainService.class, ServiceMetadataService.class,
         ServiceGroupDao.class,ServiceMetadataDao.class, DomainDao.class, UserDao.class,DBAssertion.class,
-        UIKeystoreService.class, ConversionTestConfig.class, SecurityUtilsServices.class})
+        UIKeystoreService.class, ConversionTestConfig.class, SecurityUtilsServices.class, SMLIntegrationService.class})
 @Sql(scripts = "classpath:cleanup-database.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig
         (transactionMode = SqlConfig.TransactionMode.ISOLATED,
                 transactionManager = "transactionManager",

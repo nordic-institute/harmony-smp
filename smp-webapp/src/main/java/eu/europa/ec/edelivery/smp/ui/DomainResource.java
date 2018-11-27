@@ -3,22 +3,34 @@ package eu.europa.ec.edelivery.smp.ui;
 
 import eu.europa.ec.edelivery.smp.auth.SMPAuthenticationToken;
 import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
+import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
+import eu.europa.ec.edelivery.smp.data.ui.KeystoreImportResult;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.DomainService;
 import eu.europa.ec.edelivery.smp.services.ui.UIDomainService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Joze Rihtarsic
@@ -33,6 +45,9 @@ public class DomainResource {
 
     @Autowired
     private UIDomainService uiDomainService;
+
+    @Autowired
+    private DomainService domainService;
 
     @PostConstruct
     protected void init() {
@@ -68,5 +83,28 @@ public class DomainResource {
         DeleteEntityValidation dres = new DeleteEntityValidation();
         dres.getListIds().addAll(query);
         return uiDomainService.validateDeleteRequest(dres);
+    }
+
+    @PostMapping(value = "/{id}/smlregister/{domaincode}")
+    @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#id)")
+    public void registerDomain(@PathVariable("id") Long id,
+                                               @PathVariable("domaincode") String domaincode
+                                               ) {
+        LOG.info("SML register domain code: {}, user id {}", domaincode, id);
+        // try to open keystore
+        DBDomain dbDomain =  domainService.getDomain(domaincode);
+        domainService.registerDomainAndParticipants(dbDomain);
+    }
+
+
+    @PostMapping(value = "/{id}/smlunregister/{domaincode}")
+    @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#id)")
+    public void unregisterDomainAndParticiants(@PathVariable("id") Long id,
+                                               @PathVariable("domaincode") String domaincode
+    ) {
+        LOG.info("SML unregister domain code: {}, user id {}", domaincode, id);
+        // try to open keystore
+        DBDomain dbDomain =  domainService.getDomain(domaincode);
+        domainService.unregisterDomainAndParticipantsFromSml(dbDomain);
     }
 }

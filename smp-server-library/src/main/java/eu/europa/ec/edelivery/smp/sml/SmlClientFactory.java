@@ -39,6 +39,7 @@ import javax.net.ssl.KeyManagerFactory;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.handler.MessageContext;
 import java.io.FileInputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.KeyStore;
 import java.util.HashMap;
@@ -96,9 +97,17 @@ public class SmlClientFactory {
         IManageParticipantIdentifierWS smlPort = smlService.getManageBusinessIdentifierServicePort();
         Client client = ClientProxy.getClient(smlPort);
 
+        URL urlParticipantIdentifier;
+        try {
+            urlParticipantIdentifier = new URL(smlUrl.getProtocol(), smlUrl.getHost(), smlUrl.getPort(), smlUrl.getFile() + "/manageparticipantidentifier", null);
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException("Could not create participant URL: " + smlUrl.toString(), e);
+        }
+
+
         HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
         Map<String, Object> requestContext = ((BindingProvider) smlPort).getRequestContext();
-        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, smlUrl.toString());
+        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlParticipantIdentifier.toString());
 
         configureFaultHandling(requestContext);
         configureProxy(httpConduit);
@@ -115,9 +124,16 @@ public class SmlClientFactory {
         IManageServiceMetadataWS smlPort = smlService.getManageServiceMetadataServicePort();
         Client client = ClientProxy.getClient(smlPort);
 
+        URL urlSMPManagment;
+        try {
+            urlSMPManagment = new URL(smlUrl.getProtocol(), smlUrl.getHost(), smlUrl.getPort(), smlUrl.getFile() + "/manageservicemetadata", null);
+        } catch (MalformedURLException e) {
+            throw new IllegalStateException("Could not create participant URL: " + smlUrl.toString(), e);
+        }
+
         HTTPConduit httpConduit = (HTTPConduit) client.getConduit();
         Map<String, Object> requestContext = ((BindingProvider) smlPort).getRequestContext();
-        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, smlUrl.toString());
+        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, urlSMPManagment.toString());
 
         configureFaultHandling(requestContext);
         configureProxy(httpConduit);

@@ -49,6 +49,12 @@ public class SmlConnector implements ApplicationContextAware {
     @Value("${bdmsl.integration.enabled:false}")
     private boolean smlIntegrationEnabled;
 
+    @Value("${bdmsl.integration.logical.address:}")
+    private String smpLogicalAddress;
+
+    @Value("${bdmsl.integration.physical.address:0.0.0.0}")
+    private String smpPhysicalAddress;
+
     private ApplicationContext ctx;
 
     public boolean registerInDns(ParticipantIdentifierType normalizedParticipantId, DBDomain domain) {
@@ -76,7 +82,8 @@ public class SmlConnector implements ApplicationContextAware {
         try {
             ServiceMetadataPublisherServiceType smlSmpRequest = new ServiceMetadataPublisherServiceType();
             smlSmpRequest.setPublisherEndpoint(new PublisherEndpointType());
-
+            smlSmpRequest.getPublisherEndpoint().setLogicalAddress(smpLogicalAddress);
+            smlSmpRequest.getPublisherEndpoint().setPhysicalAddress(smpPhysicalAddress);
             smlSmpRequest.setServiceMetadataPublisherID(domain.getSmlSmpId());
             getSMPManagerClient(domain).create(smlSmpRequest);
             return true;
@@ -99,13 +106,14 @@ public class SmlConnector implements ApplicationContextAware {
         }
     }
 
-    public void unregisterDomain(DBDomain domain) {
+    public boolean unregisterDomain(DBDomain domain) {
         if (!smlIntegrationEnabled) {
-            return;
+            return true;
         }
         log.info("Removing SMP id (Domain) from BDMSL: {} ", domain.getDomainCode());
         try {
             getSMPManagerClient(domain).delete(domain.getSmlSmpId());
+            return true;
         } catch (Exception e) {
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION,e, ExceptionUtils.getRootCauseMessage(e));
         }
