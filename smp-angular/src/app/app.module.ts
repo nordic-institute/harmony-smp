@@ -84,6 +84,7 @@ import {KeystoreEditDialogComponent} from "./domain/keystore-edit-dialog/keystor
 import {KeystoreCertificateDialogComponent} from "./domain/keystore-certificate-dialog/keystore-certificate-dialog.component";
 import {InformationDialogComponent} from "./common/information-dialog/information-dialog.component";
 import {KeystoreService} from "./domain/keystore.service";
+import {SmlIntegrationService} from "./domain/sml-integration.service";
 
 @NgModule({
   declarations: [
@@ -183,6 +184,7 @@ import {KeystoreService} from "./domain/keystore.service";
     DownloadService,
     CertificateService,
     KeystoreService,
+    SmlIntegrationService,
     GlobalLookups,
     DatePipe,
     UserService,

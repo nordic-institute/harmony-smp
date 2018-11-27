@@ -1,5 +1,6 @@
 package eu.europa.ec.edelivery.smp.ui;
 
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
@@ -49,14 +50,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "smp.artifact.build.time=2018-11-27 00:00:00",
         "bdmsl.integration.enabled=true"})
 
-public class ApplicationResourceTest {
+public class KeystoreResourceTest {
     private static final String PATH = "/ui/rest/application";
 
     @Autowired
     private WebApplicationContext webAppContext;
 
-    @Autowired
-    private ApplicationResource applicationResource;
+
 
 
     private MockMvc mvc;
@@ -79,47 +79,13 @@ public class ApplicationResourceTest {
     }
 
     @Test
-    public void getName() throws Exception {
-        String value = mvc.perform(get(PATH + "/name"))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        assertEquals("TestApplicationSmpName", value);
-
+    public void getKeyCertificateList() {
     }
 
     @Test
-    public void getRootContext() throws Exception {
-        String value = mvc.perform(get(PATH + "/rootContext"))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        assertEquals("/", value);
+    public void uploadKeystore() {
     }
 
-    @Test
-    public void getDisplayName() throws Exception {
-        String value = applicationResource.getDisplayVersion();
-        assertEquals("TestApplicationSmpName Version [TestApplicationVersion] Build-Time [2018-11-27 00:00:00|Central European Time]", value);
-    }
 
-    @Test
-    public void getApplicationInfoTest() throws Exception {
-        String value = mvc.perform(get(PATH + "/info"))
-                .andExpect(status().isOk())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-        ObjectMapper mapper = new ObjectMapper();
-        SmpInfoRO info = mapper.readValue(value, SmpInfoRO.class);
-
-        assertEquals("TestApplicationSmpName Version [TestApplicationVersion] Build-Time [2018-11-27 00:00:00|Central European Time]", info.getVersion());
-        assertEquals(true, info.isSmlIntegrationOn());
-        assertEquals("/", info.getContextPath());
-    }
 
 }

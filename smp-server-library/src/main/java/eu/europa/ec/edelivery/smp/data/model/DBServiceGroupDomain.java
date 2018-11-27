@@ -16,6 +16,11 @@ import java.util.Objects;
 @Entity
 @Audited
 @Table(name = "SMP_SERVICE_GROUP_DOMAIN")
+@NamedNativeQueries({
+        @NamedNativeQuery(name = "DBServiceGroupDomain.getServiceGroupDomain", query = "SELECT sgd.* FROM SMP_DOMAIN dmn  INNER JOIN SMP_SERVICE_GROUP_DOMAIN sgd ON sgd.FK_DOMAIN_ID = dmn.id " +
+                " INNER JOIN SMP_SERVICE_GROUP sg  ON sg.ID = sgd.FK_SG_ID " +
+                " where sg.PARTICIPANT_IDENTIFIER = :participantIdentifier AND sg.PARTICIPANT_SCHEME=:participantScheme and dmn.DOMAIN_CODE =:domainCode", resultClass=DBServiceGroupDomain.class)
+})
 public class DBServiceGroupDomain extends BaseEntity {
 
 
