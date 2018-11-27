@@ -5,6 +5,8 @@ import java.io.Serializable;
 public class SmpInfoRO implements Serializable {
     private static final long serialVersionUID = -49712226560325302L;
     String version;
+    boolean smlIntegrationOn;
+    String contextPath;
 
     public String getVersion() {
         return version;
@@ -12,5 +14,21 @@ public class SmpInfoRO implements Serializable {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public boolean isSmlIntegrationOn() {
+        return smlIntegrationOn;
+    }
+
+    public void setSmlIntegrationOn(boolean smlIntegrationOn) {
+        this.smlIntegrationOn = smlIntegrationOn;
+    }
+
+    public String getContextPath() {
+        return contextPath;
+    }
+
+    public void setContextPath(String contextPath) {
+        this.contextPath = contextPath;
     }
 }
