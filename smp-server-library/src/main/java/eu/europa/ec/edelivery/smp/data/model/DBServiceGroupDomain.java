@@ -26,8 +26,8 @@ public class DBServiceGroupDomain extends BaseEntity {
 
 
     @Id
+    @SequenceGenerator(name = "sgd_generator", sequenceName = "SMP_SERVICE_GROUP_DOMAIN_SEQ",allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sgd_generator")
-    @SequenceGenerator(name = "sgd_generator", sequenceName = "SMP_SERVICE_GROUP_DOMAIN_SEQ")
     @Column(name = "ID")
     Long id;
 
