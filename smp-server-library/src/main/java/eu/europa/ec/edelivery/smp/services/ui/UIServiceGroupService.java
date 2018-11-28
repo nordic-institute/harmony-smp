@@ -302,7 +302,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         }
 
 
-        // persist it to databse
+        // persist it to database
         getDatabaseDao().update(dbServiceGroup);
     }
 

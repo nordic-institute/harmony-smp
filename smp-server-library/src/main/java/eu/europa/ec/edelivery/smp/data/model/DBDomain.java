@@ -47,8 +47,8 @@ import java.time.LocalDateTime;
 public class DBDomain extends BaseEntity {
 
     @Id
+    @SequenceGenerator(name = "domain_generator", sequenceName = "SMP_DOMAIN_SEQ", allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "domain_generator")
-    @SequenceGenerator(name = "domain_generator", sequenceName = "SMP_DOMAIN_SEQ", allocationSize = 1, initialValue = 1)
     @Column(name = "ID")
     Long id;
 
