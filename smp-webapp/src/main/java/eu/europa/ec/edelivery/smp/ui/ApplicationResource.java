@@ -4,7 +4,9 @@ package eu.europa.ec.edelivery.smp.ui;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.SmpInfoRO;
+import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import eu.europa.ec.edelivery.smp.services.ui.UIServiceGroupService;
+import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +32,15 @@ public class ApplicationResource {
     @Autowired
     private Environment env;
 
+    @Autowired
+    SmlConnector smlConnector;
+
     @Value("${smp.artifact.name:eDelivery SMP}")
     String artifactName;
     @Value("${smp.artifact.version:}")
     String artifactVersion;
     @Value("${smp.artifact.build.time:}")
     String buildTime;
-
-    @Value("${bdmsl.integration.enabled}")
-    boolean smlIntegrationEnabled;
 
 
     @RequestMapping(method = RequestMethod.GET, path = "name")
@@ -55,7 +57,7 @@ public class ApplicationResource {
     public SmpInfoRO getApplicationInfo() {
         SmpInfoRO info = new SmpInfoRO();
         info.setVersion(getDisplayVersion());
-        info.setSmlIntegrationOn(smlIntegrationEnabled);
+        info.setSmlIntegrationOn(smlConnector.isSmlIntegrationEnabled());
         info.setContextPath(getRootContext());
         return info;
     }
