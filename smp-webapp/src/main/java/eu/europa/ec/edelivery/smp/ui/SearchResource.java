@@ -35,10 +35,7 @@ public class SearchResource {
     private UIServiceGroupSearchService uiServiceGroupService;
     @Autowired
     private DomainDao domainDao;
-    @PostConstruct
-    protected void init() {
 
-    }
 
     @PutMapping(produces = {"application/json"})
     @ResponseBody
