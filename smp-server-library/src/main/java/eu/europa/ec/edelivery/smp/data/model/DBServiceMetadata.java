@@ -42,8 +42,8 @@ import java.util.Objects;
 public class DBServiceMetadata extends BaseEntity {
 
     @Id
+    @SequenceGenerator(name = "sgmd_generator", sequenceName = "SMP_SERVICE_METADATA_SEQ",allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sgmd_generator")
-    @SequenceGenerator(name = "sgmd_generator", sequenceName = "SMP_SERVICE_METADATA_SEQ")
     @Column(name = "ID")
     Long id;
 

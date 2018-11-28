@@ -48,8 +48,8 @@ import java.util.Objects;
 public class DBUser extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usr_generator")
-    @SequenceGenerator(name = "usr_generator", sequenceName = "SMP_USER_SEQ")
+    @SequenceGenerator(name = "usr_generator", sequenceName = "SMP_USER_SEQ",allocationSize = 1 )
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "usr_generator" )
     @Column(name = "ID")
     Long id;
 
