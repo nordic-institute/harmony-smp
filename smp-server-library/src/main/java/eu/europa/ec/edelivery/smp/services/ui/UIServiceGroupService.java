@@ -117,6 +117,9 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         ServiceGroupValidationRO ex = new ServiceGroupValidationRO();
         DBServiceGroup dbServiceGroup = getDatabaseDao().find(serviceGroupId);
         ex.setServiceGroupId(dbServiceGroup.getId());
+        ex.setParticipantIdentifier(dbServiceGroup.getParticipantIdentifier());
+        ex.setParticipantScheme(dbServiceGroup.getParticipantScheme());
+
         if (dbServiceGroup.getExtension() != null) {
             ex.setExtension(new String(dbServiceGroup.getExtension()));
         }
