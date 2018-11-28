@@ -30,6 +30,9 @@ insert into SMP_CERTIFICATE (ID, CERTIFICATE_ID, VALID_FROM, VALID_TO, CREATED_O
 -- set the ids to higher values - tests are using sequnce which stars from 1
 insert into SMP_SERVICE_GROUP(ID, PARTICIPANT_IDENTIFIER, PARTICIPANT_SCHEME, CREATED_ON, LAST_UPDATED_ON) values (100000, 'urn:australia:ncpb', 'ehealth-actorid-qns', CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
 insert into SMP_SERVICE_GROUP(ID, PARTICIPANT_IDENTIFIER, PARTICIPANT_SCHEME, CREATED_ON, LAST_UPDATED_ON) values (200000, 'urn:brazil:ncpb', 'ehealth-actorid-qns', CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+--insert into SMP_SG_EXTENSION(ID, EXTENSION,CREATED_ON, LAST_UPDATED_ON) values (100000, '<Extension xmlns:ns2="http://www.w3.org/2000/09/xmldsig#" xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05"><ExtensionID>id1</ExtensionID><ExtensionName>name1</ExtensionName><ExtensionAgencyName>agencyName1</ExtensionAgencyName><ExtensionAgencyURI>agencyUri1</ExtensionAgencyURI><ExtensionVersionID>versionId1</ExtensionVersionID><ExtensionReasonCode>reasonCode1</ExtensionReasonCode><ExtensionReason>reason1</ExtensionReason></Extension>', CURRENT_TIMESTAMP(),CURRENT_TIMESTAMP());
+
+
 
 -- set ownership
 insert into SMP_OWNERSHIP (FK_SG_ID, FK_USER_ID) values (100000, 4);
