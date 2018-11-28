@@ -18,7 +18,7 @@ import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
-import eu.europa.ec.edelivery.smp.utils.SMPPropertyEnum;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.*;
