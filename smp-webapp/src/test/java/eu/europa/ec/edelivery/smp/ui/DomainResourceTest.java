@@ -64,7 +64,6 @@ public class DomainResourceTest {
     DomainDao domainDao;
 
     private MockMvc mvc;
-    private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
     private static final RequestPostProcessor SYSTEM_CREDENTIALS = httpBasic("sys_admin", "test123");
 
     @Before
