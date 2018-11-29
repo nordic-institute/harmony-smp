@@ -8,12 +8,12 @@
           <mat-form-field style="width:100%">
             <input matInput placeholder="Domain Code" name="domainCode"
                    id="domainCode_id"
-                   [formControl]="domainForm.controls['domainCode']" maxlength="255" required>
+                   [formControl]="domainForm.controls['domainCode']" maxlength="63" required>
             <mat-hint align="end">For WS API integration: the Domain property</mat-hint>
             <div
               *ngIf="(!editMode && domainForm.controls['domainCode'].touched || editMode) &&  domainForm.controls['domainCode'].hasError('pattern')"
               style="color:red; font-size: 70%">
-              Domain code must contain only chars and numbers.
+              Domain code must contain only chars and numbers and must be less than 63 chars long.
             </div>
             <div
               *ngIf="(!editMode && domainForm.controls['domainCode'].touched || editMode) &&  domainForm.controls['domainCode'].hasError('notInList')"
@@ -24,7 +24,7 @@
           <mat-form-field style="width:100%">
             <input matInput placeholder="SML domain"
                    name="smlSubdomain" id="smldomain_id"
-                   [formControl]="domainForm.controls['smlSubdomain']" maxlength="63" required>
+                   [formControl]="domainForm.controls['smlSubdomain']" maxlength="63" >
             <mat-hint align="end">Part of DNS Zone (e.g. for eHealth: 'ehealth', for peppol: '', ..</mat-hint>
             <div
               *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('pattern')"
@@ -36,6 +36,11 @@
               *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('notInList')"
               style="color:red; font-size: 70%">
               The SML subdomain is already defined!
+            </div>
+            <div
+              *ngIf="(!editMode &&  domainForm.controls['smlSubdomain'].hasError('blankDomainError'))"
+              style="color:red; font-size: 70%">
+              Domain with empty sml subdomain already exists!
             </div>
           </mat-form-field>
           <mat-form-field style="width:100%">
