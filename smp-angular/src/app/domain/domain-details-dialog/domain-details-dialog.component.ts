@@ -19,6 +19,7 @@ export class DomainDetailsDialogComponent {
   static readonly EDIT_MODE = 'Domain Edit';
   readonly subDomainPattern = '^(?![0-9]+$)(?!.*-$)(?!-)[a-zA-Z0-9-]{1,63}$';
   readonly smpIdDomainPattern = '^(?![0-9]+$)(?!.*-$)(?!-)[a-zA-Z0-9-]{0,63}$';
+  // is part of domain
   readonly domainCodePattern = '^[a-zA-Z0-9]{1,63}$';
 
   editMode: boolean;

@@ -27,6 +27,9 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
   static readonly NEW_MODE = 'New ServiceGroup';
   static readonly EDIT_MODE = 'ServiceGroup Edit';
 
+
+  readonly participantSchemePattern ='^[a-z0-9]+-[a-z0-9]+-[a-z0-9]+$';
+
   @ViewChild('domainSelector') domainSelector: any;
 
   editMode: boolean;
@@ -86,9 +89,10 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
           value: '',
           disabled: this.current.status !== SearchTableEntityStatus.NEW
         },
-        this.current.status !== SearchTableEntityStatus.NEW ? Validators.required : null),
+        this.current.status === SearchTableEntityStatus.NEW ? Validators.required : null),
       'participantScheme': new FormControl({value: '', disabled: this.current.status !== SearchTableEntityStatus.NEW},
-        this.current.status !== SearchTableEntityStatus.NEW ? Validators.required : null),
+        this.current.status === SearchTableEntityStatus.NEW ?
+          [Validators.required, Validators.pattern(this.participantSchemePattern)] : null),
       'serviceGroupDomains': new FormControl({value: []}, [this.minSelectedListCount(1)]),
       'users': new FormControl({value: []}, [this.minSelectedListCount(1)]),
       'extension': new FormControl({value: ''}, []),

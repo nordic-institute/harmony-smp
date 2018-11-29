@@ -11,11 +11,11 @@
           <mat-form-field style="width:100%">
             <input matInput placeholder="Participant identifier" name="participantIdentifier"
                    id="participantIdentifier_id"
-                   [formControl]="dialogForm.controls['participantIdentifier']" maxlength="255" required>
+                   [formControl]="dialogForm.controls['participantIdentifier']" maxlength="50" required>
             <div
               *ngIf="(!editMode && dialogForm.controls['participantIdentifier'].touched || editMode) &&  dialogForm.controls['participantIdentifier'].hasError('required')"
               style="color:red; font-size: 70%">
-              Participant identifier must not be empty.
+              Participant identifier must not be empty and must be up to 50 characters long.
             </div>
             <div
               *ngIf="(!editMode &&  dialogForm.controls['participantIdentifier'].hasError('dbExist'))"
@@ -28,11 +28,17 @@
             <input matInput placeholder="Participant scheme" name="participantScheme"
                    id="participantScheme_id"
                    [formControl]="dialogForm.controls['participantScheme']"
-                   maxlength="255" required>
+                   maxlength="25" required>
             <div
               *ngIf="(!editMode && dialogForm.controls['participantScheme'].touched || editMode) &&  dialogForm.controls['participantScheme'].hasError('required')"
               style="color:red; font-size: 70%">
               Participant scheme must not be empty.
+            </div>
+            <div
+              *ngIf="(!editMode && dialogForm.controls['participantScheme'].touched || editMode) &&
+               dialogForm.controls['participantScheme'].hasError('pattern')"
+              style="color:red; font-size: 70%">
+              Participant scheme must be up to 63 characters long. The Scheme Identifier MUST take the form [domain]-[identifierArea]-[identifierType] (ex.: 'busdox-actorid-upis') and may only contain the following characters: [a-z0-9]+-[a-z0-9]+-[a-z0-9]+.
             </div>
           </mat-form-field>
           </div>

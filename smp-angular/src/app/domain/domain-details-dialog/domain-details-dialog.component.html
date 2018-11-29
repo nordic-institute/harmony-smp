@@ -27,7 +27,8 @@
                    [formControl]="domainForm.controls['smlSubdomain']" maxlength="63" >
             <mat-hint align="end">Part of DNS Zone (e.g. for eHealth: 'ehealth', for peppol: '', ..</mat-hint>
             <div
-              *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode) &&  domainForm.controls['smlSubdomain'].hasError('pattern')"
+              *ngIf="(!editMode && domainForm.controls['smlSubdomain'].touched || editMode)
+              &&  domainForm.controls['smlSubdomain'].hasError('pattern')"
               style="color:red; font-size: 70%">
               SML domain should be up to 63 characters long, should only contain alphanumeric and hyphen characters,
               should not start with a digit and should not end with a hyphen.
