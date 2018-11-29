@@ -19,7 +19,7 @@ export class DomainDetailsDialogComponent {
   static readonly EDIT_MODE = 'Domain Edit';
   readonly subDomainPattern = '^(?![0-9]+$)(?!.*-$)(?!-)[a-zA-Z0-9-]{1,63}$';
   readonly smpIdDomainPattern = '^(?![0-9]+$)(?!.*-$)(?!-)[a-zA-Z0-9-]{0,63}$';
-  readonly domainCodePattern = '^[a-zA-Z0-9]{1,255}$';
+  readonly domainCodePattern = '^[a-zA-Z0-9]{1,63}$';
 
   editMode: boolean;
   formTitle: string;
@@ -99,7 +99,24 @@ export class DomainDetailsDialogComponent {
 
   submitForm() {
     this.checkValidity(this.domainForm)
-    this.dialogRef.close(true);
+
+    // check if empty domain already exists
+    if(this.current.status === SearchTableEntityStatus.NEW
+    && !this.domainForm.value['smlSubdomain'] ){
+
+      var domainWithNullSML = this.lookups.cachedDomainList.filter(function(dmn) {
+        return !dmn.smlSubdomain;
+      })[0];
+
+      if(!domainWithNullSML) {
+        this.dialogRef.close(true);
+      } else {
+        this.domainForm.controls['smlSubdomain'].setErrors({'blankDomainError': true});
+      }
+
+    } else {
+      this.dialogRef.close(true);
+    }
   }
 
   checkValidity(g: FormGroup) {
@@ -113,6 +130,8 @@ export class DomainDetailsDialogComponent {
     Object.keys(g.controls).forEach(key => {
       g.get(key).updateValueAndValidity();
     });
+
+
   }
 
   public getCurrent(): DomainRo {
