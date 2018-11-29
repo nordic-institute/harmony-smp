@@ -62,7 +62,8 @@
                                   [formControl]="dialogForm.controls['users']"
                                   style="height: 200px;  overflow-y: scroll; overflow-x: auto;">
                 <!--                  // if username is null then there must be an cerificate id! -->
-                <mat-list-option *ngFor="let user of lookups.cachedServiceGroupOwnerList" [value]='user'>
+                <mat-list-option  *ngFor="let user of lookups.cachedServiceGroupOwnerList" [value]='user'
+                                  style="max-width: 450px !important; word-wrap: break-word !important; height: auto; min-height: 30px !important;">
                   {{user.username?user.username:user.certificate?.certificateId}}
                 </mat-list-option>
               </mat-selection-list>
@@ -89,7 +90,8 @@
                                    [formControl]="dialogForm.controls['serviceGroupDomains']"
                                    (selectionChange)="onDomainSelectionChanged($event)"
                                    style="height: 200px;  overflow-y: scroll; overflow-x: auto;">
-                <mat-list-option *ngFor="let domain of lookups.cachedDomainList" [value]='domain'>
+                <mat-list-option *ngFor="let domain of lookups.cachedDomainList" [value]='domain'
+                                 style="max-width: 450px !important; word-wrap: break-word !important; height: auto; min-height: 30px !important;">
                   {{domain.domainCode}} ({{domain.smlSubdomain}})
                 </mat-list-option>
               </mat-selection-list>
