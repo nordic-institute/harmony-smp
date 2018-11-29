@@ -10,9 +10,11 @@ import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.*;
 import eu.europa.ec.edelivery.smp.data.ui.*;
 import eu.europa.ec.edelivery.smp.data.ui.enums.EntityROStatus;
+import eu.europa.ec.edelivery.smp.data.ui.enums.SMLAction;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
+import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import eu.europa.ec.edelivery.smp.services.ui.filters.ServiceGroupFilter;
 import eu.europa.ec.smp.api.exceptions.XmlInvalidAgainstSchemaException;
 import org.apache.commons.lang3.StringUtils;
@@ -35,7 +37,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO.ERROR_CODE_INVALID_EXTENSION;
 import static eu.europa.ec.edelivery.smp.data.ui.ServiceGroupValidationRO.ERROR_CODE_OK;
@@ -56,7 +57,10 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
     UserDao userDao;
 
     @Autowired
-    private CaseSensitivityNormalizer caseSensitivityNormalizer;
+    CaseSensitivityNormalizer caseSensitivityNormalizer;
+
+    @Autowired
+    SMLIntegrationService smlIntegrationService;
 
 
     @Override
@@ -127,27 +131,91 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
     }
 
     @Transactional
-    public void updateServiceGroupList(List<ServiceGroupRO> lst) {
+    public List<ParticipantSMLRecord> updateServiceGroupList(List<ServiceGroupRO> lst) {
         boolean suc = false;
+        List<ParticipantSMLRecord> lstRecords = new ArrayList<>();
         for (ServiceGroupRO dRo : lst) {
             if (dRo.getStatus() == EntityROStatus.NEW.getStatusNumber()) {
-                addNewServiceGroup(dRo);
+                lstRecords.addAll(addNewServiceGroup(dRo));
             } else if (dRo.getStatus() == EntityROStatus.UPDATED.getStatusNumber()) {
-                updateServiceGroup(dRo);
+                lstRecords.addAll(updateServiceGroup(dRo));
             } else if (dRo.getStatus() == EntityROStatus.REMOVE.getStatusNumber()) {
-                DBServiceGroup upd = getDatabaseDao().find(dRo.getId());
-                serviceGroupDao.removeServiceGroup(upd);
+                lstRecords.addAll(removeServiceGroup(dRo));
+            }
+        }
+        // register/unregister participants from domain
+        processSMLRecords(lstRecords);
+
+
+        return lstRecords;
+    }
+
+    /**
+     * Final process of SML records. If participant is to be unregistered it does not update status to database because
+     * it should not be there anymore! For registering it update status!
+     * @param lstRecords
+     */
+    public void processSMLRecords( List<ParticipantSMLRecord> lstRecords){
+        if (!smlIntegrationService.isSmlIntegrationEnabled()){
+            return;
+        }
+        for (ParticipantSMLRecord record: lstRecords){
+            if (record.getStatus()== SMLAction.REGISTER){
+                boolean result = smlIntegrationService.registerParticipantToSML(record.getParticipantIdentifier(),
+                        record.getParticipantScheme(), record.getDomain());
+
+                updateServiceGroupDomainStatus(result, record);
+            }else if (record.getStatus()== SMLAction.UNREGISTER){
+                boolean result = smlIntegrationService.unregisterParticipantFromSML(record.getParticipantIdentifier(),
+                        record.getParticipantScheme(), record.getDomain());
+                // no need to update database because record is deleted
+                updateServiceGroupDomainStatus(result, record);
+
             }
         }
     }
+
+    protected void updateServiceGroupDomainStatus(boolean smlActionStatus, ParticipantSMLRecord record){
+        Optional<DBServiceGroupDomain> optionalServiceGroupDomain = serviceGroupDao.findServiceGroupDomain(record.getParticipantIdentifier(),
+                record.getParticipantScheme(), record.getDomain().getDomainCode());
+        if (optionalServiceGroupDomain.isPresent()) {
+            DBServiceGroupDomain serviceGroupDomain = optionalServiceGroupDomain.get();
+            if (serviceGroupDomain.isSmlRegistered()!= smlActionStatus){
+                serviceGroupDomain.setSmlRegistered(smlActionStatus);
+                serviceGroupDao.updateServiceGroupDomain(serviceGroupDomain);
+            }
+
+        }
+    }
+
+    /**
+     * Remove service group
+     * @param dRo
+     * @return
+     */
+    public List<ParticipantSMLRecord> removeServiceGroup(ServiceGroupRO dRo){
+        List<ParticipantSMLRecord> participantSMLRecordList = new ArrayList<>();
+
+        DBServiceGroup dbServiceGroup = getDatabaseDao().find(dRo.getId());
+        // first update domains
+        List<DBServiceGroupDomain> dbServiceGroupDomainList = dbServiceGroup.getServiceGroupDomains();
+        dbServiceGroupDomainList.forEach(dro -> {
+                participantSMLRecordList.add( new ParticipantSMLRecord(SMLAction.UNREGISTER, dro.getServiceGroup().getParticipantIdentifier(),
+                        dro.getServiceGroup().getParticipantScheme(),dro.getDomain()));
+        });
+        serviceGroupDao.removeServiceGroup(dbServiceGroup);
+        return participantSMLRecordList;
+    }
+
+
 
     /**
      * Method validates and converts UI resource object entity to database entity and persists it to database
      *
      * @param serviceGroupRO
      */
-    private void addNewServiceGroup(ServiceGroupRO serviceGroupRO) {
-        // normalize indentifiers
+    protected List<ParticipantSMLRecord> addNewServiceGroup(ServiceGroupRO serviceGroupRO) {
+        // normalize identifiers
         normalizeIdentifiers(serviceGroupRO);
 
         DBServiceGroup dbServiceGroup = new DBServiceGroup();
@@ -159,7 +227,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
 
         // first update domains
         // validate (if domains are added only once) and  create domain list for service group.
-        createDomainsForNewServiceGroup(serviceGroupRO, dbServiceGroup);
+        List<ParticipantSMLRecord> listOfActions = createDomainsForNewServiceGroup(serviceGroupRO, dbServiceGroup);
 
 
         // sort service metadata by domain
@@ -181,6 +249,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
             dbServiceGroup.setExtension(buff);
         }
         getDatabaseDao().persistFlushDetach(dbServiceGroup);
+        return listOfActions;
     }
 
     private void normalizeIdentifiers(ServiceGroupRO sgo) {
@@ -202,19 +271,26 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
      * @param serviceGroupRO
      * @param dbServiceGroup
      */
-    protected void createDomainsForNewServiceGroup(ServiceGroupRO serviceGroupRO, DBServiceGroup dbServiceGroup) {
+    protected List<ParticipantSMLRecord> createDomainsForNewServiceGroup(ServiceGroupRO serviceGroupRO, DBServiceGroup dbServiceGroup) {
+
+        List<ParticipantSMLRecord> participantSMLRecordList = new ArrayList<>();
         // first update domains
-        List<ServiceGroupDomainRO> serviceGroupDomainROList = validateDomainList(serviceGroupRO);
+        List<ServiceGroupDomainRO> serviceGroupDomainROList = serviceGroupRO.getServiceGroupDomains();
         // validate (if domains are added only once) and  create domain list for service group.
         serviceGroupDomainROList.forEach(dro -> {
             // everting ok  find domain and add it to service group
             Optional<DBDomain> dmn = domainDao.getDomainByCode(dro.getDomainCode());
             if (dmn.isPresent()) {
-                dbServiceGroup.addDomain(dmn.get());
+                DBServiceGroupDomain domain =  dbServiceGroup.addDomain(dmn.get());
+                participantSMLRecordList.add( new ParticipantSMLRecord(SMLAction.REGISTER,
+                        serviceGroupRO.getParticipantIdentifier(),
+                        serviceGroupRO.getParticipantScheme(),
+                        domain.getDomain()));
             } else {
                 throw new SMPRuntimeException(DOMAIN_NOT_EXISTS, dro.getDomainCode());
             }
         });
+        return participantSMLRecordList;
     }
 
 
@@ -223,8 +299,9 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
      *
      * @param serviceGroupRO
      */
-    protected void updateServiceGroup(ServiceGroupRO serviceGroupRO) {
-        // normalize indentifiers
+    protected List<ParticipantSMLRecord> updateServiceGroup(ServiceGroupRO serviceGroupRO) {
+
+        // normalize identifiers
         normalizeIdentifiers(serviceGroupRO);
         // find and validate service group
         DBServiceGroup dbServiceGroup = findAndValidateServiceGroup(serviceGroupRO);
@@ -233,7 +310,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
         updateUsersOnServiceGroup(serviceGroupRO, dbServiceGroup);
 
         // update domain
-        updateDomainsForServiceGroup(serviceGroupRO, dbServiceGroup);
+        List<ParticipantSMLRecord> participantSMLRecordList =  updateDomainsForServiceGroup(serviceGroupRO, dbServiceGroup);
 
         //update service metadata
         List<ServiceMetadataRO> serviceMetadataROList = serviceGroupRO.getServiceMetadata();
@@ -304,6 +381,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
 
         // persist it to database
         getDatabaseDao().update(dbServiceGroup);
+        return participantSMLRecordList;
     }
 
     /**
@@ -312,9 +390,12 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
      * @param serviceGroupRO
      * @param dbServiceGroup
      */
-    protected void updateDomainsForServiceGroup(ServiceGroupRO serviceGroupRO, DBServiceGroup dbServiceGroup) {
+    protected List<ParticipantSMLRecord> updateDomainsForServiceGroup(ServiceGroupRO serviceGroupRO, DBServiceGroup dbServiceGroup) {
+        List<ParticipantSMLRecord> participantSMLRecordList = new ArrayList<>();
+
         // / validate (if domains are added only once) and  create domain list for service group.
-        List<ServiceGroupDomainRO> serviceGroupDomainROList = validateDomainList(serviceGroupRO);
+       // List<ServiceGroupDomainRO> serviceGroupDomainROList = validateDomainList(serviceGroupRO);
+        List<ServiceGroupDomainRO> serviceGroupDomainROList = serviceGroupRO.getServiceGroupDomains();
         // copy array list of old domains and then put them back. Domain not added back will be deleted by hibernate
         // ...
         List<DBServiceGroupDomain> lstOldSGDomains = new ArrayList<>();
@@ -327,22 +408,34 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
             if (dsg != null) {
                 // put it back - no need to call addDomain
                 dbServiceGroup.getServiceGroupDomains().add(dsg);
-                // remove from list
+                // remove from old domain list
                 lstOldSGDomains.remove(dsg);
             } else {
-                // everting ok  find domain and add it to service group
+                // new domain  - find dbDomain and add it to service group
                 Optional<DBDomain> dmn = domainDao.getDomainByCode(serviceGroupDomainRO.getDomainCode());
                 if (dmn.isPresent()) {
-                    dbServiceGroup.addDomain(dmn.get());
+
+                    DBServiceGroupDomain sgd =  dbServiceGroup.addDomain(dmn.get());
+                    participantSMLRecordList.add(new ParticipantSMLRecord( SMLAction.REGISTER,
+                            sgd.getServiceGroup().getParticipantIdentifier(),
+                            sgd.getServiceGroup().getParticipantScheme(),
+                            sgd.getDomain()));
                 } else {
                     throw new SMPRuntimeException(DOMAIN_NOT_EXISTS, serviceGroupDomainRO.getDomainCode());
                 }
             }
         });
-        // remove references
+        // remove old domains
         lstOldSGDomains.forEach(dbServiceGroupDomain -> {
+            participantSMLRecordList.add(new ParticipantSMLRecord( SMLAction.UNREGISTER,
+                    dbServiceGroupDomain.getServiceGroup().getParticipantIdentifier(),
+                    dbServiceGroupDomain.getServiceGroup().getParticipantScheme(),
+                    dbServiceGroupDomain.getDomain()));
+
             dbServiceGroupDomain.setServiceGroup(null);
+
         });
+        return participantSMLRecordList;
     }
 
     /**
@@ -350,7 +443,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
      *
      * @param serviceGroupRO
      * @return
-     */
+     *
     protected List<ServiceGroupDomainRO> validateDomainList(ServiceGroupRO serviceGroupRO) {
         List<ServiceGroupDomainRO> serviceGroupDomainROList = serviceGroupRO.getServiceGroupDomains();
         // validate (if domains are added only once) and  create domain list for service group.
@@ -365,7 +458,7 @@ public class UIServiceGroupService extends UIServiceBase<DBServiceGroup, Service
             }
         });
         return serviceGroupDomainROList;
-    }
+    }*/
 
     /**
      * Update users on service group. Method is OK for update and add new domain

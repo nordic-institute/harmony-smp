@@ -107,7 +107,7 @@ public class SMLIntegrationServiceIntegrationTest extends AbstractServiceIntegra
     }
 
     @Test
-    public void registerParticipantToSML() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
+    public void registerParticipant() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
         /* given (init database - check setup)
          * Domain: TEST_DOMAIN_CODE_1
          * Users: USERNAME_1, USER_CERT_2
@@ -125,7 +125,7 @@ public class SMLIntegrationServiceIntegrationTest extends AbstractServiceIntegra
     }
 
     @Test
-    public void unRegisterParticipantFromSML() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
+    public void unRegisterParticipant() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
         /* given (init database - check setup)
          * Domain: TEST_DOMAIN_CODE_1
          * Users: USERNAME_1, USER_CERT_2
@@ -143,7 +143,7 @@ public class SMLIntegrationServiceIntegrationTest extends AbstractServiceIntegra
     }
 
     @Test
-    public void registerParticipantToSML_NotExists(){
+    public void registerParticipant_NotExists(){
         expectedExeption.expect(SMPRuntimeException.class);
         String notExistsId = TEST_SG_ID_1+"NotExists";
         expectedExeption.expectMessage("ServiceGroup not found (part. id: '"+TEST_SG_ID_1+"NotExists', part. sch.: '"+TEST_SG_SCHEMA_1+"')!");
@@ -153,12 +153,41 @@ public class SMLIntegrationServiceIntegrationTest extends AbstractServiceIntegra
     }
 
     @Test
-    public void registerParticipantToSML_NotOnDomain(){
+    public void registerParticipant_NotOnDomain(){
         expectedExeption.expect(SMPRuntimeException.class);
         expectedExeption.expectMessage("Service group not registered for domain (domain: "+TEST_DOMAIN_CODE_2+", part. id: '"+TEST_SG_ID_1+"', part. sch.: '"+TEST_SG_SCHEMA_1+"')!");
 
         // when
         testInstance.registerParticipant(TEST_SG_ID_1,TEST_SG_SCHEMA_1,TEST_DOMAIN_CODE_2 );
+    }
+
+    @Test
+    public void isSmlIntegrationEnabled(){
+        assertTrue(testInstance.isSmlIntegrationEnabled());
+    }
+
+    @Test
+    public void registerParticipantToSML() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
+        DBDomain testDomain01 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
+        // when
+        testInstance.registerParticipantToSML(TEST_SG_ID_1,TEST_SG_SCHEMA_1,testDomain01 );
+
+        //then -- expect on call
+        assertEquals(1, integrationMock.getParticipantManagmentClientMocks().size());
+        verify(integrationMock.getParticipantManagmentClientMocks().get(0)).create(any());
+        Mockito.verifyNoMoreInteractions(integrationMock.getParticipantManagmentClientMocks().toArray());
+    }
+
+    @Test
+    public void unregisterParticipantFromSML() throws NotFoundFault, UnauthorizedFault, InternalErrorFault, BadRequestFault {
+        DBDomain testDomain01 = domainDao.getDomainByCode(TEST_DOMAIN_CODE_1).get();
+        // when
+        testInstance.unregisterParticipantFromSML(TEST_SG_ID_1,TEST_SG_SCHEMA_1,testDomain01 );
+
+        //then -- expect on call
+        assertEquals(1, integrationMock.getParticipantManagmentClientMocks().size());
+        verify(integrationMock.getParticipantManagmentClientMocks().get(0)).delete(any());
+        Mockito.verifyNoMoreInteractions(integrationMock.getParticipantManagmentClientMocks().toArray());
     }
 
 

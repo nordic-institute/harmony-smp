@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
@@ -79,10 +80,11 @@ public class SmlConnectorTest {
 
     @Test
     public void testRegisterInDns() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
-    //when
-        smlConnector.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        //when
+        boolean result = smlConnector.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         //then
+        assertTrue(result);
         assertEquals(1, smlClientMocks.size());
         verify(smlClientMocks.get(0)).create(any());
         Mockito.verifyNoMoreInteractions(smlClientMocks.toArray());
@@ -104,9 +106,10 @@ public class SmlConnectorTest {
     @Test
     public void testUnregisterFromDns() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
         //when
-        smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        boolean result = smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         //then
+        assertTrue(result);
         assertEquals(1, smlClientMocks.size());
         verify(smlClientMocks.get(0)).delete(any());
         Mockito.verifyNoMoreInteractions(smlClientMocks.toArray());

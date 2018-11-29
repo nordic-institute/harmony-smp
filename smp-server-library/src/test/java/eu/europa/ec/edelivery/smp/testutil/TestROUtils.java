@@ -50,6 +50,15 @@ public class TestROUtils {
         return sgo;
     }
 
+    public static ServiceGroupRO createROServiceGroupForDomains(String id, String sch, DBDomain ... domains) {
+        ServiceGroupRO sgo =  createROServiceGroup(id, sch);
+        Arrays.asList(domains).forEach(domain -> {
+            ServiceGroupDomainRO sgd = createServiceGroupDomain(domain);
+            sgo.getServiceGroupDomains().add(sgd);
+        });
+        return sgo;
+    }
+
     public static ServiceGroupRO createROServiceGroup(String id, String sch) {
         return createROServiceGroup(id, sch, true);
     }

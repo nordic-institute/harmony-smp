@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Purpose of class is to test ServiceGroupService base methods
@@ -85,6 +86,11 @@ public class SMLIntegrationServiceNoSMLIntegrationTest extends AbstractServiceIn
         expectedExeption.expectMessage("Configuration error: SML integration is not enabled!");
         // when
         testInstance.registerParticipant(TEST_SG_ID_1, TEST_SG_SCHEMA_1, TEST_DOMAIN_CODE_1);
+    }
+
+    @Test
+    public void isSmlIntegrationEnabled(){
+        assertFalse(testInstance.isSmlIntegrationEnabled());
     }
 
 }
