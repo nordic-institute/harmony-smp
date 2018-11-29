@@ -57,6 +57,10 @@ public class TestDBUtils {
         return createDBServiceGroup(id, sch, true);
     }
 
+    public static DBServiceGroup createDBServiceGroupRandom() {
+        return createDBServiceGroup(UUID.randomUUID().toString(), UUID.randomUUID().toString(), true);
+    }
+
     public static DBServiceGroup createDBServiceGroup(String id, String sch, boolean withExtension) {
         DBServiceGroup grp = new DBServiceGroup();
         grp.setParticipantIdentifier(id);

@@ -93,14 +93,15 @@ public class SmlConnector implements ApplicationContextAware {
     }
 
 
-    public void unregisterFromDns(ParticipantIdentifierType normalizedParticipantId, DBDomain domain) {
+    public boolean unregisterFromDns(ParticipantIdentifierType normalizedParticipantId, DBDomain domain) {
         if (!smlIntegrationEnabled) {
-            return;
+            return false;
         }
         log.info("Removing Participant from BDMSL: {} ", asString(normalizedParticipantId));
         try {
             ServiceMetadataPublisherServiceForParticipantType smlRequest = toBusdoxParticipantId(normalizedParticipantId, domain.getSmlSmpId());
             getClient(domain).delete(smlRequest);
+            return true;
         } catch (Exception e) {
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION,e, ExceptionUtils.getRootCauseMessage(e));
         }
