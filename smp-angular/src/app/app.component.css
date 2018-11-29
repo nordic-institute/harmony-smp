@@ -21,7 +21,7 @@ mat-sidenav.menu-expanded {
 }
 
 mat-sidenav.menu-collapsed {
-  width: 50px;
+  width: 55px;
 }
 
 html, body, material-app, .my-content {
