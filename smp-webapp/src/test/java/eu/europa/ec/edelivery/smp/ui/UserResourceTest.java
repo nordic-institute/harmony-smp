@@ -118,7 +118,7 @@ public class UserResourceTest {
         assertEquals("C=BE,O=DIGIT,CN=SMP test,E=smp@test.com", res.getSubject());
         assertEquals("3", res.getSerialNumber());
         assertEquals("CN=SMP test,O=DIGIT,C=BE:0000000000000003", res.getCertificateId());
-        assertEquals("sno=3&subject=C%3DBE%2CO%3DDIGIT%2CCN%3DSMP+test%2CE%3Dsmp%40test.com&validfrom=May+22+20%3A59%3A00+2018+GTM&validto=May+22+20%3A56%3A00+2019+GTM&issuer=C%3DBE%2CO%3DDIGIT%2CCN%3DIntermediate+CA", res.getBlueCoatHeader());
+        assertEquals("sno=3&subject=C%3DBE%2CO%3DDIGIT%2CCN%3DSMP+test%2CE%3Dsmp%40test.com&validfrom=May+22+20%3A59%3A00+2018+GMT&validto=May+22+20%3A56%3A00+2019+GMT&issuer=C%3DBE%2CO%3DDIGIT%2CCN%3DIntermediate+CA", res.getBlueCoatHeader());
 
     }
 

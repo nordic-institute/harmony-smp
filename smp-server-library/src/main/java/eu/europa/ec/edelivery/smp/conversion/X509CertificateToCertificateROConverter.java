@@ -60,9 +60,9 @@ public class X509CertificateToCertificateROConverter implements Converter<X509Ce
         sw.write("&subject=");
         sw.write(urlEncodeString(subject));
         sw.write("&validfrom=");
-        sw.write(urlEncodeString(sdf.format(cert.getNotBefore()) + " GTM"));
+        sw.write(urlEncodeString(sdf.format(cert.getNotBefore()) + " GMT"));
         sw.write("&validto=");
-        sw.write(urlEncodeString(sdf.format(cert.getNotAfter()) + " GTM"));
+        sw.write(urlEncodeString(sdf.format(cert.getNotAfter()) + " GMT"));
         sw.write("&issuer=");
         sw.write(urlEncodeString(issuer));
         cro.setBlueCoatHeader(sw.toString());
