@@ -132,6 +132,15 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     this.changeDetector.detectChanges()
   }
 
+  isDomainProperlyConfigured(domain: DomainRo){
+    if (this.lookups.cachedApplicationInfo.smlIntegrationOn) {
+      return domain.smlSmpId && (domain.smlClientKeyAlias || domain.smlClientCertHeader);
+    } else {
+      return true;
+    }
+
+  }
+
 
   submitForm() {
     this.checkValidity(this.dialogForm);

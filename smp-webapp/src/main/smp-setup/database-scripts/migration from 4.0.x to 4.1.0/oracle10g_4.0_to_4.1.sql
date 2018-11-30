@@ -13,10 +13,10 @@ alter table SMP_USER rename to SMP_USER_BCK;
 -- --------------------------------------------------------------------------------------------------------- 
 create sequence SMP_DOMAIN_SEQ start with 1 increment by  1;
 create sequence SMP_REVISION_SEQ start with 1 increment by  1;
-create sequence SMP_SERVICE_GROUP_DOMAIN_SEQ start with 1 increment by  50;
-create sequence SMP_SERVICE_GROUP_SEQ start with 1 increment by  50;
-create sequence SMP_SERVICE_METADATA_SEQ start with 1 increment by  50;
-create sequence SMP_USER_SEQ start with 1 increment by  50;
+create sequence SMP_SERVICE_GROUP_DOMAIN_SEQ start with 1 increment by  1;
+create sequence SMP_SERVICE_GROUP_SEQ start with 1 increment by  1;
+create sequence SMP_SERVICE_METADATA_SEQ start with 1 increment by  1;
+create sequence SMP_USER_SEQ start with 1 increment by  1;
 
     create table SMP_CERTIFICATE (
        ID number(19,0) not null,

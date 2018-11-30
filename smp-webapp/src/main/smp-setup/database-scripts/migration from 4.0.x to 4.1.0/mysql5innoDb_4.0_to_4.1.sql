@@ -52,7 +52,7 @@ alter table smp_user rename to SMP_USER_BCK;
         SML_SMP_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_SUBDOMAIN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_REGISTERED bit,
-        SML_BLUE_COAT_AUTH bit;
+        SML_BLUE_COAT_AUTH bit,
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -70,7 +70,7 @@ alter table smp_user rename to SMP_USER_BCK;
         SML_SMP_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_SUBDOMAIN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_REGISTERED bit,
-        SML_BLUE_COAT_AUTH bit;
+        SML_BLUE_COAT_AUTH bit,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
