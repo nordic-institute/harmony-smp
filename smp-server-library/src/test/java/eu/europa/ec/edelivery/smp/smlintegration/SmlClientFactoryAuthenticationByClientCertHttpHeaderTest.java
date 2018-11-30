@@ -15,6 +15,10 @@ package eu.europa.ec.edelivery.smp.smlintegration;
 
 import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
 import eu.europa.ec.bdmsl.ws.soap.IManageServiceMetadataWS;
+import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
+import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
+import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
+import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import eu.europa.ec.edelivery.smp.sml.SmlClientFactory;
 import org.apache.cxf.endpoint.Client;
 import org.apache.cxf.frontend.ClientProxy;
@@ -23,9 +27,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -40,21 +44,12 @@ import static org.junit.Assert.assertNotNull;
  * Created by gutowpa on 08/01/2018.
  */
 @RunWith(SpringRunner.class)
-@ContextConfiguration
+@ContextConfiguration(classes = {SmlClientFactory.class,
+        SecurityUtilsServices.class, UIKeystoreService.class,
+        ConversionTestConfig.class, PropertiesSingleDomainTestConfig.class})
 public class SmlClientFactoryAuthenticationByClientCertHttpHeaderTest {
 
     public static final String CLIENT_CERT_HTTP_HEADER = "value_of_ClientCert_HTTP_header";
-
-    @Configuration
-    @ComponentScan("eu.europa.ec.edelivery.smp.sml")
-    static class Config {
-        @Bean
-        public PropertySourcesPlaceholderConfigurer setLocalProperties() {
-            return buildLocalProperties(new String[][]{
-                    {"bdmsl.integration.url", "https://sml.url.pl"}
-            });
-        }
-    }
 
     @Autowired
     private SmlClientFactory smlClientFactory;
@@ -62,7 +57,7 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeaderTest {
     @Test
     public void factoryProducesPreconfiguredCxfClientThatAuthenticatesItselfWithGivenHttpHeader() {
         //when
-        IManageParticipantIdentifierWS client = smlClientFactory.create(null, CLIENT_CERT_HTTP_HEADER);
+        IManageParticipantIdentifierWS client = smlClientFactory.create(null, CLIENT_CERT_HTTP_HEADER, true);
 
         //then
         assertNotNull(client);
@@ -78,7 +73,7 @@ public class SmlClientFactoryAuthenticationByClientCertHttpHeaderTest {
     @Test
     public void factoryProducesPreconfiguredCxfCSMPlientThatAuthenticatesItselfWithGivenHttpHeader() {
         //when
-        IManageServiceMetadataWS client = smlClientFactory.createSmp(null, CLIENT_CERT_HTTP_HEADER);
+        IManageServiceMetadataWS client = smlClientFactory.createSmp(null, CLIENT_CERT_HTTP_HEADER, true);
 
         //then
         assertNotNull(client);

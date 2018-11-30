@@ -95,8 +95,9 @@ public class DomainService {
      */
 
     public void registerDomainAndParticipants(DBDomain domain){
-
+        LOG.info("Start registerDomainAndParticipants for domain:" + domain.getDomainCode());
         smlIntegrationService.registerDomain(domain);
+
         // get all participant for domain and register them
         ServiceGroupFilter serviceGroupFilter = new ServiceGroupFilter();
         serviceGroupFilter.setDomain(domain);
@@ -104,7 +105,6 @@ public class DomainService {
         // register all service groups
         List<DBServiceGroup> serviceGroupList = serviceGroupDao.getServiceGroupList(-1, -1, null, null, serviceGroupFilter);
         for (DBServiceGroup sg: serviceGroupList){
-
             smlIntegrationService.registerParticipant(sg.getParticipantIdentifier(), sg.getParticipantScheme(), domain.getDomainCode());
         }
     }
@@ -117,6 +117,7 @@ public class DomainService {
 
         // register all service groups
         List<DBServiceGroup> serviceGroupList = serviceGroupDao.getServiceGroupList(-1, -1, null, null, serviceGroupFilter);
+        LOG.info("Unregister participants (count: {}) for domain: {}: ", serviceGroupList.size(), domain.getDomainCode());
         for (DBServiceGroup sg: serviceGroupList){
             smlIntegrationService.unregisterParticipant(sg.getParticipantIdentifier(), sg.getParticipantScheme(), domain.getDomainCode());
         }

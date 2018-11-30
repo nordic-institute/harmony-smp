@@ -44,14 +44,21 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
   isExtensionValid: boolean = true;
   userList: UserRo[];
 
-
-
   minSelectedListCount(min: number) {
     return (c: AbstractControl): { [key: string]: any } => {
       if (c.value && c.value.length >= min)
         return null;
 
       return {'minSelectedListCount': {valid: false}};
+    }
+  }
+
+  multiDomainOn(multidomainOn: boolean) {
+    return (c: AbstractControl): { [key: string]: any } => {
+      if (c.value && c.value.length < 2 || multidomainOn )
+        return null;
+
+      return {'multiDomainError': {valid: false}};
     }
   }
 
@@ -93,7 +100,8 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
       'participantScheme': new FormControl({value: '', disabled: this.current.status !== SearchTableEntityStatus.NEW},
         this.current.status === SearchTableEntityStatus.NEW ?
           [Validators.required, Validators.pattern(this.participantSchemePattern)] : null),
-      'serviceGroupDomains': new FormControl({value: []}, [this.minSelectedListCount(1)]),
+      'serviceGroupDomains': new FormControl({value: []}, [this.minSelectedListCount(1),
+        this.multiDomainOn(this.lookups.cachedApplicationInfo.smlParticipantMultiDomainOn)]),
       'users': new FormControl({value: []}, [this.minSelectedListCount(1)]),
       'extension': new FormControl({value: ''}, []),
 
@@ -105,7 +113,6 @@ export class ServiceGroupDetailsDialogComponent implements OnInit {
     this.dialogForm.controls['serviceGroupDomains'].setValue(this.current.serviceGroupDomains);
     this.dialogForm.controls['users'].setValue(this.current.users)
     this.dialogForm.controls['extension'].setValue(this.current.extension)
-
   }
 
   ngOnInit() {

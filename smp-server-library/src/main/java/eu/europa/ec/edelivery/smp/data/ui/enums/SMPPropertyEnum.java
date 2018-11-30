@@ -10,6 +10,8 @@ public enum SMPPropertyEnum {
     CS_PARTICIPANTS("identifiersBehaviour.caseSensitive.ParticipantIdentifierSchemes","casesensitive-participant-scheme1|casesensitive-participant-scheme2","Specifies schemes of participant identifiers that must be considered CASE-SENSITIVE."),
     CS_DOCUMENTS("identifiersBehaviour.caseSensitive.DocumentIdentifierSchemes","casesensitive-doc-scheme1|casesensitive-doc-scheme2","Specifies schemes of document identifiers that must be considered CASE-SENSITIVE."),
     SML_ENABLED("bdmsl.integration.enabled","false","BDMSL (SML) integration ON/OFF switch"),
+    SML_PARTICIPANT_MULTIDOMAIN("bdmsl.participant.multidomain.enabled","false","Set to true if SML support participant on multidomain"),
+
     SML_URL("bdmsl.integration.url","http://localhost:8080/edelivery-sml/","BDMSL (SML) endpoint"),
     SML_LOGICAL_ADDRESS("bdmsl.integration.logical.address","http://localhost:8080/smp/","Logical SMP endpoint which will be registered on SML when registering new domain"),
     SML_PHYSICAL_ADDRESS("bdmsl.integration.physical.address","0.0.0.0","Physical SMP endpoint which will be registered on SML when registering new domain."),

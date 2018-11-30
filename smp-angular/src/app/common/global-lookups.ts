@@ -7,6 +7,8 @@ import {SecurityService} from "../security/security.service";
 import {Role} from "../security/role.model";
 import {AlertService} from "../alert/alert.service";
 import {Subscription} from "rxjs/internal/Subscription";
+import {SmpInfo} from "../app-info/smp-info.model";
+import {ReplaySubject} from "rxjs/index";
 
 /**
  * Purpose of object is to fetch lookups as domains and users
@@ -22,7 +24,7 @@ export class GlobalLookups implements OnInit {
   cachedServiceGroupOwnerList: Array<any> = [];
   cachedCertificateList: Array<any> = [];
   cachedCertificateAliasList: Array<String> = [];
-
+  cachedApplicationInfo: SmpInfo;
 
 
 
@@ -30,6 +32,8 @@ export class GlobalLookups implements OnInit {
     this.refreshDomainLookup();
     this.refreshUserLookup();
     this.refreshCertificateLookup();
+    this.refreshApplicationInfo();
+
   }
 
   ngOnInit() {
@@ -50,6 +54,18 @@ export class GlobalLookups implements OnInit {
           this.alertService.error("Error occurred while loading domain lookup [" + error + "].")
       });
     });
+  }
+
+  public refreshApplicationInfo() {
+
+    this.http.get<SmpInfo>(SmpConstants.REST_APPLICATION)
+      .subscribe((res: SmpInfo) => {
+          this.cachedApplicationInfo = res;
+        }, error => {
+          console.log("getSmpInfo:" + error);
+        }
+      );
+
   }
 
   public refreshUserLookup() {

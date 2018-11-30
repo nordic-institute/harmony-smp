@@ -6,6 +6,8 @@ public class SmpInfoRO implements Serializable {
     private static final long serialVersionUID = -49712226560325302L;
     String version;
     boolean smlIntegrationOn;
+    boolean smlParticipantMultiDomainOn;
+
     String contextPath;
 
     public String getVersion() {
@@ -30,5 +32,13 @@ public class SmpInfoRO implements Serializable {
 
     public void setContextPath(String contextPath) {
         this.contextPath = contextPath;
+    }
+
+    public boolean isSmlParticipantMultiDomainOn() {
+        return smlParticipantMultiDomainOn;
+    }
+
+    public void setSmlParticipantMultiDomainOn(boolean smlParticipantMultidomainOn) {
+        this.smlParticipantMultiDomainOn = smlParticipantMultidomainOn;
     }
 }

@@ -193,7 +193,7 @@ public class DomainResourceTest {
         mvc.perform(post(PATH + "/3/smlregister/domainTwo")
                 .with(SYSTEM_CREDENTIALS)
                 .header("Content-Type", " application/json"))
-                .andExpect(status().is5xxServerError())
+                .andExpect(status().isOk())
                 .andExpect(content().string(stringContainsInOrder("Configuration error: SML integration is not enabled!!")));
     }
 
@@ -205,7 +205,7 @@ public class DomainResourceTest {
         mvc.perform(post(PATH + "/3/smlunregister/domainTwo")
                 .with(SYSTEM_CREDENTIALS)
                 .header("Content-Type", " application/json"))
-                .andExpect(status().is5xxServerError())
+                .andExpect(status().isOk())
                 .andExpect(content().string(stringContainsInOrder("Configuration error: SML integration is not enabled!!")));
     }
 }

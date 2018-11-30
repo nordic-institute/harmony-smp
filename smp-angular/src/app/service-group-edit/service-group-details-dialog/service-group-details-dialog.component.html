@@ -87,6 +87,14 @@
                       style="color:red; font-size: 70%">
                       At least one domain must be selected!
                     </div>
+                    <div
+                      *ngIf="(!editMode && dialogForm.controls['serviceGroupDomains'].touched || editMode)
+                      &&  dialogForm.controls['serviceGroupDomains'].hasError('multiDomainError')"
+                      style="color:red; font-size: 70%">
+                      SMP is in participant single domain mode! Only one domain must be selected.
+                    </div>
+
+
                   </div>
                 </mat-panel-description>
               </mat-expansion-panel-header>

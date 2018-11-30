@@ -5,7 +5,9 @@ import eu.europa.ec.edelivery.smp.auth.SMPAuthority;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.ui.DeleteEntityValidation;
 import eu.europa.ec.edelivery.smp.data.ui.DomainRO;
+import eu.europa.ec.edelivery.smp.data.ui.SMLIntegrationResult;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
+import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.logging.SMPLogger;
 import eu.europa.ec.edelivery.smp.logging.SMPLoggerFactory;
 import eu.europa.ec.edelivery.smp.services.DomainService;
@@ -69,24 +71,39 @@ public class DomainResource {
 
     @PostMapping(value = "/{id}/smlregister/{domaincode}")
     @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#id)")
-    public void registerDomainAndParticipants(@PathVariable("id") Long id,
-                               @PathVariable("domaincode") String domaincode
+    public SMLIntegrationResult registerDomainAndParticipants(@PathVariable("id") Long id,
+                                                              @PathVariable("domaincode") String domaincode
     ) {
         LOG.info("SML register domain code: {}, user id {}", domaincode, id);
-        // try to open keystore
-        DBDomain dbDomain = domainService.getDomain(domaincode);
-        domainService.registerDomainAndParticipants(dbDomain);
+        SMLIntegrationResult result = new SMLIntegrationResult();
+        try {
+            DBDomain dbDomain = domainService.getDomain(domaincode);
+            domainService.registerDomainAndParticipants(dbDomain);
+            result.setSuccess(true);
+        } catch (SMPRuntimeException e) {
+            result.setSuccess(false);
+            result.setErrorMessage(e.getMessage());
+        }
+        return result;
     }
 
 
     @PostMapping(value = "/{id}/smlunregister/{domaincode}")
     @PreAuthorize("@smpAuthorizationService.systemAdministrator || @smpAuthorizationService.isCurrentlyLoggedIn(#id)")
-    public void unregisterDomainAndParticipants(@PathVariable("id") Long id,
-                                               @PathVariable("domaincode") String domaincode
+    public SMLIntegrationResult unregisterDomainAndParticipants(@PathVariable("id") Long id,
+                                                                @PathVariable("domaincode") String domaincode
     ) {
         LOG.info("SML unregister domain code: {}, user id {}", domaincode, id);
         // try to open keystore
-        DBDomain dbDomain = domainService.getDomain(domaincode);
-        domainService.unregisterDomainAndParticipantsFromSml(dbDomain);
+        SMLIntegrationResult result = new SMLIntegrationResult();
+        try {
+            DBDomain dbDomain = domainService.getDomain(domaincode);
+            domainService.unregisterDomainAndParticipantsFromSml(dbDomain);
+            result.setSuccess(true);
+        } catch (SMPRuntimeException e) {
+            result.setSuccess(false);
+            result.setErrorMessage(e.getMessage());
+        }
+        return result;
     }
 }

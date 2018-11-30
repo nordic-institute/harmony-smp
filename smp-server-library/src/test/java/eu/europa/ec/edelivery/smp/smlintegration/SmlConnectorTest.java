@@ -14,7 +14,13 @@
 package eu.europa.ec.edelivery.smp.smlintegration;
 
 import eu.europa.ec.bdmsl.ws.soap.*;
+import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
+import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
+import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
+import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
+import eu.europa.ec.edelivery.smp.sml.SmlClientFactory;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,13 +48,15 @@ import static org.springframework.beans.factory.config.ConfigurableBeanFactory.S
  * Created by gutowpa on 08/01/2018.
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = SmlConnectorTest.class)
+@ContextConfiguration(classes = { SmlConnector.class,SmlIntegrationConfiguration.class,
+        SecurityUtilsServices.class, UIKeystoreService.class,
+        ConversionTestConfig.class, PropertiesSingleDomainTestConfig.class})
 @Configuration
 @TestPropertySource(properties = {
         "bdmsl.integration.enabled=true"})
 public class SmlConnectorTest {
 
-    private static List<IManageParticipantIdentifierWS> smlClientMocks = new ArrayList<>();
+   // private static List<IManageParticipantIdentifierWS> smlClientMocks = new ArrayList<>();
     private static final ParticipantIdentifierType PARTICIPANT_ID = new ParticipantIdentifierType("sample:value", "sample:scheme");
     private static final DBDomain DEFAULT_DOMAIN;
 
@@ -57,25 +65,16 @@ public class SmlConnectorTest {
         DEFAULT_DOMAIN.setDomainCode("default_domain_id");
         DEFAULT_DOMAIN.setSmlSmpId("SAMPLE-SMP-ID");
     }
+
+    @Autowired
+    SmlIntegrationConfiguration mockSml;
+
     @Autowired
     private SmlConnector smlConnector;
 
-    @Before
-    public void setup() {
-        smlClientMocks = new ArrayList<>();
-    }
-
-    @Bean
-    public SmlConnector smlConnector() {
-        return new SmlConnector();
-    }
-
-    @Bean
-    @Scope(SCOPE_PROTOTYPE)
-    public IManageParticipantIdentifierWS smlClientMock(String clientKeyAlias, String clientCertHttpHeader) {
-        IManageParticipantIdentifierWS clientMock = Mockito.mock(IManageParticipantIdentifierWS.class);
-        smlClientMocks.add(clientMock);
-        return clientMock;
+    @Autowired
+    public void setup(){
+        mockSml.reset();
     }
 
     @Test
@@ -85,9 +84,9 @@ public class SmlConnectorTest {
 
         //then
         assertTrue(result);
-        assertEquals(1, smlClientMocks.size());
-        verify(smlClientMocks.get(0)).create(any());
-        Mockito.verifyNoMoreInteractions(smlClientMocks.toArray());
+        assertEquals(1, mockSml.getParticipantManagmentClientMocks().size());
+        verify(mockSml.getParticipantManagmentClientMocks().get(0)).create(any());
+        Mockito.verifyNoMoreInteractions(mockSml.getParticipantManagmentClientMocks().toArray());
     }
 
     @Test
@@ -97,10 +96,10 @@ public class SmlConnectorTest {
         smlConnector.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         //then
-        assertEquals(2, smlClientMocks.size());
-        verify(smlClientMocks.get(0)).create(any());
-        verify(smlClientMocks.get(1)).create(any());
-        Mockito.verifyNoMoreInteractions(smlClientMocks.toArray());
+        assertEquals(2, mockSml.getParticipantManagmentClientMocks().size());
+        verify(mockSml.getParticipantManagmentClientMocks().get(0)).create(any());
+        verify(mockSml.getParticipantManagmentClientMocks().get(1)).create(any());
+        Mockito.verifyNoMoreInteractions(mockSml.getParticipantManagmentClientMocks().toArray());
     }
 
     @Test
@@ -110,9 +109,9 @@ public class SmlConnectorTest {
 
         //then
         assertTrue(result);
-        assertEquals(1, smlClientMocks.size());
-        verify(smlClientMocks.get(0)).delete(any());
-        Mockito.verifyNoMoreInteractions(smlClientMocks.toArray());
+        assertEquals(1, mockSml.getParticipantManagmentClientMocks().size());
+        verify(mockSml.getParticipantManagmentClientMocks().get(0)).delete(any());
+        Mockito.verifyNoMoreInteractions(mockSml.getParticipantManagmentClientMocks().toArray());
     }
 
     @Test
@@ -122,9 +121,9 @@ public class SmlConnectorTest {
         smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         //then
-        assertEquals(2, smlClientMocks.size());
-        verify(smlClientMocks.get(0)).delete(any());
-        verify(smlClientMocks.get(1)).delete(any());
-        Mockito.verifyNoMoreInteractions(smlClientMocks.toArray());
+        assertEquals(2, mockSml.getParticipantManagmentClientMocks().size());
+        verify(mockSml.getParticipantManagmentClientMocks().get(0)).delete(any());
+        verify(mockSml.getParticipantManagmentClientMocks().get(1)).delete(any());
+        Mockito.verifyNoMoreInteractions(mockSml.getParticipantManagmentClientMocks().toArray());
     }
 }
