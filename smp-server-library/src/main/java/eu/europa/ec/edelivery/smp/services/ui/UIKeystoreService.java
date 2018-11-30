@@ -14,6 +14,8 @@ import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.net.ssl.KeyManager;
+import javax.net.ssl.KeyManagerFactory;
 import java.io.*;
 import java.security.*;
 import java.security.cert.Certificate;
@@ -55,6 +57,8 @@ public class UIKeystoreService {
 
     private Map<String, Key> keystoreKeys;
     private Map<String, X509Certificate> keystoreCertificates;
+
+    private KeyManager[] keyManagers;
 
 
     @PostConstruct
@@ -105,7 +109,22 @@ public class UIKeystoreService {
             return;
         }
 
+
+        try {
+            KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
+            kmf.init(keyStore, smpKeyStorePasswordDecrypted.toCharArray());
+            keyManagers = kmf.getKeyManagers();
+        } catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException exception) {
+            LOG.error("Error occurred while initialize  keyManagers : " + file.getAbsolutePath() + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
+            return;
+        }
+
+
         updateData(keyStore);
+    }
+
+    public KeyManager[] getKeyManagers() {
+        return keyManagers;
     }
 
     private void updateData(KeyStore keyStore) {

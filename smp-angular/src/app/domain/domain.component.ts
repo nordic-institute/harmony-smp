@@ -16,11 +16,11 @@ import {KeystoreEditDialogComponent} from "./keystore-edit-dialog/keystore-edit-
 import {SmpInfoService} from "../app-info/smp-info.service";
 import {SmpInfo} from "../app-info/smp-info.model";
 import {SmlIntegrationService} from "./sml-integration.service";
-import {KeystoreResult} from "./keystore-result.model";
+import {SMLResult} from "./sml-result.model";
 
 @Component({
   moduleId: module.id,
-  templateUrl:'./domain.component.html',
+  templateUrl: './domain.component.html',
   styleUrls: ['./domain.component.css']
 })
 export class DomainComponent implements OnInit {
@@ -32,17 +32,16 @@ export class DomainComponent implements OnInit {
   @ViewChild('searchTable') searchTable: SearchTableComponent;
 
 
-
   baseUrl = SmpConstants.REST_DOMAIN;
   columnPicker: ColumnPicker = new ColumnPicker();
   domainController: DomainController;
   filter: any = {};
-  isSMPIntegrationOn:boolean=false;
+  isSMPIntegrationOn: boolean = false;
 
 
   constructor(public securityService: SecurityService,
               protected smpInfoService: SmpInfoService,
-              protected smlIntegrationService:SmlIntegrationService,
+              protected smlIntegrationService: SmlIntegrationService,
               protected lookups: GlobalLookups,
               protected http: HttpClient,
               protected alertService: AlertService,
@@ -103,12 +102,12 @@ export class DomainComponent implements OnInit {
     ];
 
     this.columnPicker.selectedColumns = this.columnPicker.allColumns.filter(col => {
-      return ['Domain code', 'SML Domain', 'SML SMP Id', 'ClientCert Alias', 'Signature CertAlias','Is SML Registered','SML BueCoat Auth.'].indexOf(col.name) != -1
+      return ['Domain code', 'SML Domain', 'SML SMP Id', 'ClientCert Alias', 'Signature CertAlias', 'Is SML Registered', 'SML BueCoat Auth.'].indexOf(col.name) != -1
     });
   }
 
-  certificateAliasExists(alias:string): boolean {
-    if(alias){
+  certificateAliasExists(alias: string): boolean {
+    if (alias) {
       return this.lookups.cachedCertificateAliasList.includes(alias);
     } else {
 
@@ -117,13 +116,13 @@ export class DomainComponent implements OnInit {
   }
 
   aliasCssClass(alias: string, row) {
-    if (!this.certificateAliasExists(alias)){
+    if (!this.certificateAliasExists(alias)) {
       return 'missingKey';
-    } else if (row.status === SearchTableEntityStatus.NEW){
+    } else if (row.status === SearchTableEntityStatus.NEW) {
       return 'table-row-new';
-    }else if (row.status === SearchTableEntityStatus.UPDATED){
+    } else if (row.status === SearchTableEntityStatus.UPDATED) {
       return 'table-row-updated';
-    }else if (row.status === SearchTableEntityStatus.REMOVED){
+    } else if (row.status === SearchTableEntityStatus.REMOVED) {
       return 'deleted';
     }
   }
@@ -133,28 +132,50 @@ export class DomainComponent implements OnInit {
   }
 
   // for dirty guard...
-  isDirty (): boolean {
+  isDirty(): boolean {
     return this.searchTable.isDirty();
   }
-
 
 
   enableSMLRegister(): boolean {
     if (this.searchTable.selected.length !== 1 || !this.isSMPIntegrationOn) {
       return false;
     }
-    let domainRo =  (this.searchTable.selected[0] as DomainRo);
+    let domainRo = (this.searchTable.selected[0] as DomainRo);
+
+    if (!domainRo.smlClientCertHeader && domainRo.smlBlueCoatAuth) {
+      return false;
+    }
+    if (!domainRo.smlClientKeyAlias && !domainRo.smlBlueCoatAuth) {
+      return false;
+    }
+
+    if (domainRo.status != SearchTableEntityStatus.PERSISTED) {
+      return false;
+    }
     // entity must be first persisted in order to be enabled to registering to SML
-    return !domainRo.smlRegistered && domainRo.status !==SearchTableEntityStatus.NEW;
+    return !domainRo.smlRegistered;
   }
 
   enableSMLUnregister(): boolean {
     if (this.searchTable.selected.length !== 1 || !this.isSMPIntegrationOn) {
       return false;
     }
-    let domainRo =  (this.searchTable.selected[0] as DomainRo);
+    let domainRo = (this.searchTable.selected[0] as DomainRo);
+
+    if (!domainRo.smlClientCertHeader && domainRo.smlBlueCoatAuth) {
+      return false;
+    }
+    if (!domainRo.smlClientKeyAlias && !domainRo.smlBlueCoatAuth) {
+      return false;
+    }
+
+    if (domainRo.status != SearchTableEntityStatus.PERSISTED) {
+      return false;
+    }
+
     // entity must be first persisted in order to be enabled to registering to SML
-    return domainRo.smlRegistered && domainRo.status !==SearchTableEntityStatus.NEW;
+    return domainRo.smlRegistered;
   }
 
   smlUnregisterSelectedDomain() {
@@ -162,39 +183,18 @@ export class DomainComponent implements OnInit {
       return false;
     }
 
-    let domainRo =  (this.searchTable.selected[0] as DomainRo);
+    let domainRo = (this.searchTable.selected[0] as DomainRo);
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
-        title: "Unregister domain from SML!",
-        description: "Action will unregister domain: "+domainRo.domainCode +" and all its service groups from SML. Do you wish to continue?"
+        title: "Unregister domain to SML!",
+        description: "Action will unregister domain: " + domainRo.domainCode + " and all its service groups from SML. Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {
-        domainRo.smlRegistered=false;
+        this.smlUnregisterDomain(domainRo);
       }
     })
-  }
-
-  smlUnregisterDomain(domainCode:string){
-    this.smlIntegrationService.unregisterDomainToSML$(domainCode).subscribe((res) => {
-        if (res) {
-          if (res.errorMessage){
-            this.alertService.exception("Error occurred while unregistering domain:" + domainCode , res.errorMessage, false);
-          } else {
-            this.alertService.success("Domain " + domainCode + " unregistering to sml!");
-            this.lookups.refreshDomainLookup();
-
-          }
-        } else {
-          this.alertService.exception("Error occurred while unregistering domain:" + domainCode , "Unknown Error", false);
-        }
-      },
-      err => {
-        this.alertService.exception('Error occurred while unregistering domain:' + domainCode , err);
-      }
-    )
-
   }
 
   smlRegisterSelectedDomain() {
@@ -202,36 +202,57 @@ export class DomainComponent implements OnInit {
       return false;
     }
 
-    let domainRo =  (this.searchTable.selected[0] as DomainRo);
+    let domainRo = (this.searchTable.selected[0] as DomainRo);
 
     this.dialog.open(ConfirmationDialogComponent, {
       data: {
         title: "Register domain to SML!",
-        description: "Action will register domain: "+domainRo.domainCode +" and all its service groups to SML. Do you wish to continue?"
+        description: "Action will register domain: " + domainRo.domainCode + " and all its service groups to SML. Do you wish to continue?"
       }
     }).afterClosed().subscribe(result => {
       if (result) {
-        this.smlRegisterDomain(domainRo.domainCode);
+        this.smlRegisterDomain(domainRo);
       }
     })
   }
 
-  smlRegisterDomain(domainCode:string){
-    this.smlIntegrationService.registerDomainToSML$(domainCode).subscribe((res) => {
+  smlRegisterDomain(domain: DomainRo) {
+    this.smlIntegrationService.registerDomainToSML$(domain.domainCode).subscribe((res: SMLResult) => {
         if (res) {
-          if (res.errorMessage){
-            this.alertService.exception("Error occurred while registering domain:" + domainCode , res.errorMessage, false);
-          } else {
-            this.alertService.success("Domain " + domainCode + " registered to sml!");
+          if (res.success) {
+            this.alertService.success("Domain " + domain.domainCode + " registered to sml!");
             this.lookups.refreshDomainLookup();
-
+            domain.smlRegistered = true;
+          } else {
+            this.alertService.exception('Error occurred while registering domain:' + domain.domainCode, res.errorMessage);
           }
         } else {
-          this.alertService.exception("Error occurred while registering domain:" + domainCode , "Unknown Error", false);
+          this.alertService.exception('Error occurred while registering domain:' + domain.domainCode, "Unknown error. Check logs.");
         }
       },
       err => {
-        this.alertService.exception('Error occurred while registering domain:' + domainCode , err);
+        this.alertService.exception('Error occurred while registering domain:' + domain.domainCode, err);
+      }
+    )
+  }
+
+  smlUnregisterDomain(domain: DomainRo) {
+    this.smlIntegrationService.unregisterDomainToSML$(domain.domainCode).subscribe((res: SMLResult) => {
+        if (res) {
+          if (res.success) {
+            this.alertService.success("Domain " + domain.domainCode + " unregistering from sml!");
+            this.lookups.refreshDomainLookup();
+            domain.smlRegistered = false;
+          } else {
+            this.alertService.exception('Error occurred while unregistering domain:' + domain.domainCode, res.errorMessage);
+          }
+        } else {
+          this.alertService.exception('Error occurred while registering domain:' + domain.domainCode, "Unknown error. Check logs.");
+        }
+      }
+      ,
+      err => {
+        this.alertService.exception('Error occurred while unregistering domain:' + domain.domainCode, err);
       }
     )
 

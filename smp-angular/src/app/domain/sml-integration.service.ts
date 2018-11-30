@@ -6,6 +6,7 @@ import {SmpConstants} from "../smp.constants";
 import {SecurityService} from "../security/security.service";
 import {User} from "../security/user.model";
 import {KeystoreResult} from "./keystore-result.model";
+import {SMLResult} from "./sml-result.model";
 
 @Injectable()
 export class SmlIntegrationService {
@@ -15,14 +16,13 @@ export class SmlIntegrationService {
     private securityService: SecurityService) {
   }
 
-  registerDomainToSML$(domainCode): Observable<KeystoreResult> {
-
+  registerDomainToSML$(domainCode): Observable<SMLResult> {
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.post<KeystoreResult>(`${SmpConstants.REST_DOMAIN}/${currentUser.id}/smlregister/${domainCode}`, {});
+    return this.http.post<SMLResult>(`${SmpConstants.REST_DOMAIN}/${currentUser.id}/smlregister/${domainCode}`, {});
   }
 
-  unregisterDomainToSML$(domainCode): Observable<KeystoreResult> {
+  unregisterDomainToSML$(domainCode): Observable<SMLResult> {
     const currentUser: User = this.securityService.getCurrentUser();
-    return this.http.post(`${SmpConstants.REST_DOMAIN}/${currentUser.id}/smlunregister/${domainCode}`,{});
+    return this.http.post<SMLResult>(`${SmpConstants.REST_DOMAIN}/${currentUser.id}/smlunregister/${domainCode}`, {});
   }
 }

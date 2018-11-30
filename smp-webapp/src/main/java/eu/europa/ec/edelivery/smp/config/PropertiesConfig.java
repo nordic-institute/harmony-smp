@@ -21,6 +21,7 @@ import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
 import eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.context.annotation.*;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -42,6 +43,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Properties;
 
+import static eu.europa.ec.edelivery.smp.data.ui.enums.SMPPropertyEnum.*;
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.INTERNAL_ERROR;
 
 /**
@@ -114,6 +116,8 @@ public class PropertiesConfig {
             prop = new DatabaseProperties(em);
             if (prop.size() == 0) {
                 initializeProperties(em, fileProperties, prop);
+            } else {
+                validateProperties(em, fileProperties, prop);
             }
         } finally {
             if (em != null && em.isOpen()) {
@@ -124,7 +128,7 @@ public class PropertiesConfig {
     }
 
     /**
-     * Method do the folling tasks
+     * Method do the next tasks
      * // copy SMPProperties
      * // copy and merge keystore
      * // secure password for keystore
@@ -192,9 +196,9 @@ public class PropertiesConfig {
         LOG.info( "Generate new keystore to folder: " + settingsFolder.getAbsolutePath());
 
         // add configuration path
-        storeDBEntry(em, SMPPropertyEnum.CONFIGURATION_DIR, settingsFolder.getPath());
-        initProperties.setProperty(SMPPropertyEnum.CONFIGURATION_DIR.getProperty(), settingsFolder.getPath());
-        String newKeyPassword = RandomStringUtils.random(8, true, true);
+        storeDBEntry(em, CONFIGURATION_DIR, settingsFolder.getPath());
+        initProperties.setProperty(CONFIGURATION_DIR.getProperty(), settingsFolder.getPath());
+        String newKeyPassword = RandomStringUtils.random(16, true, true);
         storeDBEntry(em, SMPPropertyEnum.KEYSTORE_PASSWORD_DECRYPTED, newKeyPassword);
 
 
@@ -259,6 +263,85 @@ public class PropertiesConfig {
         }
     }
 
+
+    /**
+     * Method do the next tasks
+     * // copy SMPProperties
+     * // copy and merge keystore
+     * // secure password for keystore
+     * // -- generate symmetric key
+     * // -- encrypt key
+     * // -- set password
+     *
+     * @param em
+     * @param fileProperties
+     */
+    protected void validateProperties(EntityManager em, Properties fileProperties, Properties databaseProperties) {
+        em.getTransaction().begin();
+
+        if (!databaseProperties.containsKey(CONFIGURATION_DIR.getProperty())){
+            String folder = (new File("./")).getAbsolutePath();
+            LOG.warn("Missing property: {} set value: {}", CONFIGURATION_DIR.getProperty(), folder );
+            storeDBEntry(em,CONFIGURATION_DIR, folder);
+            databaseProperties.setProperty(CONFIGURATION_DIR.getProperty(), folder);
+        }
+        String configurationDir = databaseProperties.getProperty(CONFIGURATION_DIR.getProperty());
+        String encryptionFilename = databaseProperties.getProperty(ENCRYPTION_FILENAME.getProperty());
+        String keystoreFilePath = databaseProperties.getProperty(KEYSTORE_FILENAME.getProperty());
+        String keystorePassword = databaseProperties.getProperty(KEYSTORE_PASSWORD.getProperty());
+        String keystorePasswordDec = databaseProperties.getProperty(KEYSTORE_PASSWORD_DECRYPTED.getProperty());
+
+        File file = new File(configurationDir + File.separator + encryptionFilename);
+        File keystoreFile = new File(configurationDir + File.separator + keystoreFilePath);
+        if (!file.exists()) {
+            LOG.error("Encryption key file '{}' does not exists!", file.getAbsolutePath());
+            return;
+        }
+        //initializeProperties();
+
+        em.getTransaction().commit();
+    }
+    /*
+    protected void testKeystore(String configurationDir,
+                                String encryptionFilename,
+                                String smpKeyStoreFilename,
+                                String smpKeyStorePasswordDecrypted
+                                ){
+
+
+            LOG.info("initialize from configuration folder:{}, enc file: {}, keystore {}" , configurationDir, encryptionFilename, smpKeyStoreFilename);
+            if (configurationDir == null || encryptionFilename == null) {
+                LOG.warn("Configuration folder and/or encryption filename are not set in database!");
+                return;
+            }
+
+            File file = new File(configurationDir + File.separator + encryptionFilename);
+            File keystoreFilePath = new File(configurationDir + File.separator + smpKeyStoreFilename);
+            if (!file.exists()) {
+                LOG.error("Encryption key file '{}' does not exists!", file.getAbsolutePath());
+                return;
+            }
+            if (!keystoreFilePath.exists()) {
+                LOG.error("Keystore file '{}' does not exists!", keystoreFilePath.getAbsolutePath());
+                return;
+            }
+
+            try {
+                smpKeyStorePasswordDecrypted = securityUtilsServices.decrypt(file, smpKeyStorePasswordEncrypted);
+            } catch (SMPRuntimeException exception) {
+                LOG.error("Error occurred while using encryption key: " + file.getAbsolutePath() + " Error: " + ExceptionUtils.getRootCauseMessage(exception), exception);
+                return;
+            }
+            // load keystore
+            KeyStore keyStore = loadKeystore();
+            if (keyStore == null) {
+                return;
+            }
+
+            updateData(keyStore);
+        }
+    }
+*/
 
     protected DBConfiguration createDBEntry(String key, String value, String desc) {
         DBConfiguration dcnew = new DBConfiguration();
@@ -362,12 +445,17 @@ public class PropertiesConfig {
             for (DBConfiguration dc : lst) {
                 if(dc.getValue()!=null) {
 
-                    LOG.info("Set property: '{}' value: '{}'",dc.getProperty(),
+                    LOG.info("Database property: '{}' value: '{}'",dc.getProperty(),
                             dc.getProperty().toLowerCase().contains("password")?"******": dc.getValue());
                     setProperty(dc.getProperty(), dc.getValue());
                 }
             }
+
+
         }
+
+
+
     }
 
 }
