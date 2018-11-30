@@ -42,6 +42,7 @@ public class PropertiesSingleDomainTestConfig {
                 {"encryption.key.filename","encryptionKey.key"},
                 {"smp.keystore.password", "FarFJE2WUfY39SVRTFOqSg=="},
                 {"smp.keystore.filename", "smp-keystore.jks"},
+                {"bdmsl.integration.url", "https://sml.url.pl"}
         });
     }
 }

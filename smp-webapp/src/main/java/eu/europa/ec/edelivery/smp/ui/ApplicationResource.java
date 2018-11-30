@@ -58,6 +58,7 @@ public class ApplicationResource {
         SmpInfoRO info = new SmpInfoRO();
         info.setVersion(getDisplayVersion());
         info.setSmlIntegrationOn(smlConnector.isSmlIntegrationEnabled());
+        info.setSmlParticipantMultiDomainOn(smlConnector.isSmlMultidomainEnabled());
         info.setContextPath(getRootContext());
         return info;
     }

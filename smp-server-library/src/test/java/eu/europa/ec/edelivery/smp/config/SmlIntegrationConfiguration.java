@@ -51,7 +51,7 @@ public class SmlIntegrationConfiguration {
 
     @Bean
     @Scope(SCOPE_PROTOTYPE)
-    public IManageServiceMetadataWS smpManagerClient(String clientKeyAlias, String clientCertHttpHeader) {
+    public IManageServiceMetadataWS smpManagerClient(String clientKeyAlias, String clientCertHttpHeader, boolean authBlueCoat) {
         IManageServiceMetadataWS clientMock = Mockito.mock(IManageServiceMetadataWS.class);
         AuthenticationTestDataHolder dh = new AuthenticationTestDataHolder();
         dh.setAlias(clientKeyAlias);
@@ -63,7 +63,7 @@ public class SmlIntegrationConfiguration {
 
     @Bean
     @Scope(SCOPE_PROTOTYPE)
-    public IManageParticipantIdentifierWS smpParticipantClient(String clientKeyAlias, String clientCertHttpHeader) {
+    public IManageParticipantIdentifierWS smpParticipantClient(String clientKeyAlias, String clientCertHttpHeader,boolean authBlueCoat) {
 
         if (throwExceptionAfterParticipantCallCount >0 &&  throwExceptionAfterParticipantCallCount  <= smlClientMocks.size()){
             throw new HTTPException(400);
