@@ -4,6 +4,7 @@ import {ServiceGroupSearchRo} from './service-group-search-ro.model';
 import {of} from "rxjs/internal/observable/of";
 import {SearchTableValidationResult} from "../common/search-table/search-table-validation-result.model";
 import {SearchTableEntity} from "../common/search-table/search-table-entity.model";
+import {ServiceGroupEditRo} from "../service-group-edit/service-group-edit-ro.model";
 
 export class ServiceGroupSearchController implements SearchTableController {
 
@@ -38,5 +39,10 @@ export class ServiceGroupSearchController implements SearchTableController {
       validOperation: null,
       stringMessage: message,
     }
+  }
+
+  isRowExpanderDisabled(row: SearchTableEntity): boolean {
+    const serviceGroup = <ServiceGroupSearchRo>row;
+    return !(serviceGroup.serviceMetadata && serviceGroup.serviceMetadata.length);
   }
 }

@@ -66,6 +66,40 @@ public class IdentifiersTest {
         };
     }
 
+    private static final Object[] negativeCases() {
+        return new Object[]{
+                null,
+                "",
+                "a",
+                "abc",
+                "a:b",
+                "a::",
+                "ehealth-actorid-qns",
+                "urn:poland:ncpb",
+                "ehealth-resid-qns",
+                "epsos##services:extended:epsos:51",
+                "::a",
+        };
+    }
+
+    private static final Object[] documentTestCases() {
+        Object[] commonTests = testCases();
+        Object[] res = new Object[commonTests.length+2];
+        System.arraycopy(commonTests, 0,res, 0, commonTests.length );
+        //add new test with empty schema
+        res[commonTests.length] = new Object[]{"::a",null,"a"};
+        res[commonTests.length+1] = new Object[]{"::urn:ehealth:ncp::pt:ism",null,"urn:ehealth:ncp::pt:ism"};
+        return res;
+    }
+
+    private static final Object[] negativeDocumentCases() {
+        Object[] commonNegativeTests = negativeCases();
+        Object[] res = new Object[commonNegativeTests.length-1]; // skip last one
+        System.arraycopy(commonNegativeTests, 0,res, 0, commonNegativeTests.length-1 );
+
+        return res;
+    }
+
 
     @Test
     @Parameters(method = "testCases")
@@ -79,7 +113,7 @@ public class IdentifiersTest {
     }
 
     @Test
-    @Parameters(method = "testCases")
+    @Parameters(method = "documentTestCases")
     public void testDocumentIdPositive(String input, String scheme, String value) {
         //when
         DocumentIdentifier documentId = Identifiers.asDocumentId(input);
@@ -101,23 +135,6 @@ public class IdentifiersTest {
     }
 
 
-
-    private static final Object[] negativeCases() {
-        return new Object[]{
-                null,
-                "",
-                "a",
-                "abc",
-                "a:b",
-                "::a",
-                "a::",
-                "ehealth-actorid-qns",
-                "urn:poland:ncpb",
-                "ehealth-resid-qns",
-                "epsos##services:extended:epsos:51"
-        };
-    }
-
     @Test
     @Parameters(method = "negativeCases")
     public void testProcessIdNegative(String negativeInput) {
@@ -133,7 +150,7 @@ public class IdentifiersTest {
     }
 
     @Test
-    @Parameters(method = "negativeCases")
+    @Parameters(method = "negativeDocumentCases")
     public void testDocumentIdNegative(String negativeInput) {
         try {
             //when

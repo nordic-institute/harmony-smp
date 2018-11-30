@@ -28,7 +28,7 @@
 
           <mat-form-field  style="width:30%">
             <input matInput placeholder="Document identifier scheme" name="documentScheme"  id="documentScheme_id"
-                   [formControl]="dialogForm.controls['documentIdentifierScheme']"  maxlength="255" required>
+                   [formControl]="dialogForm.controls['documentIdentifierScheme']"  maxlength="255" >
           </mat-form-field>
             <mat-form-field style="width:55%">
               <input matInput placeholder="Document identifier" name="documentIdentifier"  id="documentIdentifier_id"
@@ -57,13 +57,13 @@
               <mat-icon>settings_ethernet</mat-icon>
               <span>Generate XML</span>
             </button>
-            <!-- button mat-raised-button color="primary"
+            <button mat-raised-button color="primary"
                     matTooltip="Opens wizard to configure ServiceMetadata xml."
                     matTooltipPosition="below"
                     (click)="onStartWizardDialog()">
               <mat-icon>add_box</mat-icon>
               <span>Metadata wizard</span>
-            </button -->
+            </button>
             <button mat-raised-button color="primary"
                     atTooltip="Validate serviceMetadata XML."
                     matTooltipPosition="below"

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
+import java.net.URLDecoder;
 import java.util.Optional;
 
 import static eu.europa.ec.edelivery.smp.exceptions.ErrorCode.DOMAIN_NOT_EXISTS;
@@ -34,10 +35,7 @@ public class SearchResource {
     private UIServiceGroupSearchService uiServiceGroupService;
     @Autowired
     private DomainDao domainDao;
-    @PostConstruct
-    protected void init() {
 
-    }
 
     @PutMapping(produces = {"application/json"})
     @ResponseBody
@@ -52,12 +50,18 @@ public class SearchResource {
             @RequestParam(value = "domain", required = false) String domainCode
     ) {
 
-        LOG.info("Search for page: {}, page size: {}, part. id: {}, part sch: {}, domain {}", page, pageSize, participantIdentifier, participantScheme, domainCode);
+        String participantIdentifierDecoded =StringUtils.isBlank(participantIdentifier)?null:URLDecoder.decode(participantIdentifier);
+        String participantSchemeDecoded = StringUtils.isBlank(participantScheme)?null:URLDecoder.decode(participantScheme);
+        String domainCodeDecoded = StringUtils.isBlank(domainCode)?null:URLDecoder.decode(domainCode);
+
+        LOG.info("Search for page: {}, page size: {}, part. id: {}, part sch: {}, domain {}", page, pageSize, participantIdentifierDecoded,
+                participantSchemeDecoded, domainCodeDecoded);
+
         ServiceGroupFilter sgf = new ServiceGroupFilter();
-        sgf.setParticipantIdentifierLike(participantIdentifier);
-        sgf.setParticipantSchemeLike(participantScheme);
+        sgf.setParticipantIdentifierLike(participantIdentifierDecoded);
+        sgf.setParticipantSchemeLike(participantSchemeDecoded);
         // add domain search parameter
-        sgf.setDomain(domainDao.validateDomainCode(domainCode));
+        sgf.setDomain(domainDao.validateDomainCode(domainCodeDecoded));
 
         return uiServiceGroupService.getTableList(page, pageSize, orderBy, orderType, sgf);
     }

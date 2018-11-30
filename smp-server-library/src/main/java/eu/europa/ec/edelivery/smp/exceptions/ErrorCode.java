@@ -10,6 +10,7 @@ package eu.europa.ec.edelivery.smp.exceptions;
 public enum ErrorCode {
 
     INVALID_ENCODING (500, "SMP:100",ErrorBusinessCode.TECHNICAL, "Unsupported or invalid encoding for %s!"),
+    SML_INVALID_IDENTIFIER (400,"SMP:101",ErrorBusinessCode.FORMAT_ERROR,"Malformed identifier, scheme and id should be delimited by double colon: %s "),
 
     // domain error
     NO_DOMAIN (500,"SMP:110",ErrorBusinessCode.TECHNICAL, "No domain configured on SMP, at least one domain is mandatory!"),
@@ -30,12 +31,11 @@ public enum ErrorCode {
 
     // service group error
     ILLEGAL_STATE_SG_MULTIPLE_ENTRY (500,"SMP:130",ErrorBusinessCode.TECHNICAL,"More than one service group ( part. id: %s, part. sch.: '%s') is defined in database!"),
-    SG_NOT_EXISTS(404,"SMP:131",ErrorBusinessCode.NOT_FOUND,"ServiceGroup not found (dpart. id: '%s', part. sch.: '%s')!"),
-    SG_NOT_REGISTRED_FOR_DOMAIN(400,"SMP:131",ErrorBusinessCode.NOT_FOUND,"Service group not registered for domain (domain: %s, part. id:~ '%s', part. sch.: '%s')!"),
+    SG_NOT_EXISTS(404,"SMP:131",ErrorBusinessCode.NOT_FOUND,"ServiceGroup not found (part. id: '%s', part. sch.: '%s')!"),
+    SG_NOT_REGISTRED_FOR_DOMAIN(400,"SMP:131",ErrorBusinessCode.NOT_FOUND,"Service group not registered for domain (domain: %s, part. id: '%s', part. sch.: '%s')!"),
     INVALID_EXTENSION_FOR_SG (400,"SMP:132",ErrorBusinessCode.XSD_INVALID,"Invalid extension for service group (part. id: '%s', part. sch.: '%s'). Error: %s!"),
     DUPLICATE_DOMAIN_FOR_SG (400,"SMP:133",ErrorBusinessCode.INVALID_INPUT_DATA,"Repeated domain for Service group (part. id: '%s', part. sch.: '%s', domainCode %s, smlDomain %s).!"),
     MISSING_SG_ID (400,"SMP:134",ErrorBusinessCode.INVALID_INPUT_DATA,"Missing service group(part. id: '%s', part. sch.: '%s'!"),
-
     INVALID_SG_ID (400,"SMP:135",ErrorBusinessCode.INVALID_INPUT_DATA,"Invalid Id for Service group(part. id: '%s', part. sch.: '%s', id %d).!"),
 
 
@@ -50,6 +50,7 @@ public enum ErrorCode {
     // SML integration
     SML_INTEGRATION_EXCEPTION (500,"SMP:150",ErrorBusinessCode.TECHNICAL,"Could not create new DNS entry through SML! Error: %s "),
 
+
     //
     XML_SIGNING_EXCEPTION (500,"SMP:500",ErrorBusinessCode.TECHNICAL,"Error occurred while signing response!"),
 
@@ -57,6 +58,8 @@ public enum ErrorCode {
     XML_PARSE_EXCEPTION (500,"SMP:512",ErrorBusinessCode.TECHNICAL, "Error occurred while parsing input stream for %s.  Error: %s!"),
     INVALID_REQEUST (500,"SMP:513",ErrorBusinessCode.TECHNICAL, "Invalid request %s.  Error: %s!"),
     INTERNAL_ERROR (500,"SMP:514",ErrorBusinessCode.TECHNICAL, "Internal error %s.  Error: %s!"),
+    CERTIFICATE_ERROR (500,"SMP:515",ErrorBusinessCode.TECHNICAL, "Certificate error %s.  Error: %s!"),
+    CONFIGURATION_ERROR (500,"SMP:516",ErrorBusinessCode.TECHNICAL, "Configuration error: %s!"),
 
     //
     ;

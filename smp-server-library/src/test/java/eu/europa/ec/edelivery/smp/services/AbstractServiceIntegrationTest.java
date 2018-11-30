@@ -1,7 +1,8 @@
 package eu.europa.ec.edelivery.smp.services;
 
 
-import eu.europa.ec.edelivery.smp.config.H2JPATestConfiguration;
+import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
+import eu.europa.ec.edelivery.smp.config.H2JPATestConfig;
 import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
 import eu.europa.ec.edelivery.smp.conversion.CaseSensitivityNormalizer;
 import eu.europa.ec.edelivery.smp.data.dao.DomainDao;
@@ -12,6 +13,7 @@ import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceGroup;
 import eu.europa.ec.edelivery.smp.data.model.DBServiceMetadata;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
+import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import eu.europa.ec.edelivery.smp.testutil.DBAssertion;
 import eu.europa.ec.edelivery.smp.testutil.TestConstants;
@@ -33,10 +35,11 @@ import static eu.europa.ec.edelivery.smp.testutil.TestConstants.*;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = {H2JPATestConfiguration.class,PropertiesSingleDomainTestConfig.class,
+@ContextConfiguration(classes = {H2JPATestConfig.class,PropertiesSingleDomainTestConfig.class,
         CaseSensitivityNormalizer.class,SmlConnector.class,ServiceMetadataSigner.class,
         ServiceGroupService.class, DomainService.class, ServiceMetadataService.class,
-        ServiceGroupDao.class,ServiceMetadataDao.class, DomainDao.class, UserDao.class,DBAssertion.class})
+        ServiceGroupDao.class,ServiceMetadataDao.class, DomainDao.class, UserDao.class,DBAssertion.class,
+        UIKeystoreService.class, ConversionTestConfig.class, SecurityUtilsServices.class, SMLIntegrationService.class})
 @Sql(scripts = "classpath:cleanup-database.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD, config = @SqlConfig
         (transactionMode = SqlConfig.TransactionMode.ISOLATED,
                 transactionManager = "transactionManager",
@@ -68,7 +71,7 @@ public abstract class AbstractServiceIntegrationTest {
      *          - TEST_DOC_ID_1, TEST_DOC_SCHEMA_1
      *
      *
-     * ServiceGroup2: TEST_SG_ID_1, TEST_SG_SCHEMA_2
+     * ServiceGroup2: TEST_SG_ID_2, TEST_SG_SCHEMA_2
      *    - Domain: TEST_DOMAIN_CODE_1
      *    - Owners: USERNAME_1
      *    - Metadata: /
@@ -175,5 +178,4 @@ public abstract class AbstractServiceIntegrationTest {
         sg3.getServiceGroupDomains().get(1).addServiceMetadata(sg3md2);
         serviceGroupDao.update(sg3);
     }
-
 }

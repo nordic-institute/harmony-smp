@@ -4,7 +4,9 @@ package eu.europa.ec.edelivery.smp.ui;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.SmpInfoRO;
+import eu.europa.ec.edelivery.smp.services.SMLIntegrationService;
 import eu.europa.ec.edelivery.smp.services.ui.UIServiceGroupService;
+import eu.europa.ec.edelivery.smp.sml.SmlConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,17 +32,20 @@ public class ApplicationResource {
     @Autowired
     private Environment env;
 
-    @Value("${Artifact-Name}")
-    private String artifactName;
-    @Value("${Artifact-Version}")
-    private String artifactVersion;
-    @Value("${Build-Time}")
-    private String buildTime;
+    @Autowired
+    SmlConnector smlConnector;
+
+    @Value("${smp.artifact.name:eDelivery SMP}")
+    String artifactName;
+    @Value("${smp.artifact.version:}")
+    String artifactVersion;
+    @Value("${smp.artifact.build.time:}")
+    String buildTime;
 
 
     @RequestMapping(method = RequestMethod.GET, path = "name")
     public  String getName() {
-        return "SMP TEST";
+        return artifactName;
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "rootContext")
@@ -49,7 +54,17 @@ public class ApplicationResource {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "info")
-    public SmpInfoRO getDisplayVersion() {
+    public SmpInfoRO getApplicationInfo() {
+        SmpInfoRO info = new SmpInfoRO();
+        info.setVersion(getDisplayVersion());
+        info.setSmlIntegrationOn(smlConnector.isSmlIntegrationEnabled());
+        info.setSmlParticipantMultiDomainOn(smlConnector.isSmlMultidomainEnabled());
+        info.setContextPath(getRootContext());
+        return info;
+    }
+
+
+    public String getDisplayVersion() {
         StringBuilder display = new StringBuilder();
         display.append(artifactName);
         display.append(" Version [");
@@ -57,12 +72,6 @@ public class ApplicationResource {
         display.append("] Build-Time [");
         display.append(buildTime + "|" + TimeZone.getDefault().getDisplayName());
         display.append("]");
-
-        SmpInfoRO info = new SmpInfoRO();
-        info.setVersion(display.toString());
-        return info;
+        return display.toString();
     }
-
-
-
 }

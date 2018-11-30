@@ -1,6 +1,7 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
 
+import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
 import eu.europa.ec.edelivery.smp.data.model.DBUser;
 import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
@@ -17,14 +18,21 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.context.ContextConfiguration;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -33,7 +41,7 @@ import static org.junit.Assert.*;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-@ContextConfiguration(classes= UIUserService.class)
+@ContextConfiguration(classes = {UIUserService.class, ConversionTestConfig.class})
 public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest {
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();
@@ -51,11 +59,11 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testGetTableListEmpty() {
-
         // given
 
         //when
         ServiceResult<UserRO> res = testInstance.getTableList(-1, -1, null, null, null);
+
         // then
         assertNotNull(res);
         assertEquals(0, res.getCount().intValue());
@@ -67,9 +75,9 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
     @Test
     public void testGetTableList15() {
-
         // given
         insertDataObjects(15);
+
         //when
         ServiceResult<UserRO> res = testInstance.getTableList(-1, -1, null, null, null);
 
@@ -87,7 +95,6 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         assertNotNull(res.getServiceEntities().get(0).getUsername());
         assertNotNull(res.getServiceEntities().get(0).getEmailAddress());
         assertNull(res.getServiceEntities().get(0).getPassword()); // Service list must not return passwords
-        assertNotNull(res.getServiceEntities().get(0).getPasswordChanged());
         assertNotNull(res.getServiceEntities().get(0).getRole());
     }
 
@@ -104,7 +111,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         //when
         usr.setPassword(newPassword);
         usr.setStatus(EntityROStatus.UPDATED.getStatusNumber());
-        testInstance.updateUserList(Collections.singletonList(usr));
+        testInstance.updateUserList(Collections.singletonList(usr), null);
 
         // then
         DBUser dbuser = userDao.find(usr.getId());
@@ -126,7 +133,8 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         user.setStatus(EntityROStatus.NEW.getStatusNumber());
 
         //when
-        testInstance.updateUserList(Collections.singletonList(user));
+        testInstance.updateUserList(Collections.singletonList(user), null);
+
         // then
         long  iCntNew  = userDao.getDataListCount(null);
         assertEquals(iCnt+1, iCntNew);
@@ -166,9 +174,9 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
         user.setStatus(EntityROStatus.NEW.getStatusNumber());
 
-
         //when
-        testInstance.updateUserList(Collections.singletonList(user));
+        testInstance.updateUserList(Collections.singletonList(user), null);
+
         // then
         long  iCntNew  = userDao.getDataListCount(null);
         assertEquals(iCnt+1, iCntNew);
@@ -212,9 +220,9 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
 
         user.setStatus(EntityROStatus.NEW.getStatusNumber());
 
-
         //when
-        testInstance.updateUserList(Collections.singletonList(user));
+        testInstance.updateUserList(Collections.singletonList(user), null);
+
         // then
         long  iCntNew  = userDao.getDataListCount(null);
         assertEquals(iCnt+1, iCntNew);
@@ -261,7 +269,8 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         userRO.setCertificate(null);
         userRO.setStatus(EntityROStatus.UPDATED.getStatusNumber());
 
-        testInstance.updateUserList(Collections.singletonList(userRO));
+        testInstance.updateUserList(Collections.singletonList(userRO), null);
+
         // then
         ServiceResult<UserRO> res  =  testInstance.getTableList(-1,-1,null, null, null);
         assertEquals(1, urTest.getServiceEntities().size());
@@ -281,7 +290,7 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
         user.setStatus(EntityROStatus.REMOVE.getStatusNumber());
 
         //when
-        testInstance.updateUserList(Collections.singletonList(user));
+        testInstance.updateUserList(Collections.singletonList(user), null);
 
         // then
         long  iCntNew  = userDao.getDataListCount(null);
@@ -296,12 +305,14 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     public void testGetCertificateDataPEM() throws IOException, CertificateException {
         // given
         byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/truststore/SMPtest.crt"));
+
         // when
         CertificateRO cer = testInstance.getCertificateData(buff);
+
         //then
         assertEquals("CN=SMP test,O=DIGIT,C=BE:0000000000000003", cer.getCertificateId());
-        assertEquals("CN=Intermediate CA, O=DIGIT, C=BE", cer.getIssuer());
-        assertEquals("EMAILADDRESS=smp@test.com, CN=SMP test, O=DIGIT, C=BE", cer.getSubject());
+        assertEquals("C=BE,O=DIGIT,CN=Intermediate CA", cer.getIssuer());
+        assertEquals("C=BE,O=DIGIT,CN=SMP test,E=smp@test.com", cer.getSubject());
         assertEquals("3", cer.getSerialNumber());
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
@@ -312,35 +323,35 @@ public class UIUserServiceIntegrationTest extends AbstractServiceIntegrationTest
     public void testGetCertificateDataPEMWithHeader() throws IOException, CertificateException {
         // given
         byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/truststore/pem-with-header.crt"));
+
         // when
         CertificateRO cer = testInstance.getCertificateData(buff);
+
         //then
         assertEquals("CN=alice,O=www.freelan.org,C=FR:0000000000000001", cer.getCertificateId());
-        assertEquals("EMAILADDRESS=contact@freelan.org, CN=Freelan Sample Certificate Authority, OU=freelan, O=www.freelan.org, L=Strasbourg, ST=Alsace, C=FR", cer.getIssuer());
-        assertEquals("EMAILADDRESS=contact@freelan.org, CN=alice, OU=freelan, O=www.freelan.org, ST=Alsace, C=FR", cer.getSubject());
+        assertEquals("C=FR,ST=Alsace,L=Strasbourg,O=www.freelan.org,OU=freelan,CN=Freelan Sample Certificate Authority,E=contact@freelan.org", cer.getIssuer());
+        assertEquals("C=FR,ST=Alsace,O=www.freelan.org,OU=freelan,CN=alice,E=contact@freelan.org", cer.getSubject());
         assertEquals("1", cer.getSerialNumber());
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
         assertTrue(cer.getValidFrom().before(cer.getValidTo()));
     }
 
-
-
     @Test
     public void testGetCertificateDataDER() throws IOException, CertificateException {
         // given
-        byte[] buff = IOUtils.toByteArray(new FileInputStream("src/test/resources/truststore/NewPeppolAP.crt"));
+        byte[] buff = IOUtils.toByteArray(UIUserServiceIntegrationTest.class.getResourceAsStream("/truststore/NewPeppolAP.crt"));
 
         // when
         CertificateRO cer = testInstance.getCertificateData(buff);
+
         //then
         assertEquals("CN=POP000004,O=European Commission,C=BE:474980c51478cf62761667461aef5e8e", cer.getCertificateId());
-        assertEquals("CN=PEPPOL ACCESS POINT TEST CA - G2, OU=FOR TEST ONLY, O=OpenPEPPOL AISBL, C=BE", cer.getIssuer());
-        assertEquals("C=BE, O=European Commission, OU=PEPPOL TEST AP, CN=POP000004", cer.getSubject());
+        assertEquals("C=BE,O=OpenPEPPOL AISBL,OU=FOR TEST ONLY,CN=PEPPOL ACCESS POINT TEST CA - G2", cer.getIssuer());
+        assertEquals("CN=POP000004,OU=PEPPOL TEST AP,O=European Commission,C=BE", cer.getSubject());
         assertEquals("474980c51478cf62761667461aef5e8e", cer.getSerialNumber());
         assertNotNull(cer.getValidFrom());
         assertNotNull(cer.getValidTo());
         assertTrue(cer.getValidFrom().before(cer.getValidTo()));
     }
-
 }

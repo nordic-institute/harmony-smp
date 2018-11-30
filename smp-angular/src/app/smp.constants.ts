@@ -8,9 +8,8 @@ export class SmpConstants {
   public static readonly REST_SECURITY_AUTHENTICATION = 'rest/security/authentication';
   public static readonly REST_SECURITY_USER = 'rest/security/user';
   public static readonly REST_APPLICATION = 'rest/application/info';
+  public static readonly REST_KEYSTORE = 'rest/keystore';
 
-
-  public static readonly REST_CERTIFICATE = `${SmpConstants.REST_USER}/certdata`;
   public static readonly REST_USER_VALIDATE_DELETE = `${SmpConstants.REST_USER}/validateDelete`;
   public static readonly REST_DOMAIN_VALIDATE_DELETE = `${SmpConstants.REST_DOMAIN}/validateDelete`;
   public static readonly REST_SERVICE_GROUP_EXTENSION = `${SmpConstants.REST_EDIT}/extension`;

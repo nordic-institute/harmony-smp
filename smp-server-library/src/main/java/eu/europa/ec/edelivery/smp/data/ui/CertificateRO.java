@@ -13,6 +13,7 @@ public class CertificateRO extends BaseRO {
     private static final long serialVersionUID = -4971552086560325302L;
 
     private String certificateId;
+    private String alias;
     private String subject;
     private String issuer;
     private String serialNumber;
@@ -26,6 +27,14 @@ public class CertificateRO extends BaseRO {
     private Date validTo;
 
     public CertificateRO() {
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     public static long getSerialVersionUID() {

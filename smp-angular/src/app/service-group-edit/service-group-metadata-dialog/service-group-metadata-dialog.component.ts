@@ -1,5 +1,5 @@
 import {Component, Inject, OnInit, ViewChild} from '@angular/core';
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from '@angular/material';
+import {MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef} from '@angular/material';
 import {FormBuilder, FormControl, FormGroup, Validators} from "@angular/forms";
 import {AlertService} from "../../alert/alert.service";
 import {SearchTableEntityStatus} from "../../common/search-table/search-table-entity-status.model";
@@ -12,6 +12,7 @@ import {Observable} from "rxjs/internal/Observable";
 import {HttpClient} from "@angular/common/http";
 import {ServiceGroupDomainEditRo} from "../service-group-domain-edit-ro.model";
 import {ServiceMetadataValidationEditRo} from "./service-metadata-validation-edit-ro.model";
+import {ServiceMetadataWizardRo} from "../service-metadata-wizard-dialog/service-metadata-wizard-edit-ro.model";
 
 @Component({
   selector: 'app-messagelog-dialog',
@@ -72,7 +73,7 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
           value: this.current.documentIdentifierScheme,
           disabled: this.editMode
         },
-        [Validators.required]),
+        []),
       'xmlContent': new FormControl({value: ''}, [Validators.required]),
     });
 
@@ -91,12 +92,6 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
         this.dialogForm.get('xmlContent').setValue(res.xmlContent);
       });
     }
-
-    // detect changes for updated values in mat-selection-list (check change detection operations)
-    // else the following error is thrown :xpressionChangedAfterItHasBeenCheckedError: Expression has changed after it was checked. Previous value:
-    // 'aria-selected: false'. Current value: 'aria-selected: true'
-    //
-    //this.changeDetector.detectChanges()
 
   }
 
@@ -120,7 +115,8 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
     let request: ServiceMetadataValidationEditRo = {
       participantScheme: this.dialogForm.controls['participantScheme'].value,
       participantIdentifier: this.dialogForm.controls['participantIdentifier'].value,
-      documentIdentifierScheme: this.dialogForm.controls['documentIdentifierScheme'].value,
+      documentIdentifierScheme: !this.dialogForm.controls['documentIdentifierScheme'].value?null:
+      this.dialogForm.controls['documentIdentifierScheme'].value,
       documentIdentifier: this.dialogForm.controls['documentIdentifier'].value,
       xmlContent: this.dialogForm.controls['xmlContent'].value,
       statusAction: this.editMode?SearchTableEntityStatus.UPDATED:SearchTableEntityStatus.NEW,
@@ -147,12 +143,41 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
   }
 
   onStartWizardDialog() {
-    const formRef: MatDialogRef<any> = this.dialog.open(ServiceMetadataWizardDialogComponent);
+
+    let serviceMetadataWizard: ServiceMetadataWizardRo = {
+      isNewServiceMetadata: !this.editMode,
+      participantIdentifier: this.dialogForm.controls['participantIdentifier'].value,
+      participantScheme: this.dialogForm.controls['participantScheme'].value,
+      documentIdentifier: this.dialogForm.controls['documentIdentifier'].value,
+      documentIdentifierScheme: this.dialogForm.controls['documentIdentifierScheme'].value,
+      processIdentifier: '',
+      processScheme: '',
+      transportProfile: 'bdxr-transport-ebms3-as4-v1p0', // default value for oasis AS4
+
+      endpointUrl: '',
+      endpointCertificate: '',
+
+      serviceDescription: '',
+      technicalContactUrl: '',
+
+    }
+
+    let wizardInit: MatDialogConfig = {
+      data: serviceMetadataWizard
+    }
+
+
+
+    const formRef: MatDialogRef<any> = this.dialog.open(ServiceMetadataWizardDialogComponent,wizardInit);
     formRef.afterClosed().subscribe(result => {
       if (result) {
-        let existingXML = this.dialogForm.controls['extension'].value;
-        let val = (existingXML ? existingXML + '\n' : '') + formRef.componentInstance.getExtensionXML();
-        this.dialogForm.controls['extension'].setValue(val);
+
+        let smw: ServiceMetadataWizardRo =  formRef.componentInstance.getCurrent();
+        this.dialogForm.controls['xmlContent'].setValue(smw.contentXML);
+        if(!this.editMode){
+          this.dialogForm.controls['documentIdentifierScheme'].setValue(smw.documentIdentifierScheme);
+          this.dialogForm.controls['documentIdentifier'].setValue(smw.documentIdentifier);
+        }
       }
     });
   }
@@ -160,15 +185,15 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
   onGenerateSimpleXML() {
     let exampleXML = '<ServiceMetadata xmlns="http://docs.oasis-open.org/bdxr/ns/SMP/2016/05">' +
       '\n    <ServiceInformation>' +
-      '\n        <ParticipantIdentifier scheme="' + this.dialogForm.controls['participantScheme'].value + '">' + this.dialogForm.controls['participantIdentifier'].value + '</ParticipantIdentifier>' +
-      '\n        <DocumentIdentifier scheme="' + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifierScheme'].value) + '">' + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifier'].value) + '</DocumentIdentifier>' +
+      '\n        <ParticipantIdentifier scheme="' + this.xmlSpecialChars(this.dialogForm.controls['participantScheme'].value) + '">' + this.xmlSpecialChars(this.dialogForm.controls['participantIdentifier'].value) + '</ParticipantIdentifier>' +
+      '\n        <DocumentIdentifier ' +
+      ( !this.dialogForm.controls['documentIdentifierScheme'].value ?'': 'scheme="' + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifierScheme'].value) +'"') + ' >' + this.xmlSpecialChars(this.dialogForm.controls['documentIdentifier'].value) + '</DocumentIdentifier>' +
       '\n        <ProcessList>' +
       '\n            <Process>' +
       '\n                <ProcessIdentifier scheme="[enterProcessType]">[enterProcessName]</ProcessIdentifier>' +
       '\n                <ServiceEndpointList>' +
       '\n                   <Endpoint transportProfile="bdxr-transport-ebms3-as4-v1p0">' +
       '\n                        <EndpointURI>https://mypage.eu</EndpointURI>' +
-      '\n                        <RequireBusinessLevelSignature>true</RequireBusinessLevelSignature>' +
       '\n                        <Certificate>UGFzdGUgYmFzZTY0IGVuY29kZWQgY2VydGlmaWNhdGUgb2YgQVA=</Certificate>' +
       '\n                        <ServiceDescription>Service description for partners</ServiceDescription>' +
       '\n                        <TechnicalContactUrl>www.best-page.eu</TechnicalContactUrl>' +
@@ -195,7 +220,8 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
 
       participantScheme: this.dialogForm.controls['participantScheme'].value,
       participantIdentifier: this.dialogForm.controls['participantIdentifier'].value,
-      documentIdentifierScheme: this.dialogForm.controls['documentIdentifierScheme'].value,
+      documentIdentifierScheme: !this.dialogForm.controls['documentIdentifierScheme'].value?null:
+        this.dialogForm.controls['documentIdentifierScheme'].value,
       documentIdentifier: this.dialogForm.controls['documentIdentifier'].value,
       xmlContent: this.dialogForm.controls['xmlContent'].value,
       statusAction: this.editMode?SearchTableEntityStatus.UPDATED:SearchTableEntityStatus.NEW,
@@ -235,6 +261,4 @@ export class ServiceGroupMetadataDialogComponent implements OnInit {
   compareDomainCode(sgDomain: ServiceGroupDomainEditRo, domainCode: String): boolean {
     return sgDomain.domainCode === domainCode;
   }
-
-
 }

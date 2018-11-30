@@ -12,23 +12,18 @@ import java.util.List;
  */
 public class UserRO extends BaseRO {
 
+    private static final long serialVersionUID = 2821447495333163882L;
 
-
-    private static final long serialVersionUID = -4971552086560325302L;
     private String username;
     private String password;
     private String emailAddress;
     private List<String> authorities;
-    private LocalDateTime passwordChanged;
     private boolean active = true;
     private String role;
     private Long id;
     private CertificateRO certificate;
     private int statusPassword = EntityROStatus.PERSISTED.getStatusNumber();
-
-    public UserRO(){
-
-    }
+    private boolean passwordExpired;
 
     public Long getId() {
         return id;
@@ -62,12 +57,12 @@ public class UserRO extends BaseRO {
         this.emailAddress = email;
     }
 
-    public LocalDateTime getPasswordChanged() {
-        return passwordChanged;
+    public boolean isPasswordExpired() {
+        return passwordExpired;
     }
 
-    public void setPasswordChanged(LocalDateTime passwordChanged) {
-        this.passwordChanged = passwordChanged;
+    public void setPasswordExpired(boolean passwordExpired) {
+        this.passwordExpired = passwordExpired;
     }
 
     public boolean isActive() {
@@ -93,6 +88,7 @@ public class UserRO extends BaseRO {
     public void setCertificate(CertificateRO certificate) {
         this.certificate = certificate;
     }
+
     public List<String> getAuthorities() {
         return authorities;
     }

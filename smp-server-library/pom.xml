@@ -48,7 +48,7 @@
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.bdmsl</groupId>
-            <artifactId>bdmsl-client</artifactId>
+            <artifactId>bdmsl-api</artifactId>
         </dependency>
         <dependency>
             <groupId>eu.europa.ec.edelivery</groupId>
@@ -65,10 +65,6 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
@@ -123,10 +119,6 @@
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-envers</artifactId>
         </dependency>
-        <!--dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency -->
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
@@ -218,6 +210,7 @@
                 <filtering>true</filtering>
                 <excludes>
                     <exclude>**/*.jks</exclude>
+                    <exclude>**/*.crt</exclude>
                 </excludes>
             </testResource>
             <testResource>
@@ -226,6 +219,7 @@
                 <!-- With filtering=true Maven was introducing changes in keystore binary files [sic!] -->
                 <includes>
                     <include>**/*.jks</include>
+                    <include>**/*.crt</include>
                 </includes>
             </testResource>
         </testResources>

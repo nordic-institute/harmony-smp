@@ -21,6 +21,8 @@ public class DomainRO extends BaseRO  {
     String smlClientCertHeader;
     String smlClientKeyAlias;
     String signatureKeyAlias;
+    boolean smlBlueCoatAuth;
+    boolean smlRegistered;
 
 
     public DomainRO() {
@@ -91,4 +93,19 @@ public class DomainRO extends BaseRO  {
         this.signatureKeyAlias = signatureKeyAlias;
     }
 
+    public boolean isSmlBlueCoatAuth() {
+        return smlBlueCoatAuth;
+    }
+
+    public void setSmlBlueCoatAuth(boolean smlBlueCoatAuth) {
+        this.smlBlueCoatAuth = smlBlueCoatAuth;
+    }
+
+    public boolean isSmlRegistered() {
+        return smlRegistered;
+    }
+
+    public void setSmlRegistered(boolean smlRegistered) {
+        this.smlRegistered = smlRegistered;
+    }
 }

@@ -14,6 +14,7 @@
 package eu.europa.ec.smp.api;
 
 import eu.europa.ec.smp.api.exceptions.MalformedIdentifierException;
+import org.apache.commons.lang3.StringUtils;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.DocumentIdentifier;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ProcessIdentifier;
@@ -34,6 +35,7 @@ public class Identifiers {
 
     private static final Pattern IDENTIFIER_PATTERN = Pattern.compile("^(?<scheme>.+?)::(?<value>.+)$");
 
+
     public static ParticipantIdentifierType asParticipantId(String doubleColonDelimitedId) {
         String scheme = extract(doubleColonDelimitedId, "scheme");
         String value = extract(doubleColonDelimitedId, "value");
@@ -41,9 +43,8 @@ public class Identifiers {
     }
 
     public static DocumentIdentifier asDocumentId(String doubleColonDelimitedId) {
-        String scheme = extract(doubleColonDelimitedId, "scheme");
-        String value = extract(doubleColonDelimitedId, "value");
-        return new DocumentIdentifier(value, scheme);
+        String[] res = splitIdentifier(doubleColonDelimitedId);
+        return new DocumentIdentifier(res[1], res[0]);
     }
 
     public static ProcessIdentifier asProcessId(String doubleColonDelimitedId) {
@@ -57,7 +58,7 @@ public class Identifiers {
     }
 
     public static String asString(DocumentIdentifier docId) {
-        return String.format("%s::%s", docId.getScheme(), docId.getValue());
+        return String.format("%s::%s", docId.getScheme()!=null?docId.getScheme():"", docId.getValue());
     }
 
     public static String asUrlEncodedString(ParticipantIdentifierType participantId) {
@@ -85,4 +86,32 @@ public class Identifiers {
             throw new MalformedIdentifierException(doubleColonDelimitedId, e);
         }
     }
+
+    /**
+     * Method splits identifier at first occurance of double colon :: and returns array size of 2. The first value is
+     * schema and the second is identifier. If identifier is blank or with missing :: MalformedIdentifierException is thrown
+     * @param doubleColonDelimitedId
+     * @return array with two elements. First is schema and second is id
+     */
+    private static String[] splitIdentifier(String doubleColonDelimitedId) {
+        String[] idResult = new String[2];
+        if (StringUtils.isBlank(doubleColonDelimitedId)){
+            throw new MalformedIdentifierException(doubleColonDelimitedId, null);
+        }
+        int delimiterIndex = doubleColonDelimitedId.indexOf("::");
+        if (delimiterIndex<0){
+            throw new MalformedIdentifierException(doubleColonDelimitedId, null);
+        }
+        idResult[0] = delimiterIndex==0?null:doubleColonDelimitedId.substring(0,delimiterIndex);
+        idResult[1] = doubleColonDelimitedId.substring(delimiterIndex+2);
+
+        if (StringUtils.isBlank(idResult[1])){
+            throw new MalformedIdentifierException(doubleColonDelimitedId, null);
+        }
+
+        return idResult;
+
+    }
+
+
 }

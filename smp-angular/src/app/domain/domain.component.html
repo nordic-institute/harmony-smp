@@ -2,7 +2,7 @@
 <smp-search-table
   #searchTable
   page_id= 'domain_id'
-  title= 'Domains'
+  [title]= "'Domains'"
   [columnPicker] = "columnPicker"
   [url]="baseUrl"
   [additionalToolButtons]="additionalToolButtons"
@@ -13,6 +13,36 @@
   [allowDeleteItems]="securityService.isCurrentUserSystemAdmin()"
 
 >
+
+  <ng-template #signKeyColumnTemplate let-row="row"  ngx-datatable-cell-template>
+    <span [class]='aliasCssClass(row.signatureKeyAlias, row)'>{{row.signatureKeyAlias}}</span>
+  </ng-template>
+
+  <ng-template #smlKeyColumnTemplate let-row="row" ngx-datatable-cell-template>
+    <span [class]='aliasCssClass(row.smlClientKeyAlias, row)'>{{row.smlClientKeyAlias}}</span>
+  </ng-template>
+
+
+
+
   <ng-template #additionalToolButtons >
+    <span style="width: 2px;background-color: deepskyblue;">&nbsp;</span>
+
+    <button  id="registerButton" mat-raised-button (click)="smlRegisterSelectedDomain()"
+            [disabled]="!enableSMLRegister()" color="primary">
+      <mat-icon>link</mat-icon>
+      <span>Register</span>
+    </button>
+    <button  id="unregisterButton" mat-raised-button (click)="smlUnregisterSelectedDomain()"
+            [disabled]="!enableSMLUnregister()" color="primary">
+      <mat-icon>link_off</mat-icon>
+      <span>Unregister</span>
+    </button>
+    <span style="width: 2px;background-color: deepskyblue;">&nbsp;</span>
+
+    <button mat-raised-button color="primary" (click)="openEditKeystoreDialog()">
+      <mat-icon>vpn_key</mat-icon>
+      <span> Edit keystore</span>
+    </button>
   </ng-template>
 </smp-search-table>

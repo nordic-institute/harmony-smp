@@ -43,7 +43,9 @@ export class DomainController implements SearchTableController {
       smlClientCertHeader: '',
       smlClientKeyAlias: '',
       signatureKeyAlias: '',
-      status: SearchTableEntityStatus.NEW
+      status: SearchTableEntityStatus.NEW,
+      smlRegistered: false,
+      smlBlueCoatAuth: false,
     }
   }
   public dataSaved() {
@@ -60,5 +62,9 @@ export class DomainController implements SearchTableController {
       validOperation: result,
       stringMessage: '',
     }
+  }
+
+  isRowExpanderDisabled(row: SearchTableEntity): boolean {
+    return false;
   }
 }

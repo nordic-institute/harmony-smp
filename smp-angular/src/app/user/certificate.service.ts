@@ -1,15 +1,29 @@
 import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {CertificateRo} from './certificate-ro.model';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {SmpConstants} from "../smp.constants";
+import {SecurityService} from "../security/security.service";
+import {User} from "../security/user.model";
 
 @Injectable()
 export class CertificateService {
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private securityService: SecurityService,
+  ) { }
 
   uploadCertificate$(payload): Observable<CertificateRo> {
-    return this.http.post<CertificateRo>(SmpConstants.REST_CERTIFICATE, payload);
+    // The user identifier below belongs to the currently logged in user and it may or may not be the same as the
+    // identifier of the user being modified (e.g. a normal user editing his own details vs. a system administrator
+    // adding or editing another user)
+
+    // upload file as binary file
+    const headers = new HttpHeaders()
+      .set("Content-Type", "application/octet-stream");
+
+    const currentUser: User = this.securityService.getCurrentUser();
+    return this.http.post<CertificateRo>(`${SmpConstants.REST_USER}/${currentUser.id}/certdata`, payload, {headers});
   }
 }
