@@ -92,27 +92,32 @@ class SMP
     // Simply open DB connection (dev or test depending on testEnvironment variable)	
 	def openConnection(){
        debugLog("Open DB connections", log)
-        if(testDatabase.toLowerCase()=="true")
-			if (sqlConnection) {
-				debugLog("DB connection seems already open", log)
-			}
-			else {
-            try{
-				if(driver.contains("oracle")){
-					// Oracle DB
-					GroovyUtils.registerJdbcDriver( "oracle.jdbc.driver.OracleDriver" )
-				}else{
-					// Mysql DB (assuming fallback: currently, we use only those 2 DBs ...)
-					GroovyUtils.registerJdbcDriver( "com.mysql.jdbc.Driver" )
+        if(testDatabase.toLowerCase()=="true") {
+				if (sqlConnection) {
+					debugLog("DB connection seems already open", log)
 				}
-				sqlConnection = Sql.newInstance(url, dbUser, dbPassword, driver);
-            }
-            catch (SQLException ex)
-            {
-                assert 0,"SQLException occurred: " + ex;
-            }
-		}
-    }
+				else {
+	            try{
+					if(driver.contains("oracle")){
+						// Oracle DB
+						GroovyUtils.registerJdbcDriver( "oracle.jdbc.driver.OracleDriver" )
+					}else{
+						// Mysql DB (assuming fallback: currently, we use only those 2 DBs ...)
+						GroovyUtils.registerJdbcDriver( "com.mysql.jdbc.Driver" )
+					}
+					debugLog("Open connection with url ${url} dbUser=${dbUser} pass=${dbPassword} driver=${driver} |", log)
+					sqlConnection = Sql.newInstance(url, dbUser, dbPassword, driver)
+					
+	            }
+	            catch (SQLException ex)
+	            {
+	                assert 0,"SQLException occurred: " + ex;
+	            }
+			}
+	        }
+	        else // testDatabase.toLowerCase()=="false")
+	        	assert 0, "testDatabase param is set not set to true value - would not try to open DB connection"
+        }
 //IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
     // Close the DB connection opened previously
     def closeConnection(){
@@ -165,6 +170,7 @@ class SMP
         }
 
         debugLog("Executing SQL query: " + query, log)
+		debugLog("Executing SQL query: " + (sqlConnection == null), log)
 		try{
 			res = sqlConnection.firstRow query
 		}
@@ -181,17 +187,16 @@ class SMP
     }
 	
 	def findDomainName() {
-		def result = executeSqlAndReturnFirstRow('select domainId from SMP_DOMAIN')
-		return result.domainId
+		def result = executeSqlAndReturnFirstRow('SELECT DOMAIN_CODE FROM SMP_DOMAIN order by ID')
+		return result.domain_code
 	}
 
 //IIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII
 //// filterForTestSuite = /PASSING_AUTO_BAMBOO/   // for multiple test suite use more advanced regexp like for example:  /PASSING_AUTO_BAMBOO|PASSING_NOT_FOR_BAMBOO/ 
 //// filterForTestCases = /SMP001.*/   //for single test case use simple regexp like /SMP001.*/
 
-def cleanAndAddHeaderElement(filterForTestSuite,  filterForTestCases, String fieldName, String newValue = null) {
-	def restMethodName = 'PUT ServiceGroup'
-	
+def cleanAndAddHeaderElement(filterForTestSuite,  filterForTestCases, String fieldName, String newValue = null, restMethodName = 'PUT ServiceGroup') {
+
 	debugLog("START: modyfication of test requests", log)
 	context.testCase.testSuite.project.getTestSuiteList().each { testSuite ->
 		if (testSuite.getLabel() =~ filterForTestSuite) {
