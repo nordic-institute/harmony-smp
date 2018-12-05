@@ -85,7 +85,7 @@ public class SmlConnector implements ApplicationContextAware {
         }
     }
 
-    private boolean processSMLErrorMessage(BadRequestFault e, ParticipantIdentifierType participantIdentifierType){
+    protected boolean processSMLErrorMessage(BadRequestFault e, ParticipantIdentifierType participantIdentifierType){
         if(!isOkMessage(participantIdentifierType, e.getMessage())){
             LOG.error( e.getMessage(), e);
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION,e, ExceptionUtils.getRootCauseMessage(e));
@@ -94,7 +94,7 @@ public class SmlConnector implements ApplicationContextAware {
         return true;
     }
 
-    private boolean processSMLErrorMessage(NotFoundFault e, ParticipantIdentifierType participantIdentifierType){
+    protected boolean processSMLErrorMessage(NotFoundFault e, ParticipantIdentifierType participantIdentifierType){
         if(!isOkMessage(participantIdentifierType, e.getMessage())){
             LOG.error( e.getMessage(), e);
             throw new SMPRuntimeException(ErrorCode.SML_INTEGRATION_EXCEPTION,e, ExceptionUtils.getRootCauseMessage(e));
