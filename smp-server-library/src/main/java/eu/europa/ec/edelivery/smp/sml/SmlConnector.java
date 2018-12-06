@@ -34,9 +34,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 import static eu.europa.ec.edelivery.smp.conversion.SmlIdentifierConverter.toBusdoxParticipantId;
-import static eu.europa.ec.edelivery.smp.sml.SMLErrorMessages.ERR_DOMAIN_ALREADY_EXISTS;
-import static eu.europa.ec.edelivery.smp.sml.SMLErrorMessages.ERR_DOMAIN_NOT_EXISTS;
-import static eu.europa.ec.edelivery.smp.sml.SMLErrorMessages.ERR_PARTICIPANT_ALREADY_EXISTS;
+import static eu.europa.ec.edelivery.smp.sml.SMLErrorMessages.*;
 import static eu.europa.ec.smp.api.Identifiers.asString;
 
 /**
@@ -114,7 +112,8 @@ public class SmlConnector implements ApplicationContextAware {
             return false;
         }
         String exp = String.format(ERR_PARTICIPANT_ALREADY_EXISTS, patId.getValue(), patId.getScheme());
-        return errorMessage.startsWith(exp);
+        String exp2 = String.format(ERR_PARTICIPANT_NOT_EXISTS, patId.getValue(), patId.getScheme());
+        return errorMessage.startsWith(exp)|| errorMessage.startsWith(exp2);
     }
 
 
