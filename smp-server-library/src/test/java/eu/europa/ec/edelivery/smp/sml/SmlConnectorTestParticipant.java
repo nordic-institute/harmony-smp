@@ -13,33 +13,21 @@
 
 package eu.europa.ec.edelivery.smp.sml;
 
-import eu.europa.ec.bdmsl.ws.soap.*;
-import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
-import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
-import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import eu.europa.ec.bdmsl.ws.soap.BadRequestFault;
+import eu.europa.ec.bdmsl.ws.soap.InternalErrorFault;
+import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
+import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
-import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
-import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
-import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.booleanThat;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -49,7 +37,13 @@ import static org.mockito.Mockito.verify;
 @RunWith(SpringRunner.class)
 public class SmlConnectorTestParticipant extends SmlConnectorTestBase {
 
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
+    @Before
+    public void setup() {
+        mockSml.reset();
+    }
 
     @Test
     public void testRegisterInDns() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
@@ -83,8 +77,8 @@ public class SmlConnectorTestParticipant extends SmlConnectorTestBase {
         String message = "something unexpected";
         Exception ex = new Exception(message);
         mockSml.setThrowException(ex);
-        expectedExeption.expectMessage(message);
-        expectedExeption.expect(SMPRuntimeException .class);
+        expectedException.expectMessage(message);
+        expectedException.expect(SMPRuntimeException.class);
 
         smlConnector.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
     }
@@ -128,41 +122,41 @@ public class SmlConnectorTestParticipant extends SmlConnectorTestBase {
     }
 
     @Test
-    public void testUnregisterFromDnsThrowUnknownBadRequestFault()  {
+    public void testUnregisterFromDnsThrowUnknownBadRequestFault() {
         //when
         BadRequestFault ex = new BadRequestFault(ERROR_UNEXPECTED_MESSAGE);
         mockSml.setThrowException(ex);
-        expectedExeption.expectMessage(ERROR_UNEXPECTED_MESSAGE);
-        expectedExeption.expect(SMPRuntimeException .class);
+        expectedException.expectMessage(ERROR_UNEXPECTED_MESSAGE);
+        expectedException.expect(SMPRuntimeException.class);
 
         smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
     }
 
     @Test
-    public void testUnregisterFromDnsThrowUnknownException()  {
+    public void testUnregisterFromDnsThrowUnknownException() {
         //when
         String message = "something unexpected";
         Exception ex = new Exception(message);
         mockSml.setThrowException(ex);
-        expectedExeption.expectMessage(message);
-        expectedExeption.expect(SMPRuntimeException .class);
+        expectedException.expectMessage(message);
+        expectedException.expect(SMPRuntimeException.class);
 
         smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
     }
 
     @Test
-    public void testUnregisterFromDnsNotExists()  {
+    public void testUnregisterFromDnsNotExists() {
         //when
         BadRequestFault ex = new BadRequestFault(ERROR_PI_NO_EXISTS);
         mockSml.setThrowException(ex);
-        boolean  suc = smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+        boolean suc = smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
 
         assertTrue(suc);
     }
 
 
     @Test
-    public void testIsOkMessageForParticipantNull(){
+    public void testIsOkMessageForParticipantNull() {
 
         boolean suc = smlConnector.isOkMessage(PARTICIPANT_ID, null);
 
@@ -170,14 +164,14 @@ public class SmlConnectorTestParticipant extends SmlConnectorTestBase {
     }
 
     @Test
-    public void testIsOkMessageForParticipantOk(){
+    public void testIsOkMessageForParticipantOk() {
         boolean suc = smlConnector.isOkMessage(PARTICIPANT_ID, ERROR_PI_ALREADY_EXISTS);
 
         assertTrue(suc);
     }
 
     @Test
-    public void testIsOkMessageForParticipantFalse(){
+    public void testIsOkMessageForParticipantFalse() {
         boolean suc = smlConnector.isOkMessage(PARTICIPANT_ID, ERROR_UNEXPECTED_MESSAGE);
 
         assertFalse(suc);
@@ -185,19 +179,19 @@ public class SmlConnectorTestParticipant extends SmlConnectorTestBase {
 
 
     @Test
-    public void testProcessSMLErrorMessageBadRequestFaultIgnore(){
+    public void testProcessSMLErrorMessageBadRequestFaultIgnore() {
 
         BadRequestFault ex = new BadRequestFault(ERROR_PI_ALREADY_EXISTS);
         boolean suc = smlConnector.processSMLErrorMessage(ex, PARTICIPANT_ID);
 
-       assertTrue(suc);
+        assertTrue(suc);
     }
 
     @Test
-    public void testProcessSMLErrorMessageBadRequestFaultFailed(){
+    public void testProcessSMLErrorMessageBadRequestFaultFailed() {
 
-        expectedExeption.expectMessage(ERROR_UNEXPECTED_MESSAGE);
-        expectedExeption.expect(SMPRuntimeException .class);
+        expectedException.expectMessage(ERROR_UNEXPECTED_MESSAGE);
+        expectedException.expect(SMPRuntimeException.class);
         BadRequestFault ex = new BadRequestFault(ERROR_UNEXPECTED_MESSAGE);
 
         smlConnector.processSMLErrorMessage(ex, PARTICIPANT_ID);
@@ -205,23 +199,22 @@ public class SmlConnectorTestParticipant extends SmlConnectorTestBase {
 
 
     @Test
-    public void testProcessSMLErrorMessageNoFoundFaultFailed(){
+    public void testProcessSMLErrorMessageNoFoundFaultFailed() {
 
-        expectedExeption.expectMessage(ERROR_UNEXPECTED_MESSAGE);
-        expectedExeption.expect(SMPRuntimeException .class);
+        expectedException.expectMessage(ERROR_UNEXPECTED_MESSAGE);
+        expectedException.expect(SMPRuntimeException.class);
         NotFoundFault ex = new NotFoundFault(ERROR_UNEXPECTED_MESSAGE);
 
         smlConnector.processSMLErrorMessage(ex, PARTICIPANT_ID);
     }
 
     @Test
-    public void testProcessSMLErrorMessageNoFoundFaultOk(){
+    public void testProcessSMLErrorMessageNoFoundFaultOk() {
 
         NotFoundFault ex = new NotFoundFault(ERROR_PI_NO_EXISTS);
 
         smlConnector.processSMLErrorMessage(ex, PARTICIPANT_ID);
     }
-
 
 
 }
