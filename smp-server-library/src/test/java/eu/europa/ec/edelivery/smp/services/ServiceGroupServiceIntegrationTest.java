@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
  * @author Joze Rihtarsic
  * @since 4.1
  */
-public class ServiceGroupServiceTestService extends AbstractServiceIntegrationTest {
+public class ServiceGroupServiceIntegrationTest extends AbstractServiceIntegrationTest {
 
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();

@@ -63,7 +63,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Sql("classpath:/cleanup-database.sql")
 @Sql("classpath:/webapp_integration_test_data_one_domain.sql")
 @SqlConfig(encoding = "UTF-8")
-public class ServiceGroupControllerTestSingleDomain {
+public class ServiceGroupControllerSingleDomainTest {
 
     private static final String PARTICIPANT_SCHEME = "ehealth-participantid-qns";
     private static final String PARTICIPANT_ID = "urn:poland:ncpb";
