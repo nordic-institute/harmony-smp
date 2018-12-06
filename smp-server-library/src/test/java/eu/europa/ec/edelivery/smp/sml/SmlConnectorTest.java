@@ -13,71 +13,54 @@
 
 package eu.europa.ec.edelivery.smp.sml;
 
-import eu.europa.ec.bdmsl.ws.soap.*;
+import eu.europa.ec.bdmsl.ws.soap.BadRequestFault;
+import eu.europa.ec.bdmsl.ws.soap.InternalErrorFault;
+import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
+import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
 import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
 import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
-import eu.europa.ec.edelivery.smp.data.model.DBDomain;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
 import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
 import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
-import eu.europa.ec.edelivery.smp.testutil.TestDBUtils;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static eu.europa.ec.edelivery.smp.sml.SmlConnectorTestConstants.*;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 /**
- * Created by gutowpa on 08/01/2018.
+ * Created by JRC
+ * since 4.1.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = { SmlConnector.class,SmlIntegrationConfiguration.class,
+@RunWith(SpringRunner.class)
+@ContextConfiguration(classes = {SmlConnector.class, SmlIntegrationConfiguration.class,
         SecurityUtilsServices.class, UIKeystoreService.class,
         ConversionTestConfig.class, PropertiesSingleDomainTestConfig.class})
-@Configuration
 @TestPropertySource(properties = {
         "bdmsl.integration.enabled=true"})
-public class SmlConnectorTest {
-
-    // private static List<IManageParticipantIdentifierWS> smlClientMocks = new ArrayList<>();
-    private static final ParticipantIdentifierType PARTICIPANT_ID = new ParticipantIdentifierType("sample:value", "sample:scheme");
-    private static final DBDomain DEFAULT_DOMAIN;
-
-    static {
-        DEFAULT_DOMAIN = new DBDomain();
-        DEFAULT_DOMAIN.setDomainCode("default_domain_id");
-        DEFAULT_DOMAIN.setSmlSmpId("SAMPLE-SMP-ID");
-    }
-
-    private static final String  ERROR_UNEXPECTED_MESSAGE ="[ERR-106] Something unexpected happend";
-    private static final String  ERROR_SMP_NOT_EXISTS ="[ERR-100] The SMP '"+DEFAULT_DOMAIN.getSmlSmpId()+"' doesn't exist";
-    private static final String  ERROR_SMP_ALREADY_EXISTS ="[ERR-106] The SMP '"+DEFAULT_DOMAIN.getSmlSmpId()+"' already exists";
-    private static final String  ERROR_PI_ALREADY_EXISTS = "[ERR-106] The participant identifier 'sample:value' does already exist for the scheme sample:scheme";
+public class SmlConnectorTest  {
 
     @Rule
-    public ExpectedException expectedExeption = ExpectedException.none();
+    public ExpectedException expectedException = ExpectedException.none();
 
+    @Autowired
+    protected SmlConnector smlConnector;
     @Autowired
     SmlIntegrationConfiguration mockSml;
 
-    @Autowired
-    private SmlConnector smlConnector;
-
-    @Autowired
-    public void setup(){
+    @Before
+    public void setup() {
         mockSml.reset();
     }
 
@@ -91,6 +74,32 @@ public class SmlConnectorTest {
         assertEquals(1, mockSml.getParticipantManagmentClientMocks().size());
         verify(mockSml.getParticipantManagmentClientMocks().get(0)).create(any());
         Mockito.verifyNoMoreInteractions(mockSml.getParticipantManagmentClientMocks().toArray());
+    }
+
+    @Test
+    public void testRegisterInDnsAlreadyExists() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
+        //when
+        BadRequestFault ex = new BadRequestFault(ERROR_PI_ALREADY_EXISTS);
+        mockSml.setThrowException(ex);
+        boolean result = smlConnector.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+
+        //then
+        assertTrue(result);
+        assertEquals(1, mockSml.getParticipantManagmentClientMocks().size());
+        verify(mockSml.getParticipantManagmentClientMocks().get(0)).create(any());
+        Mockito.verifyNoMoreInteractions(mockSml.getParticipantManagmentClientMocks().toArray());
+    }
+
+    @Test
+    public void testRegisterInDnsUnknownException() throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
+        //when
+        String message = "something unexpected";
+        Exception ex = new Exception(message);
+        mockSml.setThrowException(ex);
+        expectedException.expectMessage(message);
+        expectedException.expect(SMPRuntimeException.class);
+
+        smlConnector.registerInDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
     }
 
     @Test
@@ -131,9 +140,42 @@ public class SmlConnectorTest {
         Mockito.verifyNoMoreInteractions(mockSml.getParticipantManagmentClientMocks().toArray());
     }
 
+    @Test
+    public void testUnregisterFromDnsThrowUnknownBadRequestFault() {
+        //when
+        BadRequestFault ex = new BadRequestFault(ERROR_UNEXPECTED_MESSAGE);
+        mockSml.setThrowException(ex);
+        expectedException.expectMessage(ERROR_UNEXPECTED_MESSAGE);
+        expectedException.expect(SMPRuntimeException.class);
+
+        smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+    }
 
     @Test
-    public void testIsOkMessageForParticipantNull(){
+    public void testUnregisterFromDnsThrowUnknownException() {
+        //when
+        String message = "something unexpected";
+        Exception ex = new Exception(message);
+        mockSml.setThrowException(ex);
+        expectedException.expectMessage(message);
+        expectedException.expect(SMPRuntimeException.class);
+
+        smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+    }
+
+    @Test
+    public void testUnregisterFromDnsNotExists() {
+        //when
+        BadRequestFault ex = new BadRequestFault(ERROR_PI_NO_EXISTS);
+        mockSml.setThrowException(ex);
+        boolean suc = smlConnector.unregisterFromDns(PARTICIPANT_ID, DEFAULT_DOMAIN);
+
+        assertTrue(suc);
+    }
+
+
+    @Test
+    public void testIsOkMessageForParticipantNull() {
 
         boolean suc = smlConnector.isOkMessage(PARTICIPANT_ID, null);
 
@@ -141,49 +183,22 @@ public class SmlConnectorTest {
     }
 
     @Test
-    public void testIsOkMessageForParticipantOk(){
+    public void testIsOkMessageForParticipantOk() {
         boolean suc = smlConnector.isOkMessage(PARTICIPANT_ID, ERROR_PI_ALREADY_EXISTS);
 
         assertTrue(suc);
     }
 
     @Test
-    public void testIsOkMessageForParticipantFalse(){
+    public void testIsOkMessageForParticipantFalse() {
         boolean suc = smlConnector.isOkMessage(PARTICIPANT_ID, ERROR_UNEXPECTED_MESSAGE);
 
         assertFalse(suc);
     }
 
-    @Test
-    public void testIsOkMessageForDomainNull(){
-        boolean suc = smlConnector.isOkMessage(DEFAULT_DOMAIN, null);
-
-        assertFalse(suc);
-    }
 
     @Test
-    public void testIsOkMessageForParticipantOkAdd(){
-        boolean suc = smlConnector.isOkMessage(DEFAULT_DOMAIN, ERROR_SMP_ALREADY_EXISTS);
-
-        assertTrue(suc);
-    }
-    @Test
-    public void testIsOkMessageForParticipantOkDelete(){
-        boolean suc = smlConnector.isOkMessage(DEFAULT_DOMAIN, ERROR_SMP_NOT_EXISTS);
-
-        assertTrue(suc);
-    }
-
-    @Test
-    public void testIsOkMessageForDomainFalse(){
-
-        boolean suc = smlConnector.isOkMessage(DEFAULT_DOMAIN, ERROR_UNEXPECTED_MESSAGE);
-
-        assertFalse(suc);
-    }
-
-    @Test
-    public void testProcessSMLErrorMessageBadRequestFaultIgnore(){
+    public void testProcessSMLErrorMessageBadRequestFaultIgnore() {
 
         BadRequestFault ex = new BadRequestFault(ERROR_PI_ALREADY_EXISTS);
         boolean suc = smlConnector.processSMLErrorMessage(ex, PARTICIPANT_ID);
@@ -192,10 +207,10 @@ public class SmlConnectorTest {
     }
 
     @Test
-    public void testProcessSMLErrorMessageBadRequestFaultFailed(){
+    public void testProcessSMLErrorMessageBadRequestFaultFailed() {
 
-        expectedExeption.expectMessage(ERROR_UNEXPECTED_MESSAGE);
-        expectedExeption.expect(SMPRuntimeException .class);
+        expectedException.expectMessage(ERROR_UNEXPECTED_MESSAGE);
+        expectedException.expect(SMPRuntimeException.class);
         BadRequestFault ex = new BadRequestFault(ERROR_UNEXPECTED_MESSAGE);
 
         smlConnector.processSMLErrorMessage(ex, PARTICIPANT_ID);
@@ -203,15 +218,22 @@ public class SmlConnectorTest {
 
 
     @Test
-    public void testProcessSMLErrorMessageNoFoundFaultFailed(){
+    public void testProcessSMLErrorMessageNoFoundFaultFailed() {
 
-        expectedExeption.expectMessage(ERROR_UNEXPECTED_MESSAGE);
-        expectedExeption.expect(SMPRuntimeException .class);
+        expectedException.expectMessage(ERROR_UNEXPECTED_MESSAGE);
+        expectedException.expect(SMPRuntimeException.class);
         NotFoundFault ex = new NotFoundFault(ERROR_UNEXPECTED_MESSAGE);
 
         smlConnector.processSMLErrorMessage(ex, PARTICIPANT_ID);
     }
 
+    @Test
+    public void testProcessSMLErrorMessageNoFoundFaultOk() {
+
+        NotFoundFault ex = new NotFoundFault(ERROR_PI_NO_EXISTS);
+
+        smlConnector.processSMLErrorMessage(ex, PARTICIPANT_ID);
+    }
 
 
 }
