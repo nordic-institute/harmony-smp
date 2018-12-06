@@ -15,7 +15,7 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
-public class SmlConnectorTestBase {
+public class SmlConnectorTestConstants {
     protected static final ParticipantIdentifierType PARTICIPANT_ID = new ParticipantIdentifierType("sample:value", "sample:scheme");
     protected static final DBDomain DEFAULT_DOMAIN;
 

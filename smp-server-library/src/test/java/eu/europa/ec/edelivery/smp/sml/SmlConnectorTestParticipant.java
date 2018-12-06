@@ -34,6 +34,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static eu.europa.ec.edelivery.smp.sml.SmlConnectorTestConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -48,7 +49,7 @@ import static org.mockito.Mockito.verify;
         ConversionTestConfig.class, PropertiesSingleDomainTestConfig.class})
 @TestPropertySource(properties = {
         "bdmsl.integration.enabled=true"})
-public class SmlConnectorTestParticipant extends SmlConnectorTestBase {
+public class SmlConnectorTestParticipant  {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
