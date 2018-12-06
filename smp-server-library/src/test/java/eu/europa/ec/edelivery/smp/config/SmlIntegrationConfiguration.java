@@ -1,8 +1,9 @@
 package eu.europa.ec.edelivery.smp.config;
 
-import eu.europa.ec.bdmsl.ws.soap.IManageParticipantIdentifierWS;
-import eu.europa.ec.bdmsl.ws.soap.IManageServiceMetadataWS;
+import eu.europa.ec.bdmsl.ws.soap.*;
 import eu.europa.ec.edelivery.smp.data.model.DBDomain;
+import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
 import org.mockito.Mockito;
 import org.oasis_open.docs.bdxr.ns.smp._2016._05.ParticipantIdentifierType;
 import org.springframework.context.annotation.Bean;
@@ -15,6 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.BDDMockito.*;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 
 
@@ -32,6 +35,8 @@ public class SmlIntegrationConfiguration {
     protected Map<IManageParticipantIdentifierWS, AuthenticationTestDataHolder> smlClientMocksData = new HashMap<>();
     protected int throwExceptionAfterParticipantCallCount = -1;
 
+    protected Throwable throwException;
+
     public void reset() {
         smpManagerClientMocks.clear();
         smpManagerClientMocksData.clear();
@@ -47,12 +52,23 @@ public class SmlIntegrationConfiguration {
         defaultDomain.setSmlClientKeyAlias("clientAlias");
         defaultDomain.setSmlClientCertHeader("blueCoatClientHeader");
         setThrowExceptionAfterParticipantCallCount(-1);
+        setThrowException(null);
     }
 
     @Bean
     @Scope(SCOPE_PROTOTYPE)
-    public IManageServiceMetadataWS smpManagerClient(String clientKeyAlias, String clientCertHttpHeader, boolean authBlueCoat) {
+    public IManageServiceMetadataWS smpManagerClient(String clientKeyAlias, String clientCertHttpHeader, boolean authBlueCoat) throws BadRequestFault, UnauthorizedFault, InternalErrorFault, NotFoundFault {
+
+
+
         IManageServiceMetadataWS clientMock = Mockito.mock(IManageServiceMetadataWS.class);
+        if (throwException!= null) {
+            willThrow(throwException).given(clientMock).create(any());
+            willThrow(throwException).given(clientMock).delete(any());
+            willThrow(throwException).given(clientMock).read(any());
+            willThrow(throwException).given(clientMock).update(any());
+        }
+
         AuthenticationTestDataHolder dh = new AuthenticationTestDataHolder();
         dh.setAlias(clientKeyAlias);
         dh.setBlueCoatHeader(clientCertHttpHeader);
@@ -63,12 +79,24 @@ public class SmlIntegrationConfiguration {
 
     @Bean
     @Scope(SCOPE_PROTOTYPE)
-    public IManageParticipantIdentifierWS smpParticipantClient(String clientKeyAlias, String clientCertHttpHeader,boolean authBlueCoat) {
+    public IManageParticipantIdentifierWS smpParticipantClient(String clientKeyAlias, String clientCertHttpHeader,boolean authBlueCoat) throws UnauthorizedFault, NotFoundFault, InternalErrorFault, BadRequestFault {
+
 
         if (throwExceptionAfterParticipantCallCount >0 &&  throwExceptionAfterParticipantCallCount  <= smlClientMocks.size()){
             throw new HTTPException(400);
         }
         IManageParticipantIdentifierWS clientMock = Mockito.mock(IManageParticipantIdentifierWS.class);
+        if (throwException!= null) {
+            willThrow(throwException).given(clientMock).create(any());
+            willThrow(throwException).given(clientMock).delete(any());
+            willThrow(throwException).given(clientMock).list(any());
+            willThrow(throwException).given(clientMock).createList(any());
+            willThrow(throwException).given(clientMock).deleteList(any());
+            willThrow(throwException).given(clientMock).migrate(any());
+            willThrow(throwException).given(clientMock).prepareToMigrate(any());
+        }
+
+
         AuthenticationTestDataHolder dh = new AuthenticationTestDataHolder();
         dh.setAlias(clientKeyAlias);
         dh.setBlueCoatHeader(clientCertHttpHeader);
@@ -107,5 +135,13 @@ public class SmlIntegrationConfiguration {
 
     public void setThrowExceptionAfterParticipantCallCount(int throwExceptionAfterParticipantCallCount) {
         this.throwExceptionAfterParticipantCallCount = throwExceptionAfterParticipantCallCount;
+    }
+
+    public Throwable getThrowException() {
+        return throwException;
+    }
+
+    public void setThrowException(Throwable throwException) {
+        this.throwException = throwException;
     }
 }
