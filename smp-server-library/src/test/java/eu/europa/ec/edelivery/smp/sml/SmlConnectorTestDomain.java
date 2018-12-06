@@ -35,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -44,6 +45,7 @@ import static org.mockito.Mockito.verify;
  * Created by JRC
  * since 4.1.
  */
+@RunWith(SpringRunner.class)
 public class SmlConnectorTestDomain  extends SmlConnectorTestBase{
 
    // private static List<IManageParticipantIdentifierWS> smlClientMocks = new ArrayList<>();
