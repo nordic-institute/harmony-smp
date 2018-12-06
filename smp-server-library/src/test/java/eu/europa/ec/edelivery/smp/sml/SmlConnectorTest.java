@@ -50,7 +50,7 @@ import static org.mockito.Mockito.verify;
 @Configuration
 @TestPropertySource(properties = {
         "bdmsl.integration.enabled=true"})
-public class SmlConnectorTestParticipant {
+public class SmlConnectorTest {
 
     // private static List<IManageParticipantIdentifierWS> smlClientMocks = new ArrayList<>();
     private static final ParticipantIdentifierType PARTICIPANT_ID = new ParticipantIdentifierType("sample:value", "sample:scheme");
