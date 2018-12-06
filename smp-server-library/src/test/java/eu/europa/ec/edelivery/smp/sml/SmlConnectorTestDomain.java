@@ -17,13 +17,21 @@ import eu.europa.ec.bdmsl.ws.soap.BadRequestFault;
 import eu.europa.ec.bdmsl.ws.soap.InternalErrorFault;
 import eu.europa.ec.bdmsl.ws.soap.NotFoundFault;
 import eu.europa.ec.bdmsl.ws.soap.UnauthorizedFault;
+import eu.europa.ec.edelivery.smp.config.ConversionTestConfig;
+import eu.europa.ec.edelivery.smp.config.PropertiesSingleDomainTestConfig;
+import eu.europa.ec.edelivery.smp.config.SmlIntegrationConfiguration;
 import eu.europa.ec.edelivery.smp.exceptions.SMPRuntimeException;
+import eu.europa.ec.edelivery.smp.services.SecurityUtilsServices;
+import eu.europa.ec.edelivery.smp.services.ui.UIKeystoreService;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.*;
@@ -35,10 +43,20 @@ import static org.mockito.Mockito.verify;
  * since 4.1.
  */
 @RunWith(SpringRunner.class)
+@ContextConfiguration(classes = {SmlConnector.class, SmlIntegrationConfiguration.class,
+        SecurityUtilsServices.class, UIKeystoreService.class,
+        ConversionTestConfig.class, PropertiesSingleDomainTestConfig.class})
+@TestPropertySource(properties = {
+        "bdmsl.integration.enabled=true"})
 public class SmlConnectorTestDomain extends SmlConnectorTestBase {
 
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();
+
+    @Autowired
+    protected SmlConnector smlConnector;
+    @Autowired
+    SmlIntegrationConfiguration mockSml;
 
     @Before
     public void setup() {

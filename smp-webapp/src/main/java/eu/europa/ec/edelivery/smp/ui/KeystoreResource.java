@@ -68,24 +68,8 @@ public class KeystoreResource {
 
             LOG.info(keyStore.aliases().nextElement());
             uiKeystoreService.importKeys(keyStore, password);
-        } catch (KeyStoreException e) {
-            String msg = "KeyStoreException occurred while reading the keystore: " + e.getMessage();
-            LOG.error(msg, e);
-            keystoreImportResult.setErrorMessage(msg);
-        } catch (CertificateException e) {
-            String msg = "CertificateException occurred while reading the keystore: " + e.getMessage();
-            LOG.error(msg, e);
-            keystoreImportResult.setErrorMessage(msg);
-        } catch (NoSuchAlgorithmException e) {
-            String msg = "NoSuchAlgorithmException occurred while reading the keystore: " + e.getMessage();
-            LOG.error(msg, e);
-            keystoreImportResult.setErrorMessage(msg);
-        } catch (IOException e) {
-            String msg = "IOException occurred while reading the keystore: " + e.getMessage();
-            LOG.error(msg, e);
-            keystoreImportResult.setErrorMessage(msg);
-        } catch (UnrecoverableKeyException e) {
-            String msg = "UnrecoverableKeyException occurred while importing new keys the keystore: " + e.getMessage();
+        } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException | UnrecoverableKeyException e) {
+            String msg = e.getClass().getName() +" occurred while reading the keystore: " + e.getMessage();
             LOG.error(msg, e);
             keystoreImportResult.setErrorMessage(msg);
         }
@@ -103,20 +87,8 @@ public class KeystoreResource {
 
         try {
             uiKeystoreService.deleteKey(alias);
-        } catch (KeyStoreException e) {
-            String msg = "KeyStoreException occurred while reading the keystore: " + e.getMessage();
-            LOG.error(msg, e);
-            keystoreImportResult.setErrorMessage(msg);
-        } catch (CertificateException e) {
-            String msg = "CertificateException occurred while reading the keystore: " + e.getMessage();
-            LOG.error(msg, e);
-            keystoreImportResult.setErrorMessage(msg);
-        } catch (NoSuchAlgorithmException e) {
-            String msg = "NoSuchAlgorithmException occurred while reading the keystore: " + e.getMessage();
-            LOG.error(msg, e);
-            keystoreImportResult.setErrorMessage(msg);
-        } catch (IOException e) {
-            String msg = "IOException occurred while reading the keystore: " + e.getMessage();
+        } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException e) {
+            String msg = e.getClass().getName() +" occurred while reading the keystore: " + e.getMessage();
             LOG.error(msg, e);
             keystoreImportResult.setErrorMessage(msg);
         }

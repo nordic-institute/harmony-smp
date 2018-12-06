@@ -15,12 +15,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
-@ContextConfiguration(classes = {SmlConnector.class, SmlIntegrationConfiguration.class,
-        SecurityUtilsServices.class, UIKeystoreService.class,
-        ConversionTestConfig.class, PropertiesSingleDomainTestConfig.class})
-@Configuration
-@TestPropertySource(properties = {
-        "bdmsl.integration.enabled=true"})
 public class SmlConnectorTestBase {
     protected static final ParticipantIdentifierType PARTICIPANT_ID = new ParticipantIdentifierType("sample:value", "sample:scheme");
     protected static final DBDomain DEFAULT_DOMAIN;
@@ -36,11 +30,5 @@ public class SmlConnectorTestBase {
     protected static final String ERROR_SMP_ALREADY_EXISTS = "[ERR-106] The SMP '" + DEFAULT_DOMAIN.getSmlSmpId() + "' already exists";
     protected static final String ERROR_PI_ALREADY_EXISTS = "[ERR-106] The participant identifier 'sample:value' does already exist for the scheme sample:scheme";
     protected static final String ERROR_PI_NO_EXISTS = "[ERR-100] The participant identifier 'sample:value' doesn't exist for the scheme sample:scheme";
-
-
-    @Autowired
-    protected SmlConnector smlConnector;
-    @Autowired
-    SmlIntegrationConfiguration mockSml;
 
 }

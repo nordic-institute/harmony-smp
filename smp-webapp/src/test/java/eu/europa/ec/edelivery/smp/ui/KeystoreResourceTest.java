@@ -41,6 +41,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -128,7 +129,7 @@ public class KeystoreResourceTest {
         KeystoreImportResult res = mapper.readValue(result.getResponse().getContentAsString(), KeystoreImportResult.class);
 
         assertNotNull(res);
-        assertEquals("IOException occurred while reading the keystore: Invalid keystore format", res.getErrorMessage());
+        assertEquals("java.io.IOException occurred while reading the keystore: Invalid keystore format", res.getErrorMessage());
     }
 
     @Test
@@ -145,7 +146,7 @@ public class KeystoreResourceTest {
         KeystoreImportResult res = mapper.readValue(result.getResponse().getContentAsString(), KeystoreImportResult.class);
 
         assertNotNull(res);
-        assertEquals("IOException occurred while reading the keystore: Keystore was tampered with, or password was incorrect", res.getErrorMessage());
+        assertEquals("java.io.IOException occurred while reading the keystore: Keystore was tampered with, or password was incorrect", res.getErrorMessage());
     }
 
     @Test
@@ -167,6 +168,23 @@ public class KeystoreResourceTest {
         assertEquals(countStart+1, uiKeystoreService.getKeystoreEntriesList().size());
     }
 
+    @Test
+    public void deleteKeystoreEntryOK() throws Exception {
 
+        int countStart = uiKeystoreService.getKeystoreEntriesList().size();
+        // given when
+        MvcResult result = mvc.perform(delete(PATH+"/3/delete/second_domain_alias")
+                .with(SYSTEM_CREDENTIALS)
+                .content(Files.readAllBytes(resourceDirectory)) )
+                .andExpect(status().isOk()).andReturn();
+
+        //them
+        ObjectMapper mapper = new ObjectMapper();
+        KeystoreImportResult res = mapper.readValue(result.getResponse().getContentAsString(), KeystoreImportResult.class);
+
+        assertNotNull(res);
+        assertNull(res.getErrorMessage());
+        assertEquals(countStart-1, uiKeystoreService.getKeystoreEntriesList().size());
+    }
 
 }
