@@ -34,6 +34,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import static eu.europa.ec.edelivery.smp.sml.SmlConnectorTestConstants.*;
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
@@ -48,7 +49,7 @@ import static org.mockito.Mockito.verify;
         ConversionTestConfig.class, PropertiesSingleDomainTestConfig.class})
 @TestPropertySource(properties = {
         "bdmsl.integration.enabled=true"})
-public class SmlConnectorTestDomain extends SmlConnectorTestBase {
+public class SmlConnectorTestDomain {
 
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();
@@ -66,6 +67,7 @@ public class SmlConnectorTestDomain extends SmlConnectorTestBase {
     @Test
     public void testRegisterDomainInDns() throws UnauthorizedFault, InternalErrorFault, BadRequestFault {
         //when
+
         boolean result = smlConnector.registerDomain(DEFAULT_DOMAIN);
 
         //then
