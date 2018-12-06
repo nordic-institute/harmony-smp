@@ -1,4 +1,4 @@
-package eu.europa.ec.edelivery.smp.sml;
+package eu.europa.ec.edelivery.smp.exceptions;
 
 public class SMLErrorMessages {
 
