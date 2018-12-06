@@ -33,6 +33,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -45,6 +46,7 @@ import static org.mockito.Mockito.verify;
  * Created by JRC
  * since 4.1.
  */
+@RunWith(SpringRunner.class)
 public class SmlConnectorTestParticipant extends SmlConnectorTestBase {
 
 
