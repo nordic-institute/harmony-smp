@@ -15,7 +15,6 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 
-@RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = {SmlConnector.class, SmlIntegrationConfiguration.class,
         SecurityUtilsServices.class, UIKeystoreService.class,
         ConversionTestConfig.class, PropertiesSingleDomainTestConfig.class})
