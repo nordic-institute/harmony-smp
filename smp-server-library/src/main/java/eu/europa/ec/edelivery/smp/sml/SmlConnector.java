@@ -34,7 +34,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 import static eu.europa.ec.edelivery.smp.conversion.SmlIdentifierConverter.toBusdoxParticipantId;
-import static eu.europa.ec.edelivery.smp.sml.SMLErrorMessages.*;
+import static eu.europa.ec.edelivery.smp.exceptions.SMLErrorMessages.*;
 import static eu.europa.ec.smp.api.Identifiers.asString;
 
 /**
