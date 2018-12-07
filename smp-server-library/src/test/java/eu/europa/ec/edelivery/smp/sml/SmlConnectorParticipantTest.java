@@ -49,7 +49,7 @@ import static org.mockito.Mockito.verify;
         ConversionTestConfig.class, PropertiesSingleDomainTestConfig.class})
 @TestPropertySource(properties = {
         "bdmsl.integration.enabled=true"})
-public class SmlConnectorParticipantIntegrationTest  {
+public class SmlConnectorParticipantTest  {
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
