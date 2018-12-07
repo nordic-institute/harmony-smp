@@ -50,7 +50,7 @@ package eu.europa.ec.edelivery.smp.sml;
         ConversionTestConfig.class, PropertiesSingleDomainTestConfig.class})
 @TestPropertySource(properties = {
         "bdmsl.integration.enabled=true"})
-public class SmlConnectorDomainIntegrationTest {
+public class SmlConnectorDomainTest {
 
     @Rule
     public ExpectedException expectedExeption = ExpectedException.none();
