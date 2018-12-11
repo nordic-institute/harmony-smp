@@ -35,11 +35,6 @@
         <servlet-name>firstPage</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>firstPage</servlet-name>
-        <url-pattern>/web/index.html</url-pattern>
-    </servlet-mapping>
-
 
     <servlet>
         <servlet-name>smpRestServlet</servlet-name>
