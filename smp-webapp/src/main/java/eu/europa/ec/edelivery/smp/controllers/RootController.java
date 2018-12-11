@@ -37,13 +37,29 @@ public class RootController {
 
     private static final SMPLogger LOG = SMPLoggerFactory.getLogger(RootController.class);
 
+    /**
+     * redirect if / to index.html.
+     * @param model
+     * @return
+     */
+    @GetMapping(value={"/", "web/index.html"})
+    @Order(HIGHEST_PRECEDENCE)
+    public ModelAndView redirectOldIndexPath(ModelMap model) {
+        return new ModelAndView("redirect:/index.html", model);
+    }
 
-    @GetMapping( produces = MediaType.TEXT_HTML_VALUE, value={"", "/", "web/index.html","index.html"})
+    @GetMapping( produces = {MediaType.TEXT_HTML_VALUE, MediaType.IMAGE_PNG_VALUE},
+            value={ "/index.html", "/favicon-16x16.png"})
     @Order(HIGHEST_PRECEDENCE)
     public byte[] getServiceGroup(HttpServletRequest httpReq) throws IOException {
         String host = httpReq.getRemoteHost();
         LOG.businessInfo(SMPMessageCode.BUS_HTTP_GET_END_STATIC_CONTENT,host,httpReq.getPathInfo());
-        return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/index.html"));
+        String value = httpReq.getServletPath();
+        if(value!=null && value.endsWith("favicon-16x16.png")){
+            return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/favicon-16x16.png"));
+        }else {
+            return IOUtils.readBytesFromStream(RootController.class.getResourceAsStream("/html/index.html"));
+        }
     }
 
     /**
