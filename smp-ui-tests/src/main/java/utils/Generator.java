@@ -2,6 +2,7 @@ package utils;
 
 public class Generator {
 	
+	@SuppressWarnings("SpellCheckingInspection")
 	private static final String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	
 	

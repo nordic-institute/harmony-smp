@@ -2,6 +2,7 @@ package utils.rest;
 
 import utils.PROPERTIES;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class SMPPaths {
 
 	public static final String REST_DOMAIN_LIST = "rest/domain";
@@ -9,5 +10,6 @@ public class SMPPaths {
 	public static final String LOGIN_PATH = "rest/security/authentication";
 	public static final String USER_LIST = "rest/user";
 	public static final String SERVICE_GROUP = "rest/servicegroup";
+	public static final String KEYSTORE = "rest/keystore";
 
 }

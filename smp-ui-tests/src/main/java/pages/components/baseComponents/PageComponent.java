@@ -73,12 +73,27 @@ public class PageComponent {
 
 	public void clickVoidSpace(){
 		WebElement topLogoText = driver.findElement(By.id("topLogo"));
+		By overlayLocator = By.cssSelector("[class*=\"overlay-backdrop\"]");
 		Point logoPoint = topLogoText.getLocation();
 		int x = logoPoint.x;
 		int y = logoPoint.y;
-		new Actions(driver).moveByOffset(x, y).click().build().perform();
+
 		try {
-			waitForElementToBeGone(driver.findElement(By.cssSelector("[class*=\"overlay-backdrop\"]")));
+			webDriverWait.until(ExpectedConditions.visibilityOfElementLocated(overlayLocator));
+			new Actions(driver).moveByOffset(x, y).click().build().perform();
+		} catch (Exception e) {
+
+		}
+		try {
+			int c=0;
+			while(c<30){
+				if(null != driver.findElement(overlayLocator)){
+					new Actions(driver).moveByOffset(x, y).click().build().perform();
+					waitForXMillis(500);
+				}
+				c++;
+			}
+
 		} catch (Exception e) {	}
 		waitForXMillis(500);
 	}
