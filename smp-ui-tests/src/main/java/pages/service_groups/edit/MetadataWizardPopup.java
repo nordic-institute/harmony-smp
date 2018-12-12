@@ -42,7 +42,7 @@ public class MetadataWizardPopup extends PageComponent {
 	@FindBy(css = "#ExtensionReason_id")
 	private WebElement extensionReasonInput;
 
-	@FindBy(css = "service-group-metadata-wizard > mat-dialog-actions > div > button:nth-child(1)")
+	@FindBy(css = "service-group-extension-wizard button:nth-of-type(1)")
 	private WebElement okButton;
 
 	public void fillWithRndStrings(){
@@ -55,7 +55,7 @@ public class MetadataWizardPopup extends PageComponent {
 		clearAndFillInput(eExtensionURIInput, Generator.randomAlphaNumeric(10));
 		clearAndFillInput(extensionReasonCodeInput, Generator.randomAlphaNumeric(10));
 		clearAndFillInput(extensionReasonInput, Generator.randomAlphaNumeric(10));
-		okButton.click();
+		waitForElementToBeClickable(okButton).click();
 		waitForElementToBeGone(okButton);
 	}
 

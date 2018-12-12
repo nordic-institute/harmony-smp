@@ -30,6 +30,7 @@ public class FilterArea extends PageComponent {
 	private WebElement domainSelectContainer;
 	public GenericSelect domainSelect;
 
+	@SuppressWarnings("SpellCheckingInspection")
 	@FindBy(id = "searchbutton_id")
 	private WebElement searchButton;
 
@@ -50,10 +51,7 @@ public class FilterArea extends PageComponent {
 		if(!participantSchemeInput.isDisplayed()){
 			return false;
 		}
-		if(!domainSelect.isLoaded()){
-			return false;
-		}
-		return true;
+		return domainSelect.isLoaded();
 	}
 
 	public void filter(String identifier, String scheme, String domain){

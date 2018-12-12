@@ -32,6 +32,7 @@ public class UserPopup extends PageComponent {
 	@FindBy(id = "password_id")
 	WebElement passwordInput;
 	
+	@SuppressWarnings("SpellCheckingInspection")
 	@FindBy(id = "usernameconfirmation_id")
 	WebElement confirmationInput;
 	
@@ -102,14 +103,14 @@ public class UserPopup extends PageComponent {
 	}
 
 
-	public String getUsernameValidationEror(){
+	public String getUsernameValidationError(){
 		try {
 			return usernameValidationError.getText();
 		} catch (Exception e) {	}
 		return null;
 	}
 
-	public String getPassValidationEror(){
+	public String getPassValidationError(){
 
 		try {
 			return passValidationError.getText();
@@ -117,7 +118,7 @@ public class UserPopup extends PageComponent {
 		return null;
 	}
 
-	public String getConfirmationPassValidationEror(){
+	public String getConfirmationPassValidationError(){
 
 		try {
 			return passConfirmationValidationError.getText();

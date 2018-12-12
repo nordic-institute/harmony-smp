@@ -26,7 +26,7 @@ public class GenericSelect extends PageComponent {
 	WebElement expandoButton;
 
 	@FindBy(css = "div.mat-select-value span")
-	WebElement curentValueElement;
+	WebElement currentValueElement;
 
 	private By optionSelector = By.tagName("mat-option");
 
@@ -64,9 +64,18 @@ public class GenericSelect extends PageComponent {
 		return false;
 	}
 
+	public boolean selectFirstOption(){
+		List<WebElement> options = getOptions();
+
+		WebElement option = options.get(1);
+		waitForElementToBeClickable(option).click();
+		waitForElementToBeGone(option);
+		return true;
+	}
+
 
 	public String getSelectedValue() {
-		return curentValueElement.getText().trim();
+		return currentValueElement.getText().trim();
 	}
 
 	public boolean selectOptionByText(String text) {
@@ -87,7 +96,6 @@ public class GenericSelect extends PageComponent {
 
 	public boolean isLoaded() {
 		if(!expandoButton.isDisplayed()){ return false;}
-		if(!curentValueElement.isDisplayed()){ return false;}
-		return true;
+		return currentValueElement.isDisplayed();
 	}
 }

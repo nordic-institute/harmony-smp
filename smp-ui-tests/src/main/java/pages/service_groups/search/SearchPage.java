@@ -28,7 +28,6 @@ public class SearchPage extends SMPPage {
 
 	public boolean isLoaded() {
 		if(!filters.isLoaded()){ return false;}
-		if(!serviceGroupGrid.isLoaded()){ return false;}
-		return true;
+		return serviceGroupGrid.isLoaded();
 	}
 }

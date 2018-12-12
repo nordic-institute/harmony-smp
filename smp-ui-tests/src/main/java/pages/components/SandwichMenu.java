@@ -18,30 +18,44 @@ public class SandwichMenu extends PageComponent {
 	}
 
 
+	@SuppressWarnings("SpellCheckingInspection")
 	@FindBy(id = "settingsmenu_id")
 	WebElement expandoButton;
 
-	@FindBy(css = "button[role=\"menuitem\"] span")
+	@FindBy(css = "div.mat-menu-content")
+	WebElement lnkContainer;
+
+	@SuppressWarnings("SpellCheckingInspection")
+	@FindBy(id = "currentuser_id")
 	WebElement currentUserID;
 
 	@FindBy(id = "logout_id")
 	WebElement logoutLnk;
 
 	public boolean isLoggedIn(){
+		clickVoidSpace();
 		waitForElementToBeClickable(expandoButton).click();
 
-		waitForElementToBeVisible(currentUserID);
-		boolean toReturn = !currentUserID.getText().equalsIgnoreCase("Not logged in") ;
-		log.info("User login status is: " + toReturn);
-		currentUserID.click();
+		boolean isLoggedIn = false;
+		try {
+			String text = waitForElementToBeVisible(lnkContainer).getText();
+			isLoggedIn = !text.contains("Not logged in");
+		} catch (Exception e) {		}
+
+		log.info("User login status is: " + isLoggedIn);
+
 		clickVoidSpace();
-		return toReturn;
+		return isLoggedIn;
 	}
 
 	public SearchPage logout(){
-		waitForElementToBeClickable(expandoButton).click();
-		waitForElementToBeClickable(logoutLnk).click();
-		log.info("Logging out...");
+		clickVoidSpace();
+
+		if(isLoggedIn()){
+			waitForElementToBeClickable(expandoButton).click();
+			waitForElementToBeClickable(logoutLnk).click();
+			log.info("Logging out...");
+		}
 		return new SearchPage(driver);
 	}
 

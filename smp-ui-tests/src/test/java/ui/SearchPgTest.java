@@ -15,6 +15,8 @@ import pages.service_groups.search.pojo.ServiceGroup;
 import utils.Generator;
 import utils.rest.SMPRestClient;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -128,13 +130,18 @@ public class SearchPgTest extends BaseTest {
 		String pIdentifier = row0.getParticipantIdentifier();
 
 //		verify proper URL format
-		String tmpURLPart = listedURL.split("smp/")[1].trim();
-		soft.assertEquals(tmpURLPart, pScheme+"::"+pIdentifier, "URL contians the proper scheme and identifier");
+		String tmpURLPart = null;
+		try {
+			tmpURLPart = URLDecoder.decode(listedURL, "UTF-8").split("smp/")[1].trim();
+			soft.assertEquals(tmpURLPart, pScheme+"::"+pIdentifier, "URL contains the proper scheme and identifier");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
 
 		ServiceGroup serviceGroup = SMPRestClient.getServiceGroup(listedURL);
 
 		soft.assertTrue(row0.getMetadataSize() == serviceGroup.getServiceMetadataReferenceCollection().size(),
-				"Number of listed MetadataReferecences in XML matches UI");
+				"Number of listed MetadataReferences in XML matches UI");
 
 
 
@@ -229,7 +236,12 @@ public class SearchPgTest extends BaseTest {
 		for (MetadataRow metadataRow : metadataRows) {
 			String docScheme = metadataRow.getDocumentIdentifierScheme();
 			String docId = metadataRow.getDocumentIdentifier();
-			String url = metadataRow.getURL();
+			String url = null;
+			try {
+				url = URLDecoder.decode(metadataRow.getURL(), "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
 
 			soft.assertTrue(url.contains(String.format("%s::%s/services/%s::%s", pScheme, pIdentifier, docScheme, docId)), "Checking URL format for metadata "+ docId);
 
@@ -267,8 +279,8 @@ public class SearchPgTest extends BaseTest {
 		List<String> domains = Arrays.asList("domain1 (peppol)", "domain (subdomain)");
 		List<String> owners = Arrays.asList("smp");
 
-		logger.info("Creating servicegroup with participan id: " + participantID);
-		editPage.addNewSerivceGroup(participantID,
+		logger.info("Creating service group with participant id: " + participantID);
+		editPage.addNewServiceGroup(participantID,
 				participantScheme,
 				owners,	domains, "");
 

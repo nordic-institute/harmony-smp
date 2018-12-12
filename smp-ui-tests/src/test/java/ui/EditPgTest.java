@@ -16,6 +16,7 @@ import utils.rest.SMPRestClient;
 
 import java.util.List;
 
+@SuppressWarnings("SpellCheckingInspection")
 public class EditPgTest extends BaseTest{
 
 	@AfterMethod
@@ -90,7 +91,7 @@ public class EditPgTest extends BaseTest{
 		grid.doubleClickRow(index);
 		ServiceGroupPopup popup = new ServiceGroupPopup(driver);
 
-		soft.assertTrue(row0.getParticipantIdentifier().equalsIgnoreCase(popup.getParticipantIdentifierValue()), "Popup opened for apropriate service group");
+		soft.assertTrue(row0.getParticipantIdentifier().equalsIgnoreCase(popup.getParticipantIdentifierValue()), "Popup opened for appropriate service group");
 		soft.assertTrue(popup.isExtensionAreaEditable(), "extension area is editable");
 
 		popup.enterDataInExtensionTextArea("kjsfdfjfhskdjfhkjdhfksdjhfjksdhfjksd");
@@ -104,14 +105,14 @@ public class EditPgTest extends BaseTest{
 
 		page.getGrid().doubleClickRow(index);
 		ServiceGroupPopup popup2 = new ServiceGroupPopup(driver);
-		soft.assertEquals(popup2.getExtansionAreaContent(), extensionData, "Extension data is saved properly");
+		soft.assertEquals(popup2.getExtensionAreaContent(), extensionData, "Extension data is saved properly");
 
 		popup2.enterDataInExtensionTextArea("");
 		popup2.clickCancel();
 //TODO: refactor this assert bellow
 //		page.getGrid().doubleClickRow(0);
 //		ServiceGroupPopup popup3 = new ServiceGroupPopup(driver);
-//		soft.assertTrue(!popup3.getExtansionAreaContent().isEmpty(), "Extension data is NOT saved empty as expected");
+//		soft.assertTrue(!popup3.getExtensionAreaContent().isEmpty(), "Extension data is NOT saved empty as expected");
 
 
 		soft.assertAll();
@@ -129,7 +130,7 @@ public class EditPgTest extends BaseTest{
 
 		ServiceGroupPopup popup = row0.clickEdit();
 
-		soft.assertTrue(row0.getParticipantIdentifier().equalsIgnoreCase(popup.getParticipantIdentifierValue()), "Popup opened for apropriate service group");
+		soft.assertTrue(row0.getParticipantIdentifier().equalsIgnoreCase(popup.getParticipantIdentifierValue()), "Popup opened for appropriate service group");
 		soft.assertTrue(popup.isExtensionAreaEditable(), "extension area is editable");
 
 		soft.assertAll();
@@ -154,7 +155,7 @@ public class EditPgTest extends BaseTest{
 
 		ServiceGroupPopup popup = page.clickEdit();
 
-		soft.assertTrue(row0.getParticipantIdentifier().equalsIgnoreCase(popup.getParticipantIdentifierValue()), "Popup opened for apropriate service group");
+		soft.assertTrue(row0.getParticipantIdentifier().equalsIgnoreCase(popup.getParticipantIdentifierValue()), "Popup opened for appropriate service group");
 		soft.assertTrue(popup.isExtensionAreaEditable(), "extension area is editable");
 
 		soft.assertAll();
@@ -174,7 +175,7 @@ public class EditPgTest extends BaseTest{
 
 		ServiceGroupPopup popup = new ServiceGroupPopup(driver);
 
-		soft.assertTrue(row0.getParticipantIdentifier().equalsIgnoreCase(popup.getParticipantIdentifierValue()), "Popup opened for apropriate service group");
+		soft.assertTrue(row0.getParticipantIdentifier().equalsIgnoreCase(popup.getParticipantIdentifierValue()), "Popup opened for appropriate service group");
 		soft.assertTrue(popup.isExtensionAreaEditable(), "extension area is editable");
 
 		soft.assertTrue(!popup.isParticipantIdentifierInputEnabled(), "Participant Identifier field is disabled");
@@ -197,7 +198,7 @@ public class EditPgTest extends BaseTest{
 
 		ServiceMetadataPopup popup = row0.clickAddMetadata();
 
-		soft.assertTrue(row0.getParticipantIdentifier().equalsIgnoreCase(popup.getParticipantIdentifierValue()), "Popup opened for apropriate service group");
+		soft.assertTrue(row0.getParticipantIdentifier().equalsIgnoreCase(popup.getParticipantIdentifierValue()), "Popup opened for appropriate service group");
 
 		soft.assertTrue(popup.isDocumentIdentifierEnabled());
 		soft.assertTrue(popup.isDocumentSchemeEnabled());
@@ -282,14 +283,14 @@ public class EditPgTest extends BaseTest{
 		EditPage page = new EditPage(driver);
 
 		ServiceGroupPopup popup = page.clickNew();
-		popup.fillParticipanIdentifier(identifier);
-		popup.fillParticipanScheme(scheme);
+		popup.fillParticipantIdentifier(identifier);
+		popup.fillParticipantScheme(scheme);
 		popup.chooseFirstOwner();
 		popup.chooseFirstDomain();
 		popup.fillExtensionArea("invalid XML text");
 		popup.clickOK();
 
-		soft.assertTrue(!popup.getErrorMessage().isEmpty(), "Erorr message displayed when entering invalid xml in extension area");
+		soft.assertTrue(!popup.getErrorMessage().isEmpty(), "Error message displayed when entering invalid xml in extension area");
 
 		popup.generateRndExtension();
 		popup.clickOK();
@@ -311,8 +312,8 @@ public class EditPgTest extends BaseTest{
 		scheme = Generator.randomAlphaNumeric(10);
 
 		popup = page.clickNew();
-		popup.fillParticipanIdentifier(identifier);
-		popup.fillParticipanScheme(scheme);
+		popup.fillParticipantIdentifier(identifier);
+		popup.fillParticipantScheme(scheme);
 		popup.chooseFirstOwner();
 		popup.chooseFirstDomain();
 		popup.clickOK();

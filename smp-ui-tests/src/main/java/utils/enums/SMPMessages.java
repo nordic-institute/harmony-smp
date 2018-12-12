@@ -43,6 +43,7 @@ public class SMPMessages {
 										"Domain will be saved to SMP. Action is not recoverable.\n" +
 										"Click on \"Register\" to confirm the registration and saving.\n" +
 										"Click on \"Cancel\" to cancel the registration.";
+	@SuppressWarnings("SpellCheckingInspection")
 	public static final String MSG_15 = "You are about to delete an SMP Domain: ${SMP_DOMAIN_ID}. Action\n" +
 										"will unregister SMP domain user ${SMP_SML_ID}. from SML for domain\n" +
 										"${ BDMSL _DOMAIN}. Action is not recoverable.\n" +

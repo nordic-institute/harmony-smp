@@ -37,10 +37,7 @@ public class ServiceGroupGrid extends PageComponent {
 	}
 
 	public boolean isLoaded(){
-		if(headers.size()>0){
-			return true;
-		}
-		return false;
+		return headers.size() > 0;
 	}
 
 	public void doubleClickRow(int rowNumber) {

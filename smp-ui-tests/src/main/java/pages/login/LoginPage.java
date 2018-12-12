@@ -5,6 +5,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.pagefactory.AjaxElementLocatorFactory;
+import pages.components.ConfirmationDialog;
 import pages.components.baseComponents.SMPPage;
 import pages.service_groups.search.SearchPage;
 import utils.PROPERTIES;
@@ -27,8 +28,13 @@ public class LoginPage extends SMPPage {
 	@FindBy(id = "password_id")
 	private WebElement password;
 
+	@SuppressWarnings("SpellCheckingInspection")
 	@FindBy(id = "loginbutton_id")
 	private WebElement loginBtn;
+
+	@SuppressWarnings("SpellCheckingInspection")
+	@FindBy(id = "okbuttondialog_id")
+	private WebElement dialogOKBtn;
 
 	@FindBy(className = "smpVersion")
 	private WebElement smpVersion;
@@ -66,6 +72,8 @@ public class LoginPage extends SMPPage {
 		password.sendKeys(pass);
 		loginBtn.click();
 
+		closeChangePassModal();
+
 		log.info("Login action done!");
 
 		return PageFactory.initElements(driver, expect);
@@ -79,6 +87,7 @@ public class LoginPage extends SMPPage {
 
 		loginBtn.click();
 
+		closeChangePassModal();
 		log.info("Login action done!");
 
 		return new SearchPage(driver);
@@ -93,7 +102,7 @@ public class LoginPage extends SMPPage {
 		clearAndFillInput(password, user.get("password"));
 
 		loginBtn.click();
-
+		closeChangePassModal();
 		log.info("Login action done!");
 
 		return new SearchPage(driver);
@@ -111,4 +120,14 @@ public class LoginPage extends SMPPage {
 	public String getTextInPasswordInput(){
 		return waitForElementToBeVisible(password).getText().trim();
 	}
+
+	private void closeChangePassModal(){
+		try{
+			waitForElementToBeClickable(dialogOKBtn).click();
+			waitForElementToBeGone(dialogOKBtn);
+		}catch (Exception e){}
+	}
+
+
+
 }

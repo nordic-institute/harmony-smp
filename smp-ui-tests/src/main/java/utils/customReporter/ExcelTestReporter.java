@@ -149,25 +149,25 @@ public class ExcelTestReporter implements ITestListener {
 
 		Sheet reportSheet = workbook.getSheetAt(0);
 		int rowNum = reportSheet.getLastRowNum()+1;
-		Row curentRow = reportSheet.createRow(rowNum);
+		Row currentRow = reportSheet.createRow(rowNum);
 
-		curentRow.createCell(0).setCellValue(testType);
-//		curentRow.createCell(0).setCellValue("UI");
-		curentRow.createCell(1).setCellValue(iTestResult.getTestContext().getSuite().getName());
-		curentRow.createCell(2).setCellValue(iTestResult.getMethod().getConstructorOrMethod().getMethod().getAnnotation(Test.class).description());
-		curentRow.createCell(3).setCellValue(iTestResult.getName());
-		curentRow.createCell(4).setCellValue("Yes");
-		curentRow.createCell(5).setCellValue(!iTestResult.getMethod().getConstructorOrMethod().getMethod().getAnnotation(Test.class).enabled());
-		Cell cell = curentRow.createCell(6);
+		currentRow.createCell(0).setCellValue(testType);
+//		currentRow.createCell(0).setCellValue("UI");
+		currentRow.createCell(1).setCellValue(iTestResult.getTestContext().getSuite().getName());
+		currentRow.createCell(2).setCellValue(iTestResult.getMethod().getConstructorOrMethod().getMethod().getAnnotation(Test.class).description());
+		currentRow.createCell(3).setCellValue(iTestResult.getName());
+		currentRow.createCell(4).setCellValue("Yes");
+		currentRow.createCell(5).setCellValue(!iTestResult.getMethod().getConstructorOrMethod().getMethod().getAnnotation(Test.class).enabled());
+		Cell cell = currentRow.createCell(6);
 		cell.setCellValue(result);
 		cell.setCellStyle(composeCellStyle(workbook, result));
-		curentRow.createCell(7).setCellValue(sdf.format(new Date(iTestResult.getStartMillis())));
-		curentRow.createCell(8).setCellValue((iTestResult.getEndMillis()-iTestResult.getStartMillis())/1000);
-		curentRow.createCell(9).setCellValue("");
-		curentRow.createCell(10).setCellValue("");
+		currentRow.createCell(7).setCellValue(sdf.format(new Date(iTestResult.getStartMillis())));
+		currentRow.createCell(8).setCellValue((iTestResult.getEndMillis()-iTestResult.getStartMillis())/1000);
+		currentRow.createCell(9).setCellValue("");
+		currentRow.createCell(10).setCellValue("");
 
 		if(iTestResult.getThrowable() != null){
-			curentRow.createCell(11).setCellValue(iTestResult.getThrowable().getMessage());
+			currentRow.createCell(11).setCellValue(iTestResult.getThrowable().getMessage());
 		}
 
 

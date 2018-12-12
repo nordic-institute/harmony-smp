@@ -19,6 +19,7 @@ public class Sidebar extends PageComponent {
 		PageFactory.initElements( new AjaxElementLocatorFactory(driver, PROPERTIES.TIMEOUT), this);
 	}
 
+	@SuppressWarnings("SpellCheckingInspection")
 	@FindBy(tagName = "mat-sidenav")
 	private WebElement sideBar;
 
@@ -37,7 +38,7 @@ public class Sidebar extends PageComponent {
 	@FindBy(id = "sidebar_user_id")
 	private WebElement userLnk;
 
-	/* Receives the Page object class as parameter and based on the class name it navigates to the apropriate page
+	/* Receives the Page object class as parameter and based on the class name it navigates to the appropriate page
 	 and returns an instance of that class */
 	public <T extends SMPPage> T goToPage(Class<T> expect){
 		log.info("Navigating to " + expect.getSimpleName());
