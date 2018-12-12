@@ -13,9 +13,17 @@
 
 package eu.europa.ec.edelivery.smp.config;
 
-import org.springframework.context.annotation.*;
+import org.apache.commons.io.FileUtils;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.PropertySources;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Properties;
 
 /**
@@ -23,27 +31,39 @@ import java.util.Properties;
  */
 @Configuration
 @PropertySources({
-        @PropertySource(value = "classpath:config.properties", ignoreResourceNotFound = true)
+        @PropertySource(value = "classpath:config.properties", ignoreResourceNotFound = true),
+        @PropertySource(value = "classpath:application.properties", ignoreResourceNotFound = true)
 })
 public class PropertiesTestConfig {
 
     private final static String SIGNING_KEYSTORE_PATH = Thread.currentThread().getContextClassLoader().getResource("service_integration_signatures_single_domain.jks").getFile();
 
     @Bean
-    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() {
+    public static PropertySourcesPlaceholderConfigurer propertySourcesPlaceholderConfigurer() throws IOException {
+        Path resourceDirectory = Paths.get("src", "test", "resources", "keystores");
+        Path targetDirectory = Paths.get("target", "keystores");
+
+        FileUtils.copyDirectory(resourceDirectory.toFile(), targetDirectory.toFile());
+
+        String path = targetDirectory.toFile().getAbsolutePath();
+
+
+
         PropertySourcesPlaceholderConfigurer propertiesConfig = new PropertySourcesPlaceholderConfigurer();
 
         Properties localProps = new Properties();
         localProps.setProperty("jdbc.driverClassName", "org.h2.Driver");
         localProps.setProperty("jdbc.url", "jdbc:h2:file:./target/myDb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=TRUE;AUTO_SERVER=TRUE");
-        localProps.setProperty( "jdbc.user", "smp");
-        localProps.setProperty( "jdbc.pass", "smp");
-        localProps.setProperty( "spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-        localProps.setProperty( "spring.jpa.generate-ddl", "true");
-        localProps.setProperty( "spring.jpa.properties.hibernate.hbm2ddl.auto", "create");
+        localProps.setProperty("jdbc.user", "smp");
+        localProps.setProperty("jdbc.pass", "smp");
+        localProps.setProperty("spring.jpa.properties.hibernate.dialect", "org.hibernate.dialect.H2Dialect");
+        localProps.setProperty("spring.jpa.generate-ddl", "true");
+        localProps.setProperty("spring.jpa.properties.hibernate.hbm2ddl.auto", "create");
 
-        localProps.setProperty("xmldsig.keystore.classpath", SIGNING_KEYSTORE_PATH);
-        localProps.setProperty("xmldsig.keystore.password", "test123");
+        localProps.setProperty("configuration.dir", path);
+        localProps.setProperty("encryption.key.filename", "encryptionKey.key");
+        localProps.setProperty("smp.keystore.password", "FarFJE2WUfY39SVRTFOqSg==");
+        localProps.setProperty("smp.keystore.filename", "smp-keystore_multiple_domains.jks");
         propertiesConfig.setProperties(localProps);
         propertiesConfig.setLocalOverride(true);
 

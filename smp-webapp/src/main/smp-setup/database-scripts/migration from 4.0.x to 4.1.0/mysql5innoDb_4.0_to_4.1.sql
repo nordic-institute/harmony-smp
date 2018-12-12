@@ -14,12 +14,12 @@ alter table smp_user rename to SMP_USER_BCK;
 
     create table SMP_CERTIFICATE (
        ID bigint not null,
-        CERTIFICATE_ID varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
+        CERTIFICATE_ID varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         CREATED_ON datetime not null,
-        issuer varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ISSUER varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         LAST_UPDATED_ON datetime not null,
-        serialNumber varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        subject varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
+        SERIALNUMBER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
+        SUBJECT varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         VALID_FROM datetime,
         VALID_TO datetime,
         primary key (ID)
@@ -29,12 +29,12 @@ alter table smp_user rename to SMP_USER_BCK;
        ID bigint not null,
         REV bigint not null,
         REVTYPE tinyint,
-        CERTIFICATE_ID varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
+        CERTIFICATE_ID varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         CREATED_ON datetime,
-        issuer varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
+        ISSUER varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         LAST_UPDATED_ON datetime,
-        serialNumber varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
-        subject varchar(512)  CHARACTER SET utf8 COLLATE utf8_bin,
+        SERIALNUMBER varchar(128)  CHARACTER SET utf8 COLLATE utf8_bin,
+        SUBJECT varchar(1024)  CHARACTER SET utf8 COLLATE utf8_bin,
         VALID_FROM datetime,
         VALID_TO datetime,
         primary key (ID, REV)
@@ -51,6 +51,8 @@ alter table smp_user rename to SMP_USER_BCK;
         SML_PARTC_IDENT_REGEXP varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_SMP_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_SUBDOMAIN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        SML_REGISTERED bit,
+        SML_BLUE_COAT_AUTH bit,
         primary key (ID)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -67,6 +69,8 @@ alter table smp_user rename to SMP_USER_BCK;
         SML_PARTC_IDENT_REGEXP varchar(4000)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_SMP_ID varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
         SML_SUBDOMAIN varchar(256)  CHARACTER SET utf8 COLLATE utf8_bin,
+        SML_REGISTERED bit,
+        SML_BLUE_COAT_AUTH bit,
         primary key (ID, REV)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -127,7 +131,7 @@ alter table smp_user rename to SMP_USER_BCK;
        ID bigint not null auto_increment,
         CREATED_ON datetime not null,
         LAST_UPDATED_ON datetime not null,
-        SML_REGISTRED bit not null,
+        SML_REGISTERED bit not null,
         FK_DOMAIN_ID bigint,
         FK_SG_ID bigint,
         primary key (ID)
@@ -139,7 +143,7 @@ alter table smp_user rename to SMP_USER_BCK;
         REVTYPE tinyint,
         CREATED_ON datetime,
         LAST_UPDATED_ON datetime,
-        SML_REGISTRED bit,
+        SML_REGISTERED bit,
         FK_DOMAIN_ID bigint,
         FK_SG_ID bigint,
         primary key (ID, REV)
@@ -277,7 +281,7 @@ INSERT INTO SMP_SG_EXTENSION (ID, CREATED_ON, LAST_UPDATED_ON, EXTENSION)
         and sg.PARTICIPANT_SCHEME= sgb.businessidentifierscheme WHERE sgb.xmlcontent != '';
 
 -- insert service group domains 
-INSERT INTO SMP_SERVICE_GROUP_DOMAIN ( CREATED_ON, LAST_UPDATED_ON, SML_REGISTRED, FK_DOMAIN_ID, FK_SG_ID )
+INSERT INTO SMP_SERVICE_GROUP_DOMAIN ( CREATED_ON, LAST_UPDATED_ON, SML_REGISTERED, FK_DOMAIN_ID, FK_SG_ID )
     select  NOW(), NOW(), 0, D.ID, SG.ID from SMP_SERVICE_GROUP_BCK SGB INNER JOIN  SMP_SERVICE_GROUP SG ON
         SGB.businessidentifier = SG.PARTICIPANT_IDENTIFIER
         and SGB.businessidentifierscheme = SG.PARTICIPANT_SCHEME
@@ -312,6 +316,10 @@ INSERT INTO SMP_OWNERSHIP (FK_SG_ID, FK_USER_ID)
 
  -- we do not need certificate DN in USERNAME so remove it from username columns
 UPDATE SMP_USER set USERNAME=null where PASSWORD  ='';
+
+UPDATE SMP_DOMAIN set SML_REGISTERED=0 where SML_REGISTERED IS NULL;
+UPDATE SMP_DOMAIN set SML_BLUE_COAT_AUTH=0 where SML_BLUE_COAT_AUTH IS NULL;
+
 
 -- -------------------------------------------------------------------------------------------------------- 
 -- update sequences and remove auto_increment

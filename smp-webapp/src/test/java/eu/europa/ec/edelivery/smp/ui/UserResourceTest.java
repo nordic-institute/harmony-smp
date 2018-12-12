@@ -5,9 +5,11 @@ import eu.europa.ec.edelivery.smp.config.PropertiesTestConfig;
 import eu.europa.ec.edelivery.smp.config.SmpAppConfig;
 import eu.europa.ec.edelivery.smp.config.SmpWebAppConfig;
 import eu.europa.ec.edelivery.smp.config.SpringSecurityConfig;
+import eu.europa.ec.edelivery.smp.data.ui.CertificateRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceGroupRO;
 import eu.europa.ec.edelivery.smp.data.ui.ServiceResult;
 import eu.europa.ec.edelivery.smp.data.ui.UserRO;
+import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +35,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -58,6 +61,7 @@ public class UserResourceTest {
 
     private MockMvc mvc;
     private static final RequestPostProcessor ADMIN_CREDENTIALS = httpBasic("smp_admin", "test123");
+    private static final RequestPostProcessor SYSTEM_CREDENTIALS = httpBasic("sys_admin", "test123");
     @Before
     public void setup() {
         mvc = MockMvcBuilders.webAppContextSetup(webAppContext)
@@ -94,5 +98,74 @@ public class UserResourceTest {
         });
     }
 
+    @Test
+    public void uploadCertificateSystemAdmin() throws Exception {
+        byte[] buff = IOUtils.toByteArray(UserResourceTest.class.getResourceAsStream("/SMPtest.crt"));
+
+        // given when
+        MvcResult result = mvc.perform(post(PATH+"/1098765430/certdata")
+                .with(SYSTEM_CREDENTIALS)
+                .content(buff))
+                .andExpect(status().isOk()).andReturn();
+
+        //them
+        ObjectMapper mapper = new ObjectMapper();
+        CertificateRO res = mapper.readValue(result.getResponse().getContentAsString(), CertificateRO.class);
+
+
+        assertNotNull(res);
+        assertEquals("C=BE,O=DIGIT,CN=Intermediate CA", res.getIssuer());
+        assertEquals("C=BE,O=DIGIT,CN=SMP test,E=smp@test.com", res.getSubject());
+        assertEquals("3", res.getSerialNumber());
+        assertEquals("CN=SMP test,O=DIGIT,C=BE:0000000000000003", res.getCertificateId());
+        assertEquals("sno=3&subject=C%3DBE%2CO%3DDIGIT%2CCN%3DSMP+test%2CE%3Dsmp%40test.com&validfrom=May+22+20%3A59%3A00+2018+GMT&validto=May+22+20%3A56%3A00+2019+GMT&issuer=C%3DBE%2CO%3DDIGIT%2CCN%3DIntermediate+CA", res.getBlueCoatHeader());
+
+    }
+
+    @Test
+    public void uploadCertificateInvalidUser() throws Exception {
+        byte[] buff = IOUtils.toByteArray(UserResourceTest.class.getResourceAsStream("/SMPtest.crt"));
+        // id and logged user not match
+        // given when
+        mvc.perform(post(PATH+"/34556655/certdata")
+                .with(ADMIN_CREDENTIALS)
+                .content(buff))
+                .andExpect(status().isUnauthorized()).andReturn();
+    }
+
+    @Test
+    public void samePreviousPasswordUsedTrue() throws Exception {
+        // 1 is id for smp_admin
+        MvcResult result = mvc.perform(post(PATH+"/1/samePreviousPasswordUsed")
+                .with(ADMIN_CREDENTIALS)
+                .content("test123"))
+                .andExpect(status().isOk()).andReturn();
+
+        assertNotNull(result);
+        assertEquals("true", result.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void samePreviousPasswordUsedFalse() throws Exception {
+        // 1 is id for smp_admin
+        MvcResult result = mvc.perform(post(PATH+"/1/samePreviousPasswordUsed")
+                .with(ADMIN_CREDENTIALS)
+                .content("7777"))
+                .andExpect(status().isOk()).andReturn();
+
+        assertNotNull(result);
+        assertEquals("false", result.getResponse().getContentAsString());
+    }
+
+    @Test
+    public void samePreviousPasswordUsedUnauthorized() throws Exception {
+        // 1 is id for smp_admin so for 3 should be Unauthorized
+        MvcResult result = mvc.perform(post(PATH+"/3/samePreviousPasswordUsed")
+                .with(ADMIN_CREDENTIALS)
+                .content("test123"))
+                .andExpect(status().isUnauthorized()).andReturn();
+
+
+    }
 
 }

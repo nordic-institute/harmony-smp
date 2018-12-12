@@ -34,7 +34,7 @@ import java.util.Objects;
         @NamedNativeQuery(name = "DBServiceMetadata.getBySGIdentifierAndSMDdentifier", query = "SELECT md.* FROM SMP_SERVICE_METADATA md  INNER JOIN SMP_SERVICE_GROUP_DOMAIN sgd ON sgd.ID = md.FK_SG_DOM_ID \n" +
                 " INNER JOIN SMP_SERVICE_GROUP sg  ON sg.ID = sgd.FK_SG_ID\n" +
                 " where sg.PARTICIPANT_IDENTIFIER = :partcId AND sg.PARTICIPANT_SCHEME=:partcSch" +
-                " AND md.DOCUMENT_IDENTIFIER=:docId AND md.DOCUMENT_SCHEME=:docSch", resultClass=DBServiceMetadata.class),
+                " AND md.DOCUMENT_IDENTIFIER=:docId AND (:docSch IS NULL OR md.DOCUMENT_SCHEME=:docSch)", resultClass=DBServiceMetadata.class),
         @NamedNativeQuery(name = "DBServiceMetadata.getBySGIdentifier", query = "SELECT md.* FROM SMP_SERVICE_METADATA md  INNER JOIN SMP_SERVICE_GROUP_DOMAIN sgd ON sgd.ID = md.FK_SG_DOM_ID \n" +
                 " INNER JOIN SMP_SERVICE_GROUP sg  ON sg.ID = sgd.FK_SG_ID\n" +
                 " where sg.PARTICIPANT_IDENTIFIER = :partcId AND sg.PARTICIPANT_SCHEME=:partcSch", resultClass=DBServiceMetadata.class)
@@ -42,8 +42,8 @@ import java.util.Objects;
 public class DBServiceMetadata extends BaseEntity {
 
     @Id
+    @SequenceGenerator(name = "sgmd_generator", sequenceName = "SMP_SERVICE_METADATA_SEQ",allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sgmd_generator")
-    @SequenceGenerator(name = "sgmd_generator", sequenceName = "SMP_SERVICE_METADATA_SEQ")
     @Column(name = "ID")
     Long id;
 

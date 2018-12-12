@@ -3,6 +3,7 @@ import {EMPTY, Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {HttpEventService} from './http-event.service';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
+import {SecurityService} from "../security/security.service";
 
 // Angular CLI configuration thing.
 export interface IRequestOptions {
@@ -15,14 +16,20 @@ export interface IRequestOptions {
   body?: any;
 }
 
-export function extendedHttpClientCreator(http: HttpClient, httpEventService: HttpEventService) {
-  return new ExtendedHttpClient(http, httpEventService);
+export function extendedHttpClientCreator(http: HttpClient, httpEventService: HttpEventService, securityService: SecurityService) {
+  return new ExtendedHttpClient(http, httpEventService, securityService);
 }
 
 @Injectable()
 export class ExtendedHttpClient {
 
-  public constructor(private http: HttpClient, private httpEventService: HttpEventService) { }
+  public constructor(
+    private http: HttpClient,
+    private httpEventService: HttpEventService,
+    private securityService: SecurityService,
+  ) {
+    this.httpEventService.onForbiddenResponse$().subscribe(() => this.securityService.logout());
+  }
 
   setOptions(options?: IRequestOptions): IRequestOptions {
     if (!options) {
@@ -41,7 +48,7 @@ export class ExtendedHttpClient {
    * @param {string} api use if there is needed to send request to different back-end than the default one.
    * @returns {Observable<T>}
    */
-  public Get<T>(endPoint: string, options?: IRequestOptions): Observable<T> {
+  public get<T>(endPoint: string, options?: IRequestOptions): Observable<T> {
     options = this.setOptions(options);
     let response$ = this.http.get<T>(endPoint, options);
     return this.authenticate(response$);
@@ -54,7 +61,7 @@ export class ExtendedHttpClient {
    * @param {IRequestOptions} options options of the request like headers, body, etc.
    * @returns {Observable<T>}
    */
-  public Post<T>(endPoint: string, params: Object, options?: IRequestOptions): Observable<T> {
+  public post<T>(endPoint: string, params: Object, options?: IRequestOptions): Observable<T> {
     options = this.setOptions(options);
     let response$ = this.http.post<T>(endPoint, params, options);
     return this.authenticate(response$);
@@ -67,7 +74,7 @@ export class ExtendedHttpClient {
    * @param {IRequestOptions} options options of the request like headers, body, etc.
    * @returns {Observable<T>}
    */
-  public Put<T>(endPoint: string, params: Object, options?: IRequestOptions): Observable<T> {
+  public put<T>(endPoint: string, params: Object, options?: IRequestOptions): Observable<T> {
     options = this.setOptions(options);
     let response$ = this.http.put<T>(endPoint, params, options);
     return this.authenticate(response$);
@@ -79,7 +86,7 @@ export class ExtendedHttpClient {
    * @param {IRequestOptions} options options of the request like headers, body, etc.
    * @returns {Observable<T>}
    */
-  public Delete<T>(endPoint: string, options?: IRequestOptions): Observable<T> {
+  public delete<T>(endPoint: string, options?: IRequestOptions): Observable<T> {
     options = this.setOptions(options);
     let response$ = this.http.delete<T>(endPoint, options);
     return this.authenticate(response$);
@@ -87,9 +94,8 @@ export class ExtendedHttpClient {
 
   private authenticate<T>(response$: Observable<T>): Observable<T> {
     return response$.pipe(catchError(error => {
-      if ((error.status === 403)) {
-        console.log('The authentication session expires or the user is not authorised');
-        this.httpEventService.requestForbiddenEvent(error);
+      if (error.status === 401) {
+        this.httpEventService.notifyForbiddenResponse(error);
         return EMPTY;
       }
       return throwError(error);

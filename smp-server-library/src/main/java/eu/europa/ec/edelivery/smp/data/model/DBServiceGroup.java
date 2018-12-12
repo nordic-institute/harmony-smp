@@ -41,8 +41,8 @@ import java.util.*;
 public class DBServiceGroup extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sg_generator")
-    @SequenceGenerator(name = "sg_generator", sequenceName = "SMP_SERVICE_GROUP_SEQ")
+    @SequenceGenerator(name = "sg_generator", sequenceName = "SMP_SERVICE_GROUP_SEQ", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sg_generator" )
     @Column(name = "ID")
     Long id;
 

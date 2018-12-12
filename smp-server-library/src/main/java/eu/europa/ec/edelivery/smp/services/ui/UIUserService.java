@@ -1,7 +1,6 @@
 package eu.europa.ec.edelivery.smp.services.ui;
 
-import eu.europa.ec.edelivery.security.PreAuthenticatedCertificatePrincipal;
-import eu.europa.ec.edelivery.smp.BCryptPasswordHash;
+import eu.europa.ec.edelivery.smp.utils.BCryptPasswordHash;
 import eu.europa.ec.edelivery.smp.data.dao.BaseDao;
 import eu.europa.ec.edelivery.smp.data.dao.UserDao;
 import eu.europa.ec.edelivery.smp.data.model.DBCertificate;
@@ -23,12 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.*;
-import java.math.BigInteger;
-import java.net.URLEncoder;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
@@ -75,13 +71,12 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     }
 
     @Transactional
-    public void updateUserList(List<UserRO> lst) {
-        boolean suc = false;
+    public void updateUserList(List<UserRO> lst, LocalDateTime passwordChange) {
         for (UserRO userRO : lst) {
             if (userRO.getStatus() == EntityROStatus.NEW.getStatusNumber()) {
                 DBUser dbUser = convertFromRo(userRO);
                 if (!StringUtils.isBlank(userRO.getPassword())) {
-                        dbUser.setPassword(BCryptPasswordHash.hashPassword(userRO.getPassword()));
+                    dbUser.setPassword(BCryptPasswordHash.hashPassword(userRO.getPassword()));
                 }
                 userDao.persistFlushDetach(dbUser);
             } else if (userRO.getStatus() == EntityROStatus.UPDATED.getStatusNumber()) {
@@ -93,10 +88,10 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
                 if (StringUtils.isBlank(userRO.getUsername()) ){
                     // if username is empty than clear the password
                     dbUser.setPassword("");
-                }
-                // check for new password
-                else if (!StringUtils.isBlank(userRO.getPassword())) {
+                }else if (!StringUtils.isBlank(userRO.getPassword())) {
+                    // check for new password
                     dbUser.setPassword(BCryptPasswordHash.hashPassword(userRO.getPassword()));
+                    dbUser.setPasswordChanged(passwordChange);
                 }
                 // update certificate data
                 if (userRO.getCertificate() == null || StringUtils.isBlank(userRO.getCertificate().getCertificateId())) {
@@ -142,62 +137,12 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
 
         CertificateFactory fact = CertificateFactory.getInstance("X.509");
         X509Certificate cert = (X509Certificate) fact.generateCertificate(isCert);
-        String subject = cert.getSubjectDN().getName();
-        String issuer = cert.getIssuerDN().getName();
-        String hash = cert.getIssuerDN().getName();
-        BigInteger serial = cert.getSerialNumber();
-        String certId = getCertificateIdFromCertificate(subject, issuer, serial);
-        CertificateRO cro = new CertificateRO();
-        cro.setCertificateId(certId);
-        cro.setSubject(subject);
-        cro.setIssuer(issuer);
-        // set serial as HEX
-        cro.setSerialNumber(serial.toString(16));
-        cro.setValidFrom(cert.getNotBefore());
-        cro.setValidTo(cert.getNotAfter());
-        cro.setEncodedValue(Base64.getMimeEncoder().encodeToString(cert.getEncoded()));
-        // generate bluecoat header
-        SimpleDateFormat sdf = new SimpleDateFormat(S_BLUECOAT_DATEFORMAT);
-        StringWriter sw = new StringWriter();
-        sw.write("sno=");
-        sw.write(serial.toString(16));
-        sw.write("&subject=");
-        sw.write(urlEnodeString(subject));
-        sw.write("&validfrom=");
-        sw.write(urlEnodeString(sdf.format(cert.getNotBefore())+" GTM"));
-        sw.write("&validto=");
-        sw.write(urlEnodeString(sdf.format(cert.getNotAfter())+" GTM"));
-        sw.write("&issuer=");
-        sw.write(urlEnodeString(issuer));
-        cro.setBlueCoatHeader(sw.toString());
 
+        CertificateRO cro = convertToRo(cert);
         return cro;
     }
 
-    private String urlEnodeString(String val){
-        if (StringUtils.isBlank(val)){
-            return "";
-        } else {
-            try {
-                return URLEncoder.encode(val, "UTF-8");
-            } catch (UnsupportedEncodingException e) {
-                LOG.error("Error occurred while url encoding the certificate string:" + val, e );
-            }
-        }
-        return "";
-    }
 
-    public boolean isCertificatePemEncoded(byte[] certData) {
-        if (certData != null && certData.length > S_PEM_START_TAG.length) {
-            for (int i = 0; i < certData.length; i++) {
-                if (certData[i] != S_PEM_START_TAG[i]) {
-                    return false;
-                }
-                return true;
-            }
-        }
-        return false;
-    }
 
     /**
      * Method tests if certificate is in PEM  format. If not it creates pem format else returns original data.
@@ -223,7 +168,7 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
     }
 
     /**
-     * pem encoded cartificate can have header_?? this code finds the certificate part and return the part
+     * pem encoded certificate can have header_?? this code finds the certificate part and return the part
      * @param buff
      * @return
      */
@@ -259,14 +204,15 @@ public class UIUserService extends UIServiceBase<DBUser, UserRO> {
         return -1;
     }
 
-    public String getCertificateIdFromCertificate(String subject, String issuer, BigInteger serial) {
-        return new PreAuthenticatedCertificatePrincipal(subject, issuer, serial).getName();
-    }
-
     @Override
     public UserRO convertToRo(DBUser d) {
         return conversionService.convert(d, UserRO.class);
     }
+
+    public CertificateRO convertToRo(X509Certificate d) {
+        return conversionService.convert(d, CertificateRO.class);
+    }
+
 
     public DeleteEntityValidation validateDeleteRequest(DeleteEntityValidation dev){
         List<DBUserDeleteValidation>  lstMessages = userDao.validateUsersForDelete(dev.getListIds());

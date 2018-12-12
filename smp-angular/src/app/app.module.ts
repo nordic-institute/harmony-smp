@@ -2,7 +2,7 @@ import {BrowserModule} from '@angular/platform-browser';
 import {NgModule} from '@angular/core';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {HttpClient, HttpClientModule} from '@angular/common/http';
-import {FlexLayoutModule} from "@angular/flex-layout";
+import {FlexLayoutModule} from '@angular/flex-layout';
 import {
   MatButtonModule,
   MatCardModule,
@@ -20,7 +20,7 @@ import {
   MatToolbarModule,
   MatTooltipModule,
 } from '@angular/material';
-import "hammerjs";
+import 'hammerjs';
 
 import {NgxDatatableModule} from '@swimlane/ngx-datatable';
 
@@ -70,13 +70,21 @@ import {DomainDetailsDialogComponent} from './domain/domain-details-dialog/domai
 import {UserDetailsDialogComponent} from './user/user-details-dialog/user-details-dialog.component';
 import {DownloadService} from './download/download.service';
 import {CertificateService} from './user/certificate.service';
-import {GlobalLookups} from "./common/global-lookups";
-import {ServiceGroupExtensionWizardDialogComponent} from "./service-group-edit/service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component";
-import {ServiceMetadataWizardDialogComponent} from "./service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-dialog.component";
-import {ConfirmationDialogComponent} from "./common/confirmation-dialog/confirmation-dialog.component";
-import {SpinnerComponent} from "./common/spinner/spinner.component";
-import {UserService} from "./user/user.service";
-import {UserDetailsService} from "./user/user-details-dialog/user-details.service";
+import {GlobalLookups} from './common/global-lookups';
+import {ServiceGroupExtensionWizardDialogComponent} from './service-group-edit/service-group-extension-wizard-dialog/service-group-extension-wizard-dialog.component';
+import {ServiceMetadataWizardDialogComponent} from './service-group-edit/service-metadata-wizard-dialog/service-metadata-wizard-dialog.component';
+import {ConfirmationDialogComponent} from './common/confirmation-dialog/confirmation-dialog.component';
+import {SpinnerComponent} from './common/spinner/spinner.component';
+import {UserService} from './user/user.service';
+import {UserDetailsService} from './user/user-details-dialog/user-details.service';
+import { ExpiredPasswordDialogComponent } from './common/expired-password-dialog/expired-password-dialog.component';
+import { DialogComponent } from './common/dialog/dialog.component';
+import {KeystoreImportDialogComponent} from "./domain/keystore-import-dialog/keystore-import-dialog.component";
+import {KeystoreEditDialogComponent} from "./domain/keystore-edit-dialog/keystore-edit-dialog.component";
+import {KeystoreCertificateDialogComponent} from "./domain/keystore-certificate-dialog/keystore-certificate-dialog.component";
+import {InformationDialogComponent} from "./common/information-dialog/information-dialog.component";
+import {KeystoreService} from "./domain/keystore.service";
+import {SmlIntegrationService} from "./domain/sml-integration.service";
 
 @NgModule({
   declarations: [
@@ -96,6 +104,7 @@ import {UserDetailsService} from "./user/user-details-dialog/user-details.servic
     ServiceGroupMetadataDialogComponent,
     CancelDialogComponent,
     ConfirmationDialogComponent,
+    InformationDialogComponent,
     RowLimiterComponent,
     DatePipe,
     CapitalizeFirstPipe,
@@ -110,7 +119,12 @@ import {UserDetailsService} from "./user/user-details-dialog/user-details.servic
     DomainSelectorComponent,
     AlertsComponent,
     SearchTableComponent,
-    UserDetailsDialogComponent
+    UserDetailsDialogComponent,
+    ExpiredPasswordDialogComponent,
+    DialogComponent,
+    KeystoreImportDialogComponent,
+    KeystoreEditDialogComponent,
+    KeystoreCertificateDialogComponent,
   ],
   entryComponents: [
     AppComponent,
@@ -122,8 +136,13 @@ import {UserDetailsService} from "./user/user-details-dialog/user-details.servic
     UserDetailsDialogComponent,
     CancelDialogComponent,
     ConfirmationDialogComponent,
+    InformationDialogComponent,
     SaveDialogComponent,
     DefaultPasswordDialogComponent,
+    ExpiredPasswordDialogComponent,
+    KeystoreImportDialogComponent,
+    KeystoreEditDialogComponent,
+    KeystoreCertificateDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -164,6 +183,8 @@ import {UserDetailsService} from "./user/user-details-dialog/user-details.servic
     AlertService,
     DownloadService,
     CertificateService,
+    KeystoreService,
+    SmlIntegrationService,
     GlobalLookups,
     DatePipe,
     UserService,
@@ -171,7 +192,7 @@ import {UserDetailsService} from "./user/user-details-dialog/user-details.servic
     {
       provide: ExtendedHttpClient,
       useFactory: extendedHttpClientCreator,
-      deps: [HttpClient]
+      deps: [HttpClient, HttpEventService, SecurityService]
     },
   ],
   bootstrap: [AppComponent]

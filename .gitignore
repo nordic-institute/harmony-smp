@@ -29,3 +29,4 @@ addons/cipa-sml-migration/target/classes/
 addons/cipa-sml-migration/target/
 addons/cipa-sml-migration/.idea/
 .idea/
+code-coverage

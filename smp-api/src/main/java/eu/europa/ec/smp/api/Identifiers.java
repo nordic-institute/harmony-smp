@@ -102,7 +102,7 @@ public class Identifiers {
         if (delimiterIndex<0){
             throw new MalformedIdentifierException(doubleColonDelimitedId, null);
         }
-        idResult[0] = doubleColonDelimitedId.substring(0,delimiterIndex);
+        idResult[0] = delimiterIndex==0?null:doubleColonDelimitedId.substring(0,delimiterIndex);
         idResult[1] = doubleColonDelimitedId.substring(delimiterIndex+2);
 
         if (StringUtils.isBlank(idResult[1])){

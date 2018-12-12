@@ -3,7 +3,7 @@ import {SearchTableEntity} from "../common/search-table/search-table-entity.mode
 
 export interface ServiceMetadataEditRo extends SearchTableEntity  {
   documentIdentifier: string;
-  documentIdentifierScheme : string;
+  documentIdentifierScheme?: string;
   smlSubdomain: string;
   domainCode: string;
   domainId: null,
